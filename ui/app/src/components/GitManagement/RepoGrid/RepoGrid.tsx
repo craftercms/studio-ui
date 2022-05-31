@@ -35,16 +35,12 @@ import { copyToClipboard } from '../../../utils/system';
 import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
 import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
-import ApiResponse from '../../../models/ApiResponse';
 
 export interface RepoGridProps {
-  sandboxBranch: string;
-  sandboxBranchError: ApiResponse;
   repositories: Array<Repository>;
   disableActions: boolean;
   fetchStatus(): void;
   fetchRepositories(): void;
-  onFetchSandboxBranch(): void;
 }
 
 const messages = defineMessages({
@@ -80,15 +76,7 @@ const messages = defineMessages({
 });
 
 export function RepoGrid(props: RepoGridProps) {
-  const {
-    sandboxBranch,
-    sandboxBranchError,
-    repositories,
-    disableActions,
-    fetchStatus,
-    fetchRepositories,
-    onFetchSandboxBranch
-  } = props;
+  const { repositories, disableActions, fetchStatus, fetchRepositories } = props;
   const [repositoriesPushDialogBranches, setRepositoriesPushDialogBranches] = useState([]);
   const [pullRemoteName, setPullRemoteName] = useState(null);
   const [pushRemoteName, setPushRemoteName] = useState(null);
@@ -244,8 +232,6 @@ export function RepoGrid(props: RepoGridProps) {
       <PullDialog
         open={pullFromRemoteDialogState.open}
         onClose={pullFromRemoteDialogState.onClose}
-        sandboxBranch={sandboxBranch}
-        sandboxBranchError={sandboxBranchError}
         remoteName={pullRemoteName}
         mergeStrategies={mergeStrategies}
         onPullSuccess={onPullSuccess}
@@ -253,7 +239,6 @@ export function RepoGrid(props: RepoGridProps) {
         isMinimized={pullFromRemoteDialogState.isMinimized}
         isSubmitting={pullFromRemoteDialogState.isSubmitting}
         hasPendingChanges={pullFromRemoteDialogState.hasPendingChanges}
-        onFetchSandboxBranch={onFetchSandboxBranch}
       />
       {/* endregion */}
       {/* region PushDialog */}

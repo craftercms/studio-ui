@@ -21,16 +21,7 @@ import { PullFromRemoteDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 
 export function PullDialog(props: PullFromRemoteDialogProps) {
-  const {
-    sandboxBranch,
-    sandboxBranchError,
-    remoteName,
-    mergeStrategies,
-    onPullSuccess,
-    onPullError,
-    onFetchSandboxBranch,
-    ...rest
-  } = props;
+  const { remoteName, mergeStrategies, onPullSuccess, onPullError, ...rest } = props;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const computedIsSubmitting = isSubmitting || rest.isSubmitting;
   return (
@@ -43,8 +34,6 @@ export function PullDialog(props: PullFromRemoteDialogProps) {
       isSubmitting={computedIsSubmitting}
     >
       <PullDialogContainer
-        sandboxBranch={sandboxBranch}
-        sandboxBranchError={sandboxBranchError}
         remoteName={remoteName}
         isSubmitting={computedIsSubmitting}
         mergeStrategies={mergeStrategies}
@@ -57,7 +46,6 @@ export function PullDialog(props: PullFromRemoteDialogProps) {
           setIsSubmitting(false);
           onPullError?.(result);
         }}
-        onFetchSandboxBranch={onFetchSandboxBranch}
       />
     </EnhancedDialog>
   );

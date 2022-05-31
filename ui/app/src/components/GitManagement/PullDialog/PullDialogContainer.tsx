@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import DialogBody from '../../DialogBody/DialogBody';
 import DialogFooter from '../../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
@@ -39,6 +39,8 @@ import Alert from '@mui/material/Alert';
 import FormLabel from '@mui/material/FormLabel';
 import { Typography } from '@mui/material';
 import Link from '@mui/material/Link';
+import ApiResponse from '../../../models/ApiResponse';
+import { fetchSite } from '../../../services/sites';
 
 const useStyles = makeStyles()((theme) => ({
   formControl: {
@@ -66,15 +68,12 @@ const useStyles = makeStyles()((theme) => ({
 
 export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const {
-    sandboxBranch,
-    sandboxBranchError,
     remoteName,
     mergeStrategies,
     onClose,
     onPullSuccess,
     onPullError,
     onPullStart,
-    onFetchSandboxBranch,
     disabled = false,
     isSubmitting = false
   } = props;
@@ -83,6 +82,8 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const { classes } = useStyles();
   const { uuid, id: siteId } = useActiveSite();
   const { username } = useActiveUser();
+  const [sandboxBranch, setSandboxBranch] = useState('');
+  const [sandboxBranchError, setSandboxBranchError] = useState<ApiResponse>(null);
 
   const onFormInputChange = (e: any) => {
     if (e.target.name === 'mergeStrategy') {
@@ -112,6 +113,18 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
     }
   };
 
+  const fetchSandboxBranch = useCallback(() => {
+    fetchSite(siteId).subscribe({
+      next: ({ sandboxBranch }) => {
+        setSandboxBranchError(null);
+        setSandboxBranch(sandboxBranch);
+      },
+      error: (error) => {
+        setSandboxBranchError(error);
+      }
+    });
+  }, [siteId]);
+
   useEffect(() => {
     if (!selectedMergeStrategy && mergeStrategies?.length) {
       const storedPullMergeStrategy = getStoredPullMergeStrategy(uuid, username);
@@ -134,6 +147,10 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
     }
   }, [selectedMergeStrategy, uuid, username]);
 
+  useEffect(() => {
+    fetchSandboxBranch();
+  }, [fetchSandboxBranch]);
+
   return (
     <form onSubmit={onSubmit}>
       <DialogBody>
@@ -153,7 +170,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
                   defaultMessage="Unable to retrieve project’s branch • {retry}"
                   values={{
                     retry: (
-                      <Link sx={{ cursor: 'pointer' }} onClick={onFetchSandboxBranch}>
+                      <Link sx={{ cursor: 'pointer' }} onClick={fetchSandboxBranch}>
                         <FormattedMessage id="words.retry" defaultMessage="Retry" />
                       </Link>
                     )

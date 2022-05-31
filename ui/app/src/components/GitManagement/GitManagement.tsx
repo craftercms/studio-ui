@@ -44,7 +44,6 @@ import useSpreadState from '../../hooks/useSpreadState';
 import { UNDEFINED } from '../../utils/constants';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
-import { fetchSite } from '../../services/sites';
 
 export interface GitManagementProps {
   embedded?: boolean;
@@ -69,8 +68,6 @@ export function GitManagement(props: GitManagementProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [activeTab, setActiveTab] = useState(0);
-  const [sandboxBranch, setSandboxBranch] = useState('');
-  const [sandboxBranchError, setSandboxBranchError] = useState<ApiResponse>(null);
 
   const [{ repositories }, setRepoState] = useSpreadState({
     repositories: null as Array<Repository>,
@@ -140,18 +137,6 @@ export function GitManagement(props: GitManagementProps) {
     });
   }, [dispatch, fetchRepoStatusReceiver, setRepoStatusState, siteId]);
 
-  const fetchSandboxBranch = useCallback(() => {
-    fetchSite(siteId).subscribe({
-      next: ({ sandboxBranch }) => {
-        setSandboxBranchError(null);
-        setSandboxBranch(sandboxBranch);
-      },
-      error: (error) => {
-        setSandboxBranchError(error);
-      }
-    });
-  }, [siteId]);
-
   const onRepoCreatedSuccess = () => {
     fetchRepositories();
     newRemoteRepositoryDialogState.onClose();
@@ -182,10 +167,6 @@ export function GitManagement(props: GitManagementProps) {
   useEffect(() => {
     fetchRepoStatus();
   }, [fetchRepoStatus]);
-
-  useEffect(() => {
-    fetchSandboxBranch();
-  }, [fetchSandboxBranch]);
 
   const newRemoteRepositoryDialogState = useEnhancedDialogState();
   const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
@@ -251,13 +232,10 @@ export function GitManagement(props: GitManagementProps) {
               {formatMessage(translations[loadingStatus ? 'fetchingStatus' : statusMessageKey ?? 'fetchingStatus'])}
             </Alert>
             <RepoGrid
-              sandboxBranch={sandboxBranch}
-              sandboxBranchError={sandboxBranchError}
               repositories={repositories}
               fetchStatus={fetchRepoStatus}
               fetchRepositories={fetchRepositories}
               disableActions={!repoStatus || repoStatus.conflicting.length > 0}
-              onFetchSandboxBranch={fetchSandboxBranch}
             />
             <Typography variant="caption" className={classes.statusNote}>
               <FormattedMessage
