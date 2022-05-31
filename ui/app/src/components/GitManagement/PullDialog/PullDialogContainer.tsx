@@ -40,7 +40,7 @@ import FormLabel from '@mui/material/FormLabel';
 import { Typography } from '@mui/material';
 import Link from '@mui/material/Link';
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
     marginBottom: '15px'
   },
