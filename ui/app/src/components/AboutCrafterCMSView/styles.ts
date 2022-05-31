@@ -14,31 +14,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    paperRoot: {
-      display: 'flex',
-      padding: '30px',
-      flexDirection: 'column',
-      backgroundColor: theme.palette.background.default
-    },
-    logo: {
-      margin: '0 auto 20px auto'
-    },
-    row: {
-      display: 'flex',
-      marginTop: '10px',
-      '& .aboutLabel': {
-        marginRight: '10px'
-      }
-    },
-    externalLink: {
-      marginTop: '10px'
+const useStyles = makeStyles()((theme) => ({
+  paperRoot: {
+    display: 'flex',
+    padding: '30px',
+    flexDirection: 'column',
+    backgroundColor: theme.palette.background.default
+  },
+  logo: {
+    margin: '0 auto 20px auto'
+  },
+  row: {
+    display: 'flex',
+    marginTop: '10px',
+    '& .aboutLabel': {
+      marginRight: '10px'
     }
-  })
-);
+  },
+  externalLink: {
+    marginTop: '10px'
+  }
+}));
 
 export default useStyles;

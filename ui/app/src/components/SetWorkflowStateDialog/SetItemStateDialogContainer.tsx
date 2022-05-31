@@ -26,16 +26,16 @@ import { useStyles } from './styles';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
+
 import Box from '@mui/material/Box';
-import { CSSProperties } from '@mui/styles';
+import { CSSObject as CSSProperties } from 'tss-react';
 import { useUnmount } from '../../hooks/useUnmount';
 import { useSpreadState } from '../../hooks/useSpreadState';
 
 export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
   const { onClose, onClosed, title } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [update, setUpdate] = useSpreadState({
     clearSystemProcessing: false,
     clearUserLocked: false,
@@ -195,23 +195,27 @@ interface BracketProps {
   styles?: Partial<Record<'bracket', CSSProperties>>;
 }
 
-const useBracketStyles = makeStyles((theme) =>
-  createStyles({
-    bracket: (props: BracketProps) => ({
-      width: `${props.width}`,
-      height: `${props.height}`,
-      borderTopLeftRadius: '2px',
-      borderBottomLeftRadius: '2px',
-      borderLeft: `${props.borderWidth} solid ${props.color}`,
-      borderTop: `${props.borderWidth} solid ${props.color}`,
-      borderBottom: `${props.borderWidth} solid ${props.color}`,
-      ...props.styles.bracket
-    })
-  })
-);
+const useBracketStyles = makeStyles<{
+  width: number | string;
+  height: number | string;
+  color: string;
+  borderWidth: number | string;
+  styles: any;
+}>()((theme, { width, height, color, borderWidth, styles } = {} as any) => ({
+  bracket: {
+    width: `${width}`,
+    height: `${height}`,
+    borderTopLeftRadius: '2px',
+    borderBottomLeftRadius: '2px',
+    borderLeft: `${borderWidth} solid ${color}`,
+    borderTop: `${borderWidth} solid ${color}`,
+    borderBottom: `${borderWidth} solid ${color}`,
+    ...styles.bracket
+  }
+}));
 
 function Bracket(props: BracketProps) {
   const { width = '20px', height = '40px', color = '#E0E0E0', borderWidth = '3px', styles } = props;
-  const classes = useBracketStyles({ width, height, color, borderWidth, styles });
+  const { classes } = useBracketStyles({ width, height, color, borderWidth, styles });
   return <div className={classes.bracket} />;
 }

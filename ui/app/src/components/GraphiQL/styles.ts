@@ -14,18 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-export const useStyles = makeStyles(() =>
-  createStyles({
-    container: {
-      '& .title': {
-        display: 'none'
-      },
-      '& .doc-explorer-title, & .history-title': {
-        height: '32px'
-      }
+export const useStyles = makeStyles()(() => ({
+  container: {
+    '& .title': {
+      display: 'none'
+    },
+    '& .doc-explorer-title, & .history-title': {
+      height: '32px'
     }
-  })
-);
+  }
+}));

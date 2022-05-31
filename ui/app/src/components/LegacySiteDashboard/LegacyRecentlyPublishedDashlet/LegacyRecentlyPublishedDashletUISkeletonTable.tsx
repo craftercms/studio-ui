@@ -38,7 +38,7 @@ export interface RecentlyPublishedWidgetUiSkeletonTableProps {
 }
 
 export function LegacyRecentlyPublishedDashletUISkeletonTable(props: RecentlyPublishedWidgetUiSkeletonTableProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { numOfItems = 2 } = props;
 
   const items = props.items

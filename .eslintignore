@@ -27,6 +27,7 @@ node_modules
 /static-assets/modules/*
 /static-assets/next/*
 /static-assets/scripts/craftercms-guest.umd.js
+/static-assets/scripts/craftercms-xb.umd.js
 /static-assets/scripts/preview-landing.umd.js
 /static-assets/yui/*
 /static-assets/jquery/*

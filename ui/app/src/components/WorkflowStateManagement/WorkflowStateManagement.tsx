@@ -87,7 +87,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
   const [selectedItem, setSelectedItem] = useState<SandboxItem>(null);
   const [isSelectedItemsOnAllPages, setIsSelectedItemsOnAllPages] = useState(false);
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   const hasSelectedItems = useMemo(() => Object.values(selectedItems).some(Boolean), [selectedItems]);

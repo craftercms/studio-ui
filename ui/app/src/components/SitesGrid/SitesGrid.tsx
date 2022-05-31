@@ -44,7 +44,7 @@ export function SitesGrid(props: SitesGridProps) {
     onPublishButtonClick
   } = props;
   const sites = resource.read();
-  const classes = useSitesGridStyles();
+  const { classes } = useSitesGridStyles();
   return (
     <section className={classes.root}>
       <Grid container spacing={3}>

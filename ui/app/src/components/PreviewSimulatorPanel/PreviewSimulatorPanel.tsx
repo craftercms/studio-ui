@@ -17,9 +17,7 @@
 import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useMemo, useReducer } from 'react';
 import { getTranslation } from '../../utils/i18n';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
 import { ScreenRotationRounded } from '@mui/icons-material';
 import Divider from '@mui/material/Divider';
@@ -76,25 +74,23 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    topPanel: {
-      display: 'flex',
-      padding: '15px',
-      alignItems: 'flex-end',
-      '& > div:first-child': {
-        marginRight: '10px'
-      }
-    },
-    presetFieldset: {
-      padding: '15px',
-      width: '100%'
-    },
-    margin: {
-      marginBottom: '10px'
+const useStyles = makeStyles()(() => ({
+  topPanel: {
+    display: 'flex',
+    padding: '15px',
+    alignItems: 'flex-end',
+    '& > div:first-child': {
+      marginRight: '10px'
     }
-  })
-);
+  },
+  presetFieldset: {
+    padding: '15px',
+    width: '100%'
+  },
+  margin: {
+    marginBottom: '10px'
+  }
+}));
 
 const INITIAL_STATE = {
   width: '',
@@ -105,7 +101,7 @@ const INITIAL_STATE = {
 const reducer = (a: any, b: any) => ({ ...a, ...b });
 
 export function PreviewSimulatorPanel(props: any) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const maxWidth = window.innerWidth - toolsPanelWidth;

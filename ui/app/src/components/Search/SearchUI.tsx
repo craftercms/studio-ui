@@ -17,9 +17,8 @@
 import SiteSearchToolBar from '../SiteSearchToolbar';
 import React, { useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
-import clsx from 'clsx';
 import SiteSearchFilters from '../SiteSearchFilters';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import { ElasticParams, Filter, MediaItem, SearchResult } from '../../models/Search';
 import { CheckedFilter, drawerWidth } from './utils';
@@ -83,7 +82,7 @@ interface SearchUIProps {
   onAcceptSelection?(items: DetailedItem[]): void;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   wrapper: {
     height: '100%',
     margin: 'auto',
@@ -261,7 +260,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function SearchUI(props: SearchUIProps) {
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
+  // region const { ... } = props
   const {
     areAllSelected,
     itemsByPath,
@@ -301,6 +301,7 @@ export function SearchUI(props: SearchUIProps) {
     onClose,
     onAcceptSelection
   } = props;
+  // endregion
 
   const { formatMessage } = useIntl();
 
@@ -325,7 +326,7 @@ export function SearchUI(props: SearchUIProps) {
         open={drawerOpen}
         className={classes.drawer}
         classes={{
-          paper: clsx(classes.drawerPaper, mode === 'select' && classes.drawerPaperSelect),
+          paper: cx(classes.drawerPaper, mode === 'select' && classes.drawerPaperSelect),
           modal: classes.drawerModal
         }}
         ModalProps={{
@@ -352,7 +353,7 @@ export function SearchUI(props: SearchUIProps) {
         )}
       </Drawer>
       <section
-        className={clsx(classes.wrapper, {
+        className={cx(classes.wrapper, {
           [classes.shift]: drawerOpen,
           [classes.wrapperSelectMode]: mode === 'select'
         })}

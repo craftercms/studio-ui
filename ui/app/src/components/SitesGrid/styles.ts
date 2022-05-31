@@ -14,52 +14,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import cardTitleStyles from '../../styles/card';
 
-export const useSitesGridStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      display: 'flex',
-      flexDirection: 'column',
-      padding: '20px'
-    },
-    paginationRoot: {
-      '&:last-child': {
-        alignSelf: 'flex-end',
-        marginTop: '20px'
-      }
+export const useSitesGridStyles = makeStyles()(() => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '20px'
+  },
+  paginationRoot: {
+    '&:last-child': {
+      alignSelf: 'flex-end',
+      marginTop: '20px'
     }
-  })
-);
+  }
+}));
 
-export const useSiteCardStyles = makeStyles(() =>
-  createStyles({
-    media: {
-      height: '226px'
-    },
-    card: {
-      width: '340px',
-      '&.compact': {
-        display: 'flex'
-      }
-    },
-    cardHeader: {
-      height: '77px',
-      width: '100%',
-      '& .cardTitle': {
-        ...cardTitleStyles
-      },
-      '& .cardSubtitle': {
-        overflow: 'hidden',
-        display: '-webkit-box',
-        '-webkit-line-clamp': 1,
-        '-webkit-box-orient': 'vertical'
-      }
-    },
-    cardActions: {
-      placeContent: 'center space-between'
+export const useSiteCardStyles = makeStyles()(() => ({
+  media: {
+    height: '226px'
+  },
+  card: {
+    width: '340px',
+    '&.compact': {
+      display: 'flex'
     }
-  })
-);
+  },
+  cardHeader: {
+    height: '77px',
+    width: '100%',
+    '& .cardTitle': {
+      ...cardTitleStyles
+    },
+    '& .cardSubtitle': {
+      overflow: 'hidden',
+      display: '-webkit-box',
+      WebkitLineClamp: 1,
+      WebkitBoxOrient: 'vertical'
+    }
+  },
+  cardActions: {
+    placeContent: 'center space-between'
+  }
+}));

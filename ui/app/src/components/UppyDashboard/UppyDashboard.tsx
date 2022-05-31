@@ -17,8 +17,8 @@
 import { Dashboard } from '@craftercms/uppy';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Uppy } from '@uppy/core';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
+
 import palette from '../../styles/palette';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages, useIntl } from 'react-intl';
@@ -29,6 +29,7 @@ import { alpha } from '@mui/material';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { UppyFile } from '@uppy/utils';
+import { CSSObject } from 'tss-react';
 
 interface UppyDashboardProps {
   uppy: Uppy;
@@ -42,277 +43,275 @@ interface UppyDashboardProps {
   options?: DashboardOptions;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    dashboard: {
-      paddingBottom: 0,
-      '& .uppy-Dashboard-inner': {
-        border: 0,
-        borderRadius: 0,
-        backgroundColor: theme.palette.background.default
-      },
-      '& .uppy-Dashboard-files, & .uppy-size--md .uppy-Dashboard-files': {
-        padding: '15px'
-      },
-      '& .uppy-Dashboard-browse': {
-        color: theme.palette.primary.main,
-        '&:hover': {
-          textDecoration: 'underline'
-        }
-      },
-      '& .uppy-Dashboard-dropFilesHereHint': {
-        border: `1px dashed ${theme.palette.primary.main}`,
-        color: theme.palette.primary.main
-      },
-      '& [data-uppy-drag-drop-supported=true] .uppy-Dashboard-AddFiles': {
-        border: 0
-      },
-      // region header
-      '& .uppy-dashboard-header': {
-        backgroundColor: theme.palette.background.paper,
-        minHeight: '64px',
-        color: theme.palette.text.primary,
-        padding: '8px',
-        display: 'flex',
-        alignItems: 'center',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-        '& .uppy-dashboard-header-actions': {
-          marginLeft: 'auto'
-        },
-        '& .uppy-dashboard-header-title': {
-          padding: '0 8px',
-          margin: 0,
-          fontSize: '1.25rem',
-          fontFamily: ' Source Sans Pro, Open Sans, sans-serif',
-          fontWeight: '600',
-          lineHeight: '1.6'
-        }
-      },
-      // endregion
-      // region item card
-      '& .uppy-dashboard-item-card': {
-        display: 'flex',
-        position: 'relative'
-      },
-      '& .uppy-dashboard-item-validating': {
-        color: 'rgba(0, 0, 0, 0.54)'
-      },
-      '& .uppy-dashboard-item-preview': {
-        width: '120px',
-        height: '120px',
-        position: 'relative'
-      },
-      '& .uppy-Dashboard-Item-name': {
-        display: 'flex',
-        alignItems: 'center',
-        '& .suggested-file-name': {
-          display: 'flex',
-          alignItems: 'center'
-        },
-        '& .suggested-icon': {
-          fill: palette.gray.medium6,
-          width: '20px',
-          height: '20px',
-          marginRight: '5px',
-          marginLeft: '5px'
-        }
-      },
-      '& .uppy-dashboard-site-policy-warning': {
-        color: theme.palette.error.main,
-        display: 'flex',
-        alignItems: 'center',
-        fontSize: '0.875rem',
-        marginBottom: '5px',
-        '& .warning-icon': {
-          fill: theme.palette.error.main,
-          width: '20px',
-          height: '20px',
-          marginRight: '5px'
-        }
-      },
-      '& .uppy-Dashboard-Item-previewInnerWrap': {
-        backgroundColor: `${theme.palette.divider} !important`,
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0
-      },
-      '& .uppy-dashboard-item-statusType': {
-        display: 'inline-block'
-      },
-      '& .uppy-dashboard-item-fileInfoAndButtons': {
-        padding: '15px',
-        display: 'flex',
-        alignItems: 'center',
-        flexGrow: 1
-      },
-      '& .uppy-dashboard-item-progress': {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        '& .uppy-file-progress-bar': {
-          backgroundColor: theme.palette.primary.main,
-          height: '2px',
-          transition: 'background-color, width 0.3s ease-out',
-          borderBottomRightRadius: '5px',
-          borderBottomLeftRadius: '5px',
-          '&.complete': {
-            backgroundColor: theme.palette.success.main
-          },
-          '&.error': {
-            backgroundColor: theme.palette.error.main
-          }
-        }
-      },
-      '& .item-name-valid': {
-        color: theme.palette.success.main
-      },
-      '& .item-name-invalid': {
-        textDecoration: 'line-through',
-        color: theme.palette.text.primary
-      },
-      // endregion
-      // region File list
-      '& .uppy-Dashboard-files': {},
-      '& .uppy-Dashboard-AddFiles-title': {
-        color: theme.palette.text.primary,
-        position: 'relative',
-        zIndex: 1
-      },
-      '& .uppy-dashboard-files-list-row': {
-        marginBottom: '20px',
-        '&:last-child': {
-          marginBottom: 0
-        }
-      },
-      // endregion
-      // region Footer
-      '& .uppy-DashboardContent-bar': {
-        position: 'relative',
-        borderTop: `1px solid ${theme.palette.divider}`,
-        backgroundColor: theme.palette.background.paper,
-        borderBottom: 0
-      },
-      '& .uppy-dashboard-progress-indicator': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        '& .uppy-file-progress-bar': {
-          backgroundColor: theme.palette.primary.main,
-          height: '2px',
-          transition: 'background-color, width 0.3s ease-out',
-          '&.complete': {
-            backgroundColor: theme.palette.success.main
-          },
-          '&.error': {
-            backgroundColor: theme.palette.error.main
-          }
-        }
-      },
-      '& .uppy-dashboard-validation-buttons': {
-        marginLeft: 'auto',
-        '& button:first-child': {
-          marginRight: '10px'
-        }
-      },
-      '& .uppy-dashboard-right-buttons': {
-        marginLeft: 'auto',
-        '& button:last-child': {
-          marginLeft: '10px'
-        }
-      },
-      '& .uppy-dashboard-button-base': {
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        boxSizing: 'border-box',
-        WebkitTapHighlightColor: 'transparent',
-        backgroundColor: 'transparent',
-        outline: 0,
-        border: 0,
-        margin: 0,
-        borderRadius: 0,
-        padding: 0,
-        cursor: 'pointer',
-        userSelect: 'none',
-        verticalAlign: 'middle',
-        MozAppearance: 'none',
-        WebkitAppearance: 'none',
-        textDecoration: 'none',
-        color: 'inherit',
-        '&::-moz-focus-inner': {
-          borderStyle: 'none'
-        },
-        '&:disabled': {
-          pointerEvents: 'none',
-          cursor: 'default'
-        },
-        '@media print': {
-          colorAdjust: 'exact'
-        }
-      },
-      '& .uppy-dashboard-text-button': {
-        ...theme.typography.button,
-        minWidth: 64,
-        padding: '6px 8px',
-        borderRadius: theme.shape.borderRadius,
-        transition: theme.transitions.create(['background-color', 'box-shadow', 'border-color', 'color'], {
-          duration: theme.transitions.duration.short
-        }),
-        color: theme.palette.primary.main,
-        '&:hover': {
-          textDecoration: 'none',
-          // backgroundColor: alpha(theme.palette.text.primary, theme.palette.action.hoverOpacity),
-          // Reset on touch devices, it doesn't add specificity
-          '@media (hover: none)': {
-            backgroundColor: 'transparent'
-          },
-          backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.hoverOpacity)
-        },
-        '&:disabled': {
-          color: theme.palette.action.disabled,
-          pointerEvents: 'none',
-          cursor: 'default'
-        }
-      },
-      '& .uppy-dashboard-icon-button': {
-        textAlign: 'center',
-        flex: '0 0 auto',
-        borderRadius: '50%',
-        overflow: 'visible', // Explicitly set the default value to solve a bug on IE11.
-        color: theme.palette.action.active,
-        transition: theme.transitions.create('background-color', {
-          duration: theme.transitions.duration.shortest
-        }),
-        padding: 12,
-        fontSize: theme.typography.pxToRem(28),
-        '&:hover': {
-          backgroundColor: alpha(theme.palette.action.active, theme.palette.action.hoverOpacity),
-          '@media (hover: none)': {
-            backgroundColor: 'transparent'
-          }
-        },
-        '&.edgeEnd': {
-          marginRight: '-12px'
-        }
-      },
-      '& .uppy-dashboard-svg-icon': {
-        userSelect: 'none',
-        width: '1em',
-        height: '1em',
-        display: 'inline-block',
-        fill: 'currentColor',
-        flexShrink: 0,
-        fontSize: theme.typography.pxToRem(24),
-        transition: theme.transitions.create('fill', {
-          duration: theme.transitions.duration.shorter
-        })
+const useStyles = makeStyles()((theme) => ({
+  dashboard: {
+    paddingBottom: 0,
+    '& .uppy-Dashboard-inner': {
+      border: 0,
+      borderRadius: 0,
+      backgroundColor: theme.palette.background.default
+    },
+    '& .uppy-Dashboard-files, & .uppy-size--md .uppy-Dashboard-files': {
+      padding: '15px'
+    },
+    '& .uppy-Dashboard-browse': {
+      color: theme.palette.primary.main,
+      '&:hover': {
+        textDecoration: 'underline'
       }
-      // endregion
+    },
+    '& .uppy-Dashboard-dropFilesHereHint': {
+      border: `1px dashed ${theme.palette.primary.main}`,
+      color: theme.palette.primary.main
+    },
+    '& [data-uppy-drag-drop-supported=true] .uppy-Dashboard-AddFiles': {
+      border: 0
+    },
+    // region header
+    '& .uppy-dashboard-header': {
+      backgroundColor: theme.palette.background.paper,
+      minHeight: '64px',
+      color: theme.palette.text.primary,
+      padding: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+      '& .uppy-dashboard-header-actions': {
+        marginLeft: 'auto'
+      },
+      '& .uppy-dashboard-header-title': {
+        padding: '0 8px',
+        margin: 0,
+        fontSize: '1.25rem',
+        fontFamily: 'Source Sans Pro, Open Sans, sans-serif',
+        fontWeight: 600,
+        lineHeight: '1.6'
+      }
+    },
+    // endregion
+    // region item card
+    '& .uppy-dashboard-item-card': {
+      display: 'flex',
+      position: 'relative'
+    },
+    '& .uppy-dashboard-item-validating': {
+      color: 'rgba(0, 0, 0, 0.54)'
+    },
+    '& .uppy-dashboard-item-preview': {
+      width: '120px',
+      height: '120px',
+      position: 'relative'
+    },
+    '& .uppy-Dashboard-Item-name': {
+      display: 'flex',
+      alignItems: 'center',
+      '& .suggested-file-name': {
+        display: 'flex',
+        alignItems: 'center'
+      },
+      '& .suggested-icon': {
+        fill: palette.gray.medium6,
+        width: '20px',
+        height: '20px',
+        marginRight: '5px',
+        marginLeft: '5px'
+      }
+    },
+    '& .uppy-dashboard-site-policy-warning': {
+      color: theme.palette.error.main,
+      display: 'flex',
+      alignItems: 'center',
+      fontSize: '0.875rem',
+      marginBottom: '5px',
+      '& .warning-icon': {
+        fill: theme.palette.error.main,
+        width: '20px',
+        height: '20px',
+        marginRight: '5px'
+      }
+    },
+    '& .uppy-Dashboard-Item-previewInnerWrap': {
+      backgroundColor: `${theme.palette.divider} !important`,
+      borderTopRightRadius: 0,
+      borderBottomRightRadius: 0
+    },
+    '& .uppy-dashboard-item-statusType': {
+      display: 'inline-block'
+    },
+    '& .uppy-dashboard-item-fileInfoAndButtons': {
+      padding: '15px',
+      display: 'flex',
+      alignItems: 'center',
+      flexGrow: 1
+    },
+    '& .uppy-dashboard-item-progress': {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      '& .uppy-file-progress-bar': {
+        backgroundColor: theme.palette.primary.main,
+        height: '2px',
+        transition: 'background-color, width 0.3s ease-out',
+        borderBottomRightRadius: '5px',
+        borderBottomLeftRadius: '5px',
+        '&.complete': {
+          backgroundColor: theme.palette.success.main
+        },
+        '&.error': {
+          backgroundColor: theme.palette.error.main
+        }
+      }
+    },
+    '& .item-name-valid': {
+      color: theme.palette.success.main
+    },
+    '& .item-name-invalid': {
+      textDecoration: 'line-through',
+      color: theme.palette.text.primary
+    },
+    // endregion
+    // region File list
+    '& .uppy-Dashboard-files': {},
+    '& .uppy-Dashboard-AddFiles-title': {
+      color: theme.palette.text.primary,
+      position: 'relative',
+      zIndex: 1
+    },
+    '& .uppy-dashboard-files-list-row': {
+      marginBottom: '20px',
+      '&:last-child': {
+        marginBottom: 0
+      }
+    },
+    // endregion
+    // region Footer
+    '& .uppy-DashboardContent-bar': {
+      position: 'relative',
+      borderTop: `1px solid ${theme.palette.divider}`,
+      backgroundColor: theme.palette.background.paper,
+      borderBottom: 0
+    },
+    '& .uppy-dashboard-progress-indicator': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      '& .uppy-file-progress-bar': {
+        backgroundColor: theme.palette.primary.main,
+        height: '2px',
+        transition: 'background-color, width 0.3s ease-out',
+        '&.complete': {
+          backgroundColor: theme.palette.success.main
+        },
+        '&.error': {
+          backgroundColor: theme.palette.error.main
+        }
+      }
+    },
+    '& .uppy-dashboard-validation-buttons': {
+      marginLeft: 'auto',
+      '& button:first-child': {
+        marginRight: '10px'
+      }
+    },
+    '& .uppy-dashboard-right-buttons': {
+      marginLeft: 'auto',
+      '& button:last-child': {
+        marginLeft: '10px'
+      }
+    },
+    '& .uppy-dashboard-button-base': {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      boxSizing: 'border-box',
+      WebkitTapHighlightColor: 'transparent',
+      backgroundColor: 'transparent',
+      outline: 0,
+      border: 0,
+      margin: 0,
+      borderRadius: 0,
+      padding: 0,
+      cursor: 'pointer',
+      userSelect: 'none',
+      verticalAlign: 'middle',
+      MozAppearance: 'none',
+      WebkitAppearance: 'none',
+      textDecoration: 'none',
+      color: 'inherit',
+      '&::-moz-focus-inner': {
+        borderStyle: 'none'
+      },
+      '&:disabled': {
+        pointerEvents: 'none',
+        cursor: 'default'
+      },
+      '@media print': {
+        colorAdjust: 'exact'
+      }
+    },
+    '& .uppy-dashboard-text-button': {
+      ...(theme.typography.button as CSSObject),
+      minWidth: 64,
+      padding: '6px 8px',
+      borderRadius: theme.shape.borderRadius,
+      transition: theme.transitions.create(['background-color', 'box-shadow', 'border-color', 'color'], {
+        duration: theme.transitions.duration.short
+      }),
+      color: theme.palette.primary.main,
+      '&:hover': {
+        textDecoration: 'none',
+        // backgroundColor: alpha(theme.palette.text.primary, theme.palette.action.hoverOpacity),
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: 'transparent'
+        },
+        backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.hoverOpacity)
+      },
+      '&:disabled': {
+        color: theme.palette.action.disabled,
+        pointerEvents: 'none',
+        cursor: 'default'
+      }
+    },
+    '& .uppy-dashboard-icon-button': {
+      textAlign: 'center',
+      flex: '0 0 auto',
+      borderRadius: '50%',
+      overflow: 'visible', // Explicitly set the default value to solve a bug on IE11.
+      color: theme.palette.action.active,
+      transition: theme.transitions.create('background-color', {
+        duration: theme.transitions.duration.shortest
+      }),
+      padding: 12,
+      fontSize: theme.typography.pxToRem(28),
+      '&:hover': {
+        backgroundColor: alpha(theme.palette.action.active, theme.palette.action.hoverOpacity),
+        '@media (hover: none)': {
+          backgroundColor: 'transparent'
+        }
+      },
+      '&.edgeEnd': {
+        marginRight: '-12px'
+      }
+    },
+    '& .uppy-dashboard-svg-icon': {
+      userSelect: 'none',
+      width: '1em',
+      height: '1em',
+      display: 'inline-block',
+      fill: 'currentColor',
+      flexShrink: 0,
+      fontSize: theme.typography.pxToRem(24),
+      transition: theme.transitions.create('fill', {
+        duration: theme.transitions.duration.shorter
+      })
     }
-  })
-);
+    // endregion
+  }
+}));
 
 const translations = defineMessages({
   cancelPending: {
@@ -390,7 +389,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
     fileManagerSelectionType: 'both',
     ...props.options
   };
-  const classes = useStyles();
+  const { classes } = useStyles();
   const ref = useRef();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();

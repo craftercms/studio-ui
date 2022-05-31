@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { ReactNode } from 'react';
-import { CSSProperties } from '@mui/styles';
+import { CSSObject as CSSProperties } from 'tss-react';
 import StandardAction from '../../models/StandardAction';
 import { DialogProps } from '@mui/material/Dialog';
 

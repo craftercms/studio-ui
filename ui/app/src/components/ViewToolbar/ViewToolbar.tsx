@@ -14,13 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import React, { PropsWithChildren } from 'react';
-import { CSSProperties } from '@mui/styles';
-import clsx from 'clsx';
+import { CSSObject as CSSProperties } from 'tss-react';
 
 export type ViewToolbarClassKey = 'appBar' | 'toolbar';
 
@@ -32,38 +30,36 @@ type ViewToolbarProps = PropsWithChildren<{
   classes?: Partial<Record<ViewToolbarClassKey, string>>;
 }>;
 
-const useStyles = makeStyles((theme) =>
-  createStyles<ViewToolbarClassKey, ViewToolbarStyles>({
-    appBar: (styles) => ({
-      borderBottom: `1px solid ${theme.palette.divider}`,
-      background: theme.palette.background.paper,
-      color: theme.palette.text.primary,
-      ...styles.appBar
-    }),
-    toolbar: (styles) => ({
-      paddingLeft: theme.spacing(1.5),
-      paddingRight: theme.spacing(1.5),
-      placeContent: 'center space-between',
-      '& > section': {
-        display: 'flex',
-        alignItems: 'center'
-      },
-      ...styles.toolbar
-    })
-  })
-);
+const useStyles = makeStyles<ViewToolbarStyles, ViewToolbarClassKey>()((theme, { appBar, toolbar } = {} as any) => ({
+  appBar: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    background: theme.palette.background.paper,
+    color: theme.palette.text.primary,
+    ...appBar
+  },
+  toolbar: {
+    paddingLeft: theme.spacing(1.5),
+    paddingRight: theme.spacing(1.5),
+    placeContent: 'center space-between',
+    '& > section': {
+      display: 'flex',
+      alignItems: 'center'
+    },
+    ...toolbar
+  }
+}));
 
 export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
-  const classes = useStyles(props.styles);
+  const { classes, cx } = useStyles(props.styles);
   const { children, elevation = 0 } = props;
   return (
     <AppBar
       color="inherit"
       position="relative"
       elevation={elevation}
-      className={clsx(classes.appBar, props.classes?.appBar)}
+      className={cx(classes.appBar, props.classes?.appBar)}
     >
-      <Toolbar className={clsx(classes.toolbar, props.classes?.toolbar)}>{children}</Toolbar>
+      <Toolbar className={cx(classes.toolbar, props.classes?.toolbar)}>{children}</Toolbar>
     </AppBar>
   );
 });

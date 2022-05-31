@@ -41,6 +41,51 @@ CStudioForms.Controls.RTE =
     return this;
   };
 
+CStudioForms.Controls.RTE.rteConfigManager =
+  CStudioForms.Controls.RTE.rteConfigManager ||
+  (function () {
+    const { Observable, share, filter, take } = craftercms.libs.rxjs;
+    const manager = {
+      state$: null,
+      initConfigDispatched: false,
+      getState$: (store) => {
+        if (!manager.state$) {
+          manager.state$ = new Observable((subscriber) => {
+            return store.subscribe(() => {
+              const state = store.getState();
+              subscriber.next(state.models);
+            });
+          }).pipe(share());
+        }
+        return manager.state$;
+      },
+      getUiConfigXml: (store) => store.getState().uiConfig.xml,
+      getRTEState: (store) => store.getState().preview.richTextEditor,
+      dispatchInitRTEConfig: (store) => {
+        if (!manager.initConfigDispatched) {
+          manager.initConfigDispatched = true;
+          store.dispatch({
+            type: 'INIT_RICH_TEXT_EDITOR_CONFIG',
+            payload: {
+              configXml: manager.getUiConfigXml(store),
+              siteId: CStudioAuthoringContext.site
+            }
+          });
+        }
+      },
+      awaitRteConfigInitialization: (store, callback) => {
+        manager
+          .getState$(store)
+          .pipe(
+            filter(() => Boolean(manager.getRTEState(store))),
+            take(1)
+          )
+          .subscribe(() => callback());
+      }
+    };
+    return manager;
+  })();
+
 CStudioForms.Controls.RTE.plugins = CStudioForms.Controls.RTE.plugins || {};
 
 CStudioAuthoring.Module.requireModule(
@@ -60,54 +105,48 @@ CStudioAuthoring.Module.requireModule(
          * render the RTE
          */
         render: function (config, containerEl) {
-          var _thisControl = this,
-            configuration = 'generic';
-
-          const { take } = CrafterCMSNext.rxjs;
-
+          var _thisControl = this;
+          var configuration = 'generic';
+          const { take, filter } = CrafterCMSNext.rxjs;
           for (var i = 0; i < config.properties.length; i++) {
             var prop = config.properties[i];
-
             if (prop.name == 'rteConfiguration') {
               if (prop.value && prop.Value != '') {
                 configuration = prop.value;
               }
-
               break;
             }
           }
-
           CrafterCMSNext.system
             .getStore()
             .pipe(take(1))
             .subscribe((store) => {
-              if (!Boolean(store.getState().preview.richTextEditor)) {
-                // If textEditorConfig is not loaded
-                const unsubscribe = store.subscribe(() => {
-                  if (Boolean(store.getState().preview.richTextEditor)) {
-                    _thisControl._initializeRte(
-                      config,
-                      store.getState().preview.richTextEditor[configuration],
-                      containerEl
-                    );
-                    unsubscribe();
-                  }
-                });
-
-                store.dispatch({
-                  type: 'INIT_RICH_TEXT_EDITOR_CONFIG',
-                  payload: {
-                    configXml: CrafterCMSNext.system.store.getState().uiConfig.xml,
-                    siteId: CStudioAuthoringContext.site
-                  }
-                });
+              let callbackRan = false;
+              const manager = CStudioForms.Controls.RTE.rteConfigManager;
+              const doRteInitialization = () => {
+                if (!callbackRan) {
+                  _thisControl._initializeRte(config, manager.getRTEState(store)[configuration], containerEl);
+                }
+              };
+              if (manager.getRTEState(store)) {
+                // RTE config has been initialized (hence, UI config XML was loaded)
+                doRteInitialization();
+              } else if (manager.getUiConfigXml(store)) {
+                // UI config XML has loaded but RTE config has not initialized
+                manager.awaitRteConfigInitialization(store, doRteInitialization);
+                manager.dispatchInitRTEConfig(store);
               } else {
-                // If textEditorConfig is already loaded
-                _thisControl._initializeRte(
-                  config,
-                  store.getState().preview.richTextEditor[configuration],
-                  containerEl
-                );
+                // If ui config XML not loaded yet
+                manager
+                  .getState$(store)
+                  .pipe(
+                    filter(() => Boolean(manager.getUiConfigXml(store))),
+                    take(1)
+                  )
+                  .subscribe(() => {
+                    manager.awaitRteConfigInitialization(store, doRteInitialization);
+                    manager.dispatchInitRTEConfig(store);
+                  });
               }
             });
         },

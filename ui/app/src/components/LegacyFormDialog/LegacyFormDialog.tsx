@@ -26,7 +26,7 @@ import { translations } from './translations';
 
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { open, inProgress, disableOnClose, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
 
   const iframeRef = useRef<HTMLIFrameElement>();

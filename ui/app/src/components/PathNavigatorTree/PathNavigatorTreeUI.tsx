@@ -16,10 +16,8 @@
 
 import React from 'react';
 import TreeView from '@mui/lab/TreeView';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Accordion from '@mui/material/Accordion';
-import clsx from 'clsx';
 import Header from '../PathNavigator/PathNavigatorHeader';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { StateStylingProps } from '../../models/UiConfig';
@@ -59,34 +57,32 @@ export interface PathNavigatorTreeUIProps {
   classes?: Partial<Record<'root' | 'body', string>>;
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {},
-    accordion: {
-      boxShadow: 'none',
-      backgroundColor: 'inherit',
-      '&.Mui-expanded': {
-        margin: 'inherit'
-      }
-    },
-    accordionDetails: {
-      padding: 0,
-      flexDirection: 'column'
-    },
-    loading: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '2px',
-      marginLeft: '5px',
-      '& p': {
-        marginLeft: '10px'
-      }
+const useStyles = makeStyles()(() => ({
+  root: {},
+  accordion: {
+    boxShadow: 'none',
+    backgroundColor: 'inherit',
+    '&.Mui-expanded': {
+      margin: 'inherit'
     }
-  })
-);
+  },
+  accordionDetails: {
+    padding: 0,
+    flexDirection: 'column'
+  },
+  loading: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '2px',
+    marginLeft: '5px',
+    '& p': {
+      marginLeft: '10px'
+    }
+  }
+}));
 
 export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   // region const { ... } = props
   const {
     icon,
@@ -118,7 +114,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
       TransitionProps={{ unmountOnExit: true }}
       expanded={!isCollapsed}
       onChange={() => onChangeCollapsed(!isCollapsed)}
-      className={clsx(
+      className={cx(
         classes.accordion,
         props.classes?.root,
         container?.baseClass,
@@ -141,7 +137,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
       {error ? (
         <ApiResponseErrorState error={error} imageUrl={null} />
       ) : (
-        <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
+        <AccordionDetails className={cx(classes.accordionDetails, props.classes?.body)}>
           <TreeView className={classes.root} expanded={expandedNodes} disableSelection>
             <PathNavigatorTreeItem
               node={rootNode}

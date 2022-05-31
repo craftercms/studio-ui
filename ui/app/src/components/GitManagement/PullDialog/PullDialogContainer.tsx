@@ -22,8 +22,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { pull } from '../../../services/repositories';
 import SecondaryButton from '../../SecondaryButton';
 import PrimaryButton from '../../PrimaryButton';
@@ -41,31 +40,29 @@ import FormLabel from '@mui/material/FormLabel';
 import { Typography } from '@mui/material';
 import Link from '@mui/material/Link';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    formControl: {
-      marginBottom: '15px'
-    },
-    pullBranchLabel: {
-      padding: '14px 16px',
-      border: `1px solid ${theme.palette.grey['400']}`,
-      borderRadius: 4,
-      color: theme.palette.text.primary
-    },
-    pullBranchLabelHeading: {
-      display: 'inline-block',
-      fontWeight: theme.typography.fontWeightMedium,
-      marginRight: theme.spacing(1)
-    },
-    pullBranchLabelError: {
-      color: theme.palette.error.main
-    },
-    pullInfo: {
-      alignItems: 'center',
-      marginTop: theme.spacing(2)
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  formControl: {
+    marginBottom: '15px'
+  },
+  pullBranchLabel: {
+    padding: '14px 16px',
+    border: `1px solid ${theme.palette.grey['400']}`,
+    borderRadius: 4,
+    color: theme.palette.text.primary
+  },
+  pullBranchLabelHeading: {
+    display: 'inline-block',
+    fontWeight: theme.typography.fontWeightMedium,
+    marginRight: theme.spacing(1)
+  },
+  pullBranchLabelError: {
+    color: theme.palette.error.main
+  },
+  pullInfo: {
+    alignItems: 'center',
+    marginTop: theme.spacing(2)
+  }
+}));
 
 export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const {
@@ -83,7 +80,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   } = props;
 
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState('');
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { uuid, id: siteId } = useActiveSite();
   const { username } = useActiveUser();
 

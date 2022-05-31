@@ -17,13 +17,11 @@
 import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
-import clsx from 'clsx';
 import ContextMenu from '../ContextMenu';
 import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -80,51 +78,49 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    singleItemSelector: {
-      marginBottom: '10px'
-    },
-    contentLocalizationRoot: {
-      background: palette.white,
-      border: '1px solid rgba(0, 0, 0, .125)',
-      minHeight: '30vh',
-      '& header': {
-        marginBottom: '5px'
-      }
-    },
-    icon: {
-      marginLeft: 'auto',
-      padding: '9px'
-    },
-    checkbox: {
-      color: theme.palette.primary.main
-    },
-    flex: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    headerTitle: {
-      fontWeight: 'bold',
-      paddingRight: '20px'
-    },
-    locale: {
-      paddingRight: '20px'
-    },
-    width30: {
-      width: '30%'
-    },
-    menuPaper: {
-      width: '182px'
-    },
-    menuList: {
-      padding: 0
-    },
-    menuItemRoot: {
-      whiteSpace: 'initial'
+const useStyles = makeStyles()((theme) => ({
+  singleItemSelector: {
+    marginBottom: '10px'
+  },
+  contentLocalizationRoot: {
+    background: palette.white,
+    border: '1px solid rgba(0, 0, 0, .125)',
+    minHeight: '30vh',
+    '& header': {
+      marginBottom: '5px'
     }
-  })
-);
+  },
+  icon: {
+    marginLeft: 'auto',
+    padding: '9px'
+  },
+  checkbox: {
+    color: theme.palette.primary.main
+  },
+  flex: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  headerTitle: {
+    fontWeight: 'bold',
+    paddingRight: '20px'
+  },
+  locale: {
+    paddingRight: '20px'
+  },
+  width30: {
+    width: '30%'
+  },
+  menuPaper: {
+    width: '182px'
+  },
+  menuList: {
+    padding: 0
+  },
+  menuItemRoot: {
+    whiteSpace: 'initial'
+  }
+}));
 
 const localizationMap: any = {
   en: 'English, US (en)',
@@ -198,7 +194,7 @@ export function ContentLocalizationDialog(props: ContentLocalizationDialogProps)
 function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const { onClose, locales, item, rootPath, onItemChange } = props;
   const [selected, setSelected] = useState([]);
   const [openSelector, setOpenSelector] = useState(false);
@@ -309,7 +305,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
             <header className={classes.flex}>
               <Checkbox color="primary" className={classes.checkbox} onChange={toggleSelectAll} />
               <>
-                <Typography variant="subtitle2" className={clsx(classes.headerTitle, classes.width30)}>
+                <Typography variant="subtitle2" className={cx(classes.headerTitle, classes.width30)}>
                   {formatMessage(translations.locales)}
                 </Typography>
                 <Typography variant="subtitle2" className={classes.headerTitle}>
@@ -326,7 +322,7 @@ function ContentLocalizationDialogUI(props: ContentLocalizationDialogProps) {
                 checked={selected?.includes(locale.id)}
                 onChange={(event) => handleSelect(event.currentTarget.checked, locale.id)}
               />
-              <Typography variant="subtitle2" className={clsx(classes.locale, classes.width30)}>
+              <Typography variant="subtitle2" className={cx(classes.locale, classes.width30)}>
                 {localizationMap[locale.localeCode]}
               </Typography>
               <Typography variant="subtitle2" className={classes.locale}>

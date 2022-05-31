@@ -18,8 +18,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import DialogBody from '../DialogBody/DialogBody';
 import EmptyState from '../EmptyState/EmptyState';
 import Alert from '@mui/material/Alert';
@@ -47,43 +46,41 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    content: {
-      background: theme.palette.background.paper
-    },
-    preListMessageWrapper: {
-      padding: '8px 15px'
-    },
-    semiBold: {
-      fontWeight: 600
-    },
-    confirmationInput: {
-      marginTop: '1em',
-      '& legend': {
-        width: 0
-      }
-    },
-    topAlert: {
-      marginBottom: '1em'
-    },
-    bottomAlert: {
-      marginBottom: '.5em'
-    },
-    loadingStateWrapper: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      display: 'flex',
-      background: 'rgba(255,255,255,0.7)'
+const useStyles = makeStyles()((theme) => ({
+  content: {
+    background: theme.palette.background.paper
+  },
+  preListMessageWrapper: {
+    padding: '8px 15px'
+  },
+  semiBold: {
+    fontWeight: 600
+  },
+  confirmationInput: {
+    marginTop: '1em',
+    '& legend': {
+      width: 0
     }
-  })
-);
+  },
+  topAlert: {
+    marginBottom: '1em'
+  },
+  bottomAlert: {
+    marginBottom: '.5em'
+  },
+  loadingStateWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    display: 'flex',
+    background: 'rgba(255,255,255,0.7)'
+  }
+}));
 
 export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { onCloseButtonClick, resource, contentType, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
   const data = resource.read();
   const { formatMessage } = useIntl();

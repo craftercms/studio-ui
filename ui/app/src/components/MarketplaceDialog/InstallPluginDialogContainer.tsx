@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
+import { makeStyles } from 'tss-react/mui';
 import { InstallPluginDialogProps } from './utils';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useLogicResource from '../../hooks/useLogicResource';
@@ -44,17 +43,15 @@ import { PluginParametersForm } from '../PluginParametersForm';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    searchWrapper: {
-      marginBottom: '16px'
-    },
-    loadingWrapper: {
-      flexGrow: 1,
-      justifyContent: 'center'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  searchWrapper: {
+    marginBottom: '16px'
+  },
+  loadingWrapper: {
+    flexGrow: 1,
+    justifyContent: 'center'
+  }
+}));
 
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
@@ -78,7 +75,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
     submitted: false,
     error: {}
   });
-  const classes = useStyles();
+  const { classes } = useStyles();
   const onSearch$ = useSubject<string>();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();

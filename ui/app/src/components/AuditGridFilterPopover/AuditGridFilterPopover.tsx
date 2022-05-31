@@ -48,7 +48,7 @@ export interface AuditGridFilterPopoverProps {
 
 export function AuditGridFilterPopover(props: AuditGridFilterPopoverProps) {
   const { open, anchorPosition, onClose } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <Popover
       open={open}

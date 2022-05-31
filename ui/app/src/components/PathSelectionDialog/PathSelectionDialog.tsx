@@ -17,8 +17,7 @@
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import FolderBrowserTreeViewUI, { FolderBrowserTreeViewNode } from '../FolderBrowserTreeView/FolderBrowserTreeViewUI';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
@@ -91,19 +90,17 @@ export interface PathSelectionDialogBodyUIProps {
   onFolderCreated: (args: { path: string; name: string }) => void;
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    dialogBody: {
-      minHeight: '60vh'
-    },
-    createFolderBtn: {
-      marginRight: 'auto'
-    },
-    treeViewRoot: {
-      marginTop: '15px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  dialogBody: {
+    minHeight: '60vh'
+  },
+  createFolderBtn: {
+    marginRight: 'auto'
+  },
+  treeViewRoot: {
+    marginTop: '15px'
+  }
+}));
 
 export function PathSelectionDialog(props: PathSelectionDialogProps) {
   const site = useActiveSiteId();
@@ -283,7 +280,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
     onCloseCreateFolder,
     onFolderCreated
   } = props;
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const title = usePossibleTranslation(props.title);
   const createFolderState = useSelection((state) => state.dialogs.createFolder);
   const resource = useLogicResource<

@@ -14,22 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-export const useDeleteDialogUIStyles = makeStyles((theme) =>
-  createStyles({
-    submissionCommentField: {
-      '& .MuiTextField-root': {
-        width: '100%'
-      }
-    },
-    depsContainer: {
-      background: theme.palette.background.paper,
-      border: `1px solid ${theme.palette.divider}`
-    },
-    confirmCheck: {
-      margin: `${theme.spacing()} 0`
+export const useDeleteDialogUIStyles = makeStyles()((theme) => ({
+  submissionCommentField: {
+    '& .MuiTextField-root': {
+      width: '100%'
     }
-  })
-);
+  },
+  depsContainer: {
+    background: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.divider}`
+  },
+  confirmCheck: {
+    margin: `${theme.spacing()} 0`
+  }
+}));

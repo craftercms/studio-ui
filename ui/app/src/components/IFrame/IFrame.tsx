@@ -15,31 +15,27 @@
  */
 
 import React from 'react';
-import clsx from 'clsx';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    iframe: {
-      width: '100%',
-      maxWidth: '100%',
-      border: 'none',
-      height: '100%',
-      transition: 'width .25s ease, height .25s ease'
-    },
-    iframeWithBorder: {
-      borderRadius: 20,
-      borderColor: '#555'
-    },
-    iframeWithBorderLandscape: {
-      borderWidth: '10px 50px'
-    },
-    iframeWithBorderPortrait: {
-      borderWidth: '50px 10px'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  iframe: {
+    width: '100%',
+    maxWidth: '100%',
+    border: 'none',
+    height: '100%',
+    transition: 'width .25s ease, height .25s ease'
+  },
+  iframeWithBorder: {
+    borderRadius: 20,
+    borderColor: '#555'
+  },
+  iframeWithBorderLandscape: {
+    borderWidth: '10px 50px'
+  },
+  iframeWithBorderPortrait: {
+    borderWidth: '50px 10px'
+  }
+}));
 
 interface IFrameProps {
   url: string;
@@ -52,10 +48,10 @@ interface IFrameProps {
 }
 
 export function IFrame(props: IFrameProps) {
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const { url, title, width, height, border, className, onLoadComplete } = props;
 
-  const cls = clsx(classes.iframe, {
+  const cls = cx(classes.iframe, {
     [className || '']: !!className,
     [classes.iframeWithBorder]: border != null,
     [classes.iframeWithBorderPortrait]: border === 'landscape',

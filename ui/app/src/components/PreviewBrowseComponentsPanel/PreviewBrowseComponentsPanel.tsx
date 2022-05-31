@@ -51,7 +51,7 @@ interface ComponentResource {
 }
 
 export function PreviewBrowseComponentsPanel() {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const initialKeyword = useSelection((state) => state.preview.components.query.keywords);

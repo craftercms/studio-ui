@@ -15,12 +15,12 @@
  */
 
 'no use strict';
-!(function(window) {
+!(function (window) {
   if (typeof window.window != 'undefined' && window.document) return;
   if (window.require && window.define) return;
 
   if (!window.console) {
-    window.console = function() {
+    window.console = function () {
       var msgs = Array.prototype.slice.call(arguments, 0);
       postMessage({ type: 'log', data: msgs });
     };
@@ -29,7 +29,7 @@
   window.window = window;
   window.ace = window;
 
-  window.onerror = function(message, file, line, col, err) {
+  window.onerror = function (message, file, line, col, err) {
     postMessage({
       type: 'error',
       data: {
@@ -43,7 +43,7 @@
     });
   };
 
-  window.normalizeModule = function(parentId, moduleName) {
+  window.normalizeModule = function (parentId, moduleName) {
     // normalize plugin requires
     if (moduleName.indexOf('!') !== -1) {
       var chunks = moduleName.split('!');
@@ -51,10 +51,7 @@
     }
     // normalize relative requires
     if (moduleName.charAt(0) == '.') {
-      var base = parentId
-        .split('/')
-        .slice(0, -1)
-        .join('/');
+      var base = parentId.split('/').slice(0, -1).join('/');
       moduleName = (base ? base + '/' : '') + moduleName;
 
       while (moduleName.indexOf('.') !== -1 && previous != moduleName) {
@@ -119,7 +116,7 @@
   window.require.modules = {};
   window.require.tlns = {};
 
-  window.define = function(id, deps, factory) {
+  window.define = function (id, deps, factory) {
     if (arguments.length == 2) {
       factory = deps;
       if (typeof id != 'string') {
@@ -145,17 +142,17 @@
       // "module" as dependencies, to provide CommonJS compatibility.
       deps = ['require', 'exports', 'module'];
 
-    var req = function(childId) {
+    var req = function (childId) {
       return window.require(id, childId);
     };
 
     window.require.modules[id] = {
       exports: {},
-      factory: function() {
+      factory: function () {
         var module = this;
         var returnExports = factory.apply(
           this,
-          deps.slice(0, factory.length).map(function(dep) {
+          deps.slice(0, factory.length).map(function (dep) {
             switch (dep) {
               // Because "require", "exports" and "module" aren't actual
               // dependencies, we must handle them seperately.
@@ -187,12 +184,12 @@
     var EventEmitter = window.require('ace/lib/event_emitter').EventEmitter;
     var oop = window.require('ace/lib/oop');
 
-    var Sender = function() {};
+    var Sender = function () {};
 
-    (function() {
+    (function () {
       oop.implement(this, EventEmitter);
 
-      this.callback = function(data, callbackId) {
+      this.callback = function (data, callbackId) {
         postMessage({
           type: 'call',
           id: callbackId,
@@ -200,7 +197,7 @@
         });
       };
 
-      this.emit = function(name, data) {
+      this.emit = function (name, data) {
         postMessage({
           type: 'event',
           name: name,
@@ -215,7 +212,7 @@
   var main = (window.main = null);
   var sender = (window.sender = null);
 
-  window.onmessage = function(e) {
+  window.onmessage = function (e) {
     var msg = e.data;
     if (msg.event && sender) {
       sender._signal(msg.event, msg.data);
@@ -232,10 +229,10 @@
   };
 })(this);
 
-ace.define('ace/lib/oop', [], function(require, exports, module) {
+ace.define('ace/lib/oop', [], function (require, exports, module) {
   'use strict';
 
-  exports.inherits = function(ctor, superCtor) {
+  exports.inherits = function (ctor, superCtor) {
     ctor.super_ = superCtor;
     ctor.prototype = Object.create(superCtor.prototype, {
       constructor: {
@@ -247,24 +244,24 @@ ace.define('ace/lib/oop', [], function(require, exports, module) {
     });
   };
 
-  exports.mixin = function(obj, mixin) {
+  exports.mixin = function (obj, mixin) {
     for (var key in mixin) {
       obj[key] = mixin[key];
     }
     return obj;
   };
 
-  exports.implement = function(proto, mixin) {
+  exports.implement = function (proto, mixin) {
     exports.mixin(proto, mixin);
   };
 });
 
-ace.define('ace/range', [], function(require, exports, module) {
+ace.define('ace/range', [], function (require, exports, module) {
   'use strict';
-  var comparePoints = function(p1, p2) {
+  var comparePoints = function (p1, p2) {
     return p1.row - p2.row || p1.column - p2.column;
   };
-  var Range = function(startRow, startColumn, endRow, endColumn) {
+  var Range = function (startRow, startColumn, endRow, endColumn) {
     this.start = {
       row: startRow,
       column: startColumn
@@ -276,8 +273,8 @@ ace.define('ace/range', [], function(require, exports, module) {
     };
   };
 
-  (function() {
-    this.isEqual = function(range) {
+  (function () {
+    this.isEqual = function (range) {
       return (
         this.start.row === range.start.row &&
         this.end.row === range.end.row &&
@@ -285,16 +282,16 @@ ace.define('ace/range', [], function(require, exports, module) {
         this.end.column === range.end.column
       );
     };
-    this.toString = function() {
+    this.toString = function () {
       return (
         'Range: [' + this.start.row + '/' + this.start.column + '] -> [' + this.end.row + '/' + this.end.column + ']'
       );
     };
 
-    this.contains = function(row, column) {
+    this.contains = function (row, column) {
       return this.compare(row, column) == 0;
     };
-    this.compareRange = function(range) {
+    this.compareRange = function (range) {
       var cmp,
         end = range.end,
         start = range.start;
@@ -322,23 +319,23 @@ ace.define('ace/range', [], function(require, exports, module) {
         }
       }
     };
-    this.comparePoint = function(p) {
+    this.comparePoint = function (p) {
       return this.compare(p.row, p.column);
     };
-    this.containsRange = function(range) {
+    this.containsRange = function (range) {
       return this.comparePoint(range.start) == 0 && this.comparePoint(range.end) == 0;
     };
-    this.intersects = function(range) {
+    this.intersects = function (range) {
       var cmp = this.compareRange(range);
       return cmp == -1 || cmp == 0 || cmp == 1;
     };
-    this.isEnd = function(row, column) {
+    this.isEnd = function (row, column) {
       return this.end.row == row && this.end.column == column;
     };
-    this.isStart = function(row, column) {
+    this.isStart = function (row, column) {
       return this.start.row == row && this.start.column == column;
     };
-    this.setStart = function(row, column) {
+    this.setStart = function (row, column) {
       if (typeof row == 'object') {
         this.start.column = row.column;
         this.start.row = row.row;
@@ -347,7 +344,7 @@ ace.define('ace/range', [], function(require, exports, module) {
         this.start.column = column;
       }
     };
-    this.setEnd = function(row, column) {
+    this.setEnd = function (row, column) {
       if (typeof row == 'object') {
         this.end.column = row.column;
         this.end.row = row.row;
@@ -356,7 +353,7 @@ ace.define('ace/range', [], function(require, exports, module) {
         this.end.column = column;
       }
     };
-    this.inside = function(row, column) {
+    this.inside = function (row, column) {
       if (this.compare(row, column) == 0) {
         if (this.isEnd(row, column) || this.isStart(row, column)) {
           return false;
@@ -366,7 +363,7 @@ ace.define('ace/range', [], function(require, exports, module) {
       }
       return false;
     };
-    this.insideStart = function(row, column) {
+    this.insideStart = function (row, column) {
       if (this.compare(row, column) == 0) {
         if (this.isEnd(row, column)) {
           return false;
@@ -376,7 +373,7 @@ ace.define('ace/range', [], function(require, exports, module) {
       }
       return false;
     };
-    this.insideEnd = function(row, column) {
+    this.insideEnd = function (row, column) {
       if (this.compare(row, column) == 0) {
         if (this.isStart(row, column)) {
           return false;
@@ -386,7 +383,7 @@ ace.define('ace/range', [], function(require, exports, module) {
       }
       return false;
     };
-    this.compare = function(row, column) {
+    this.compare = function (row, column) {
       if (!this.isMultiLine()) {
         if (row === this.start.row) {
           return column < this.start.column ? -1 : column > this.end.column ? 1 : 0;
@@ -403,21 +400,21 @@ ace.define('ace/range', [], function(require, exports, module) {
 
       return 0;
     };
-    this.compareStart = function(row, column) {
+    this.compareStart = function (row, column) {
       if (this.start.row == row && this.start.column == column) {
         return -1;
       } else {
         return this.compare(row, column);
       }
     };
-    this.compareEnd = function(row, column) {
+    this.compareEnd = function (row, column) {
       if (this.end.row == row && this.end.column == column) {
         return 1;
       } else {
         return this.compare(row, column);
       }
     };
-    this.compareInside = function(row, column) {
+    this.compareInside = function (row, column) {
       if (this.end.row == row && this.end.column == column) {
         return 1;
       } else if (this.start.row == row && this.start.column == column) {
@@ -426,7 +423,7 @@ ace.define('ace/range', [], function(require, exports, module) {
         return this.compare(row, column);
       }
     };
-    this.clipRows = function(firstRow, lastRow) {
+    this.clipRows = function (firstRow, lastRow) {
       if (this.end.row > lastRow) var end = { row: lastRow + 1, column: 0 };
       else if (this.end.row < firstRow) var end = { row: firstRow, column: 0 };
 
@@ -435,7 +432,7 @@ ace.define('ace/range', [], function(require, exports, module) {
 
       return Range.fromPoints(start || this.start, end || this.end);
     };
-    this.extend = function(row, column) {
+    this.extend = function (row, column) {
       var cmp = this.compare(row, column);
 
       if (cmp == 0) return this;
@@ -445,45 +442,45 @@ ace.define('ace/range', [], function(require, exports, module) {
       return Range.fromPoints(start || this.start, end || this.end);
     };
 
-    this.isEmpty = function() {
+    this.isEmpty = function () {
       return this.start.row === this.end.row && this.start.column === this.end.column;
     };
-    this.isMultiLine = function() {
+    this.isMultiLine = function () {
       return this.start.row !== this.end.row;
     };
-    this.clone = function() {
+    this.clone = function () {
       return Range.fromPoints(this.start, this.end);
     };
-    this.collapseRows = function() {
+    this.collapseRows = function () {
       if (this.end.column == 0) return new Range(this.start.row, 0, Math.max(this.start.row, this.end.row - 1), 0);
       else return new Range(this.start.row, 0, this.end.row, 0);
     };
-    this.toScreenRange = function(session) {
+    this.toScreenRange = function (session) {
       var screenPosStart = session.documentToScreenPosition(this.start);
       var screenPosEnd = session.documentToScreenPosition(this.end);
 
       return new Range(screenPosStart.row, screenPosStart.column, screenPosEnd.row, screenPosEnd.column);
     };
-    this.moveBy = function(row, column) {
+    this.moveBy = function (row, column) {
       this.start.row += row;
       this.start.column += column;
       this.end.row += row;
       this.end.column += column;
     };
   }.call(Range.prototype));
-  Range.fromPoints = function(start, end) {
+  Range.fromPoints = function (start, end) {
     return new Range(start.row, start.column, end.row, end.column);
   };
   Range.comparePoints = comparePoints;
 
-  Range.comparePoints = function(p1, p2) {
+  Range.comparePoints = function (p1, p2) {
     return p1.row - p2.row || p1.column - p2.column;
   };
 
   exports.Range = Range;
 });
 
-ace.define('ace/apply_delta', [], function(require, exports, module) {
+ace.define('ace/apply_delta', [], function (require, exports, module) {
   'use strict';
 
   function throwDeltaError(delta, errorText) {
@@ -516,7 +513,7 @@ ace.define('ace/apply_delta', [], function(require, exports, module) {
       throwDeltaError(delta, 'delta.range must match delta lines');
   }
 
-  exports.applyDelta = function(docLines, delta, doNotValidate) {
+  exports.applyDelta = function (docLines, delta, doNotValidate) {
     var row = delta.start.row;
     var startColumn = delta.start.column;
     var line = docLines[row] || '';
@@ -549,18 +546,18 @@ ace.define('ace/apply_delta', [], function(require, exports, module) {
   };
 });
 
-ace.define('ace/lib/event_emitter', [], function(require, exports, module) {
+ace.define('ace/lib/event_emitter', [], function (require, exports, module) {
   'use strict';
 
   var EventEmitter = {};
-  var stopPropagation = function() {
+  var stopPropagation = function () {
     this.propagationStopped = true;
   };
-  var preventDefault = function() {
+  var preventDefault = function () {
     this.defaultPrevented = true;
   };
 
-  EventEmitter._emit = EventEmitter._dispatchEvent = function(eventName, e) {
+  EventEmitter._emit = EventEmitter._dispatchEvent = function (eventName, e) {
     this._eventRegistry || (this._eventRegistry = {});
     this._defaultHandlers || (this._defaultHandlers = {});
 
@@ -583,27 +580,27 @@ ace.define('ace/lib/event_emitter', [], function(require, exports, module) {
     if (defaultHandler && !e.defaultPrevented) return defaultHandler(e, this);
   };
 
-  EventEmitter._signal = function(eventName, e) {
+  EventEmitter._signal = function (eventName, e) {
     var listeners = (this._eventRegistry || {})[eventName];
     if (!listeners) return;
     listeners = listeners.slice();
     for (var i = 0; i < listeners.length; i++) listeners[i](e, this);
   };
 
-  EventEmitter.once = function(eventName, callback) {
+  EventEmitter.once = function (eventName, callback) {
     var _self = this;
     this.on(eventName, function newCallback() {
       _self.off(eventName, newCallback);
       callback.apply(null, arguments);
     });
     if (!callback) {
-      return new Promise(function(resolve) {
+      return new Promise(function (resolve) {
         callback = resolve;
       });
     }
   };
 
-  EventEmitter.setDefaultHandler = function(eventName, callback) {
+  EventEmitter.setDefaultHandler = function (eventName, callback) {
     var handlers = this._defaultHandlers;
     if (!handlers) handlers = this._defaultHandlers = { _disabled_: {} };
 
@@ -617,7 +614,7 @@ ace.define('ace/lib/event_emitter', [], function(require, exports, module) {
     }
     handlers[eventName] = callback;
   };
-  EventEmitter.removeDefaultHandler = function(eventName, callback) {
+  EventEmitter.removeDefaultHandler = function (eventName, callback) {
     var handlers = this._defaultHandlers;
     if (!handlers) return;
     var disabled = handlers._disabled_[eventName];
@@ -630,7 +627,7 @@ ace.define('ace/lib/event_emitter', [], function(require, exports, module) {
     }
   };
 
-  EventEmitter.on = EventEmitter.addEventListener = function(eventName, callback, capturing) {
+  EventEmitter.on = EventEmitter.addEventListener = function (eventName, callback, capturing) {
     this._eventRegistry = this._eventRegistry || {};
 
     var listeners = this._eventRegistry[eventName];
@@ -640,17 +637,20 @@ ace.define('ace/lib/event_emitter', [], function(require, exports, module) {
     return callback;
   };
 
-  EventEmitter.off = EventEmitter.removeListener = EventEmitter.removeEventListener = function(eventName, callback) {
-    this._eventRegistry = this._eventRegistry || {};
+  EventEmitter.off =
+    EventEmitter.removeListener =
+    EventEmitter.removeEventListener =
+      function (eventName, callback) {
+        this._eventRegistry = this._eventRegistry || {};
 
-    var listeners = this._eventRegistry[eventName];
-    if (!listeners) return;
+        var listeners = this._eventRegistry[eventName];
+        if (!listeners) return;
 
-    var index = listeners.indexOf(callback);
-    if (index !== -1) listeners.splice(index, 1);
-  };
+        var index = listeners.indexOf(callback);
+        if (index !== -1) listeners.splice(index, 1);
+      };
 
-  EventEmitter.removeAllListeners = function(eventName) {
+  EventEmitter.removeAllListeners = function (eventName) {
     if (!eventName) this._eventRegistry = this._defaultHandlers = undefined;
     if (this._eventRegistry) this._eventRegistry[eventName] = undefined;
     if (this._defaultHandlers) this._defaultHandlers[eventName] = undefined;
@@ -659,13 +659,13 @@ ace.define('ace/lib/event_emitter', [], function(require, exports, module) {
   exports.EventEmitter = EventEmitter;
 });
 
-ace.define('ace/anchor', [], function(require, exports, module) {
+ace.define('ace/anchor', [], function (require, exports, module) {
   'use strict';
 
   var oop = require('./lib/oop');
   var EventEmitter = require('./lib/event_emitter').EventEmitter;
 
-  var Anchor = (exports.Anchor = function(doc, row, column) {
+  var Anchor = (exports.Anchor = function (doc, row, column) {
     this.$onChange = this.onChange.bind(this);
     this.attach(doc);
 
@@ -673,16 +673,16 @@ ace.define('ace/anchor', [], function(require, exports, module) {
     else this.setPosition(row, column);
   });
 
-  (function() {
+  (function () {
     oop.implement(this, EventEmitter);
-    this.getPosition = function() {
+    this.getPosition = function () {
       return this.$clipPositionToDocument(this.row, this.column);
     };
-    this.getDocument = function() {
+    this.getDocument = function () {
       return this.document;
     };
     this.$insertRight = false;
-    this.onChange = function(delta) {
+    this.onChange = function (delta) {
       if (delta.start.row == delta.end.row && delta.start.row != this.row) return;
 
       if (delta.start.row > this.row) return;
@@ -720,7 +720,7 @@ ace.define('ace/anchor', [], function(require, exports, module) {
         column: deltaStart.column
       };
     }
-    this.setPosition = function(row, column, noClip) {
+    this.setPosition = function (row, column, noClip) {
       var pos;
       if (noClip) {
         pos = {
@@ -745,14 +745,14 @@ ace.define('ace/anchor', [], function(require, exports, module) {
         value: pos
       });
     };
-    this.detach = function() {
+    this.detach = function () {
       this.document.off('change', this.$onChange);
     };
-    this.attach = function(doc) {
+    this.attach = function (doc) {
       this.document = doc || this.document;
       this.document.on('change', this.$onChange);
     };
-    this.$clipPositionToDocument = function(row, column) {
+    this.$clipPositionToDocument = function (row, column) {
       var pos = {};
 
       if (row >= this.document.getLength()) {
@@ -773,7 +773,7 @@ ace.define('ace/anchor', [], function(require, exports, module) {
   }.call(Anchor.prototype));
 });
 
-ace.define('ace/document', [], function(require, exports, module) {
+ace.define('ace/document', [], function (require, exports, module) {
   'use strict';
 
   var oop = require('./lib/oop');
@@ -782,7 +782,7 @@ ace.define('ace/document', [], function(require, exports, module) {
   var Range = require('./range').Range;
   var Anchor = require('./anchor').Anchor;
 
-  var Document = function(textOrLines) {
+  var Document = function (textOrLines) {
     this.$lines = [''];
     if (textOrLines.length === 0) {
       this.$lines = [''];
@@ -793,35 +793,35 @@ ace.define('ace/document', [], function(require, exports, module) {
     }
   };
 
-  (function() {
+  (function () {
     oop.implement(this, EventEmitter);
-    this.setValue = function(text) {
+    this.setValue = function (text) {
       var len = this.getLength() - 1;
       this.remove(new Range(0, 0, len, this.getLine(len).length));
       this.insert({ row: 0, column: 0 }, text);
     };
-    this.getValue = function() {
+    this.getValue = function () {
       return this.getAllLines().join(this.getNewLineCharacter());
     };
-    this.createAnchor = function(row, column) {
+    this.createAnchor = function (row, column) {
       return new Anchor(this, row, column);
     };
     if ('aaa'.split(/a/).length === 0) {
-      this.$split = function(text) {
+      this.$split = function (text) {
         return text.replace(/\r\n|\r/g, '\n').split('\n');
       };
     } else {
-      this.$split = function(text) {
+      this.$split = function (text) {
         return text.split(/\r\n|\r|\n/);
       };
     }
 
-    this.$detectNewLine = function(text) {
+    this.$detectNewLine = function (text) {
       var match = text.match(/^.*?(\r\n|\r|\n)/m);
       this.$autoNewLine = match ? match[1] : '\n';
       this._signal('changeNewLineMode');
     };
-    this.getNewLineCharacter = function() {
+    this.getNewLineCharacter = function () {
       switch (this.$newLineMode) {
         case 'windows':
           return '\r\n';
@@ -834,34 +834,34 @@ ace.define('ace/document', [], function(require, exports, module) {
 
     this.$autoNewLine = '';
     this.$newLineMode = 'auto';
-    this.setNewLineMode = function(newLineMode) {
+    this.setNewLineMode = function (newLineMode) {
       if (this.$newLineMode === newLineMode) return;
 
       this.$newLineMode = newLineMode;
       this._signal('changeNewLineMode');
     };
-    this.getNewLineMode = function() {
+    this.getNewLineMode = function () {
       return this.$newLineMode;
     };
-    this.isNewLine = function(text) {
+    this.isNewLine = function (text) {
       return text == '\r\n' || text == '\r' || text == '\n';
     };
-    this.getLine = function(row) {
+    this.getLine = function (row) {
       return this.$lines[row] || '';
     };
-    this.getLines = function(firstRow, lastRow) {
+    this.getLines = function (firstRow, lastRow) {
       return this.$lines.slice(firstRow, lastRow + 1);
     };
-    this.getAllLines = function() {
+    this.getAllLines = function () {
       return this.getLines(0, this.getLength());
     };
-    this.getLength = function() {
+    this.getLength = function () {
       return this.$lines.length;
     };
-    this.getTextRange = function(range) {
+    this.getTextRange = function (range) {
       return this.getLinesForRange(range).join(this.getNewLineCharacter());
     };
-    this.getLinesForRange = function(range) {
+    this.getLinesForRange = function (range) {
       var lines;
       if (range.start.row === range.end.row) {
         lines = [this.getLine(range.start.row).substring(range.start.column, range.end.column)];
@@ -873,24 +873,24 @@ ace.define('ace/document', [], function(require, exports, module) {
       }
       return lines;
     };
-    this.insertLines = function(row, lines) {
+    this.insertLines = function (row, lines) {
       console.warn('Use of document.insertLines is deprecated. Use the insertFullLines method instead.');
       return this.insertFullLines(row, lines);
     };
-    this.removeLines = function(firstRow, lastRow) {
+    this.removeLines = function (firstRow, lastRow) {
       console.warn('Use of document.removeLines is deprecated. Use the removeFullLines method instead.');
       return this.removeFullLines(firstRow, lastRow);
     };
-    this.insertNewLine = function(position) {
+    this.insertNewLine = function (position) {
       console.warn("Use of document.insertNewLine is deprecated. Use insertMergedLines(position, ['', '']) instead.");
       return this.insertMergedLines(position, ['', '']);
     };
-    this.insert = function(position, text) {
+    this.insert = function (position, text) {
       if (this.getLength() <= 1) this.$detectNewLine(text);
 
       return this.insertMergedLines(position, this.$split(text));
     };
-    this.insertInLine = function(position, text) {
+    this.insertInLine = function (position, text) {
       var start = this.clippedPos(position.row, position.column);
       var end = this.pos(position.row, position.column + text.length);
 
@@ -907,7 +907,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       return this.clonePos(end);
     };
 
-    this.clippedPos = function(row, column) {
+    this.clippedPos = function (row, column) {
       var length = this.getLength();
       if (row === undefined) {
         row = length;
@@ -923,15 +923,15 @@ ace.define('ace/document', [], function(require, exports, module) {
       return { row: row, column: column };
     };
 
-    this.clonePos = function(pos) {
+    this.clonePos = function (pos) {
       return { row: pos.row, column: pos.column };
     };
 
-    this.pos = function(row, column) {
+    this.pos = function (row, column) {
       return { row: row, column: column };
     };
 
-    this.$clipPosition = function(position) {
+    this.$clipPosition = function (position) {
       var length = this.getLength();
       if (position.row >= length) {
         position.row = Math.max(0, length - 1);
@@ -942,7 +942,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       }
       return position;
     };
-    this.insertFullLines = function(row, lines) {
+    this.insertFullLines = function (row, lines) {
       row = Math.min(Math.max(row, 0), this.getLength());
       var column = 0;
       if (row < this.getLength()) {
@@ -955,7 +955,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       }
       this.insertMergedLines({ row: row, column: column }, lines);
     };
-    this.insertMergedLines = function(position, lines) {
+    this.insertMergedLines = function (position, lines) {
       var start = this.clippedPos(position.row, position.column);
       var end = {
         row: start.row + lines.length - 1,
@@ -971,7 +971,7 @@ ace.define('ace/document', [], function(require, exports, module) {
 
       return this.clonePos(end);
     };
-    this.remove = function(range) {
+    this.remove = function (range) {
       var start = this.clippedPos(range.start.row, range.start.column);
       var end = this.clippedPos(range.end.row, range.end.column);
       this.applyDelta({
@@ -982,7 +982,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       });
       return this.clonePos(start);
     };
-    this.removeInLine = function(row, startColumn, endColumn) {
+    this.removeInLine = function (row, startColumn, endColumn) {
       var start = this.clippedPos(row, startColumn);
       var end = this.clippedPos(row, endColumn);
 
@@ -998,7 +998,7 @@ ace.define('ace/document', [], function(require, exports, module) {
 
       return this.clonePos(start);
     };
-    this.removeFullLines = function(firstRow, lastRow) {
+    this.removeFullLines = function (firstRow, lastRow) {
       firstRow = Math.min(Math.max(0, firstRow), this.getLength() - 1);
       lastRow = Math.min(Math.max(0, lastRow), this.getLength() - 1);
       var deleteFirstNewLine = lastRow == this.getLength() - 1 && firstRow > 0;
@@ -1018,7 +1018,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       });
       return deletedLines;
     };
-    this.removeNewLine = function(row) {
+    this.removeNewLine = function (row) {
       if (row < this.getLength() - 1 && row >= 0) {
         this.applyDelta({
           start: this.pos(row, this.getLine(row).length),
@@ -1028,7 +1028,7 @@ ace.define('ace/document', [], function(require, exports, module) {
         });
       }
     };
-    this.replace = function(range, text) {
+    this.replace = function (range, text) {
       if (!(range instanceof Range)) range = Range.fromPoints(range.start, range.end);
       if (text.length === 0 && range.isEmpty()) return range.start;
       if (text == this.getTextRange(range)) return range.end;
@@ -1043,17 +1043,17 @@ ace.define('ace/document', [], function(require, exports, module) {
 
       return end;
     };
-    this.applyDeltas = function(deltas) {
+    this.applyDeltas = function (deltas) {
       for (var i = 0; i < deltas.length; i++) {
         this.applyDelta(deltas[i]);
       }
     };
-    this.revertDeltas = function(deltas) {
+    this.revertDeltas = function (deltas) {
       for (var i = deltas.length - 1; i >= 0; i--) {
         this.revertDelta(deltas[i]);
       }
     };
-    this.applyDelta = function(delta, doNotValidate) {
+    this.applyDelta = function (delta, doNotValidate) {
       var isInsert = delta.action == 'insert';
       if (isInsert ? delta.lines.length <= 1 && !delta.lines[0] : !Range.comparePoints(delta.start, delta.end)) {
         return;
@@ -1067,7 +1067,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       }
     };
 
-    this.$safeApplyDelta = function(delta) {
+    this.$safeApplyDelta = function (delta) {
       var docLength = this.$lines.length;
       if (
         (delta.action == 'remove' && delta.start.row < docLength && delta.end.row < docLength) ||
@@ -1077,7 +1077,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       }
     };
 
-    this.$splitAndapplyLargeDelta = function(delta, MAX) {
+    this.$splitAndapplyLargeDelta = function (delta, MAX) {
       var lines = delta.lines;
       var l = lines.length - MAX + 1;
       var row = delta.start.row;
@@ -1101,7 +1101,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       delta.start.column = column;
       this.applyDelta(delta, true);
     };
-    this.revertDelta = function(delta) {
+    this.revertDelta = function (delta) {
       this.$safeApplyDelta({
         start: this.clonePos(delta.start),
         end: this.clonePos(delta.end),
@@ -1109,7 +1109,7 @@ ace.define('ace/document', [], function(require, exports, module) {
         lines: delta.lines.slice()
       });
     };
-    this.indexToPosition = function(index, startRow) {
+    this.indexToPosition = function (index, startRow) {
       var lines = this.$lines || this.getAllLines();
       var newlineLength = this.getNewLineCharacter().length;
       for (var i = startRow || 0, l = lines.length; i < l; i++) {
@@ -1118,7 +1118,7 @@ ace.define('ace/document', [], function(require, exports, module) {
       }
       return { row: l - 1, column: index + lines[l - 1].length + newlineLength };
     };
-    this.positionToIndex = function(pos, startRow) {
+    this.positionToIndex = function (pos, startRow) {
       var lines = this.$lines || this.getAllLines();
       var newlineLength = this.getNewLineCharacter().length;
       var index = 0;
@@ -1132,21 +1132,18 @@ ace.define('ace/document', [], function(require, exports, module) {
   exports.Document = Document;
 });
 
-ace.define('ace/lib/lang', [], function(require, exports, module) {
+ace.define('ace/lib/lang', [], function (require, exports, module) {
   'use strict';
 
-  exports.last = function(a) {
+  exports.last = function (a) {
     return a[a.length - 1];
   };
 
-  exports.stringReverse = function(string) {
-    return string
-      .split('')
-      .reverse()
-      .join('');
+  exports.stringReverse = function (string) {
+    return string.split('').reverse().join('');
   };
 
-  exports.stringRepeat = function(string, count) {
+  exports.stringRepeat = function (string, count) {
     var result = '';
     while (count > 0) {
       if (count & 1) result += string;
@@ -1159,15 +1156,15 @@ ace.define('ace/lib/lang', [], function(require, exports, module) {
   var trimBeginRegexp = /^\s\s*/;
   var trimEndRegexp = /\s\s*$/;
 
-  exports.stringTrimLeft = function(string) {
+  exports.stringTrimLeft = function (string) {
     return string.replace(trimBeginRegexp, '');
   };
 
-  exports.stringTrimRight = function(string) {
+  exports.stringTrimRight = function (string) {
     return string.replace(trimEndRegexp, '');
   };
 
-  exports.copyObject = function(obj) {
+  exports.copyObject = function (obj) {
     var copy = {};
     for (var key in obj) {
       copy[key] = obj[key];
@@ -1175,7 +1172,7 @@ ace.define('ace/lib/lang', [], function(require, exports, module) {
     return copy;
   };
 
-  exports.copyArray = function(array) {
+  exports.copyArray = function (array) {
     var copy = [];
     for (var i = 0, l = array.length; i < l; i++) {
       if (array[i] && typeof array[i] == 'object') copy[i] = this.copyObject(array[i]);
@@ -1201,7 +1198,7 @@ ace.define('ace/lib/lang', [], function(require, exports, module) {
     return copy;
   };
 
-  exports.arrayToMap = function(arr) {
+  exports.arrayToMap = function (arr) {
     var map = {};
     for (var i = 0; i < arr.length; i++) {
       map[arr[i]] = 1;
@@ -1209,14 +1206,14 @@ ace.define('ace/lib/lang', [], function(require, exports, module) {
     return map;
   };
 
-  exports.createMap = function(props) {
+  exports.createMap = function (props) {
     var map = Object.create(null);
     for (var i in props) {
       map[i] = props[i];
     }
     return map;
   };
-  exports.arrayRemove = function(array, value) {
+  exports.arrayRemove = function (array, value) {
     for (var i = 0; i <= array.length; i++) {
       if (value === array[i]) {
         array.splice(i, 1);
@@ -1224,22 +1221,18 @@ ace.define('ace/lib/lang', [], function(require, exports, module) {
     }
   };
 
-  exports.escapeRegExp = function(str) {
+  exports.escapeRegExp = function (str) {
     return str.replace(/([.*+?^${}()|[\]\/\\])/g, '\\$1');
   };
 
-  exports.escapeHTML = function(str) {
-    return ('' + str)
-      .replace(/&/g, '&#38;')
-      .replace(/"/g, '&#34;')
-      .replace(/'/g, '&#39;')
-      .replace(/</g, '&#60;');
+  exports.escapeHTML = function (str) {
+    return ('' + str).replace(/&/g, '&#38;').replace(/"/g, '&#34;').replace(/'/g, '&#39;').replace(/</g, '&#60;');
   };
 
-  exports.getMatchOffsets = function(string, regExp) {
+  exports.getMatchOffsets = function (string, regExp) {
     var matches = [];
 
-    string.replace(regExp, function(str) {
+    string.replace(regExp, function (str) {
       matches.push({
         offset: arguments[arguments.length - 2],
         length: str.length
@@ -1248,14 +1241,14 @@ ace.define('ace/lib/lang', [], function(require, exports, module) {
 
     return matches;
   };
-  exports.deferredCall = function(fcn) {
+  exports.deferredCall = function (fcn) {
     var timer = null;
-    var callback = function() {
+    var callback = function () {
       timer = null;
       fcn();
     };
 
-    var deferred = function(timeout) {
+    var deferred = function (timeout) {
       deferred.cancel();
       timer = setTimeout(callback, timeout || 0);
       return deferred;
@@ -1263,53 +1256,53 @@ ace.define('ace/lib/lang', [], function(require, exports, module) {
 
     deferred.schedule = deferred;
 
-    deferred.call = function() {
+    deferred.call = function () {
       this.cancel();
       fcn();
       return deferred;
     };
 
-    deferred.cancel = function() {
+    deferred.cancel = function () {
       clearTimeout(timer);
       timer = null;
       return deferred;
     };
 
-    deferred.isPending = function() {
+    deferred.isPending = function () {
       return timer;
     };
 
     return deferred;
   };
 
-  exports.delayedCall = function(fcn, defaultTimeout) {
+  exports.delayedCall = function (fcn, defaultTimeout) {
     var timer = null;
-    var callback = function() {
+    var callback = function () {
       timer = null;
       fcn();
     };
 
-    var _self = function(timeout) {
+    var _self = function (timeout) {
       if (timer == null) timer = setTimeout(callback, timeout || defaultTimeout);
     };
 
-    _self.delay = function(timeout) {
+    _self.delay = function (timeout) {
       timer && clearTimeout(timer);
       timer = setTimeout(callback, timeout || defaultTimeout);
     };
     _self.schedule = _self;
 
-    _self.call = function() {
+    _self.call = function () {
       this.cancel();
       fcn();
     };
 
-    _self.cancel = function() {
+    _self.cancel = function () {
       timer && clearTimeout(timer);
       timer = null;
     };
 
-    _self.isPending = function() {
+    _self.isPending = function () {
       return timer;
     };
 
@@ -1317,21 +1310,21 @@ ace.define('ace/lib/lang', [], function(require, exports, module) {
   };
 });
 
-ace.define('ace/worker/mirror', [], function(require, exports, module) {
+ace.define('ace/worker/mirror', [], function (require, exports, module) {
   'use strict';
 
   var Range = require('../range').Range;
   var Document = require('../document').Document;
   var lang = require('../lib/lang');
 
-  var Mirror = (exports.Mirror = function(sender) {
+  var Mirror = (exports.Mirror = function (sender) {
     this.sender = sender;
     var doc = (this.doc = new Document(''));
 
     var deferredUpdate = (this.deferredUpdate = lang.delayedCall(this.onUpdate.bind(this)));
 
     var _self = this;
-    sender.on('change', function(e) {
+    sender.on('change', function (e) {
       var data = e.data;
       if (data[0].start) {
         doc.applyDeltas(data);
@@ -1350,25 +1343,25 @@ ace.define('ace/worker/mirror', [], function(require, exports, module) {
     });
   });
 
-  (function() {
+  (function () {
     this.$timeout = 500;
 
-    this.setTimeout = function(timeout) {
+    this.setTimeout = function (timeout) {
       this.$timeout = timeout;
     };
 
-    this.setValue = function(value) {
+    this.setValue = function (value) {
       this.doc.setValue(value);
       this.deferredUpdate.schedule(this.$timeout);
     };
 
-    this.getValue = function(callbackId) {
+    this.getValue = function (callbackId) {
       this.sender.callback(this.doc.getValue(), callbackId);
     };
 
-    this.onUpdate = function() {};
+    this.onUpdate = function () {};
 
-    this.isPending = function() {
+    this.isPending = function () {
       return this.deferredUpdate.isPending();
     };
   }.call(Mirror.prototype));
@@ -1377,22 +1370,22 @@ ace.define('ace/worker/mirror', [], function(require, exports, module) {
 importScripts(self.location.origin + '/studio/static-assets/libs/ace/yaml_parse.js');
 ace.define('ace/mode/yaml/yaml_parse', [], yaml_parse);
 
-ace.define('ace/mode/yaml_worker', [], function(require, exports, module) {
+ace.define('ace/mode/yaml_worker', [], function (require, exports, module) {
   'use strict';
 
   var oop = require('../lib/oop');
   var Mirror = require('../worker/mirror').Mirror;
   var parse = require('./yaml/yaml_parse');
 
-  var YamlWorker = (exports.YamlWorker = function(sender) {
+  var YamlWorker = (exports.YamlWorker = function (sender) {
     Mirror.call(this, sender);
     this.setTimeout(200);
   });
 
   oop.inherits(YamlWorker, Mirror);
 
-  (function() {
-    this.onUpdate = function() {
+  (function () {
+    this.onUpdate = function () {
       var value = this.doc.getValue();
       var errors = [];
       try {

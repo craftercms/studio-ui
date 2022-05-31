@@ -15,59 +15,55 @@
  */
 
 import { fromEvent, NEVER, Observable } from 'rxjs';
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
+import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import { StandardAction } from '../../models/StandardAction';
 import React, { useEffect, useRef } from 'react';
-import clsx from 'clsx';
 import { filter, map, pluck } from 'rxjs/operators';
 
 const message$ = fromEvent<MessageEvent>(window, 'message');
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    iframe: {
-      width: '100%',
-      maxWidth: '100%',
-      border: 'none',
-      height: '100%',
-      transition: 'width .25s ease, height .25s ease'
-    },
-    iframeWithBorder: {
-      borderRadius: 20,
-      borderColor: '#555'
-    },
-    iframeWithBorderLandscape: {
-      borderWidth: '10px 50px'
-    },
-    iframeWithBorderPortrait: {
-      borderWidth: '50px 10px'
-    },
-    hostContainer: {
-      flexGrow: 1,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      background: '#f3f3f3',
-      height: '100%',
-      maxHeight: 'calc(100% - 64px)',
-      overflow: 'auto',
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      })
-    },
-    shift: {
-      transition: theme.transitions.create('margin', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen
-      })
-      // width: `calc(100% - ${DRAWER_WIDTH}px)`,
-      // marginLeft: DRAWER_WIDTH
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  iframe: {
+    width: '100%',
+    maxWidth: '100%',
+    border: 'none',
+    height: '100%',
+    transition: 'width .25s ease, height .25s ease'
+  },
+  iframeWithBorder: {
+    borderRadius: 20,
+    borderColor: '#555'
+  },
+  iframeWithBorderLandscape: {
+    borderWidth: '10px 50px'
+  },
+  iframeWithBorderPortrait: {
+    borderWidth: '50px 10px'
+  },
+  hostContainer: {
+    flexGrow: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#f3f3f3',
+    height: '100%',
+    maxHeight: 'calc(100% - 64px)',
+    overflow: 'auto',
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  shift: {
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    })
+    // width: `calc(100% - ${DRAWER_WIDTH}px)`,
+    // marginLeft: DRAWER_WIDTH
+  }
+}));
 
 const meta = { craftercms: true, source: 'host' };
 
@@ -92,12 +88,12 @@ export interface HostPropsUI {
 }
 
 export function HostUI(props: HostPropsUI) {
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
 
   const { url, site, width, origin, height, border, className, onMessage, postMessage$ = NEVER } = props;
   const iframeRef = useRef(null);
-  const cls = clsx(classes.iframe, {
+  const cls = cx(classes.iframe, {
     [className || '']: !!className,
     [classes.iframeWithBorder]: border != null,
     [classes.iframeWithBorderPortrait]: border === 'landscape',

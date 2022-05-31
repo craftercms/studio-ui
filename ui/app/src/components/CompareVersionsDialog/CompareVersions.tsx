@@ -16,7 +16,7 @@
 
 // Next UI code disabled temporarily
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ContentInstance from '../../models/ContentInstance';
 import { LookupTable } from '../../models/LookupTable';
 import ContentType from '../../models/ContentType';
@@ -161,7 +161,7 @@ interface CompareVersionsProps {
   resource: Resource<CompareVersionsResource>;
 }
 
-const getLegacyDialogStyles = makeStyles(() => ({
+const getLegacyDialogStyles = makeStyles()(() => ({
   iframe: {
     border: 'none',
     height: '80vh'
@@ -170,7 +170,7 @@ const getLegacyDialogStyles = makeStyles(() => ({
 
 export function CompareVersions(props: CompareVersionsProps) {
   const { a, b } = props.resource.read();
-  const classes = getLegacyDialogStyles();
+  const { classes } = getLegacyDialogStyles();
   const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
   return (
     <iframe

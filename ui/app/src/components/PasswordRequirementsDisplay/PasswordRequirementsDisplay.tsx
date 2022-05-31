@@ -17,14 +17,12 @@
 import React, { useEffect, useMemo } from 'react';
 import { isBlank } from '../../utils/string';
 import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import { passwordRequirementMessages } from '../../env/i18n-legacy';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
 import palette from '../../styles/palette';
-import { CSSProperties } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
+import { CSSObject as CSSProperties } from 'tss-react';
 
 type PasswordRequirementsDisplayClassKey =
   | 'listOfConditions'
@@ -44,36 +42,45 @@ export interface PasswordRequirementsDisplayProps {
   styles?: PasswordRequirementsDisplayStyles;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles<PasswordRequirementsDisplayClassKey, PasswordRequirementsDisplayStyles>({
-    listOfConditions: (styles) => ({
+const useStyles = makeStyles<PasswordRequirementsDisplayStyles, PasswordRequirementsDisplayClassKey>()(
+  (
+    theme,
+    {
+      listOfConditions,
+      conditionItem,
+      conditionItemIcon,
+      conditionItemNotMet,
+      conditionItemMet
+    } = {} as PasswordRequirementsDisplayStyles
+  ) => ({
+    listOfConditions: {
       listStyle: 'none',
       padding: 0,
       margin: '16px 0 16px 0',
-      ...styles.listOfConditions
-    }),
-    conditionItem: (styles) => ({
+      ...listOfConditions
+    },
+    conditionItem: {
       display: 'flex',
       alignItems: 'center',
-      ...styles.conditionItem
-    }),
-    conditionItemIcon: (styles) => ({
+      ...conditionItem
+    },
+    conditionItemIcon: {
       marginRight: theme.spacing(1),
-      ...styles.conditionItemIcon
-    }),
-    conditionItemNotMet: (styles) => ({
+      ...conditionItemIcon
+    },
+    conditionItemNotMet: {
       color: palette.yellow.shade,
-      ...styles.conditionItemNotMet
-    }),
-    conditionItemMet: (styles) => ({
+      ...conditionItemNotMet
+    },
+    conditionItemMet: {
       color: palette.green.shade,
-      ...styles.conditionItemMet
-    })
+      ...conditionItemMet
+    }
   })
 );
 
 export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
-  const classes = useStyles(props.styles);
+  const { classes, cx } = useStyles(props.styles);
   const { passwordRequirementsRegex, formatMessage, value, onValidStateChanged } = props;
   const { regEx, conditions } = useMemo(
     () => getPrimeMatter({ passwordRequirementsRegex, formatMessage }),
@@ -91,7 +98,7 @@ export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayPr
           <Typography
             key={key}
             component="li"
-            className={clsx(
+            className={cx(
               classes.conditionItem,
               !blank && {
                 [classes.conditionItemNotMet]: !valid,

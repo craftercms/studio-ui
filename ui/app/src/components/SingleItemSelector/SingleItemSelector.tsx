@@ -18,8 +18,7 @@ import React, { ReactNode, useCallback, useReducer, useRef } from 'react';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import { TypographyVariant as Variant } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import Popover from '@mui/material/Popover';
@@ -45,7 +44,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import ItemDisplay from '../ItemDisplay';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   popoverRoot: {
     minWidth: '200px',
     maxWidth: '400px',
@@ -62,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: '100%',
     minWidth: '200px',
     '&.disable': {
-      'min-width': 'auto',
+      minWidth: 'auto',
       backgroundColor: 'inherit'
     }
   },
@@ -237,8 +236,9 @@ const fetchChildrenByPathAction = /*#__PURE__*/ createAction<string>('FETCH_CHIL
 
 const fetchParentsItems = /*#__PURE__*/ createAction<string>('FETCH_PARENTS_ITEMS');
 
-const fetchParentsItemsComplete =
-  /*#__PURE__*/ createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>('FETCH_PARENTS_ITEMS_COMPLETE');
+const fetchParentsItemsComplete = /*#__PURE__*/ createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
+  'FETCH_PARENTS_ITEMS_COMPLETE'
+);
 
 const fetchChildrenByPathComplete = /*#__PURE__*/ createAction<{
   parent?: DetailedItem;
@@ -264,7 +264,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     canSelectFolders = false,
     filterChildren = () => true
   } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const anchorEl = useRef();
   const [state, _dispatch] = useReducer(reducer, props, init);
   const site = useActiveSiteId();
@@ -397,7 +397,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
   const wrapperProps = hideUI
     ? {}
     : {
-        className: clsx(classes.root, !onDropdownClick && 'disable', propClasses?.root),
+        className: cx(classes.root, !onDropdownClick && 'disable', propClasses?.root),
         elevation: 0
       };
 
@@ -406,7 +406,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
       {!hideUI && (
         <>
           {label && (
-            <Typography variant={titleVariant} className={clsx(classes.title, propClasses?.title)}>
+            <Typography variant={titleVariant} className={cx(classes.title, propClasses?.title)}>
               {label}
             </Typography>
           )}
@@ -425,13 +425,13 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
           onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
           size="large"
         >
-          <SelectIcon className={clsx(classes.selectIcon, propClasses?.selectIcon)} />
+          <SelectIcon className={cx(classes.selectIcon, propClasses?.selectIcon)} />
         </IconButton>
       )}
       <Popover
         anchorEl={anchorEl.current}
         open={open}
-        classes={{ paper: clsx(classes.popoverRoot, propClasses?.popoverRoot) }}
+        classes={{ paper: cx(classes.popoverRoot, propClasses?.popoverRoot) }}
         onClose={onClose}
         anchorOrigin={{
           vertical: 'bottom',

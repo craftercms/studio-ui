@@ -30,7 +30,6 @@ import content from './content';
 import pathNavigator from './pathNavigator';
 import pathNavigatorTree from './pathNavigatorTree';
 import uiConfig from './uiConfig';
-import launcher from './launcher';
 import dashboard from './dashboard';
 import globalNavigation from './globalNavigation';
 
@@ -48,7 +47,6 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   pathNavigator,
   pathNavigatorTree,
   uiConfig,
-  launcher,
   dashboard,
   globalNavigation
 };

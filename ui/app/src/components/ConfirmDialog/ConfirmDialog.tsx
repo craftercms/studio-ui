@@ -15,35 +15,34 @@
  */
 
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useOnClose } from '../../hooks/useOnClose';
 import { ConfirmDialogProps, ConfirmDialogStateClassKey, ConfirmDialogStateStyles } from './utils';
 import ConfirmDialogContainer from './ConfirmDialogContainer';
 import { Dialog } from '@mui/material';
 
-const useStyles = makeStyles(() =>
-  createStyles<ConfirmDialogStateClassKey, ConfirmDialogStateStyles>({
-    dialog: (styles) => ({
+const useStyles = makeStyles<ConfirmDialogStateStyles, ConfirmDialogStateClassKey>()(
+  (_theme, { dialog, dialogImage, dialogBody, dialogTitle, dialogFooter } = {} as ConfirmDialogStateStyles) => ({
+    dialog: {
       '& .MuiPaper-root': {
         borderRadius: '20px'
       },
-      ...styles.dialog
-    }),
-    dialogImage: (styles) => ({
+      ...dialog
+    },
+    dialogImage: {
       paddingBottom: '35px',
-      ...styles.dialogImage
-    }),
-    dialogBody: (styles) => ({
+      ...dialogImage
+    },
+    dialogBody: {
       textAlign: 'center',
       padding: '40px 20px 0 !important',
-      ...styles.dialogBody
-    }),
-    dialogTitle: (styles) => ({
+      ...dialogBody
+    },
+    dialogTitle: {
       paddingBottom: '5px',
-      ...styles.dialogTitle
-    }),
-    dialogFooter: (styles) => ({
+      ...dialogTitle
+    },
+    dialogFooter: {
       borderTop: 'none',
       display: 'flex',
       flexDirection: 'column',
@@ -56,13 +55,13 @@ const useStyles = makeStyles(() =>
         marginTop: '10px',
         marginLeft: 0
       },
-      ...styles.dialogFooter
-    })
+      ...dialogFooter
+    }
   })
 );
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
-  const classes = useStyles(props.styles);
+  const { classes } = useStyles(props.styles);
   const {
     open,
     disableBackdropClick,

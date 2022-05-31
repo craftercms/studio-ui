@@ -15,34 +15,31 @@
  */
 
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import LoginView, { LoginViewProps } from '../components/LoginView/LoginView';
 import CrafterThemeProvider from '../components/CrafterThemeProvider';
 import I18nProvider from '../components/I18nProvider';
 import GlobalStyles from '../components/GlobalStyles';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    root: {
-      height: '100%',
-      background: 'url("/studio/static-assets/images/cogs.jpg") 0 0 no-repeat',
-      backgroundSize: 'cover'
-    },
-    video: {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      minWidth: '100%',
-      position: 'fixed',
-      minHeight: '100%'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  root: {
+    height: '100%',
+    background: 'url("/studio/static-assets/images/cogs.jpg") 0 0 no-repeat',
+    backgroundSize: 'cover'
+  },
+  video: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    minWidth: '100%',
+    position: 'fixed',
+    minHeight: '100%'
+  }
+}));
 
 export default function Login(props: LoginViewProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   // **************************************************************************
   // TODO: To be enabled or removed depending on the background video decision.
   // **************************************************************************

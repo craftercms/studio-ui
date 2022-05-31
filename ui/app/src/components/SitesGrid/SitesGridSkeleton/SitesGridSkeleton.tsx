@@ -25,7 +25,7 @@ interface SitesGridSkeletonProps {
 }
 
 export function SitesGridSkeleton(props: SitesGridSkeletonProps) {
-  const classes = useSitesGridStyles();
+  const { classes } = useSitesGridStyles();
   const { numOfItems = 5, currentView } = props;
   const items = new Array(numOfItems).fill(null);
   return (

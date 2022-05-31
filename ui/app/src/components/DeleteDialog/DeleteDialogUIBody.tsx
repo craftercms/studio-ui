@@ -43,7 +43,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
     onEditDependantClick
   } = props;
   const deleteDependencies: DeleteDependencies = resource.read();
-  const classes = useDeleteDialogUIStyles();
+  const { classes } = useDeleteDialogUIStyles();
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>

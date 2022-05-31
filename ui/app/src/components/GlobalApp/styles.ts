@@ -14,47 +14,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-export const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      height: '100vh',
-      width: '100%'
-    },
-    wrapper: {
-      transition: theme.transitions.create('padding-left', {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen
-      })
-    },
-    launcher: {
-      margin: '10px 12px 0 auto'
-    },
-    footerDescription: {
-      color: theme.palette.text.secondary,
-      '& > a': {
-        textDecoration: 'none',
-        color: theme.palette.primary.main
-      }
-    },
-    footer: {
-      padding: '20px 0',
-      textAlign: 'center'
-    },
-    logo: {
-      margin: '0 auto 10px auto'
-    },
-    drawerBody: {
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between'
-    },
-    drawerPaper: {
-      top: '0',
-      padding: theme.spacing(2)
+export const useStyles = makeStyles()((theme) => ({
+  root: {
+    height: '100vh',
+    width: '100%'
+  },
+  wrapper: {
+    transition: theme.transitions.create('padding-left', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    })
+  },
+  launcher: {
+    margin: '10px 12px 0 auto'
+  },
+  footerDescription: {
+    color: theme.palette.text.secondary,
+    '& > a': {
+      textDecoration: 'none',
+      color: theme.palette.primary.main
     }
-  })
-);
+  },
+  footer: {
+    padding: '20px 0',
+    textAlign: 'center'
+  },
+  logo: {
+    margin: '0 auto 10px auto'
+  },
+  drawerBody: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  },
+  drawerPaper: {
+    top: '0',
+    padding: theme.spacing(2)
+  }
+}));

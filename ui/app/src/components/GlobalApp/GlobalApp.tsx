@@ -53,7 +53,7 @@ interface GlobalAppProps {
 }
 
 export function GlobalApp(props: GlobalAppProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { passwordRequirementsRegex, footerHtml } = props;
   const [width, setWidth] = useState(240);
   const globalNavigation = useGlobalNavigation();
@@ -150,7 +150,7 @@ export function GlobalApp(props: GlobalAppProps) {
                 return (
                   <Box display="flex" flexDirection="column" height="100%">
                     <section className={classes.launcher}>
-                      <LauncherOpenerButton sitesRailPosition="left" icon="apps" />
+                      <LauncherOpenerButton />
                     </section>
                     <EmptyState
                       styles={{

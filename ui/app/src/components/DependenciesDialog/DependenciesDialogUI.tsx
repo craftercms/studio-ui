@@ -50,7 +50,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     handleContextMenuClick,
     handleContextMenuClose
   } = props;
-  const classes = dependenciesDialogStyles({});
+  const { classes } = dependenciesDialogStyles();
   const [openSelector, setOpenSelector] = useState(false);
 
   return (

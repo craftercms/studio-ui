@@ -19,9 +19,7 @@ import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import Button from '@mui/material/Button';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 
 export type LogInFormProps = PropsWithChildren<{
   username: string;
@@ -39,27 +37,25 @@ export type LogInFormProps = PropsWithChildren<{
   xsrfToken?: string;
 }>;
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    spacing: {
-      marginBottom: theme.spacing(1.5)
-    },
-    doubleSpacing: {
-      marginBottom: theme.spacing(2)
-    },
-    inputLabel: {
-      '&.MuiInputLabel-shrink, &[class*="MuiInputLabel-shrink"]': {
-        padding: '0 8px',
-        borderRadius: 10,
-        background: theme.palette.background.paper,
-        transform: 'translate(9px, -6px) scale(.75)'
-      }
+const useStyles = makeStyles()((theme) => ({
+  spacing: {
+    marginBottom: theme.spacing(1.5)
+  },
+  doubleSpacing: {
+    marginBottom: theme.spacing(2)
+  },
+  inputLabel: {
+    '&.MuiInputLabel-shrink, &[class*="MuiInputLabel-shrink"]': {
+      padding: '0 8px',
+      borderRadius: 10,
+      background: theme.palette.background.paper,
+      transform: 'translate(9px, -6px) scale(.75)'
     }
-  })
-);
+  }
+}));
 
 export function LogInForm(props: LogInFormProps) {
-  const cls = useStyles();
+  const { classes: cls, cx } = useStyles();
   const {
     children,
     username,
@@ -88,7 +84,7 @@ export function LogInForm(props: LogInFormProps) {
         type="text"
         value={username}
         onChange={(e: any) => onSetUsername?.(e.target.value)}
-        className={clsx(cls.spacing, classes?.username)}
+        className={cx(cls.spacing, classes?.username)}
         label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
         InputLabelProps={{ className: cls.inputLabel }}
       />
@@ -99,7 +95,7 @@ export function LogInForm(props: LogInFormProps) {
         autoFocus={!enableUsernameInput || Boolean(username)}
         value={password}
         onChange={(e: any) => onSetPassword?.(e.target.value)}
-        className={clsx(cls.spacing, classes?.password, 'last-before-button')}
+        className={cx(cls.spacing, classes?.password, 'last-before-button')}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
         InputLabelProps={{ className: cls.inputLabel }}
       />
@@ -110,7 +106,7 @@ export function LogInForm(props: LogInFormProps) {
         fullWidth
         type="submit"
         disabled={isFetching}
-        className={clsx(onRecover && cls.spacing, classes?.submit)}
+        className={cx(onRecover && cls.spacing, classes?.submit)}
       >
         <FormattedMessage id="loginView.loginButtonLabel" defaultMessage="Log In" />
       </Button>

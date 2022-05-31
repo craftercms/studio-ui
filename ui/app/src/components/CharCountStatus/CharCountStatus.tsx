@@ -15,9 +15,7 @@
  */
 
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material/styles';
+import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import { Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
@@ -25,17 +23,15 @@ import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    countContainer: {
-      padding: '5px'
-    },
-    submissionCommentCount: {
-      fontSize: '14px',
-      color: palette.gray.medium4
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  countContainer: {
+    padding: '5px'
+  },
+  submissionCommentCount: {
+    fontSize: '14px',
+    color: palette.gray.medium4
+  }
+}));
 
 interface CharCountStatusContainerProps {
   commentLength: number;
@@ -47,7 +43,7 @@ interface CharCountStatusProps {
 }
 
 function CharCountStatus(props: CharCountStatusProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { commentLength, commentMaxLength } = props;
 
   return (

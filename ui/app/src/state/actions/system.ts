@@ -31,8 +31,9 @@ export const itemReverted = /*#__PURE__*/ createAction<{ target: string }>('ITEM
 
 export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT');
 
-export const folderRenamed =
-  /*#__PURE__*/ createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
+export const folderRenamed = /*#__PURE__*/ createAction<{ target: string; oldName: string; newName: string }>(
+  'FOLDER_RENAMED'
+);
 
 export const lockContentEvent = /*#__PURE__*/ createAction<SocketEventBase & { locked: boolean }>('LOCK_CONTENT_EVENT');
 
