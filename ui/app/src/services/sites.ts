@@ -15,7 +15,7 @@
  */
 
 import { get, postJSON } from '../utils/ajax';
-import { Action, BackendSite, ContentValidationResult, CreateSiteMeta, Site } from '../models/Site';
+import { Action, BackendSite, ContentValidationResult, CreateSiteMeta, LegacySite, Site } from '../models/Site';
 import { map, mapTo, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
@@ -127,6 +127,6 @@ export function validateActionPolicy(
   ).pipe(pluck(...toPluck));
 }
 
-export function fetchSite(siteId: string): Observable<any> {
+export function fetchSite(siteId: string): Observable<LegacySite> {
   return get(`/studio/api/1/services/api/1/site/get.json?site_id=${siteId}`).pipe(pluck('response'));
 }

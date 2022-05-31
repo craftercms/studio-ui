@@ -117,8 +117,25 @@ export interface BackendSite {
 }
 
 export interface LegacySite {
+  deleted: number;
+  description: string;
+  id: number;
+  lastCommitId: string;
+  lastSyncedGitlogCommitId: string;
+  lastVerifiedGitlogCommitId: string;
+  liveUrl: string;
+  name: string;
+  publishedRepoCreated: number;
+  publishingEnabled: number;
+  publishingLockHeartbeat: string;
+  publishingLockOwner: string;
+  publishingStatus: string;
+  sandboxBranch: string;
+  siteDeleted: boolean;
   siteId: string;
-  desc: string;
+  sitePublishedRepoCreated: boolean;
+  siteUuid: string;
+  state: string;
 }
 
 export interface Action {
