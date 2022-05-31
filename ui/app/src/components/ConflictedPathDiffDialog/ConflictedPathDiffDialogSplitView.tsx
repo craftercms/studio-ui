@@ -16,8 +16,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { FileDiff } from '../../models/Repository';
-
-declare var monaco: any;
+import { withMonaco } from '../../utils/system';
 
 export interface SplitViewProps {
   diff: FileDiff;
@@ -30,17 +29,19 @@ export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
 
   useEffect(() => {
     if (diff) {
-      const studioVersion = monaco.editor.createModel(diff.studioVersion, 'text/plain');
-      const remoteVersion = monaco.editor.createModel(diff.remoteVersion, 'text/plain');
-      const diffEditor = monaco.editor.createDiffEditor(ref.current, {
-        scrollbar: {
-          alwaysConsumeMouseWheel: false
-        },
-        readOnly: true
-      });
-      diffEditor.setModel({
-        original: studioVersion,
-        modified: remoteVersion
+      withMonaco((monaco) => {
+        const studioVersion = monaco.editor.createModel(diff.studioVersion, 'text/plain');
+        const remoteVersion = monaco.editor.createModel(diff.remoteVersion, 'text/plain');
+        const diffEditor = monaco.editor.createDiffEditor(ref.current, {
+          scrollbar: {
+            alwaysConsumeMouseWheel: false
+          },
+          readOnly: true
+        });
+        diffEditor.setModel({
+          original: studioVersion,
+          modified: remoteVersion
+        });
       });
     }
   }, [diff]);
