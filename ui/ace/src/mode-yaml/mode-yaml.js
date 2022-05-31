@@ -17,13 +17,13 @@
 ace.define(
   'ace/mode/yaml_highlight_rules',
   ['require', 'exports', 'module', 'ace/lib/oop', 'ace/mode/text_highlight_rules'],
-  function(require, exports, module) {
+  function (require, exports, module) {
     'use strict';
 
     var oop = require('../lib/oop');
     var TextHighlightRules = require('./text_highlight_rules').TextHighlightRules;
 
-    var YamlHighlightRules = function() {
+    var YamlHighlightRules = function () {
       this.$rules = {
         start: [
           {
@@ -69,7 +69,7 @@ ace.define(
           {
             token: 'string', // multi line string start
             regex: /[|>][-+\d]*(?:$|\s+(?:$|#))/,
-            onMatch: function(val, state, stack, line) {
+            onMatch: function (val, state, stack, line) {
               line = line.replace(/ #.*/, '');
               var indent = /^ *((:\s*)?-(\s*[^|>])?)?/.exec(line)[0].replace(/\S\s*$/, '').length;
               var indentationIndicator = parseInt(/\d+[\s+-]*$/.exec(line));
@@ -128,7 +128,7 @@ ace.define(
           {
             token: 'indent',
             regex: /^ */,
-            onMatch: function(val, state, stack) {
+            onMatch: function (val, state, stack) {
               var curIndent = stack[1];
 
               if (curIndent >= val.length) {
@@ -155,7 +155,7 @@ ace.define(
           {
             token: 'indent',
             regex: /^ */,
-            onMatch: function(val, state, stack) {
+            onMatch: function (val, state, stack) {
               var curIndent = stack[1];
 
               if (curIndent >= val.length) {
@@ -183,62 +183,62 @@ ace.define(
   }
 );
 
-ace.define('ace/mode/matching_brace_outdent', ['require', 'exports', 'module', 'ace/range'], function(
-  require,
-  exports,
-  module
-) {
-  'use strict';
+ace.define(
+  'ace/mode/matching_brace_outdent',
+  ['require', 'exports', 'module', 'ace/range'],
+  function (require, exports, module) {
+    'use strict';
 
-  var Range = require('../range').Range;
+    var Range = require('../range').Range;
 
-  var MatchingBraceOutdent = function() {};
+    var MatchingBraceOutdent = function () {};
 
-  (function() {
-    this.checkOutdent = function(line, input) {
-      if (!/^\s+$/.test(line)) return false;
+    (function () {
+      this.checkOutdent = function (line, input) {
+        if (!/^\s+$/.test(line)) return false;
 
-      return /^\s*\}/.test(input);
-    };
+        return /^\s*\}/.test(input);
+      };
 
-    this.autoOutdent = function(doc, row) {
-      var line = doc.getLine(row);
-      var match = line.match(/^(\s*\})/);
+      this.autoOutdent = function (doc, row) {
+        var line = doc.getLine(row);
+        var match = line.match(/^(\s*\})/);
 
-      if (!match) return 0;
+        if (!match) return 0;
 
-      var column = match[1].length;
-      var openBracePos = doc.findMatchingBracket({ row: row, column: column });
+        var column = match[1].length;
+        var openBracePos = doc.findMatchingBracket({ row: row, column: column });
 
-      if (!openBracePos || openBracePos.row == row) return 0;
+        if (!openBracePos || openBracePos.row == row) return 0;
 
-      var indent = this.$getIndent(doc.getLine(openBracePos.row));
-      doc.replace(new Range(row, 0, row, column - 1), indent);
-    };
+        var indent = this.$getIndent(doc.getLine(openBracePos.row));
+        doc.replace(new Range(row, 0, row, column - 1), indent);
+      };
 
-    this.$getIndent = function(line) {
-      return line.match(/^\s*/)[0];
-    };
-  }.call(MatchingBraceOutdent.prototype));
+      this.$getIndent = function (line) {
+        return line.match(/^\s*/)[0];
+      };
+    }.call(MatchingBraceOutdent.prototype));
 
-  exports.MatchingBraceOutdent = MatchingBraceOutdent;
-});
+    exports.MatchingBraceOutdent = MatchingBraceOutdent;
+  }
+);
 
 ace.define(
   'ace/mode/folding/coffee',
   ['require', 'exports', 'module', 'ace/lib/oop', 'ace/mode/folding/fold_mode', 'ace/range'],
-  function(require, exports, module) {
+  function (require, exports, module) {
     'use strict';
 
     var oop = require('../../lib/oop');
     var BaseFoldMode = require('./fold_mode').FoldMode;
     var Range = require('../../range').Range;
 
-    var FoldMode = (exports.FoldMode = function() {});
+    var FoldMode = (exports.FoldMode = function () {});
     oop.inherits(FoldMode, BaseFoldMode);
 
-    (function() {
-      this.getFoldWidgetRange = function(session, foldStyle, row) {
+    (function () {
+      this.getFoldWidgetRange = function (session, foldStyle, row) {
         var range = this.indentationBlock(session, row);
         if (range) return range;
 
@@ -268,7 +268,7 @@ ace.define(
           return new Range(startRow, startColumn, endRow, endColumn);
         }
       };
-      this.getFoldWidget = function(session, foldStyle, row) {
+      this.getFoldWidget = function (session, foldStyle, row) {
         var line = session.getLine(row);
         var indent = line.search(/\S/);
         var next = session.getLine(row + 1);
@@ -316,7 +316,7 @@ ace.define(
     'ace/mode/matching_brace_outdent',
     'ace/mode/folding/coffee'
   ],
-  function(require, exports, module) {
+  function (require, exports, module) {
     'use strict';
 
     var oop = require('../lib/oop');
@@ -327,7 +327,7 @@ ace.define(
     require('ace/config').set('workerPath', '/studio/static-assets/libs/ace');
     var WorkerClient = require('../worker/worker_client').WorkerClient;
 
-    var Mode = function() {
+    var Mode = function () {
       this.HighlightRules = YamlHighlightRules;
       this.$outdent = new MatchingBraceOutdent();
       this.foldingRules = new FoldMode();
@@ -335,10 +335,10 @@ ace.define(
     };
     oop.inherits(Mode, TextMode);
 
-    (function() {
+    (function () {
       this.lineCommentStart = ['#'];
 
-      this.getNextLineIndent = function(state, line, tab) {
+      this.getNextLineIndent = function (state, line, tab) {
         var indent = this.$getIndent(line);
 
         if (state == 'start') {
@@ -351,22 +351,22 @@ ace.define(
         return indent;
       };
 
-      this.checkOutdent = function(state, line, input) {
+      this.checkOutdent = function (state, line, input) {
         return this.$outdent.checkOutdent(line, input);
       };
 
-      this.autoOutdent = function(state, doc, row) {
+      this.autoOutdent = function (state, doc, row) {
         this.$outdent.autoOutdent(doc, row);
       };
 
       // Added worker for yaml syntax validation
-      this.createWorker = function(session) {
+      this.createWorker = function (session) {
         var worker = new WorkerClient(['ace'], 'ace/mode/yaml_worker', 'YamlWorker');
         worker.attachToDocument(session.getDocument());
-        worker.on('annotate', function(e) {
+        worker.on('annotate', function (e) {
           session.setAnnotations(e.data);
         });
-        worker.on('terminate', function() {
+        worker.on('terminate', function () {
           session.clearAnnotations();
         });
         return worker;
@@ -378,8 +378,8 @@ ace.define(
     exports.Mode = Mode;
   }
 );
-(function() {
-  ace.require(['ace/mode/yaml'], function(m) {
+(function () {
+  ace.require(['ace/mode/yaml'], function (m) {
     if (typeof module == 'object' && typeof exports == 'object' && module) {
       module.exports = m;
     }
