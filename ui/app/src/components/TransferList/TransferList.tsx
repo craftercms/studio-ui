@@ -58,7 +58,7 @@ export function TransferList(props: TransferListProps) {
   };
 
   const [checkedList, setCheckedList] = useState({});
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const onItemClicked = (item: TransferListItem) => {
     if (checkedList[item.id]) {

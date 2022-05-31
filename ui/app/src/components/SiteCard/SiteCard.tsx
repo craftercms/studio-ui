@@ -28,7 +28,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import CardActionArea from '@mui/material/CardActionArea';
 import { Typography } from '@mui/material';
 import ConfirmDropdown from '../ConfirmDropdown';
-import clsx from 'clsx';
 import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
@@ -70,7 +69,7 @@ export function SiteCard(props: SiteCardProps) {
     publishingStatus,
     onPublishButtonClick
   } = props;
-  const classes = useSiteCardStyles();
+  const { classes, cx: clsx } = useSiteCardStyles();
   const { formatMessage } = useIntl();
 
   return (

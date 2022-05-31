@@ -35,7 +35,6 @@ import { DetailedItem } from '../../../models/Item';
 import ItemDisplay from '../../ItemDisplay';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import Box from '@mui/material/Box';
-import clsx from 'clsx';
 import useStyles from './styles';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import Tooltip from '@mui/material/Tooltip';
@@ -53,7 +52,7 @@ export interface RecentlyPublishedWidgetUIProps {
 export function LegacyRecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
   const { resource, expandedItems, setExpandedItems, itemsLookup, onItemMenuClick, localeBranch } = props;
   const parentItems = resource.read();
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
 
   const toggleExpand = (name) => {
     setExpandedItems({ [name]: !expandedItems[name] });

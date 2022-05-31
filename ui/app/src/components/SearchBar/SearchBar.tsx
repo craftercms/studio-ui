@@ -15,63 +15,58 @@
  */
 
 import React, { useRef, useState } from 'react';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/SearchRounded';
 import CloseIcon from '@mui/icons-material/Close';
-import clsx from 'clsx';
 import { defineMessages, useIntl } from 'react-intl';
 import { Paper } from '@mui/material';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    search: {
-      position: 'relative',
-      background: (props: any) => props.background ?? theme.palette.background.default,
-      display: 'flex',
-      alignItems: 'center',
-      padding: '0 12px',
-      borderRadius: '5px',
-      '&.focus': {
-        backgroundColor: theme.palette.background.paper,
-        border: '1px solid transparent'
-      },
-      '&.noPadded': {
-        padding: '0 0 0 12px'
-      }
+const useStyles = makeStyles<{ background: string }>()((theme, { background } = {} as any) => ({
+  search: {
+    position: 'relative',
+    background: background ?? theme.palette.background.default,
+    display: 'flex',
+    alignItems: 'center',
+    padding: '0 12px',
+    borderRadius: '5px',
+    '&.focus': {
+      backgroundColor: theme.palette.background.paper,
+      border: '1px solid transparent'
     },
-    searchIcon: {
-      color: theme.palette.text.secondary
-    },
-    icon: {
-      padding: '6px'
-    },
-    closeIcon: {
-      fontSize: '25px',
-      color: theme.palette.text.secondary,
-      cursor: 'pointer'
-    },
-    inputRoot: {
-      flexGrow: 1,
-      background: 'transparent',
-      '&:focus': {
-        backgroundColor: theme.palette.background.paper
-      }
-    },
-    inputInput: {
-      background: 'none',
-      border: 'none',
-      width: '100%',
-      padding: '10px 5px',
-      '&:focus': {
-        boxShadow: 'none'
-      }
+    '&.noPadded': {
+      padding: '0 0 0 12px'
     }
-  })
-);
+  },
+  searchIcon: {
+    color: theme.palette.text.secondary
+  },
+  icon: {
+    padding: '6px'
+  },
+  closeIcon: {
+    fontSize: '25px',
+    color: theme.palette.text.secondary,
+    cursor: 'pointer'
+  },
+  inputRoot: {
+    flexGrow: 1,
+    background: 'transparent',
+    '&:focus': {
+      backgroundColor: theme.palette.background.paper
+    }
+  },
+  inputInput: {
+    background: 'none',
+    border: 'none',
+    width: '100%',
+    padding: '10px 5px',
+    '&:focus': {
+      boxShadow: 'none'
+    }
+  }
+}));
 
 const messages = defineMessages({
   placeholder: {
@@ -105,7 +100,7 @@ interface SearchBarProps {
 }
 
 export function SearchBar(props: SearchBarProps) {
-  const classes = useStyles({ background: props.backgroundColor });
+  const { classes, cx } = useStyles({ background: props.backgroundColor });
   const {
     onChange,
     onKeyPress,
@@ -131,7 +126,7 @@ export function SearchBar(props: SearchBarProps) {
       onClick={onClick}
       variant={focus ? 'elevation' : 'outlined'}
       elevation={focus ? 4 : 0}
-      className={clsx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
+      className={cx(classes.search, focus && 'focus', showActionButton && 'noPadded', props.classes?.root)}
     >
       {showDecoratorIcon && onDecoratorButtonClick ? (
         <IconButton onClick={onDecoratorButtonClick} size="large">
@@ -153,8 +148,8 @@ export function SearchBar(props: SearchBarProps) {
         disabled={disabled}
         value={keyword}
         classes={{
-          root: clsx(classes.inputRoot, props.classes?.inputRoot),
-          input: clsx(classes.inputInput, props.classes?.inputInput)
+          root: cx(classes.inputRoot, props.classes?.inputRoot),
+          input: cx(classes.inputInput, props.classes?.inputInput)
         }}
         inputProps={{ 'aria-label': finalPlaceholder, ref: inputRef }}
       />
@@ -171,7 +166,7 @@ export function SearchBar(props: SearchBarProps) {
           className={classes.icon}
           size="large"
         >
-          <ActionButtonIcon className={clsx(classes.closeIcon, props.classes?.actionIcon)} />
+          <ActionButtonIcon className={cx(classes.closeIcon, props.classes?.actionIcon)} />
         </IconButton>
       )}
     </Paper>

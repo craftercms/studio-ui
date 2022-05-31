@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@mui/material/List';
@@ -28,45 +26,42 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import { Resource } from '../../models/Resource';
 import { LegacyVersion } from '../../models/Version';
-import clsx from 'clsx';
 import palette from '../../styles/palette';
 import GlobalState from '../../models/GlobalState';
 import { useSelection } from '../../hooks/useSelection';
 
-const versionListStyles = makeStyles((theme) =>
-  createStyles({
-    list: {
-      backgroundColor: theme.palette.background.paper,
-      padding: 0,
-      borderRadius: '5px 5px 0 0'
-    },
-    listItem: {
-      padding: '15px 48px 15px 20px',
-      '&.selected': {
-        backgroundColor: palette.blue.highlight
-      }
-    },
-    listItemTextMultiline: {
-      margin: 0
-    },
-    listItemTextPrimary: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    listItemTextSecondary: {
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden'
-    },
-    chip: {
-      padding: '1px',
-      backgroundColor: palette.green.main,
-      height: 'auto',
-      color: palette.white,
-      marginLeft: '10px'
+const versionListStyles = makeStyles()((theme) => ({
+  list: {
+    backgroundColor: theme.palette.background.paper,
+    padding: 0,
+    borderRadius: '5px 5px 0 0'
+  },
+  listItem: {
+    padding: '15px 48px 15px 20px',
+    '&.selected': {
+      backgroundColor: palette.blue.highlight
     }
-  })
-);
+  },
+  listItemTextMultiline: {
+    margin: 0
+  },
+  listItemTextPrimary: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  listItemTextSecondary: {
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden'
+  },
+  chip: {
+    padding: '1px',
+    backgroundColor: palette.green.main,
+    height: 'auto',
+    color: palette.white,
+    marginLeft: '10px'
+  }
+}));
 
 interface FancyFormattedDateProps {
   date: string;
@@ -104,7 +99,7 @@ interface VersionListProps {
 }
 
 export function VersionList(props: VersionListProps) {
-  const classes = versionListStyles({});
+  const { classes, cx } = versionListStyles();
   const { versions: versionsResource, onOpenMenu, onItemClick, current, selected } = props;
   const versions = versionsResource.read();
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
@@ -118,7 +113,7 @@ export function VersionList(props: VersionListProps) {
             divider={versions.length - 1 !== i}
             button
             onClick={() => onItemClick(version)}
-            className={clsx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
+            className={cx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
           >
             <ListItemText
               classes={{

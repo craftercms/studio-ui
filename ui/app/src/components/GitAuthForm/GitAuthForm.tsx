@@ -21,13 +21,11 @@ import Radio from '@mui/material/Radio';
 import Collapse from '@mui/material/Collapse';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@mui/material/TextField';
-import clsx from 'clsx';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { SiteState } from '../../models/Site';
 import Typography from '@mui/material/Typography';
 
@@ -44,24 +42,22 @@ interface AuthFieldsProps {
   onKeyPress?(event: any): any;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    authBox: {
-      padding: '10px',
-      background: theme.palette.background.paper,
-      borderRadius: '5px',
-      marginLeft: '30px',
-      display: 'flex',
-      justifyContent: 'center'
-    },
-    margin: {
-      margin: theme.spacing(1)
-    },
-    textField: {
-      width: '100%'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  authBox: {
+    padding: '10px',
+    background: theme.palette.background.paper,
+    borderRadius: '5px',
+    marginLeft: '30px',
+    display: 'flex',
+    justifyContent: 'center'
+  },
+  margin: {
+    margin: theme.spacing(1)
+  },
+  textField: {
+    width: '100%'
+  }
+}));
 
 const messages = defineMessages({
   userName: {
@@ -95,7 +91,7 @@ function AuthFields(props: AuthFieldsProps) {
   const type = inputs.repoAuthentication;
   const [showPassword, setShowPassword] = useState(false);
   const { formatMessage } = useIntl();
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -107,7 +103,7 @@ function AuthFields(props: AuthFieldsProps) {
         <TextField
           id="repoUsername"
           name="repoUsername"
-          className={clsx(classes.margin, classes.textField)}
+          className={cx(classes.margin, classes.textField)}
           label={formatMessage(messages.userName)}
           required
           value={inputs.repoUsername}
@@ -127,7 +123,7 @@ function AuthFields(props: AuthFieldsProps) {
         <TextField
           id="repoPassword"
           name="repoPassword"
-          className={clsx(classes.margin, classes.textField)}
+          className={cx(classes.margin, classes.textField)}
           type={showPassword ? 'text' : 'password'}
           label={formatMessage(messages.password)}
           required
@@ -162,7 +158,7 @@ function AuthFields(props: AuthFieldsProps) {
         <TextField
           id="repoToken"
           name="repoToken"
-          className={clsx(classes.margin, classes.textField)}
+          className={cx(classes.margin, classes.textField)}
           type={showPassword ? 'text' : 'password'}
           label={formatMessage(messages.token)}
           required

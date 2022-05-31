@@ -15,6 +15,9 @@
  */
 
 import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH } from './constants';
+import { ReplaySubject } from 'rxjs';
+import { take } from 'rxjs/operators';
+import Monaco from '../models/Monaco';
 
 export type SystemLinkId =
   | 'preview'
@@ -48,4 +51,22 @@ export function getSystemLink({
 
 export function copyToClipboard(textToCopy: string): Promise<void> {
   return navigator.clipboard.writeText(textToCopy);
+}
+
+let monaco$: ReplaySubject<Monaco>;
+export function withMonaco(onReady: (api: Monaco) => void): void {
+  if (!monaco$) {
+    monaco$ = new ReplaySubject(1);
+    const script = document.createElement('script');
+    script.src = '/studio/static-assets/libs/monaco/monaco.0.33.0.js';
+    script.onload = () => {
+      // @ts-ignore
+      monaco$.next(window.monaco);
+    };
+    script.onerror = () => {
+      console.error('Monaco editor could not be loaded');
+    };
+    document.head.appendChild(script);
+  }
+  monaco$.asObservable().pipe(take(1)).subscribe(onReady);
 }

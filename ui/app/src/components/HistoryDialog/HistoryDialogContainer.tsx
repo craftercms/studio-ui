@@ -66,7 +66,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const path = item?.path ?? '';
   const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
-  const classes = historyStyles({});
+  const { classes } = historyStyles();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);

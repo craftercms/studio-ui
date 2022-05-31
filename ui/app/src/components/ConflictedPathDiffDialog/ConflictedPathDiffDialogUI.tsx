@@ -17,8 +17,8 @@
 import { Resource } from '../../models/Resource';
 import { FileDiff } from '../../models/Repository';
 import React from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
+
 import AceEditor from '../AceEditor/AceEditor';
 import ConflictedPathDiffDialogSplitView from './ConflictedPathDiffDialogSplitView';
 import Grid from '@mui/material/Grid';
@@ -26,34 +26,32 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
 const tabsHeight = 450;
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    diffTab: {
-      height: tabsHeight,
-      overflowX: 'auto',
-      '& .ace_editor': {
-        margin: 0
-      }
-    },
-    diffContent: {
-      fontSize: '14px',
-      background: 'none',
-      border: 'none'
-    },
-    splitView: {
-      width: '100%',
-      height: 'calc(100% - 24px)',
-      '&.unChanged': {
-        height: 'auto'
-      }
-    },
-    labelsContainer: {
-      width: 'calc(100% - 30px)',
-      textAlign: 'center',
-      backgroundColor: theme.palette.background.paper
+const useStyles = makeStyles()((theme) => ({
+  diffTab: {
+    height: tabsHeight,
+    overflowX: 'auto',
+    '& .ace_editor': {
+      margin: 0
     }
-  })
-);
+  },
+  diffContent: {
+    fontSize: '14px',
+    background: 'none',
+    border: 'none'
+  },
+  splitView: {
+    width: '100%',
+    height: 'calc(100% - 24px)',
+    '&.unChanged': {
+      height: 'auto'
+    }
+  },
+  labelsContainer: {
+    width: 'calc(100% - 30px)',
+    textAlign: 'center',
+    backgroundColor: theme.palette.background.paper
+  }
+}));
 
 export interface RemoteRepositoriesDiffDialogUIProps {
   resource: Resource<FileDiff>;
@@ -63,7 +61,7 @@ export interface RemoteRepositoriesDiffDialogUIProps {
 export function ConflictedPathDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
   const { resource, tab } = props;
   const fileDiff = resource.read();
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <>

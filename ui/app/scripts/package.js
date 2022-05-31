@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const uppyPkg = require('../../uppy/package.json');
+
 const path = require('path');
 const fse = require('fs-extra');
 const glob = require('glob');
@@ -69,7 +71,9 @@ async function createPackageFile() {
 
   Object.entries(appPackage.dependencies).forEach(([dep, version]) => {
     if (!ignoreDeps.includes(dep)) {
-      if (optional.includes(dep)) {
+      if (dep === '@craftercms/uppy') {
+        newPackageData.dependencies[dep] = uppyPkg.version;
+      } else if (optional.includes(dep)) {
         newPackageData.peerDependenciesMeta[dep] = {
           optional: true
         };

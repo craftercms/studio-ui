@@ -56,23 +56,48 @@ TEMPLATES=${DEFAULT_SITE}/templates
 
 SRC=$(pwd)
 
-LINK_ONLY=false
-REMOVE_ONLY=false
-RESTORE_ONLY=false
-SYNC_ONLY=false
+DO_LINK=true
+DO_REMOVE=false
+DO_RESTORE=false
+DO_SYNC=false
+DO_BACKUP=false
+
 for ARG in "$@"; do
   case "$ARG" in
   --link)
-    LINK_ONLY=true
+    DO_LINK=true
+    DO_REMOVE=true
+    DO_RESTORE=false
+    DO_SYNC=false
+    DO_BACKUP=false
     ;;
   --remove)
-    REMOVE_ONLY=true
+    DO_LINK=false
+    DO_REMOVE=true
+    DO_RESTORE=false
+    DO_SYNC=false
+    DO_BACKUP=false
     ;;
   --restore)
-    RESTORE_ONLY=true
+    DO_LINK=false
+    DO_REMOVE=true
+    DO_RESTORE=true
+    DO_SYNC=false
+    DO_BACKUP=false
     ;;
   --sync)
-    SYNC_ONLY=true
+    DO_LINK=false
+    DO_REMOVE=false
+    DO_RESTORE=false
+    DO_SYNC=true
+    DO_BACKUP=false
+    ;;
+  --backup)
+    DO_LINK=false
+    DO_REMOVE=false
+    DO_RESTORE=false
+    DO_SYNC=false
+    DO_BACKUP=true
     ;;
   *)
     echo "Unknown option $ARG."
@@ -83,25 +108,28 @@ done
 
 echo ""
 
-if [[ $LINK_ONLY != true && $RESTORE_ONLY != true && $REMOVE_ONLY != true && $SYNC_ONLY != true ]]; then
+# region Backup
+if [[ $DO_BACKUP == true ]]; then
   echo "Backup directories"
   mkdir "$DEFAULT_SITE/link-backup"
-  mv "$STATIC_ASSETS/modules" "$DEFAULT_SITE/link-backup/modules"
-  mv "$STATIC_ASSETS/components" "$DEFAULT_SITE/link-backup/components"
-  mv "$STATIC_ASSETS/next" "$DEFAULT_SITE/link-backup/next"
-  mv "$STATIC_ASSETS/scripts" "$DEFAULT_SITE/link-backup/scripts"
-  mv "$STATIC_ASSETS/styles" "$DEFAULT_SITE/link-backup/styles"
-  mv "$TEMPLATES" "$DEFAULT_SITE/link-backup/templates"
-  mv "$STATIC_ASSETS/themes" "$DEFAULT_SITE/link-backup/themes"
-  mv "$STATIC_ASSETS/libs" "$DEFAULT_SITE/link-backup/libs"
-  mv "$STATIC_ASSETS/images" "$DEFAULT_SITE/link-backup/images"
-  mv "$DEFAULT_SITE/site" "$DEFAULT_SITE/link-backup/site"
-  mv "$STATIC_ASSETS/yui" "$DEFAULT_SITE/link-backup/yui"
-  mv "$STATIC_ASSETS/css" "$DEFAULT_SITE/link-backup/css"
-  mv "$STATIC_ASSETS/js" "$DEFAULT_SITE/link-backup/js"
+  cp -r "$STATIC_ASSETS/modules" "$DEFAULT_SITE/link-backup/modules"
+  cp -r "$STATIC_ASSETS/components" "$DEFAULT_SITE/link-backup/components"
+  cp -r "$STATIC_ASSETS/next" "$DEFAULT_SITE/link-backup/next"
+  cp -r "$STATIC_ASSETS/scripts" "$DEFAULT_SITE/link-backup/scripts"
+  cp -r "$STATIC_ASSETS/styles" "$DEFAULT_SITE/link-backup/styles"
+  cp -r "$TEMPLATES" "$DEFAULT_SITE/link-backup/templates"
+  cp -r "$STATIC_ASSETS/themes" "$DEFAULT_SITE/link-backup/themes"
+  cp -r "$STATIC_ASSETS/libs" "$DEFAULT_SITE/link-backup/libs"
+  cp -r "$STATIC_ASSETS/images" "$DEFAULT_SITE/link-backup/images"
+  cp -r "$DEFAULT_SITE/site" "$DEFAULT_SITE/link-backup/site"
+  cp -r "$STATIC_ASSETS/yui" "$DEFAULT_SITE/link-backup/yui"
+  cp -r "$STATIC_ASSETS/css" "$DEFAULT_SITE/link-backup/css"
+  cp -r "$STATIC_ASSETS/js" "$DEFAULT_SITE/link-backup/js"
 fi
+# endregion
 
-if [[ $REMOVE_ONLY == true || $RESTORE_ONLY == true ]]; then
+# region Remove
+if [[ $DO_REMOVE == true ]]; then
   echo "Removing directories"
   rm -rf "$STATIC_ASSETS/modules"
   rm -rf "$STATIC_ASSETS/components"
@@ -117,32 +145,35 @@ if [[ $REMOVE_ONLY == true || $RESTORE_ONLY == true ]]; then
   rm -rf "$STATIC_ASSETS/css"
   rm -rf "$STATIC_ASSETS/js"
 fi
+# endregion
 
-if [[ $RESTORE_ONLY == true ]]; then
+# region Restore
+if [[ $DO_RESTORE == true ]]; then
   echo "Restoring directories"
-  mv "$DEFAULT_SITE/link-backup/modules" "$STATIC_ASSETS/modules"
-  mv "$DEFAULT_SITE/link-backup/components" "$STATIC_ASSETS/components"
-  mv "$DEFAULT_SITE/link-backup/next" "$STATIC_ASSETS/next"
-  mv "$DEFAULT_SITE/link-backup/scripts" "$STATIC_ASSETS/scripts"
-  mv "$DEFAULT_SITE/link-backup/styles" "$STATIC_ASSETS/styles"
-  mv "$DEFAULT_SITE/link-backup/templates" "$TEMPLATES"
-  mv "$DEFAULT_SITE/link-backup/themes" "$STATIC_ASSETS/themes"
-  mv "$DEFAULT_SITE/link-backup/libs" "$STATIC_ASSETS/libs"
-  mv "$DEFAULT_SITE/link-backup/images" "$STATIC_ASSETS/images"
-  mv "$DEFAULT_SITE/link-backup/site" "$DEFAULT_SITE/site"
-  mv "$DEFAULT_SITE/link-backup/yui" "$STATIC_ASSETS/yui"
-  mv "$DEFAULT_SITE/link-backup/css" "$STATIC_ASSETS/css"
-  mv "$DEFAULT_SITE/link-backup/js" "$STATIC_ASSETS/js"
-  rm -rf "$DEFAULT_SITE/link-backup"
+  cp -r "$DEFAULT_SITE/link-backup/modules" "$STATIC_ASSETS/modules"
+  cp -r "$DEFAULT_SITE/link-backup/components" "$STATIC_ASSETS/components"
+  cp -r "$DEFAULT_SITE/link-backup/next" "$STATIC_ASSETS/next"
+  cp -r "$DEFAULT_SITE/link-backup/scripts" "$STATIC_ASSETS/scripts"
+  cp -r "$DEFAULT_SITE/link-backup/styles" "$STATIC_ASSETS/styles"
+  cp -r "$DEFAULT_SITE/link-backup/templates" "$TEMPLATES"
+  cp -r "$DEFAULT_SITE/link-backup/themes" "$STATIC_ASSETS/themes"
+  cp -r "$DEFAULT_SITE/link-backup/libs" "$STATIC_ASSETS/libs"
+  cp -r "$DEFAULT_SITE/link-backup/images" "$STATIC_ASSETS/images"
+  cp -r "$DEFAULT_SITE/link-backup/site" "$DEFAULT_SITE/site"
+  cp -r "$DEFAULT_SITE/link-backup/yui" "$STATIC_ASSETS/yui"
+  cp -r "$DEFAULT_SITE/link-backup/css" "$STATIC_ASSETS/css"
+  cp -r "$DEFAULT_SITE/link-backup/js" "$STATIC_ASSETS/js"
 fi
+# endregion
 
-if [[ $REMOVE_ONLY != true && $RESTORE_ONLY != true && $SYNC_ONLY != true ]]; then
+# region Link
+if [[ $DO_LINK == true ]]; then
   echo "Linking directories"
-  ln -s "$SRC/static-assets/modules" "$STATIC_ASSETS/"
-  ln -s "$SRC/static-assets/components" "$STATIC_ASSETS/"
-  ln -s "$SRC/static-assets/next" "$STATIC_ASSETS/"
-  ln -s "$SRC/static-assets/scripts" "$STATIC_ASSETS/"
-  ln -s "$SRC/static-assets/styles" "$STATIC_ASSETS/"
+  ln -s "$SRC/static-assets/modules" "$STATIC_ASSETS"
+  ln -s "$SRC/static-assets/components" "$STATIC_ASSETS"
+  ln -s "$SRC/static-assets/next" "$STATIC_ASSETS"
+  ln -s "$SRC/static-assets/scripts" "$STATIC_ASSETS"
+  ln -s "$SRC/static-assets/styles" "$STATIC_ASSETS"
   ln -s "$SRC/templates" "$DEFAULT_SITE"
   ln -s "$SRC/static-assets/themes" "$STATIC_ASSETS/themes"
   ln -s "$SRC/static-assets/libs" "$STATIC_ASSETS/libs"
@@ -152,8 +183,10 @@ if [[ $REMOVE_ONLY != true && $RESTORE_ONLY != true && $SYNC_ONLY != true ]]; th
   ln -s "$SRC/static-assets/css" "$STATIC_ASSETS/css"
   ln -s "$SRC/static-assets/js" "$STATIC_ASSETS/js"
 fi
+# endregion
 
-if [[ $SYNC_ONLY == true ]]; then
+# region Sync
+if [[ $DO_SYNC == true ]]; then
   echo "Synchronizing directories"
   cp -r "$SRC/static-assets/modules" "$STATIC_ASSETS"
   cp -r "$SRC/static-assets/components" "$STATIC_ASSETS"
@@ -169,6 +202,7 @@ if [[ $SYNC_ONLY == true ]]; then
   cp -r "$SRC/static-assets/css" "$STATIC_ASSETS"
   cp -r "$SRC/static-assets/js" "$STATIC_ASSETS"
 fi
+# endregion
 
 cd "$currentDir" || exit 1
 

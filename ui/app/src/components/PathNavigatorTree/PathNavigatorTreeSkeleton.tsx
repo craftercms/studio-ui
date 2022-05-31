@@ -16,8 +16,7 @@
 
 import * as React from 'react';
 import Skeleton from '@mui/material/Skeleton';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import PathNavigatorTreeSkeletonItem from './PathNavigatorTreeSkeletonItem';
 
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
@@ -26,25 +25,23 @@ interface PathNavigatorSkeletonProps {
   numOfItems?: number;
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    skeletonRoot: {
-      margin: '10px 0'
-    },
-    skeletonHeader: {
-      display: 'flex',
-      marginBottom: '5px',
-      padding: '0 10px'
-    },
-    skeletonBody: {
-      paddingLeft: '5px'
-    },
-    skeletonBodyItem: { display: 'flex', padding: '5px 5px' }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  skeletonRoot: {
+    margin: '10px 0'
+  },
+  skeletonHeader: {
+    display: 'flex',
+    marginBottom: '5px',
+    padding: '0 10px'
+  },
+  skeletonBody: {
+    paddingLeft: '5px'
+  },
+  skeletonBodyItem: { display: 'flex', padding: '5px 5px' }
+}));
 
 function PathNavigatorSkeletonTree({ numOfItems = 5 }: PathNavigatorSkeletonProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <section className={classes.skeletonRoot}>
       <header className={classes.skeletonHeader}>

@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import makeStyles from '@mui/styles/makeStyles';
 import MuiDialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import React from 'react';
 import palette from '../../styles/palette';
+import { makeStyles } from 'tss-react/mui';
 
-const dialogTitleStyles = makeStyles(() => ({
+const dialogTitleStyles = makeStyles()(() => ({
   titleRoot: {
     margin: 0,
     padding: '13px 20px 11px',
@@ -48,7 +48,7 @@ export interface DialogTitleProps {
 }
 
 export function DialogTitle(props: DialogTitleProps) {
-  const classes = dialogTitleStyles({});
+  const { classes } = dialogTitleStyles();
   const { onClose, title, subtitle } = props;
   return (
     <MuiDialogTitle className={classes.titleRoot}>

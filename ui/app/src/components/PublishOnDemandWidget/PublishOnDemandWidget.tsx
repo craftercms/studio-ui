@@ -20,8 +20,7 @@ import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
@@ -46,38 +45,36 @@ import SecondaryButton from '../SecondaryButton';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    content: {
-      backgroundColor: theme.palette.background.default,
-      padding: '16px'
-    },
-    modeSelector: {
-      padding: '10px 25px',
-      border: `1px solid ${palette.gray.light7}`,
-      borderRadius: '10px'
-    },
-    byPathModeSelector: {
-      marginBottom: '10px'
-    },
-    formContainer: {
-      marginTop: '20px'
-    },
-    noteContainer: {
-      textAlign: 'center',
-      marginTop: '20px'
-    },
-    note: {
-      color: theme.palette.action.active,
-      display: 'inline-block',
-      maxWidth: '700px'
-    },
-    noteLink: {
-      color: 'inherit',
-      textDecoration: 'underline'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  content: {
+    backgroundColor: theme.palette.background.default,
+    padding: '16px'
+  },
+  modeSelector: {
+    padding: '10px 25px',
+    border: `1px solid ${palette.gray.light7}`,
+    borderRadius: '10px'
+  },
+  byPathModeSelector: {
+    marginBottom: '10px'
+  },
+  formContainer: {
+    marginTop: '20px'
+  },
+  noteContainer: {
+    textAlign: 'center',
+    marginTop: '20px'
+  },
+  note: {
+    color: theme.palette.action.active,
+    display: 'inline-block',
+    maxWidth: '700px'
+  },
+  noteLink: {
+    color: 'inherit',
+    textDecoration: 'underline'
+  }
+}));
 
 const messages = defineMessages({
   publishStudioWarning: {
@@ -126,8 +123,8 @@ interface PublishOnDemandWidgetProps {
 }
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
-  const { siteId, onSubmittingAndOrPendingChange } = props;
-  const classes = useStyles();
+  const { siteId } = props;
+  const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [mode, setMode] = useState<PublishOnDemandMode>(null);

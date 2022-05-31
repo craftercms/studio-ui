@@ -18,7 +18,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Button from '@mui/material/Button';
 import React, { useState } from 'react';
 import Popover from '@mui/material/Popover';
-import makeStyles from '@mui/styles/makeStyles';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -28,8 +27,9 @@ import Radio from '@mui/material/Radio';
 import { CurrentFilters } from '../../models/Publishing';
 import SearchIcon from '@mui/icons-material/SearchRounded';
 import { Checkbox, FormGroup, Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   paper: {
     width: '300px'
   },
@@ -122,7 +122,7 @@ interface FilterDropdownProps {
 
 export function FilterDropdown(props: FilterDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { text, className, handleFilterChange, handleEnterKey, currentFilters, filters } = props;
   const [path, setPath] = useState('');
   const { formatMessage } = useIntl();

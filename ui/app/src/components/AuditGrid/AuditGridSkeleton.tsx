@@ -33,7 +33,7 @@ export interface AuditGridSkeletonProps {
 
 export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
   const { numOfItems = 5, filters, siteMode = false } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   const rows = useMemo(() => {

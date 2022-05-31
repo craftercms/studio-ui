@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   const { React, ReactDOM, i18n } = CrafterCMSNext;
   const { useState, useMemo, useRef, useEffect } = React;
 

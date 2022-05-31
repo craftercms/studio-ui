@@ -21,7 +21,7 @@ import { getLegacyDialogStyles } from './ViewVersionDialog';
 
 export function LegacyVersionDialog(props: VersionViewProps) {
   const { version } = props.resource.read();
-  const classes = getLegacyDialogStyles();
+  const { classes } = getLegacyDialogStyles();
   const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
   return (
     <iframe

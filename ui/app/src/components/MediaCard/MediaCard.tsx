@@ -19,10 +19,7 @@ import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardActionArea from '@mui/material/CardActionArea';
 import IconButton from '@mui/material/IconButton';
-import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 import { MediaItem } from '../../models/Search';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
@@ -45,85 +42,83 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    card: {
-      '& .cardTitle': {
-        ...cardTitleStyles
-      },
-      '& .cardSubtitle': {
-        overflow: 'hidden',
-        display: '-webkit-box',
-        '-webkit-line-clamp': 2,
-        '-webkit-box-orient': 'vertical',
-        wordBreak: 'break-all'
-      },
-      position: 'relative'
+const useStyles = makeStyles()((theme) => ({
+  card: {
+    '& .cardTitle': {
+      ...cardTitleStyles
     },
-    cardHeaderRoot: {
-      padding: '9px 0',
-      cursor: 'pointer',
-      width: '100%'
-    },
-    avatar: {
-      color: palette.black,
-      margin: '0 10px'
-    },
-    cardHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      width: '100%'
-    },
-    cardOptions: {
-      marginLeft: 'auto'
-    },
-    media: {
-      height: 0,
-      paddingTop: '56.25%' // 16:9
-    },
-    previewButton: {
-      margin: '5px',
-      position: 'absolute',
-      bottom: 0,
-      right: 0,
-      color: theme.palette.primary.contrastText,
-      background: theme.palette.action.focus
-    },
-    listActionArea: {
-      paddingTop: 0,
-      height: '80px',
-      width: '80px',
-      order: -1
-    },
-    mediaIcon: {
-      paddingTop: '56.25%',
-      position: 'relative',
+    '& .cardSubtitle': {
       overflow: 'hidden',
-      '& .media-icon': {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        color: palette.gray.medium4,
-        fontSize: '50px'
-      },
-      '&.list': {
-        height: '80px',
-        width: '80px',
-        paddingTop: '0',
-        order: -1
-      }
+      display: '-webkit-box',
+      WebkitLineClamp: 2,
+      WebkitBoxOrient: 'vertical',
+      wordBreak: 'break-all'
     },
-    videoThumbnail: {
+    position: 'relative'
+  },
+  cardHeaderRoot: {
+    padding: '9px 0',
+    cursor: 'pointer',
+    width: '100%'
+  },
+  avatar: {
+    color: palette.black,
+    margin: '0 10px'
+  },
+  cardHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%'
+  },
+  cardOptions: {
+    marginLeft: 'auto'
+  },
+  media: {
+    height: 0,
+    paddingTop: '56.25%' // 16:9
+  },
+  previewButton: {
+    margin: '5px',
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    color: theme.palette.primary.contrastText,
+    background: theme.palette.action.focus
+  },
+  listActionArea: {
+    paddingTop: 0,
+    height: '80px',
+    width: '80px',
+    order: -1
+  },
+  mediaIcon: {
+    paddingTop: '56.25%',
+    position: 'relative',
+    overflow: 'hidden',
+    '& .media-icon': {
       position: 'absolute',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: '100%'
+      color: palette.gray.medium4,
+      fontSize: '50px'
     },
-    checkbox: {}
-  })
-);
+    '&.list': {
+      height: '80px',
+      width: '80px',
+      paddingTop: '0',
+      order: -1
+    }
+  },
+  videoThumbnail: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '100%'
+  },
+  checkbox: {}
+}));
 
 interface MediaCardProps {
   item: MediaItem;
@@ -144,7 +139,7 @@ interface MediaCardProps {
 }
 
 function MediaCard(props: MediaCardProps) {
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const {
     onPreview,
     onSelect,
@@ -192,8 +187,8 @@ function MediaCard(props: MediaCardProps) {
         break;
     }
     return onPreview ? (
-      <CardActionArea onClick={() => onPreview(item)} className={clsx(isList && classes.listActionArea)}>
-        <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
+      <CardActionArea onClick={() => onPreview(item)} className={cx(isList && classes.listActionArea)}>
+        <div className={cx(classes.mediaIcon, props.classes?.mediaIcon)}>
           {type === 'Video' ? (
             <video className={classes.videoThumbnail}>
               <source src={path} type="video/mp4" />
@@ -205,7 +200,7 @@ function MediaCard(props: MediaCardProps) {
         </div>
       </CardActionArea>
     ) : (
-      <div className={clsx(classes.mediaIcon, props.classes?.mediaIcon)}>
+      <div className={cx(classes.mediaIcon, props.classes?.mediaIcon)}>
         {type === 'Video' ? (
           <video className={classes.videoThumbnail}>
             <source src={path} type="video/mp4" />
@@ -220,14 +215,14 @@ function MediaCard(props: MediaCardProps) {
 
   return (
     <Card
-      className={clsx(classes.card, props.classes?.root)}
+      className={cx(classes.card, props.classes?.root)}
       draggable={!!onDragStart || !!onDragEnd}
       onDragStart={() => onDragStart(item)}
       onDragEnd={() => onDragEnd(item)}
       onClick={() => onCardClicked?.(item)}
     >
       {isList && onSelect && (
-        <FormGroup className={clsx(classes.checkbox, props.classes?.checkbox)}>
+        <FormGroup className={cx(classes.checkbox, props.classes?.checkbox)}>
           <Checkbox
             checked={selected.includes(path)}
             onClick={(e: any) => onSelect(path, e.target.checked)}
@@ -235,7 +230,7 @@ function MediaCard(props: MediaCardProps) {
           />
         </FormGroup>
       )}
-      <header className={clsx(classes.cardHeader, props.classes?.header)}>
+      <header className={cx(classes.cardHeader, props.classes?.header)}>
         {!isList && onSelect && (
           <FormGroup>
             <Checkbox
@@ -289,7 +284,7 @@ function MediaCard(props: MediaCardProps) {
         onPreviewButton || !onPreview ? (
           <>
             <CardMedia
-              className={clsx(classes.media, props.classes?.media)}
+              className={cx(classes.media, props.classes?.media)}
               image={`${previewAppBaseUri}${path}`}
               title={name}
             />
@@ -308,9 +303,9 @@ function MediaCard(props: MediaCardProps) {
             )}
           </>
         ) : (
-          <CardActionArea onClick={() => onPreview(item)} className={clsx(isList && classes.listActionArea)}>
+          <CardActionArea onClick={() => onPreview(item)} className={cx(isList && classes.listActionArea)}>
             <CardMedia
-              className={clsx(classes.media, props.classes?.media)}
+              className={cx(classes.media, props.classes?.media)}
               image={`${previewAppBaseUri}${path}`}
               title={name}
             />

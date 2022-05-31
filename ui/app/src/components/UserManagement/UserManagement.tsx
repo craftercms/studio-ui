@@ -31,7 +31,6 @@ import { useLogicResource } from '../../hooks/useLogicResource';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import useStyles from './styles';
-import clsx from 'clsx';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
@@ -52,7 +51,7 @@ export function UserManagement(props: UserManagementProps) {
   const [viewUser, setViewUser] = useState(null);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
 
   const fetchUsers = useCallback(
     (keyword = '', _offset = offset) => {

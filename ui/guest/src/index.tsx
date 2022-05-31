@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import ReactDOM, { unmountComponentAtNode } from 'react-dom';
+import * as React from 'react';
+import { createRoot } from 'react-dom/client';
 import ExperienceBuilder, { ExperienceBuilderProps } from './react/ExperienceBuilder';
 import GuestProxy from './react/GuestProxy';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
@@ -84,14 +84,14 @@ export function addAuthoringSupport(config?: Partial<BaseCrafterConfig>): Promis
 export function initExperienceBuilder(props: ExperienceBuilderProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
-  ReactDOM.render(
+  const root = createRoot(guestProxyElement);
+  root.render(
     // @ts-ignore - typing system is not playing nice with the {path} | {model} options of GuestProps
     <ExperienceBuilder isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
       <GuestProxy />
-    </ExperienceBuilder>,
-    guestProxyElement
+    </ExperienceBuilder>
   );
-  return { unmount: () => unmountComponentAtNode(guestProxyElement) };
+  return { unmount: () => root.unmount() };
 }
 
 /** @deprecated Use `initExperienceBuilder` instead. */

@@ -14,11 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
-import { CSSProperties } from '@mui/styles';
-import clsx from 'clsx';
+import { CSSObject } from 'tss-react';
 import Typography from '@mui/material/Typography';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
@@ -28,13 +26,13 @@ import { useGlobalAppState } from '../GlobalApp';
 
 export type GlobalAppToolbarClassKey =
   | ViewToolbarClassKey
-  | 'title'
+  | 'headings'
   | 'subtitle'
   | 'leftContent'
   | 'rightContent'
   | 'ellipsis';
 
-export type GlobalAppToolbarStyles = Partial<Record<GlobalAppToolbarClassKey, CSSProperties>>;
+export type GlobalAppToolbarStyles = Partial<Record<GlobalAppToolbarClassKey, CSSObject>>;
 
 export interface GlobalAppToolbarProps {
   elevation?: number;
@@ -56,36 +54,35 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles<GlobalAppToolbarClassKey, GlobalAppToolbarStyles>({
-    appBar: null,
-    toolbar: null,
-    title: (styles) => ({
+const useStyles = makeStyles<GlobalAppToolbarStyles, GlobalAppToolbarClassKey>()(
+  (theme, { headings, subtitle, leftContent, rightContent } = {} as GlobalAppToolbarStyles) => ({
+    appBar: {},
+    toolbar: {},
+    headings: {
       marginLeft: '10px',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
+      alignItems: 'flex-start!important',
       overflow: 'hidden',
-      marginBottom: theme.spacing(1),
-      ...styles.title
-    }),
-    subtitle: (styles) => ({
-      ...styles.subtitle
-    }),
-    leftContent: (styles) => ({
+      ...headings
+    },
+    subtitle: {
+      ...subtitle
+    },
+    leftContent: {
       marginLeft: '25px',
       display: 'flex',
       alignItems: 'center',
       whiteSpace: 'nowrap',
-      ...styles.leftContent
-    }),
-    rightContent: (styles) => ({
+      ...leftContent
+    },
+    rightContent: {
       marginLeft: 'auto',
       display: 'flex',
       alignItems: 'center',
       whiteSpace: 'nowrap',
-      ...styles.rightContent
-    }),
+      ...rightContent
+    },
     ellipsis: {
       overflow: 'hidden',
       textOverflow: 'ellipsis',
@@ -105,7 +102,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
     startContent,
     styles
   } = props;
-  const classes = useStyles(styles);
+  const { classes, cx } = useStyles(styles);
   const { formatMessage } = useIntl();
   const [{ openSidebar }, setState] = useGlobalAppState();
 
@@ -120,7 +117,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
       )}
       {startContent}
       {Boolean(title || subtitle) && (
-        <section className={clsx(classes.title, props.classes?.title)}>
+        <section className={cx(classes.headings, props.classes?.headings)}>
           {title && (
             <Typography variant="h5" component="h1" className={classes.ellipsis}>
               {title}
@@ -131,16 +128,16 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
               variant="body2"
               component="h2"
               color="textSecondary"
-              className={clsx(classes.ellipsis, classes.subtitle, props.classes?.subtitle)}
+              className={cx(classes.ellipsis, classes.subtitle, props.classes?.subtitle)}
             >
               {subtitle}
             </Typography>
           )}
         </section>
       )}
-      <section className={clsx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
-      <section className={clsx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
-      {showAppsButton && <LauncherOpenerButton sitesRailPosition="left" />}
+      <section className={cx(classes.leftContent, props.classes?.leftContent)}>{leftContent}</section>
+      <section className={cx(classes.rightContent, props.classes?.rightContent)}>{rightContent}</section>
+      {showAppsButton && <LauncherOpenerButton />}
     </ViewToolbar>
   );
 });

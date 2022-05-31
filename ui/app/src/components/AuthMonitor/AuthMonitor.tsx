@@ -22,8 +22,7 @@ import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React, { CSSProperties, PropsWithChildren, useEffect, useRef, useState } from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useDispatch } from 'react-redux';
 import { login, loginComplete, logout } from '../../state/actions/auth';
 import loginGraphicUrl from '../../assets/authenticate.svg';
@@ -31,7 +30,6 @@ import { isBlank } from '../../utils/string';
 import Typography from '@mui/material/Typography';
 import OpenInNewRounded from '@mui/icons-material/OpenInNewRounded';
 import LogInForm from '../LoginForm';
-import { ClassNameMap } from '@mui/styles';
 import { me } from '../../services/users';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import ErrorState from '../ErrorState/ErrorState';
@@ -53,28 +51,26 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    actions: {
-      placeContent: 'center space-between'
-    },
-    dialog: {
-      width: 400
-    },
-    graphic: {
-      width: 150
-    },
-    title: {
-      textAlign: 'center'
-    },
-    ssoAction: {
-      textAlign: 'center',
-      display: 'flex',
-      flexDirection: 'column',
-      marginTop: theme.spacing(1)
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  actions: {
+    placeContent: 'center space-between'
+  },
+  dialog: {
+    width: 400
+  },
+  graphic: {
+    width: 150
+  },
+  title: {
+    textAlign: 'center'
+  },
+  ssoAction: {
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    marginTop: theme.spacing(1)
+  }
+}));
 
 export function AuthMonitor() {
   const dispatch = useDispatch();
@@ -131,7 +127,7 @@ interface AuthMonitorBodyProps {
 
 function AuthMonitorBody(props: AuthMonitorBodyProps) {
   const { authoringUrl, username, isSSO, dispatch, formatMessage } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { error, isFetching } = useSelection((state) => state.auth);
   const [password, setPassword] = useState<string>('');
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
@@ -203,7 +199,7 @@ type SSOFormProps = PropsWithChildren<{
   onSubmit: (e) => any;
   ssoButtonClicked: boolean;
   onSetSSOButtonClicked: Function;
-  classes?: ClassNameMap<any>;
+  classes?: Record<string, string>;
 }>;
 
 function SSOForm(props: SSOFormProps) {

@@ -19,11 +19,9 @@ import React, { useEffect, useState } from 'react';
 import { debounceTime, switchMap, tap } from 'rxjs/operators';
 import { search } from '../../services/search';
 import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import useAutocomplete from '@mui/material/useAutocomplete';
 import { SearchItem } from '../../models/Search';
-import clsx from 'clsx';
 import { CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Paper } from '@mui/material';
 import LoadingState from '../LoadingState/LoadingState';
 import EmptyState from '../EmptyState/EmptyState';
@@ -49,59 +47,57 @@ export interface PagesSearchAheadProps {
   autoFocus?: boolean;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    container: {
-      width: '100%',
-      position: 'relative'
+const useStyles = makeStyles()((theme: Theme) => ({
+  container: {
+    width: '100%',
+    position: 'relative'
+  },
+  closeIcon: {
+    padding: '3px'
+  },
+  progress: {
+    position: 'absolute',
+    right: 0
+  },
+  inputRoot: {
+    width: '100%',
+    background: 'none'
+  },
+  input: {},
+  paper: {
+    width: 400,
+    position: 'absolute',
+    right: '-52px',
+    top: '50px'
+  },
+  listBox: {
+    overflow: 'auto',
+    maxHeight: 600,
+    margin: 0,
+    padding: 0,
+    listStyle: 'none',
+    '& li[data-focus="true"]': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)'
     },
-    closeIcon: {
-      padding: '3px'
-    },
-    progress: {
-      position: 'absolute',
-      right: 0
-    },
-    inputRoot: {
-      width: '100%',
-      background: 'none'
-    },
-    input: {},
-    paper: {
-      width: 400,
-      position: 'absolute',
-      right: '-52px',
-      top: '50px'
-    },
-    listBox: {
-      overflow: 'auto',
-      maxHeight: 600,
-      margin: 0,
-      padding: 0,
-      listStyle: 'none',
-      '& li[data-focus="true"]': {
-        backgroundColor: 'rgba(0, 0, 0, 0.04)'
-      },
-      '& li:active': {
-        backgroundColor: 'rgba(0, 0, 0, 0.04)',
-        color: 'white'
-      }
-    },
-    listItemIcon: {
-      minWidth: 'auto',
-      paddingRight: '16px'
-    },
-    highlighted: {
-      display: 'inline-block',
-      background: 'yellow',
-      color: theme.palette.mode === 'dark' ? palette.gray.medium6 : theme.palette.text.secondary
+    '& li:active': {
+      backgroundColor: 'rgba(0, 0, 0, 0.04)',
+      color: 'white'
     }
-  })
-);
+  },
+  listItemIcon: {
+    minWidth: 'auto',
+    paddingRight: '16px'
+  },
+  highlighted: {
+    display: 'inline-block',
+    background: 'yellow',
+    color: theme.palette.mode === 'dark' ? palette.gray.medium6 : theme.palette.text.secondary
+  }
+}));
 
 export function PagesSearchAhead(props: PagesSearchAheadProps) {
   const { value, placeholder = '', disabled = false, onEnter, onFocus, onBlur, autoFocus = true } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const onSearch$ = useSubject<string>();
   const site = useActiveSiteId();
   const contentTypes = useContentTypeList((contentType) => contentType.id.startsWith('/page'));
@@ -205,7 +201,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
           autoFocus={autoFocus}
           placeholder={placeholder}
           disabled={disabled}
-          classes={{ root: classes.inputRoot, input: clsx(classes.input, props.classes?.input) }}
+          classes={{ root: classes.inputRoot, input: cx(classes.input, props.classes?.input) }}
           endAdornment={
             isFetching ? (
               <CircularProgress className={classes.progress} size={15} />

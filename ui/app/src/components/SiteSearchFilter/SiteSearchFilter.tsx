@@ -22,10 +22,9 @@ import SiteSearchFilterCheckboxes from '../SiteSearchFilterCheckboxes';
 import SiteSearchFilterRadios from '../SiteSearchFilterRadios';
 import SiteSearchRangeSelector from '../SiteSearchRangeSelector';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme) => ({
   filterActions: {
     textAlign: 'right'
   },
@@ -56,7 +55,7 @@ interface FilterProps {
 }
 
 export function SiteSearchFilter(props: FilterProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const {
     facet,

@@ -91,7 +91,7 @@ export function RecentActivityDashlet() {
   const [sortType, setSortType] = useState<'asc' | 'desc'>('desc');
   const [sortBy, setSortBy] = useState('dateModified');
   const locale = useLocale();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();

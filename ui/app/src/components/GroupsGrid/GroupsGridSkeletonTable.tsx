@@ -34,7 +34,7 @@ export interface GroupsGridSkeletonTableProps {
 export const GroupsGridSkeletonTable = React.memo((props: GroupsGridSkeletonTableProps) => {
   const { numOfItems = 5 } = props;
   const items = new Array(numOfItems).fill(null);
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <TableContainer>
       <Table className={classes.tableRoot}>

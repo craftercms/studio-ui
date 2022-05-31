@@ -16,11 +16,9 @@
 
 import React from 'react';
 import { DetailedItem } from '../../models/Item';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { FormattedMessage } from 'react-intl';
 import LookupTable from '../../models/LookupTable';
-import clsx from 'clsx';
 import { SelectionList, SelectionListProps } from './SelectionList';
 import { nnou } from '../../utils/object';
 import { FetchDependenciesResponse } from '../../services/dependencies';
@@ -39,33 +37,31 @@ export interface DeleteDependencies {
 }
 
 // region useStyles
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    dependencySelection: {
-      background: theme.palette.background.paper,
-      border: `1px solid ${theme.palette.divider}`,
-      minHeight: '374px'
-    },
-    dependencySelectionDisabled: {
-      opacity: 0.7
-    },
-    showAllBtn: {
-      marginLeft: 0,
-      verticalAlign: 'baseline'
-    },
-    listItemTitle: {
-      '& h4': {
-        fontSize: '1rem',
-        margin: 0,
-        padding: 0,
-        fontWeight: 400
-      }
-    },
-    listItemPath: {
-      padding: 0
+const useStyles = makeStyles()((theme) => ({
+  dependencySelection: {
+    background: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.divider}`,
+    minHeight: '374px'
+  },
+  dependencySelectionDisabled: {
+    opacity: 0.7
+  },
+  showAllBtn: {
+    marginLeft: 0,
+    verticalAlign: 'baseline'
+  },
+  listItemTitle: {
+    '& h4': {
+      fontSize: '1rem',
+      margin: 0,
+      padding: 0,
+      fontWeight: 400
     }
-  })
-);
+  },
+  listItemPath: {
+    padding: 0
+  }
+}));
 // endregion
 
 export function DependencySelection(props: DependencySelectionProps) {
@@ -78,10 +74,10 @@ export function DependencySelection(props: DependencySelectionProps) {
     onSelectAllSoftClicked,
     disabled = false
   } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   return (
     <>
-      <div className={clsx(classes.dependencySelection, disabled && classes.dependencySelectionDisabled)}>
+      <div className={cx(classes.dependencySelection, disabled && classes.dependencySelectionDisabled)}>
         <SelectionList
           title={<FormattedMessage id="publishDialog.itemsToPublish" defaultMessage="Items To Publish" />}
           items={items}

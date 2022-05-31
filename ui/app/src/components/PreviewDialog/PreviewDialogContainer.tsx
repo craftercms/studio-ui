@@ -36,7 +36,7 @@ import { hasEditAction } from '../../utils/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const { title, content, mode, url, onClose, type } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const item = useDetailedItem(url);
   const dispatch = useDispatch();
 

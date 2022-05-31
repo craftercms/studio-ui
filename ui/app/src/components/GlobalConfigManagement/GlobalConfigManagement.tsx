@@ -55,7 +55,7 @@ export function GlobalConfigManagement() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [nextRoute, setNextRoute] = useState<string>();
   const history = useHistory();
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const aceEditorRef = useRef<any>();
   const dispatch = useDispatch();

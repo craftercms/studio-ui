@@ -21,8 +21,7 @@ import AddCircleIcon from '@mui/icons-material/AddRounded';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useDispatch } from 'react-redux';
 import { newContentCreationComplete, showEditDialog, showNewContentDialog } from '../../state/actions/dialogs';
 import Card from '@mui/material/Card';
@@ -55,52 +54,50 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    menu: {
-      paddingTop: 0,
-      minWidth: '140px'
-    },
-    menuItem: {
-      fontSize: 14
-    },
-    menuTitle: {
-      fontSize: 14
-    },
-    menuSectionTitle: {
-      fontSize: 12,
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.secondary,
-      padding: '5px 16px'
-    },
-    quickCreateEmptyRoot: {
-      width: '149px',
-      justifyContent: 'center',
-      display: 'flex',
-      flexDirection: 'column',
-      textAlign: 'center',
-      alignItems: 'center',
-      boxShadow: 'none'
-    },
-    quickCreateEmptyCardContent: {
-      padding: '5px 10px'
-    },
-    quickCreateEmptyDescription: {
-      fontSize: '12px'
-    },
-    quickCreateEmptyCardActions: {
-      padding: 0,
-      '& .MuiButton-root': {
-        fontSize: '14px',
-        textDecoration: 'underline',
-        color: palette.blue.main
-      }
-    },
-    quickCreateLoadingState: {
-      width: 80
+const useStyles = makeStyles()((theme) => ({
+  menu: {
+    paddingTop: 0,
+    minWidth: '140px'
+  },
+  menuItem: {
+    fontSize: 14
+  },
+  menuTitle: {
+    fontSize: 14
+  },
+  menuSectionTitle: {
+    fontSize: 12,
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.text.secondary,
+    padding: '5px 16px'
+  },
+  quickCreateEmptyRoot: {
+    width: '149px',
+    justifyContent: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    textAlign: 'center',
+    alignItems: 'center',
+    boxShadow: 'none'
+  },
+  quickCreateEmptyCardContent: {
+    padding: '5px 10px'
+  },
+  quickCreateEmptyDescription: {
+    fontSize: '12px'
+  },
+  quickCreateEmptyCardActions: {
+    padding: 0,
+    '& .MuiButton-root': {
+      fontSize: '14px',
+      textDecoration: 'underline',
+      color: palette.blue.main
     }
-  })
-);
+  },
+  quickCreateLoadingState: {
+    width: 80
+  }
+}));
 
 interface QuickCreateMenuProps {
   open: boolean;
@@ -136,7 +133,7 @@ interface QuickCreateSectionProps {
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const { open, onClose, anchorEl, resource, onNewContentSelected, onQuickCreateItemSelected, item } = props;
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const itemNewContentButton = item?.availableActionsMap.createContent;
 

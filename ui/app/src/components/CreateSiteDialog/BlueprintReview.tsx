@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -27,7 +27,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   review: {
     maxWidth: '600px',
     margin: 'auto'
@@ -151,7 +151,7 @@ const messages = defineMessages({
 });
 
 function BlueprintReview(props: BlueprintReviewProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { onGoTo, inputs, blueprint } = props;
   const [passwordFields, setPasswordFields] = useState(null);
   const { formatMessage } = useIntl();

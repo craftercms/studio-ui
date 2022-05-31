@@ -18,13 +18,11 @@ import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
 import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useDispatch } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Paper from '@mui/material/Paper';
-import clsx from 'clsx';
 import ItemDisplay from '../ItemDisplay';
 import PagesSearchAhead from '../PagesSearchAhead';
 import SingleItemSelector from '../SingleItemSelector';
@@ -48,69 +46,67 @@ export interface AddressBarProps {
   item?: DetailedItem;
 }
 
-const useAddressBarStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    toolbar: {
-      placeContent: 'center space-between'
-    },
-    addressBarInput: {
-      width: 300,
-      padding: '2px 2px 2px 10px',
-      display: 'flex',
-      alignItems: 'center',
-      backgroundColor: theme.palette.background.default
-    },
-    addressBarInputFocused: {
-      border: `2px solid ${theme.palette.primary.main}`,
-      backgroundColor: theme.palette.background.paper
-    },
-    inputContainer: {
-      marginLeft: theme.spacing(1)
-    },
-    input: {
+const useAddressBarStyles = makeStyles()((theme: Theme) => ({
+  toolbar: {
+    placeContent: 'center space-between'
+  },
+  addressBarInput: {
+    width: 300,
+    padding: '2px 2px 2px 10px',
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: theme.palette.background.default
+  },
+  addressBarInputFocused: {
+    border: `2px solid ${theme.palette.primary.main}`,
+    backgroundColor: theme.palette.background.paper
+  },
+  inputContainer: {
+    marginLeft: theme.spacing(1)
+  },
+  input: {
+    border: 'none',
+    background: 'transparent',
+    '&:focus:invalid, &:focus': {
       border: 'none',
-      background: 'transparent',
-      '&:focus:invalid, &:focus': {
-        border: 'none',
-        boxShadow: 'none'
-      }
-    },
-    divider: {
-      height: 28,
-      margin: 4
-    },
-    selectorPopoverRoot: {
-      width: 400,
-      marginLeft: '4px'
-    },
-    hidden: {
-      visibility: 'hidden'
-    },
-    itemActionSkeleton: {
-      width: 40,
-      margin: '0 5px'
-    },
-    itemDisplayWrapper: {
-      width: '100%',
-      overflow: 'hidden',
-      cursor: 'pointer',
-      display: 'flex'
-    },
-    itemPreviewUrl: {
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      marginLeft: '4px'
-    },
-    itemDisplaySkeleton: {
-      marginLeft: '5px',
-      width: '100%'
+      boxShadow: 'none'
     }
-  })
-);
+  },
+  divider: {
+    height: 28,
+    margin: 4
+  },
+  selectorPopoverRoot: {
+    width: 400,
+    marginLeft: '4px'
+  },
+  hidden: {
+    visibility: 'hidden'
+  },
+  itemActionSkeleton: {
+    width: 40,
+    margin: '0 5px'
+  },
+  itemDisplayWrapper: {
+    width: '100%',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    display: 'flex'
+  },
+  itemPreviewUrl: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    marginLeft: '4px'
+  },
+  itemDisplaySkeleton: {
+    marginLeft: '5px',
+    width: '100%'
+  }
+}));
 
 export function PreviewAddressBar(props: AddressBarProps) {
-  const classes = useAddressBarStyles();
+  const { classes, cx } = useAddressBarStyles();
   const { site = '', item } = props;
   const noSiteSet = isBlank(site);
   const { currentUrlPath = '' } = usePreviewNavigation();
@@ -164,7 +160,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
       <Paper
         variant={focus ? 'elevation' : 'outlined'}
         elevation={focus ? 2 : 0}
-        className={clsx(classes.addressBarInput, focus && classes.addressBarInputFocused)}
+        className={cx(classes.addressBarInput, focus && classes.addressBarInputFocused)}
       >
         {!focus && item && (
           <div className={classes.itemDisplayWrapper} onClick={() => setFocus(true)}>

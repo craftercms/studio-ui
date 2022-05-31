@@ -24,7 +24,7 @@ import useStyles from './styles';
 
 export function Dropdown(props: Control) {
   const { field, value = '', onChange, disabled } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const handleSelectChange = (event: SelectChangeEvent<{ value: unknown }>) => {
     onChange(event.target.value);

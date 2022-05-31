@@ -14,20 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    leftAlignedAction: {
-      marginRight: 'auto'
-    },
-    btnSpinner: {
-      marginLeft: 11,
-      marginRight: 11,
-      color: '#fff'
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  leftAlignedAction: {
+    marginRight: 'auto'
+  },
+  btnSpinner: {
+    marginLeft: 11,
+    marginRight: 11,
+    color: '#fff'
+  }
+}));
 
 export default useStyles;

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   class EncryptTool {
     constructor(config, el) {
       this.containerEl = el;

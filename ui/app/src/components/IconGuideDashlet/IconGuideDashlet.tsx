@@ -19,8 +19,7 @@ import LegacyDashletCard from '../LegacySiteDashboard/LegacyDashletCard';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ItemStateIcon from '../ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemTypeIcon from '../ItemTypeIcon';
@@ -30,26 +29,24 @@ export interface IconGuideDashletProps {
   contentHeight?: number | string;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    iconGuideContainer: {
-      padding: theme.spacing(2)
-    },
-    guideSectionTitle: {
-      marginBottom: theme.spacing(1),
-      '&:not(:first-child)': {
-        marginTop: theme.spacing(3)
-      }
-    },
-    stateContainer: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    icon: {
-      marginRight: theme.spacing(1)
+const useStyles = makeStyles()((theme) => ({
+  iconGuideContainer: {
+    padding: theme.spacing(2)
+  },
+  guideSectionTitle: {
+    marginBottom: theme.spacing(1),
+    '&:not(:first-child)': {
+      marginTop: theme.spacing(3)
     }
-  })
-);
+  },
+  stateContainer: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  icon: {
+    marginRight: theme.spacing(1)
+  }
+}));
 
 const messages = defineMessages({
   page: { id: 'words.page', defaultMessage: 'Page' },
@@ -113,7 +110,7 @@ const types = {
 export function IconGuideDashlet(props: IconGuideDashletProps) {
   const { contentHeight } = props;
   const [expanded, setExpanded] = useState(true);
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   return (
     <LegacyDashletCard

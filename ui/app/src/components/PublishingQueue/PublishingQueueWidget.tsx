@@ -17,23 +17,20 @@
 import * as React from 'react';
 import PublishingQueue, { PublishingQueueProps } from './PublishingQueue';
 import Paper from '@mui/material/Paper';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import DialogHeader from '../DialogHeader';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    paperContent: {
-      backgroundColor: theme.palette.background.default,
-      padding: '16px'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  paperContent: {
+    backgroundColor: theme.palette.background.default,
+    padding: '16px'
+  }
+}));
 
 export function PublishingQueueWidget(props: PublishingQueueProps) {
   const { siteId } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <Paper elevation={2}>

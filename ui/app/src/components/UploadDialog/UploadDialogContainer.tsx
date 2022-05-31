@@ -28,35 +28,33 @@ import { Button, IconButton } from '@mui/material';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
+
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    rootTitle: {
-      paddingBottom: 0,
-      display: 'none'
-    },
-    subtitleWrapper: {
-      paddingBottom: 0,
-      display: 'flex',
-      alignItems: 'center',
-      width: '100%',
-      justifyContent: 'space-between'
-    },
-    dialogBody: {
-      minHeight: '60vh',
-      padding: 0
-    }
-  })
-);
+const useStyles = makeStyles()(() => ({
+  rootTitle: {
+    paddingBottom: 0,
+    display: 'none'
+  },
+  subtitleWrapper: {
+    paddingBottom: 0,
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between'
+  },
+  dialogBody: {
+    minHeight: '60vh',
+    padding: 0
+  }
+}));
 
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const { formatMessage } = useIntl();
   const expiresAt = useSelection((state) => state.auth.expiresAt);
   const { upload } = useSiteUIConfig();
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { site, path, onClose, onClosed, maxSimultaneousUploads, onMinimized, hasPendingChanges, setPendingChanges } =
     props;
 

@@ -20,10 +20,9 @@ import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   rangePicker: {
     display: 'flex',
     alignItems: 'center',
@@ -65,7 +64,7 @@ export interface RangeSelectorProps {
 }
 
 export function SiteSearchRangeSelector(props: RangeSelectorProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const { facet, handleFilterChange, checkedFilters } = props;
   const [range, setRange] = useState({ min: '', max: '' });

@@ -60,7 +60,7 @@ export interface PreviewBrowseComponentsPanelUIProps {
 export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPanelUIProps) {
   const { componentsResource, onPageChanged, onDragStart, onDragEnd, onRowsPerPageChange } = props;
   const { formatMessage } = useIntl();
-  const classes = useComponentsPanelUI();
+  const { classes } = useComponentsPanelUI();
   const components = componentsResource.read();
   const { count, pageNumber, items, limit } = components;
   return (

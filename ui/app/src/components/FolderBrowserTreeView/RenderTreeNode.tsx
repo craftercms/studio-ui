@@ -19,7 +19,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import TreeItem from '@mui/lab/TreeItem';
-import clsx from 'clsx';
 import { useTreeNodeStyles } from './styles';
 import { FolderBrowserTreeViewNode } from './FolderBrowserTreeViewUI';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -45,7 +44,7 @@ const translations = defineMessages({
 
 export function RenderTreeNode(props: RenderTreeNodeProps) {
   const { node, onIconClick, onLabelClick } = props;
-  const classes = useTreeNodeStyles();
+  const { classes, cx: clsx } = useTreeNodeStyles();
   const { formatMessage } = useIntl();
 
   return node.id === 'loading' ? (

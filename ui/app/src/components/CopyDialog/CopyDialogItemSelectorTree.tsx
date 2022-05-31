@@ -22,11 +22,11 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import TreeView from '@mui/lab/TreeView';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { Theme } from '@mui/material/styles';
 import { messages } from './utils';
 
-const simpleItemsSelectionsStyles = makeStyles((theme: Theme) => ({
+const simpleItemsSelectionsStyles = makeStyles()((theme: Theme) => ({
   simpleItemsSelectionRoot: {
     border: '1px solid rgba(0, 0, 0, .125)',
     background: theme.palette.background.paper,
@@ -64,7 +64,7 @@ interface ItemSelectorTreeProps {
 
 export function ItemSelectorTree(props: ItemSelectorTreeProps) {
   const { formatMessage } = useIntl();
-  const classes = simpleItemsSelectionsStyles({});
+  const { classes } = simpleItemsSelectionsStyles();
   const { item, selected, paths, handleSelect, toggleSelectAll } = props;
 
   const renderTree = (nodes: LegacyItem) => (

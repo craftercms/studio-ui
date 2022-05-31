@@ -283,6 +283,7 @@ export const showRtePickerActions = /*#__PURE__*/ createAction<ShowRtePickerActi
 // endregion
 
 // region Rte Picker Action Result
-export const rtePickerActionResult =
-  /*#__PURE__*/ createAction<{ path: string; name: string }>('RTE_PICKER_ACTION_RESULT');
+export const rtePickerActionResult = /*#__PURE__*/ createAction<{ path: string; name: string }>(
+  'RTE_PICKER_ACTION_RESULT'
+);
 // endregion

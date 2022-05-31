@@ -16,6 +16,7 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
@@ -47,6 +48,7 @@ export interface CrafterCMSGlobal {
   libs: {
     React: typeof React;
     ReactDOM: typeof ReactDOM;
+    ReactDOMClient: { createRoot: typeof createRoot };
     MaterialUI: typeof MaterialUI;
     ReactRedux: typeof ReactRedux;
     ReactIntl: typeof ReactIntl;
@@ -57,6 +59,7 @@ export interface CrafterCMSGlobal {
     react: typeof React;
     rxjs: typeof rxjs;
     'react-dom': typeof ReactDOM;
+    'react-dom/client': CrafterCMSGlobal['libs']['ReactDOMClient'];
     'react-redux': typeof ReactRedux;
     'react-intl': typeof ReactIntl;
     '@mui/material': typeof MaterialUI;
@@ -77,11 +80,13 @@ export interface CrafterCMSGlobal {
 let UND;
 
 const ReduxToolkit = { createAction };
+const ReactDOMClient = { createRoot };
 
 export const libs: CrafterCMSGlobal['libs'] = {
   rxjs,
   React,
   ReactDOM,
+  ReactDOMClient,
   ReactIntl,
   MaterialUI,
   ReactRedux,
@@ -89,6 +94,7 @@ export const libs: CrafterCMSGlobal['libs'] = {
   createEmotion,
   react: React,
   'react-dom': ReactDOM,
+  'react-dom/client': ReactDOMClient,
   'react-redux': ReactRedux,
   'react-intl': ReactIntl,
   '@mui/material': MaterialUI,
