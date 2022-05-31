@@ -236,8 +236,9 @@ const fetchChildrenByPathAction = /*#__PURE__*/ createAction<string>('FETCH_CHIL
 
 const fetchParentsItems = /*#__PURE__*/ createAction<string>('FETCH_PARENTS_ITEMS');
 
-const fetchParentsItemsComplete =
-  /*#__PURE__*/ createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>('FETCH_PARENTS_ITEMS_COMPLETE');
+const fetchParentsItemsComplete = /*#__PURE__*/ createAction<{ items?: DetailedItem[]; children: GetChildrenResponse }>(
+  'FETCH_PARENTS_ITEMS_COMPLETE'
+);
 
 const fetchChildrenByPathComplete = /*#__PURE__*/ createAction<{
   parent?: DetailedItem;
