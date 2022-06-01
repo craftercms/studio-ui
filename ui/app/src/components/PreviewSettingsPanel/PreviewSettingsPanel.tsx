@@ -16,15 +16,25 @@
 
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
-import { FormControl, FormControlLabel, FormHelperText, FormLabel, Radio, RadioGroup } from '@mui/material';
-import { setEditModePadding, setHighlightMode } from '../../state/actions/preview';
+import {
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  List,
+  ListItem,
+  ListItemText,
+  ListSubheader,
+  Radio,
+  RadioGroup
+} from '@mui/material';
+import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { HighlightMode } from '../../models/GlobalState';
-import Switch from '@mui/material/Switch';
+import PaddingModeSwitchListItem from '../PaddingModeSwitchListItem';
 
 const translations = defineMessages({
   editMode: {
@@ -51,61 +61,32 @@ const translations = defineMessages({
   highlightMovable: {
     id: 'settingsPanel.highlightMovable',
     defaultMessage: 'Highlight movable (m)'
-  },
-  editModePaddingLabel: {
-    id: 'settingsPanel.editModePaddingLabel',
-    defaultMessage: 'Edit-mode padding (p)'
-  },
-  editModePaddingHelp: {
-    id: 'settingsPanel.editModePaddingHelp',
-    defaultMessage:
-      'Adds padding to collections for easier interaction in edit-mode. Press `p` at any point to toggle on/off.'
   }
 });
 
-const useStyles = makeStyles()(() => ({
-  root: {
-    padding: '15px'
-  },
-  highlightModeWrapper: {
-    padding: '15px'
-  },
-  labelRoot: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginLeft: 0
-  },
-  margin: {
-    marginTop: '15px',
-    marginBottom: '10px'
-  }
-}));
+const labelRootSx = {
+  width: '100%',
+  justifyContent: 'space-between',
+  ml: 0
+};
+
+const formHelperTextSx = { pb: 1, pr: 2, pl: 2, pt: 0, mt: 0 };
 
 export function PreviewSettingsPanel() {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
-  const { highlightMode, editModePadding } = usePreviewState();
+  const { highlightMode } = usePreviewState();
   const item = useCurrentPreviewItem();
   const dispatch = useDispatch();
-  const onEditModePaddingChange = (e) => {
-    dispatch(setEditModePadding({ editModePadding: e.target.checked }));
-  };
   return (
-    <section className={classes.root}>
-      <FormControl>
-        <FormControlLabel
-          classes={{ root: classes.labelRoot }}
-          control={<EditModeSwitch item={item} />}
-          label={formatMessage(translations.editMode)}
-          labelPlacement="start"
-        />
-        <FormHelperText>{formatMessage(translations.editModeHelperText)}</FormHelperText>
-      </FormControl>
-      <FormControl>
-        <FormLabel focused={false} className={classes.margin}>
-          {formatMessage(translations.highlightMode)}
-        </FormLabel>
+    <List>
+      <ListItem>
+        <ListItemText primary={formatMessage(translations.editMode)} />
+        <EditModeSwitch item={item} edge="end" />
+      </ListItem>
+      <FormHelperText sx={formHelperTextSx}>{formatMessage(translations.editModeHelperText)}</FormHelperText>
+      <Divider />
+      <ListSubheader id="settingsPanelHighlightModeLabel" children={formatMessage(translations.highlightMode)} />
+      <FormControl sx={{ pt: 0, pb: 0, pl: 2, pr: 2 }} component="li">
         <RadioGroup
           value={highlightMode}
           onChange={(e) => {
@@ -118,31 +99,24 @@ export function PreviewSettingsPanel() {
         >
           <FormControlLabel
             value="all"
-            classes={{ root: classes.labelRoot }}
+            sx={labelRootSx}
             control={<Radio color="primary" edge="end" />}
             label={formatMessage(translations.highlightAllZones)}
             labelPlacement="start"
           />
           <FormControlLabel
             value="move"
-            classes={{ root: classes.labelRoot }}
+            sx={labelRootSx}
             control={<Radio color="primary" edge="end" />}
             label={formatMessage(translations.highlightMovable)}
             labelPlacement="start"
           />
         </RadioGroup>
-        <FormHelperText>{formatMessage(translations.highlightModeHelperText)}</FormHelperText>
+        <FormHelperText sx={formHelperTextSx}>{formatMessage(translations.highlightModeHelperText)}</FormHelperText>
       </FormControl>
-      <FormControl>
-        <FormControlLabel
-          classes={{ root: classes.labelRoot }}
-          control={<Switch checked={editModePadding} onChange={onEditModePaddingChange} />}
-          label={formatMessage(translations.editModePaddingLabel)}
-          labelPlacement="start"
-        />
-        <FormHelperText>{formatMessage(translations.editModePaddingHelp)}</FormHelperText>
-      </FormControl>
-    </section>
+      <Divider />
+      <PaddingModeSwitchListItem showIcon={false} showHelperText />
+    </List>
   );
 }
 

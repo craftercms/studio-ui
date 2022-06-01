@@ -1278,7 +1278,7 @@
   "settingsPanel.editMode": "Edit Mode",
   "settingsPanel.editModeHelperText": "Enable In-context editing, highlighting editable zones as you hover on them.",
   "settingsPanel.editModePaddingHelp": "Fügt Sammlungen Auffüllen für eine einfachere Interaktion im Bearbeitungsmodus hinzu. Drücken Sie `p` zu einem beliebigen Zeitpunkt, um zwischen Ein- und Ausschalten zu wechseln.",
-  "settingsPanel.editModePaddingLabel": "Auffüllen im Bearbeitungsmodus (p)",
+  "settingsPanel.editModePaddingLabel": "Raummodus (p)",
   "settingsPanel.highlightAllTargets": "Markieren Sie alle Ziele (e)",
   "settingsPanel.highlightMode": "Highlight-Modus",
   "settingsPanel.highlightModeHelperText": "When \"highlight movable\" is active, only content items you can move around drop targets highlight.",

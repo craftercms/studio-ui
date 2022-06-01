@@ -1278,7 +1278,7 @@
   "settingsPanel.editMode": "Edit Mode",
   "settingsPanel.editModeHelperText": "Enable In-context editing, highlighting editable zones as you hover on them.",
   "settingsPanel.editModePaddingHelp": "편집 모드에서 더 쉽게 상호 작용할 수 있도록 컬렉션에 패딩을 추가합니다. 켜짐/꺼짐을 토글하려면 아무 지점에서나 'p'를 누르세요.",
-  "settingsPanel.editModePaddingLabel": "편집 모드 패딩(p)",
+  "settingsPanel.editModePaddingLabel": "우주 모드 (p)",
   "settingsPanel.highlightAllTargets": "모든 대상 강조 표시(e)",
   "settingsPanel.highlightMode": "하이라이트 모드",
   "settingsPanel.highlightModeHelperText": "When \"highlight movable\" is active, only content items you can move around drop targets highlight.",
