@@ -218,6 +218,7 @@ export const components = {
   NewRemoteRepositoryForm: lazy(() => import('../components/NewRemoteRepositoryForm')),
   NonReactWidget: lazy(() => import('../components/NonReactWidget')),
   PackageDetailsDialog: lazy(() => import('../components/PackageDetailsDialog')),
+  PaddingModeSwitchListItem: lazy(() => import('../components/PaddingModeSwitchListItem')),
   PagesSearchAhead: lazy(() => import('../components/PagesSearchAhead')),
   Pagination: lazy(() => import('../components/Pagination')),
   PasswordRequirementsDisplay: lazy(() => import('../components/PasswordRequirementsDisplay')),

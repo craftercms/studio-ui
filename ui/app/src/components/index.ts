@@ -162,6 +162,7 @@ export * from './NewRemoteRepositoryDialog';
 export * from './NewRemoteRepositoryForm';
 export * from './NonReactWidget';
 export * from './PackageDetailsDialog';
+export * from './PaddingModeSwitchListItem';
 export * from './PagesSearchAhead';
 export * from './Pagination';
 export * from './PasswordRequirementsDisplay';
