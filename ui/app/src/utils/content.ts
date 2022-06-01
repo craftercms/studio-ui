@@ -135,6 +135,9 @@ export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem,
   return item ? isLockedState(item.state) && item.lockOwner !== username : true;
 }
 
+/**
+ * Returns the boolean intersection of editMode, lock status and the item's edit permission
+ */
 export function getComputedEditMode({
   item,
   username,
