@@ -41,15 +41,17 @@ export function PaddingModeSwitchListItem(props: PaddingModeSwitchProps) {
     <>
       <ListItem {...listItemProps}>
         {showIcon && (
-          <ListItemIcon>
+          <ListItemIcon sx={sxs?.listItemIcon}>
             <Icon sx={{ mr: 0.5 }} />
           </ListItemIcon>
         )}
         <ListItemText
+          sx={sxs?.listItemText}
           id="paddingModeSwitchLabel"
           primary={<FormattedMessage id="settingsPanel.editModePaddingLabel" defaultMessage="Padding mode (p)" />}
         />
         <Switch
+          sx={sxs?.switch}
           edge="end"
           checked={editModePadding}
           onChange={onEditModePaddingChange}
