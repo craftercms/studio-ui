@@ -14,13 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PaginationOptions } from './PaginationOptions';
+import React from 'react';
+import List from '@mui/material/List';
+import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 
-export interface GetChildrenOptions extends PaginationOptions {
-  localeCode: string;
-  sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
-  order: 'ASC' | 'DESC';
-  keyword: string;
-  excludes?: string[];
-  systemTypes?: string[];
+export function NavLoader(props: { numOfItems?: number }) {
+  const { numOfItems = 5 } = props;
+  const items = new Array(numOfItems).fill(null);
+  return (
+    <List component="nav" disablePadding>
+      {items.map((value, i) => (
+        <PathNavigatorSkeletonItem key={i} />
+      ))}
+    </List>
+  );
 }
+
+export default NavLoader;

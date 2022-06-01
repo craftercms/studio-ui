@@ -14,13 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PaginationOptions } from './PaginationOptions';
+export { default } from './FolderBrowserPathView';
 
-export interface GetChildrenOptions extends PaginationOptions {
-  localeCode: string;
-  sortStrategy: 'default' | 'alphabetical' | 'foldersFirst';
-  order: 'ASC' | 'DESC';
-  keyword: string;
-  excludes?: string[];
-  systemTypes?: string[];
-}
+export * from './FolderBrowserPathView';
+
+export * from './FolderBrowserPathViewUI';

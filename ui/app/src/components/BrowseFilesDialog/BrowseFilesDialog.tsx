@@ -37,6 +37,7 @@ export function BrowseFilesDialog(props: BrowseFilesDialogProps) {
     <EnhancedDialog
       title={<FormattedMessage id="browseFilesDialog.uploadImage" defaultMessage="Select a file" />}
       onClose={onClose}
+      maxWidth="lg"
       {...rest}
     >
       <BrowseFilesDialogContainer
