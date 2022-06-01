@@ -36,9 +36,9 @@ import {
 import useActiveSite from '../../../hooks/useActiveSite';
 import useActiveUser from '../../../hooks/useActiveUser';
 import Alert from '@mui/material/Alert';
-import FormLabel from '@mui/material/FormLabel';
+import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
-import Link from '@mui/material/Link';
+import Button from '@mui/material/Button';
 import { fetchLegacySite } from '../../../services/sites';
 import useSpreadState from '../../../hooks/useSpreadState';
 import Skeleton from '@mui/material/Skeleton';
@@ -48,10 +48,15 @@ const useStyles = makeStyles()((theme) => ({
     marginBottom: '15px'
   },
   pullBranchLabel: {
-    padding: '14px 16px',
-    border: `1px solid ${theme.palette.grey['400']}`,
+    padding: `${theme.spacing(1.5)} ${theme.spacing(2)}`,
+    border: `1px solid ${theme.palette.divider}`,
     borderRadius: 4,
-    color: theme.palette.text.primary
+    color: theme.palette.text.primary,
+    display: 'flex',
+    alignItems: 'center'
+  },
+  pullBranchLabelWithError: {
+    justifyContent: 'space-between'
   },
   pullBranchLabelHeading: {
     display: 'inline-block',
@@ -68,6 +73,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
+  // region const { ... } = props
   const {
     remoteName,
     mergeStrategies,
@@ -78,9 +84,9 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
     disabled = false,
     isSubmitting = false
   } = props;
-
+  // endregion
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState('');
-  const { classes } = useStyles();
+  const { classes, cx } = useStyles();
   const { uuid, id: siteId } = useActiveSite();
   const { username } = useActiveUser();
   const [sandboxState, setSandboxState] = useSpreadState({
@@ -116,7 +122,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   };
 
   const fetchSandboxBranch = useCallback(() => {
-    setSandboxState({ loading: true });
+    setSandboxState({ loading: true, error: null });
     fetchLegacySite(siteId).subscribe({
       next: ({ sandboxBranch }) => {
         setSandboxState({
@@ -163,34 +169,38 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   return (
     <form onSubmit={onSubmit}>
       <DialogBody>
-        <FormControl variant="outlined" fullWidth className={classes.formControl} disabled={disabled || isSubmitting}>
-          <FormLabel className={classes.pullBranchLabel}>
-            {sandboxState.loading ? (
-              <Skeleton variant="text" width="30%" animation="wave" />
-            ) : !sandboxState.error ? (
-              <>
-                <Typography color="textSecondary" variant="body1" className={classes.pullBranchLabelHeading}>
-                  <FormattedMessage id="words.branch" defaultMessage="Branch" />
-                </Typography>
-                {sandboxState.branch}
-              </>
-            ) : (
-              <Typography variant="body1" className={classes.pullBranchLabelError}>
+        <Box
+          className={cx(
+            classes.pullBranchLabel,
+            classes.formControl,
+            sandboxState.error && classes.pullBranchLabelWithError
+          )}
+        >
+          {sandboxState.error ? (
+            <>
+              <Typography className={classes.pullBranchLabelError}>
                 <FormattedMessage
                   id="repositories.sandboxBranchRetrievalError"
-                  defaultMessage="Unable to retrieve project’s branch • {retry}"
-                  values={{
-                    retry: (
-                      <Link sx={{ cursor: 'pointer' }} onClick={fetchSandboxBranch}>
-                        <FormattedMessage id="words.retry" defaultMessage="Retry" />
-                      </Link>
-                    )
-                  }}
+                  defaultMessage="Unable to retrieve project’s branch"
                 />
               </Typography>
-            )}
-          </FormLabel>
-        </FormControl>
+              <Button onClick={fetchSandboxBranch} size="small">
+                <FormattedMessage id="words.retry" defaultMessage="Retry" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <Typography color="textSecondary" className={classes.pullBranchLabelHeading}>
+                <FormattedMessage id="words.branch" defaultMessage="Branch" />
+              </Typography>
+              {sandboxState.loading ? (
+                <Skeleton variant="text" width="30%" animation="wave" sx={{ display: 'inline-flex' }} />
+              ) : (
+                sandboxState.branch
+              )}
+            </>
+          )}
+        </Box>
         <FormControl variant="outlined" fullWidth disabled={disabled || isSubmitting}>
           <InputLabel id="mergeStrategyLabel">
             <FormattedMessage id="repositories.mergeStrategyLabel" defaultMessage="Merge Strategy" />
@@ -210,7 +220,6 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
             ))}
           </Select>
         </FormControl>
-
         <Alert severity="info" variant="outlined" className={classes.pullInfo}>
           <Typography>
             <FormattedMessage
@@ -226,7 +235,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton type="submit" disabled={disabled || isBlank(sandboxState.branch)} loading={isSubmitting}>
-          <FormattedMessage id="words.ok" defaultMessage="Ok" />
+          <FormattedMessage id="words.pull" defaultMessage="Pull" />
         </PrimaryButton>
       </DialogFooter>
     </form>
