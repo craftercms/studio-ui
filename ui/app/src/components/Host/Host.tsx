@@ -22,9 +22,6 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useEnv } from '../../hooks/useEnv';
-import { getComputedEditMode } from '../../utils/content';
-import { useActiveUser } from '../../hooks/useActiveUser';
-import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import HostUI from './HostUI';
 
 const useStyles = makeStyles()((theme) => ({
@@ -58,9 +55,6 @@ export function Host() {
   const { guestBase, previewLandingBase } = useEnv();
   const { hostSize, showToolsPanel, toolsPanelWidth, icePanelWidth, editMode } = usePreviewState();
   const { currentUrlPath } = usePreviewNavigation();
-  const { username } = useActiveUser();
-  const item = useCurrentPreviewItem();
-  const isEditMode = getComputedEditMode({ item, editMode, username });
 
   const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
   const onMessage = useMemo(() => {
@@ -71,7 +65,7 @@ export function Host() {
   return (
     <div
       style={{
-        width: `calc(100% - ${showToolsPanel ? toolsPanelWidth : 0}px - ${isEditMode ? icePanelWidth : 0}px)`,
+        width: `calc(100% - ${showToolsPanel ? toolsPanelWidth : 0}px - ${editMode ? icePanelWidth : 0}px)`,
         marginLeft: showToolsPanel ? toolsPanelWidth : 0
       }}
       className={cx(classes.hostContainer, { [classes.shift]: showToolsPanel })}
