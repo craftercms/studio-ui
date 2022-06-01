@@ -123,7 +123,7 @@ interface PublishOnDemandWidgetProps {
 }
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
-  const { siteId } = props;
+  const { siteId, onSubmittingAndOrPendingChange } = props;
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
