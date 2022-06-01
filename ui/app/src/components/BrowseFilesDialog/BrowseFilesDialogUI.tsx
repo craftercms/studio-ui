@@ -27,11 +27,11 @@ import SearchBar from '../SearchBar/SearchBar';
 import MediaSkeletonCard from './MediaSkeletonCard';
 import EmptyState from '../EmptyState/EmptyState';
 import Pagination from '../Pagination';
+import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
 import Divider from '@mui/material/Divider';
 import InputUnstyled from '@mui/base/InputUnstyled';
-import FolderBrowserTreeView from '../FolderBrowserTreeView';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const {
