@@ -224,8 +224,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
           <Typography>
             <FormattedMessage
               id="repositories.pullFromCreatedBranchOnlyHint"
-              defaultMessage="You may only pull from the branch the site was created from; any feature branch work should be merged
-          upstream."
+              defaultMessage="You may only pull from the branch the site was created from; any feature branch work should be merged upstream."
             />
           </Typography>
         </Alert>
