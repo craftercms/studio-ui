@@ -146,6 +146,7 @@ export interface GlobalState {
     packageVersion: string;
     packageBuildDate: string;
     useBaseDomain: boolean;
+    activeEnvironment: string;
   };
   preview: {
     editMode: boolean;

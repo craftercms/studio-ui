@@ -68,7 +68,7 @@ const translations = defineMessages({
 export function SiteManagement() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { authoringBase, useBaseDomain } = useEnv();
+  const { authoringBase, useBaseDomain, activeEnvironment } = useEnv();
   const [openCreateSiteDialog, setOpenCreateSiteDialog] = useState(false);
   const user = useActiveUser();
   const [currentView, setCurrentView] = useState<'grid' | 'list'>(
@@ -126,7 +126,7 @@ export function SiteManagement() {
 
   const onSiteClick = (site: Site) => {
     setSiteCookie(site.id, useBaseDomain);
-    fetchUseLegacyPreviewPreference(site.id).subscribe((useLegacy) => {
+    fetchUseLegacyPreviewPreference(site.id, activeEnvironment).subscribe((useLegacy) => {
       window.location.href = getSystemLink({
         systemLinkId: 'preview',
         authoringBase,
