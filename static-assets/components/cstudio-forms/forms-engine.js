@@ -1958,8 +1958,10 @@ var CStudioForms =
             }, 500);
           }
 
-          var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
-          YDom.addClass(overlayContainer, 'overlay');
+          if (window.frameElement) {
+            var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
+            YDom.addClass(overlayContainer, 'overlay');
+          }
 
           $(document).on('keyup', function (e) {
             if (e.keyCode === 27) {
@@ -2047,9 +2049,7 @@ var CStudioForms =
             });
             sendMessage({ type: FORM_ENGINE_RENDER_COMPLETE });
           }
-          if (CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete) {
-            CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete();
-          }
+          CStudioAuthoring.InContextEdit.getIceCallback(editorId)?.renderComplete();
         });
       },
 
@@ -2115,7 +2115,7 @@ var CStudioForms =
                 onDone();
               } else {
                 jQuery
-                  .getScript({ url: script, cache: false })
+                  .getScript({ url: script, cache: true })
                   .done(onDone)
                   .fail(
                     (function (datasourceDef) {

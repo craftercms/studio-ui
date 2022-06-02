@@ -225,127 +225,118 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
           mapDatasource = datasourceMap[el.id];
           const $itemEl = $(`<li><a class="cstudio-form-control-image-picker-add-container-item">${el.title}</a></li>`);
           _self.$dropdownMenu.append($itemEl);
-          YAHOO.util.Event.on(
-            $itemEl[0],
-            'click',
-            function () {
-              _self._addImage(mapDatasource);
-            },
-            $itemEl[0]
-          );
+          $itemEl.on('click', function () {
+            _self._addImage(mapDatasource);
+          });
         }
       });
     }
   },
 
   _addImage: function (datasourceEl) {
-    self = this;
-    var datasource = datasourceEl;
-    if (datasource) {
-      if (datasource.insertImageAction) {
-        var callback = {
-          success: function (imageData, repoImage) {
-            var valid = false,
-              message = '',
-              repoImage;
+    if (datasourceEl && datasourceEl.insertImageAction) {
+      var self = this;
+      datasourceEl.insertImageAction({
+        imagePicker: this,
+        success: function (imageData, repoImage) {
+          var valid = false,
+            message = '',
+            repoImage;
 
-            if (this.imagePicker.validExtensions.indexOf(imageData.fileExtension) !== -1) {
-              valid = true;
-            } else {
-              message = 'The uploaded file is not of type image';
-            }
+          if (this.imagePicker.validExtensions.indexOf(imageData.fileExtension) !== -1) {
+            valid = true;
+          } else {
+            message = 'The uploaded file is not of type image';
+          }
 
-            if (!valid) {
-              this.imagePicker.showAlert(message);
-            } else {
-              var image = new Image();
-              var imagePicker = this.imagePicker;
+          if (!valid) {
+            this.imagePicker.showAlert(message);
+          } else {
+            var image = new Image();
+            var imagePicker = this.imagePicker;
 
-              function imageLoaded() {
-                imagePicker.originalWidth = this.width;
-                imagePicker.originalHeight = this.height;
+            function imageLoaded() {
+              imagePicker.originalWidth = this.width;
+              imagePicker.originalHeight = this.height;
 
-                valid = imagePicker.isImageValid();
-                if (!valid) {
-                  var widthConstrains = JSON.parse(self.width);
-                  var heightConstrains = JSON.parse(self.height);
-                  message = 'The uploaded file does not meet the specified width & height constraints';
-                  if (
-                    (widthConstrains.min && imagePicker.originalWidth < widthConstrains.min) ||
-                    (heightConstrains.min && imagePicker.originalHeight < heightConstrains.min) ||
-                    (widthConstrains.exact && imagePicker.originalWidth < widthConstrains.exact) ||
-                    (heightConstrains.exact && imagePicker.originalHeight < heightConstrains.exact) ||
-                    (widthConstrains && imagePicker.originalWidth < widthConstrains) ||
-                    (heightConstrains && imagePicker.originalHeight < heightConstrains)
-                  ) {
-                    message = 'Image is smaller than the constraint size';
-                    self.showAlert(message);
+              valid = imagePicker.isImageValid();
+              if (!valid) {
+                var widthConstrains = JSON.parse(self.width);
+                var heightConstrains = JSON.parse(self.height);
+                message = 'The uploaded file does not meet the specified width & height constraints';
+                if (
+                  (widthConstrains.min && imagePicker.originalWidth < widthConstrains.min) ||
+                  (heightConstrains.min && imagePicker.originalHeight < heightConstrains.min) ||
+                  (widthConstrains.exact && imagePicker.originalWidth < widthConstrains.exact) ||
+                  (heightConstrains.exact && imagePicker.originalHeight < heightConstrains.exact) ||
+                  (widthConstrains && imagePicker.originalWidth < widthConstrains) ||
+                  (heightConstrains && imagePicker.originalHeight < heightConstrains)
+                ) {
+                  message = 'Image is smaller than the constraint size';
+                  self.showAlert(message);
+                } else {
+                  (function (self) {
+                    var callbackCropper = {
+                      success: function (content) {
+                        var imagePicker = self;
+
+                        imageData.relativeUrl = imageData.renameRelativeUrl
+                          ? imageData.renameRelativeUrl
+                          : imageData.relativeUrl;
+                        imageData.previewUrl = imageData.renamePreviewUrl
+                          ? imageData.renamePreviewUrl
+                          : imageData.previewUrl;
+
+                        self.setImageData(imagePicker, imageData);
+                      }
+                    };
+
+                    CStudioAuthoring.Operations.cropperImage(
+                      CStudioAuthoringContext.site,
+                      message,
+                      imageData,
+                      self.width,
+                      self.height,
+                      self.width / self.height,
+                      repoImage,
+                      callbackCropper
+                    );
+                  })(self);
+                }
+              } else {
+                var formContainer = this.form ? this.form.containerEl : self.form.containerEl;
+                if ($(formContainer).find('#ice-body .cstudio-form-field-container').length > 1) {
+                  if (this.setImageData) {
+                    this.setImageData(imagePicker, imageData);
                   } else {
-                    (function (self) {
-                      var callbackCropper = {
-                        success: function (content) {
-                          var imagePicker = self;
-
-                          imageData.relativeUrl = imageData.renameRelativeUrl
-                            ? imageData.renameRelativeUrl
-                            : imageData.relativeUrl;
-                          imageData.previewUrl = imageData.renamePreviewUrl
-                            ? imageData.renamePreviewUrl
-                            : imageData.previewUrl;
-
-                          self.setImageData(imagePicker, imageData);
-                        }
-                      };
-
-                      CStudioAuthoring.Operations.cropperImage(
-                        CStudioAuthoringContext.site,
-                        message,
-                        imageData,
-                        self.width,
-                        self.height,
-                        self.width / self.height,
-                        repoImage,
-                        callbackCropper
-                      );
-                    })(self);
+                    self.setImageData(imagePicker, imageData);
                   }
                 } else {
-                  var formContainer = this.form ? this.form.containerEl : self.form.containerEl;
-                  if ($(formContainer).find('#ice-body .cstudio-form-field-container').length > 1) {
-                    if (this.setImageData) {
-                      this.setImageData(imagePicker, imageData);
-                    } else {
-                      self.setImageData(imagePicker, imageData);
-                    }
+                  if (this.setImageData) {
+                    this.setImageData(imagePicker, imageData);
+                    CStudioAuthoring.Utils.decreaseFormDialog();
                   } else {
-                    if (this.setImageData) {
-                      this.setImageData(imagePicker, imageData);
-                      CStudioAuthoring.Utils.decreaseFormDialog();
-                    } else {
-                      self.setImageData(imagePicker, imageData);
-                      CStudioAuthoring.Utils.decreaseFormDialog();
-                    }
+                    self.setImageData(imagePicker, imageData);
+                    CStudioAuthoring.Utils.decreaseFormDialog();
                   }
                 }
               }
-              image.addEventListener('load', imageLoaded, false);
-              image.addEventListener('error', function () {
-                message = 'Unable to load the selected image. Please try again or select another image';
-                imagePicker.showAlert(message);
-              });
-              CStudioAuthoring.Operations.getImageRequest({
-                url: imageData.previewUrl,
-                image: image
-              });
             }
-          },
-          failure: function (message) {
-            this.imagePicker.showAlert(message);
+            image.addEventListener('load', imageLoaded, false);
+            image.addEventListener('error', function () {
+              message = 'Unable to load the selected image. Please try again or select another image';
+              imagePicker.showAlert(message);
+            });
+            CStudioAuthoring.Operations.getImageRequest({
+              url: imageData.previewUrl,
+              image: image
+            });
           }
-        };
-        callback.imagePicker = this;
-        datasource.insertImageAction(callback);
-      }
+        },
+        failure: function (message) {
+          this.imagePicker.showAlert(message);
+        }
+      });
     }
   },
 
