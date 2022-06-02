@@ -36,9 +36,14 @@ import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { emitSystemEvent, folderRenamed } from '../../state/actions/system';
 import slugify from 'slugify';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import { UNDEFINED } from '../../utils/constants';
+import { isBlank } from '../../utils/string';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
-  const { onClose, isSubmitting, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
+  const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
+  const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
   const [name, setName] = useState(value);
   const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
@@ -50,6 +55,12 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const path = useMemo(() => {
     return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
   }, [props.path, selectedItem]);
+  const itemLookupTable = useItemsByPath();
+  const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
+  const folderExists = rename
+    ? name !== value && itemLookupTable[newFolderPath] !== UNDEFINED
+    : itemLookupTable[newFolderPath] !== UNDEFINED;
+  const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
 
   useEffect(() => {
     if (item && rename === false) {
@@ -58,55 +69,38 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   }, [item, rename]);
 
   const onRenameFolder = (site: string, path: string, name: string) => {
-    renameFolder(site, path, name).subscribe(
-      (response) => {
+    renameFolder(site, path, name).subscribe({
+      next() {
         onRenamed?.({ path, name, rename });
         dispatch(
           batchActions([
-            updateCreateFolderDialog({
-              isSubmitting: false,
-              hasPendingChanges: false
-            }),
+            updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }),
             emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name }))
           ])
         );
       },
-      (response) => {
+      error(response) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onCreateFolder = (site: string, path: string, name: string) => {
-    createFolder(site, path, name).subscribe(
-      (response) => {
+    createFolder(site, path, name).subscribe({
+      next() {
         onCreated?.({ path, name, rename });
-        dispatch(
-          updateCreateFolderDialog({
-            isSubmitting: false,
-            hasPendingChanges: false
-          })
-        );
+        dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
       },
-      (response) => {
+      error(response) {
         dispatch(
-          batchActions([
-            showErrorDialog({ error: response }),
-            updateCreateFolderDialog({
-              isSubmitting: false
-            })
-          ])
+          batchActions([showErrorDialog({ error: response }), updateCreateFolderDialog({ isSubmitting: false })])
         );
       }
-    );
+    });
   };
 
   const onCreate = () => {
-    dispatch(
-      updateCreateFolderDialog({
-        isSubmitting: true
-      })
-    );
+    dispatch(updateCreateFolderDialog({ isSubmitting: true }));
     if (name) {
       const parentPath = rename ? getParentPath(path) : path;
       validateActionPolicy(site, {
@@ -128,11 +122,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             error: true,
             body: formatMessage(translations.policyError)
           });
-          dispatch(
-            updateCreateFolderDialog({
-              isSubmitting: false
-            })
-          );
+          dispatch(updateCreateFolderDialog({ isSubmitting: false }));
         }
       });
     }
@@ -148,20 +138,14 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
   const onConfirmCancel = () => {
     setConfirm(null);
-    dispatch(
-      updateCreateFolderDialog({
-        isSubmitting: false
-      })
-    );
+    dispatch(updateCreateFolderDialog({ isSubmitting: false }));
   };
 
-  const onInputChanges = (value: string) => {
-    setName(value);
-    dispatch(
-      updateCreateFolderDialog({
-        hasPendingChanges: true
-      })
-    );
+  const onInputChanges = (newValue: string) => {
+    setName(newValue);
+    const newHasPendingChanges = rename ? newValue !== value : !isBlank(newValue);
+    hasPendingChanges !== newHasPendingChanges &&
+      dispatch(updateCreateFolderDialog({ hasPendingChanges: newHasPendingChanges }));
   };
 
   const itemSelectorFilterChildren = useMemo(() => (item: SandboxItem) => item.availableActionsMap.createFolder, []);
@@ -216,10 +200,15 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             value={name}
             autoFocus
             required
-            error={!name && isSubmitting !== null}
+            error={(!name && isSubmitting !== null) || folderExists}
             placeholder={formatMessage(translations.placeholder)}
             helperText={
-              !name && isSubmitting !== null ? (
+              folderExists ? (
+                <FormattedMessage
+                  id="newFolder.folderAlreadyExists"
+                  defaultMessage="A folder with that name already exists"
+                />
+              ) : !name && isSubmitting !== null ? (
                 <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
               ) : (
                 <FormattedMessage
@@ -241,7 +230,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
         <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
+        <PrimaryButton onClick={onCreate} disabled={isSubmitting || !isValid} loading={isSubmitting}>
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />
           ) : (

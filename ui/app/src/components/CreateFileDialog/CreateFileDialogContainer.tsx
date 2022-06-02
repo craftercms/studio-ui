@@ -31,14 +31,23 @@ import { CreateFileContainerProps, getExtension, getName } from './utils';
 import { translations } from './translations';
 import { updateCreateFileDialog, updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
+import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import { UNDEFINED } from '../../utils/constants';
+import { isBlank } from '../../utils/string';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
-  const { onClose, onCreated, type, path, allowBraces, isSubmitting } = props;
+  const { onClose, onCreated, type, path, allowBraces } = props;
+  const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
   const [name, setName] = useState('');
   const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
+  const itemLookup = useItemsByPath();
+  const computedFilePath = `${path}/${getName(type, name)}`;
+  const fileExists = itemLookup[computedFilePath] !== UNDEFINED;
+  const isValid = !isBlank(name) && !fileExists;
 
   const onCreateFile = (site: string, path: string, fileName: string) => {
     createFile(site, path, fileName).subscribe({
@@ -115,11 +124,13 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 
   const onInputChanges = (value: string) => {
     setName(value);
-    dispatch(
-      updateCreateFileDialog({
-        hasPendingChanges: true
-      })
-    );
+    const newHasPending = !isBlank(value);
+    hasPendingChanges !== newHasPending &&
+      dispatch(
+        updateCreateFileDialog({
+          hasPendingChanges: newHasPending
+        })
+      );
   };
 
   return (
@@ -137,10 +148,15 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
             fullWidth
             autoFocus
             required
-            error={!name && isSubmitting !== null}
+            error={(!name && isSubmitting !== null) || fileExists}
             placeholder={formatMessage(translations.placeholder)}
             helperText={
-              !name && isSubmitting ? (
+              fileExists ? (
+                <FormattedMessage
+                  id="createFileDialog.fileAlreadyExists"
+                  defaultMessage="A file with that name already exists"
+                />
+              ) : !name && isSubmitting ? (
                 <FormattedMessage id="createFileDialog.fileNameRequired" defaultMessage="File name is required." />
               ) : (
                 <FormattedMessage
@@ -168,7 +184,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
         <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onCreate} disabled={isSubmitting || name === ''} loading={isSubmitting}>
+        <PrimaryButton onClick={onCreate} disabled={isSubmitting || !isValid} loading={isSubmitting}>
           <FormattedMessage id="words.create" defaultMessage="Create" />
         </PrimaryButton>
       </DialogFooter>
