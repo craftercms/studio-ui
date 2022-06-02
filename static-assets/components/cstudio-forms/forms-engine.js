@@ -2114,9 +2114,19 @@ var CStudioForms =
             });
           };
 
+          // If the repeating group that it's being re-rendered has RTE5 controls, remove all of them before cleanup up
+          // markup (so it'll remove all things related to those RTEs)
+          const $rte5Controls = $(controlEl).find('.rte-tinymce5-control')
+          if ($rte5Controls.length) {
+            const $rteInputs = $rte5Controls.find('.cstudio-form-control-input');
+            $rteInputs.each((index, element) => {
+              const rteId = element.getAttribute('id');
+              tinymce.get(rteId).remove();
+            });
+          }
+
           controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
           controlEl.innerHTML = '';
-          $('.tox-silver-sink').remove();
           controlEl.formEngine._renderRepeatBody(controlEl);
         };
 
@@ -2182,6 +2192,7 @@ var CStudioForms =
             form.model[repeat.id][0] = [];
 
             this.parentNode.parentNode.reRender(this.parentNode.parentNode);
+            repeatEdited = true;
           };
 
           formSection.notifyValidation();
