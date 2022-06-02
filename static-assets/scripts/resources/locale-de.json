@@ -276,10 +276,6 @@
         "REMOTE_BRANCH": "Remote Branch",
         "PULL": "Pull",
         "PUSH": "Push",
-        "PULL_FROM": "Abziehen",
-        "BRANCH": "Zweig",
-        "PULL_INFO": "Sie können nur aus dem Zweig ziehen, aus dem die Site erstellt wurde; Jede Feature-Branch-Arbeit sollte Upstream zusammengeführt werden.",
-        "SANDBOX_BRANCH_ERROR": "Zweig des Projekts kann nicht abgerufen werden",
         "REMOTE_BRANCH_PULL":"Remote Branch von dem Pull ausgeführt werden soll",
         "REMOTE_BRANCH_PUSH":"Remote Branch zu dem Push ausgeführt werden soll",
         "SUCCESSFULLY_PUSHED": "Push war erfolgreich",
@@ -390,7 +386,6 @@
     "GLOBAL_MENU": "Globales Menü",
     "MAIN_MENU": "Hauptmenü",
     "RESET_PASSWORD": "Passwort zurücksetzen",
-    "CLOSE": "Schließen",
-    "RETRY": "Wiederholen"
+    "CLOSE": "Schließen"
   }
 }
