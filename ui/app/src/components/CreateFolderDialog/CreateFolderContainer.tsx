@@ -36,7 +36,7 @@ import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { emitSystemEvent, folderRenamed } from '../../state/actions/system';
 import slugify from 'slugify';
-import useSelection from '../../hooks/useSelection';
+import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
@@ -55,7 +55,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const path = useMemo(() => {
     return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
   }, [props.path, selectedItem]);
-  const itemLookupTable = useSelection((state) => state.content.itemsByPath);
+  const itemLookupTable = useItemsByPath();
   const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
   const folderExists = rename
     ? name !== value && itemLookupTable[newFolderPath] !== UNDEFINED
