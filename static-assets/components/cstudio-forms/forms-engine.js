@@ -2243,9 +2243,9 @@ var CStudioForms =
 
           // If the repeating group that it's being re-rendered has RTE5 controls, remove all of them before cleanup up
           // markup (so it'll remove all things related to those RTEs)
-          const $rte5Controls = $(controlEl).find('.rte-control');
-          if ($rte5Controls.length) {
-            const $rteInputs = $rte5Controls.find('.cstudio-form-control-input');
+          const $rteControls = $(controlEl).find('.rte-control');
+          if ($rteControls.length) {
+            const $rteInputs = $rteControls.find('.cstudio-form-control-input');
             $rteInputs.each((index, element) => {
               const rteId = element.getAttribute('id');
               tinymce.get(rteId).remove();
