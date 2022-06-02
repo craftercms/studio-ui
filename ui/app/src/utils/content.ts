@@ -16,7 +16,7 @@
 
 import { BaseItem, DetailedItem, ItemActionsMap, ItemStateMap, LegacyItem, SandboxItem } from '../models/Item';
 import { getStateMapFromLegacyItem } from './state';
-import { nnou, reversePluckProps } from './object';
+import { nnou, nou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
@@ -470,7 +470,7 @@ function parseElementByContentType(
     case 'checkbox-group': {
       const deserialized = deserialize(element);
       const extract = deserialized[element.tagName].item;
-      return Array.isArray(extract) ? extract : [extract];
+      return nou(extract) ? [] : Array.isArray(extract) ? extract : [extract];
     }
     case 'text':
     case 'textarea':
