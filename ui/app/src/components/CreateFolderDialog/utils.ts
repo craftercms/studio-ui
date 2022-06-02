@@ -40,5 +40,5 @@ export interface CreateFolderStateProps extends CreateFolderBaseProps, EnhancedD
 export interface CreateFolderContainerProps
   extends Pick<
     CreateFolderProps,
-    'path' | 'allowBraces' | 'value' | 'rename' | 'isSubmitting' | 'onRenamed' | 'onCreated' | 'onClose'
+    'path' | 'allowBraces' | 'value' | 'rename' | 'onRenamed' | 'onCreated' | 'onClose'
   > {}
