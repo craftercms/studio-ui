@@ -120,6 +120,7 @@ export const EncryptTool = (props: EncryptToolProps) => {
   const [notificationSettings, setNotificationSettings] = useSpreadState(notificationInitialState);
   const { formatMessage } = useIntl();
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const hasText = Boolean(text);
 
   const focus = () => {
     const toolRawTextInput: HTMLInputElement = document.querySelector('#encryptionToolRawText');
@@ -160,14 +161,9 @@ export const EncryptTool = (props: EncryptToolProps) => {
     focus();
   };
 
-  useEffect(
-    () => {
-      fnRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: Boolean(text) });
-    },
-    // No need to add fnRefs (it's a ref) and only want to run effect when text changes from blank to non-blank or vise-versa
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [Boolean(text)]
-  );
+  useEffect(() => {
+    fnRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasText });
+  }, [hasText, fnRefs]);
 
   return (
     <Paper elevation={0}>
