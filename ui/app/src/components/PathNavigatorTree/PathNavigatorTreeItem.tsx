@@ -191,7 +191,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     keywordByPath,
     totalByPath,
     childrenByParentPath,
-    active,
+    active = {},
     onLabelClick,
     onIconClick,
     onOpenItemMenu,
