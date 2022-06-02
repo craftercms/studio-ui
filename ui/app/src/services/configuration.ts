@@ -300,8 +300,8 @@ export interface CannedMessage {
   message: string;
 }
 
-export function fetchCannedMessages(site: string): Observable<CannedMessage[]> {
-  return fetchConfigurationDOM(site, '/workflow/notification-config.xml', 'studio').pipe(
+export function fetchCannedMessages(site: string, environment: string): Observable<CannedMessage[]> {
+  return fetchConfigurationDOM(site, '/workflow/notification-config.xml', 'studio', environment).pipe(
     map((dom) => {
       const cannedMessages = [];
 

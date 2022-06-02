@@ -127,8 +127,17 @@ export const unEscapeXml = (value) => {
   return value;
 };
 
-export const legacyLoadFormDefinition = (siteId: string, contentType: string): Observable<unknown> => {
-  return fetchConfigurationJSON(siteId, `/content-types/${contentType}/form-definition.xml`, 'studio').pipe(
+export const legacyLoadFormDefinition = (
+  siteId: string,
+  contentType: string,
+  environment: string
+): Observable<unknown> => {
+  return fetchConfigurationJSON(
+    siteId,
+    `/content-types/${contentType}/form-definition.xml`,
+    'studio',
+    environment
+  ).pipe(
     map((config) => {
       let def = config.form;
       def.contentType = contentType;
