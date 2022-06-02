@@ -34,6 +34,7 @@ import Box from '@mui/material/Box';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import Paper from '@mui/material/Paper';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface EncryptToolProps {
   site?: string;
@@ -117,8 +118,8 @@ export const EncryptTool = (props: EncryptToolProps) => {
   const [result, setResult] = useState(null);
   const [fetching, setFetching] = useState(null);
   const [notificationSettings, setNotificationSettings] = useSpreadState(notificationInitialState);
-
   const { formatMessage } = useIntl();
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
 
   const focus = () => {
     const toolRawTextInput: HTMLInputElement = document.querySelector('#encryptionToolRawText');
@@ -159,11 +160,14 @@ export const EncryptTool = (props: EncryptToolProps) => {
     focus();
   };
 
-  useEffect(() => {
-    onSubmittingAndOrPendingChange?.({
-      hasPendingChanges: Boolean(text)
-    });
-  }, [text, onSubmittingAndOrPendingChange]);
+  useEffect(
+    () => {
+      fnRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: Boolean(text) });
+    },
+    // No need to add fnRefs (it's a ref) and only want to run effect when text changes from blank to non-blank or vise-versa
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [Boolean(text)]
+  );
 
   return (
     <Paper elevation={0}>
