@@ -48,17 +48,11 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   leftWrapper: {
-    width: '220px',
+    width: '270px',
     paddingRight: '16px'
   },
   rightWrapper: {
     flexGrow: 1
-  },
-  treeView: {
-    overflow: 'auto'
-  },
-  treeItemLabel: {
-    width: '100%'
   },
   bodyEmptyState: {
     height: '60vh'

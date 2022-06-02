@@ -29,8 +29,6 @@ import LookupTable from '../../models/LookupTable';
 import { StateStylingProps } from '../../models/UiConfig';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import List from '@mui/material/List';
-import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
 import { SystemIconDescriptor } from '../SystemIcon';
@@ -38,6 +36,7 @@ import { lookupItemByPath } from '../../utils/content';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { createFakeResource } from '../../utils/resource';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
+import NavLoader from './NavLoader';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -131,18 +130,6 @@ export interface PathNavigatorUIProps {
   onPageChanged?: (page: number) => void;
   onRowsPerPageChange?: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
 }
-
-const NavLoader = React.memo((props: { numOfItems?: number }) => {
-  const { numOfItems = 5 } = props;
-  const items = new Array(numOfItems).fill(null);
-  return (
-    <List component="nav" disablePadding>
-      {items.map((value, i) => (
-        <PathNavigatorSkeletonItem key={i} />
-      ))}
-    </List>
-  );
-});
 
 export function PathNavigatorUI(props: PathNavigatorUIProps) {
   const { classes, cx: clsx } = useStyles();

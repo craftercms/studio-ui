@@ -1283,7 +1283,7 @@
   "settingsPanel.editMode": "Edit Mode (e | m)",
   "settingsPanel.editModeHelperText": "Enable/disabled in-context editing",
   "settingsPanel.editModePaddingHelp": "Adds padding to collections for easier interaction in edit-mode. Press `p` at any point to toggle on/off.",
-  "settingsPanel.editModePaddingLabel": "Edit-mode padding (p)",
+  "settingsPanel.editModePaddingLabel": "Padding mode (p)",
   "settingsPanel.highlightAllTargets": "Highlight all targets (e)",
   "settingsPanel.highlightMode": "Highlight Mode",
   "settingsPanel.highlightModeHelperText": "When \"highlight movable\" is selected, only content items you can be moved or sorted highlight. Text inputs and other non-movable won't highlight. Press `e` and `m` at any point to toggle between modes.",

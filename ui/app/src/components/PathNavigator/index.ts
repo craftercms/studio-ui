@@ -29,3 +29,5 @@ export * from './PathNavigatorSkeleton';
 export * from './PathNavigatorSkeletonItem';
 
 export * from './PathNavigatorUI';
+
+export * from './NavLoader';

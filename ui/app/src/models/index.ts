@@ -41,6 +41,7 @@ export * from './Logger';
 export * from './LookupTable';
 export * from './MarketplacePlugin';
 export * from './MinimizedTab';
+export * from './Monaco';
 export * from './MutableRef';
 export * from './NonReactWidgetRecord';
 export * from './PagedArray';
