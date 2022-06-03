@@ -158,10 +158,10 @@ function BlueprintForm(props: BlueprintFormProps) {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
     } else {
-      setInputs({ [e.target.name]: e.target.value });
-      if (blueprint.id === 'GIT' && e.target.name === 'repoRemoteBranch') {
-        setInputs({ sandboxBranch: e.target.value });
-      }
+      setInputs({
+        [e.target.name]: e.target.value,
+        ...(blueprint.id === 'GIT' && e.target.name === 'repoRemoteBranch' && { sandboxBranch: e.target.value })
+      });
     }
   };
 
