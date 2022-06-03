@@ -33,7 +33,6 @@ import { useHistory } from 'react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
-import useEnv from '../../hooks/useEnv';
 
 const translations = defineMessages({
   configSaved: {
@@ -57,7 +56,6 @@ export function GlobalConfigManagement() {
   const [nextRoute, setNextRoute] = useState<string>();
   const history = useHistory();
   const { classes } = useStyles();
-  const { activeEnvironment } = useEnv();
 
   const aceEditorRef = useRef<any>();
   const dispatch = useDispatch();
@@ -80,13 +78,8 @@ export function GlobalConfigManagement() {
 
   useMount(() => {
     const requests = [
-      fetchConfigurationXML(
-        'studio_root',
-        '/configuration/samples/sample-studio-config-override.yaml',
-        'studio',
-        activeEnvironment
-      ),
-      fetchConfigurationXML('studio_root', '/configuration/studio-config-override.yaml', 'studio', activeEnvironment)
+      fetchConfigurationXML('studio_root', '/configuration/samples/sample-studio-config-override.yaml', 'studio'),
+      fetchConfigurationXML('studio_root', '/configuration/studio-config-override.yaml', 'studio')
     ];
 
     forkJoin(requests).subscribe(([sample, content]) => {

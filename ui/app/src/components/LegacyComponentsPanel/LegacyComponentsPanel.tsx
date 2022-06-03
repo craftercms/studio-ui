@@ -515,7 +515,7 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
         }
         case 'REQUEST_FORM_DEFINITION': {
           const { contentType } = payload;
-          legacyLoadFormDefinition(siteId, contentType, activeEnvironment).subscribe((config) => {
+          legacyLoadFormDefinition(siteId, contentType).subscribe((config) => {
             hostToGuest$.next({
               type: 'REQUEST_FORM_DEFINITION_RESPONSE',
               payload: config
@@ -561,8 +561,7 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
     open,
     siteId,
     user.username,
-    browseFilesDialogState,
-    activeEnvironment
+    browseFilesDialogState
   ]);
   // endregion
 
