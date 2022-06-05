@@ -473,27 +473,15 @@
   <div class="modal-header">
     <h3 class="modal-title">{{dialogTitle}}</h3>
   </div>
-  <form name="pullPushForm" novalidate class="ng-dirty ng-invalid ng-invalid-required pull-push-form">
+  <form name="pullPushForm" novalidate class="ng-dirty ng-invalid ng-invalid-required">
     <div class="modal-body">
       <div class="form-group">
-        <div ng-if="repositories.repoAction == 'push'">
-          <label for="branch">{{ confirmationText }}</label>
-          <select class="form-control" id="branch" name="branch" ng-model="branch" required>
-            <option ng-repeat="branch in branches" value="{{branch}}">{{branch}}</option>
-          </select>
-        </div>
+        <label for="branch">{{ confirmationText }}</label>
+        <select class="form-control" id="branch" name="branch" ng-model="repositories.remoteBranch" required>
+          <option ng-repeat="branch in branches" value="{{branch}}">{{branch}}</option>
+        </select>
+
         <div ng-if="repositories.repoAction == 'pull'">
-          <label class="pull-branch-label">
-            <span ng-if="!sandboxBranchError">
-              <span class="heading">{{ 'admin.repositories.BRANCH' | translate }}</span>
-              {{ sandboxBranch }}
-            </span>
-            <span ng-if="sandboxBranchError" class="text-danger">
-              {{ 'admin.repositories.SANDBOX_BRANCH_ERROR' | translate }} •
-              <a ng-click="getSite()">{{ 'common.RETRY' | translate }}</a>
-            </span>
-          </label>
-          <input type="hidden" id="branch" name="branch" ng-model="sandboxBranch" required />
           <label
             class="mt15" for="branch"
           >{{ 'admin.repositories.MERGE_STRATEGY_LABEL' | translate }}</label>
@@ -515,13 +503,6 @@
             </option>
           </select>
           <div class="mt10">{{ repositories.mergeStrategyDescription }}</div>
-
-          <div class="pull-info text-info mt15">
-            <i class="fa fa-info-circle mr10" aria-hidden="true"></i>
-            <p class="mb0">
-              {{ 'admin.repositories.PULL_INFO' | translate }}
-            </p>
-          </div>
         </div>
 
         <div
@@ -541,7 +522,7 @@
     <div class="modal-footer">
       <button
         class="btn btn-primary" ng-disabled="pullPushForm.$invalid"
-        ng-click="confirmationAction(branch); hideModal()"
+        ng-click="confirmationAction(); hideModal()"
       >{{ 'common.OK' | translate }}
       </button>
       <button

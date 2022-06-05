@@ -204,10 +204,6 @@
         return $http.post(repositories('cancel_failed_pull'), data);
       };
 
-      this.getSite = function(site) {
-        return $http.get(`${Constants.SERVICE}site/get.json?site_id=${site}`);
-      }
-
       //AUDIT
 
       this.getAudit = function (data) {
@@ -2179,7 +2175,8 @@
           unreachableRemote: (name) => formatMessage(repoMessages.unreachableRemote, { name }),
           reason: formatMessage(words.reason),
           repositoriesNote: formatMessage(repoMessages.repositoriesNote)
-        }
+        },
+        remoteBranch: null
       };
 
       var repositories = $scope.repositories;
@@ -2214,19 +2211,7 @@
         repositories.spinnerOverlay && repositories.spinnerOverlay.close();
       }
 
-      $scope.getSite = function () {
-        $scope.sandboxBranchError = null;
-        adminService.getSite(repositories.site)
-          .success(({ sandboxBranch }) => {
-            $scope.sandboxBranch = sandboxBranch;
-          })
-          .error((error) => {
-            $scope.sandboxBranchError = error;
-          })
-      }
-
       this.init = function () {
-        $scope.sandboxBranch = '';
         $scope.showError = function (error) {
           $scope.messageTitle = `${$translate.instant('common.ERROR')} ${$translate.instant('common.CODE')}: ${
             error.code
@@ -2282,8 +2267,6 @@
           .error(function (error) {
             $scope.showError(error.response);
           });
-
-        $scope.getSite();
       };
       this.init();
 
@@ -2347,14 +2330,14 @@
       };
 
       $scope.pullRepo = function (repo) {
-        $scope.branch = repo.branches[0];
+        repositories.remoteBranch = repo.branches[0];
         $scope.branches = repo.branches;
         var pullRepo = function () {
           repositories.spinnerOverlay = $scope.spinnerOverlay();
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
-          currentRepo.remoteBranch = $scope.sandboxBranch;
+          currentRepo.remoteBranch = repositories.remoteBranch;
           currentRepo.mergeStrategy = repositories.mergeStrategy;
 
           adminService
@@ -2374,20 +2357,20 @@
         repositories.repoAction = 'pull';
         $scope.confirmationAction = pullRepo;
         $scope.confirmationText = $translate.instant('admin.repositories.REMOTE_BRANCH_PULL') + ':';
-        $scope.dialogTitle = `${$translate.instant('admin.repositories.PULL_FROM')} ${repo.name}`;
+        $scope.dialogTitle = $translate.instant('admin.repositories.PULL');
 
         $scope.adminModal = $scope.showModal('pushPull.html', 'sm', true, 'studioMedium');
       };
 
       $scope.pushRepo = function (repo) {
-        $scope.branch = repo.branches[0];
+        repositories.remoteBranch = repo.branches[0];
         $scope.branches = repo.branches;
-        var pushRepo = function (branch) {
+        var pushRepo = function () {
           repositories.spinnerOverlay = $scope.spinnerOverlay();
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
-          currentRepo.remoteBranch = branch;
+          currentRepo.remoteBranch = repositories.remoteBranch;
 
           adminService
             .pushRepository(currentRepo)

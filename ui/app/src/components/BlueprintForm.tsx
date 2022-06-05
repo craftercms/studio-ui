@@ -134,7 +134,10 @@ function BlueprintForm(props: BlueprintFormProps) {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
     } else {
-      setInputs({ [e.target.name]: e.target.value });
+      setInputs({
+        [e.target.name]: e.target.value,
+        ...(blueprint.id === 'GIT' && e.target.name === 'repoRemoteBranch' && { sandboxBranch: e.target.value })
+      });
     }
   };
 
@@ -200,19 +203,21 @@ function BlueprintForm(props: BlueprintFormProps) {
             )}
           />
         </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="sandboxBranch"
-            name="sandboxBranch"
-            label={formatMessage(messages.sandboxBranch)}
-            fullWidth
-            onKeyPress={onKeyPress}
-            onChange={(event) => handleInputChange(event)}
-            InputLabelProps={{ shrink: true }}
-            placeholder={'master'}
-            value={inputs.sandboxBranch}
-          />
-        </Grid>
+        {blueprint.id !== 'GIT' && (
+          <Grid item xs={12}>
+            <TextField
+              id="sandboxBranch"
+              name="sandboxBranch"
+              label={formatMessage(messages.sandboxBranch)}
+              fullWidth
+              onKeyPress={onKeyPress}
+              onChange={(event) => handleInputChange(event)}
+              InputLabelProps={{ shrink: true }}
+              placeholder={'master'}
+              value={inputs.sandboxBranch}
+            />
+          </Grid>
+        )}
         <Grid item xs={12}>
           <TextField
             id="description"

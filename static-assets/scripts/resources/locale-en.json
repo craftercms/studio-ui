@@ -278,10 +278,6 @@
         "REMOTE_BRANCH": "Remote Branch",
         "PULL": "Pull",
         "PUSH": "Push",
-        "PULL_FROM": "Pull from",
-        "BRANCH": "Branch",
-        "PULL_INFO": "You may only pull from the branch the site was created from; any feature branch work should be merged upstream.",
-        "SANDBOX_BRANCH_ERROR": "Unable to retrieve project’s branch",
         "REMOTE_BRANCH_PULL":"Remote Branch to pull",
         "REMOTE_BRANCH_PUSH":"Remote Branch to push to ",
         "SUCCESSFULLY_PUSHED": "Successfully Pushed",
@@ -394,7 +390,6 @@
     "GLOBAL_MENU": "Global Menu",
     "MAIN_MENU": "Main Menu",
     "RESET_PASSWORD": "Reset Password",
-    "CLOSE": "Close",
-    "RETRY": "Retry"
+    "CLOSE": "Close"
   }
 }
