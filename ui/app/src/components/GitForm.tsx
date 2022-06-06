@@ -339,6 +339,42 @@ function GitForm(props: GitFormProps) {
         />
       </Grid>
       <Grid item xs={12}>
+        <TextField
+          id="repoRemoteBranch"
+          name="repoRemoteBranch"
+          label={formatMessage(messages.branch)}
+          InputLabelProps={{ shrink: true }}
+          placeholder="master"
+          fullWidth
+          onKeyPress={onKeyPress}
+          onChange={handleInputChange}
+          value={inputs.repoRemoteBranch}
+          helperText={
+            type === 'push'
+              ? formatMessage(pushMessages.push_remoteBranch_label)
+              : formatMessage(cloneMessages.clone_remoteBranch_label)
+          }
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          id="repoRemoteName"
+          name="repoRemoteName"
+          label={formatMessage(messages.remoteName)}
+          InputLabelProps={{ shrink: true }}
+          placeholder="origin"
+          fullWidth
+          onKeyPress={onKeyPress}
+          onChange={handleInputChange}
+          value={inputs.repoRemoteName}
+          helperText={
+            type === 'push'
+              ? formatMessage(pushMessages.push_remoteName_label)
+              : formatMessage(cloneMessages.clone_remoteName_label)
+          }
+        />
+      </Grid>
+      <Grid item xs={12}>
         <Typography variant="subtitle1" color={'textSecondary'}>
           {formatMessage(messages.authentication)}
         </Typography>
@@ -381,42 +417,6 @@ function GitForm(props: GitFormProps) {
             </Collapse>
           </RadioGroup>
         </div>
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          id="repoRemoteBranch"
-          name="repoRemoteBranch"
-          label={formatMessage(messages.branch)}
-          InputLabelProps={{ shrink: true }}
-          placeholder="master"
-          fullWidth
-          onKeyPress={onKeyPress}
-          onChange={handleInputChange}
-          value={inputs.repoRemoteBranch}
-          helperText={
-            type === 'push'
-              ? formatMessage(pushMessages.push_remoteBranch_label)
-              : formatMessage(cloneMessages.clone_remoteBranch_label)
-          }
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          id="repoRemoteName"
-          name="repoRemoteName"
-          label={formatMessage(messages.remoteName)}
-          InputLabelProps={{ shrink: true }}
-          placeholder="origin"
-          fullWidth
-          onKeyPress={onKeyPress}
-          onChange={handleInputChange}
-          value={inputs.repoRemoteName}
-          helperText={
-            type === 'push'
-              ? formatMessage(pushMessages.push_remoteName_label)
-              : formatMessage(cloneMessages.clone_remoteName_label)
-          }
-        />
       </Grid>
     </Grid>
   );

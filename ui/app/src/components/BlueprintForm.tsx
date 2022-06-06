@@ -87,9 +87,9 @@ const messages = defineMessages({
     id: 'createSiteDialog.cantStart',
     defaultMessage: 'Site names may not start with zeros, dashes (-) or underscores (_).'
   },
-  sandboxBranch: {
-    id: 'createSiteDialog.sandboxBranch',
-    defaultMessage: 'Sandbox Branch'
+  gitBranch: {
+    id: 'createSiteDialog.gitBranch',
+    defaultMessage: 'Git Branch'
   },
   createAsOrphan: {
     id: 'createSiteDialog.createAsOrphan',
@@ -107,6 +107,7 @@ function BlueprintForm(props: BlueprintFormProps) {
   const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist } = props;
   const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
+  const syncBranches = blueprint.id === 'GIT' || inputs.pushSite;
   const maxLength = 4000;
 
   useEffect(() => {
@@ -119,6 +120,11 @@ function BlueprintForm(props: BlueprintFormProps) {
     e.persist();
     if (e.target.type === 'checkbox') {
       setInputs({ [e.target.name]: e.target.checked, submitted: false });
+
+      // If 'push site to remote' is being enabled - set repoRemoteBranch value to be the same as sandboxBranch
+      if (e.target.name === 'pushSite' && e.target.checked) {
+        setInputs({ repoRemoteBranch: inputs.sandboxBranch });
+      }
     } else if (e.target.name === 'siteId') {
       const invalidSiteId =
         e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_');
@@ -136,7 +142,7 @@ function BlueprintForm(props: BlueprintFormProps) {
     } else {
       setInputs({
         [e.target.name]: e.target.value,
-        ...(blueprint.id === 'GIT' && e.target.name === 'repoRemoteBranch' && { sandboxBranch: e.target.value })
+        ...(syncBranches && e.target.name === 'repoRemoteBranch' && { sandboxBranch: e.target.value })
       });
     }
   };
@@ -203,21 +209,6 @@ function BlueprintForm(props: BlueprintFormProps) {
             )}
           />
         </Grid>
-        {blueprint.id !== 'GIT' && (
-          <Grid item xs={12}>
-            <TextField
-              id="sandboxBranch"
-              name="sandboxBranch"
-              label={formatMessage(messages.sandboxBranch)}
-              fullWidth
-              onKeyPress={onKeyPress}
-              onChange={(event) => handleInputChange(event)}
-              InputLabelProps={{ shrink: true }}
-              placeholder={'master'}
-              value={inputs.sandboxBranch}
-            />
-          </Grid>
-        )}
         <Grid item xs={12}>
           <TextField
             id="description"
@@ -231,26 +222,19 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        {blueprint.id === 'GIT' && (
+        {blueprint.id !== 'GIT' && !inputs.pushSite && (
           <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Switch
-                  name="createAsOrphan"
-                  checked={inputs.createAsOrphan}
-                  onChange={(event) => handleInputChange(event)}
-                  color="primary"
-                />
-              }
-              label={formatMessage(messages.createAsOrphan)}
+            <TextField
+              id="sandboxBranch"
+              name="sandboxBranch"
+              label={formatMessage(messages.gitBranch)}
+              fullWidth
+              onKeyPress={onKeyPress}
+              onChange={(event) => handleInputChange(event)}
+              InputLabelProps={{ shrink: true }}
+              placeholder={'master'}
+              value={inputs.sandboxBranch}
             />
-            <Typography
-              variant="subtitle2"
-              component="small"
-              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
-            >
-              {formatMessage(messages.createAsOrphanHelpText)}
-            </Typography>
           </Grid>
         )}
         {blueprint.parameters && (
@@ -295,6 +279,28 @@ function BlueprintForm(props: BlueprintFormProps) {
             handleInputChange={handleInputChange}
             onKeyPress={onKeyPress}
           />
+        )}
+        {blueprint.id === 'GIT' && (
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Switch
+                  name="createAsOrphan"
+                  checked={inputs.createAsOrphan}
+                  onChange={(event) => handleInputChange(event)}
+                  color="primary"
+                />
+              }
+              label={formatMessage(messages.createAsOrphan)}
+            />
+            <Typography
+              variant="subtitle2"
+              component="small"
+              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
+            >
+              {formatMessage(messages.createAsOrphanHelpText)}
+            </Typography>
+          </Grid>
         )}
       </Grid>
     </form>
