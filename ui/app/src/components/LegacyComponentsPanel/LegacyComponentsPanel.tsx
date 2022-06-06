@@ -95,7 +95,7 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
   const { formatMessage } = useIntl();
   const [browsePath, setBrowsePath] = useState(null);
   const dispatch = useDispatch();
-  const { authoringBase } = useEnv();
+  const { authoringBase, activeEnvironment } = useEnv();
   const [legacyContentModel, setLegacyContentModel] = useState(null);
   const browseFilesDialogState = useEnhancedDialogState();
 
@@ -417,30 +417,32 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
   );
 
   useEffect(() => {
-    fetchConfigurationJSON(siteId, '/preview-tools/components-config.xml', 'studio').subscribe((dom) => {
-      let config = {
-        browse: [],
-        components: []
-      };
-      if (dom.config.browse) {
-        config.browse = Array.isArray(dom.config.browse) ? dom.config.browse : [dom.config.browse];
+    fetchConfigurationJSON(siteId, '/preview-tools/components-config.xml', 'studio', activeEnvironment).subscribe(
+      (dom) => {
+        let config = {
+          browse: [],
+          components: []
+        };
+        if (dom.config.browse) {
+          config.browse = Array.isArray(dom.config.browse) ? dom.config.browse : [dom.config.browse];
+        }
+        if (dom.config.category) {
+          config.components = Array.isArray(dom.config.category)
+            ? dom.config.category.map(({ component, label }) => ({
+                components: component,
+                label
+              }))
+            : [
+                {
+                  components: dom.config.category.component,
+                  label: dom.config.category.label
+                }
+              ];
+        }
+        setConfig(config);
       }
-      if (dom.config.category) {
-        config.components = Array.isArray(dom.config.category)
-          ? dom.config.category.map(({ component, label }) => ({
-              components: component,
-              label
-            }))
-          : [
-              {
-                components: dom.config.category.component,
-                label: dom.config.category.label
-              }
-            ];
-      }
-      setConfig(config);
-    });
-  }, [siteId]);
+    );
+  }, [siteId, activeEnvironment]);
 
   useEffect(() => {
     if (!editMode && open) {

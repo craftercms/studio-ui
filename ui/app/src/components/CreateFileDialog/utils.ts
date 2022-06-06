@@ -34,9 +34,7 @@ export interface CreateFileStateProps extends CreateFileBaseProps, EnhancedDialo
   onCreated?: StandardAction;
 }
 
-export interface CreateFileContainerProps
-  extends CreateFileBaseProps,
-    Pick<CreateFileProps, 'isSubmitting' | 'onCreated' | 'onClose'> {}
+export interface CreateFileContainerProps extends CreateFileBaseProps, Pick<CreateFileProps, 'onCreated' | 'onClose'> {}
 
 export const getExtension = (type: string) => (type === 'controller' ? `groovy` : `ftl`);
 

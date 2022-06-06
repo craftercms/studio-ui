@@ -21,7 +21,7 @@ import CreateFolderContainer from './CreateFolderContainer';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateFolderDialog(props: CreateFolderProps) {
-  const { path, isSubmitting, allowBraces, value, rename, onRenamed, onCreated, ...rest } = props;
+  const { path, allowBraces, value, rename, onRenamed, onCreated, ...rest } = props;
   return (
     <EnhancedDialog
       title={
@@ -32,7 +32,6 @@ export function CreateFolderDialog(props: CreateFolderProps) {
         )
       }
       maxWidth="xs"
-      isSubmitting={isSubmitting}
       {...rest}
     >
       <CreateFolderContainer
@@ -40,7 +39,6 @@ export function CreateFolderDialog(props: CreateFolderProps) {
         rename={rename}
         allowBraces={allowBraces}
         value={value}
-        isSubmitting={isSubmitting}
         onCreated={onCreated}
         onRenamed={onRenamed}
       />
