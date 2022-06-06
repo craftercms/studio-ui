@@ -44,6 +44,7 @@ import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const useStyles = makeStyles()((theme) => ({
   content: {
@@ -139,6 +140,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const { bulkPublishCommentRequired, publishByCommitCommentRequired } = useSelection(
     (state) => state.uiConfig.publishing
   );
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
 
   const setDefaultPublishingTarget = (targets, clearData?) => {
     if (targets.length) {
@@ -156,11 +158,11 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   useEffect(() => {
-    onSubmittingAndOrPendingChange?.({
+    fnRefs.current.onSubmittingAndOrPendingChange?.({
       hasPendingChanges: mode === 'studio' ? publishStudioFormValid : publishGitFormValid,
       isSubmitting
     });
-  }, [isSubmitting, mode, publishStudioFormValid, publishGitFormValid, onSubmittingAndOrPendingChange]);
+  }, [isSubmitting, mode, publishStudioFormValid, publishGitFormValid, fnRefs]);
 
   useEffect(() => {
     fetchPublishingTargets(siteId).subscribe({
