@@ -28,6 +28,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { nnou, pluckProps } from '../../utils/object';
 import { fetchStatus } from '../../services/publishing';
 import { makeStyles } from 'tss-react/mui';
+import useEnv from '../../hooks/useEnv';
 
 const useStyles = makeStyles()((theme) => ({
   itemsList: {
@@ -76,6 +77,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const isSubmitDisabled = checkedItems.length === 0 || rejectionComment.trim() === '' || isSubmitting;
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
+  const { activeEnvironment } = useEnv();
 
   // check all items as default
   useEffect(() => {
@@ -90,7 +92,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   }, [items]);
 
   useEffect(() => {
-    fetchCannedMessages(siteId).subscribe({
+    fetchCannedMessages(siteId, activeEnvironment).subscribe({
       next: (cannedMessages) => {
         setCannedMessages(cannedMessages);
       },
@@ -98,7 +100,7 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
         setApiState({ error: true, errorResponse: response });
       }
     });
-  }, [siteId, setApiState]);
+  }, [siteId, setApiState, activeEnvironment]);
 
   useEffect(() => {
     fetchStatus(siteId).subscribe(({ published }) => {

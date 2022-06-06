@@ -439,7 +439,10 @@ const systemEpics: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       filter(([action, state]) => Boolean(state.sites.active || action.payload?.site)),
       exhaustMap(([action, state]) =>
-        fetchUseLegacyPreviewPreferenceService(action.payload?.site || state.sites.active).pipe(
+        fetchUseLegacyPreviewPreferenceService(
+          action.payload?.site || state.sites.active,
+          state.env.activeEnvironment
+        ).pipe(
           map((useLegacyPreview) =>
             fetchUseLegacyPreviewPreferenceComplete({
               useLegacyPreview,

@@ -357,7 +357,7 @@ export function Launcher(props: LauncherStateProps) {
   const version = useSystemVersion();
   const useLegacy = useLegacyPreviewPreference();
   const { formatMessage } = useIntl();
-  const { authoringBase, useBaseDomain } = useEnv();
+  const { authoringBase, useBaseDomain, activeEnvironment } = useEnv();
   const {
     open,
     anchor: anchorSelector,
@@ -406,7 +406,7 @@ export function Launcher(props: LauncherStateProps) {
   const onSiteCardClick = (site: string) => {
     if (!checkMinimized()) {
       setSiteCookie(site, useBaseDomain);
-      fetchUseLegacyPreviewPreference(site).subscribe((useLegacy) => {
+      fetchUseLegacyPreviewPreference(site, activeEnvironment).subscribe((useLegacy) => {
         if (!useLegacy && window.location.href.includes(PREVIEW_URL_PATH)) {
           // If user is in UI next and switching to a site that's viewed in 4.
           dispatch(batchActions([changeSite(site), closeLauncher()]));

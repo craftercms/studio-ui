@@ -48,8 +48,8 @@ export default [
       filter(([, state]) => Boolean(state.sites.active)),
       // A very quick site change may present problematic as the
       // config that would be retrieved would be the first site.
-      exhaustMap(([{ payload }]) =>
-        fetchSiteUiConfigService(payload.site).pipe(
+      exhaustMap(([{ payload }, { env }]) =>
+        fetchSiteUiConfigService(payload.site, env.activeEnvironment).pipe(
           map((config) => fetchSiteUiConfigComplete({ config, site: payload.site })),
           catchAjaxError(fetchSiteUiConfigFailed)
         )
@@ -61,7 +61,7 @@ export default [
       withLatestFrom(state$),
       filter(([, state]) => Boolean(state.sites.active)),
       exhaustMap(([, state]) =>
-        fetchSiteConfigService(state.sites.active).pipe(
+        fetchSiteConfigService(state.sites.active, state.env.activeEnvironment).pipe(
           switchMap((config) => {
             try {
               let localeCode = config.locale?.localeCode || state.uiConfig.locale.localeCode;
