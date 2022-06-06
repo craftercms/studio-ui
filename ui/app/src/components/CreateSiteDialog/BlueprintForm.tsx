@@ -33,7 +33,9 @@ const useStyles = makeStyles()((theme) => ({
     margin: '0 auto'
   },
   helpText: {
-    transition: `color .5s`
+    transition: `color .5s`,
+    display: 'block',
+    marginBottom: theme.spacing(2)
   },
   muted: {
     color: theme.palette.text.secondary
@@ -91,9 +93,9 @@ const messages = defineMessages({
     id: 'createSiteDialog.cantStart',
     defaultMessage: 'Project names may not start with zeros, dashes (-) or underscores (_).'
   },
-  sandboxBranch: {
-    id: 'createSiteDialog.sandboxBranch',
-    defaultMessage: 'Sandbox Branch'
+  gitBranch: {
+    id: 'createSiteDialog.gitBranch',
+    defaultMessage: 'Git Branch'
   },
   createAsOrphan: {
     id: 'createSiteDialog.createAsOrphan',
@@ -274,20 +276,6 @@ function BlueprintForm(props: BlueprintFormProps) {
             )}
           />
         </Grid>
-        {blueprint.id !== 'GIT' && (
-          <Grid item xs={12}>
-            <TextField
-              id="sandboxBranch"
-              name="sandboxBranch"
-              label={formatMessage(messages.sandboxBranch)}
-              fullWidth
-              onKeyPress={onKeyPress}
-              onChange={(event) => handleInputChange(event)}
-              placeholder={'master'}
-              value={inputs.sandboxBranch}
-            />
-          </Grid>
-        )}
         <Grid item xs={12}>
           <TextField
             id="description"
@@ -301,8 +289,39 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        {blueprint.id === 'GIT' && (
+        {blueprint.id !== 'GIT' && (
           <Grid item xs={12}>
+            <TextField
+              id="sandboxBranch"
+              name="sandboxBranch"
+              label={formatMessage(messages.gitBranch)}
+              fullWidth
+              onKeyPress={onKeyPress}
+              onChange={(event) => handleInputChange(event)}
+              placeholder={'master'}
+              value={inputs.sandboxBranch}
+            />
+          </Grid>
+        )}
+        {blueprint.parameters && (
+          <PluginFormEngine
+            parameters={blueprint.parameters}
+            handleInputChange={handleInputChange}
+            submitted={inputs.submitted}
+            fields={inputs.blueprintFields}
+            onKeyPress={onKeyPress}
+          />
+        )}
+        {blueprint.id === 'GIT' && (
+          <GitForm
+            inputs={inputs}
+            setInputs={setInputs}
+            handleInputChange={handleInputChange}
+            onKeyPress={onKeyPress}
+          />
+        )}
+        {blueprint.id === 'GIT' && (
+          <Grid item xs={12} sx={{ mb: 2 }}>
             <FormControlLabel
               control={
                 <Switch
@@ -322,23 +341,6 @@ function BlueprintForm(props: BlueprintFormProps) {
               {formatMessage(messages.createAsOrphanHelpText)}
             </Typography>
           </Grid>
-        )}
-        {blueprint.parameters && (
-          <PluginFormEngine
-            parameters={blueprint.parameters}
-            handleInputChange={handleInputChange}
-            submitted={inputs.submitted}
-            fields={inputs.blueprintFields}
-            onKeyPress={onKeyPress}
-          />
-        )}
-        {blueprint.id === 'GIT' && (
-          <GitForm
-            inputs={inputs}
-            setInputs={setInputs}
-            handleInputChange={handleInputChange}
-            onKeyPress={onKeyPress}
-          />
         )}
       </Grid>
     </form>

@@ -28,12 +28,6 @@ const useStyles = makeStyles()(() => ({
     '& .MuiFormGroup-root': {
       marginLeft: '10px'
     }
-  },
-  gitInfo: {
-    width: '100%',
-    '& .MuiGrid-item': {
-      padding: '12px'
-    }
   }
 }));
 
@@ -127,7 +121,7 @@ function GitForm(props: GitFormProps) {
   }
 
   return (
-    <Grid container spacing={0} className={classes.gitInfo}>
+    <>
       <Grid item xs={12}>
         <TextField
           id="repoUrl"
@@ -149,11 +143,6 @@ function GitForm(props: GitFormProps) {
             inputs.submitted
           )}
         />
-      </Grid>
-      <Grid item xs={12}>
-        <div className={classes.formControl}>
-          <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
-        </div>
       </Grid>
       <Grid item xs={12}>
         <TextField
@@ -183,7 +172,12 @@ function GitForm(props: GitFormProps) {
           helperText={formatMessage(cloneMessages.clone_remoteName_label)}
         />
       </Grid>
-    </Grid>
+      <Grid item xs={12}>
+        <div className={classes.formControl}>
+          <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
+        </div>
+      </Grid>
+    </>
   );
 }
 
