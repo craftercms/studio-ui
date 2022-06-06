@@ -44,9 +44,12 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
     setActiveToolId(id);
   };
 
-  const onSubmittingAndOrPendingChange = (value: onSubmittingAndOrPendingChangeProps) => {
-    dispatch(updateWidgetDialog(value));
-  };
+  const onSubmittingAndOrPendingChange =
+    // @ts-ignore
+    props.onSubmittingAndOrPendingChange ??
+    ((value: onSubmittingAndOrPendingChangeProps) => {
+      dispatch(updateWidgetDialog(value));
+    });
 
   return (
     <SiteTools
