@@ -147,14 +147,14 @@ function GitForm(props: GitFormProps) {
       <Grid item xs={12}>
         <TextField
           id="repoRemoteBranch"
-          name="repoRemoteBranch"
+          name="gitBranch"
           label={formatMessage(messages.branch)}
           InputLabelProps={{ shrink: true }}
           placeholder="master"
           fullWidth
           onKeyPress={onKeyPress}
           onChange={handleInputChange}
-          value={inputs.repoRemoteBranch}
+          value={inputs.gitBranch}
           helperText={formatMessage(cloneMessages.clone_remoteBranch_label)}
         />
       </Grid>
