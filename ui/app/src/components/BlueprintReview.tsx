@@ -286,11 +286,11 @@ function BlueprintReview(props: BlueprintReviewProps) {
               <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>
             )}
           </Typography>
-          {blueprint.source !== 'GIT' && (blueprint.id === 'GIT' || inputs.pushSite) && renderGitOptions()}
           <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{formatMessage(messages.gitBranch)}: </span>{' '}
             {inputs.gitBranch ? inputs.gitBranch : 'master'}
           </Typography>
+          {blueprint.source !== 'GIT' && (blueprint.id === 'GIT' || inputs.pushSite) && renderGitOptions()}
           {blueprint.id !== 'GIT' && inputs.pushSite && (
             <div>
               <Typography variant="body2" gutterBottom>
