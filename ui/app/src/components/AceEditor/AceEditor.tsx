@@ -266,7 +266,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
           }
         });
     };
-    // TODO: Loading mechanisms very rudimentary. Most research better ways.
+    // TODO: Loading mechanisms very rudimentary. Must research better ways.
     if (!window.ace) {
       const aceScript = document.createElement('script');
       aceScript.src = '/studio/static-assets/libs/ace/ace.js';
