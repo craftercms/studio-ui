@@ -27,6 +27,7 @@ import { updateWidgetDialog } from '../../../state/actions/dialogs';
 
 interface EmbeddedSiteToolsProps {
   onMinimize?: () => void;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
@@ -45,7 +46,6 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   };
 
   const onSubmittingAndOrPendingChange =
-    // @ts-ignore
     props.onSubmittingAndOrPendingChange ??
     ((value: onSubmittingAndOrPendingChangeProps) => {
       dispatch(updateWidgetDialog(value));
