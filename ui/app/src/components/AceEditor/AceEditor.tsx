@@ -16,7 +16,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import { pluckProps } from '../../utils/object';
 import { CSSObject as CSSProperties } from 'tss-react';
 import { useMount } from '../../hooks/useMount';
 import { useTheme } from '@mui/material/styles';
@@ -26,7 +25,9 @@ import MutableRef from '../../models/MutableRef';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
 export interface AceOptions {
-  // editor options
+  // - - - - - - - -
+  // region editor options
+  // - - - - - - - -
   selectionStyle: 'line' | 'text';
   highlightActiveLine: boolean;
   highlightSelectedWord: boolean;
@@ -42,7 +43,10 @@ export interface AceOptions {
   useSoftTabs: boolean; // (defaults to false)
   navigateWithinSoftTabs: boolean; // (defaults to false)
   enableMultiselect: boolean; // # on by default
-  // renderer options
+  // endregion
+  // - - - - - - - -
+  // region renderer options
+  // - - - - - - - -
   hScrollBarAlwaysVisible: boolean;
   vScrollBarAlwaysVisible: boolean;
   highlightGutterLine: boolean;
@@ -57,7 +61,7 @@ export interface AceOptions {
   showLineNumbers: boolean; // (defaults to true)
   showGutter: boolean; // (defaults to true)
   displayIndentGuides: boolean; // (defaults to true)
-  fontSize: number | string; // number or css font-size string
+  fontSize: number | string; // or css font-size string
   fontFamily: string; // css font-family value
   // resize editor based on the contents of the editor until the number of lines reaches maxLines
   maxLines: number;
@@ -65,25 +69,33 @@ export interface AceOptions {
   // number of page sizes to scroll after document end (typical values are 0, 0.5, and 1)
   scrollPastEnd: number | boolean;
   fixedWidthGutter: boolean; // (defaults to false)
-  theme: string; // to a theme e.g "ace/theme/textmate"
-  // mouseHandler options
+  theme: string; // path to a theme e.g "ace/theme/textmate"
+  // endregion
+  // - - - - - - - -
+  // region mouseHandler options
+  // - - - - - - - -
   scrollSpeed: number;
   dragDelay: number;
   dragEnabled: boolean; // (defaults to true)
   focusTimout: number;
   tooltipFollowsMouse: boolean;
-  // session options
+  // endregion
+  // - - - - - - - -
+  // region session options
+  // - - - - - - - -
   firstLineNumber: number; // defaults to 1
   overwrite: boolean;
   newLineMode: 'auto' | 'unix' | 'windows';
   useWorker: boolean;
-  // useSoftTabs: boolean;
+  // useSoftTabs: boolean; - declared above in "editor options"
   tabSize: number;
   wrap: boolean | number;
   foldStyle: 'markbegin' | 'markbeginend' | 'manual';
   mode: string; // path to a mode e.g "ace/mode/text"
-  // editor options defined by extensions
-  // to use this options the corresponding extension file needs to be loaded in addition to the ace.js
+  // endregion
+  // - - - - - - - -
+  // region editor options defined by extensions
+  // - - - - - - - -
   // following options require ext-language_tools.js
   enableBasicAutocompletion: boolean;
   enableLiveAutocompletion: boolean;
@@ -92,6 +104,7 @@ export interface AceOptions {
   enableEmmet: boolean;
   // the following option requires ext-elastic_tabstops_lite.js
   useElasticTabstops: boolean;
+  // endregion
 }
 
 export type AceEditorClassKey = 'root' | 'editorRoot';
@@ -103,6 +116,7 @@ export interface AceEditorProps extends Partial<AceOptions> {
   classes?: Partial<Record<AceEditorClassKey, string>>;
   autoFocus?: boolean;
   styles?: AceEditorStyles;
+  extensions?: string[];
   onChange?(e: any): void;
   onInit?(editor: AceAjax.Editor): void;
 }
@@ -185,16 +199,24 @@ const useStyles = makeStyles<AceEditorStyles, AceEditorClassKey>()(
       margin: 0,
       width: '100%',
       height: '100%',
-      position: 'relative',
       ...editorRoot
     }
   })
 );
 
 function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
-  const { value = '', autoFocus = false, onChange, readOnly, onInit } = props;
-  const { classes, cx } = useStyles(props.styles);
-  const editorRootClasses = props.classes?.editorRoot;
+  const {
+    value = '',
+    classes: propClasses,
+    autoFocus = false,
+    styles,
+    extensions = [],
+    onChange,
+    onInit,
+    ...options
+  } = props;
+  const { classes, cx } = useStyles(styles);
+  const editorRootClasses = propClasses?.editorRoot;
   const refs = useRef({
     ace: null,
     elem: null,
@@ -207,7 +229,6 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     palette: { mode }
   } = useTheme();
 
-  const options = pluckProps(props as AceOptions, true, ...aceOptions);
   options.theme = options.theme ?? `ace/theme/${mode === 'light' ? 'chrome' : 'tomorrow_night'}`;
 
   refs.current.onChange = onChange;
@@ -216,34 +237,63 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     let unmounted = false;
     let initialized = false;
     let aceEditor: AceAjax.Editor;
+    let deps = { ace: false, emmet: false, languageTools: false };
     const init = () => {
-      if (!unmounted) {
-        const pre = document.createElement('pre');
-        pre.className = cx(classes.editorRoot, editorRootClasses);
-        refs.current.pre = pre;
-        refs.current.elem.appendChild(pre);
-        // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
-        aceEditor = window.ace.edit(pre, options);
-        if (readOnly) {
-          // @ts-ignore - TS don't recognize $cursorLayer prop
-          aceEditor.renderer.$cursorLayer.element.style.display = 'none';
-        } else {
-          autoFocus && aceEditor.focus();
-        }
-        refs.current.ace = aceEditor;
-        onInit?.(aceEditor);
-        if (ref) {
-          typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);
-        }
-        setInitialized((initialized = true));
-      }
+      deps.ace &&
+        deps.emmet &&
+        deps.languageTools &&
+        // @ts-ignore - Ace types are incorrect; the require function takes a callback
+        window.ace.require(['ace/ace', 'ace/ext/language_tools', 'ace/ext/emmet', ...extensions], (ace) => {
+          if (!unmounted) {
+            const pre = document.createElement('pre');
+            pre.className = cx(classes.editorRoot, editorRootClasses);
+            refs.current.pre = pre;
+            refs.current.elem.appendChild(pre);
+            // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
+            aceEditor = ace.edit(pre, options);
+            if (options.readOnly) {
+              // @ts-ignore - TS don't recognize $cursorLayer prop
+              aceEditor.renderer.$cursorLayer.element.style.display = 'none';
+            } else {
+              autoFocus && aceEditor.focus();
+            }
+            refs.current.ace = aceEditor;
+            onInit?.(aceEditor);
+            if (ref) {
+              typeof ref === 'function' ? ref(aceEditor) : (ref.current = aceEditor);
+            }
+            setInitialized((initialized = true));
+          }
+        });
     };
+    // TODO: Loading mechanisms very rudimentary. Must research better ways.
     if (!window.ace) {
-      const script = document.createElement('script');
-      script.src = '/studio/static-assets/libs/ace/ace.js';
-      script.onload = init;
-      document.head.appendChild(script);
+      const aceScript = document.createElement('script');
+      aceScript.src = '/studio/static-assets/libs/ace/ace.js';
+      aceScript.onload = () => {
+        deps.ace = true;
+        // Emmet
+        const emmetScript = document.createElement('script');
+        emmetScript.src = '/studio/static-assets/libs/ace/ext-language_tools.js';
+        emmetScript.onload = () => {
+          deps.languageTools = true;
+          init();
+        };
+        // Language tools
+        const languageToolsScript = document.createElement('script');
+        languageToolsScript.src = '/studio/static-assets/libs/ace/ext-emmet.js';
+        languageToolsScript.onload = () => {
+          deps.emmet = true;
+          init();
+        };
+        document.head.appendChild(emmetScript);
+        document.head.appendChild(languageToolsScript);
+      };
+      document.head.appendChild(aceScript);
     } else {
+      deps.ace = true;
+      deps.emmet = true;
+      deps.languageTools = true;
       init();
     }
     return () => {
