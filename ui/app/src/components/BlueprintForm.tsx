@@ -107,7 +107,6 @@ function BlueprintForm(props: BlueprintFormProps) {
   const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist } = props;
   const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
-  const syncBranches = blueprint.id === 'GIT' || inputs.pushSite;
   const maxLength = 4000;
 
   useEffect(() => {
@@ -120,11 +119,6 @@ function BlueprintForm(props: BlueprintFormProps) {
     e.persist();
     if (e.target.type === 'checkbox') {
       setInputs({ [e.target.name]: e.target.checked, submitted: false });
-
-      // If 'push site to remote' is being enabled - set repoRemoteBranch value to be the same as sandboxBranch
-      if (e.target.name === 'pushSite' && e.target.checked) {
-        setInputs({ repoRemoteBranch: inputs.sandboxBranch });
-      }
     } else if (e.target.name === 'siteId') {
       const invalidSiteId =
         e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_');
@@ -140,10 +134,7 @@ function BlueprintForm(props: BlueprintFormProps) {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
     } else {
-      setInputs({
-        [e.target.name]: e.target.value,
-        ...(syncBranches && e.target.name === 'repoRemoteBranch' && { sandboxBranch: e.target.value })
-      });
+      setInputs({ [e.target.name]: e.target.value });
     }
   };
 
@@ -222,18 +213,18 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        {blueprint.id !== 'GIT' && !inputs.pushSite && (
+        {blueprint.id !== 'GIT' && (
           <Grid item xs={12}>
             <TextField
               id="sandboxBranch"
-              name="sandboxBranch"
+              name="gitBranch"
               label={formatMessage(messages.gitBranch)}
               fullWidth
               onKeyPress={onKeyPress}
               onChange={(event) => handleInputChange(event)}
               InputLabelProps={{ shrink: true }}
               placeholder={'master'}
-              value={inputs.sandboxBranch}
+              value={inputs.gitBranch}
             />
           </Grid>
         )}
