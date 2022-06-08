@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import {
   changeCurrentUrl,
   clearSelectedZones,
@@ -88,6 +88,7 @@ import {
   insertComponent,
   insertInstance,
   insertItem,
+  lock,
   moveItem,
   sortItem,
   updateField,
@@ -142,6 +143,7 @@ import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros } from '../../utils/path';
 import {
   closeSingleFileUploadDialog,
+  closeWorkflowCancellationDialog,
   rtePickerActionResult,
   showEditDialog,
   showRtePickerActions,
@@ -182,6 +184,7 @@ import BrowseFilesDialog from '../BrowseFilesDialog';
 import { DetailedItem, MediaItem } from '../../models';
 import DataSourcesActionsList, { DataSourcesActionsListProps } from '../DataSourcesActionsList/DataSourcesActionsList';
 import { editControllerActionCreator, itemActionDispatcher } from '../../utils/itemActions';
+import useItemsByPath from '../../hooks/useItemsByPath';
 
 const originalDocDomain = document.domain;
 
@@ -291,6 +294,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
     usePreviewState();
   const item = useCurrentPreviewItem();
+  const itemsByPath = useItemsByPath();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
@@ -354,7 +358,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     setDataSourceActionsListState,
     showToolsPanel,
     toolsPanelWidth,
-    browseFilesDialogState
+    browseFilesDialogState,
+    itemsByPath
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -364,6 +369,48 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       payload
     });
   };
+
+  const onBeforeWriteOperation = useCallback(
+    (siteId, path, action) => {
+      const { enqueueSnackbar, dispatch, formatMessage } = upToDateRefs.current;
+      const cachedSandboxItem = upToDateRefs.current.itemsByPath[path];
+
+      lock(siteId, path).subscribe({
+        next: () => {
+          fetchSandboxItemService(siteId, path).subscribe((item) => {
+            if (item.stateMap.submitted || item.stateMap.scheduled) {
+              dispatch(
+                showWorkflowCancellationDialog({
+                  items: [item],
+                  onContinue: dispatchDOMEvent({ id: 'workflowContinue' }),
+                  onClose: batchActions([unlockItem({ path }), closeWorkflowCancellationDialog()])
+                })
+              );
+              createCustomDocumentEventListener('workflowContinue', () => {
+                action();
+              });
+            } else if (item.commitId !== cachedSandboxItem?.sandbox.commitId) {
+              enqueueSnackbar(formatMessage(guestMessages['outOfSyncContent']), {
+                variant: 'warning'
+              });
+              dispatch(unlockItem({ path }));
+              getHostToGuestBus().next({ type: reloadRequest.type });
+            } else {
+              action();
+            }
+          });
+        },
+        error: ({ response, status }) => {
+          if (status === 409) {
+            enqueueSnackbar(formatMessage(guestMessages['itemLocked'], { lockOwner: response.person }), {
+              variant: 'warning'
+            });
+          }
+        }
+      });
+    },
+    [upToDateRefs]
+  );
 
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
@@ -595,43 +642,45 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             parentModelId = findParentModelId(modelId, upToDateRefs.current.hierarchyMap, models);
           }
 
-          sortItem(
-            siteId,
-            modelId,
-            fieldId,
-            currentIndex,
-            targetIndex,
-            models[parentModelId ? parentModelId : modelId].craftercms.path
-          ).subscribe({
-            next({ updatedDocument }) {
-              const updatedModels = {};
-              parseContentXML(
-                updatedDocument,
-                parentModelId ? models[parentModelId].craftercms.path : models[modelId].craftercms.path,
-                contentTypes,
-                updatedModels
-              );
-              dispatch(guestModelUpdated({ model: normalizeModel(updatedModels[modelId]) }));
+          onBeforeWriteOperation(siteId, path, () => {
+            sortItem(
+              siteId,
+              modelId,
+              fieldId,
+              currentIndex,
+              targetIndex,
+              models[parentModelId ? parentModelId : modelId].craftercms.path
+            ).subscribe({
+              next({ updatedDocument }) {
+                const updatedModels = {};
+                parseContentXML(
+                  updatedDocument,
+                  parentModelId ? models[parentModelId].craftercms.path : models[modelId].craftercms.path,
+                  contentTypes,
+                  updatedModels
+                );
+                dispatch(guestModelUpdated({ model: normalizeModel(updatedModels[modelId]) }));
 
-              issueDescriptorRequest({
-                site: siteId,
-                path: path ?? models[parentModelId].craftercms.path,
-                contentTypes,
-                requestedSourceMapPaths,
-                dispatch,
-                completeAction: fetchGuestModelComplete
-              });
-              hostToHost$.next(sortItemOperationComplete(payload));
-              updatedModifiedItem(path);
-              enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
-            },
-            error(error) {
-              console.error(`${type} failed`, error);
-              hostToHost$.next(sortItemOperationFailed());
-              // If write operation fails the items remains locked, so we need to dispatch unlockItem
-              dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
-            }
+                issueDescriptorRequest({
+                  site: siteId,
+                  path: path ?? models[parentModelId].craftercms.path,
+                  contentTypes,
+                  requestedSourceMapPaths,
+                  dispatch,
+                  completeAction: fetchGuestModelComplete
+                });
+                hostToHost$.next(sortItemOperationComplete(payload));
+                updatedModifiedItem(path);
+                enqueueSnackbar(formatMessage(guestMessages.sortOperationComplete));
+              },
+              error(error) {
+                console.error(`${type} failed`, error);
+                hostToHost$.next(sortItemOperationFailed());
+                // If write operation fails the items remains locked, so we need to dispatch unlockItem
+                dispatch(unlockItem({ path }));
+                enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
+              }
+            });
           });
           break;
         }
@@ -750,25 +799,28 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case duplicateItemOperation.type: {
           const { modelId, parentModelId, fieldId, index } = payload;
           const path = models[parentModelId ?? modelId].craftercms.path;
-          duplicateItem(siteId, modelId, fieldId, index, path).subscribe({
-            next({ newItem }) {
-              issueDescriptorRequest({
-                site: siteId,
-                path: newItem.path,
-                contentTypes,
-                requestedSourceMapPaths,
-                dispatch,
-                completeAction: fetchPrimaryGuestModelComplete
-              });
-              hostToGuest$.next(duplicateItemOperationComplete());
-              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
-            },
-            error() {
-              hostToGuest$.next(duplicateItemOperationFailed());
-              // If write operation fails the items remains locked, so we need to dispatch unlockItem
-              dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
-            }
+
+          onBeforeWriteOperation(siteId, path, () => {
+            duplicateItem(siteId, modelId, fieldId, index, path).subscribe({
+              next({ newItem }) {
+                issueDescriptorRequest({
+                  site: siteId,
+                  path: newItem.path,
+                  contentTypes,
+                  requestedSourceMapPaths,
+                  dispatch,
+                  completeAction: fetchPrimaryGuestModelComplete
+                });
+                hostToGuest$.next(duplicateItemOperationComplete());
+                enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
+              },
+              error() {
+                hostToGuest$.next(duplicateItemOperationFailed());
+                // If write operation fails the items remains locked, so we need to dispatch unlockItem
+                dispatch(unlockItem({ path }));
+                enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
+              }
+            });
           });
           break;
         }
@@ -833,34 +885,36 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             parentModelId = findParentModelId(modelId, hierarchyMap, models);
           }
 
-          deleteItem(
-            siteId,
-            modelId,
-            fieldId,
-            index,
-            models[parentModelId ? parentModelId : modelId].craftercms.path
-          ).subscribe({
-            next: () => {
-              issueDescriptorRequest({
-                site: siteId,
-                path: path ?? models[parentModelId].craftercms.path,
-                contentTypes,
-                requestedSourceMapPaths,
-                dispatch,
-                completeAction: fetchGuestModelComplete
-              });
+          onBeforeWriteOperation(siteId, path, () => {
+            deleteItem(
+              siteId,
+              modelId,
+              fieldId,
+              index,
+              models[parentModelId ? parentModelId : modelId].craftercms.path
+            ).subscribe({
+              next: () => {
+                issueDescriptorRequest({
+                  site: siteId,
+                  path: path ?? models[parentModelId].craftercms.path,
+                  contentTypes,
+                  requestedSourceMapPaths,
+                  dispatch,
+                  completeAction: fetchGuestModelComplete
+                });
 
-              hostToHost$.next(deleteItemOperationComplete(payload));
-              updatedModifiedItem(path);
-              enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
-            },
-            error: (error) => {
-              console.error(`${type} failed`, error);
-              hostToHost$.next(deleteItemOperationFailed());
-              // If write operation fails the items remains locked, so we need to dispatch unlockItem
-              dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
-            }
+                hostToHost$.next(deleteItemOperationComplete(payload));
+                updatedModifiedItem(path);
+                enqueueSnackbar(formatMessage(guestMessages.deleteOperationComplete));
+              },
+              error: (error) => {
+                console.error(`${type} failed`, error);
+                hostToHost$.next(deleteItemOperationFailed());
+                // If write operation fails the items remains locked, so we need to dispatch unlockItem
+                dispatch(unlockItem({ path }));
+                enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
+              }
+            });
           });
           break;
         }
@@ -1199,7 +1253,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     return () => {
       guestToHostSubscription.unsubscribe();
     };
-  }, [upToDateRefs]);
+  }, [upToDateRefs, onBeforeWriteOperation]);
 
   // hostToHost$ subscription
   useEffect(() => {
