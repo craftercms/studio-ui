@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
@@ -130,13 +130,28 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const { formatMessage } = useIntl();
   const [mode, setMode] = useState<PublishOnDemandMode>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
   const [publishingTargets, setPublishingTargets] = useState(null);
   const [publishingTargetsError, setPublishingTargetsError] = useState(null);
   const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
   const [publishGitFormValid, setPublishGitFormValid] = useState(false);
+  const publishGitFormChanged = useMemo(() => {
+    return (
+      publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
+      publishGitFormData.comment !== initialPublishGitFormData.comment ||
+      publishGitFormData.environment !== initialPublishingTarget
+    );
+  }, [initialPublishingTarget, publishGitFormData]);
   const [publishStudioFormData, setPublishStudioFormData] =
     useSpreadState<PublishFormData>(initialPublishStudioFormData);
   const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
+  const publishStudioFormChanged = useMemo(() => {
+    return (
+      publishStudioFormData.path !== initialPublishStudioFormData.path ||
+      publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
+      publishStudioFormData.environment !== initialPublishingTarget
+    );
+  }, [initialPublishingTarget, publishStudioFormData]);
   const { bulkPublishCommentRequired, publishByCommitCommentRequired } = useSelection(
     (state) => state.uiConfig.publishing
   );
@@ -146,6 +161,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     if (targets.length) {
       const stagingEnv = targets.find((target) => target.name === 'staging');
       const environment = stagingEnv?.name ?? targets[0].name;
+      setInitialPublishingTarget(environment);
       setPublishGitFormData({
         ...(clearData && initialPublishGitFormData),
         environment
@@ -159,10 +175,10 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 
   useEffect(() => {
     fnRefs.current.onSubmittingAndOrPendingChange?.({
-      hasPendingChanges: mode === 'studio' ? publishStudioFormValid : publishGitFormValid,
+      hasPendingChanges: mode === 'studio' ? publishStudioFormChanged : publishGitFormChanged,
       isSubmitting
     });
-  }, [isSubmitting, mode, publishStudioFormValid, publishGitFormValid, fnRefs]);
+  }, [isSubmitting, mode, publishStudioFormChanged, publishGitFormChanged, fnRefs]);
 
   useEffect(() => {
     fetchPublishingTargets(siteId).subscribe({
