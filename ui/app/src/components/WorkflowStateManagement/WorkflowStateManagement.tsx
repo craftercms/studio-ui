@@ -129,9 +129,9 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 
   useEffect(() => {
     fnRefs.current.onSubmittingAndOrPendingChange?.({
-      hasPendingChanges: Boolean(selectedItemsLength)
+      hasPendingChanges: hasSelectedItems
     });
-  }, [selectedItemsLength, fnRefs]);
+  }, [hasSelectedItems, fnRefs]);
 
   const resource = useLogicResource<
     PagedArray<SandboxItem>,
