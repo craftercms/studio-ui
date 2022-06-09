@@ -70,10 +70,6 @@ const cloneMessages = defineMessages({
 });
 
 const messages = defineMessages({
-  branch: {
-    id: 'createSiteDialog.branch',
-    defaultMessage: 'Git Branch'
-  },
   userName: {
     id: 'common.userName',
     defaultMessage: 'Username'

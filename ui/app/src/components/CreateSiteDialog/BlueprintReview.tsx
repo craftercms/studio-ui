@@ -96,10 +96,6 @@ const messages = defineMessages({
     id: 'createSiteDialog.remoteURL',
     defaultMessage: 'Git Repo URL'
   },
-  remoteBranch: {
-    id: 'createSiteDialog.remoteBranch',
-    defaultMessage: 'Git Branch'
-  },
   siteId: {
     id: 'createSiteDialog.siteId',
     defaultMessage: 'Project ID'
