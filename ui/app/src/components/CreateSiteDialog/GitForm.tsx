@@ -21,13 +21,24 @@ import TextField from '@mui/material/TextField';
 import { SiteState } from '../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
 import GitAuthForm from '../GitAuthForm';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
     width: '100%',
     '& .MuiFormGroup-root': {
       marginLeft: '10px'
     }
+  },
+  helpText: {
+    transition: `color .5s`,
+    display: 'block',
+    marginBottom: theme.spacing(2)
+  },
+  muted: {
+    color: theme.palette.text.secondary
   }
 }));
 
@@ -98,6 +109,15 @@ const messages = defineMessages({
   required: {
     id: 'createSiteDialog.required',
     defaultMessage: '{name} is required.'
+  },
+  createAsOrphan: {
+    id: 'createSiteDialog.createAsOrphan',
+    defaultMessage: 'Create the project from a remote repository as orphan (no git history)'
+  },
+  createAsOrphanHelpText: {
+    id: 'createSiteDialog.createAsOrphanHelpText',
+    defaultMessage:
+      'Creating the project as an orphan will dissociate the project from the source git repository and remove all history.'
   }
 });
 
@@ -146,20 +166,6 @@ function GitForm(props: GitFormProps) {
       </Grid>
       <Grid item xs={12}>
         <TextField
-          id="repoRemoteBranch"
-          name="gitBranch"
-          label={formatMessage(messages.branch)}
-          InputLabelProps={{ shrink: true }}
-          placeholder="master"
-          fullWidth
-          onKeyPress={onKeyPress}
-          onChange={handleInputChange}
-          value={inputs.gitBranch}
-          helperText={formatMessage(cloneMessages.clone_remoteBranch_label)}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
           id="repoRemoteName"
           name="repoRemoteName"
           label={formatMessage(messages.remoteName)}
@@ -176,6 +182,26 @@ function GitForm(props: GitFormProps) {
         <div className={classes.formControl}>
           <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
         </div>
+      </Grid>
+      <Grid item xs={12} sx={{ mb: 2 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              name="createAsOrphan"
+              checked={inputs.createAsOrphan}
+              onChange={(event) => handleInputChange(event)}
+              color="primary"
+            />
+          }
+          label={formatMessage(messages.createAsOrphan)}
+        />
+        <Typography
+          variant="subtitle2"
+          component="small"
+          className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
+        >
+          {formatMessage(messages.createAsOrphanHelpText)}
+        </Typography>
       </Grid>
     </>
   );
