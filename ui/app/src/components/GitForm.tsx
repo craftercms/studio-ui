@@ -106,10 +106,6 @@ const cloneMessages = defineMessages({
 });
 
 const messages = defineMessages({
-  branch: {
-    id: 'createSiteDialog.branch',
-    defaultMessage: 'Git Branch'
-  },
   userName: {
     id: 'common.userName',
     defaultMessage: 'Username'
@@ -338,26 +334,6 @@ function GitForm(props: GitFormProps) {
           }
         />
       </Grid>
-      {!inputs.pushSite && (
-        <Grid item xs={12}>
-          <TextField
-            id="repoRemoteBranch"
-            name="gitBranch"
-            label={formatMessage(messages.branch)}
-            InputLabelProps={{ shrink: true }}
-            placeholder="master"
-            fullWidth
-            onKeyPress={onKeyPress}
-            onChange={handleInputChange}
-            value={inputs.gitBranch}
-            helperText={
-              type === 'push'
-                ? formatMessage(pushMessages.push_remoteBranch_label)
-                : formatMessage(cloneMessages.clone_remoteBranch_label)
-            }
-          />
-        </Grid>
-      )}
       <Grid item xs={12}>
         <TextField
           id="repoRemoteName"

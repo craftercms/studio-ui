@@ -213,21 +213,19 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        {blueprint.id !== 'GIT' && (
-          <Grid item xs={12}>
-            <TextField
-              id="sandboxBranch"
-              name="gitBranch"
-              label={formatMessage(messages.gitBranch)}
-              fullWidth
-              onKeyPress={onKeyPress}
-              onChange={(event) => handleInputChange(event)}
-              InputLabelProps={{ shrink: true }}
-              placeholder={'master'}
-              value={inputs.gitBranch}
-            />
-          </Grid>
-        )}
+        <Grid item xs={12}>
+          <TextField
+            id="sandboxBranch"
+            name="gitBranch"
+            label={formatMessage(messages.gitBranch)}
+            fullWidth
+            onKeyPress={onKeyPress}
+            onChange={(event) => handleInputChange(event)}
+            InputLabelProps={{ shrink: true }}
+            placeholder="master"
+            value={inputs.gitBranch}
+          />
+        </Grid>
         {blueprint.parameters && (
           <FormBuilder
             parameters={blueprint.parameters}
