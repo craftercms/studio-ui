@@ -28,6 +28,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
    */
   initialize: function (config) {
     this.config = config;
+    this.isDirty = false;
   },
 
   /**
@@ -54,13 +55,16 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   },
 
   onSetDirty(value) {
-    window.top.postMessage(
-      {
-        type: 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE',
-        payload: { hasPendingChanges: value }
-      },
-      '*'
-    );
+    if (this.isDirty !== value) {
+      this.isDirty = value;
+      window.top.postMessage(
+        {
+          type: 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE',
+          payload: { hasPendingChanges: value }
+        },
+        '*'
+      );
+    }
   },
 
   /**
