@@ -48,6 +48,7 @@ import { itemActionDispatcher } from '../../../utils/itemActions';
 import { useEnv } from '../../../hooks/useEnv';
 import { getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
+import useDetailedItems from '../../../hooks/useDetailedItems';
 
 export interface AwaitingApprovalDashletDashboardItem {
   label: string;
@@ -97,6 +98,7 @@ export function AwaitingApprovalDashlet() {
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
     [isAllChecked, selectedLookup, state.itemsLookup]
   );
+  const { itemsByPath } = useDetailedItems(Object.keys(selectedLookup));
 
   const refresh = useCallback(() => {
     setIsFetching(true);
@@ -245,7 +247,8 @@ export function AwaitingApprovalDashlet() {
     } else {
       const selected = Object.keys(selectedLookup)
         .filter((path) => selectedLookup[path])
-        .map((path) => state.itemsLookup[path]);
+        .map((path) => itemsByPath[path]);
+
       itemActionDispatcher({
         site: siteId,
         item: selected.length > 1 ? selected : selected[0],

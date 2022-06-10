@@ -54,6 +54,7 @@ import { useActiveSite } from '../../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import { reversePluckProps } from '../../../utils/object';
 import { useLocale } from '../../../hooks/useLocale';
+import useDetailedItems from '../../../hooks/useDetailedItems';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   filterBy: 'all',
@@ -98,6 +99,7 @@ export function ApprovedScheduledDashlet() {
     [isAllChecked, selectedLookup, state.itemsLookup]
   );
   const locale = useLocale();
+  const { itemsByPath } = useDetailedItems(Object.keys(selectedLookup));
 
   const refresh = useCallback(() => {
     setIsFetching(true);
@@ -226,7 +228,7 @@ export function ApprovedScheduledDashlet() {
     } else {
       const selected = Object.keys(selectedLookup)
         .filter((path) => selectedLookup[path])
-        .map((path) => state.itemsLookup[path]);
+        .map((path) => itemsByPath[path]);
       itemActionDispatcher({
         site: siteId,
         item: selected.length > 1 ? selected : selected[0],
