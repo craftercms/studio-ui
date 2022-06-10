@@ -102,17 +102,13 @@ const messages = defineMessages({
     id: 'createSiteDialog.remoteURL',
     defaultMessage: 'Git Repo URL'
   },
-  remoteBranch: {
-    id: 'createSiteDialog.remoteBranch',
+  gitBranch: {
+    id: 'createSiteDialog.gitBranch',
     defaultMessage: 'Git Branch'
   },
   siteId: {
     id: 'createSiteDialog.siteId',
     defaultMessage: 'Site ID'
-  },
-  sandboxBranch: {
-    id: 'createSiteDialog.sandboxBranch',
-    defaultMessage: 'Sandbox Branch'
   },
   userNameAndPassword: {
     id: 'createSiteDialog.userNameAndPassword',
@@ -234,10 +230,6 @@ function BlueprintReview(props: BlueprintReviewProps) {
           <span className={classes.bold}>{formatMessage(messages.remoteName)}: </span>{' '}
           {inputs.repoRemoteName ? inputs.repoRemoteName : 'origin'}
         </Typography>
-        <Typography variant="body2" gutterBottom>
-          <span className={classes.bold}>{formatMessage(messages.remoteBranch)}: </span>{' '}
-          {inputs.repoRemoteBranch ? inputs.repoRemoteBranch : 'master'}
-        </Typography>
         {inputs.repoAuthentication !== 'none' && (
           <Typography variant="body2" gutterBottom>
             <span className={classes.bold}>{formatMessage(messages.authentication)}: </span>{' '}
@@ -294,11 +286,11 @@ function BlueprintReview(props: BlueprintReviewProps) {
               <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>
             )}
           </Typography>
-          {blueprint.source !== 'GIT' && (blueprint.id === 'GIT' || inputs.pushSite) && renderGitOptions()}
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.sandboxBranch)}: </span>{' '}
-            {inputs.sandboxBranch ? inputs.sandboxBranch : 'master'}
+            <span className={classes.bold}>{formatMessage(messages.gitBranch)}: </span>{' '}
+            {inputs.gitBranch ? inputs.gitBranch : 'master'}
           </Typography>
+          {blueprint.source !== 'GIT' && (blueprint.id === 'GIT' || inputs.pushSite) && renderGitOptions()}
           {blueprint.id !== 'GIT' && inputs.pushSite && (
             <div>
               <Typography variant="body2" gutterBottom>

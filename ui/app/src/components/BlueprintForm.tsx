@@ -87,9 +87,9 @@ const messages = defineMessages({
     id: 'createSiteDialog.cantStart',
     defaultMessage: 'Site names may not start with zeros, dashes (-) or underscores (_).'
   },
-  sandboxBranch: {
-    id: 'createSiteDialog.sandboxBranch',
-    defaultMessage: 'Sandbox Branch'
+  gitBranch: {
+    id: 'createSiteDialog.gitBranch',
+    defaultMessage: 'Git Branch'
   },
   createAsOrphan: {
     id: 'createSiteDialog.createAsOrphan',
@@ -134,10 +134,7 @@ function BlueprintForm(props: BlueprintFormProps) {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
     } else {
-      setInputs({
-        [e.target.name]: e.target.value,
-        ...(blueprint.id === 'GIT' && e.target.name === 'repoRemoteBranch' && { sandboxBranch: e.target.value })
-      });
+      setInputs({ [e.target.name]: e.target.value });
     }
   };
 
@@ -203,21 +200,6 @@ function BlueprintForm(props: BlueprintFormProps) {
             )}
           />
         </Grid>
-        {blueprint.id !== 'GIT' && (
-          <Grid item xs={12}>
-            <TextField
-              id="sandboxBranch"
-              name="sandboxBranch"
-              label={formatMessage(messages.sandboxBranch)}
-              fullWidth
-              onKeyPress={onKeyPress}
-              onChange={(event) => handleInputChange(event)}
-              InputLabelProps={{ shrink: true }}
-              placeholder={'master'}
-              value={inputs.sandboxBranch}
-            />
-          </Grid>
-        )}
         <Grid item xs={12}>
           <TextField
             id="description"
@@ -231,28 +213,19 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        {blueprint.id === 'GIT' && (
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Switch
-                  name="createAsOrphan"
-                  checked={inputs.createAsOrphan}
-                  onChange={(event) => handleInputChange(event)}
-                  color="primary"
-                />
-              }
-              label={formatMessage(messages.createAsOrphan)}
-            />
-            <Typography
-              variant="subtitle2"
-              component="small"
-              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
-            >
-              {formatMessage(messages.createAsOrphanHelpText)}
-            </Typography>
-          </Grid>
-        )}
+        <Grid item xs={12}>
+          <TextField
+            id="sandboxBranch"
+            name="gitBranch"
+            label={formatMessage(messages.gitBranch)}
+            fullWidth
+            onKeyPress={onKeyPress}
+            onChange={(event) => handleInputChange(event)}
+            InputLabelProps={{ shrink: true }}
+            placeholder="master"
+            value={inputs.gitBranch}
+          />
+        </Grid>
         {blueprint.parameters && (
           <FormBuilder
             parameters={blueprint.parameters}
@@ -295,6 +268,28 @@ function BlueprintForm(props: BlueprintFormProps) {
             handleInputChange={handleInputChange}
             onKeyPress={onKeyPress}
           />
+        )}
+        {blueprint.id === 'GIT' && (
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Switch
+                  name="createAsOrphan"
+                  checked={inputs.createAsOrphan}
+                  onChange={(event) => handleInputChange(event)}
+                  color="primary"
+                />
+              }
+              label={formatMessage(messages.createAsOrphan)}
+            />
+            <Typography
+              variant="subtitle2"
+              component="small"
+              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
+            >
+              {formatMessage(messages.createAsOrphanHelpText)}
+            </Typography>
+          </Grid>
         )}
       </Grid>
     </form>
