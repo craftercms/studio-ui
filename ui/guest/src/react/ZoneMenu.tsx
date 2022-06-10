@@ -35,6 +35,7 @@ import {
   getCachedModels,
   insertItem,
   modelHierarchyMap,
+  onBeforeWriteOperation,
   sortDownItem,
   sortUpItem
 } from '../contentController';
@@ -53,6 +54,8 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
 import { fromICEId, get } from '../elementRegistry';
+import { useSelector } from './GuestContext';
+import { GuestState } from '../store/models/GuestStore';
 
 export interface ZoneMenuProps {
   record: ElementRecord;
@@ -149,6 +152,24 @@ export function ZoneMenu(props: ZoneMenuProps) {
 
     return actions;
   }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord]);
+  const { activeSite, username } = useSelector<GuestState>((state) => state);
+  const models = getCachedModels();
+
+  const itemData = useMemo(() => {
+    const isNodeSelectorItem = recordType === 'component' && nodeSelectorItemRecord;
+    const itemModelId = isNodeSelectorItem ? nodeSelectorItemRecord.modelId : modelId;
+    const itemFieldId = isNodeSelectorItem ? nodeSelectorItemRecord.fieldId : fieldId;
+    const itemIndex = isNodeSelectorItem ? nodeSelectorItemRecord.index : index;
+    const parentModelId = getParentModelId(itemModelId, models, modelHierarchyMap);
+    const path = models[parentModelId ?? nodeSelectorItemRecord.modelId].craftercms.path;
+
+    return {
+      path,
+      itemModelId,
+      itemFieldId,
+      itemIndex
+    };
+  }, [recordType, nodeSelectorItemRecord]);
 
   // region Callbacks
 
@@ -188,33 +209,32 @@ export function ZoneMenu(props: ZoneMenuProps) {
   };
 
   const onDuplicateItem = (e) => {
-    if (recordType === 'component' && nodeSelectorItemRecord) {
-      duplicateItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
-    } else {
-      duplicateItem(modelId, fieldId, index);
-    }
+    const { path, itemModelId, itemFieldId, itemIndex } = itemData;
+    onBeforeWriteOperation(activeSite, path, username, () => {
+      duplicateItem(itemModelId, itemFieldId, itemIndex);
+    }).subscribe();
     onCancel();
   };
 
   const onMoveUp = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (recordType === 'component' && nodeSelectorItemRecord) {
-      sortUpItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
-    } else {
-      sortUpItem(modelId, fieldId, index);
-    }
+
+    const { path, itemModelId, itemFieldId, itemIndex } = itemData;
+    onBeforeWriteOperation(activeSite, path, username, () => {
+      sortUpItem(itemModelId, itemFieldId, itemIndex);
+    }).subscribe();
     onCancel();
   };
 
   const onMoveDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (recordType === 'component' && nodeSelectorItemRecord) {
-      sortDownItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
-    } else {
-      sortDownItem(modelId, fieldId, index);
-    }
+
+    const { path, itemModelId, itemFieldId, itemIndex } = itemData;
+    onBeforeWriteOperation(activeSite, path, username, () => {
+      sortDownItem(itemModelId, itemFieldId, itemIndex);
+    }).subscribe();
     onCancel();
   };
 
@@ -226,11 +246,10 @@ export function ZoneMenu(props: ZoneMenuProps) {
     if (minCount) {
       post(validationMessage(minCount));
     } else {
-      if (recordType === 'component' && nodeSelectorItemRecord) {
-        deleteItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
-      } else {
-        deleteItem(modelId, fieldId, index);
-      }
+      const { path, itemModelId, itemFieldId, itemIndex } = itemData;
+      onBeforeWriteOperation(activeSite, path, username, () => {
+        deleteItem(itemModelId, itemFieldId, itemIndex);
+      }).subscribe();
       onCancel();
     }
   };

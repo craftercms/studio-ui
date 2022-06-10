@@ -34,7 +34,13 @@ import * as iceRegistry from '../../iceRegistry';
 import { getById } from '../../iceRegistry';
 import { dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
-import { getCachedModel, getCachedModels, getCachedSandboxItem, modelHierarchyMap } from '../../contentController';
+import {
+  getCachedModel,
+  getCachedModels,
+  getCachedSandboxItem,
+  modelHierarchyMap,
+  onBeforeWriteOperation
+} from '../../contentController';
 import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
@@ -449,60 +455,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const modelId = action.payload.record.modelId;
                 const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
                 const path = models[parentModelId ?? modelId].craftercms.path;
-                const cachedSandboxItem = getCachedSandboxItem(path);
 
-                return lock(state.activeSite, path).pipe(
-                  switchMap(() => {
-                    return fetchSandboxItem(state.activeSite, path).pipe(
-                      switchMap((item) => {
-                        if (item.stateMap.submitted || item.stateMap.scheduled) {
-                          post(
-                            requestWorkflowCancellationDialog({
-                              siteId: state.activeSite,
-                              path
-                            })
-                          );
-                          return message$.pipe(
-                            filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
-                            take(1),
-                            switchMap(({ payload }) => {
-                              if (payload.type === 'continue') {
-                                return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
-                              } else {
-                                post(unlockItem({ path }));
-                                return NEVER;
-                              }
-                            })
-                          );
-                        } else if (item.commitId !== cachedSandboxItem.commitId) {
-                          post(
-                            validationMessage({
-                              id: 'outOfSyncContent',
-                              level: 'suggestion'
-                            })
-                          );
-                          post(unlockItem({ path }));
-                          window.location.reload();
-                          return NEVER;
-                        } else {
-                          return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
-                        }
-                      })
-                    );
-                  }),
-                  catchError(({ response, status }) => {
-                    if (status === 409) {
-                      post(
-                        validationMessage({
-                          id: 'itemLocked',
-                          level: 'suggestion',
-                          values: { lockOwner: response.person }
-                        })
-                      );
-                    }
-                    return NEVER;
-                  })
-                );
+                return onBeforeWriteOperation(state.activeSite, path, state.username, () => {
+                  initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                });
               }
               break;
             }

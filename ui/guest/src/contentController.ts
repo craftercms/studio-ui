@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, NEVER, Observable, of, Subject } from 'rxjs';
+import { catchError, filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
 import Cookies from 'js-cookie';
-import { fromTopic, post } from './utils/communicator';
+import { fromTopic, message$, post } from './utils/communicator';
 import { v4 as uuid } from 'uuid';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { ContentType } from '@craftercms/studio-ui/models/ContentType';
@@ -32,9 +32,12 @@ import {
   insertInstanceOperation,
   insertItemOperation,
   moveItemOperation,
+  requestWorkflowCancellationDialog,
+  requestWorkflowCancellationDialogOnResult,
   sortItemOperation,
   updateFieldValueOperation,
-  updateFieldValueOperationComplete
+  updateFieldValueOperationComplete,
+  validationMessage
 } from '@craftercms/studio-ui/state/actions/preview';
 import { createLookupTable, nnou, nou } from '@craftercms/studio-ui/utils/object';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
@@ -45,6 +48,8 @@ import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
 import { SandboxItem } from '@craftercms/studio-ui/models';
+import { fetchSandboxItem, lock } from '@craftercms/studio-ui/services/content';
+import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -291,6 +296,59 @@ function deleteItemFromHierarchyMap(modelId: string) {
     .slice(0, index)
     .concat(children.slice(index + 1));
   delete modelHierarchyMap[modelId];
+}
+
+export function onBeforeWriteOperation(siteId, path, username, operation): NEVER {
+  const cachedSandboxItem = getCachedSandboxItem(path);
+
+  return lock(siteId, path).pipe(
+    switchMap(() =>
+      fetchSandboxItem(siteId, path).pipe(
+        switchMap((item) => {
+          if (item.stateMap.submitted || item.stateMap.scheduled) {
+            post(requestWorkflowCancellationDialog({ siteId, path }));
+            return message$.pipe(
+              filter((e) => e.type === requestWorkflowCancellationDialogOnResult.type),
+              take(1),
+              switchMap(({ payload }) => {
+                if (payload.type === 'continue') {
+                  operation();
+                } else {
+                  post(unlockItem({ path }));
+                }
+                return NEVER;
+              })
+            );
+          } else if (item.commitId !== cachedSandboxItem?.commitId && item.lockOwner !== username) {
+            post(
+              validationMessage({
+                id: 'outOfSyncContent',
+                level: 'suggestion'
+              })
+            );
+            post(unlockItem({ path }));
+            window.location.reload();
+          } else {
+            operation();
+          }
+
+          return NEVER;
+        })
+      )
+    ),
+    catchError(({ response, status }) => {
+      if (status === 409) {
+        post(
+          validationMessage({
+            id: 'itemLocked',
+            level: 'suggestion',
+            values: { lockOwner: response.person }
+          })
+        );
+      }
+      return NEVER;
+    })
+  );
 }
 
 export function updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
