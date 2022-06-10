@@ -18,25 +18,16 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import GitForm from './GitForm';
 import { MarketplacePlugin, SiteState } from '../../models';
 import { defineMessages, useIntl } from 'react-intl';
 import PluginFormEngine from '../PluginFormBuilder';
 import { fetchAll } from '../../services/sites';
-import Switch from '@mui/material/Switch';
-import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles()(() => ({
   form: {
     maxWidth: '600px',
     margin: '0 auto'
-  },
-  helpText: {
-    transition: `color .5s`
-  },
-  muted: {
-    color: theme.palette.text.secondary
   }
 }));
 
@@ -91,18 +82,9 @@ const messages = defineMessages({
     id: 'createSiteDialog.cantStart',
     defaultMessage: 'Project names may not start with zeros, dashes (-) or underscores (_).'
   },
-  sandboxBranch: {
-    id: 'createSiteDialog.sandboxBranch',
-    defaultMessage: 'Sandbox Branch'
-  },
-  createAsOrphan: {
-    id: 'createSiteDialog.createAsOrphan',
-    defaultMessage: 'Create the project from a remote repository as orphan (no git history)'
-  },
-  createAsOrphanHelpText: {
-    id: 'createSiteDialog.createAsOrphanHelpText',
-    defaultMessage:
-      'Creating the project as an orphan will dissociate the project from the source git repository and remove all history.'
+  gitBranch: {
+    id: 'createSiteDialog.gitBranch',
+    defaultMessage: 'Git Branch'
   }
 });
 
@@ -158,10 +140,7 @@ function BlueprintForm(props: BlueprintFormProps) {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
     } else {
-      setInputs({
-        [e.target.name]: e.target.value,
-        ...(blueprint.id === 'GIT' && e.target.name === 'repoRemoteBranch' && { sandboxBranch: e.target.value })
-      });
+      setInputs({ [e.target.name]: e.target.value });
     }
   };
 
@@ -274,20 +253,6 @@ function BlueprintForm(props: BlueprintFormProps) {
             )}
           />
         </Grid>
-        {blueprint.id !== 'GIT' && (
-          <Grid item xs={12}>
-            <TextField
-              id="sandboxBranch"
-              name="sandboxBranch"
-              label={formatMessage(messages.sandboxBranch)}
-              fullWidth
-              onKeyPress={onKeyPress}
-              onChange={(event) => handleInputChange(event)}
-              placeholder={'master'}
-              value={inputs.sandboxBranch}
-            />
-          </Grid>
-        )}
         <Grid item xs={12}>
           <TextField
             id="description"
@@ -301,28 +266,18 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        {blueprint.id === 'GIT' && (
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Switch
-                  name="createAsOrphan"
-                  checked={inputs.createAsOrphan}
-                  onChange={(event) => handleInputChange(event)}
-                  color="primary"
-                />
-              }
-              label={formatMessage(messages.createAsOrphan)}
-            />
-            <Typography
-              variant="subtitle2"
-              component="small"
-              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
-            >
-              {formatMessage(messages.createAsOrphanHelpText)}
-            </Typography>
-          </Grid>
-        )}
+        <Grid item xs={12}>
+          <TextField
+            id="sandboxBranch"
+            name="gitBranch"
+            label={formatMessage(messages.gitBranch)}
+            fullWidth
+            onKeyPress={onKeyPress}
+            onChange={(event) => handleInputChange(event)}
+            placeholder="master"
+            value={inputs.gitBranch}
+          />
+        </Grid>
         {blueprint.parameters && (
           <PluginFormEngine
             parameters={blueprint.parameters}
