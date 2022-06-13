@@ -296,7 +296,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     });
   };
 
-  // Clear input current value on click, so if you need to select the same file (in case on an error) it will re-trigger
+  // Clear input current value on click, so if you need to select the same file (in case of an error) it will re-trigger
   // the change/file selection.
   const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const element = event.target as HTMLInputElement;
