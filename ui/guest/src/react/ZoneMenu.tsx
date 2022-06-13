@@ -56,6 +56,7 @@ import { getParentModelId } from '../utils/ice';
 import { fromICEId, get } from '../elementRegistry';
 import { useSelector } from './GuestContext';
 import { GuestState } from '../store/models/GuestStore';
+import { NEVER } from 'rxjs';
 
 export interface ZoneMenuProps {
   record: ElementRecord;
@@ -207,6 +208,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     const { path, itemModelId, itemFieldId, itemIndex } = itemData;
     onBeforeWriteOperation(activeSite, path, username, () => {
       duplicateItem(itemModelId, itemFieldId, itemIndex);
+      return NEVER;
     }).subscribe();
     onCancel();
   };
@@ -218,6 +220,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     const { path, itemModelId, itemFieldId, itemIndex } = itemData;
     onBeforeWriteOperation(activeSite, path, username, () => {
       sortUpItem(itemModelId, itemFieldId, itemIndex);
+      return NEVER;
     }).subscribe();
     onCancel();
   };
@@ -229,6 +232,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     const { path, itemModelId, itemFieldId, itemIndex } = itemData;
     onBeforeWriteOperation(activeSite, path, username, () => {
       sortDownItem(itemModelId, itemFieldId, itemIndex);
+      return NEVER;
     }).subscribe();
     onCancel();
   };
@@ -244,6 +248,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
       const { path, itemModelId, itemFieldId, itemIndex } = itemData;
       onBeforeWriteOperation(activeSite, path, username, () => {
         deleteItem(itemModelId, itemFieldId, itemIndex);
+        return NEVER;
       }).subscribe();
       onCancel();
     }

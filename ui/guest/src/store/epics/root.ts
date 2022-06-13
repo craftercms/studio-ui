@@ -457,7 +457,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const path = models[parentModelId ?? modelId].craftercms.path;
 
                 return onBeforeWriteOperation(state.activeSite, path, state.username, () => {
-                  initTinyMCE(path, record, validations, type === 'html' ? setup : {});
+                  return initTinyMCE(path, record, validations, type === 'html' ? setup : {});
                 });
               }
               break;
@@ -586,6 +586,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         onBeforeWriteOperation(state.activeSite, path, state.username, () => {
           contentController.deleteItem(modelId, fieldId, index);
           post(instanceDragEnded());
+          return NEVER;
         }).subscribe();
       }),
       // There's a raise condition where sometimes the dragend is

@@ -298,7 +298,7 @@ function deleteItemFromHierarchyMap(modelId: string) {
   delete modelHierarchyMap[modelId];
 }
 
-export function onBeforeWriteOperation(siteId, path, username, operation): typeof NEVER {
+export function onBeforeWriteOperation(siteId, path, username, operation): Observable<any> {
   const cachedSandboxItem = getCachedSandboxItem(path);
 
   return lock(siteId, path).pipe(
@@ -312,7 +312,7 @@ export function onBeforeWriteOperation(siteId, path, username, operation): typeo
               take(1),
               switchMap(({ payload }) => {
                 if (payload.type === 'continue') {
-                  operation();
+                  return operation();
                 } else {
                   post(unlockItem({ path }));
                 }
@@ -329,7 +329,7 @@ export function onBeforeWriteOperation(siteId, path, username, operation): typeo
             post(unlockItem({ path }));
             window.location.reload();
           } else {
-            operation();
+            return operation();
           }
 
           return NEVER;
