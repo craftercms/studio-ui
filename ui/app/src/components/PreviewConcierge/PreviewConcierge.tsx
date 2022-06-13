@@ -292,7 +292,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
     usePreviewState();
   const item = useCurrentPreviewItem();
-  const itemsByPath = useItemsByPath();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
@@ -356,8 +355,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     setDataSourceActionsListState,
     showToolsPanel,
     toolsPanelWidth,
-    browseFilesDialogState,
-    itemsByPath
+    browseFilesDialogState
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -753,7 +751,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case duplicateItemOperation.type: {
           const { modelId, parentModelId, fieldId, index } = payload;
           const path = models[parentModelId ?? modelId].craftercms.path;
-
           duplicateItem(siteId, modelId, fieldId, index, path).subscribe({
             next({ newItem }) {
               issueDescriptorRequest({
