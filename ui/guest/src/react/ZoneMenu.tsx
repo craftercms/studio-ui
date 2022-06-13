@@ -163,12 +163,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     const parentModelId = getParentModelId(itemModelId, models, modelHierarchyMap);
     const path = models[parentModelId ?? itemModelId].craftercms.path;
 
-    return {
-      path,
-      itemModelId,
-      itemFieldId,
-      itemIndex
-    };
+    return { path, itemModelId, itemFieldId, itemIndex };
   }, [recordType, nodeSelectorItemRecord]);
 
   // region Callbacks
