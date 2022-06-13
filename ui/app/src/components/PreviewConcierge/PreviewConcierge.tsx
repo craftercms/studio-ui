@@ -182,7 +182,6 @@ import BrowseFilesDialog from '../BrowseFilesDialog';
 import { DetailedItem, MediaItem } from '../../models';
 import DataSourcesActionsList, { DataSourcesActionsListProps } from '../DataSourcesActionsList/DataSourcesActionsList';
 import { editControllerActionCreator, itemActionDispatcher } from '../../utils/itemActions';
-import useItemsByPath from '../../hooks/useItemsByPath';
 
 const originalDocDomain = document.domain;
 
