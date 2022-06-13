@@ -135,27 +135,21 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const [publishingTargetsError, setPublishingTargetsError] = useState(null);
   const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
   const [publishGitFormValid, setPublishGitFormValid] = useState(false);
-  const publishGitFormChanged = useMemo(() => {
-    return (
-      publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
-      publishGitFormData.comment !== initialPublishGitFormData.comment ||
-      publishGitFormData.environment !== initialPublishingTarget
-    );
-  }, [initialPublishingTarget, publishGitFormData]);
   const [publishStudioFormData, setPublishStudioFormData] =
     useSpreadState<PublishFormData>(initialPublishStudioFormData);
   const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
-  const publishStudioFormChanged = useMemo(() => {
-    return (
-      publishStudioFormData.path !== initialPublishStudioFormData.path ||
-      publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
-      publishStudioFormData.environment !== initialPublishingTarget
-    );
-  }, [initialPublishingTarget, publishStudioFormData]);
   const { bulkPublishCommentRequired, publishByCommitCommentRequired } = useSelection(
     (state) => state.uiConfig.publishing
   );
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const hasChanges =
+    mode === 'studio'
+      ? publishStudioFormData.path !== initialPublishStudioFormData.path ||
+        publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
+        publishStudioFormData.environment !== initialPublishingTarget
+      : publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
+        publishGitFormData.comment !== initialPublishGitFormData.comment ||
+        publishGitFormData.environment !== initialPublishingTarget;
 
   const setDefaultPublishingTarget = (targets, clearData?) => {
     if (targets.length) {
@@ -175,10 +169,10 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 
   useEffect(() => {
     fnRefs.current.onSubmittingAndOrPendingChange?.({
-      hasPendingChanges: mode === 'studio' ? publishStudioFormChanged : publishGitFormChanged,
+      hasPendingChanges: hasChanges,
       isSubmitting
     });
-  }, [isSubmitting, mode, publishStudioFormChanged, publishGitFormChanged, fnRefs]);
+  }, [isSubmitting, mode, hasChanges, fnRefs]);
 
   useEffect(() => {
     fetchPublishingTargets(siteId).subscribe({
