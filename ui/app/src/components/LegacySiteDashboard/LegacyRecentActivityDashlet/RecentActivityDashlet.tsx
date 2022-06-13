@@ -52,11 +52,13 @@ import {
 } from '../../../utils/itemActions';
 import { useEnv } from '../../../hooks/useEnv';
 import ActionsBar, { ActionsBarAction } from '../../ActionsBar';
-import { useDetailedItems } from '../../../hooks/useDetailedItems';
 import translations from './translations';
 import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import { fetchItemsByPath } from '../../../services/content';
+import useItemsByPath from '../../../hooks/useItemsByPath';
+import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';
+import useSelection from '../../../hooks/useSelection';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   filterBy: 'page',
@@ -95,7 +97,12 @@ export function RecentActivityDashlet() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
-  const { itemsByPath, isFetching } = useDetailedItems(Object.keys(selectedLookup));
+  const itemsByPath = useItemsByPath();
+  useFetchSandboxItems(Object.keys(selectedLookup));
+  const itemsBeingFetchedByPath = useSelection((state) => state.content.itemsBeingFetchedByPath);
+  const isFetching = useMemo(() => {
+    return Object.keys(selectedLookup).some((path) => itemsBeingFetchedByPath[path]);
+  }, [itemsBeingFetchedByPath, selectedLookup]);
 
   const isAllChecked = useMemo(() => {
     const nonDeletedItems = items.filter((item) => !item.stateMap.deleted);

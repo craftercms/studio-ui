@@ -28,6 +28,8 @@ import {
   fetchQuickCreateListFailed,
   fetchSandboxItem,
   fetchSandboxItemComplete,
+  fetchSandboxItems,
+  fetchSandboxItemsComplete,
   reloadDetailedItem,
   restoreClipboard,
   setClipboard,
@@ -123,6 +125,20 @@ const updateItemsBeingFetchedByPath = (state: ContentState, { payload: { path } 
   };
 };
 
+const updateItemsBeingFetchedByPaths = (state, { payload }) => {
+  const itemsFetchedByPath = {};
+  payload.paths.forEach((path) => {
+    itemsFetchedByPath[path] = true;
+  });
+  return {
+    ...state,
+    itemsBeingFetchedByPath: {
+      ...state.itemsBeingFetchedByPath,
+      ...itemsFetchedByPath
+    }
+  };
+};
+
 const reducer = createReducer<ContentState>(initialState, {
   [fetchQuickCreateList.type]: (state) => ({
     ...state,
@@ -151,6 +167,24 @@ const reducer = createReducer<ContentState>(initialState, {
   [reloadDetailedItem.type]: updateItemsBeingFetchedByPath,
   [completeDetailedItem.type]: updateItemsBeingFetchedByPath,
   [fetchSandboxItem.type]: updateItemsBeingFetchedByPath,
+  [fetchSandboxItems.type]: updateItemsBeingFetchedByPaths,
+  [fetchSandboxItemsComplete.type]: (state, { payload: items }) => {
+    const nextByPath = {};
+    items.forEach((item) => {
+      nextByPath[item.path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
+    });
+
+    return {
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        ...nextByPath
+      },
+      itemsBeingFetchedByPath: {
+        ...reversePluckProps(state.itemsBeingFetchedByPath, ...items.map((item) => item.path))
+      }
+    };
+  },
   [fetchDetailedItemComplete.type]: (state, { payload }) => ({
     ...state,
     itemsByPath: {
@@ -161,19 +195,7 @@ const reducer = createReducer<ContentState>(initialState, {
       ...reversePluckProps(state.itemsBeingFetchedByPath, payload.path)
     }
   }),
-  [fetchDetailedItems.type]: (state, { payload }) => {
-    const itemsFetchedByPath = {};
-    payload.paths.forEach((path) => {
-      itemsFetchedByPath[path] = true;
-    });
-    return {
-      ...state,
-      itemsBeingFetchedByPath: {
-        ...state.itemsBeingFetchedByPath,
-        ...itemsFetchedByPath
-      }
-    };
-  },
+  [fetchDetailedItems.type]: updateItemsBeingFetchedByPaths,
   [fetchDetailedItemsComplete.type]: (state, { payload: items }) => {
     const nextByPath = {};
     items.forEach((item) => {
