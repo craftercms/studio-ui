@@ -298,7 +298,7 @@ function deleteItemFromHierarchyMap(modelId: string) {
   delete modelHierarchyMap[modelId];
 }
 
-export function onBeforeWriteOperation(siteId, path, username, operation): NEVER {
+export function onBeforeWriteOperation(siteId, path, username, operation): typeof NEVER {
   const cachedSandboxItem = getCachedSandboxItem(path);
 
   return lock(siteId, path).pipe(

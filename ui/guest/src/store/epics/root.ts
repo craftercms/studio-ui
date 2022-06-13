@@ -570,16 +570,23 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   },
   // endregion
   // region trashed
-  (action$: Observable<GuestStandardAction<{ iceId: number }>>) => {
+  (action$: Observable<GuestStandardAction<{ iceId: number }>>, state$) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
       ofType(trashed.type),
-      tap((action) => {
+      withLatestFrom(state$),
+      tap(([action, state]) => {
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
-        contentController.deleteItem(modelId, fieldId, index);
-        post(instanceDragEnded());
+        const models = getCachedModels();
+        const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+        const path = models[parentModelId ?? modelId].craftercms.path;
+
+        onBeforeWriteOperation(state.activeSite, path, state.username, () => {
+          contentController.deleteItem(modelId, fieldId, index);
+          post(instanceDragEnded());
+        }).subscribe();
       }),
       // There's a raise condition where sometimes the dragend is
       // fired and sometimes is not upon dropping on the rubbish bin.
