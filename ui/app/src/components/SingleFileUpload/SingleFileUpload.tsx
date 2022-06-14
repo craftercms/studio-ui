@@ -273,7 +273,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
   };
 
   const onConfirmCancel = () => {
-    document.querySelector('.uppy-FileInput-btn').removeAttribute('disabled');
+    document.querySelector('.uppy-FileInput-btn')?.removeAttribute('disabled');
     uppy.removeFile(file.id);
     setFile(null);
     setConfirm(null);
@@ -294,6 +294,13 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         console.error(err);
       }
     });
+  };
+
+  // Clear input current value on click, so if you need to select the same file (in case of an error) it will re-trigger
+  // the change/file selection.
+  const onInputClick = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    const element = event.target as HTMLInputElement;
+    element.value = '';
   };
 
   return (
@@ -322,6 +329,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
             id="contained-button-file"
             type="file"
             onChange={onChange}
+            onClick={onInputClick}
           />
           <label htmlFor="contained-button-file">
             <Button variant="outlined" component="span" disabled={disableInput}>
