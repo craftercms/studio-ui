@@ -240,7 +240,7 @@ const content: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
         fetchItemsByPath(state.sites.active, payload.paths).pipe(
-          map((items) => fetchSandboxItemsComplete(items as SandboxItem[])),
+          map((items) => fetchSandboxItemsComplete({ items })),
           catchAjaxError(fetchSandboxItemsFailed)
         )
       )
