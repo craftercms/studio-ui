@@ -35,13 +35,15 @@ export interface RejectDialogContentUIProps {
 }
 
 export interface RejectDialogUIProps {
-  resource: Resource<Return>;
+  items: SandboxItem[];
+  cannedMessages: CannedMessage[];
   checkedItems: string[];
   rejectionReason: string;
   rejectionComment: string;
   isSubmitDisabled: boolean;
   isSubmitting: boolean;
   published: boolean;
+  error: ApiResponse;
   onRejectionReasonChange?(value: string): void;
   onCommentChange?(value: string): void;
   onUpdateChecked?(value?: string): void;
