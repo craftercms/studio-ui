@@ -48,7 +48,7 @@ function GraphiQL(props: GraphiQLProps) {
   } = props;
   // We don't want to update the initialQuery.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`), []);
+  const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`) ?? '', []);
   const [query, setQuery] = useState(initialQuery);
   const [schema, setSchema] = useState<GraphQLSchema>(null);
   const storage = useMemo(
