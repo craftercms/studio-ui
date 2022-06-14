@@ -2276,6 +2276,19 @@ var CStudioForms =
         }
       },
 
+      _renderRepeatDescription: function (repeatContainerEl) {
+        const repeat = repeatContainerEl.repeat;
+        const description = repeat.description;
+
+        if (description) {
+          var descriptionEl = document.createElement('span');
+          YAHOO.util.Dom.addClass(descriptionEl, 'description');
+          YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description repeating-group-description');
+          descriptionEl.textContent = description;
+          repeatContainerEl.appendChild(descriptionEl);
+        }
+      },
+
       /**
        * this method does the actual rendering of the repeat and
        * has been separated from renderRepeat so it can be called on
@@ -2320,6 +2333,8 @@ var CStudioForms =
             this.parentNode.parentNode.reRender(this.parentNode.parentNode);
             repeatEdited = true;
           };
+
+          this._renderRepeatDescription(repeatContainerEl);
 
           formSection.notifyValidation();
           return;
@@ -2455,6 +2470,8 @@ var CStudioForms =
             this._renderField(formDef, field, form, formSection, repeatInstanceContainerEl, repeat, i);
           }
         }
+
+        this._renderRepeatDescription(repeatContainerEl);
       },
 
       /**
