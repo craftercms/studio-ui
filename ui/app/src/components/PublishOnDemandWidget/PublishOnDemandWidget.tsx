@@ -172,7 +172,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
       hasPendingChanges: hasChanges,
       isSubmitting
     });
-  }, [isSubmitting, mode, hasChanges, fnRefs]);
+  }, [isSubmitting, hasChanges, fnRefs]);
 
   useEffect(() => {
     fetchPublishingTargets(siteId).subscribe({
