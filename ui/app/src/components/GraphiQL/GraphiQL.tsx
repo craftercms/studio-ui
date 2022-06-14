@@ -23,6 +23,9 @@ import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { useStyles } from './styles';
 import { toQueryString } from '../../utils/object';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { isBlank } from '../../utils/string';
 
 export interface GraphiQLProps {
   url?: string;
@@ -30,6 +33,7 @@ export interface GraphiQLProps {
   method?: string;
   embedded?: boolean;
   showAppsButton?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 function GraphiQL(props: GraphiQLProps) {
@@ -39,9 +43,13 @@ function GraphiQL(props: GraphiQLProps) {
     showAppsButton,
     embedded = false,
     method = 'post',
-    url = `${window.location.origin}/api/1/site/graphql`
+    url = `${window.location.origin}/api/1/site/graphql`,
+    onSubmittingAndOrPendingChange
   } = props;
-  const [query, setQuery] = useState(() => window.localStorage.getItem(`${storageKey}graphiql:query`));
+  // We don't want to update the initialQuery.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`), []);
+  const [query, setQuery] = useState(initialQuery);
   const [schema, setSchema] = useState<GraphQLSchema>(null);
   const storage = useMemo(
     () =>
@@ -84,11 +92,17 @@ function GraphiQL(props: GraphiQLProps) {
       };
     }
   }, [url, method]);
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const hasChanges = isBlank(query) ? false : initialQuery !== query;
 
   function onEditQuery(newQuery: string) {
     setQuery(newQuery);
     window.localStorage.setItem(`${storageKey}graphiql:query`, newQuery);
   }
+
+  useEffect(() => {
+    fnRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasChanges });
+  }, [hasChanges, fnRefs]);
 
   useEffect(() => {
     graphQLFetcher({
