@@ -139,7 +139,9 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onCreate();
+            if (isValid) {
+              onCreate();
+            }
           }}
         >
           <TextField

@@ -185,7 +185,9 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onCreate();
+            if (isValid) {
+              onCreate();
+            }
           }}
         >
           <TextField
