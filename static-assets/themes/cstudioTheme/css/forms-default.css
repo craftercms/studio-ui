@@ -408,6 +408,11 @@ div.yui-calcontainer.cstudio-form-field-calendar {
     text-align: justify;
 }
 
+.repeating-group-description {
+  margin: 10px 0 10px 10px;
+  padding: 0;
+}
+
 .cstudio-form-field-help-container {
 	vertical-align: top;
     position: relative;

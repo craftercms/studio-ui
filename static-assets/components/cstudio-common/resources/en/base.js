@@ -850,6 +850,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   enableSearchExisting: 'Enable Search Existing',
   useSearch: 'Use Search',
   allowEditWithoutWarning: 'Allow Edit Without Warning',
+  allowSVG: 'Allow SVG',
 
   /*Restrictions*/
   required: 'Required',
@@ -960,7 +961,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   /* Image */
   constraintsError: 'The uploaded file does not meet the specified width & height constraints',
   sizeError: 'Image is smaller than the constraint size',
-  fileNotImage: 'The uploaded file is not of type image',
+  fileNotImage: 'The selected file is not an allowed type of image',
   loadImageError: 'Unable to load the selected image. Please try again or select another image',
 
   /*Postfixes*/

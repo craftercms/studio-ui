@@ -612,7 +612,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         patch: site.blueprint.version.patch
       }
     };
-    if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
+    if (site.gitBranch) params.sandboxBranch = site.gitBranch;
     if (site.blueprintFields) params.siteParams = site.blueprintFields;
     return params;
   }
@@ -631,14 +631,14 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         params.useRemote = true;
       }
 
-      if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
+      if (site.gitBranch) params.sandboxBranch = site.gitBranch;
       if (site.description) params.description = site.description;
       if (site.pushSite || site.blueprint.id === 'GIT') {
         params.authenticationType = site.repoAuthentication;
         if (site.repoRemoteName) params.remoteName = site.repoRemoteName;
         if (site.repoUrl) params.remoteUrl = site.repoUrl;
-        if (site.repoRemoteBranch) {
-          params.remoteBranch = site.repoRemoteBranch;
+        if (site.gitBranch) {
+          params.remoteBranch = site.gitBranch;
         }
         if (site.repoAuthentication === 'basic') {
           params.remoteUsername = site.repoUsername;

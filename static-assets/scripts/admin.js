@@ -2175,7 +2175,8 @@
           unreachableRemote: (name) => formatMessage(repoMessages.unreachableRemote, { name }),
           reason: formatMessage(words.reason),
           repositoriesNote: formatMessage(repoMessages.repositoriesNote)
-        }
+        },
+        remoteBranch: null
       };
 
       var repositories = $scope.repositories;
@@ -2329,14 +2330,14 @@
       };
 
       $scope.pullRepo = function (repo) {
-        $scope.branch = repo.branches[0];
+        repositories.remoteBranch = repo.branches[0];
         $scope.branches = repo.branches;
-        var pullRepo = function (branch) {
+        var pullRepo = function () {
           repositories.spinnerOverlay = $scope.spinnerOverlay();
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
-          currentRepo.remoteBranch = branch;
+          currentRepo.remoteBranch = repositories.remoteBranch;
           currentRepo.mergeStrategy = repositories.mergeStrategy;
 
           adminService
@@ -2362,14 +2363,14 @@
       };
 
       $scope.pushRepo = function (repo) {
-        $scope.branch = repo.branches[0];
+        repositories.remoteBranch = repo.branches[0];
         $scope.branches = repo.branches;
-        var pushRepo = function (branch) {
+        var pushRepo = function () {
           repositories.spinnerOverlay = $scope.spinnerOverlay();
           var currentRepo = {};
           currentRepo.siteId = repositories.site;
           currentRepo.remoteName = repo.name;
-          currentRepo.remoteBranch = branch;
+          currentRepo.remoteBranch = repositories.remoteBranch;
 
           adminService
             .pushRepository(currentRepo)

@@ -818,6 +818,8 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   enableBrowseExisting: "Mostrar 'Seleccionar Existentes'",
   enableSearchExisting: "Mostrar 'Buscar Existentes'",
   useSearch: 'Usar Búsqueda',
+  allowEditWithoutWarning: 'Permitir Edición Sin Advertencia',
+  allowSVG: 'Permitir SVG',
 
   /*Restrictions*/
   required: 'Requerido',

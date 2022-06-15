@@ -477,7 +477,7 @@
     <div class="modal-body">
       <div class="form-group">
         <label for="branch">{{ confirmationText }}</label>
-        <select class="form-control" id="branch" name="branch" ng-model="branch" required>
+        <select class="form-control" id="branch" name="branch" ng-model="repositories.remoteBranch" required>
           <option ng-repeat="branch in branches" value="{{branch}}">{{branch}}</option>
         </select>
 
@@ -522,7 +522,7 @@
     <div class="modal-footer">
       <button
         class="btn btn-primary" ng-disabled="pullPushForm.$invalid"
-        ng-click="confirmationAction(branch); hideModal()"
+        ng-click="confirmationAction(); hideModal()"
       >{{ 'common.OK' | translate }}
       </button>
       <button

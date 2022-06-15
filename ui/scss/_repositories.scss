@@ -44,6 +44,28 @@ $split-view-size: $diff-modal-size / 2;
   }
 }
 
+.pull-push-form {
+  .pull-branch-label {
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: normal;
+
+    .heading {
+      color: #7C7C80; margin-right: 10px; font-weight: bold;
+    }
+  }
+}
+
+.pull-info {
+  display: flex;
+  align-items: center;
+  border: 1px solid #31708f;
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
 .diff-header {
   .tabs {
     .diff-tab {
