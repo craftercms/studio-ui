@@ -28,6 +28,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
    */
   initialize: function (config) {
     this.config = config;
+    this.isDirty = false;
   },
 
   /**
@@ -53,10 +54,24 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
     this.dialog.destroy();
   },
 
+  onSetDirty(value) {
+    if (this.isDirty !== value) {
+      this.isDirty = value;
+      window.top.postMessage(
+        {
+          type: 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE',
+          payload: { hasPendingChanges: value }
+        },
+        '*'
+      );
+    }
+  },
+
   /**
    * create dialog
    */
   createDialog: function () {
+    const self = this;
     YDom.removeClass('cstudio-wcm-popup-div', 'yui-pe-content');
 
     var newdiv = YDom.get('cstudio-wcm-popup-div'),
@@ -164,7 +179,10 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       objectTypeEl: document.getElementById('contentTypeObjectType')
     };
 
+    // 'Type' dropdown
     YEvent.on('contentTypeObjectType', 'change', function () {
+      self.onSetDirty(true);
+
       var type = document.getElementById('contentTypeObjectType').value;
       if (type == 'page') {
         document.getElementById('contentTypeAsFolder').checked = true;
@@ -173,12 +191,15 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       }
     });
 
+    // 'Display Label' input
     YEvent.on('contentTypeDisplayName', 'keyup', function () {
       YAHOO.Bubbling.fire('content-type.values.changed');
       value = document.getElementById('contentTypeDisplayName').value;
 
       value = value.replace(/[^a-z0-9]/gi, '');
       value = value.toLowerCase();
+
+      self.onSetDirty(Boolean(value));
 
       document.getElementById('contentTypeName').value = value;
     });

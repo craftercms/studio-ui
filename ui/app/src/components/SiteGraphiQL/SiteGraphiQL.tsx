@@ -18,10 +18,12 @@ import React from 'react';
 import GraphiQL from '../GraphiQL';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 interface SiteGraphiQLProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function SiteGraphiQL(props: SiteGraphiQLProps) {
@@ -33,6 +35,7 @@ export function SiteGraphiQL(props: SiteGraphiQLProps) {
       url={`${guestBase}/api/1/site/graphql`}
       embedded={props.embedded}
       showAppsButton={props.showAppsButton}
+      onSubmittingAndOrPendingChange={props.onSubmittingAndOrPendingChange}
     />
   );
 }

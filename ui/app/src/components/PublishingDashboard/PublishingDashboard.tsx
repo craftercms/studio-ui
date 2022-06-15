@@ -23,6 +23,7 @@ import PublishOnDemandWidget from '../PublishOnDemandWidget';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 const useStyles = makeStyles()((theme) => ({
   root: {},
@@ -44,10 +45,11 @@ const useStyles = makeStyles()((theme) => ({
 interface PublishingDashboardProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function PublishingDashboard(props: PublishingDashboardProps) {
-  const { embedded, showAppsButton } = props;
+  const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const { classes, cx } = useStyles();
   const site = useActiveSiteId();
 
@@ -64,7 +66,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
           <PublishingStatusWidget siteId={site} />
         </Grid>
         <Grid className={classes.rowSpacing} item xs={12}>
-          <PublishOnDemandWidget siteId={site} />
+          <PublishOnDemandWidget siteId={site} onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange} />
         </Grid>
         <Grid item xs={12}>
           <PublishingQueueWidget siteId={site} />
