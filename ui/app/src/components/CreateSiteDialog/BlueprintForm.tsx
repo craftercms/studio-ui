@@ -88,8 +88,7 @@ const messages = defineMessages({
   },
   gitBranchDescription: {
     id: 'createSiteDialog.gitBranchDescription',
-    defaultMessage:
-      'The name of the branch this project will track. Any pull operations from remotes will be done against this branch.'
+    defaultMessage: 'Name of the branch this project will track. Pull operations will be done against this branch.'
   }
 });
 
