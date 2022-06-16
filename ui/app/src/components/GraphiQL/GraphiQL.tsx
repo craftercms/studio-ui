@@ -26,6 +26,7 @@ import { toQueryString } from '../../utils/object';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { isBlank } from '../../utils/string';
+import { defaultQuery } from './utils';
 
 export interface GraphiQLProps {
   url?: string;
@@ -48,7 +49,7 @@ function GraphiQL(props: GraphiQLProps) {
   } = props;
   // We don't want to update the initialQuery.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`), []);
+  const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`) ?? defaultQuery, []);
   const [query, setQuery] = useState(initialQuery);
   const [schema, setSchema] = useState<GraphQLSchema>(null);
   const storage = useMemo(
