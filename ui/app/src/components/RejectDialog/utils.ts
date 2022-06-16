@@ -47,7 +47,6 @@ export interface RejectDialogUIProps {
   onRejectionReasonChange?(value: string): void;
   onCommentChange?(value: string): void;
   onUpdateChecked?(value?: string): void;
-  classes?: any;
   onReject?(): void;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onDismiss?(): void;

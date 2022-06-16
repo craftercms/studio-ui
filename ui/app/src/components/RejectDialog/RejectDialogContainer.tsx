@@ -25,40 +25,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { reject } from '../../services/workflow';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { fetchStatus } from '../../services/publishing';
-import { makeStyles } from 'tss-react/mui';
 import useEnv from '../../hooks/useEnv';
-
-const useStyles = makeStyles()((theme) => ({
-  itemsList: {
-    border: `1px solid ${theme.palette.divider}`,
-    background: theme.palette.background.paper,
-    padding: 0,
-    height: '100%'
-  },
-  submissionTextField: {
-    marginTop: '10px'
-  },
-  ellipsis: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
-  },
-  submittedBy: {
-    flexGrow: 0,
-    width: '100px',
-    textAlign: 'right',
-    alignSelf: 'flex-start'
-  },
-  listSubHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.divider}`,
-    lineHeight: '30px'
-  },
-  subHeaderItem: {
-    marginLeft: '40px'
-  }
-}));
 
 export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const typeCustomReason = 'typeCustomReason';
@@ -76,7 +43,6 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
   const { activeEnvironment } = useEnv();
-  const { classes } = useStyles();
 
   // check all items as default
   useEffect(() => {
@@ -165,7 +131,6 @@ export function RejectDialogContainer(props: RejectDialogContainerProps) {
       onUpdateChecked={updateChecked}
       onCloseButtonClick={onCloseButtonClick}
       onReject={onReject}
-      classes={classes}
     />
   );
 }

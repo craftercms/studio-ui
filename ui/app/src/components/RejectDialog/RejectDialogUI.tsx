@@ -34,6 +34,7 @@ import { nnou } from '../../utils/object';
 import { LoadingState } from '../LoadingState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
+import { useStyles } from './styles';
 
 export function RejectDialogUI(props: RejectDialogUIProps) {
   const {
@@ -49,14 +50,15 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
     onUpdateChecked,
     onCloseButtonClick,
     onReject,
-    classes,
     isSubmitting,
     isSubmitDisabled
   } = props;
+  const { classes } = useStyles();
+
   return (
     <>
       <DialogBody id="confirmDialogBody">
-        <Grid container spacing={3} className={classes.contentRoot}>
+        <Grid container spacing={3}>
           <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
             {error ? (
               <ApiResponseErrorState error={error} />
