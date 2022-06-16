@@ -102,7 +102,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
-import { DetailedItem, SandboxItem } from '../../models';
+import { DetailedItem } from '../../models';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
