@@ -41,6 +41,8 @@ import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { fetchSandboxItemComplete } from '../../state/actions/content';
+import { switchMap, tap } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -87,23 +89,29 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   };
 
   const onCreateFolder = (site: string, path: string, name: string) => {
-    fetchSandboxItem(site, `${path}/${name}`).subscribe((item) => {
-      if (item) {
-        dispatch(batchActions([fetchSandboxItemComplete({ item }), updateCreateFolderDialog({ isSubmitting: false })]));
-      } else {
-        createFolder(site, path, name).subscribe({
-          next() {
-            onCreated?.({ path, name, rename });
-            dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
-          },
-          error(response) {
+    fetchSandboxItem(site, `${path}/${name}`)
+      .pipe(
+        tap(
+          (item) =>
+            item &&
             dispatch(
-              batchActions([showErrorDialog({ error: response }), updateCreateFolderDialog({ isSubmitting: false })])
-            );
-          }
-        });
-      }
-    });
+              batchActions([fetchSandboxItemComplete({ item }), updateCreateFolderDialog({ isSubmitting: false })])
+            )
+        ),
+        filter((item) => !item),
+        switchMap(() => createFolder(site, path, name))
+      )
+      .subscribe({
+        next() {
+          onCreated?.({ path, name, rename });
+          dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
+        },
+        error(response) {
+          dispatch(
+            batchActions([showErrorDialog({ error: response }), updateCreateFolderDialog({ isSubmitting: false })])
+          );
+        }
+      });
   };
 
   const onCreate = () => {

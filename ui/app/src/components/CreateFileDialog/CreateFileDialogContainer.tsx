@@ -36,6 +36,8 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
 import { fetchSandboxItemComplete } from '../../state/actions/content';
+import { switchMap, tap } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const { onClose, onCreated, type, path, allowBraces } = props;
@@ -51,33 +53,39 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const isValid = !isBlank(name) && !fileExists;
 
   const onCreateFile = (site: string, path: string, fileName: string) => {
-    fetchSandboxItem(site, `${path}/${fileName}`).subscribe((item) => {
-      if (item) {
-        dispatch(batchActions([fetchSandboxItemComplete({ item }), updateCreateFileDialog({ isSubmitting: false })]));
-      } else {
-        createFile(site, path, fileName).subscribe({
-          next() {
-            onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess: true });
+    fetchSandboxItem(site, `${path}/${fileName}`)
+      .pipe(
+        tap(
+          (item) =>
+            item &&
             dispatch(
+              batchActions([fetchSandboxItemComplete({ item }), updateCreateFileDialog({ isSubmitting: false })])
+            )
+        ),
+        filter((item) => !item),
+        switchMap(() => createFile(site, path, fileName))
+      )
+      .subscribe({
+        next() {
+          onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess: true });
+          dispatch(
+            updateCreateFileDialog({
+              hasPendingChanges: false,
+              isSubmitting: false
+            })
+          );
+        },
+        error(response) {
+          dispatch(
+            batchActions([
+              showErrorDialog({ error: response }),
               updateCreateFileDialog({
-                hasPendingChanges: false,
                 isSubmitting: false
               })
-            );
-          },
-          error(response) {
-            dispatch(
-              batchActions([
-                showErrorDialog({ error: response }),
-                updateCreateFileDialog({
-                  isSubmitting: false
-                })
-              ])
-            );
-          }
-        });
-      }
-    });
+            ])
+          );
+        }
+      });
   };
 
   const onCreate = () => {
