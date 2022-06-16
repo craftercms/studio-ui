@@ -126,6 +126,24 @@ export function findDocumentElement(element: Element) {
   return null;
 }
 
+// encodes XML special characters
+export function encodeXMLValue(value): string {
+  return value.replace(/[<>&'"]/g, function (c) {
+    switch (c) {
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '&':
+        return '&amp;';
+      case "'":
+        return '&apos;';
+      case '"':
+        return '&quot;';
+    }
+  });
+}
+
 export function createElements(element: Element, data: object): void {
   Object.entries(data).forEach(([tag, content]) => {
     if (tag === '@attributes') {
@@ -135,7 +153,7 @@ export function createElements(element: Element, data: object): void {
     } else {
       const elem = createElement(tag);
       if (typeof content === 'string' || typeof content === 'number' || typeof content === 'boolean') {
-        elem.innerHTML = `${content}`;
+        elem.innerHTML = `${encodeXMLValue(content)}`;
       } else if (Array.isArray(content)) {
         elem.setAttribute('item-list', 'true');
         if (content.length) {
