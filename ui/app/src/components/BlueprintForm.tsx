@@ -91,6 +91,10 @@ const messages = defineMessages({
     id: 'createSiteDialog.gitBranch',
     defaultMessage: 'Git Branch'
   },
+  gitBranchDescription: {
+    id: 'createSiteDialog.gitBranchDescription',
+    defaultMessage: 'Name of the branch this project will track. Pull operations will be done against this branch.'
+  },
   createAsOrphan: {
     id: 'createSiteDialog.createAsOrphan',
     defaultMessage: 'Create the site from a remote repository as orphan (no git history)'
@@ -224,6 +228,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             InputLabelProps={{ shrink: true }}
             placeholder="master"
             value={inputs.gitBranch}
+            helperText={formatMessage(messages.gitBranchDescription)}
           />
         </Grid>
         {blueprint.parameters && (
