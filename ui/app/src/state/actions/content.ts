@@ -48,6 +48,11 @@ export const fetchSandboxItemComplete = /*#__PURE__*/ createAction<{ item: Sandb
   'FETCH_SANDBOX_ITEM_COMPLETE'
 );
 export const fetchSandboxItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEM_FAILED');
+export const fetchSandboxItems = /*#__PURE__*/ createAction<{ paths: string[] }>('FETCH_SANDBOX_ITEMS');
+export const fetchSandboxItemsComplete = /*#__PURE__*/ createAction<{ items: SandboxItem[] }>(
+  'FETCH_SANDBOX_ITEMS_COMPLETE'
+);
+export const fetchSandboxItemsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEMS_FAILED');
 // endregion
 
 export const updateItemsByPath = /*#__PURE__*/ createAction<{ items: SandboxItem[] }>('UPDATE_ITEMS_BY_PATH');

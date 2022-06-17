@@ -38,6 +38,9 @@ import {
   fetchSandboxItemComplete,
   fetchSandboxItemFailed,
   FetchSandboxItemPayload,
+  fetchSandboxItems,
+  fetchSandboxItemsComplete,
+  fetchSandboxItemsFailed,
   lockItem,
   lockItemCompleted,
   lockItemFailed,
@@ -52,6 +55,7 @@ import {
   fetchDetailedItem as fetchDetailedItemService,
   fetchDetailedItems as fetchDetailedItemsService,
   fetchItemByPath,
+  fetchItemsByPath,
   fetchQuickCreateList,
   fetchSandboxItem as fetchSandboxItemService,
   lock,
@@ -225,6 +229,19 @@ const content: CrafterCMSEpic[] = [
         fetchSandboxItemService(state.sites.active, payload.path).pipe(
           map((item) => fetchSandboxItemComplete({ item })),
           catchAjaxError(fetchSandboxItemFailed)
+        )
+      )
+    ),
+  // endregion
+  // region fetchSandboxItems
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchSandboxItems.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        fetchItemsByPath(state.sites.active, payload.paths).pipe(
+          map((items) => fetchSandboxItemsComplete({ items })),
+          catchAjaxError(fetchSandboxItemsFailed)
         )
       )
     ),
