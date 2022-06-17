@@ -14,8 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface LookupTable<T = any> {
-  [id: string]: T;
-}
+export type LookupTable<T = any> = Record<string, T>;
 
 export default LookupTable;

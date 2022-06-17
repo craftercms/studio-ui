@@ -25,88 +25,76 @@ type PayloadWithId<P> = P & { id: string };
 
 export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
   PayloadWithId<{
-    path: string;
+    rootPath: string;
     collapsed?: boolean;
     excludes?: string[];
     limit: number;
     expanded?: string[];
   }>
->('PATH_NAVIGATOR_TREE_INIT');
+>('PATH_NAV_TREE_INIT');
 
-export const pathNavigatorTreeRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_TREE_REFRESH');
+export const pathNavigatorTreeRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_TREE_REFRESH');
 
 export const pathNavigatorTreeBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>(
-  'PATH_NAVIGATOR_TREE_BACKGROUND_REFRESH'
+  'PATH_NAV_TREE_BACKGROUND_REFRESH'
 );
 
-export const pathNavigatorTreeRestoreComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{
-    expanded: string[];
-    collapsed: boolean;
-    items: DetailedItem[];
-    data: LookupTable<GetChildrenResponse>;
-  }>
->('PATH_NAVIGATOR_TREE_RESTORE_COMPLETE');
+export const pathNavigatorTreeRestore = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_RESTORE');
+
+export type PathNavigatorTreeRestoreCompletePayload = PayloadWithId<{
+  expanded: string[];
+  collapsed: boolean;
+  items: DetailedItem[];
+  children: LookupTable<GetChildrenResponse>;
+}>;
+
+export const pathNavigatorTreeRestoreComplete = /*#__PURE__*/ createAction<PathNavigatorTreeRestoreCompletePayload>(
+  'PATH_NAV_TREE_RESTORE_COMPLETE'
+);
 
 export const pathNavigatorTreeRestoreFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_TREE_RESTORE_FAILED');
+}>('PATH_NAV_TREE_RESTORE_FAILED');
 
-export const pathNavigatorTreeExpandPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
-  'PATH_NAVIGATOR_TREE_EXPAND_PATH'
-);
+export const pathNavigatorTreeExpandPath =
+  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_TREE_EXPAND_PATH');
 
-export const pathNavigatorTreeCollapsePath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
-  'PATH_NAVIGATOR_TREE_COLLAPSE_PATH'
-);
+export const pathNavigatorTreeCollapsePath =
+  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_TREE_COLLAPSE_PATH');
 
-export const pathNavigatorTreeSetKeyword = /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string; path: string }>>(
-  'PATH_NAVIGATOR_TREE_SET_KEYWORD'
-);
+export const pathNavigatorTreeSetKeyword =
+  /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string; path: string }>>('PATH_NAV_TREE_SET_KEYWORD');
 
-export const pathNavigatorTreeToggleExpanded = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
-  'PATH_NAVIGATOR_TREE_TOGGLE_EXPANDED'
+export const pathNavigatorTreeToggleCollapsed = /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>(
+  'PATH_NAV_TREE_TOGGLE_EXPANDED'
 );
 
 export const pathNavigatorTreeFetchPathPage = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions> }>
->('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE');
+>('PATH_NAV_TREE_FETCH_PATH_PAGE');
 
 export const pathNavigatorTreeFetchPathPageComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
->('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE_COMPLETE');
+>('PATH_NAV_TREE_FETCH_PATH_PAGE_COMPLETE');
 
 export const pathNavigatorTreeFetchPathPageFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_TREE_FETCH_PATH_PAGE_FAILED');
+}>('PATH_NAV_TREE_FETCH_PATH_PAGE_FAILED');
 
 export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions>; expand?: boolean }>
->('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN');
+>('PATH_NAV_TREE_FETCH_PATH_CHILDREN');
 
 export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
->('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN_COMPLETE');
+>('PATH_NAV_TREE_FETCH_PATH_CHILDREN_COMPLETE');
 
 export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_TREE_FETCH_PATH_CHILDREN_FAILED');
-
-export const pathNavigatorTreeFetchPathsChildren = /*#__PURE__*/ createAction<
-  PayloadWithId<{ paths: LookupTable<Partial<GetChildrenOptions>>; options?: Partial<GetChildrenOptions> }>
->('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN');
-
-export const pathNavigatorTreeFetchPathsChildrenComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ data: LookupTable<GetChildrenResponse>; options?: Partial<GetChildrenOptions> }>
->('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN_COMPLETE');
-
-export const pathNavigatorTreeFetchPathsChildrenFailed = /*#__PURE__*/ createAction<{
-  id: string;
-  error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_TREE_FETCH_PATHS_CHILDREN_FAILED');
+}>('PATH_NAV_TREE_FETCH_PATH_CHILDREN_FAILED');
 
 export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
   PayloadWithId<{
@@ -115,4 +103,6 @@ export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
     items?: DetailedItem[];
     data?: LookupTable<GetChildrenResponse>;
   }>
->('PATH_NAVIGATOR_TREE_UPDATE');
+>('PATH_NAV_TREE_UPDATE');
+
+export const pathNavigatorTreeRootMissing = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_ROOT_MISSING');

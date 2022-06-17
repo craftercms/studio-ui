@@ -29,25 +29,55 @@ export const fetchQuickCreateListFailed = /*#__PURE__*/ createAction('FETCH_QUIC
 // endregion
 
 // region Detailed Item
+
 export const fetchDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('FETCH_DETAILED_ITEM');
+
 export const reloadDetailedItem = /*#__PURE__*/ createAction<{ path: string }>('RELOAD_DETAILED_ITEM');
+
 export const completeDetailedItem = /*#__PURE__*/ createAction<{ path: string; force?: boolean }>(
   'COMPLETE_DETAILED_ITEM'
 );
+
 export const fetchDetailedItemComplete = /*#__PURE__*/ createAction<DetailedItem>('FETCH_DETAILED_ITEM_COMPLETE');
+
 export const fetchDetailedItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEM_FAILED');
+
 export const fetchDetailedItems = /*#__PURE__*/ createAction<{ paths: string[] }>('COMPLETE_DETAILED_ITEMS');
-export const fetchDetailedItemsComplete = /*#__PURE__*/ createAction<DetailedItem[]>('FETCH_DETAILED_ITEMS_COMPLETE'); // TODO: update type
+
+export const fetchDetailedItemsComplete = /*#__PURE__*/ createAction<{ items: DetailedItem[] }>(
+  'FETCH_DETAILED_ITEMS_COMPLETE'
+);
+
 export const fetchDetailedItemsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DETAILED_ITEMS_FAILED');
+
 // endregion
 
 // region Sandbox Item
+
 export type FetchSandboxItemPayload = { path: string };
+
+export type FetchSandboxItemsPayload = { paths: string[] };
+
 export const fetchSandboxItem = /*#__PURE__*/ createAction<FetchSandboxItemPayload>('FETCH_SANDBOX_ITEM');
-export const fetchSandboxItemComplete = /*#__PURE__*/ createAction<{ item: SandboxItem }>(
-  'FETCH_SANDBOX_ITEM_COMPLETE'
-);
+
+export const fetchSandboxItems = /*#__PURE__*/ createAction<FetchSandboxItemsPayload>('FETCH_SANDBOX_ITEMS');
+
+export type FetchSandboxItemCompletePayload = { item: SandboxItem };
+
+export type FetchSandboxItemsCompletePayload = { items: SandboxItem[] };
+
+export const fetchSandboxItemComplete =
+  /*#__PURE__*/ createAction<FetchSandboxItemCompletePayload>('FETCH_SANDBOX_ITEM_COMPLETE');
+
+export const fetchSandboxItemsComplete =
+  /*#__PURE__*/ createAction<FetchSandboxItemsCompletePayload>('FETCH_SANDBOX_ITEMS_COMPLETE');
+
 export const fetchSandboxItemFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEM_FAILED');
+
+export const fetchSandboxItemsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SANDBOX_ITEMS_FAILED');
+
+export const sandboxItemsMissing = /*#__PURE__*/ createAction<{ paths: string[] }>('SANDBOX_ITEMS_MISSING');
+
 // endregion
 
 export const updateItemsByPath = /*#__PURE__*/ createAction<{ items: SandboxItem[] }>('UPDATE_ITEMS_BY_PATH');
@@ -89,11 +119,15 @@ export const pasteItemWithPolicyValidation = /*#__PURE__*/ createAction<{ path: 
 );
 
 export const unlockItem = /*#__PURE__*/ createAction<{ path: string; notify?: boolean }>('UNLOCK_ITEM');
+
 export const unlockItemCompleted = /*#__PURE__*/ createAction<{ path: string }>('UNLOCK_ITEM_COMPLETED');
+
 export const unlockItemFailed = /*#__PURE__*/ createAction('LOCK_ITEM_FAILED');
 
 export const lockItem = /*#__PURE__*/ createAction<{ path: string }>('LOCK_ITEM');
+
 export const lockItemCompleted = /*#__PURE__*/ createAction<{ path: string; username: string }>('LOCK_ITEM_COMPLETED');
+
 export const lockItemFailed = /*#__PURE__*/ createAction('LOCK_ITEM_FAILED');
 
 // This action's semantic is to unlock the item only if the lock owner is the current user.

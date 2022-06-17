@@ -172,7 +172,7 @@ export function bytesToSize(bytes: number, separator: string = '') {
  * Removes double slashes from urls
  * @param url {string} The URL to clean up
  */
-export function insureSingleSlash(url: string): string {
+export function ensureSingleSlash(url: string): string {
   return /^(http|https):\/\//g.test(url) ? url.replace(/([^:]\/)\/+/g, '$1') : url.replace(/\/+/g, '/');
 }
 

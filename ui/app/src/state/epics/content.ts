@@ -38,12 +38,16 @@ import {
   fetchSandboxItemComplete,
   fetchSandboxItemFailed,
   FetchSandboxItemPayload,
+  fetchSandboxItems,
+  fetchSandboxItemsComplete,
+  fetchSandboxItemsFailed,
   lockItem,
   lockItemCompleted,
   lockItemFailed,
   pasteItem,
   pasteItemWithPolicyValidation,
   reloadDetailedItem,
+  sandboxItemsMissing,
   unlockItem
 } from '../actions/content';
 import { catchAjaxError } from '../../utils/ajax';
@@ -52,6 +56,7 @@ import {
   fetchDetailedItem as fetchDetailedItemService,
   fetchDetailedItems as fetchDetailedItemsService,
   fetchItemByPath,
+  fetchItemsByPath,
   fetchQuickCreateList,
   fetchSandboxItem as fetchSandboxItemService,
   lock,
@@ -71,7 +76,10 @@ import {
 import { getEditorMode, isEditableAsset } from '../../utils/content';
 import {
   blockUI,
+  contentEvent,
   lockContentEvent,
+  moveContentEvent,
+  MoveContentEventPayload,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
@@ -98,7 +106,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
-import { DetailedItem } from '../../models';
+import SocketEvent from '../../models/SocketEvent';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
@@ -143,7 +151,7 @@ const inProgressMessages = defineMessages({
 });
 
 const content: CrafterCMSEpic[] = [
-  // region Quick Create
+  // region fetchQuickCreateListAction
   (action$, $state) =>
     action$.pipe(
       ofType(fetchQuickCreateListAction.type),
@@ -195,7 +203,7 @@ const content: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
         fetchDetailedItemsService(state.sites.active, payload.paths).pipe(
-          map((items) => fetchDetailedItemsComplete(items as DetailedItem[])),
+          map((items) => fetchDetailedItemsComplete({ items })),
           catchAjaxError(fetchDetailedItemsFailed)
         )
       )
@@ -223,13 +231,26 @@ const content: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) =>
         fetchSandboxItemService(state.sites.active, payload.path).pipe(
-          map((item) => fetchSandboxItemComplete({ item })),
+          map((item) => (item ? fetchSandboxItemComplete({ item }) : sandboxItemsMissing({ paths: [payload.path] }))),
           catchAjaxError(fetchSandboxItemFailed)
         )
       )
     ),
   // endregion
-  // region Item Duplicate
+  // region fetchSandboxItems
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchSandboxItems.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        fetchItemsByPath(state.sites.active, payload.paths).pipe(
+          map((items) => fetchSandboxItemsComplete({ items })),
+          catchAjaxError(fetchSandboxItemsFailed)
+        )
+      )
+    ),
+  // endregion
+  // region duplicateItem
   (action$, state$) =>
     action$.pipe(
       ofType(duplicateItem.type),
@@ -288,7 +309,7 @@ const content: CrafterCMSEpic[] = [
       map(([{ payload }]) => unlockItem(payload))
     ),
   // endregion
-  // region Asset Duplicate
+  // region duplicateAsset
   (action$, state$) =>
     action$.pipe(
       ofType(duplicateAsset.type),
@@ -312,7 +333,7 @@ const content: CrafterCMSEpic[] = [
       })
     ),
   // endregion
-  // region Duplicate with validation policy
+  // region duplicateWithPolicyValidation
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(duplicateWithPolicyValidation.type),
@@ -369,7 +390,7 @@ const content: CrafterCMSEpic[] = [
       })
     ),
   // endregion
-  // region Item Paste
+  // region pasteItem
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(pasteItem.type),
@@ -406,7 +427,7 @@ const content: CrafterCMSEpic[] = [
       )
     ),
   // endregion
-  // region Item Paste with validation policy
+  // region pasteItemWithPolicyValidation
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(pasteItemWithPolicyValidation.type),
@@ -467,7 +488,7 @@ const content: CrafterCMSEpic[] = [
       })
     ),
   // endregion
-  // region Delete Controller/Template
+  // region deleteController, deleteTemplate
   (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(deleteController.type, deleteTemplate.type),
@@ -522,7 +543,7 @@ const content: CrafterCMSEpic[] = [
       })
     ),
   // endregion
-  // region Lock Content Event
+  // region lockContentEvent
   (action$, state$) =>
     action$.pipe(
       ofType(lockContentEvent.type),
@@ -534,6 +555,50 @@ const content: CrafterCMSEpic[] = [
           catchAjaxError(fetchSandboxItemFailed)
         )
       )
+    ),
+  // endregion
+  // region contentEvent
+  (action$: Observable<StandardAction<SocketEvent>>, state$) =>
+    action$.pipe(
+      ofType(contentEvent.type),
+      withLatestFrom(state$),
+      mergeMap(([action, state]) => {
+        const { targetPath } = action.payload;
+        const parentPath = getParentPath(targetPath);
+        const parentWithIndex = withIndex(parentPath);
+        return [
+          // If the item is in state, assume it got updated
+          state.content.itemsByPath[targetPath] && fetchSandboxItem({ path: targetPath }),
+          // If the parent of the item is in state, a new item may have been added, re-fetch to update its child count
+          state.content.itemsByPath[parentPath] && fetchSandboxItem({ path: parentPath }),
+          state.content.itemsByPath[parentWithIndex] && fetchSandboxItem({ path: parentWithIndex })
+        ].filter(Boolean);
+      })
+    ),
+  // endregion
+  // region moveContentEvent
+  (action$: Observable<StandardAction<MoveContentEventPayload>>, state$) =>
+    action$.pipe(
+      ofType(moveContentEvent.type),
+      withLatestFrom(state$),
+      mergeMap(([action, state]) => {
+        const actions = [];
+        const itemsByPath = state.content.itemsByPath;
+        const { targetPath, sourcePath } = action.payload;
+        const parentOfTarget = getParentPath(targetPath);
+        const parentOfSource = getParentPath(sourcePath);
+        // By this point, the reducer would have deleted the `sourcePath` from the state.
+        // Re-fetch any items that are already on the state that were changed themselves or
+        // where a child may have been added/removed.
+        [targetPath, parentOfTarget, parentOfSource, withIndex(parentOfTarget), withIndex(parentOfSource)].forEach(
+          (path) => {
+            if (itemsByPath[path]) {
+              actions.push(fetchSandboxItem({ path }));
+            }
+          }
+        );
+        return actions;
+      })
     )
   // endregion
 ];

@@ -31,11 +31,13 @@ interface HeaderProps {
   onLanguageMenu?(anchor: Element): void;
   onMenuButtonClick?(anchor: Element): void;
   menuButtonIcon?: ReactNode;
+  className?: string;
+  classes?: Partial<Record<'root' | 'content', string>>;
 }
 
 // PathNavigatorHeader
 export function PathNavigatorHeader(props: HeaderProps) {
-  const { classes } = useStyles();
+  const { classes, cx } = useStyles();
   const {
     title,
     icon,
@@ -43,11 +45,17 @@ export function PathNavigatorHeader(props: HeaderProps) {
     onLanguageMenu,
     onMenuButtonClick,
     menuButtonIcon = <MoreVertIcon />,
-    collapsed = false
+    collapsed = false,
+    className
   } = props;
   const currentFlag = (locale: string) => <LanguageRounded />;
   return (
-    <AccordionSummary classes={{ root: classes.accordionSummary, content: classes.accordionSummaryContent }}>
+    <AccordionSummary
+      classes={{
+        root: cx(classes.accordionSummary, className, props.classes?.root),
+        content: cx(classes.accordionSummaryContent, props.classes?.content)
+      }}
+    >
       <div className={classes.accordionSummaryTitle}>
         {icon && (
           <SystemIcon

@@ -226,6 +226,7 @@ export const components = {
   PathNavigator: lazy(() => import('../components/PathNavigator')),
   PathNavigatorTree: lazy(() => import('../components/PathNavigatorTree')),
   PathSelectionDialog: lazy(() => import('../components/PathSelectionDialog')),
+  PathSelectionInput: lazy(() => import('../components/PathSelectionInput')),
   PendingApprovalDashlet: lazy(() => import('../components/PendingApprovalDashlet')),
   PluginCard: lazy(() => import('../components/PluginCard')),
   PluginConfigDialog: lazy(() => import('../components/PluginConfigDialog')),

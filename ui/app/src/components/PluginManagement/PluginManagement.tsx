@@ -167,10 +167,8 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const onInstallMarketplacePlugin = (plugin: MarketplacePlugin) => {
     dispatch(
       batchActions([
-        showSystemNotification({
-          message: formatMessage(messages.pluginInstalled)
-        }),
-        emitSystemEvent(pluginInstalled())
+        showSystemNotification({ message: formatMessage(messages.pluginInstalled) }),
+        emitSystemEvent(pluginInstalled(plugin))
       ])
     );
     setInstalledPluginsLookup({ ...installedPluginsLookup, [plugin.id]: true });

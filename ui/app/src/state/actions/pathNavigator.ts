@@ -22,78 +22,85 @@ import { AjaxError } from 'rxjs/ajax';
 
 type PayloadWithId<P> = P & { id: string };
 
-export const pathNavigatorInit =
-  /*#__PURE__*/ createAction<
-    PayloadWithId<{ path: string; locale: string; collapsed?: boolean; excludes?: string[]; limit: number }>
-  >('PATH_NAVIGATOR_INIT');
+export type PathNavInitPayload = PayloadWithId<{
+  rootPath: string;
+  locale?: string;
+  collapsed?: boolean;
+  excludes?: string[];
+  limit?: number;
+  currentPath?: string;
+  keyword?: string;
+  offset?: number;
+}>;
 
-export const pathNavigatorSetLocaleCode = /*#__PURE__*/ createAction<PayloadWithId<{ locale: string }>>(
-  'PATH_NAVIGATOR_SET_LOCALE_CODE'
-);
+export const pathNavigatorInit = /*#__PURE__*/ createAction<PathNavInitPayload>('PATH_NAV_INIT');
+
+export const pathNavigatorSetLocaleCode =
+  /*#__PURE__*/ createAction<PayloadWithId<{ locale: string }>>('PATH_NAV_SET_LOCALE_CODE');
 
 export const pathNavigatorUpdate =
-  /*#__PURE__*/ createAction<PayloadWithId<Partial<PathNavigatorStateProps>>>('PATH_NAVIGATOR_UPDATE');
+  /*#__PURE__*/ createAction<PayloadWithId<Partial<PathNavigatorStateProps>>>('PATH_NAV_UPDATE');
 
 export const pathNavigatorSetCollapsed =
-  /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>('PATH_NAVIGATOR_SET_COLLAPSED');
+  /*#__PURE__*/ createAction<PayloadWithId<{ collapsed: boolean }>>('PATH_NAV_SET_COLLAPSED');
 
-export const pathNavigatorSetCurrentPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
-  'PATH_NAVIGATOR_SET_CURRENT_PATH'
-);
+export const pathNavigatorSetCurrentPath =
+  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_SET_CURRENT_PATH');
 
 export const pathNavigatorConditionallySetPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
-  'PATH_NAVIGATOR_CONDITIONALLY_SET_PATH'
+  'PATH_NAV_CONDITIONALLY_SET_PATH'
 );
 
 export const pathNavigatorConditionallySetPathComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; parent?: DetailedItem; children: GetChildrenResponse }>
->('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_COMPLETE');
+>('PATH_NAV_CONDITIONALLY_SET_PATH_COMPLETE');
 
 export const pathNavigatorConditionallySetPathFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: { status: number; message: string };
-}>('PATH_NAVIGATOR_CONDITIONALLY_SET_PATH_FAILED');
+}>('PATH_NAV_CONDITIONALLY_SET_PATH_FAILED');
 
-export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_REFRESH');
+export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_REFRESH');
 
-export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>(
-  'PATH_NAVIGATOR_BACKGROUND_REFRESH'
-);
+export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_BACKGROUND_REFRESH');
 
 export const pathNavigatorItemChecked =
-  /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAVIGATOR_ITEM_CHECKED');
+  /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAV_ITEM_CHECKED');
 
-export const pathNavigatorItemUnchecked = /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>(
-  'PATH_NAVIGATOR_ITEM_UNCHECKED'
-);
+export const pathNavigatorItemUnchecked =
+  /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAV_ITEM_UNCHECKED');
 
-export const pathNavigatorClearChecked = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAVIGATOR_CLEAR_CHECKED');
+export const pathNavigatorClearChecked = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_CLEAR_CHECKED');
 
-export const pathNavigatorFetchParentItems = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; excludes?: string[]; limit: number; offset?: number; keyword?: string }>
->('PATH_NAVIGATOR_FETCH_PARENT_ITEMS');
+export const pathNavigatorFetchParentItems =
+  /*#__PURE__*/ createAction<
+    PayloadWithId<{ path: string; excludes?: string[]; limit: number; offset?: number; keyword?: string }>
+  >('PATH_NAV_FETCH_PARENT_ITEMS');
 
 export const pathNavigatorFetchPath =
-  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAVIGATOR_FETCH_PATH');
+  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_FETCH_PATH');
 
-export const pathNavigatorFetchPathComplete = /*#__PURE__*/ createAction<
-  PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>
->('PATH_NAVIGATOR_FETCH_PATH_COMPLETE');
+export const pathNavigatorFetchPathComplete =
+  /*#__PURE__*/ createAction<PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>>(
+    'PATH_NAV_FETCH_PATH_COMPLETE'
+  );
 
 export const pathNavigatorFetchParentItemsComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ items: DetailedItem[]; children: GetChildrenResponse }>
->('PATH_NAVIGATOR_FETCH_PARENT_ITEMS_COMPLETE');
+>('PATH_NAV_FETCH_PARENT_ITEMS_COMPLETE');
 
 export const pathNavigatorFetchPathFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
-}>('PATH_NAVIGATOR_FETCH_PATH_FAILED');
+}>('PATH_NAV_FETCH_PATH_FAILED');
 
 export const pathNavigatorSetKeyword =
-  /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string }>>('PATH_NAVIGATOR_SET_KEYWORD');
+  /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string }>>('PATH_NAV_SET_KEYWORD');
 
 export const pathNavigatorChangePage =
-  /*#__PURE__*/ createAction<PayloadWithId<{ offset: number }>>('PATH_NAVIGATOR_CHANGE_PAGE');
+  /*#__PURE__*/ createAction<PayloadWithId<{ offset: number }>>('PATH_NAV_CHANGE_PAGE');
 
 export const pathNavigatorChangeLimit =
-  /*#__PURE__*/ createAction<PayloadWithId<{ limit: number; offset: number }>>('PATH_NAVIGATOR_CHANGE_LIMIT');
+  /*#__PURE__*/ createAction<PayloadWithId<{ limit: number; offset: number }>>('PATH_NAV_CHANGE_LIMIT');
+
+export const pathNavRootPathMissing = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_ROOT_MISSING');

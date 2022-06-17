@@ -34,7 +34,6 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import { emitSystemEvent, folderRenamed } from '../../state/actions/system';
 import slugify from 'slugify';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
@@ -72,12 +71,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
     renameFolder(site, path, name).subscribe({
       next() {
         onRenamed?.({ path, name, rename });
-        dispatch(
-          batchActions([
-            updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }),
-            emitSystemEvent(folderRenamed({ target: path, oldName: value, newName: name }))
-          ])
-        );
+        dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
       },
       error(response) {
         dispatch(showErrorDialog({ error: response }));
@@ -228,7 +222,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
-          <FormattedMessage id="words.close" defaultMessage="Close" />
+          <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
         <PrimaryButton onClick={onCreate} disabled={isSubmitting || !isValid} loading={isSubmitting}>
           {rename ? (

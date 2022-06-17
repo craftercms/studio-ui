@@ -22,6 +22,7 @@ import { LegacyDashboardPreferences } from '../models/Dashboard';
 import ToolsPanelTarget from '../models/ToolsPanelTarget';
 import { EnhancedDialogState } from '../hooks/useEnhancedDialogState';
 import { HighlightMode } from '../models/GlobalState';
+import { PathNavInitPayload } from '../state/actions/pathNavigator';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
   window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
@@ -105,17 +106,23 @@ export function removeStoredPreviewToolsPanelPage(siteIdentifier: string, user: 
   return window.localStorage.removeItem(`craftercms.${user}.previewToolsPanelPage.${siteIdentifier}`);
 }
 
+export type StoredPathNavState = Pick<PathNavInitPayload, 'collapsed' | 'currentPath' | 'keyword' | 'offset' | 'limit'>;
+
 export function setStoredPathNavigator(
   siteIdentifier: string,
   user: string,
   id: string,
-  value: { collapsed: boolean; currentPath: string; keyword: string; offset: number; limit: number }
+  value: StoredPathNavState
 ): void {
   window.localStorage.setItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`, JSON.stringify(value));
 }
 
-export function getStoredPathNavigator(siteIdentifier: string, user: string, id: string) {
+export function getStoredPathNavigator(siteIdentifier: string, user: string, id: string): StoredPathNavState {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`));
+}
+
+export function removeStoredPathNavigator(siteIdentifier: string, user: string, id: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`);
 }
 
 export function setStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string, value: object) {
@@ -124,6 +131,10 @@ export function setStoredPathNavigatorTree(siteIdentifier: string, user: string,
 
 export function getStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string) {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`));
+}
+
+export function removeStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`);
 }
 
 export function setStoredFolderBrowserPathView(siteIdentifier: string, user: string, value: { limit: number }): void {

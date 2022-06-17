@@ -28,8 +28,7 @@ import User from '../../models/User';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-// @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import { Button, Typography } from '@mui/material';

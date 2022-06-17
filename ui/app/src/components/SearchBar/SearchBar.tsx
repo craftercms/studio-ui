@@ -95,7 +95,7 @@ interface SearchBarProps {
   onClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onChange(value: string, event: React.SyntheticEvent): void;
   onKeyPress?(key: string): void;
-  onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement): void;
   onDecoratorButtonClick?(): void;
 }
 
@@ -155,14 +155,15 @@ export function SearchBar(props: SearchBarProps) {
       />
       {showActionButton && (
         <IconButton
-          onClick={
-            onActionButtonClick
-              ? onActionButtonClick
-              : (e) => {
-                  onChange('', e);
-                  inputRef.current?.focus();
-                }
-          }
+          onClick={(e) => {
+            (
+              onActionButtonClick ??
+              ((e, inputRef) => {
+                onChange('', e);
+                inputRef?.focus();
+              })
+            )(e, inputRef.current);
+          }}
           className={classes.icon}
           size="large"
         >

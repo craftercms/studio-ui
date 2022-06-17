@@ -73,10 +73,35 @@ export function withIndex(path: string): string {
   return `${withoutIndex(path)}/index.xml`;
 }
 
+/**
+ * Takes in a path and if it ends with a file, strips the file off the path (returns the parent
+ * path of the file). Returns same path if not file is present in the path.
+ **/
+export function withoutFile(path: string): string {
+  const pieces = path.replace('/$', '').split('/');
+  const lastPieceSplitByDot = pieces[pieces.length - 1].split('.');
+  if (lastPieceSplitByDot.length > 1) {
+    return `/${pieces.slice(1, pieces.length - 1).join('/')}`;
+  } else {
+    return path;
+  }
+}
+
+/**
+ * Takes in a path (or file name) and extracts its extension (e.g. "/files/names.txt" => "txt")
+ **/
+export function getFileExtension(path: string): string {
+  return (path ?? '').match(/\.[0-9a-z]+$/i)?.[0].substr(1) ?? '';
+}
+
+export function hasExtension(path: string): boolean {
+  return getFileExtension(path) !== '';
+}
+
 export function getParentPath(path: string): string {
   let splitPath = withoutIndex(path).split('/');
   splitPath.pop();
-  return splitPath.join('/');
+  return splitPath.join('/') || '/';
 }
 
 export function isRootPath(path: string): boolean {
@@ -96,31 +121,23 @@ export function getParentsFromPath(path: string, rootPath: string): string[] {
   return [rootPath, ...splitPath.map((value, i) => `${rootPath}/${splitPath.slice(1, i + 1).join('/')}`).splice(1)];
 }
 
-export function getIndividualPaths(path: string, rootPath?: string): string[] {
-  let paths = [];
-  // adding withoutIndex to avoid duplicates paths
-  let array = withoutIndex(path)
-    .replace(/^\/|\/$/g, '')
-    .split('/');
-  do {
-    // validation to add .index.xml to the current path;
-    if ('/' + array.join('/') === withoutIndex(path) && path.endsWith('index.xml')) {
-      paths.push(path);
-    } else {
-      paths.push('/' + array.join('/'));
-    }
-    array.pop();
-  } while (array.length);
-  if (rootPath && rootPath !== '/') {
-    // validation to remove previous path before the rootPath, example 'site' when rootPath is /site/website
-    if (paths.indexOf(withIndex(rootPath)) >= 0) {
-      return paths.slice(0, paths.indexOf(withIndex(rootPath)) + 1).reverse();
-    } else {
-      return paths.slice(0, paths.indexOf(withoutIndex(rootPath)) + 1).reverse();
-    }
-  } else {
-    return paths.reverse();
+export function getIndividualPaths(path: string, rootPath = ''): string[] {
+  // `/` is not valid path in CrafterCMS
+  rootPath === '/' && (rootPath = '');
+  let rootWithoutIndex = withoutIndex(rootPath);
+  let paths = (rootPath ? path.replace(new RegExp(`^${withoutIndex(rootPath)}`), '') : path).split('/');
+  paths[0] === '' && paths.shift();
+  let length = paths.length;
+  let individualPaths = paths.map((p, i) => `${rootWithoutIndex}/${paths.slice(0, length - i).join('/')}`).reverse();
+  rootWithoutIndex && individualPaths.unshift(rootWithoutIndex);
+  if (
+    individualPaths.length > 1 &&
+    individualPaths[individualPaths.length - 1] === `${individualPaths[individualPaths.length - 2]}/index.xml`
+  ) {
+    individualPaths.pop();
+    individualPaths[individualPaths.length - 1] += '/index.xml';
   }
+  return individualPaths;
 }
 
 export function getPasteItemFromPath(path: string, paths: string[]): PasteItem {
