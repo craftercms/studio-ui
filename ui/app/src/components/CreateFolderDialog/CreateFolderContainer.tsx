@@ -21,7 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
-import { createFolder, renameFolder } from '../../services/content';
+import { createFolder, fetchSandboxItem, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -39,6 +39,9 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { fetchSandboxItemComplete } from '../../state/actions/content';
+import { switchMap, tap } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -80,17 +83,29 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   };
 
   const onCreateFolder = (site: string, path: string, name: string) => {
-    createFolder(site, path, name).subscribe({
-      next() {
-        onCreated?.({ path, name, rename });
-        dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
-      },
-      error(response) {
-        dispatch(
-          batchActions([showErrorDialog({ error: response }), updateCreateFolderDialog({ isSubmitting: false })])
-        );
-      }
-    });
+    fetchSandboxItem(site, `${path}/${name}`)
+      .pipe(
+        tap(
+          (item) =>
+            item &&
+            dispatch(
+              batchActions([fetchSandboxItemComplete({ item }), updateCreateFolderDialog({ isSubmitting: false })])
+            )
+        ),
+        filter((item) => !item),
+        switchMap(() => createFolder(site, path, name))
+      )
+      .subscribe({
+        next() {
+          onCreated?.({ path, name, rename });
+          dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
+        },
+        error(response) {
+          dispatch(
+            batchActions([showErrorDialog({ error: response }), updateCreateFolderDialog({ isSubmitting: false })])
+          );
+        }
+      });
   };
 
   const onCreate = () => {
@@ -179,7 +194,9 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onCreate();
+            if (isValid) {
+              onCreate();
+            }
           }}
         >
           <TextField

@@ -48,6 +48,8 @@ import { itemActionDispatcher } from '../../../utils/itemActions';
 import { useEnv } from '../../../hooks/useEnv';
 import { getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
+import useItemsByPath from '../../../hooks/useItemsByPath';
+import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';
 
 export interface AwaitingApprovalDashletDashboardItem {
   label: string;
@@ -97,6 +99,8 @@ export function AwaitingApprovalDashlet() {
     () => Object.keys(state.itemsLookup).some((path) => selectedLookup[path]) && !isAllChecked,
     [isAllChecked, selectedLookup, state.itemsLookup]
   );
+  const itemsByPath = useItemsByPath();
+  useFetchSandboxItems(Object.keys(selectedLookup));
 
   const refresh = useCallback(() => {
     setIsFetching(true);
@@ -245,7 +249,8 @@ export function AwaitingApprovalDashlet() {
     } else {
       const selected = Object.keys(selectedLookup)
         .filter((path) => selectedLookup[path])
-        .map((path) => state.itemsLookup[path]);
+        .flatMap((path) => itemsByPath[path] ?? []);
+
       itemActionDispatcher({
         site: siteId,
         item: selected.length > 1 ? selected : selected[0],

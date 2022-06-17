@@ -16,8 +16,7 @@
 
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Suspencified from '../Suspencified/Suspencified';
+import React, { useCallback, useEffect, useState } from 'react';
 import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
@@ -32,12 +31,12 @@ import AuditLogEntryParametersDialog from '../AuditLogEntryParametersDialog';
 import { nnou } from '../../utils/object';
 import Button from '@mui/material/Button';
 import AuditGridSkeleton from '../AuditGrid/AuditGridSkeleton';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useMount } from '../../hooks/useMount';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSiteList } from '../../hooks/useSiteList';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
 interface AuditManagementProps {
   site?: string;
@@ -47,7 +46,6 @@ interface AuditManagementProps {
 
 export function AuditManagement(props: AuditManagementProps) {
   const { site, embedded, showAppsButton } = props;
-  const [fetching, setFetching] = useState(false);
   const [auditLogs, setAuditLogs] = useState<PagedArray<AuditLogEntry>>(null);
   const [error, setError] = useState<ApiResponse>();
   const sites = useSiteList();
@@ -71,17 +69,14 @@ export function AuditManagement(props: AuditManagementProps) {
   const auditLogEntryParametersDialogState = useEnhancedDialogState();
 
   const refresh = useCallback(() => {
-    setFetching(true);
-    fetchAuditLog(options).subscribe(
-      (logs) => {
+    fetchAuditLog(options).subscribe({
+      next: (logs) => {
         setAuditLogs(logs);
-        setFetching(false);
       },
-      ({ response }) => {
-        setError(response);
-        setFetching(false);
+      error: ({ response }) => {
+        setError(response.response);
       }
-    );
+    });
   }, [options]);
 
   useMount(() => {
@@ -93,20 +88,6 @@ export function AuditManagement(props: AuditManagementProps) {
   useEffect(() => {
     refresh();
   }, [refresh]);
-
-  const resource = useLogicResource<
-    PagedArray<AuditLogEntry>,
-    { auditLogs: PagedArray<AuditLogEntry>; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(() => ({ auditLogs, error, fetching }), [auditLogs, error, fetching]),
-    {
-      shouldResolve: (source) => Boolean(source.auditLogs) && !fetching,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetching && resource.complete,
-      resultSelector: (source) => source.auditLogs,
-      errorSelector: () => error
-    }
-  );
 
   const onPageChange = (pageNumber: number) => {
     setPage(pageNumber);
@@ -174,16 +155,12 @@ export function AuditManagement(props: AuditManagementProps) {
         showHamburgerMenuButton={!embedded}
         showAppsButton={showAppsButton}
       />
-      <Suspencified
-        suspenseProps={{
-          fallback: (
-            <AuditGridSkeleton siteMode={Boolean(site)} numOfItems={auditLogs?.length ?? 10} filters={options} />
-          )
-        }}
-      >
+      {error ? (
+        <ApiResponseErrorState error={error} />
+      ) : auditLogs ? (
         <AuditGridUI
           page={page}
-          resource={resource}
+          auditLogs={auditLogs}
           sites={sites}
           users={users}
           siteMode={Boolean(site)}
@@ -203,7 +180,9 @@ export function AuditManagement(props: AuditManagementProps) {
             { id: 'API', name: 'API', value: 'API' }
           ]}
         />
-      </Suspencified>
+      ) : (
+        <AuditGridSkeleton siteMode={Boolean(site)} numOfItems={auditLogs?.length ?? 10} filters={options} />
+      )}
       <AuditLogEntryParametersDialog
         open={auditLogEntryParametersDialogState.open}
         onClose={auditLogEntryParametersDialogState.onClose}

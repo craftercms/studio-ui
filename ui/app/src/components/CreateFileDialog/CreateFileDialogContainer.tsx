@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { createFile } from '../../services/content';
+import { createFile, fetchSandboxItem } from '../../services/content';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { validateActionPolicy } from '../../services/sites';
 import DialogBody from '../DialogBody/DialogBody';
@@ -35,6 +35,9 @@ import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
+import { fetchSandboxItemComplete } from '../../state/actions/content';
+import { switchMap, tap } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const { onClose, onCreated, type, path, allowBraces } = props;
@@ -50,27 +53,39 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const isValid = !isBlank(name) && !fileExists;
 
   const onCreateFile = (site: string, path: string, fileName: string) => {
-    createFile(site, path, fileName).subscribe({
-      next() {
-        onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess: true });
-        dispatch(
-          updateCreateFileDialog({
-            hasPendingChanges: false,
-            isSubmitting: false
-          })
-        );
-      },
-      error(response) {
-        dispatch(
-          batchActions([
-            showErrorDialog({ error: response }),
+    fetchSandboxItem(site, `${path}/${fileName}`)
+      .pipe(
+        tap(
+          (item) =>
+            item &&
+            dispatch(
+              batchActions([fetchSandboxItemComplete({ item }), updateCreateFileDialog({ isSubmitting: false })])
+            )
+        ),
+        filter((item) => !item),
+        switchMap(() => createFile(site, path, fileName))
+      )
+      .subscribe({
+        next() {
+          onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess: true });
+          dispatch(
             updateCreateFileDialog({
+              hasPendingChanges: false,
               isSubmitting: false
             })
-          ])
-        );
-      }
-    });
+          );
+        },
+        error(response) {
+          dispatch(
+            batchActions([
+              showErrorDialog({ error: response }),
+              updateCreateFileDialog({
+                isSubmitting: false
+              })
+            ])
+          );
+        }
+      });
   };
 
   const onCreate = () => {
@@ -139,7 +154,9 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onCreate();
+            if (isValid) {
+              onCreate();
+            }
           }}
         >
           <TextField
