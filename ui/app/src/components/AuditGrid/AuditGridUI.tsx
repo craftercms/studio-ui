@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
 import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
@@ -39,7 +38,7 @@ import { useLocale } from '../../hooks/useLocale';
 
 export interface AuditGridUIProps {
   page: number;
-  resource: Resource<PagedArray<AuditLogEntry>>;
+  auditLogs: PagedArray<AuditLogEntry>;
   sites: Site[];
   users: PagedArray<User>;
   parametersLookup: LookupTable<AuditLogEntryParameter[]>;
@@ -121,7 +120,7 @@ export const fieldIdMapping = {
 export function AuditGridUI(props: AuditGridUIProps) {
   const {
     page,
-    resource,
+    auditLogs,
     onPageChange,
     onPageSizeChange,
     onFilterChange,
@@ -138,7 +137,6 @@ export function AuditGridUI(props: AuditGridUIProps) {
     hasActiveFilters,
     siteMode = false
   } = props;
-  const auditLogs = resource.read();
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const [anchorPosition, setAnchorPosition] = useState(null);
@@ -174,8 +172,8 @@ export function AuditGridUI(props: AuditGridUIProps) {
 
     if (newSort !== sort) {
       setSortModel(model);
-      if (sort === 'asc') {
-        onFilterChange({ id: 'order', value: sort.toUpperCase() });
+      if (newSort === 'asc') {
+        onFilterChange({ id: 'order', value: newSort.toUpperCase() });
       } else {
         onFilterChange({ id: 'order', value: undefined });
       }
