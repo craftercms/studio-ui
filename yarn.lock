@@ -4026,7 +4026,7 @@ __metadata:
     "@mui/icons-material": ^5.8.2
     "@mui/lab": ^5.0.0-alpha.84
     "@mui/material": ^5.8.2
-    "@mui/x-data-grid": ^5.12.0
+    "@mui/x-data-grid": ^5.12.2
     "@prettier/plugin-xml": ^2.2.0
     "@reduxjs/toolkit": ^1.7.0
     "@rollup/plugin-typescript": ^8.3.0
@@ -5238,9 +5238,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^5.12.0":
-  version: 5.12.0
-  resolution: "@mui/x-data-grid@npm:5.12.0"
+"@mui/x-data-grid@npm:^5.12.2":
+  version: 5.12.2
+  resolution: "@mui/x-data-grid@npm:5.12.2"
   dependencies:
     "@babel/runtime": ^7.17.2
     "@mui/utils": ^5.4.1
@@ -5251,7 +5251,8 @@ __metadata:
     "@mui/material": ^5.4.1
     "@mui/system": ^5.4.1
     react: ^17.0.2 || ^18.0.0
-  checksum: e906b1a2c48c01874aea55d5acd3abe04177ddf16f6dc926ec9aea05dc70c14bca501314e49e2206a062df5c39ad74b07d212a5c7972c0a7923ada04bf37700f
+    react-dom: ^17.0.2 || ^18.0.0
+  checksum: e23a45cc64c85996f30bbfb9885ca3a3364b40895eab64d77178b84b07f1c1941df93414896932496eb95e1d0d539c1666e2d729547c45c4c6f80cfbb6294a33
   languageName: node
   linkType: hard
 
