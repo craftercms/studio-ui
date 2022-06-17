@@ -18,7 +18,6 @@ import { RejectDialogUIProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
 import Grid from '@mui/material/Grid';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
@@ -31,41 +30,42 @@ import React from 'react';
 import { RejectDialogContentUI } from './RejectDialogContentUI';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
+import { nnou } from '../../utils/object';
+import { LoadingState } from '../LoadingState';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { EmptyState } from '../EmptyState';
+import { useStyles } from './styles';
 
 export function RejectDialogUI(props: RejectDialogUIProps) {
   const {
-    resource,
+    items,
+    cannedMessages,
     published,
     checkedItems,
     rejectionReason,
     rejectionComment,
+    error,
     onRejectionReasonChange,
     onCommentChange,
     onUpdateChecked,
     onCloseButtonClick,
     onReject,
-    classes,
     isSubmitting,
     isSubmitDisabled
   } = props;
-  const { items, cannedMessages } = resource.read();
+  const { classes } = useStyles();
+
   return (
     <>
       <DialogBody id="confirmDialogBody">
-        <Grid container spacing={3} className={classes.contentRoot}>
+        <Grid container spacing={3}>
           <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
-            <SuspenseWithEmptyState
-              resource={resource}
-              withEmptyStateProps={{
-                emptyStateProps: {
-                  title: (
-                    <FormattedMessage id="rejectDialog.noItemsSelected" defaultMessage="There are no files to reject" />
-                  )
-                },
-                isEmpty: ({ items }) => items.length === 0
-              }}
-            >
-              {published ? (
+            {error ? (
+              <ApiResponseErrorState error={error} />
+            ) : !Boolean(items && nnou(published) && cannedMessages) ? (
+              <LoadingState />
+            ) : items.length > 0 ? (
+              published ? (
                 <RejectDialogContentUI
                   items={items}
                   checkedItems={checkedItems}
@@ -79,8 +79,14 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                     defaultMessage="The entire site publish will be rejected since this is the first publish request"
                   />
                 </Alert>
-              )}
-            </SuspenseWithEmptyState>
+              )
+            ) : (
+              <EmptyState
+                title={
+                  <FormattedMessage id="rejectDialog.noItemsSelected" defaultMessage="There are no files to reject" />
+                }
+              />
+            )}
           </Grid>
 
           <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
@@ -107,7 +113,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                   <MenuItem value="typeCustomReason">
                     <FormattedMessage id="rejectDialog.typeMyOwnComment" defaultMessage="Type my own comment" />
                   </MenuItem>
-                  {cannedMessages.map((message) => (
+                  {cannedMessages?.map((message) => (
                     <MenuItem value={message.key} key={message.key}>
                       <Typography>{message.title}</Typography>
                     </MenuItem>
