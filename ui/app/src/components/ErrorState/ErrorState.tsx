@@ -29,7 +29,7 @@ type ErrorStateClassKey = 'root' | 'image' | 'title' | 'message' | 'button';
 type ErrorStateStyles = Partial<Record<ErrorStateClassKey, CSSProperties>>;
 
 export type ErrorStateProps = React.PropsWithChildren<{
-  title?: string;
+  title?: ReactNode;
   message?: string;
   imageUrl?: string;
   buttonIcon?: ReactNode;

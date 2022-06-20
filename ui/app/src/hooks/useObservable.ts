@@ -14,6 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './FolderBrowserTreeView';
+import { Observable, Subject } from 'rxjs';
+import { useMemo } from 'react';
 
-export * from './FolderBrowserTreeView';
+export function useObservable<T = void>(): { subject: Subject<T>; observable: Observable<T> } {
+  return useMemo(() => {
+    const subject = new Subject<T>();
+    return { subject, observable: subject.asObservable() };
+  }, []);
+}
+
+export default useObservable;

@@ -34,6 +34,7 @@ import Divider from '@mui/material/Divider';
 import InputUnstyled from '@mui/base/InputUnstyled';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
+  // region const { ... } = props;
   const {
     items,
     guestBase,
@@ -60,6 +61,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onRefresh,
     onUpload
   } = props;
+  // endregion
   const { classes, cx: clsx } = useStyles();
   return (
     <>

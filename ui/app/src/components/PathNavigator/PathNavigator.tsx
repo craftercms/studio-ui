@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, ElementType, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, ElementType, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
-import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
+import { withIndex, withoutIndex } from '../../utils/path';
 import { translations } from './translations';
 import { languages } from '../../env/i18n-legacy';
 import {
@@ -33,11 +33,9 @@ import {
   pathNavigatorItemUnchecked,
   pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
-  pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
   pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
-import { fetchSandboxItem } from '../../state/actions/content';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import {
   getEditorMode,
@@ -49,21 +47,12 @@ import {
   isVideo
 } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
-import { getHostToHostBus } from '../../utils/subjects';
 import { debounceTime } from 'rxjs/operators';
-import {
-  contentEvent,
-  deleteContentEvent,
-  pluginInstalled,
-  publishEvent,
-  workflowEvent
-} from '../../state/actions/system';
 import PathNavigatorUI from './PathNavigatorUI';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { SystemIconDescriptor } from '../SystemIcon';
-// @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
@@ -109,10 +98,11 @@ export interface PathNavigatorProps {
 }
 
 export interface PathNavigatorStateProps {
+  id: string;
   rootPath: string;
   currentPath: string;
   localeCode: string;
-  keyword: '';
+  keyword: string;
   isSelectMode: boolean;
   hasClipboard: boolean;
   levelDescriptor: string;
@@ -126,6 +116,7 @@ export interface PathNavigatorStateProps {
   excludes?: string[];
   isFetching: boolean;
   error: any;
+  isRootPathMissing: boolean;
 }
 
 // @see https://github.com/craftercms/craftercms/issues/5360
@@ -137,6 +128,7 @@ export interface PathNavigatorStateProps {
 // };
 
 export function PathNavigator(props: PathNavigatorProps) {
+  // region const { ... } = props;
   const {
     label = '(No name)',
     icon,
@@ -151,8 +143,9 @@ export function PathNavigator(props: PathNavigatorProps) {
     initialCollapsed,
     onItemClicked: onItemClickedProp,
     createItemClickedHandler = (defaultHandler) => defaultHandler,
-    computeActiveItems: computeActiveItemsProp
+    computeActiveItems
   } = props;
+  // endregion
   const state = useSelection((state) => state.pathNavigator)[id];
   const itemsByPath = useItemsByPath();
   const { id: siteId, uuid } = useActiveSite();
@@ -179,7 +172,17 @@ export function PathNavigator(props: PathNavigatorProps) {
       if (storedState?.keyword) {
         setKeyword(storedState.keyword);
       }
-      dispatch(pathNavigatorInit({ id, path, locale, excludes, limit, collapsed: initialCollapsed, ...storedState }));
+      dispatch(
+        pathNavigatorInit({
+          id,
+          rootPath: path,
+          locale,
+          excludes,
+          limit,
+          collapsed: initialCollapsed,
+          ...storedState
+        })
+      );
     }
   }, [
     dispatch,
@@ -222,71 +225,6 @@ export function PathNavigator(props: PathNavigatorProps) {
     }
   }, [dispatch, id, siteLocales.defaultLocaleCode, state?.localeCode]);
 
-  // Item Updates Propagation
-  useEffect(() => {
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.subscribe(({ type, payload }) => {
-      switch (type) {
-        case contentEvent.type: {
-          const targetPath = payload.targetPath;
-          const parentPathOfTargetPath = getParentPath(targetPath);
-          if (
-            // If content event target is a direct child of the current path in the navigator
-            parentPathOfTargetPath === withoutIndex(state.currentPath) ||
-            // If content event target is the current path in the navigator
-            withoutIndex(targetPath) === withoutIndex(state.currentPath)
-          ) {
-            dispatch(pathNavigatorBackgroundRefresh({ id }));
-          } else if (
-            // If content event target is a child of a child of the current path in the navigator,
-            // then, the parent item of the event target needs refreshing, so it's child count is
-            // updated and becomes navigable (in case that it didn't have children before this event).
-            getParentPath(parentPathOfTargetPath) === withoutIndex(state.currentPath)
-          ) {
-            dispatch(fetchSandboxItem({ path: parentPathOfTargetPath }));
-          }
-          break;
-        }
-        case deleteContentEvent.type: {
-          const targetPath = payload.targetPath;
-          if (withoutIndex(targetPath) === withoutIndex(path)) {
-            // if path being deleted is the rootPath
-            dispatch(pathNavigatorRefresh({ id }));
-          } else if (withoutIndex(targetPath) === withoutIndex(state.currentPath)) {
-            // if path is currentPath (current root path)
-            dispatch(pathNavigatorSetCurrentPath({ id, path: getParentPath(withoutIndex(targetPath)) }));
-          } else if (state.itemsInPath.includes(targetPath)) {
-            // current page is last one and only one item in current page
-            const goBackOnePage = state.offset >= state.limit && state.total === state.offset + 1;
-            if (goBackOnePage) {
-              dispatch(pathNavigatorChangePage({ id, offset: state.offset - state.limit }));
-            } else {
-              dispatch(pathNavigatorBackgroundRefresh({ id }));
-            }
-          }
-          break;
-        }
-        case pluginInstalled.type: {
-          dispatch(pathNavigatorBackgroundRefresh({ id }));
-          break;
-        }
-        case workflowEvent.type:
-        case publishEvent.type: {
-          // If it's fetching, do not refresh
-          if (!state.isFetching) {
-            dispatch(pathNavigatorBackgroundRefresh({ id }));
-          }
-        }
-      }
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [state, id, dispatch, path]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const computeActiveItems = useCallback(computeActiveItemsProp ?? (() => []), [computeActiveItemsProp]);
-
   if (!state) {
     return <PathNavigatorSkeleton />;
   }
@@ -324,7 +262,6 @@ export function PathNavigator(props: PathNavigatorProps) {
     }
   };
 
-  // TODO: Implement pagination when get_children api is ready.
   const onPageChanged = (page: number) => {
     const offset = page * state.limit;
     dispatch(

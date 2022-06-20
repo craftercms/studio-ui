@@ -170,6 +170,7 @@ export * from './PasswordTextField';
 export * from './PathNavigator';
 export * from './PathNavigatorTree';
 export * from './PathSelectionDialog';
+export * from './PathSelectionInput';
 export * from './PendingApprovalDashlet';
 export * from './PluginCard';
 export * from './PluginConfigDialog';

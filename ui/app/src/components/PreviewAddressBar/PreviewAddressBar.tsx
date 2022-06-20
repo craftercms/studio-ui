@@ -28,8 +28,7 @@ import PagesSearchAhead from '../PagesSearchAhead';
 import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import MoreRounded from '@mui/icons-material/MoreVertRounded';
-// @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { withIndex } from '../../utils/path';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';

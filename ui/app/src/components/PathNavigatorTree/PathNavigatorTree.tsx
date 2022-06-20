@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import PathNavigatorTreeUI, { PathNavigatorTreeNode } from './PathNavigatorTreeUI';
+import React, { useEffect, useRef, useState } from 'react';
+import PathNavigatorTreeUI, { PathNavigatorTreeUIProps } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeBackgroundRefresh,
@@ -26,22 +26,20 @@ import {
   pathNavigatorTreeInit,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeSetKeyword,
-  pathNavigatorTreeToggleExpanded
+  pathNavigatorTreeToggleCollapsed
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
-import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
+import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { previewItem } from '../../state/actions/preview';
-// @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
-import { nnou } from '../../utils/object';
 import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
-import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
+import { withIndex, withoutIndex } from '../../utils/path';
 import { DetailedItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { useSelection } from '../../hooks/useSelection';
@@ -49,23 +47,19 @@ import { useEnv } from '../../hooks/useEnv';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
-import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { debounceTime } from 'rxjs/operators';
-import {
-  contentEvent,
-  deleteContentEvent,
-  folderRenamed,
-  pluginInstalled,
-  publishEvent,
-  workflowEvent
-} from '../../state/actions/system';
-import { getHostToHostBus } from '../../utils/subjects';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { fetchSandboxItem } from '../../services/content';
 import { ApiResponse } from '../../models';
 import { batchActions } from '../../state/actions/misc';
+import SystemType from '../../models/SystemType';
+import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
+import { UNDEFINED } from '../../utils/constants';
 
-export interface PathNavigatorTreeProps {
+export interface PathNavigatorTreeProps
+  extends Pick<
+    PathNavigatorTreeItemProps,
+    'showNavigableAsLinks' | 'showPublishingTarget' | 'showWorkflowState' | 'showItemMenu'
+  > {
   id: string;
   label: string;
   rootPath: string;
@@ -75,20 +69,28 @@ export interface PathNavigatorTreeProps {
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
+  initialCollapsed?: boolean;
+  initialSystemTypes?: SystemType[];
+  initialExpanded?: string[];
+  onNodeClick?: PathNavigatorTreeUIProps['onLabelClick'];
+  active?: PathNavigatorTreeItemProps['active'];
+  classes?: Partial<Record<'header', string>>;
 }
 
 export interface PathNavigatorTreeStateProps {
+  id: string;
   rootPath: string;
   collapsed: boolean;
   limit: number;
   expanded: string[];
   childrenByParentPath: LookupTable<string[]>;
   keywordByPath: LookupTable<string>;
-  fetchingByPath: LookupTable<boolean>;
   totalByPath: LookupTable<number>;
   offsetByPath: LookupTable<number>;
-  excludes?: string[];
+  excludes: string[];
+  systemTypes: SystemType[];
   error: ApiResponse;
+  isRootPathMissing: boolean;
 }
 
 interface Menu {
@@ -114,6 +116,7 @@ interface Menu {
 // };
 
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
+  // region const { ... } = props;
   const {
     label,
     id = props.label.replace(/\s/g, ''),
@@ -123,131 +126,54 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     expandedIcon,
     collapsedIcon,
     container,
-    rootPath
+    rootPath,
+    initialExpanded,
+    initialCollapsed = true,
+    initialSystemTypes,
+    onNodeClick,
+    active,
+    classes,
+    showNavigableAsLinks,
+    showPublishingTarget,
+    showWorkflowState,
+    showItemMenu
   } = props;
-  const state = useSelection((state) => state.pathNavigatorTree)[id];
+  // endregion
+  const state = useSelection((state) => state.pathNavigatorTree[id]);
   const { id: siteId, uuid } = useActiveSite();
   const user = useActiveUser();
-  const nodesByPathRef = useRef<LookupTable<PathNavigatorTreeNode>>({});
   const onSearch$ = useSubject<{ keyword: string; path: string }>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
-  const storedState = useMemo(() => {
-    return getStoredPathNavigatorTree(uuid, user.username, id) ?? {};
-  }, [id, uuid, user.username]);
-  const [widgetMenu, setWidgetMenu] = useState<Menu>({
-    anchorEl: null,
-    sections: []
-  });
+  const [widgetMenu, setWidgetMenu] = useState<Menu>({ anchorEl: null, sections: [] });
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const itemsByPath = useItemsByPath();
-  const keywordByPath = useMemo(() => state?.keywordByPath ?? {}, [state?.keywordByPath]);
-  const totalByPath = useMemo(() => state?.totalByPath ?? {}, [state?.totalByPath]);
-  const childrenByParentPath = useMemo<LookupTable<string[]>>(
-    () => state?.childrenByParentPath ?? {},
-    [state?.childrenByParentPath]
-  );
-  const fetchingByPath = useMemo(() => state?.fetchingByPath ?? {}, [state?.fetchingByPath]);
-  const rootItem = useDetailedItem(props.rootPath);
-  const [rootNode, setRootNode] = useState(null);
-  const [error, setError] = useState<ApiResponse>();
-
-  const rootPathExists = useCallback(() => {
-    fetchSandboxItem(siteId, rootPath).subscribe({
-      next() {},
-      error({ response }) {
-        setError(response.response);
-      }
-    });
-  }, [siteId, rootPath]);
+  const initialRefs = useRef({ initialCollapsed, initialSystemTypes, limit, excludes, initialExpanded });
+  const keywordByPath = state?.keywordByPath;
+  const totalByPath = state?.totalByPath;
+  const childrenByParentPath = state?.childrenByParentPath;
+  const rootItem = itemsByPath[rootPath];
 
   useEffect(() => {
-    // setting nodeByPathRef to undefined when the siteId changes
     // Adding uiConfig as means to stop navigator from trying to
     // initialize with previous state information when switching sites
-    if (!state && uiConfig.currentSite === siteId && rootPath) {
-      nodesByPathRef.current = {};
-      const { expanded, collapsed, keywordByPath } = storedState;
+    if (rootPath !== state?.rootPath && uiConfig.currentSite === siteId) {
+      const storedState = getStoredPathNavigatorTree(uuid, user.username, id);
+      const { initialSystemTypes, initialCollapsed, limit, excludes, initialExpanded } = initialRefs.current;
       dispatch(
         pathNavigatorTreeInit({
           id,
-          path: rootPath,
+          rootPath,
           excludes,
           limit,
-          ...(expanded && { expanded }),
-          ...(keywordByPath && { keywordByPath }),
-          ...(nnou(collapsed) && { collapsed })
+          collapsed: initialCollapsed,
+          systemTypes: initialSystemTypes,
+          expanded: initialExpanded,
+          ...storedState
         })
       );
     }
-  }, [siteId, user.username, id, dispatch, rootPath, excludes, limit, state, uiConfig.currentSite, storedState]);
-
-  useEffect(() => {
-    rootPathExists();
-  }, [rootPathExists]);
-
-  useEffect(() => {
-    if (rootItem && nodesByPathRef.current[rootItem.path] === undefined) {
-      const rootNode = {
-        id: rootItem.path,
-        children: [{ id: 'loading' }]
-      };
-      nodesByPathRef.current[rootItem.path] = rootNode;
-      setRootNode(rootNode);
-    }
-  }, [rootItem]);
-
-  useEffect(() => {
-    // This effect will update the expanded nodes on the tree
-    if (rootPath) {
-      Object.keys(fetchingByPath).forEach((path) => {
-        if (fetchingByPath[path]) {
-          // if the node doest exist, we will create it, otherwise will add loading to the children
-          if (!nodesByPathRef.current[path]) {
-            nodesByPathRef.current[path] = {
-              id: path,
-              children: [{ id: 'loading' }]
-            };
-          } else {
-            nodesByPathRef.current[path].children = [{ id: 'loading' }];
-          }
-        } else {
-          // Checking and setting children for the path
-          if (childrenByParentPath[path]) {
-            // If the children are empty and there are filtered search, we will add a empty node
-            if (Boolean(keywordByPath[path]) && totalByPath[path] === 0) {
-              nodesByPathRef.current[path].children = [
-                {
-                  id: 'empty'
-                }
-              ];
-              return;
-            }
-
-            lookupItemByPath(path, nodesByPathRef.current).children = [];
-            lookupItemByPath(path, childrenByParentPath)?.forEach((childPath) => {
-              // if the node doest exist, we will create it, otherwise will add loading to the children
-              if (!nodesByPathRef.current[childPath]) {
-                nodesByPathRef.current[childPath] = {
-                  id: childPath,
-                  children: totalByPath[childPath] === 0 ? [] : [{ id: 'loading' }]
-                };
-              }
-              nodesByPathRef.current[path].children.push(nodesByPathRef.current[childPath]);
-            });
-
-            // Checking node children total is less than the total items for the children we will add a more node
-            if (nodesByPathRef.current[path].children.length < totalByPath[path]) {
-              nodesByPathRef.current[path].children.push({ id: 'more', parentPath: path });
-            }
-          }
-        }
-      });
-      if (nodesByPathRef.current[rootPath]) {
-        setRootNode({ ...nodesByPathRef.current[rootPath] });
-      }
-    }
-  }, [childrenByParentPath, fetchingByPath, keywordByPath, rootPath, totalByPath]);
+  }, [dispatch, id, rootPath, siteId, state?.rootPath, uiConfig.currentSite, user.username, uuid]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
@@ -267,90 +193,14 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     };
   }, [dispatch, id, onSearch$, rootPath]);
 
-  // region Item Updates Propagation
-  useEffect(() => {
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.subscribe(({ type, payload }) => {
-      switch (type) {
-        case contentEvent.type: {
-          const targetPath = payload.targetPath ?? payload.target;
-          const parentPath = getParentPath(targetPath);
-          if (withoutIndex(targetPath) === rootPath) {
-            // If item is root
-            dispatch(pathNavigatorTreeRefresh({ id }));
-          } else if (
-            // The target path is rooted in this navigator's root
-            targetPath.startsWith(withoutIndex(rootPath))
-          ) {
-            // TODO: Research improving the reloads here; consider targetPath and opened paths?
-            if (user.username === payload.user.username) {
-              // if it's current user then reload and expand folder (for example pasting in another folder)
-              dispatch(pathNavigatorTreeFetchPathChildren({ id, path: parentPath, expand: false }));
-            } else {
-              // if content editor is not current user do a silent refresh
-              dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-            }
-          }
-          break;
-        }
-        case deleteContentEvent.type: {
-          const targetPath = payload.targetPath;
-          const parentPath = getParentPath(targetPath);
-          const node = lookupItemByPath(parentPath, nodesByPathRef.current);
-          const path = node?.id;
-          if (path) {
-            dispatch(
-              state.expanded.includes(targetPath)
-                ? batchActions([
-                    pathNavigatorTreeCollapsePath({ id, path: targetPath }),
-                    pathNavigatorTreeFetchPathChildren({ id, path })
-                  ])
-                : pathNavigatorTreeFetchPathChildren({ id, path })
-            );
-          }
-          if (targetPath === rootPath) {
-            rootPathExists();
-          }
-          break;
-        }
-        case folderRenamed.type: {
-          const targetPath = payload.target;
-          if (state.expanded.includes(targetPath)) {
-            dispatch(
-              pathNavigatorTreeCollapsePath({
-                id,
-                path: targetPath
-              })
-            );
-          }
-          if (targetPath === rootPath) {
-            rootPathExists();
-          }
-          break;
-        }
-        case pluginInstalled.type: {
-          dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-          break;
-        }
-        case workflowEvent.type:
-        case publishEvent.type: {
-          dispatch(pathNavigatorTreeBackgroundRefresh({ id }));
-          break;
-        }
-      }
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [id, rootPath, dispatch, state?.expanded, user, rootPathExists]);
-  // endregion
-
-  if ((!rootItem || !Boolean(state) || !rootNode) && !error) {
+  if (!rootItem || !state) {
+    const storedState = getStoredPathNavigatorTree(uuid, user.username, id);
     return (
       <PathNavigatorSkeletonTree
         numOfItems={
-          storedState.expanded?.includes(withIndex(props.rootPath)) ||
-          storedState.expanded?.includes(withoutIndex(props.rootPath))
+          storedState?.expanded.some(
+            (path) => path === withIndex(props.rootPath) || path === withoutIndex(props.rootPath)
+          )
             ? 5
             : 1
         }
@@ -359,24 +209,27 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   }
 
   // region Handlers
+
   const onChangeCollapsed = (collapsed) => {
-    dispatch(pathNavigatorTreeToggleExpanded({ id, collapsed }));
+    dispatch(pathNavigatorTreeToggleCollapsed({ id, collapsed }));
   };
 
-  const onNodeLabelClick = (event: React.MouseEvent<Element, MouseEvent>, path: string) => {
-    if (isNavigable(itemsByPath[path])) {
-      dispatch(
-        previewItem({
-          item: itemsByPath[path],
-          newTab: event.ctrlKey || event.metaKey
-        })
-      );
-    } else if (isPreviewable(itemsByPath[path])) {
-      onPreview(itemsByPath[path]);
-    } else {
-      onToggleNodeClick(path);
-    }
-  };
+  const onNodeLabelClick =
+    onNodeClick ??
+    ((event: React.MouseEvent<Element, MouseEvent>, path: string) => {
+      if (isNavigable(itemsByPath[path])) {
+        dispatch(
+          previewItem({
+            item: itemsByPath[path],
+            newTab: event.ctrlKey || event.metaKey
+          })
+        );
+      } else if (isPreviewable(itemsByPath[path])) {
+        onPreview(itemsByPath[path]);
+      } else {
+        onToggleNodeClick(path);
+      }
+    });
 
   const onToggleNodeClick = (path: string) => {
     // If the path is already expanded, should be collapsed
@@ -443,14 +296,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   };
 
   const onMoreClick = (path: string) => {
-    nodesByPathRef.current[path].children.pop();
-    nodesByPathRef.current[path].children.push({ id: 'loading' });
-    dispatch(
-      pathNavigatorTreeFetchPathPage({
-        id,
-        path
-      })
-    );
+    dispatch(pathNavigatorTreeFetchPathPage({ id, path }));
   };
 
   const onPreview = (item: DetailedItem) => {
@@ -482,12 +328,14 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   return (
     <>
       <PathNavigatorTreeUI
+        classes={{ header: classes?.header }}
         title={label}
+        active={active}
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}
         container={container}
-        isCollapsed={state?.collapsed}
-        rootNode={rootNode}
-        error={error}
+        isCollapsed={state.collapsed}
+        rootPath={rootPath}
+        isRootPathMissing={state.isRootPathMissing}
         itemsByPath={itemsByPath}
         keywordByPath={keywordByPath}
         totalByPath={totalByPath}
@@ -497,9 +345,13 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         onLabelClick={onNodeLabelClick}
         onChangeCollapsed={onChangeCollapsed}
         onOpenItemMenu={onOpenItemMenu}
-        onHeaderButtonClick={state.collapsed ? void 0 : onHeaderButtonClick}
+        onHeaderButtonClick={state.collapsed ? UNDEFINED : onHeaderButtonClick}
         onFilterChange={onFilterChange}
         onMoreClick={onMoreClick}
+        showNavigableAsLinks={showNavigableAsLinks}
+        showPublishingTarget={showPublishingTarget}
+        showWorkflowState={showWorkflowState}
+        showItemMenu={showItemMenu}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}

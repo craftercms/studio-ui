@@ -14,6 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './FolderBrowserTreeView';
+import { useMemo } from 'react';
+import { nanoid } from 'nanoid';
 
-export * from './FolderBrowserTreeView';
+export function useNanoId() {
+  return useMemo(() => nanoid(), []);
+}
+
+export default useNanoId;
