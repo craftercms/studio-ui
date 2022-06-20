@@ -97,12 +97,12 @@
     top: 51px;
     right: 0;
     left: 265px;
-    bottom: 0;
+    bottom: 63px; // Height of the controls container at the bottom.
     position: absolute;
     padding-top: 31px;
     padding: 30px;
     font-size: 14px;
-    // min-height: calc( 100vh - 50px );   // 50px is the height of studio's top bar
+    overflow-y: scroll;
 
     .search-bar {
         margin-bottom: 20px;
@@ -436,10 +436,6 @@
     &.select {
         top: 0;
         left: 0;
-
-        .pagination-container {
-            margin-bottom: 100px;
-        }
     }
 }
 
