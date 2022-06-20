@@ -14,12 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import LoginView, { LoginViewProps } from '../components/LoginView/LoginView';
 import CrafterThemeProvider from '../components/CrafterThemeProvider';
 import I18nProvider from '../components/I18nProvider';
 import GlobalStyles from '../components/GlobalStyles';
+import { UNDEFINED } from '../utils/constants';
+import ErrorState from '../components/ErrorState';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 
 const useStyles = makeStyles()(() => ({
   root: {
@@ -40,6 +44,17 @@ const useStyles = makeStyles()(() => ({
 
 export default function Login(props: LoginViewProps) {
   const { classes } = useStyles();
+  const supportError = useMemo<string>(
+    () =>
+      'SharedWorker' in window
+        ? UNDEFINED
+        : ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(
+            navigator.platform
+          )
+        ? 'iOS is not supported as it lacks essential features. Please use Chrome or Firefox browsers on your desktop.'
+        : 'Your browser is not supported as it lacks essential features. Please use Chrome or Firefox.',
+    []
+  );
   // **************************************************************************
   // TODO: To be enabled or removed depending on the background video decision.
   // **************************************************************************
@@ -69,7 +84,19 @@ export default function Login(props: LoginViewProps) {
             src="/studio/static-assets/images/camera-moving-through-cogs.mp4"
           />
           */}
-          <LoginView {...props} />
+          {supportError ? (
+            <Dialog open={true}>
+              <DialogContent>
+                <ErrorState
+                  title={supportError}
+                  imageUrl="/studio/static-assets/images/warning_state.svg"
+                  styles={{ title: { textAlign: 'center' }, image: { width: 250, marginBottom: 10, marginTop: 10 } }}
+                />
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <LoginView {...props} />
+          )}
         </div>
         <GlobalStyles />
       </CrafterThemeProvider>
