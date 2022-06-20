@@ -316,7 +316,7 @@ export function insertComponent(
           ...(shared ? {} : { inline: true })
         },
         key: shared ? path : id,
-        value: instance.craftercms.label,
+        value: cdataWrap(instance.craftercms.label),
         ...(shared
           ? {
               include: path,
@@ -355,11 +355,11 @@ export function insertInstance(
 
       createElements(newItem, {
         '@attributes': {
-          // TODO: Hardcoded value. Fix.
-          datasource: datasource ?? 'TODO'
+          // TODO: Review datasource persistence.
+          datasource: datasource ?? ''
         },
         key: path,
-        value: instance.craftercms.label,
+        value: cdataWrap(instance.craftercms.label),
         include: path,
         disableFlattening: 'false'
       });
