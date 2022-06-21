@@ -14,8 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './FolderBrowserPathView';
+import useObservable from './useObservable';
+import { Observable } from 'rxjs';
+import { useEffect } from 'react';
 
-export * from './FolderBrowserPathView';
+export function useUnmount$(): Observable<void> {
+  const { subject, observable } = useObservable<void>();
+  useEffect(() => {
+    return () => {
+      subject.next();
+      subject.complete();
+    };
+  }, [subject]);
+  return observable;
+}
 
-export * from './FolderBrowserPathViewUI';
+export default useUnmount$;

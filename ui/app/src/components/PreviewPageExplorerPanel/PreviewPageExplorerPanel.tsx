@@ -52,8 +52,7 @@ import Link from '@mui/material/Link';
 import ItemActionsMenu from '../ItemActionsMenu';
 import SearchBar from '../SearchBar/SearchBar';
 import Divider from '@mui/material/Divider';
-// @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';

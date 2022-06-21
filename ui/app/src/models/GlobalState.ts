@@ -262,12 +262,8 @@ export interface GlobalState {
     references: LookupTable;
     xml: string;
   };
-  pathNavigator: {
-    [id: string]: PathNavigatorStateProps;
-  };
-  pathNavigatorTree: {
-    [id: string]: PathNavigatorTreeStateProps;
-  };
+  pathNavigator: LookupTable<PathNavigatorStateProps>;
+  pathNavigatorTree: LookupTable<PathNavigatorTreeStateProps>;
   dashboard: {
     widgets: WidgetDescriptor[];
   };

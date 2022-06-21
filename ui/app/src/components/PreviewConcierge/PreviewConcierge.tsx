@@ -286,7 +286,7 @@ const dataSourceActionsListInitialState = {
 export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const dispatch = useDispatch();
   const store = useStore<GlobalState>();
-  const { id: siteId, uuid } = useActiveSite();
+  const { id: siteId, uuid } = useActiveSite() ?? {};
   const user = useActiveUser();
   const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
     usePreviewState();

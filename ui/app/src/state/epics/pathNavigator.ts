@@ -17,9 +17,14 @@
 import { ofType } from 'redux-observable';
 import { ignoreElements, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
-import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
-import { getIndividualPaths, getRootPath } from '../../utils/path';
-import { forkJoin } from 'rxjs';
+import {
+  checkPathExistence,
+  fetchChildrenByPath,
+  fetchItemsByPath,
+  fetchItemWithChildrenByPath
+} from '../../services/content';
+import { getIndividualPaths, getParentPath, getRootPath, withIndex } from '../../utils/path';
+import { forkJoin, Observable } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangeLimit,
@@ -36,34 +41,53 @@ import {
   pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
-  pathNavigatorSetKeyword
+  pathNavigatorSetKeyword,
+  PathNavInitPayload,
+  pathNavRootPathMissing
 } from '../actions/pathNavigator';
 import { setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { AjaxError } from 'rxjs/ajax';
+import StandardAction from '../../models/StandardAction';
+import SocketEvent from '../../models/SocketEvent';
+import {
+  contentEvent,
+  deleteContentEvent,
+  moveContentEvent,
+  MoveContentEventPayload,
+  pluginInstalled,
+  publishEvent,
+  workflowEvent
+} from '../actions/system';
 
 export default [
   // region pathNavigatorInit
-  (action$, state$) =>
+  (action$: Observable<StandardAction<PathNavInitPayload>>, state$) =>
     action$.pipe(
       ofType(pathNavigatorInit.type),
       withLatestFrom(state$),
-      map(
+      mergeMap(
         ([
           {
-            payload: { id, excludes }
+            payload: { id, excludes, rootPath }
           },
           state
         ]) =>
-          pathNavigatorFetchParentItems({
-            id,
-            path: state.pathNavigator[id].currentPath,
-            offset: state.pathNavigator[id].offset,
-            keyword: state.pathNavigator[id].keyword,
-            excludes,
-            limit: state.pathNavigator[id].limit
-          })
+          checkPathExistence(state.sites.active, rootPath).pipe(
+            map((exists) =>
+              exists
+                ? pathNavigatorFetchParentItems({
+                    id,
+                    path: state.pathNavigator[id].currentPath,
+                    offset: state.pathNavigator[id].offset,
+                    keyword: state.pathNavigator[id].keyword,
+                    excludes,
+                    limit: state.pathNavigator[id].limit
+                  })
+                : pathNavRootPathMissing({ id })
+            )
+          )
       )
     ),
   // endregion
@@ -295,6 +319,105 @@ export default [
           }
         }
       ),
+      ignoreElements()
+    ),
+  // endregion
+  // region contentEvent
+  (action$, state$) =>
+    action$.pipe(
+      ofType(contentEvent.type),
+      withLatestFrom(state$),
+      mergeMap(([action, state]) => {
+        // Cases:
+        // a. Item is the current path in the navigator: refresh navigator
+        // b. Item is a direct child of the current path: refresh navigator
+        // b. Item is a direct child of the current path: refresh navigator
+        // c. Item is a child of an item on the current path: refresh item's child count
+        const actions = [];
+        const {
+          payload: { targetPath }
+        } = action;
+        const parentPathOfTargetPath = getParentPath(targetPath);
+        const parentOfTargetWithIndex = withIndex(parentPathOfTargetPath);
+        Object.values(state.pathNavigator).forEach((navigator) => {
+          if (
+            // Case (a)
+            navigator.currentPath === targetPath ||
+            // Case (b)
+            navigator.currentPath === parentPathOfTargetPath ||
+            navigator.currentPath === parentOfTargetWithIndex
+          ) {
+            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+          } /* else if (
+            // Case (c) - Content epics load any item that's on the state already
+            navigator.currentPath === getParentPath(parentPathOfTargetPath)
+          ) {
+            actions.push(fetchSandboxItem({ path: parentPathOfTargetPath }));
+          } */
+        });
+        return actions;
+      })
+    ),
+  // endregion
+  // region deleteContentEvent
+  (action$: Observable<StandardAction<SocketEvent>>, state$) =>
+    action$.pipe(
+      ofType(deleteContentEvent.type),
+      withLatestFrom(state$),
+      mergeMap(([action, state]) => {
+        const actions = [];
+        const {
+          payload: { targetPath }
+        } = action;
+        Object.values(state.pathNavigator).forEach((navigator) => {
+          if (!navigator.isRootPathMissing && navigator.currentPath.startsWith(targetPath)) {
+            actions.push(pathNavigatorSetCurrentPath({ id: navigator.id, path: navigator.rootPath }));
+          }
+        });
+        return actions;
+      })
+    ),
+  // endregion
+  // region moveContentEvent
+  (action$: Observable<StandardAction<MoveContentEventPayload>>, state$) =>
+    action$.pipe(
+      ofType(moveContentEvent.type),
+      withLatestFrom(state$),
+      mergeMap(([action, state]) => {
+        const actions = [];
+        const {
+          payload: { targetPath, sourcePath }
+        } = action;
+        const parentOfTargetPath = getParentPath(targetPath);
+        const parentOfSourcePath = getParentPath(sourcePath);
+        Object.values(state.pathNavigator).forEach((navigator) => {
+          if (navigator.isRootPathMissing && targetPath === navigator.rootPath) {
+            actions.push(pathNavigatorRefresh({ id: navigator.id }));
+          } else if (!navigator.isRootPathMissing && navigator.currentPath.startsWith(sourcePath)) {
+            actions.push(pathNavigatorSetCurrentPath({ id: navigator.id, path: navigator.rootPath }));
+          } else if (navigator.currentPath === parentOfTargetPath || navigator.currentPath === parentOfSourcePath) {
+            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+          }
+        });
+        return actions;
+      })
+    ),
+  // endregion
+  // region pluginInstalled
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pluginInstalled.type),
+      withLatestFrom(state$),
+      // tap
+      ignoreElements()
+    ),
+  // endregion
+  // region publishEvent, workflowEvent
+  (action$, state$) =>
+    action$.pipe(
+      ofType(publishEvent.type, workflowEvent.type),
+      withLatestFrom(state$),
+      // tap
       ignoreElements()
     )
   // endregion

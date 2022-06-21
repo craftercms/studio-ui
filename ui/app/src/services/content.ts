@@ -316,7 +316,7 @@ export function insertComponent(
           ...(shared ? {} : { inline: true })
         },
         key: shared ? path : id,
-        value: instance.craftercms.label,
+        value: cdataWrap(instance.craftercms.label),
         ...(shared
           ? {
               include: path,
@@ -355,11 +355,11 @@ export function insertInstance(
 
       createElements(newItem, {
         '@attributes': {
-          // TODO: Hardcoded value. Fix.
-          datasource: datasource ?? 'TODO'
+          // TODO: Review datasource persistence.
+          datasource: datasource ?? ''
         },
         key: path,
-        value: instance.craftercms.label,
+        value: cdataWrap(instance.craftercms.label),
         include: path,
         disableFlattening: 'false'
       });
@@ -1118,11 +1118,15 @@ export function fetchChildrenByPath(
 
 export function fetchChildrenByPaths(
   siteId: string,
-  paths: LookupTable<Partial<GetChildrenOptions>>,
+  fetchOptionsByPath: LookupTable<Partial<GetChildrenOptions>>,
   options?: Partial<GetChildrenOptions>
 ): Observable<LookupTable<GetChildrenResponse>> {
-  const requests = Object.keys(paths).map((path) =>
-    fetchChildrenByPath(siteId, path, { ...options, ...paths[path] }).pipe(
+  const paths = Object.keys(fetchOptionsByPath);
+  if (paths.length === 0) {
+    return of({});
+  }
+  const requests = paths.map((path) =>
+    fetchChildrenByPath(siteId, path, { ...options, ...fetchOptionsByPath[path] }).pipe(
       catchError((error: AjaxError) => {
         if (error.status === 404) {
           return of([]);
@@ -1135,7 +1139,7 @@ export function fetchChildrenByPaths(
   return forkJoin(requests).pipe(
     map((responses) => {
       const data = {};
-      Object.keys(paths).forEach((path, i) => (data[path] = responses[i]));
+      Object.keys(fetchOptionsByPath).forEach((path, i) => (data[path] = responses[i]));
       return data;
     })
   );

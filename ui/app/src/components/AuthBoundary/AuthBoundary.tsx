@@ -26,10 +26,10 @@ export function AuthBoundary(props) {
   useEffect(() => {
     obtainAuthToken()
       .pipe()
-      .subscribe(
-        () => setLoggedIn(true),
-        () => setLoggedIn(false)
-      );
+      .subscribe({
+        next: () => setLoggedIn(true),
+        error: () => setLoggedIn(false)
+      });
   }, []);
   if (loggedIn === null) {
     return 'Checking auth...';

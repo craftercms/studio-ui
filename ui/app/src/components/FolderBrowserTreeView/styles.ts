@@ -67,39 +67,4 @@ export const useTreeNodeStyles = makeStyles<void, 'treeItemContent' | 'treeItemS
   })
 );
 
-export const usePathSelectedStyles = makeStyles<void, 'invisibleInput'>()((theme, _params, classes) => ({
-  wrapper: {
-    display: 'flex',
-    padding: '10px 12px',
-    border: `1px solid  ${palette.gray.light1}`,
-    borderRadius: '5px',
-    backgroundColor: theme.palette.background.paper,
-    '&.invalid': {
-      borderColor: palette.red.main
-    }
-  },
-  selected: {
-    fontWeight: 600,
-    marginRight: '10px'
-  },
-  root: {
-    flexGrow: 1
-  },
-  invisibleInput: {
-    padding: 0,
-    border: 0,
-    background: 'none',
-    height: '100%',
-    '&:focus': {
-      borderColor: 'none',
-      boxShadow: 'inherit'
-    }
-  },
-  invalid: {
-    [`& .${classes.invisibleInput}`]: {
-      color: palette.red.main
-    }
-  }
-}));
-
 export default useStyles;

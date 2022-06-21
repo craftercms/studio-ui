@@ -28,7 +28,6 @@ import PaginationOptions from '../../models/PaginationOptions';
 import { LookupTable } from '../../models/LookupTable';
 import ApiResponse from '../../models/ApiResponse';
 import { createAction } from '@reduxjs/toolkit';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import Breadcrumbs from '../PathNavigator/PathNavigatorBreadcrumbs';
 import PathNavigatorList from '../PathNavigator/PathNavigatorList';
 import { fetchChildrenByPath, fetchItemsByPath, fetchItemWithChildrenByPath } from '../../services/content';
@@ -41,8 +40,8 @@ import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import Pagination from '../Pagination';
 import NavItem from '../PathNavigator/PathNavigatorItem';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import ItemDisplay from '../ItemDisplay';
+import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
 
 const useStyles = makeStyles()((theme) => ({
   popoverRoot: {
@@ -339,14 +338,6 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     [state, site, filterChildren]
   );
 
-  const itemsResource = useLogicResource<DetailedItem[], SingleItemSelectorState>(state, {
-    shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
-    shouldReject: (consumer) => Boolean(consumer.error),
-    shouldRenew: (consumer, resource) => consumer.isFetching && resource.complete,
-    resultSelector: (consumer) => consumer.items.map((id) => consumer.byId[id]),
-    errorSelector: (consumer) => consumer.error
-  });
-
   const handleDropdownClick = (item: DetailedItem) => {
     onDropdownClick();
     let nextPath = item
@@ -400,6 +391,14 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
         className: cx(classes.root, !onDropdownClick && 'disable', propClasses?.root),
         elevation: 0
       };
+
+  // const itemsResource = useLogicResource<DetailedItem[], SingleItemSelectorState>(state, {
+  //   shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
+  //   shouldReject: (consumer) => Boolean(consumer.error),
+  //   shouldRenew: (consumer, resource) => consumer.isFetching && resource.complete,
+  //   resultSelector: (consumer) => consumer.items.map((id) => consumer.byId[id]),
+  //   errorSelector: (consumer) => consumer.error
+  // });
 
   return (
     <Wrapper {...wrapperProps}>
@@ -458,22 +457,26 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
             showItemNavigateToButton={false}
           />
         )}
-        <SuspenseWithEmptyState resource={itemsResource}>
-          <PathNavigatorList
-            locale={'en_US'}
-            resource={itemsResource}
-            onPathSelected={onPathSelected}
-            onItemClicked={handleItemClicked}
-          />
-          <Pagination
-            count={state.total}
-            rowsPerPageOptions={[5, 10, 20]}
-            rowsPerPage={state.limit}
-            page={state && Math.ceil(state.offset / state.limit)}
-            onRowsPerPageChange={onChangeRowsPerPage}
-            onPageChange={onPageChanged}
-          />
-        </SuspenseWithEmptyState>
+        {state.isFetching ? (
+          <PathNavigatorSkeleton />
+        ) : (
+          <>
+            <PathNavigatorList
+              locale="en_US"
+              items={state.items.map((p) => state.byId[p])}
+              onPathSelected={onPathSelected}
+              onItemClicked={handleItemClicked}
+            />
+            <Pagination
+              count={state.total}
+              rowsPerPageOptions={[5, 10, 20]}
+              rowsPerPage={state.limit}
+              page={state && Math.ceil(state.offset / state.limit)}
+              onRowsPerPageChange={onChangeRowsPerPage}
+              onPageChange={onPageChanged}
+            />
+          </>
+        )}
       </Popover>
     </Wrapper>
   );

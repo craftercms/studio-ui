@@ -21,26 +21,24 @@ import Accordion from '@mui/material/Accordion';
 import Header from '../PathNavigator/PathNavigatorHeader';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { StateStylingProps } from '../../models/UiConfig';
-import PathNavigatorTreeItem from './PathNavigatorTreeItem';
+import PathNavigatorTreeItem, { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
-import { ApiResponse } from '../../models';
-import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
+import { FormattedMessage } from 'react-intl';
+import { ErrorState } from '../ErrorState';
 
-export interface PathNavigatorTreeNode {
-  id: string;
-  children?: PathNavigatorTreeNode[];
-  parentPath?: string;
-}
-
-export interface PathNavigatorTreeUIProps {
+export interface PathNavigatorTreeUIProps
+  extends Pick<
+    PathNavigatorTreeItemProps,
+    'showNavigableAsLinks' | 'showPublishingTarget' | 'showWorkflowState' | 'showItemMenu'
+  > {
   title: string;
   icon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
-  rootNode: PathNavigatorTreeNode;
-  error: ApiResponse;
+  rootPath: string;
+  isRootPathMissing: boolean;
   itemsByPath: LookupTable<DetailedItem>;
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
@@ -54,7 +52,8 @@ export interface PathNavigatorTreeUIProps {
   onMoreClick(path: string): void;
   isCollapsed: boolean;
   expandedNodes: string[];
-  classes?: Partial<Record<'root' | 'body', string>>;
+  classes?: Partial<Record<'root' | 'body' | 'header', string>>;
+  active?: PathNavigatorTreeItemProps['active'];
 }
 
 const useStyles = makeStyles()(() => ({
@@ -88,8 +87,8 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     icon,
     container,
     title,
-    rootNode,
-    error,
+    rootPath,
+    isRootPathMissing,
     itemsByPath,
     keywordByPath,
     childrenByParentPath,
@@ -102,10 +101,14 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     onFilterChange,
     onMoreClick,
     isCollapsed,
-    expandedNodes
+    expandedNodes,
+    active,
+    showNavigableAsLinks,
+    showPublishingTarget,
+    showWorkflowState,
+    showItemMenu
   } = props;
   // endregion
-
   return (
     <Accordion
       square
@@ -133,14 +136,25 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         menuButtonIcon={<RefreshRounded />}
         collapsed={isCollapsed}
         onMenuButtonClick={onHeaderButtonClick}
+        className={props.classes?.header}
       />
-      {error ? (
-        <ApiResponseErrorState error={error} imageUrl={null} />
+      {isRootPathMissing ? (
+        <ErrorState
+          styles={{ image: { display: 'none' } }}
+          title={
+            <FormattedMessage
+              id="pathNavigatorTree.missingRootPath"
+              defaultMessage={`The path "{path}" doesn't exist`}
+              values={{ path: rootPath }}
+            />
+          }
+        />
       ) : (
         <AccordionDetails className={cx(classes.accordionDetails, props.classes?.body)}>
           <TreeView className={classes.root} expanded={expandedNodes} disableSelection>
             <PathNavigatorTreeItem
-              node={rootNode}
+              path={rootPath}
+              active={active}
               itemsByPath={itemsByPath}
               keywordByPath={keywordByPath}
               totalByPath={totalByPath}
@@ -150,6 +164,10 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
               onFilterChange={onFilterChange}
               onOpenItemMenu={onOpenItemMenu}
               onMoreClick={onMoreClick}
+              showNavigableAsLinks={showNavigableAsLinks}
+              showPublishingTarget={showPublishingTarget}
+              showWorkflowState={showWorkflowState}
+              showItemMenu={showItemMenu}
             />
           </TreeView>
         </AccordionDetails>

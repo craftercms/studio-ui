@@ -18,11 +18,11 @@ import List from '@mui/material/List';
 import { DetailedItem } from '../../models/Item';
 import NavItem from './PathNavigatorItem';
 import React, { useMemo } from 'react';
-import { Resource } from '../../models/Resource';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface NavProps {
   locale?: string;
-  resource: Resource<DetailedItem[]>;
+  items: DetailedItem[];
   isSelectMode?: boolean;
   computeActiveItems?: (items: DetailedItem[]) => string[];
   showItemNavigateToButton?: boolean;
@@ -34,10 +34,9 @@ export interface NavProps {
   onOpenItemMenu?(element: Element, item: DetailedItem): void;
 }
 
-// PathNavigatorList
 function PathNavigatorList(props: NavProps) {
   const {
-    resource,
+    items,
     onPathSelected,
     onPreview,
     locale,
@@ -48,11 +47,11 @@ function PathNavigatorList(props: NavProps) {
     onItemClicked,
     showItemNavigateToButton
   } = props;
-  const items = resource.read();
-  const active = useMemo(() => computeActiveItems?.(items) ?? [], [items, computeActiveItems]);
+  const fnRefs = useUpdateRefs({ computeActiveItems });
+  const active = useMemo(() => fnRefs.current.computeActiveItems?.(items) ?? [], [items, fnRefs]);
   return (
     <List component="nav" disablePadding classes={{ root: props.classes?.root }}>
-      {items.map((item: DetailedItem) => (
+      {items?.map((item: DetailedItem) => (
         <NavItem
           item={item}
           key={item.id}
