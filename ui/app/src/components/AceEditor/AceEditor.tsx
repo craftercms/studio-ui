@@ -224,6 +224,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     onChange: null
   });
   const [initialized, setInitialized] = useState(false);
+  const [initialCursorDisplay, setInitialCursorDisplay] = useState('');
 
   const {
     palette: { mode }
@@ -251,6 +252,8 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
             refs.current.elem.appendChild(pre);
             // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
             aceEditor = ace.edit(pre, options);
+            // @ts-ignore - TS don't recognize $cursorLayer prop
+            setInitialCursorDisplay(aceEditor.renderer.$cursorLayer.element.style.display);
             if (options.readOnly) {
               // @ts-ignore - TS don't recognize $cursorLayer prop
               aceEditor.renderer.$cursorLayer.element.style.display = 'none';
@@ -317,6 +320,21 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
       ...aceOptions.map((o) => options[o])
     ]
   );
+
+  useEffect(() => {
+    const editor = refs.current.ace;
+    if (editor) {
+      const currentCursorDisplay = editor.renderer.$cursorLayer.element.style.display;
+      const newDisplay = options.readOnly ? 'none' : initialCursorDisplay;
+
+      if (currentCursorDisplay !== newDisplay) {
+        editor.renderer.$cursorLayer.element.style.display = options.readOnly ? 'none' : initialCursorDisplay;
+      }
+      if (options.readOnly) {
+        autoFocus && editor.focus();
+      }
+    }
+  }, [options?.readOnly]);
 
   // If the Editor is inside a dialog, resize when fullscreen changes
   const isFullScreen = useEnhancedDialogContext()?.isFullScreen;
