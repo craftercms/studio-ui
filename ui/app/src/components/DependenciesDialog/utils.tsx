@@ -18,10 +18,10 @@ import { FormattedMessage } from 'react-intl';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { isAsset, isCode } from '../../utils/content';
 import React from 'react';
-import { Resource } from '../../models/Resource';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import ApiResponse from '../../models/ApiResponse';
 
 export interface DependenciesDialogBaseProps {
   item?: DetailedItem;
@@ -39,7 +39,7 @@ export interface DependenciesDialogStateProps extends DependenciesDialogBaseProp
 export interface DependenciesDialogContainerProps extends DependenciesDialogBaseProps {}
 
 export interface DependenciesListProps {
-  resource: Resource<DetailedItem[]>;
+  dependencies: DetailedItem[];
   compactView: boolean;
   showTypes: string;
 
@@ -47,7 +47,7 @@ export interface DependenciesListProps {
 }
 
 export interface DependenciesDialogUIProps {
-  resource: Resource<DetailedItem[]>;
+  dependencies: DetailedItem[];
   item: DetailedItem;
   rootPath: string;
   setItem: Function;
@@ -61,6 +61,7 @@ export interface DependenciesDialogUIProps {
   handleEditorDisplay(item: DetailedItem): void;
   handleHistoryDisplay(item: DetailedItem): void;
   contextMenu: any;
+  error: ApiResponse;
 
   handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
 
