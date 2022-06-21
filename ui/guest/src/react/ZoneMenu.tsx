@@ -33,6 +33,7 @@ import {
   duplicateItem,
   getCachedModel,
   getCachedModels,
+  getCachedSandboxItem,
   insertItem,
   modelHierarchyMap,
   sortDownItem,
@@ -45,7 +46,7 @@ import { extractCollection } from '@craftercms/studio-ui/utils/model';
 import { isSimple, popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
-import { exists, findContainerRecord, getById, runValidation, getReferentialEntries } from '../iceRegistry';
+import { exists, findContainerRecord, getById, getReferentialEntries, runValidation } from '../iceRegistry';
 import { post } from '../utils/communicator';
 import { requestEdit, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
@@ -53,6 +54,8 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
 import { fromICEId, get } from '../elementRegistry';
+import { beforeWrite$ } from '../store/util';
+import { useStore } from './GuestContext';
 
 export interface ZoneMenuProps {
   record: ElementRecord;
@@ -100,6 +103,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
       : parseInt(isSimple(index) ? String(index) : popPiece(String(index)));
   }, [recordType, collection, modelId, index]);
   const nodeSelectorItemRecord = useMemo(
+    // region
     () =>
       recordType === 'component'
         ? getById(
@@ -112,6 +116,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
         : ['node-selector-item', 'repeat-item'].includes(recordType)
         ? iceRecord
         : null,
+    // endregion
     [modelId, recordType, iceRecord]
   );
   const componentId =
@@ -150,7 +155,30 @@ export function ZoneMenu(props: ZoneMenuProps) {
     return actions;
   }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord]);
 
+  const store = useStore();
+  const getItemData = () => {
+    const models = getCachedModels();
+    const isNodeSelectorItem = recordType === 'component' && nodeSelectorItemRecord;
+    const itemModelId = isNodeSelectorItem ? nodeSelectorItemRecord.modelId : modelId;
+    const itemFieldId = isNodeSelectorItem ? nodeSelectorItemRecord.fieldId : fieldId;
+    const itemIndex = isNodeSelectorItem ? nodeSelectorItemRecord.index : index;
+    const parentModelId = getParentModelId(itemModelId, models, modelHierarchyMap);
+    const path = models[parentModelId ?? itemModelId].craftercms.path;
+    return { path, itemModelId, itemFieldId, itemIndex };
+  };
+
   // region Callbacks
+
+  const execOperation = (subscriber: () => void) => {
+    const { username, activeSite } = store.getState();
+    const { path } = getItemData();
+    beforeWrite$({
+      path,
+      site: activeSite,
+      username,
+      localItem: getCachedSandboxItem(path)
+    }).subscribe(subscriber);
+  };
 
   const onCancel = () => {
     clearAndListen$.next();
@@ -184,37 +212,45 @@ export function ZoneMenu(props: ZoneMenuProps) {
   };
 
   const onAddRepeatItem = (e) => {
-    insertItem(modelId, fieldId, index, contentType);
+    execOperation(() => {
+      insertItem(modelId, fieldId, index, contentType);
+    });
   };
 
   const onDuplicateItem = (e) => {
-    if (recordType === 'component' && nodeSelectorItemRecord) {
-      duplicateItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
-    } else {
-      duplicateItem(modelId, fieldId, index);
-    }
+    execOperation(() => {
+      if (recordType === 'component' && nodeSelectorItemRecord) {
+        duplicateItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+      } else {
+        duplicateItem(modelId, fieldId, index);
+      }
+    });
     onCancel();
   };
 
   const onMoveUp = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (recordType === 'component' && nodeSelectorItemRecord) {
-      sortUpItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
-    } else {
-      sortUpItem(modelId, fieldId, index);
-    }
+    execOperation(() => {
+      if (recordType === 'component' && nodeSelectorItemRecord) {
+        sortUpItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+      } else {
+        sortUpItem(modelId, fieldId, index);
+      }
+    });
     onCancel();
   };
 
   const onMoveDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (recordType === 'component' && nodeSelectorItemRecord) {
-      sortDownItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
-    } else {
-      sortDownItem(modelId, fieldId, index);
-    }
+    execOperation(() => {
+      if (recordType === 'component' && nodeSelectorItemRecord) {
+        sortDownItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+      } else {
+        sortDownItem(modelId, fieldId, index);
+      }
+    });
     onCancel();
   };
 
@@ -226,11 +262,13 @@ export function ZoneMenu(props: ZoneMenuProps) {
     if (minCount) {
       post(validationMessage(minCount));
     } else {
-      if (recordType === 'component' && nodeSelectorItemRecord) {
-        deleteItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
-      } else {
-        deleteItem(modelId, fieldId, index);
-      }
+      execOperation(() => {
+        if (recordType === 'component' && nodeSelectorItemRecord) {
+          deleteItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
+        } else {
+          deleteItem(modelId, fieldId, index);
+        }
+      });
       onCancel();
     }
   };
