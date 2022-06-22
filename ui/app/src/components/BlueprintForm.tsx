@@ -137,6 +137,17 @@ function BlueprintForm(props: BlueprintFormProps) {
     } else if (type === 'blueprintFields') {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
+    } else if (e.target.name === 'gitBranch') {
+      let escapedValue = e.target.value
+        .replace(/\s+|[~^:?*[@\\]/g, '')
+        // It cannot have two or more consecutive dots anywhere.
+        .replace(/\.{2,}/g, '.')
+        // It cannot have two or more consecutive slashes anywhere.
+        .replace(/\/{2,}/g, '/');
+      setInputs({ [e.target.name]: escapedValue });
+    } else if (e.target.name === 'repoUrl') {
+      let escapedValue = e.target.value.replace(/\s+/g, '');
+      setInputs({ [e.target.name]: escapedValue });
     } else {
       setInputs({ [e.target.name]: e.target.value });
     }
