@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, map, mapTo, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
   completeDetailedItem,
@@ -279,7 +279,7 @@ const content: CrafterCMSEpic[] = [
           // Not using the boolean return of the service. If the item it's already unlocked,
           // notify anyway of successful unlock as not notifying can be confusing (i.e. "what happened?").
           filter(() => payload.notify),
-          mapTo(showUnlockItemSuccessNotification())
+          map(() => showUnlockItemSuccessNotification())
         )
       )
     ),

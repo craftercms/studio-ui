@@ -16,7 +16,7 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { toQueryString } from '../utils/object';
-import { mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { CMISItem } from '../models/CMIS';
 
@@ -56,5 +56,5 @@ export function clone(siteId: string, cmisRepoId: string, cmisPath: string, stud
     cmisRepoId,
     cmisPath,
     studioPath
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }

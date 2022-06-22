@@ -16,7 +16,7 @@
 
 import { Observable } from 'rxjs';
 import { del, get, postJSON } from '../utils/ajax';
-import { mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { Token } from '../models/Token';
 
 export function fetchTokens(): Observable<Token[]> {
@@ -35,5 +35,5 @@ export function updateToken(id: number, properties: Object): Observable<Token> {
 }
 
 export function deleteToken(id: number): Observable<boolean> {
-  return del(`/studio/api/2/security/tokens/${id}`).pipe(mapTo(true));
+  return del(`/studio/api/2/security/tokens/${id}`).pipe(map(() => true));
 }
