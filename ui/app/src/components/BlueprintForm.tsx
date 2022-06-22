@@ -146,7 +146,7 @@ function BlueprintForm(props: BlueprintFormProps) {
         .replace(/\/{2,}/g, '/');
       setInputs({ [e.target.name]: escapedValue });
     } else if (e.target.name === 'repoUrl') {
-      let escapedValue = e.target.value.replace(/\s+|[~^:?*[@\\]/g, '');
+      let escapedValue = e.target.value.replace(/\s+/g, '');
       setInputs({ [e.target.name]: escapedValue });
     } else {
       setInputs({ [e.target.name]: e.target.value });
