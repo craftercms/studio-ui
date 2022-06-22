@@ -20,7 +20,6 @@ import {
   filter,
   ignoreElements,
   map,
-  mapTo,
   startWith,
   switchMap,
   takeUntil,
@@ -392,7 +391,7 @@ const systemEpics: CrafterCMSEpic[] = [
       switchMap(() =>
         interval(150000).pipe(
           startWith(0), // To fetch status immediately
-          mapTo(fetchPublishingStatus()),
+          map(() => fetchPublishingStatus()),
           takeUntil(
             action$.pipe(
               ofType(stopPublishingStatusFetcher.type, sessionTimeout.type, sharedWorkerUnauthenticated.type)
@@ -411,7 +410,7 @@ const systemEpics: CrafterCMSEpic[] = [
       switchMap(() =>
         interval(1000).pipe(
           startWith(0), // To fetch status immediately
-          mapTo(fetchPublishingStatus()),
+          map(() => fetchPublishingStatus()),
           takeUntil(
             action$.pipe(
               ofType(

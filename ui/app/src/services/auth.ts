@@ -15,7 +15,7 @@
  */
 
 import { get, getGlobalHeaders, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck } from 'rxjs/operators';
+import { catchError, map, pluck } from 'rxjs/operators';
 import { from, Observable, of } from 'rxjs';
 import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
@@ -48,7 +48,7 @@ export function login(credentials: Credentials): Observable<boolean> {
       redirect: 'manual',
       body: `username=${credentials.username}&password=${credentials.password}`
     })
-  ).pipe(mapTo(true));
+  ).pipe(map(() => true));
 }
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
@@ -82,7 +82,7 @@ export function setPassword(token: string, password: string, confirmation: strin
 
 export function validatePasswordResetToken(token: string): Observable<boolean> {
   return get(`/studio/api/2/users/validate_token?token=${token}`).pipe(
-    mapTo(true),
+    map(() => true),
     catchError((error) => {
       if (error.status === 401) return of(false);
       else throw new Error(error.response);

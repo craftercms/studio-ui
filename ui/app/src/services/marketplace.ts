@@ -26,7 +26,7 @@ import {
   PluginRecord,
   SandboxItem
 } from '../models';
-import { map, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { map, pluck, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { pluckProps, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
@@ -74,7 +74,7 @@ export function installMarketplacePlugin(
   parameters?: LookupTable<string>
 ): Observable<boolean> {
   return postJSON('/studio/api/2/marketplace/install', { siteId, pluginId, pluginVersion, parameters }).pipe(
-    mapTo(true)
+    map(() => true)
   );
 }
 
@@ -87,7 +87,7 @@ export function uninstallMarketplacePlugin(
     siteId,
     pluginId,
     force
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function getPluginConfiguration(siteId: string, pluginId: string): Observable<string> {
@@ -96,7 +96,7 @@ export function getPluginConfiguration(siteId: string, pluginId: string): Observ
 }
 
 export function setPluginConfiguration(siteId: string, pluginId: string, content: string): Observable<boolean> {
-  return postJSON('/studio/api/2/plugin/write_configuration', { siteId, pluginId, content }).pipe(mapTo(true));
+  return postJSON('/studio/api/2/plugin/write_configuration', { siteId, pluginId, content }).pipe(map(() => true));
 }
 
 export function fetchMarketplacePluginUsage(siteId: string, pluginId: string): Observable<SandboxItem[]> {
@@ -114,5 +114,5 @@ export function fetchInstalledMarketplacePlugins(siteId: string): Observable<Plu
 }
 
 export function createSite(site: MarketplaceSite): Observable<boolean> {
-  return postJSON('/studio/api/2/sites/create_site_from_marketplace', site).pipe(mapTo(true));
+  return postJSON('/studio/api/2/sites/create_site_from_marketplace', site).pipe(map(() => true));
 }

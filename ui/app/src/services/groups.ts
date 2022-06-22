@@ -19,7 +19,7 @@ import { PagedArray } from '../models/PagedArray';
 import { Observable } from 'rxjs';
 import { toQueryString } from '../utils/object';
 import { del, get, patchJSON, postJSON } from '../utils/ajax';
-import { map, mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import Group from '../models/Group';
 import User from '../models/User';
 
@@ -69,7 +69,7 @@ export function update(group: Partial<Group>): Observable<Group> {
 }
 
 export function trash(groupId: number): Observable<true> {
-  return del(`/studio/api/2/groups?id=${groupId}`).pipe(mapTo(true));
+  return del(`/studio/api/2/groups?id=${groupId}`).pipe(map(() => true));
 }
 
 export function addUserToGroup(groupId: number, username: string): Observable<User> {
@@ -97,5 +97,5 @@ export function deleteUsersFromGroup(groupId: number, usernamesOrUserIds: number
   const qs = toQueryString({
     [typeof usernamesOrUserIds[0] === 'string' ? 'username' : 'userId']: usernamesOrUserIds
   });
-  return del(`/studio/api/2/groups/${groupId}/members${qs}`).pipe(mapTo(true));
+  return del(`/studio/api/2/groups/${groupId}/members${qs}`).pipe(map(() => true));
 }

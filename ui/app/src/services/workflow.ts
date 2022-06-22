@@ -16,7 +16,7 @@
 
 import { Observable } from 'rxjs';
 import { get, postJSON } from '../utils/ajax';
-import { map, mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { toQueryString } from '../utils/object';
 import { SandboxItem } from '../models/Item';
 import { PagedArray } from '../models/PagedArray';
@@ -62,7 +62,7 @@ export function setItemStates(siteId: string, items: string[], { ...rest }: Stat
     siteId,
     items: items,
     ...rest
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function setItemStatesByQuery(siteId: string, states: number, update: StatesToUpdate, path?: string) {
@@ -73,28 +73,28 @@ export function setItemStatesByQuery(siteId: string, states: number, update: Sta
       states
     },
     update
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function publish(siteId: string, data: PublishingParams): Observable<boolean> {
   return postJSON('/studio/api/2/workflow/publish', {
     siteId,
     ...data
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function requestPublish(siteId: string, data: PublishingParams): Observable<boolean> {
   return postJSON('/studio/api/2/workflow/request_publish', {
     siteId,
     ...data
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function approve(siteId: string, data: PublishingParams): Observable<boolean> {
   return postJSON('/studio/api/2/workflow/approve', {
     siteId,
     ...data
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function reject(siteId: string, items: string[], comment: string): Observable<boolean> {
@@ -102,5 +102,5 @@ export function reject(siteId: string, items: string[], comment: string): Observ
     siteId,
     items,
     comment
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
