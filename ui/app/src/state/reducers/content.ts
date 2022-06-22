@@ -153,7 +153,7 @@ const reducer = createReducer<ContentState>(initialState, {
   [completeDetailedItem.type]: updateItemsBeingFetchedByPath,
   [fetchSandboxItem.type]: updateItemsBeingFetchedByPath,
   [fetchSandboxItems.type]: updateItemsBeingFetchedByPaths,
-  [fetchSandboxItemsComplete.type]: (state, { payload: items }) => {
+  [fetchSandboxItemsComplete.type]: (state, { payload: { items } }) => {
     items.forEach((item) => {
       const path = item.path;
       state.itemsByPath[path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
