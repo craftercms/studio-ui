@@ -16,7 +16,7 @@
 
 import { combineEpics, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import { filter, ignoreElements, map, mapTo, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
@@ -151,7 +151,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       filter(([, state]) => state.status === EditingStatus.UPLOAD_ASSET_FROM_DESKTOP),
       switchMap(() =>
         interval(100).pipe(
-          mapTo(desktopAssetDragEnded()),
+          map(() => desktopAssetDragEnded()),
           takeUntil(action$.pipe(ofType(documentDragOver.type, 'dragover')))
         )
       )
@@ -526,7 +526,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       // fired and sometimes is not upon dropping on the rubbish bin.
       // Manually firing here may incur in double firing of computed_dragend
       // in those occasions.
-      mapTo(computedDragEnd())
+      map(() => computedDragEnd())
     );
   },
   // endregion

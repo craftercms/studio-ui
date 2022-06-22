@@ -31,7 +31,7 @@ import PrimaryButton from '../PrimaryButton';
 import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
-import { mapTo, switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { addUserToGroup } from '../../services/groups';
 import { useSpreadState } from '../../hooks/useSpreadState';
@@ -153,7 +153,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
             switchMap((user) =>
               selectedGroupsRef.current.length
                 ? forkJoin(selectedGroupsRef.current.map((id) => addUserToGroup(Number(id), user.username))).pipe(
-                    mapTo(user)
+                    map(() => user)
                   )
                 : of(user)
             )

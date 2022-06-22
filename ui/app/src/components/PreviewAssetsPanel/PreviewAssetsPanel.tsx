@@ -23,7 +23,7 @@ import SearchBar from '../SearchBar/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import { fromEvent, interval } from 'rxjs';
-import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../../utils/subjects';
 import {
   assetDragEnded,
@@ -227,7 +227,7 @@ export function PreviewAssetsPanel() {
       const dragleaveSubscription = fromEvent(elementRef.current, 'dragleave')
         .pipe(
           switchMap(() => interval(100).pipe(takeUntil(dragover$))),
-          mapTo(false)
+          map(() => false)
         )
         .subscribe(setDragInProgress);
       const dropSubscription = fromEvent(elementRef.current, 'drop')

@@ -16,7 +16,7 @@
 
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { DependenciesDialogContainerProps, dialogInitialState } from './utils';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSelection } from '../../hooks/useSelection';
@@ -26,7 +26,6 @@ import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../s
 import { batchActions } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/actions/versions';
 import { getRootPath } from '../../utils/path';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { fetchDependant, fetchSimpleDependencies } from '../../services/dependencies';
 import { isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
 import DependenciesDialogUI from './DependenciesDialogUI';
@@ -75,18 +74,6 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
       ])
     );
   };
-
-  const depsSource = useMemo(() => {
-    return { deps, error };
-  }, [deps, error]);
-
-  const resource = useLogicResource<DetailedItem[], { deps: DetailedItem[]; error: ApiResponse }>(depsSource, {
-    shouldResolve: (source) => Boolean(source.deps),
-    shouldReject: (source) => Boolean(source.error),
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source.deps,
-    errorSelector: (source) => source.error
-  });
 
   const getDepsItems = useCallback(
     (siteId: string, path: string, newItem?: boolean) => {
@@ -180,7 +167,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 
   return (
     <DependenciesDialogUI
-      resource={resource}
+      dependencies={deps}
       item={dialog.item}
       rootPath={rootPath}
       setItem={setItem}
@@ -196,6 +183,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
       contextMenu={contextMenu}
       handleContextMenuClick={handleContextMenuClick}
       handleContextMenuClose={handleContextMenuClose}
+      error={error}
     />
   );
 }

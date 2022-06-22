@@ -16,7 +16,7 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { Action, BackendSite, ContentValidationResult, CreateSiteMeta, LegacySite, Site } from '../models/Site';
-import { map, mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
 import { PaginationOptions } from '../models/PaginationOptions';
@@ -80,20 +80,20 @@ export function create(site: CreateSiteMeta): Observable<Site> {
   });
   return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
     pluck('response'),
-    mapTo({
+    map(() => ({
       id: site.siteId,
       name: site.siteName,
       description: site.description ?? '',
       uuid: null,
       imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
-    })
+    }))
   );
 }
 
 export function trash(id: string): Observable<boolean> {
   return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id }).pipe(
     pluck('response'),
-    mapTo(true)
+    map(() => true)
   );
 }
 

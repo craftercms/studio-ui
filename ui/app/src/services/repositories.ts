@@ -16,7 +16,7 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
-import { mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { FileDiff, Remote, Repository, RepositoryStatus } from '../models/Repository';
 
 const repositoryEndpointUrl = '/studio/api/2/repository';
@@ -26,11 +26,11 @@ export function fetchRepositories(siteId: string): Observable<Repository[]> {
 }
 
 export function addRemote(remote: Remote): Observable<true> {
-  return postJSON(`${repositoryEndpointUrl}/add_remote`, remote).pipe(mapTo(true));
+  return postJSON(`${repositoryEndpointUrl}/add_remote`, remote).pipe(map(() => true));
 }
 
 export function deleteRemote(siteId: string, remoteName: string): Observable<true> {
-  return postJSON(`${repositoryEndpointUrl}/remove_remote`, { siteId, remoteName }).pipe(mapTo(true));
+  return postJSON(`${repositoryEndpointUrl}/remove_remote`, { siteId, remoteName }).pipe(map(() => true));
 }
 
 export interface PullResponse {
@@ -44,7 +44,7 @@ export function pull(remote: Partial<Remote>): Observable<PullResponse> {
 
 export function push(siteId: string, remoteName: string, remoteBranch: string, force: boolean): Observable<true> {
   return postJSON(`${repositoryEndpointUrl}/push_to_remote`, { siteId, remoteName, remoteBranch, force }).pipe(
-    mapTo(true)
+    map(() => true)
   );
 }
 

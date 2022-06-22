@@ -15,7 +15,7 @@
  */
 
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck } from 'rxjs/operators';
+import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
@@ -86,7 +86,7 @@ export function writeConfiguration(
     path,
     content,
     ...(environment && { environment })
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 // region AudiencesPanelConfig

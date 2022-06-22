@@ -15,7 +15,7 @@
  */
 
 import { errorSelectorApi1, get, getBinary, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { cdataWrap, createElement, createElements, fromString, getInnerHtml, serialize } from '../utils/xml';
 import { ContentType } from '../models/ContentType';
@@ -242,7 +242,7 @@ function performMutation(
   path: string,
   mutation: (doc: Element) => void,
   modelId: string = null
-): Observable<any> {
+): Observable<{ updatedDocument: XMLDocument }> {
   return fetchContentDOM(site, path).pipe(
     switchMap((doc) => {
       const documentModelId = doc.querySelector(':scope > objectId').innerHTML.trim();
@@ -264,7 +264,7 @@ function performMutation(
           fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
         }),
         serialize(doc)
-      ).pipe(mapTo({ updatedDocument: doc }));
+      ).pipe(map(() => ({ updatedDocument: doc })));
     })
   );
 }
@@ -437,7 +437,7 @@ export function duplicateItem(
             fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
           }),
           serialize(doc)
-        ).pipe(mapTo(returnValue));
+        ).pipe(map(() => returnValue));
       } else {
         return fetchContentDOM(site, itemPath).pipe(
           switchMap((componentDoc) => {
@@ -464,7 +464,12 @@ export function duplicateItem(
                 }),
                 serialize(componentDoc)
               )
-            ]).pipe(mapTo(returnValue));
+            ]).pipe(
+              map(() => {
+                returnValue.newItem.path += `/${returnValue.newItem.modelId}.xml`;
+                return returnValue;
+              })
+            );
           })
         );
       }
@@ -704,7 +709,7 @@ export function formatXML(site: string, path: string): Observable<boolean> {
         serialize(doc)
       )
     ),
-    mapTo(true)
+    map(() => true)
   );
 }
 
@@ -1265,16 +1270,16 @@ export function deleteItems(
     items,
     optionalDependencies,
     comment
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function lock(siteId: string, path: string): Observable<boolean> {
-  return postJSON('/studio/api/2/content/item_lock_by_path', { siteId, path }).pipe(mapTo(true));
+  return postJSON('/studio/api/2/content/item_lock_by_path', { siteId, path }).pipe(map(() => true));
 }
 
 export function unlock(siteId: string, path: string): Observable<boolean> {
   return postJSON('/studio/api/2/content/item_unlock_by_path', { siteId, path }).pipe(
-    mapTo(true),
+    map(() => true),
     // Do not throw/report 409 (item is already unlocked) as an error.
     catchError((error) => {
       if (error.status === 409) {
