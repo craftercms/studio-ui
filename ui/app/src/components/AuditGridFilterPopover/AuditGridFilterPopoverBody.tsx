@@ -17,10 +17,8 @@
 import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
-import DatePicker from '@mui/lab/DatePicker';
-import TimePicker from '@mui/lab/TimePicker';
+import DateTimePicker from '@mui/lab/DateTimePicker';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import Box from '@mui/material/Box';
@@ -33,6 +31,7 @@ import IconButton from '@mui/material/IconButton';
 import { AuditGridFilterPopoverProps } from './AuditGridFilterPopover';
 import moment from 'moment-timezone';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
+import useSpreadState from '../../hooks/useSpreadState';
 
 const translations = defineMessages({
   siteId: {
@@ -74,6 +73,10 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
   const [fromDate, setFromDate] = useState(props.dateFrom ? moment(props.dateFrom) : null);
   const [toDate, setToDate] = useState(props.dateTo ? moment(props.dateTo) : null);
   const onSearch = useCallback((keywords: string) => onFilterChange(filterId, keywords), [onFilterChange, filterId]);
+  const [pickersOpenState, setPickersOpenState] = useSpreadState({
+    from: false,
+    to: false
+  });
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
@@ -165,32 +168,51 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
 
   return (
     <>
-      <Avatar className={classes.popoverCloseIcon} onClick={onClose}>
-        <ClearRoundedIcon fontSize="small" />
-      </Avatar>
+      <Box display="flex" justifyContent="end" marginBottom="10px">
+        <IconButton onClick={onClose}>
+          <ClearRoundedIcon fontSize="small" />
+        </IconButton>
+      </Box>
       {filterId === 'operationTimestamp' && (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <form className={classes.popoverForm} noValidate autoComplete="off">
-            <Box display="flex" alignItems="center" marginBottom="20px">
-              <DatePicker
-                className={classes.fromDatePicker}
+          <form noValidate autoComplete="off">
+            <Box className={classes.timestampFiltersContainer}>
+              <DateTimePicker
+                open={pickersOpenState.from}
+                onOpen={() => setPickersOpenState({ from: true })}
+                onClose={() => setPickersOpenState({ from: false })}
                 clearable
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
-                inputFormat="MM/dd/yyyy"
                 value={fromDate}
                 onChange={onFromDateSelected}
                 renderInput={(props) => (
-                  <TextField {...props} inputProps={{ ...props.inputProps, onKeyDown: (e) => e.preventDefault() }} />
+                  <TextField
+                    {...props}
+                    inputProps={{
+                      ...props.inputProps,
+                      onKeyDown: (e) => e.preventDefault(),
+                      onClick: () => setPickersOpenState({ from: true })
+                    }}
+                  />
                 )}
               />
-              <TimePicker
-                className={classes.toDatePicker}
+              <DateTimePicker
+                open={pickersOpenState.to}
+                onOpen={() => setPickersOpenState({ to: true })}
+                onClose={() => setPickersOpenState({ to: false })}
                 clearable
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
                 value={toDate}
                 onChange={onToDateSelected}
                 renderInput={(props) => (
-                  <TextField {...props} inputProps={{ ...props.inputProps, onKeyDown: (e) => e.preventDefault() }} />
+                  <TextField
+                    {...props}
+                    inputProps={{
+                      ...props.inputProps,
+                      onKeyDown: (e) => e.preventDefault(),
+                      onClick: () => setPickersOpenState({ to: true })
+                    }}
+                  />
                 )}
               />
               <Button
