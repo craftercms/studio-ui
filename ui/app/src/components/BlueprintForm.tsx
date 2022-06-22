@@ -91,6 +91,10 @@ const messages = defineMessages({
     id: 'createSiteDialog.gitBranch',
     defaultMessage: 'Git Branch'
   },
+  gitBranchDescription: {
+    id: 'createSiteDialog.gitBranchDescription',
+    defaultMessage: 'Name of the branch this project will track. Pull operations will be done against this branch.'
+  },
   createAsOrphan: {
     id: 'createSiteDialog.createAsOrphan',
     defaultMessage: 'Create the site from a remote repository as orphan (no git history)'
@@ -133,6 +137,17 @@ function BlueprintForm(props: BlueprintFormProps) {
     } else if (type === 'blueprintFields') {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
+    } else if (e.target.name === 'gitBranch') {
+      let escapedValue = e.target.value
+        .replace(/\s+|[~^:?*[@\\]/g, '')
+        // It cannot have two or more consecutive dots anywhere.
+        .replace(/\.{2,}/g, '.')
+        // It cannot have two or more consecutive slashes anywhere.
+        .replace(/\/{2,}/g, '/');
+      setInputs({ [e.target.name]: escapedValue });
+    } else if (e.target.name === 'repoUrl') {
+      let escapedValue = e.target.value.replace(/\s+/g, '');
+      setInputs({ [e.target.name]: escapedValue });
     } else {
       setInputs({ [e.target.name]: e.target.value });
     }
@@ -224,6 +239,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             InputLabelProps={{ shrink: true }}
             placeholder="master"
             value={inputs.gitBranch}
+            helperText={formatMessage(messages.gitBranchDescription)}
           />
         </Grid>
         {blueprint.parameters && (
