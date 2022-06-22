@@ -221,7 +221,8 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     ace: null,
     elem: null,
     pre: null,
-    onChange: null
+    onChange: null,
+    options: null
   });
   const [initialized, setInitialized] = useState(false);
 
@@ -232,6 +233,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
   options.theme = options.theme ?? `ace/theme/${mode === 'light' ? 'chrome' : 'tomorrow_night'}`;
 
   refs.current.onChange = onChange;
+  refs.current.options = options;
 
   useMount(() => {
     let unmounted = false;
@@ -250,9 +252,9 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
             refs.current.pre = pre;
             refs.current.elem.appendChild(pre);
             // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
-            aceEditor = ace.edit(pre, options);
+            aceEditor = ace.edit(pre, refs.current.options);
             autoFocus && aceEditor.focus();
-            if (options.readOnly) {
+            if (refs.current.options.readOnly) {
               // This setting of the cursor to not display is unnecessary as the
               // options.readOnly effect takes care of doing so. Nevertheless, this
               // eliminates the delay in hiding the cursor if left up to the effect only.
@@ -321,12 +323,9 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
   );
 
   useEffect(() => {
-    if (initialized && options?.readOnly) {
+    if (initialized) {
       const editor = refs.current.ace;
-      editor.renderer.$cursorLayer.element.style.display = 'none';
-      return () => {
-        editor.renderer.$cursorLayer.element.style.display = '';
-      };
+      editor.renderer.$cursorLayer.element.style.display = options?.readOnly ? 'none' : '';
     }
   }, [initialized, options?.readOnly]);
 
