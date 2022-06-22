@@ -464,7 +464,12 @@ export function duplicateItem(
                 }),
                 serialize(componentDoc)
               )
-            ]).pipe(mapTo(returnValue));
+            ]).pipe(
+              map(() => {
+                returnValue.newItem.path += `/${returnValue.newItem.modelId}.xml`;
+                return returnValue;
+              })
+            );
           })
         );
       }
