@@ -251,11 +251,13 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
             refs.current.elem.appendChild(pre);
             // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
             aceEditor = ace.edit(pre, options);
+            autoFocus && aceEditor.focus();
             if (options.readOnly) {
-              // @ts-ignore - TS don't recognize $cursorLayer prop
+              // This setting of the cursor to not display is unnecessary as the
+              // options.readOnly effect takes care of doing so. Nevertheless, this
+              // eliminates the delay in hiding the cursor if left up to the effect only.
+              // @ts-ignore - $cursorLayer.element typings are missing
               aceEditor.renderer.$cursorLayer.element.style.display = 'none';
-            } else {
-              autoFocus && aceEditor.focus();
             }
             refs.current.ace = aceEditor;
             onInit?.(aceEditor);
@@ -317,6 +319,16 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
       ...aceOptions.map((o) => options[o])
     ]
   );
+
+  useEffect(() => {
+    if (initialized && options?.readOnly) {
+      const editor = refs.current.ace;
+      editor.renderer.$cursorLayer.element.style.display = 'none';
+      return () => {
+        editor.renderer.$cursorLayer.element.style.display = '';
+      };
+    }
+  }, [initialized, options?.readOnly]);
 
   // If the Editor is inside a dialog, resize when fullscreen changes
   const isFullScreen = useEnhancedDialogContext()?.isFullScreen;
