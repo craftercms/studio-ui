@@ -253,7 +253,10 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
             aceEditor = ace.edit(pre, options);
             autoFocus && aceEditor.focus();
             if (options.readOnly) {
-              // @ts-ignore - $cursorLayer.element types not set
+              // This setting of the cursor to not display is unnecessary as the
+              // options.readOnly effect takes care of doing so. Nevertheless, this
+              // eliminates the delay in hiding the cursor if left up to the effect only.
+              // @ts-ignore - $cursorLayer.element typings are missing
               aceEditor.renderer.$cursorLayer.element.style.display = 'none';
             }
             refs.current.ace = aceEditor;
@@ -321,12 +324,11 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     if (initialized && options?.readOnly) {
       const editor = refs.current.ace;
       editor.renderer.$cursorLayer.element.style.display = 'none';
-      autoFocus && editor.focus();
       return () => {
         editor.renderer.$cursorLayer.element.style.display = '';
       };
     }
-  }, [initialized, autoFocus, options?.readOnly]);
+  }, [initialized, options?.readOnly]);
 
   // If the Editor is inside a dialog, resize when fullscreen changes
   const isFullScreen = useEnhancedDialogContext()?.isFullScreen;
