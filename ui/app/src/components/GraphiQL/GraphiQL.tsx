@@ -15,8 +15,9 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import GraphiQLComponent, { FetcherOpts, FetcherParams } from 'graphiql';
+import GraphiQLComponent, { FetcherOpts, FetcherParams, ToolbarButton } from 'graphiql';
 import 'graphiql/graphiql.min.css';
+import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
@@ -52,6 +53,7 @@ function GraphiQL(props: GraphiQLProps) {
   const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`) ?? defaultQuery, []);
   const [query, setQuery] = useState(initialQuery);
   const [schema, setSchema] = useState<GraphQLSchema>(null);
+  const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
   const storage = useMemo(
     () =>
       ({
@@ -93,17 +95,17 @@ function GraphiQL(props: GraphiQLProps) {
       };
     }
   }, [url, method]);
-  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const handleToggleExplorer = () => setExplorerIsOpen(!explorerIsOpen);
+  const refs = useUpdateRefs({ onSubmittingAndOrPendingChange, graphiql: null });
   const hasChanges = isBlank(query) ? false : initialQuery !== query;
-
-  function onEditQuery(newQuery: string) {
+  const onEditQuery = (newQuery: string) => {
     setQuery(newQuery);
     window.localStorage.setItem(`${storageKey}graphiql:query`, newQuery);
-  }
+  };
 
   useEffect(() => {
-    fnRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasChanges });
-  }, [hasChanges, fnRefs]);
+    refs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasChanges });
+  }, [hasChanges, refs]);
 
   useEffect(() => {
     graphQLFetcher({
@@ -122,13 +124,24 @@ function GraphiQL(props: GraphiQLProps) {
         />
       )}
       <div className={clsx(classes.container, 'graphiql-container')}>
-        {/* Explorer plugin for GraphiQL  */}
+        <GraphiQLExplorer
+          schema={schema}
+          query={query}
+          onEdit={onEditQuery}
+          onRunOperation={(operationName: any) => refs.current.graphiql.handleRunQuery(operationName)}
+          explorerIsOpen={explorerIsOpen}
+          onToggleExplorer={handleToggleExplorer}
+        />
         <GraphiQLComponent
+          ref={(ref) => (refs.current.graphiql = ref)}
           fetcher={graphQLFetcher}
           schema={schema}
           query={query}
           storage={storage}
           onEditQuery={onEditQuery}
+          toolbar={{
+            additionalContent: <ToolbarButton onClick={handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
+          }}
         />
       </div>
     </Box>
