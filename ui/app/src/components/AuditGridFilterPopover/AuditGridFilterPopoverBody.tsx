@@ -31,7 +31,6 @@ import IconButton from '@mui/material/IconButton';
 import { AuditGridFilterPopoverProps } from './AuditGridFilterPopover';
 import moment from 'moment-timezone';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
-import useSpreadState from '../../hooks/useSpreadState';
 
 const translations = defineMessages({
   siteId: {
@@ -73,10 +72,6 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
   const [fromDate, setFromDate] = useState(props.dateFrom ? moment(props.dateFrom) : null);
   const [toDate, setToDate] = useState(props.dateTo ? moment(props.dateTo) : null);
   const onSearch = useCallback((keywords: string) => onFilterChange(filterId, keywords), [onFilterChange, filterId]);
-  const [pickersOpenState, setPickersOpenState] = useSpreadState({
-    from: false,
-    to: false
-  });
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
@@ -153,7 +148,9 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
   };
 
   const onToDateSelected = (date) => {
-    onFilterChange('dateTo', date ? moment(date).format() : 'all');
+    if (!isNaN(Date.parse(date))) {
+      onFilterChange('dateTo', date ? moment(date).format() : 'all');
+    }
     setToDate(date);
   };
 
@@ -180,18 +177,12 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
           <form noValidate autoComplete="off">
             <Box className={classes.timestampFiltersContainer}>
               <DateTimePicker
-                open={pickersOpenState.from}
-                onOpen={() => setPickersOpenState({ from: true })}
-                onClose={() => setPickersOpenState({ from: false })}
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
                 value={fromDate}
                 onChange={onFromDateSelected}
                 renderInput={(props) => <TextField {...props} />}
               />
               <DateTimePicker
-                open={pickersOpenState.to}
-                onOpen={() => setPickersOpenState({ to: true })}
-                onClose={() => setPickersOpenState({ to: false })}
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
                 value={toDate}
                 onChange={onToDateSelected}
