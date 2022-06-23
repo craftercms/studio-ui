@@ -20,10 +20,9 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { camelize } from '../../utils/string';
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import { Theme } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
   select: {
     width: '100%',
     '&.last': {
@@ -74,7 +73,7 @@ interface SortByProps {
 }
 
 export function SiteSearchSortBy(props: SortByProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const { handleFilterChange, filterKeys, sortBy = '_score' } = props;
 

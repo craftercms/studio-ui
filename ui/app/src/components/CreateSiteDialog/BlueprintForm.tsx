@@ -15,29 +15,19 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import GitForm from './GitForm';
 import { MarketplacePlugin, SiteState } from '../../models';
 import { defineMessages, useIntl } from 'react-intl';
 import PluginFormEngine from '../PluginFormBuilder';
 import { fetchAll } from '../../services/sites';
-import Switch from '@mui/material/Switch';
-import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()(() => ({
   form: {
     maxWidth: '600px',
     margin: '0 auto'
-  },
-  helpText: {
-    transition: `color .5s`
-  },
-  muted: {
-    color: theme.palette.text.secondary
   }
 }));
 
@@ -92,23 +82,18 @@ const messages = defineMessages({
     id: 'createSiteDialog.cantStart',
     defaultMessage: 'Project names may not start with zeros, dashes (-) or underscores (_).'
   },
-  sandboxBranch: {
-    id: 'createSiteDialog.sandboxBranch',
-    defaultMessage: 'Sandbox Branch'
+  gitBranch: {
+    id: 'createSiteDialog.gitBranch',
+    defaultMessage: 'Git Branch'
   },
-  createAsOrphan: {
-    id: 'createSiteDialog.createAsOrphan',
-    defaultMessage: 'Create the project from a remote repository as orphan (no git history)'
-  },
-  createAsOrphanHelpText: {
-    id: 'createSiteDialog.createAsOrphanHelpText',
-    defaultMessage:
-      'Creating the project as an orphan will dissociate the project from the source git repository and remove all history.'
+  gitBranchDescription: {
+    id: 'createSiteDialog.gitBranchDescription',
+    defaultMessage: 'Name of the branch this project will track. Pull operations will be done against this branch.'
   }
 });
 
 function BlueprintForm(props: BlueprintFormProps) {
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, classes: classesProp } = props;
   const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
@@ -158,6 +143,17 @@ function BlueprintForm(props: BlueprintFormProps) {
     } else if (type === 'fields') {
       let parameters = { ...inputs.blueprintFields, [e.target.name]: e.target.value };
       setInputs({ blueprintFields: parameters });
+    } else if (e.target.name === 'gitBranch') {
+      const escapedValue = e.target.value
+        .replace(/\s+|[~^:?*[@\\]/g, '')
+        // It cannot have two or more consecutive dots anywhere.
+        .replace(/\.{2,}/g, '.')
+        // It cannot have two or more consecutive slashes anywhere.
+        .replace(/\/{2,}/g, '/');
+      setInputs({ [e.target.name]: escapedValue });
+    } else if (e.target.name === 'repoUrl') {
+      const escapedValue = e.target.value.replace(/\s+/g, '');
+      setInputs({ [e.target.name]: escapedValue });
     } else {
       setInputs({ [e.target.name]: e.target.value });
     }
@@ -220,7 +216,7 @@ function BlueprintForm(props: BlueprintFormProps) {
   }
 
   return (
-    <form className={clsx(classes.form, classesProp?.root)}>
+    <form className={cx(classes.form, classesProp?.root)}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TextField
@@ -274,18 +270,6 @@ function BlueprintForm(props: BlueprintFormProps) {
         </Grid>
         <Grid item xs={12}>
           <TextField
-            id="sandboxBranch"
-            name="sandboxBranch"
-            label={formatMessage(messages.sandboxBranch)}
-            fullWidth
-            onKeyPress={onKeyPress}
-            onChange={(event) => handleInputChange(event)}
-            placeholder={'master'}
-            value={inputs.sandboxBranch}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
             id="description"
             fullWidth
             name="description"
@@ -297,28 +281,19 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        {blueprint.id === 'GIT' && (
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Switch
-                  name="createAsOrphan"
-                  checked={inputs.createAsOrphan}
-                  onChange={(event) => handleInputChange(event)}
-                  color="primary"
-                />
-              }
-              label={formatMessage(messages.createAsOrphan)}
-            />
-            <Typography
-              variant="subtitle2"
-              component="small"
-              className={`${classes.helpText} ${inputs.createAsOrphan ? '' : classes.muted}`}
-            >
-              {formatMessage(messages.createAsOrphanHelpText)}
-            </Typography>
-          </Grid>
-        )}
+        <Grid item xs={12}>
+          <TextField
+            id="sandboxBranch"
+            name="gitBranch"
+            label={formatMessage(messages.gitBranch)}
+            fullWidth
+            onKeyPress={onKeyPress}
+            onChange={(event) => handleInputChange(event)}
+            placeholder="master"
+            value={inputs.gitBranch}
+            helperText={formatMessage(messages.gitBranchDescription)}
+          />
+        </Grid>
         {blueprint.parameters && (
           <PluginFormEngine
             parameters={blueprint.parameters}

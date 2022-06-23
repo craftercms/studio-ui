@@ -21,32 +21,35 @@ import LookupTable from '../../models/LookupTable';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import { PathNavigatorTreeNode } from './PathNavigatorTreeUI';
-import clsx from 'clsx';
 import SearchBar from '../SearchBar/SearchBar';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
-import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import Button from '@mui/material/Button';
 import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
+import { isBlank } from '../../utils/string';
+import ErrorOutlineRounded from '@mui/icons-material/ErrorOutlineRounded';
 
 export interface PathNavigatorTreeItemProps {
-  node: PathNavigatorTreeNode;
+  path: string;
   itemsByPath: LookupTable<DetailedItem>;
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
   childrenByParentPath: LookupTable<string[]>;
+  active?: Record<string, boolean>;
   classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
+  showNavigableAsLinks?: boolean;
+  showPublishingTarget?: boolean;
+  showWorkflowState?: boolean;
+  showItemMenu?: boolean;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onIconClick(path: string): void;
-  onOpenItemMenu(element: Element, path: string): void;
+  onOpenItemMenu?(element: Element, path: string): void;
   onFilterChange(keyword: string, path: string): void;
   onMoreClick(path: string): void;
 }
@@ -72,140 +75,149 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      '&:focus > $content $labelContainer': {
-        background: 'none'
-      }
-    },
-    content: {
-      alignItems: 'flex-start',
-      paddingRight: 0,
-      '&:hover': {
-        background: 'none'
-      }
-    },
-    labelContainer: {
-      display: 'flex',
-      paddingLeft: 0,
-      flexWrap: 'wrap',
-      overflow: 'hidden',
-      '&:hover': {
-        background: 'none'
-      },
-      '& .MuiSvgIcon-root': {
-        fontSize: '1.1rem'
-      }
-    },
-    itemDisplaySection: {
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      minHeight: '23.5px',
-      '&:hover': {
-        backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
-      }
-    },
-    filterSection: {
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center'
-    },
-    empty: {
-      color: theme.palette.text.secondary,
-      display: 'flex',
-      alignItems: 'center',
-      minHeight: '23.5px',
-      marginLeft: '10px',
-      '& svg': {
-        marginRight: '5px',
-        fontSize: '1.1rem'
-      }
-    },
-    more: {
-      color: theme.palette.text.primary,
-      display: 'flex',
-      alignItems: 'center',
-      minHeight: '23.5px',
-      marginLeft: '10px'
-    },
-    iconContainer: {
-      width: '26px',
-      marginRight: 0,
-      '& svg': {
-        fontSize: '23.5px !important',
-        color: theme.palette.text.secondary
-      }
-    },
-    focused: {
-      background: 'none !important'
-    },
-    optionsWrapper: {
-      top: 0,
-      right: 0,
-      visibility: 'hidden',
-      position: 'absolute',
-      marginLeft: 'auto',
-      display: 'flex',
-      minHeight: '23.5px',
-      alignItems: 'center'
-    },
-    optionsWrapperOver: {
-      visibility: 'visible'
-    },
-    loading: {
-      display: 'flex',
-      alignItems: 'center',
-      minHeight: '23.5px',
-      marginLeft: '10px',
-      '& span': {
-        marginLeft: '10px'
-      }
-    },
-    searchRoot: {
-      margin: '5px 10px 5px 0',
-      height: '25px',
-      width: '100%'
-    },
-    searchInput: {
-      fontSize: '12px',
-      padding: '5px !important'
-    },
-    searchCloseButton: {
-      marginRight: '10px'
-    },
-    searchCloseIcon: {
-      fontSize: '12px !important'
-    },
-    iconButton: {
-      padding: '2px 3px'
+const useStyles = makeStyles<void, 'content' | 'labelContainer'>()((theme, _params, classes) => ({
+  root: {
+    [`&:focus > .${classes.content} .${classes.labelContainer}`]: {
+      background: 'none'
     }
-  })
-);
+  },
+  content: {
+    alignItems: 'flex-start',
+    paddingRight: 0,
+    '&:hover': {
+      background: 'none'
+    }
+  },
+  labelContainer: {
+    display: 'flex',
+    paddingLeft: 0,
+    flexWrap: 'wrap',
+    overflow: 'hidden',
+    '&:hover': {
+      background: 'none'
+    },
+    '& .MuiSvgIcon-root': {
+      fontSize: '1.1rem'
+    }
+  },
+  itemDisplaySection: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '23.5px',
+    '&:hover': {
+      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
+    }
+  },
+  filterSection: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  empty: {
+    color: theme.palette.text.secondary,
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '23.5px',
+    marginLeft: '10px',
+    '& svg': {
+      marginRight: '5px',
+      fontSize: '1.1rem'
+    }
+  },
+  more: {
+    color: theme.palette.text.primary,
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '23.5px',
+    marginLeft: '10px'
+  },
+  iconContainer: {
+    width: '26px',
+    marginRight: 0,
+    '& svg': {
+      fontSize: '23.5px !important',
+      color: theme.palette.text.secondary
+    }
+  },
+  focused: {
+    background: 'none !important'
+  },
+  optionsWrapper: {
+    top: 0,
+    right: 0,
+    visibility: 'hidden',
+    position: 'absolute',
+    marginLeft: 'auto',
+    display: 'flex',
+    minHeight: '23.5px',
+    alignItems: 'center'
+  },
+  optionsWrapperOver: {
+    visibility: 'visible'
+  },
+  loading: {
+    display: 'flex',
+    alignItems: 'center',
+    minHeight: '23.5px',
+    marginLeft: '10px',
+    '& span': {
+      marginLeft: '10px'
+    }
+  },
+  searchRoot: {
+    margin: '5px 10px 5px 0',
+    height: '25px',
+    width: '100%'
+  },
+  searchInput: {
+    fontSize: '12px',
+    padding: '5px !important'
+  },
+  searchCloseButton: {
+    marginRight: '10px'
+  },
+  searchCloseIcon: {
+    fontSize: '12px !important'
+  },
+  iconButton: {
+    padding: '2px 3px'
+  },
+  active: {
+    backgroundColor: theme.palette.action.selected
+  }
+}));
 
 export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
   const {
-    node,
+    path,
     itemsByPath,
     keywordByPath,
     totalByPath,
     childrenByParentPath,
+    active = {},
+    showNavigableAsLinks = true,
+    showPublishingTarget = true,
+    showWorkflowState = true,
+    showItemMenu = true,
     onLabelClick,
     onIconClick,
     onOpenItemMenu,
     onFilterChange,
     onMoreClick
   } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const [over, setOver] = useState(false);
-  const [showFilter, setShowFilter] = useState(Boolean(keywordByPath[node.id]));
-  const [keyword, setKeyword] = useState(keywordByPath[node.id] ?? '');
+  const [showFilter, setShowFilter] = useState(Boolean(keywordByPath[path]));
+  const [keyword, setKeyword] = useState(keywordByPath[path] ?? '');
   const { formatMessage } = useIntl();
+  const children = childrenByParentPath[path] ?? [];
+
   const onMouseOver = (e) => {
     e.stopPropagation();
     setOver(true);
   };
+
   const onMouseLeave = (e) => {
     e.stopPropagation();
     setOver(false);
@@ -215,200 +227,215 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     setShowFilter(!showFilter);
   };
 
-  const onCloseFilterBox = () => {
+  const onClearKeywords = () => {
     if (keyword) {
       setKeyword('');
-      onFilterChange('', node.id);
+      onFilterChange('', path);
     }
   };
 
   const onContextMenu = (e) => {
-    e.preventDefault();
-    onOpenItemMenu(e.currentTarget.querySelector('[data-item-menu]'), node.id);
+    if (onOpenItemMenu) {
+      e.preventDefault();
+      onOpenItemMenu(e.currentTarget.querySelector('[data-item-menu]'), path);
+    }
   };
 
-  switch (node.id) {
-    case 'loading': {
-      return (
-        <div className={classes.loading}>
-          <CircularProgress size={14} />
-          <Typography variant="caption" color="textSecondary">
-            <FormattedMessage id="words.loading" defaultMessage="Loading" />
-          </Typography>
-        </div>
-      );
-    }
-    case 'empty': {
-      return (
-        <section className={classes.empty}>
-          <ErrorOutlineRoundedIcon />
-          <Typography variant="caption">
-            <FormattedMessage id="filter.noResults" defaultMessage="No results match your query" />
-          </Typography>
-        </section>
-      );
-    }
-    case 'more': {
-      return (
-        <section className={classes.more}>
+  // Children for TreeItem set here this way instead of as JSX children below since, because there
+  // are multiple blocks, that would cause all nodes to have an "open" icon even if they have no children.
+  const propsForTreeItem = { children: [] };
+  if (children.length) {
+    propsForTreeItem.children = children.map((path) => (
+      <PathNavigatorTreeItem
+        key={path}
+        path={path}
+        itemsByPath={itemsByPath}
+        keywordByPath={keywordByPath}
+        totalByPath={totalByPath}
+        childrenByParentPath={childrenByParentPath}
+        active={active}
+        onLabelClick={onLabelClick}
+        onIconClick={onIconClick}
+        onOpenItemMenu={onOpenItemMenu}
+        onFilterChange={onFilterChange}
+        onMoreClick={onMoreClick}
+        showNavigableAsLinks={showNavigableAsLinks}
+        showPublishingTarget={showPublishingTarget}
+        showWorkflowState={showWorkflowState}
+        showItemMenu={showItemMenu}
+      />
+    ));
+    children.length < totalByPath[path] &&
+      propsForTreeItem.children.push(
+        <section key="more" className={classes.more}>
           <Button
             color="primary"
             size="small"
             onClick={() => {
-              onMoreClick(node.parentPath);
+              onMoreClick(path);
             }}
           >
             <FormattedMessage
               id="pathNavigatorTree.moreLinkLabel"
               defaultMessage="{count, plural, one {...{count} more item} other {...{count} more items}}"
-              values={{
-                count: totalByPath[node.parentPath] - childrenByParentPath[node.parentPath].length
-              }}
+              values={{ count: totalByPath[path] - children.length }}
             />
           </Button>
         </section>
       );
-    }
-    default: {
-      return (
-        <TreeItem
-          key={node.id}
-          nodeId={node.id}
-          expandIcon={
-            <ArrowRightRoundedIcon
-              role="button"
-              aria-label={formatMessage(translations.expand)}
-              aria-hidden="false"
-              onClick={() => onIconClick(node.id)}
-            />
-          }
-          collapseIcon={
-            <ArrowDropDownRoundedIcon
-              role="button"
-              aria-label={formatMessage(translations.collapse)}
-              aria-hidden="false"
-              onClick={() => onIconClick(node.id)}
-            />
-          }
-          label={
-            <>
-              <section
-                role="button"
-                onClick={(event) => onLabelClick(event, node.id)}
-                className={classes.itemDisplaySection}
-                onMouseOver={onMouseOver}
-                onMouseLeave={onMouseLeave}
-                onContextMenu={onContextMenu}
-              >
-                <ItemDisplay
-                  styles={{
-                    root: {
-                      width: over ? 'calc(100% - 60px)' : '100%',
-                      minHeight: '23.5px'
-                    }
-                  }}
-                  item={itemsByPath[node.id]}
-                  labelTypographyProps={{ variant: 'body2' }}
-                />
-                <section className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-                  <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
-                    <IconButton
-                      size="small"
-                      className={classes.iconButton}
-                      data-item-menu
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onOpenItemMenu(e.currentTarget, node.id);
-                      }}
-                    >
-                      <MoreVertRoundedIcon />
-                    </IconButton>
-                  </Tooltip>
-                  {(Boolean(node.children.length) || showFilter) && (
-                    <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
-                      <IconButton
-                        size="small"
-                        className={classes.iconButton}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          onCloseFilterBox();
-                          onFilterButtonClick();
-                        }}
-                      >
-                        <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </section>
-              </section>
-              {showFilter && (
-                <>
-                  <section className={classes.filterSection}>
-                    <SearchBar
-                      autoFocus
-                      onClick={(e) => e.stopPropagation()}
-                      onChange={(keyword) => {
-                        setKeyword(keyword);
-                        onFilterChange(keyword, node.id);
-                      }}
-                      keyword={keyword}
-                      placeholder={formatMessage(translations.filter)}
-                      onActionButtonClick={(e) => {
-                        e.stopPropagation();
-                        onCloseFilterBox();
-                      }}
-                      showActionButton={keyword && true}
-                      classes={{
-                        root: clsx(classes.searchRoot, props.classes?.searchRoot),
-                        inputInput: clsx(classes.searchInput, props.classes?.searchInput),
-                        actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
-                      }}
-                    />
-                    <IconButton
-                      size="small"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onCloseFilterBox();
-                        setShowFilter(false);
-                      }}
-                      className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
-                    >
-                      <CloseIconRounded />
-                    </IconButton>
-                  </section>
-                </>
-              )}
-            </>
-          }
-          classes={{
-            root: classes.root,
-            content: classes.content,
-            label: classes.labelContainer,
-            iconContainer: classes.iconContainer,
-            focused: classes.focused
-          }}
-        >
-          {node.children.map((node) => (
-            <PathNavigatorTreeItem
-              key={node.id}
-              node={node}
-              itemsByPath={itemsByPath}
-              keywordByPath={keywordByPath}
-              totalByPath={totalByPath}
-              childrenByParentPath={childrenByParentPath}
-              onLabelClick={onLabelClick}
-              onIconClick={onIconClick}
-              onOpenItemMenu={onOpenItemMenu}
-              onFilterChange={onFilterChange}
-              onMoreClick={onMoreClick}
-            />
-          ))}
-        </TreeItem>
-      );
-    }
+  } else if (totalByPath[path] > 0 && !childrenByParentPath.length) {
+    propsForTreeItem.children.push(
+      <div key="loading" className={classes.loading}>
+        <CircularProgress size={14} />
+        <Typography variant="caption" color="textSecondary">
+          <FormattedMessage id="words.loading" defaultMessage="Loading" />
+        </Typography>
+      </div>
+    );
+  } else if (!isBlank(keywordByPath[path]) && totalByPath[path] === 0) {
+    propsForTreeItem.children.push(
+      <section key="noResults" className={classes.empty}>
+        <ErrorOutlineRounded />
+        <Typography variant="caption">
+          <FormattedMessage id="filter.noResults" defaultMessage="No results match your query" />
+        </Typography>
+      </section>
+    );
   }
+  return (
+    // region <TreeItem ... />
+    <TreeItem
+      key={path}
+      nodeId={path}
+      expandIcon={
+        // region
+        <ArrowRightRoundedIcon
+          role="button"
+          aria-label={formatMessage(translations.expand)}
+          aria-hidden="false"
+          onClick={() => onIconClick(path)}
+        />
+        // endregion
+      }
+      collapseIcon={
+        // region
+        <ArrowDropDownRoundedIcon
+          role="button"
+          aria-label={formatMessage(translations.collapse)}
+          aria-hidden="false"
+          onClick={() => onIconClick(path)}
+        />
+        // endregion
+      }
+      label={
+        <>
+          <section
+            role="button"
+            onClick={(event) => onLabelClick(event, path)}
+            className={classes.itemDisplaySection}
+            onMouseOver={onMouseOver}
+            onMouseLeave={onMouseLeave}
+            onContextMenu={onContextMenu}
+          >
+            <ItemDisplay
+              styles={{
+                root: {
+                  width: over ? 'calc(100% - 60px)' : '100%',
+                  minHeight: '23.5px'
+                }
+              }}
+              item={itemsByPath[path]}
+              labelTypographyProps={{ variant: 'body2' }}
+              showNavigableAsLinks={showNavigableAsLinks}
+              showPublishingTarget={showPublishingTarget}
+              showWorkflowState={showWorkflowState}
+            />
+            <section className={cx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
+              {showItemMenu && onOpenItemMenu && (
+                <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+                  <IconButton
+                    size="small"
+                    className={classes.iconButton}
+                    data-item-menu
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onOpenItemMenu(e.currentTarget, path);
+                    }}
+                  >
+                    <MoreVertRoundedIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+              {(Boolean(children.length) || showFilter) && (
+                <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
+                  <IconButton
+                    size="small"
+                    className={classes.iconButton}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onClearKeywords();
+                      onFilterButtonClick();
+                    }}
+                  >
+                    <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </section>
+          </section>
+          {showFilter && (
+            <>
+              <section className={classes.filterSection}>
+                <SearchBar
+                  autoFocus
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(keyword) => {
+                    setKeyword(keyword);
+                    onFilterChange(keyword, path);
+                  }}
+                  keyword={keyword}
+                  placeholder={formatMessage(translations.filter)}
+                  onActionButtonClick={(e, input) => {
+                    e.stopPropagation();
+                    onClearKeywords();
+                    input.focus();
+                  }}
+                  showActionButton={keyword && true}
+                  classes={{
+                    root: cx(classes.searchRoot, props.classes?.searchRoot),
+                    inputInput: cx(classes.searchInput, props.classes?.searchInput),
+                    actionIcon: cx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+                  }}
+                />
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClearKeywords();
+                    setShowFilter(false);
+                  }}
+                  className={cx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+                >
+                  <CloseIconRounded />
+                </IconButton>
+              </section>
+            </>
+          )}
+        </>
+      }
+      classes={{
+        root: classes.root,
+        content: classes.content,
+        label: cx(classes.labelContainer, active[path] && classes.active),
+        iconContainer: classes.iconContainer,
+        focused: classes.focused
+      }}
+      {...propsForTreeItem}
+    />
+    // endregion
+  );
 }
 
 export default PathNavigatorTreeItem;

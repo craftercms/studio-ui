@@ -17,8 +17,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { contentTreeFieldSelected, setContentTypeFilter, setPreviewEditMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../Suspencified/Suspencified';
@@ -59,34 +58,32 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    search: {
-      padding: '15px 15px 0 15px'
-    },
-    Select: {
-      width: '100%',
-      marginTop: '15px'
-    },
-    noWrapping: {
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis',
-      display: 'block'
-    },
-    selectProgress: {
-      position: 'absolute',
-      right: '28px'
-    },
-    emptyStateTitle: {
-      fontSize: '1em'
-    },
-    item: {}
-  })
-);
+const useStyles = makeStyles()(() => ({
+  search: {
+    padding: '15px 15px 0 15px'
+  },
+  Select: {
+    width: '100%',
+    marginTop: '15px'
+  },
+  noWrapping: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    display: 'block'
+  },
+  selectProgress: {
+    position: 'absolute',
+    right: '28px'
+  },
+  emptyStateTitle: {
+    fontSize: '1em'
+  },
+  item: {}
+}));
 
 export function PreviewInPageInstancesPanel() {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const contentTypeLookup = useContentTypes();
@@ -229,7 +226,7 @@ interface InPageInstancesUIProps {
 function InPageInstancesUI(props: InPageInstancesUIProps) {
   const { resource, selectedModels, onItemClick, contentTypeFilter } = props;
   resource.read();
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   return (

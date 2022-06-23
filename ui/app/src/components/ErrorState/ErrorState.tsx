@@ -15,15 +15,13 @@
  */
 
 import React, { ReactNode } from 'react';
-import { CSSProperties } from '@mui/styles';
+import { CSSObject as CSSProperties } from 'tss-react';
 import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Fab from '@mui/material/Fab';
 import crack from '../../assets/full-crack.svg';
-import clsx from 'clsx';
 import { nnou } from '../../utils/object';
 
 type ErrorStateClassKey = 'root' | 'image' | 'title' | 'message' | 'button';
@@ -31,7 +29,7 @@ type ErrorStateClassKey = 'root' | 'image' | 'title' | 'message' | 'button';
 type ErrorStateStyles = Partial<Record<ErrorStateClassKey, CSSProperties>>;
 
 export type ErrorStateProps = React.PropsWithChildren<{
-  title?: string;
+  title?: ReactNode;
   message?: string;
   imageUrl?: string;
   buttonIcon?: ReactNode;
@@ -41,43 +39,43 @@ export type ErrorStateProps = React.PropsWithChildren<{
   styles?: ErrorStateStyles;
 }>;
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles<ErrorStateClassKey, ErrorStateStyles>({
-    root: (styles) => ({
+const useStyles = makeStyles<ErrorStateStyles, ErrorStateClassKey>()(
+  (theme: Theme, { root, image, title, message, button } = {} as ErrorStateStyles) => ({
+    root: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       padding: theme.spacing(1),
       paddingBottom: '0',
-      ...styles.root
-    }),
-    image: (styles) => ({
+      ...root
+    },
+    image: {
       maxWidth: '100%',
       marginBottom: theme.spacing(1),
-      ...styles.image
-    }),
-    title: (styles) => ({
+      ...image
+    },
+    title: {
       marginBottom: theme.spacing(1),
-      ...styles.title
-    }),
-    message: (styles) => ({
+      ...title
+    },
+    message: {
       textAlign: 'center',
       marginBottom: theme.spacing(1),
       wordBreak: 'break-all',
-      ...styles.message
-    }),
-    button: (styles) => ({
+      ...message
+    },
+    button: {
       color: theme.palette.text.secondary,
       background: theme.palette.background.default,
       marginBottom: theme.spacing(1),
-      ...styles.button
-    })
+      ...button
+    }
   })
 );
 
 export function ErrorState(props: ErrorStateProps) {
-  const classes = useStyles(props.styles);
+  const { classes, cx } = useStyles(props.styles);
   const {
     title,
     message,
@@ -88,13 +86,13 @@ export function ErrorState(props: ErrorStateProps) {
     children
   } = props;
   return (
-    <section className={clsx(classes.root, props.classes?.root)}>
-      <img className={clsx(classes.image, props.classes?.image)} src={imageUrl} alt="" />
+    <section className={cx(classes.root, props.classes?.root)}>
+      <img className={cx(classes.image, props.classes?.image)} src={imageUrl} alt="" />
       {nnou(title) && (
         <Typography
           variant="body1"
           component="h3"
-          className={clsx(classes.title, props.classes?.title)}
+          className={cx(classes.title, props.classes?.title)}
           children={title}
         />
       )}
@@ -102,7 +100,7 @@ export function ErrorState(props: ErrorStateProps) {
         <Typography
           variant="body2"
           component="p"
-          className={clsx(classes.message, props.classes?.message)}
+          className={cx(classes.message, props.classes?.message)}
           children={message}
         />
       )}
@@ -111,7 +109,7 @@ export function ErrorState(props: ErrorStateProps) {
         <Fab
           onClick={onButtonClick}
           aria-label={buttonText}
-          className={clsx(classes.button, props.classes?.button)}
+          className={cx(classes.button, props.classes?.button)}
           children={buttonIcon}
         />
       )}

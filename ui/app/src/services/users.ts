@@ -17,7 +17,7 @@
 import { forkJoin, Observable, of } from 'rxjs';
 import { User } from '../models/User';
 import { del, get, patchJSON, postJSON } from '../utils/ajax';
-import { map, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { map, pluck, switchMap } from 'rxjs/operators';
 import { fetchAll as fetchAllSites } from './sites';
 import LookupTable from '../models/LookupTable';
 import { Site } from '../models/Site';
@@ -46,7 +46,7 @@ export function update(user: Partial<User>): Observable<User> {
 }
 
 export function trash(username: string): Observable<true> {
-  return del(`/studio/api/2/users?username=${encodeURIComponent(username)}`).pipe(mapTo(true));
+  return del(`/studio/api/2/users?username=${encodeURIComponent(username)}`).pipe(map(() => true));
 }
 
 export function fetchAll(options?: Partial<PaginationOptions & { keyword?: string }>): Observable<PagedArray<User>> {

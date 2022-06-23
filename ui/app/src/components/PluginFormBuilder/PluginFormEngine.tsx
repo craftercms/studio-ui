@@ -18,7 +18,7 @@ import React from 'react';
 import { MarketplacePluginParameter } from '../../models/MarketplacePlugin';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 
@@ -32,7 +32,7 @@ export interface PluginFormEngineProps {
   onKeyPress?(event: React.KeyboardEvent): any;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     width: '100%',
     paddingLeft: '24px',
@@ -53,7 +53,7 @@ const messages = defineMessages({
 });
 
 export function PluginFormEngine(props: PluginFormEngineProps) {
-  const classes = useStyles({});
+  const { classes } = useStyles();
   const { parameters, handleInputChange, submitted, fields, onKeyPress } = props;
   const { formatMessage } = useIntl();
 

@@ -57,16 +57,18 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from './HistoryDialogPagination';
 import { historyStyles } from './HistoryDialog';
 import useSelection from '../../hooks/useSelection';
+import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
   const { count, page, limit, current, rootPath, isConfig } = versionsBranch;
+  useFetchSandboxItems([versionsBranch.item.path]);
   // TODO: It'd be best for the dialog to directly receive a live item. Must change versions branch to only hold the path.
-  const item = useSelection((state) => state.content.itemsByPath[versionsBranch.item.path]) ?? versionsBranch.item;
+  const item = useSelection((state) => state.content.itemsByPath[versionsBranch.item.path]);
   const path = item?.path ?? '';
   const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
-  const classes = historyStyles({});
+  const { classes } = historyStyles();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);
@@ -116,7 +118,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         activeItem: version
       });
     },
-    [item?.systemType, item?.availableActionsMap.revert, count, setMenu, formatMessage, isConfig, item.stateMap.locked]
+    [item?.systemType, item?.availableActionsMap.revert, count, setMenu, formatMessage, isConfig, item?.stateMap.locked]
   );
 
   const compareVersionDialogWithActions = () =>

@@ -15,23 +15,20 @@
  */
 
 import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import withStyles from '@mui/styles/withStyles';
+import { withStyles } from 'tss-react/mui';
 import TableRow from '@mui/material/TableRow';
 
-const GlobalAppGridRow = withStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      cursor: 'pointer',
-      '&:hover': {
-        backgroundColor: theme.palette.action.hover
-      },
-      '&.hoverDisabled': {
-        cursor: 'inherit',
-        background: 'none'
-      }
+const GlobalAppGridRow = withStyles(TableRow, (theme: Theme) => ({
+  root: {
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover
+    },
+    '&.hoverDisabled': {
+      cursor: 'inherit',
+      background: 'none'
     }
-  })
-)(TableRow);
+  }
+}));
 
 export default GlobalAppGridRow;

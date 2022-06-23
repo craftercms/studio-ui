@@ -16,8 +16,7 @@
 
 import React from 'react';
 import { Theme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
@@ -48,19 +47,17 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    searchBarContainer: {
-      width: '30%',
-      [theme.breakpoints.up('md')]: {
-        minWidth: '500px'
-      }
-    },
-    searchPaper: {
-      flex: 1
+const useStyles = makeStyles()((theme: Theme) => ({
+  searchBarContainer: {
+    width: '30%',
+    [theme.breakpoints.up('md')]: {
+      minWidth: '500px'
     }
-  })
-);
+  },
+  searchPaper: {
+    flex: 1
+  }
+}));
 
 export interface SiteSearchToolBarProps {
   keyword: string[] | string;
@@ -77,7 +74,7 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
   const { onChange, keyword, showActionButton, showTitle, handleChangeView, currentView, onMenuIconClick, embedded } =
     props;
   const { formatMessage } = useIntl();
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <ViewToolbar>
       <section>
@@ -109,7 +106,7 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
             {currentView === 'grid' ? <ListViewIcon /> : <GridViewIcon />}
           </IconButton>
         </Tooltip>
-        {!embedded && <LauncherOpenerButton sitesRailPosition="left" icon="apps" />}
+        {!embedded && <LauncherOpenerButton />}
       </section>
     </ViewToolbar>
   );

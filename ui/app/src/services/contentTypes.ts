@@ -30,7 +30,7 @@ import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank } from '../utils/string';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck, switchMap } from 'rxjs/operators';
+import { catchError, map, pluck, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
 import { SandboxItem } from '../models/Item';
@@ -482,7 +482,7 @@ export function deleteContentType(site: string, contentTypeId: string): Observab
     siteId: site,
     contentType: contentTypeId,
     deleteDependencies: true
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function associateTemplate(site: string, contentTypeId: string, displayTemplate: string): Observable<boolean> {

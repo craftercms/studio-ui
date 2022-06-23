@@ -17,6 +17,9 @@
 import React, { useContext, useMemo } from 'react';
 import { GuestState } from '../store/models/GuestStore';
 import { createDispatchHook, createSelectorHook, createStoreHook, ReactReduxContextValue } from 'react-redux';
+import { Dispatch, Store } from 'redux';
+import { StandardAction } from '@craftercms/studio-ui/models';
+import { GuestStandardAction } from '../store/models/GuestStandardAction';
 
 export type GuestContextProps = {
   hasHost: boolean;
@@ -32,11 +35,11 @@ if (process.env.NODE_ENV !== 'production') {
   GuestReduxContext.displayName = 'GuestRedux';
 }
 
-export const useDispatch = createDispatchHook(GuestReduxContext);
+export const useDispatch: () => Dispatch<StandardAction> = createDispatchHook(GuestReduxContext);
 
-export const useSelector = createSelectorHook(GuestReduxContext);
+export const useSelector = createSelectorHook<GuestState, GuestStandardAction>(GuestReduxContext);
 
-export const useStore = createStoreHook(GuestReduxContext);
+export const useStore: () => Store<GuestState, StandardAction> = createStoreHook(GuestReduxContext);
 
 const GuestContext = React.createContext<GuestContextProps>(null);
 

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
@@ -229,6 +229,6 @@ const dialogEpics: CrafterCMSEpic[] = [
       map(({ payload }) => fetchDetailedItems({ paths: payload.items.map((item) => item.path) }))
     )
   // endregion
-] as Epic[];
+] as CrafterCMSEpic[];
 
 export default dialogEpics;

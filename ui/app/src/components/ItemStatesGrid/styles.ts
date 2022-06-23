@@ -14,34 +14,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    tableContainer: {},
-    ellipsis: {
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap'
-    },
-    rowSelected: {
-      backgroundColor: theme.palette.action.selected
-    },
-    iconRoot: {
-      fontSize: '1em'
-    },
-    itemPath: {
-      color: theme.palette.text.secondary
-    },
-    upperCase: {
-      textTransform: 'uppercase'
-    },
-    paginationRoot: {
-      marginLeft: 'auto',
-      marginRight: '20px'
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  tableContainer: {},
+  ellipsis: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  rowSelected: {
+    backgroundColor: theme.palette.action.selected
+  },
+  iconRoot: {
+    fontSize: '1em'
+  },
+  itemPath: {
+    color: theme.palette.text.secondary
+  },
+  upperCase: {
+    textTransform: 'uppercase'
+  },
+  paginationRoot: {
+    marginLeft: 'auto',
+    marginRight: '20px'
+  }
+}));
 
 export default useStyles;

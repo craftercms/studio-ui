@@ -17,9 +17,7 @@
 import * as React from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from './utils';
-import clsx from 'clsx';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
 
@@ -27,36 +25,34 @@ interface PathNavigatorSkeletonProps {
   numOfItems?: number;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    skeletonRoot: {
-      margin: '10px 0'
-    },
-    skeletonHeader: {
-      display: 'flex',
-      marginBottom: '5px',
-      padding: '0 10px'
-    },
-    skeletonBody: {
-      paddingLeft: '5px'
-    },
-    skeletonBodyItem: { display: 'flex', padding: '5px 5px' },
-    childrenRail: {
-      marginLeft: 10,
-      borderLeft: `3px solid ${theme.palette.divider}`
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  skeletonRoot: {
+    margin: '10px 0'
+  },
+  skeletonHeader: {
+    display: 'flex',
+    marginBottom: '5px',
+    padding: '0 10px'
+  },
+  skeletonBody: {
+    paddingLeft: '5px'
+  },
+  skeletonBodyItem: { display: 'flex', padding: '5px 5px' },
+  childrenRail: {
+    marginLeft: 10,
+    borderLeft: `3px solid ${theme.palette.divider}`
+  }
+}));
 
 function PathNavigatorSkeleton({ numOfItems = 5 }: PathNavigatorSkeletonProps) {
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   return (
     <section className={classes.skeletonRoot}>
       <header className={classes.skeletonHeader}>
         <Skeleton variant="rectangular" width="20px" />
         <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(40, 70)}%` }} />
       </header>
-      <section className={clsx(classes.skeletonBody)}>
+      <section className={cx(classes.skeletonBody)}>
         <div className={classes.skeletonBodyItem}>
           <Skeleton variant="text" style={{ width: `${rand(80, 150)}px` }} />
         </div>

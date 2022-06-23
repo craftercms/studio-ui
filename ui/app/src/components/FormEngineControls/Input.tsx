@@ -22,7 +22,7 @@ import useStyles from './styles';
 
 export function Input(props: Control) {
   const { field, value = '', onChange, disabled } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);

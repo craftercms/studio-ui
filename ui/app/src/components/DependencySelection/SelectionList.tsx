@@ -33,8 +33,8 @@ import { getItemStateText } from '../ItemDisplay/utils';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Button from '@mui/material/Button';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
+
 import LookupTable from '../../models/LookupTable';
 
 export interface SelectionListProps {
@@ -52,44 +52,42 @@ export interface SelectionListProps {
   onEditClick?(event: React.MouseEvent, path: string): void;
 }
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    listTitle: {
-      display: 'flex !important',
-      alignItems: 'center',
-      whiteSpace: 'break-spaces'
-    },
-    selectionList: {
-      paddingTop: 0
-    },
-    publishingTargetIcon: {
-      fontSize: '1rem',
-      margin: '0 5px'
-    },
-    stateScheduledIcon: {
-      fontSize: '1em',
-      marginRight: '5px'
-    },
-    emptyDependencies: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '8px',
-      '& svg': {
-        marginRight: '8px'
-      }
-    },
-    selectAllBtn: {
-      marginLeft: 'auto',
-      fontWeight: 'bold',
-      verticalAlign: 'baseline'
-    },
-    overflowText: {
-      overflow: 'hidden',
-      whiteSpace: 'nowrap',
-      textOverflow: 'ellipsis'
+const useStyles = makeStyles()(() => ({
+  listTitle: {
+    display: 'flex !important',
+    alignItems: 'center',
+    whiteSpace: 'break-spaces'
+  },
+  selectionList: {
+    paddingTop: 0
+  },
+  publishingTargetIcon: {
+    fontSize: '1rem',
+    margin: '0 5px'
+  },
+  stateScheduledIcon: {
+    fontSize: '1em',
+    marginRight: '5px'
+  },
+  emptyDependencies: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '8px',
+    '& svg': {
+      marginRight: '8px'
     }
-  })
-);
+  },
+  selectAllBtn: {
+    marginLeft: 'auto',
+    fontWeight: 'bold',
+    verticalAlign: 'baseline'
+  },
+  overflowText: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis'
+  }
+}));
 
 export function SelectionList(props: SelectionListProps) {
   // region const { ... } = props
@@ -107,7 +105,7 @@ export function SelectionList(props: SelectionListProps) {
   } = props;
   // endregion
 
-  const classes = useStyles();
+  const { classes } = useStyles();
   const locale = useLocale();
   const isAllChecked = useMemo(
     () => (selectedItems ? !paths?.some((path) => !selectedItems[path]) : null),

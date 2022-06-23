@@ -18,14 +18,20 @@ const path = require('path');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const publicPath = '/studio/static-assets/libs/monaco/';
+const pkg = require('./package.json');
+const rimraf = require('rimraf');
+const targetPath = path.resolve(__dirname, '..', '..', 'static-assets', 'libs', 'monaco');
+
+// Delete prior build
+rimraf.sync(`${targetPath}/*`);
 
 module.exports = {
   mode: 'production',
   entry: './src/index.js',
   output: {
     publicPath,
-    path: path.resolve(__dirname, '..', '..', 'static-assets', 'libs', 'monaco'),
-    filename: 'monaco.0.20.0.js'
+    path: targetPath,
+    filename: `monaco.${pkg.dependencies['monaco-editor']}.js`
   },
   module: {
     rules: [

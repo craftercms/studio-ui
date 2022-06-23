@@ -37,7 +37,7 @@ interface ApprovedScheduledDashletSkeletonTableProps {
 }
 
 export function ApprovedScheduledDashletSkeletonTable(props: ApprovedScheduledDashletSkeletonTableProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { numOfItems = 4 } = props;
 
   const items = props.items?.length

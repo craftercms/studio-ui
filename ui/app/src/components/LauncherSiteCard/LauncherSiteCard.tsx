@@ -17,9 +17,7 @@
 import React from 'react';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
+import { makeStyles } from 'tss-react/mui';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Link from '@mui/material/Link';
@@ -44,24 +42,22 @@ export interface LauncherSiteCardProps {
   onCardClick(id: string): any;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    card: {
-      paddingTop: theme.spacing(2.5),
-      paddingBottom: theme.spacing(2.5),
-      borderRadius: 5,
-      backgroundColor: theme.palette.background.paper
-    },
-    siteName: {
-      fontWeight: 600
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  card: {
+    paddingTop: theme.spacing(2.5),
+    paddingBottom: theme.spacing(2.5),
+    borderRadius: 5,
+    backgroundColor: theme.palette.background.paper
+  },
+  siteName: {
+    fontWeight: 600
+  }
+}));
 
 function LauncherSiteCard(props: LauncherSiteCardProps) {
   const { title, value, onCardClick, options, selected = false } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const hasOptions = Boolean(options && options.length);
 
   const handleClose = (event, action?) => {
@@ -84,7 +80,7 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         boxShadow={1}
         component={ListItem}
         onClick={() => onCardClick(value)}
-        className={clsx(classes.card, props.classes?.root)}
+        className={cx(classes.card, props.classes?.root)}
         title={title}
       >
         <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />

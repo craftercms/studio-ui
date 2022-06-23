@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-(function() {
+(function () {
   function formatMessage(id) {
     return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.localeSelectorControlMessages[id]);
   }
@@ -27,7 +27,7 @@
     }
   }
 
-  CStudioForms.Controls.LocaleSelector = function(id, form, owner, properties, constraints, readonly) {
+  CStudioForms.Controls.LocaleSelector = function (id, form, owner, properties, constraints, readonly) {
     this.owner = owner;
     this.owner.registerField(this);
     this.errors = [];
@@ -44,11 +44,11 @@
   };
 
   YAHOO.extend(CStudioForms.Controls.LocaleSelector, CStudioForms.CStudioFormField, {
-    getLabel: function() {
+    getLabel: function () {
       return formatMessage('label');
     },
 
-    validate: function(obj) {
+    validate: function (obj) {
       if (obj.inputEl) obj.value = obj.inputEl.value;
       if (obj.required) {
         if (obj.value === '') {
@@ -64,17 +64,17 @@
       obj.owner.notifyValidation();
     },
 
-    _onChange: function(evt, obj) {
+    _onChange: function (evt, obj) {
       this.validate(obj);
       obj.form.updateModel(obj.id, obj.getValue());
     },
 
-    _onChangeVal: function(evt, obj) {
+    _onChangeVal: function (evt, obj) {
       obj.edited = true;
       obj._onChange(evt, obj);
     },
 
-    render: function(config, containerEl) {
+    render: function (config, containerEl) {
       var _self = this;
       containerEl.id = this.id;
 
@@ -117,7 +117,7 @@
               YAHOO.util.Event.on(
                 inputEl,
                 'focus',
-                function(evt, context) {
+                function (evt, context) {
                   context.form.setFocusedField(context);
                 },
                 _self
@@ -170,26 +170,26 @@
         });
     },
 
-    getValue: function() {
+    getValue: function () {
       return this.value;
     },
 
-    setValue: function(value) {
+    setValue: function (value) {
       this.value = value;
       if (this.inputEl) this.inputEl.value = value;
       this._onChange(null, this);
       this.edited = false;
     },
 
-    getName: function() {
+    getName: function () {
       return 'locale-selector';
     },
 
-    getSupportedProperties: function() {
+    getSupportedProperties: function () {
       return [{ label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' }];
     },
 
-    getSupportedConstraints: function() {
+    getSupportedConstraints: function () {
       return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
     }
   });

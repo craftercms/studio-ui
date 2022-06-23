@@ -15,10 +15,10 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import CircularProgress from '@mui/material/CircularProgress';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles<{ background: string }>()((theme, { background } = {} as any) => ({
   progress: {
     margin: theme.spacing(2)
   },
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    background: (props: any) => props.background,
+    background: background,
     transform: 'translate(-50%, -50%)'
   }
 }));
@@ -36,8 +36,7 @@ interface SpinnerProps {
 }
 
 export function Spinner(props: SpinnerProps) {
-  const classes = useStyles({ background: props.background || '#fff' });
-  // @ts-ignore
+  const { classes } = useStyles({ background: props.background || '#fff' });
   return (
     <div className={classes.center}>
       <CircularProgress className={classes.progress} />

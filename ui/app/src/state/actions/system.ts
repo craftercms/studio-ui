@@ -24,6 +24,7 @@ import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
 import SocketEventBase from '../../models/SocketEvent';
+import { MarketplacePlugin } from '../../models';
 
 // region Item Events
 
@@ -31,14 +32,15 @@ export const itemReverted = /*#__PURE__*/ createAction<{ target: string }>('ITEM
 
 export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT');
 
-export const folderRenamed =
-  /*#__PURE__*/ createAction<{ target: string; oldName: string; newName: string }>('FOLDER_RENAMED');
-
 export const lockContentEvent = /*#__PURE__*/ createAction<SocketEventBase & { locked: boolean }>('LOCK_CONTENT_EVENT');
 
-export const contentEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONTENT_EVENT');
+export type ContentEventPayload = SocketEventBase;
+export type DeleteContentEventPayload = SocketEventBase;
 
-export const deleteContentEvent = /*#__PURE__*/ createAction<SocketEventBase>('DELETE_CONTENT_EVENT');
+// New or updated (writeContent, createFolder, copyContent, revertContent, renameFolder
+export const contentEvent = /*#__PURE__*/ createAction<ContentEventPayload>('CONTENT_EVENT');
+
+export const deleteContentEvent = /*#__PURE__*/ createAction<DeleteContentEventPayload>('DELETE_CONTENT_EVENT');
 
 export const configurationEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONFIGURATION_EVENT');
 
@@ -47,6 +49,10 @@ export const publishEvent = /*#__PURE__*/ createAction('PUBLISH_EVENT');
 export const repositoryEvent = /*#__PURE__*/ createAction('REPOSITORY_EVENT');
 
 export const workflowEvent = /*#__PURE__*/ createAction('WORKFLOW_EVENT');
+
+export type MoveContentEventPayload = SocketEventBase & { sourcePath: string };
+
+export const moveContentEvent = /*#__PURE__*/ createAction<MoveContentEventPayload>('MOVE_CONTENT_EVENT');
 
 // endregion
 
@@ -91,7 +97,7 @@ export const showSystemNotification = /*#__PURE__*/ createAction<{
 
 export const emitSystemEvent = /*#__PURE__*/ createAction<StandardAction>('SYSTEM_EVENT');
 
-export const pluginInstalled = /*#__PURE__*/ createAction<StandardAction>('PLUGIN_INSTALLED');
+export const pluginInstalled = /*#__PURE__*/ createAction<MarketplacePlugin>('PLUGIN_INSTALLED');
 
 export const pluginUninstalled = /*#__PURE__*/ createAction<StandardAction>('PLUGIN_UNINSTALLED');
 

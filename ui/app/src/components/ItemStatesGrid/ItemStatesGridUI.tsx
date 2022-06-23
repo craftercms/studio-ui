@@ -30,7 +30,6 @@ import useStyles from './styles';
 import { SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
-import clsx from 'clsx';
 import LookupTable from '../../models/LookupTable';
 
 export interface WorkflowStatesGridUIProps {
@@ -62,7 +61,7 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
     isThisPageIndeterminate
   } = props;
   const itemStates = resource.read();
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
 
   return (
     <>

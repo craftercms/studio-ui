@@ -266,3 +266,10 @@ export function deepCopy<T extends object = any>(target: T): T {
 }
 
 export const foo = {};
+
+export function isApiResponse(source: object): boolean {
+  return (
+    Object.prototype.hasOwnProperty.call(source ?? {}, 'code') &&
+    Object.prototype.hasOwnProperty.call(source ?? {}, 'message')
+  );
+}

@@ -1958,8 +1958,10 @@ var CStudioForms =
             }, 500);
           }
 
-          var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
-          YDom.addClass(overlayContainer, 'overlay');
+          if (window.frameElement) {
+            var overlayContainer = parent.document.getElementById(window.frameElement.id).parentElement;
+            YDom.addClass(overlayContainer, 'overlay');
+          }
 
           $(document).on('keyup', function (e) {
             if (e.keyCode === 27) {
@@ -2047,9 +2049,7 @@ var CStudioForms =
             });
             sendMessage({ type: FORM_ENGINE_RENDER_COMPLETE });
           }
-          if (CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete) {
-            CStudioAuthoring.InContextEdit.getIceCallback(editorId).renderComplete();
-          }
+          CStudioAuthoring.InContextEdit.getIceCallback(editorId)?.renderComplete();
         });
       },
 
@@ -2115,7 +2115,7 @@ var CStudioForms =
                 onDone();
               } else {
                 jQuery
-                  .getScript({ url: script, cache: false })
+                  .getScript({ url: script, cache: true })
                   .done(onDone)
                   .fail(
                     (function (datasourceDef) {
@@ -2241,9 +2241,18 @@ var CStudioForms =
             });
           };
 
+          // If the repeating group that it's being re-rendered has RTE5 controls, remove all of them before cleanup up
+          // markup (so it'll remove all things related to those RTEs)
+          const $rteControls = $(controlEl).find('.rte-control');
+          if ($rteControls.length) {
+            const $rteInputs = $rteControls.find('.cstudio-form-control-input');
+            $rteInputs.each((index, element) => {
+              const rteId = element.getAttribute('id');
+              tinymce.get(rteId).remove();
+            });
+          }
           controlEl.formEngine._cleanUpRepeatBodyFields(controlEl, this.repeat.id);
           controlEl.innerHTML = '';
-          $('.tox-silver-sink').remove();
           controlEl.formEngine._renderRepeatBody(controlEl);
         };
 
@@ -2264,6 +2273,19 @@ var CStudioForms =
             }
           }
           repeatContainerEl.formSection.fields = formSectionFields;
+        }
+      },
+
+      _renderRepeatDescription: function (repeatContainerEl) {
+        const repeat = repeatContainerEl.repeat;
+        const description = repeat.description;
+
+        if (description) {
+          var descriptionEl = document.createElement('span');
+          YAHOO.util.Dom.addClass(descriptionEl, 'description');
+          YAHOO.util.Dom.addClass(descriptionEl, 'cstudio-form-field-description repeating-group-description');
+          descriptionEl.textContent = description;
+          repeatContainerEl.appendChild(descriptionEl);
         }
       },
 
@@ -2309,7 +2331,10 @@ var CStudioForms =
             form.model[repeat.id][0] = [];
 
             this.parentNode.parentNode.reRender(this.parentNode.parentNode);
+            repeatEdited = true;
           };
+
+          this._renderRepeatDescription(repeatContainerEl);
 
           formSection.notifyValidation();
           return;
@@ -2445,6 +2470,8 @@ var CStudioForms =
             this._renderField(formDef, field, form, formSection, repeatInstanceContainerEl, repeat, i);
           }
         }
+
+        this._renderRepeatDescription(repeatContainerEl);
       },
 
       /**

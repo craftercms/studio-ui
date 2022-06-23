@@ -14,31 +14,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, useMemo } from 'react';
+import React, { ChangeEvent } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import TablePagination from '@mui/material/TablePagination';
 import { DetailedItem } from '../../models/Item';
-import clsx from 'clsx';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { useStyles } from './styles';
 import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
-import NavItem from './PathNavigatorItem';
-import ItemList from './PathNavigatorList';
+import PathNavigatorItem from './PathNavigatorItem';
+import PathNavigatorList from './PathNavigatorList';
 import LookupTable from '../../models/LookupTable';
 import { StateStylingProps } from '../../models/UiConfig';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import List from '@mui/material/List';
-import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { lookupItemByPath } from '../../utils/content';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import { createFakeResource } from '../../utils/resource';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
+import NavLoader from './NavLoader';
+import { ErrorState } from '../ErrorState';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { isApiResponse } from '../../utils/object';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -133,20 +131,8 @@ export interface PathNavigatorUIProps {
   onRowsPerPageChange?: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
 }
 
-const NavLoader = React.memo((props: { numOfItems?: number }) => {
-  const { numOfItems = 5 } = props;
-  const items = new Array(numOfItems).fill(null);
-  return (
-    <List component="nav" disablePadding>
-      {items.map((value, i) => (
-        <PathNavigatorSkeletonItem key={i} />
-      ))}
-    </List>
-  );
-});
-
 export function PathNavigatorUI(props: PathNavigatorUIProps) {
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   // region consts {...} = props
   const {
     state,
@@ -172,46 +158,8 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
   } = props;
   // endregion
   const { formatMessage } = useIntl();
-
-  const resource = useLogicResource<
-    DetailedItem[],
-    { itemsInPath: string[]; itemsByPath: LookupTable<DetailedItem>; isFetching: boolean; error: any }
-  >(
-    useMemo(
-      () => ({
-        itemsByPath,
-        itemsInPath: state.itemsInPath,
-        isFetching: state.isFetching,
-        error: state.error
-      }),
-      // We only want to renew the state when itemsInPath changes.
-      // Note: This only works whilst `itemsByPath` updates prior to `itemsInPath`.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [state.itemsInPath, state.isFetching, state.error]
-    ),
-    {
-      shouldResolve: ({ itemsInPath, itemsByPath, isFetching, error }) => {
-        return !isFetching && Boolean(itemsInPath) && !itemsInPath.some((path) => !lookupItemByPath(path, itemsByPath));
-      },
-      shouldRenew: ({ isFetching }, resource) => isFetching && resource.complete,
-      shouldReject: ({ error }) => Boolean(error),
-      resultSelector: ({ itemsInPath, itemsByPath }) => itemsInPath.map((path) => itemsByPath[path]),
-      errorSelector: ({ error }) => error.response
-    }
-  );
-
-  const itemsResource = useMemo(
-    () => createFakeResource(state.itemsInPath ? state.itemsInPath.map((path) => itemsByPath[path]) : []),
-    [itemsByPath, state.itemsInPath]
-  );
-
-  const levelDescriptor = useMemo(() => {
-    if (itemsByPath && state.levelDescriptor) {
-      return itemsByPath[state.levelDescriptor];
-    }
-    return null;
-  }, [state.levelDescriptor, itemsByPath]);
-
+  const items = state.itemsInPath?.flatMap((path) => itemsByPath[path] ?? []) ?? [];
+  const levelDescriptor = itemsByPath[state.levelDescriptor];
   return (
     <Accordion
       square
@@ -231,6 +179,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         ...(container ? (state.collapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
       }}
     >
+      {/* region Header */}
       <Header
         icon={icon}
         title={title}
@@ -245,82 +194,98 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         }
         collapsed={state.collapsed}
       />
+      {/* endregion */}
       <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
-        <Breadcrumbs
-          keyword={keyword}
-          breadcrumb={state.breadcrumb.map((path) => lookupItemByPath(path, itemsByPath)).filter(Boolean)}
-          onSearch={onSearch}
-          onCrumbSelected={onBreadcrumbSelected}
-          classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
-        />
-        {lookupItemByPath(state.currentPath, itemsByPath) && (
-          <NavItem
-            item={lookupItemByPath(state.currentPath, itemsByPath)}
-            locale={state.localeCode}
-            isLevelDescriptor={false}
-            onOpenItemMenu={onCurrentParentMenu}
-            onItemClicked={onItemClicked}
-            showItemNavigateToButton={false}
-            isCurrentPath
-          />
-        )}
-        <SuspenseWithEmptyState
-          resource={resource}
-          errorBoundaryProps={{
-            errorStateProps: { imageUrl: null }
-          }}
-          withEmptyStateProps={{
-            /* If there are no children and no level descriptor => empty */
-            isEmpty: (children) => children.length === 0 && !Boolean(levelDescriptor),
-            emptyStateProps: {
-              title: (
-                <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
-              ),
-              image: null
+        {state.isRootPathMissing ? (
+          <ErrorState
+            styles={{ image: { display: 'none' } }}
+            title={
+              <FormattedMessage
+                id="pathNavigatorTree.missingRootPath"
+                defaultMessage={`The path "{path}" doesn't exist`}
+                values={{ path: state.rootPath }}
+              />
             }
-          }}
-          suspenseProps={{
-            fallback: <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
-          }}
-        >
-          {levelDescriptor && (
-            <NavItem
-              item={levelDescriptor}
-              locale={state.localeCode}
-              isLevelDescriptor
-              onOpenItemMenu={onOpenItemMenu}
-              onItemClicked={onItemClicked}
+          />
+        ) : (
+          <>
+            {/* region <Breadcrumbs /> */}
+            <Breadcrumbs
+              keyword={keyword}
+              breadcrumb={state.breadcrumb.map((path) => lookupItemByPath(path, itemsByPath)).filter(Boolean)}
+              onSearch={onSearch}
+              onCrumbSelected={onBreadcrumbSelected}
+              classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
             />
-          )}
-          <ItemList
-            classes={{ root: classes.childrenList }}
-            isSelectMode={false}
-            locale={state.localeCode}
-            resource={itemsResource}
-            onSelectItem={onSelectItem}
-            onPathSelected={onPathSelected}
-            onPreview={onPreview}
-            onOpenItemMenu={onOpenItemMenu}
-            onItemClicked={onItemClicked}
-            computeActiveItems={computeActiveItems}
-          />
-        </SuspenseWithEmptyState>
-        {state.total !== null && state.total > 0 && (
-          <TablePagination
-            classes={{
-              root: clsx(classes.pagination, props.classes?.paginationRoot),
-              toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
-            }}
-            component="div"
-            labelRowsPerPage=""
-            count={state.total}
-            rowsPerPage={state.limit}
-            page={state && Math.ceil(state.offset / state.limit)}
-            backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-            nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-            onRowsPerPageChange={onRowsPerPageChange}
-            onPageChange={(e, page: number) => onPageChanged(page)}
-          />
+            {/* endregion */}
+            {/* region Current Item */}
+            {lookupItemByPath(state.currentPath, itemsByPath) && (
+              <PathNavigatorItem
+                item={lookupItemByPath(state.currentPath, itemsByPath)}
+                locale={state.localeCode}
+                isLevelDescriptor={false}
+                onOpenItemMenu={onCurrentParentMenu}
+                onItemClicked={onItemClicked}
+                showItemNavigateToButton={false}
+                isCurrentPath
+              />
+            )}
+            {/* endregion */}
+            {state.isFetching ? (
+              <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
+            ) : state.error ? (
+              isApiResponse(state.error) ? (
+                <ApiResponseErrorState imageUrl={null} error={state.error} />
+              ) : (
+                <ErrorState imageUrl={null} message={state.error.message ?? state.error} />
+              )
+            ) : state.itemsInPath.length === 0 && !Boolean(levelDescriptor) ? (
+              <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
+            ) : (
+              <>
+                {levelDescriptor && (
+                  <PathNavigatorItem
+                    item={levelDescriptor}
+                    locale={state.localeCode}
+                    isLevelDescriptor
+                    onOpenItemMenu={onOpenItemMenu}
+                    onItemClicked={onItemClicked}
+                  />
+                )}
+                <PathNavigatorList
+                  classes={{ root: classes.childrenList }}
+                  isSelectMode={false}
+                  locale={state.localeCode}
+                  items={items}
+                  onSelectItem={onSelectItem}
+                  onPathSelected={onPathSelected}
+                  onPreview={onPreview}
+                  onOpenItemMenu={onOpenItemMenu}
+                  onItemClicked={onItemClicked}
+                  computeActiveItems={computeActiveItems}
+                />
+              </>
+            )}
+            {/* region Pagination */}
+            {state.total !== null && state.total > 0 && (
+              <TablePagination
+                classes={{
+                  root: clsx(classes.pagination, props.classes?.paginationRoot),
+                  toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
+                }}
+                component="div"
+                labelRowsPerPage=""
+                count={state.total}
+                rowsPerPage={state.limit}
+                page={state && Math.ceil(state.offset / state.limit)}
+                backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
+                nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
+                onRowsPerPageChange={onRowsPerPageChange}
+                onPageChange={(e, page: number) => onPageChanged(page)}
+              />
+            )}
+            {/* endregion */}
+          </>
         )}
       </AccordionDetails>
     </Accordion>

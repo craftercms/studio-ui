@@ -16,7 +16,7 @@
 
 import { get, post, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
-import { map, mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { pluckProps, toQueryString } from '../utils/object';
 import { PublishingStatus, PublishingTarget, PublishingTargets } from '../models/Publishing';
@@ -106,11 +106,11 @@ export function fetchStatus(siteId: string): Observable<PublishingStatus> {
 }
 
 export function start(siteId: string): Observable<true> {
-  return postJSON('/studio/api/1/services/api/1/publish/start.json', { site_id: siteId }).pipe(mapTo(true));
+  return postJSON('/studio/api/1/services/api/1/publish/start.json', { site_id: siteId }).pipe(map(() => true));
 }
 
 export function stop(siteId: string): Observable<true> {
-  return postJSON('/studio/api/1/services/api/1/publish/stop.json', { site_id: siteId }).pipe(mapTo(true));
+  return postJSON('/studio/api/1/services/api/1/publish/stop.json', { site_id: siteId }).pipe(map(() => true));
 }
 
 export function bulkGoLive(siteId: string, path: string, environment: string, comment: string): Observable<true> {
@@ -120,7 +120,7 @@ export function bulkGoLive(siteId: string, path: string, environment: string, co
     environment: encodeURIComponent(environment),
     comment
   });
-  return post(`/studio/api/1/services/api/1/deployment/bulk-golive.json${qs}`).pipe(mapTo(true));
+  return post(`/studio/api/1/services/api/1/deployment/bulk-golive.json${qs}`).pipe(map(() => true));
 }
 
 export function publishByCommits(
@@ -134,9 +134,9 @@ export function publishByCommits(
     commit_ids: commitIds,
     environment,
     comment
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function clearLock(siteId: string): Observable<boolean> {
-  return postJSON('/studio/api/2/publish/clear_lock', { siteId }).pipe(mapTo(true));
+  return postJSON('/studio/api/2/publish/clear_lock', { siteId }).pipe(map(() => true));
 }

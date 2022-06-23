@@ -24,201 +24,161 @@ import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeFetchPathPageComplete,
-  pathNavigatorTreeFetchPathsChildren,
-  pathNavigatorTreeFetchPathsChildrenComplete,
   pathNavigatorTreeInit,
-  pathNavigatorTreeRefresh,
+  pathNavigatorTreeRestore,
   pathNavigatorTreeRestoreComplete,
+  PathNavigatorTreeRestoreCompletePayload,
+  pathNavigatorTreeRootMissing,
   pathNavigatorTreeSetKeyword,
-  pathNavigatorTreeToggleExpanded,
+  pathNavigatorTreeToggleCollapsed,
   pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
 import { changeSite } from '../actions/sites';
-import { createPresenceTable } from '../../utils/array';
 import { fetchSiteUiConfig } from '../actions/configuration';
 import { reversePluckProps } from '../../utils/object';
+import { SocketEventBase, StandardAction } from '../../models';
+import { fetchSandboxItemComplete, FetchSandboxItemCompletePayload } from '../actions/content';
+import { getIndividualPaths, getParentPath, withoutIndex } from '../../utils/path';
+import { deleteContentEvent, moveContentEvent, MoveContentEventPayload } from '../actions/system';
+import { createPresenceTable } from '../../utils/array';
+
+export function contentAndDeleteEventForEachApplicableTree(
+  state: LookupTable<PathNavigatorTreeStateProps>,
+  targetPath: string,
+  callbackFn: (tree: PathNavigatorTreeStateProps, targetPath: string, parentPathOfTargetPath: string) => void
+): void {
+  const parentPathOfTargetPath = getParentPath(targetPath);
+  Object.values(state).forEach((tree) => {
+    if (tree.rootPath === targetPath || targetPath in tree.totalByPath || parentPathOfTargetPath in tree.totalByPath) {
+      callbackFn(tree, targetPath, parentPathOfTargetPath);
+    }
+  });
+}
+
+const expandPath = (state: LookupTable<PathNavigatorTreeStateProps>, { payload: { id, path } }) => {
+  const chunk = state[id];
+  if (path.startsWith(withoutIndex(chunk.rootPath)) && !chunk.expanded.includes(path)) {
+    const paths = getIndividualPaths(path, chunk.rootPath);
+    const expandedPathLookup = createPresenceTable(chunk.expanded);
+    paths.forEach((path) => {
+      !expandedPathLookup[path] && !expandedPathLookup[`${path}/index.xml`] && chunk.expanded.push(path);
+    });
+  }
+};
+
+export function deleteItemFromState(tree: PathNavigatorTreeStateProps, targetPath: string): void {
+  let parentPath = getParentPath(targetPath);
+  let totalByPath = tree.totalByPath;
+  let childrenByParentPath = tree.childrenByParentPath;
+
+  // Remove deleted item from the parent path's children
+  childrenByParentPath[parentPath] = childrenByParentPath[parentPath].filter((childPath) => targetPath !== childPath);
+
+  // Discount deleted item from parent path child count
+  totalByPath[parentPath] = totalByPath[parentPath] - 1;
+
+  // TODO: Remove.
+  if (totalByPath[parentPath] < 0) {
+    debugger;
+  }
+
+  // Remove item
+  delete totalByPath[targetPath];
+  delete tree.keywordByPath[targetPath];
+  delete tree.offsetByPath[targetPath];
+  // Remove children of the item
+  delete childrenByParentPath[targetPath];
+  // Remove item from expanded. Parent too if pertinent.
+  tree.expanded = tree.expanded.filter(
+    // If the parent is left without children, remove from expanded too.
+    totalByPath[parentPath] === 0
+      ? (expandedPath) => expandedPath !== targetPath || expandedPath !== parentPath
+      : (expandedPath) => expandedPath !== targetPath
+  );
+}
 
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
   {},
   {
-    [pathNavigatorTreeInit.type]: (
-      state,
-      { payload: { id, path, collapsed = true, limit, expanded = [], keywordByPath = {}, excludes } }
-    ) => {
-      return {
-        ...state,
-        [id]: {
-          rootPath: path,
-          collapsed,
+    // region pathNavigatorTreeInit
+    [pathNavigatorTreeInit.type]: (state, action) => {
+      const {
+        payload: {
+          id,
+          rootPath,
+          collapsed = true,
           limit,
-          expanded,
-          childrenByParentPath: {},
-          offsetByPath: {},
-          keywordByPath,
-          totalByPath: {},
-          fetchingByPath: { ...createPresenceTable(expanded) },
-          excludes
+          expanded = [],
+          keywordByPath = {},
+          excludes = null,
+          systemTypes = null
         }
+      } = action;
+      state[id] = {
+        id,
+        rootPath,
+        collapsed,
+        limit,
+        expanded,
+        childrenByParentPath: {},
+        offsetByPath: {},
+        keywordByPath,
+        totalByPath: {},
+        excludes,
+        error: null,
+        isRootPathMissing: false,
+        systemTypes
       };
     },
-    [pathNavigatorTreeExpandPath.type]: (state, { payload: { id, path } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          expanded: [...state[id].expanded, path]
-        }
-      };
-    },
+    // endregion
+    [pathNavigatorTreeExpandPath.type]: expandPath,
     [pathNavigatorTreeCollapsePath.type]: (state, { payload: { id, path } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          expanded: state[id].expanded.filter((expanded) => expanded !== path)
-        }
-      };
+      state[id].expanded = state[id].expanded.filter((expanded) => !expanded.startsWith(path));
     },
-    [pathNavigatorTreeToggleExpanded.type]: (state, { payload: { id, collapsed } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          collapsed
-        }
-      };
+    [pathNavigatorTreeToggleCollapsed.type]: (state, { payload: { id, collapsed } }) => {
+      state[id].collapsed = collapsed;
     },
     [pathNavigatorTreeSetKeyword.type]: (state, { payload: { id, path, keyword } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          keywordByPath: {
-            ...state[id].keywordByPath,
-            [path]: keyword
-          },
-          fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
-        }
-      };
+      state[id].keywordByPath[path] = keyword;
     },
-    [pathNavigatorTreeFetchPathsChildren.type]: (state, { payload: { id, paths } }) => {
-      return {
-        ...state,
-        fetchingByPath: { ...state[id].fetchingByPath, ...createPresenceTable(Object.keys(paths)) }
-      };
-    },
-    [pathNavigatorTreeFetchPathChildren.type]: (state, { payload: { id, path, expand = true } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          ...(expand && !state[id].expanded.includes(path) && { expanded: [...state[id].expanded, path] }),
-          fetchingByPath: { ...state[id].fetchingByPath, [path]: true }
-        }
-      };
+    [pathNavigatorTreeFetchPathChildren.type]: (state, action) => {
+      const { expand = true } = action.payload;
+      expand && expandPath(state, action);
     },
     [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
-      const totalByPath = { ...state[id].totalByPath };
-      totalByPath[parentPath] = children.levelDescriptor ? children.total + 1 : children.total;
-      const nextChildren = [];
-      if (children.levelDescriptor) {
-        nextChildren.push(children.levelDescriptor.path);
-        totalByPath[children.levelDescriptor.path] = 0;
-      }
-
+      const chunk = state[id];
+      chunk.totalByPath[parentPath] = children.total;
+      chunk.childrenByParentPath[parentPath] = [];
       children.forEach((item) => {
-        nextChildren.push(item.path);
-        totalByPath[item.path] = item.childrenCount;
+        chunk.childrenByParentPath[parentPath].push(item.path);
+        chunk.totalByPath[item.path] = item.childrenCount;
       });
-
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          // If the expanded node has no children and is not filtered, it's a leaf node and there's no point keeping it in `expanded`
-          expanded:
-            children.length === 0 && !options?.keyword
-              ? state[id].expanded.filter((path) => path !== parentPath)
-              : state[id].expanded,
-          childrenByParentPath: {
-            ...state[id].childrenByParentPath,
-            [parentPath]: nextChildren
-          },
-          totalByPath,
-          offsetByPath: {
-            ...state[id].offsetByPath,
-            [parentPath]: 0
-          },
-          fetchingByPath: { ...state[id].fetchingByPath, [parentPath]: false }
-        }
-      };
+      if (children.levelDescriptor) {
+        chunk.childrenByParentPath[parentPath].push(children.levelDescriptor.path);
+        chunk.totalByPath[children.levelDescriptor.path] = 0;
+      }
+      // If the expanded node has no children and is not filtered, it's a
+      // leaf node and there's no point keeping it in `expanded`
+      if (children.length === 0 && !options?.keyword) {
+        chunk.expanded = chunk.expanded.filter((path) => path !== parentPath);
+      }
+      chunk.offsetByPath[parentPath] = 0;
     },
     [pathNavigatorTreeFetchPathPage.type]: (state, { payload: { id, path } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          offsetByPath: {
-            ...state[id].offsetByPath,
-            [path]: state[id].offsetByPath[path] ? state[id].offsetByPath[path] + state[id].limit : state[id].limit
-          }
-        }
-      };
+      state[id].offsetByPath[path] = state[id].offsetByPath[path]
+        ? state[id].offsetByPath[path] + state[id].limit
+        : state[id].limit;
     },
     [pathNavigatorTreeFetchPathPageComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
-      const totalByPath = { ...state[id].totalByPath };
-      const nextChildren = [...state[id].childrenByParentPath[parentPath]];
-      totalByPath[parentPath] = children.levelDescriptor ? children.total + 1 : children.total;
-
+      const chunk = state[id];
+      chunk.totalByPath[parentPath] = children.total;
       if (children.levelDescriptor) {
-        totalByPath[children.levelDescriptor.path] = 0;
+        chunk.totalByPath[children.levelDescriptor.path] = 0;
       }
-
       children.forEach((item) => {
-        nextChildren.push(item.path);
-        totalByPath[item.path] = item.childrenCount;
+        chunk.childrenByParentPath[parentPath].push(item.path);
+        chunk.totalByPath[item.path] = item.childrenCount;
       });
-
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          childrenByParentPath: {
-            ...state[id].childrenByParentPath,
-            [parentPath]: nextChildren
-          },
-          totalByPath
-        }
-      };
-    },
-    [pathNavigatorTreeFetchPathsChildrenComplete.type]: (state, { payload: { id, data } }) => {
-      const childrenByParentPath = { ...state[id].childrenByParentPath };
-      const totalByPath = { ...state[id].totalByPath };
-      const offsetByPath = { ...state[id].offsetByPath };
-
-      Object.keys(data).forEach((path) => {
-        childrenByParentPath[path] = [];
-        if (data[path].levelDescriptor) {
-          childrenByParentPath[path].push(data[path].levelDescriptor.path);
-          totalByPath[data[path].levelDescriptor.path] = 0;
-        }
-        data[path].forEach((item) => {
-          childrenByParentPath[path].push(item.path);
-          totalByPath[item.path] = item.childrenCount;
-        });
-        totalByPath[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
-        offsetByPath[path] = 0;
-      });
-
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          childrenByParentPath,
-          totalByPath,
-          offsetByPath
-        }
-      };
     },
     [pathNavigatorTreeUpdate.type]: (state, { payload }) => {
       return {
@@ -229,69 +189,90 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
       };
     },
-    [pathNavigatorTreeRefresh.type]: (state, { payload: { id } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          fetchingByPath: { ...state[id].fetchingByPath, [state[id].rootPath]: true }
-        }
-      };
+    [pathNavigatorTreeRestore.type]: (state, { payload: { id } }) => {
+      state[id].isRootPathMissing = false;
     },
-    [pathNavigatorTreeRestoreComplete.type]: (state, { payload: { id, data, items } }) => {
-      const children = {};
-      const total = {};
-      const offsetByPath = {};
-      const keywordByPath = state[id].keywordByPath;
-      const expanded = [];
-      Object.keys(data).forEach((path) => {
-        children[path] = [];
-        if (data[path].levelDescriptor) {
-          children[path].push(data[path].levelDescriptor.path);
-          total[data[path].levelDescriptor.path] = 0;
+    // region pathNavigatorTreeRestoreComplete
+    // Assumption: this reducer is a reset. Not suitable for partial updates.
+    [pathNavigatorTreeRestoreComplete.type]: (
+      state,
+      { payload: { id, children, items } }: { payload: PathNavigatorTreeRestoreCompletePayload }
+    ) => {
+      const chunk = state[id];
+      chunk.childrenByParentPath = {};
+      chunk.totalByPath = {};
+      chunk.offsetByPath = {};
+      const childrenByParentPath = chunk.childrenByParentPath;
+      const totalByPath = chunk.totalByPath;
+      const offsetByPath = chunk.offsetByPath;
+      items.forEach((item) => {
+        totalByPath[item.path] = item.childrenCount;
+      });
+      Object.keys(children).forEach((parentPath) => {
+        const childrenOfPath = children[parentPath];
+        if (childrenOfPath.length || childrenOfPath.levelDescriptor) {
+          childrenByParentPath[parentPath] = [];
+          if (childrenOfPath.levelDescriptor) {
+            childrenByParentPath[parentPath].push(childrenOfPath.levelDescriptor.path);
+            totalByPath[childrenOfPath.levelDescriptor.path] = 0;
+          }
+          childrenOfPath.forEach((child) => {
+            childrenByParentPath[parentPath].push(child.path);
+            totalByPath[child.path] = child.childrenCount;
+          });
         }
-        data[path].forEach((item) => {
-          children[path].push(item.path);
-          total[item.path] = item.childrenCount;
-        });
-        total[path] = data[path].levelDescriptor ? data[path].total + 1 : data[path].total;
-        offsetByPath[path] = 0;
-
-        if (keywordByPath[path] || children[path].length) {
-          // If the expanded node is filtered or has children it means, it's not a leaf and and we should keep it in 'expanded'
-          expanded.push(path);
+        // Should we account here for the level descriptor (LD)? if there's a LD, add 1 to the total?
+        totalByPath[parentPath] = childrenOfPath.total;
+        offsetByPath[parentPath] = 0;
+        // If the expanded node is filtered or has children it means, it's not a leaf,
+        // and we should keep it in 'expanded'.
+        // if (chunk.keywordByPath[parentPath] || childrenByParentPath[parentPath].length) {
+        //   chunk.expanded.push(parentPath);
+        // }
+      });
+    },
+    // endregion
+    [changeSite.type]: () => ({}),
+    [fetchSiteUiConfig.type]: () => ({}),
+    // region fetchSandboxItemComplete
+    [fetchSandboxItemComplete.type]: (
+      state,
+      { payload: { item } }: StandardAction<FetchSandboxItemCompletePayload>
+    ) => {
+      const path = item.path;
+      Object.values(state).forEach((tree) => {
+        if (path in tree.totalByPath) {
+          tree.totalByPath[path] = item.childrenCount;
         }
       });
-
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          expanded,
-          childrenByParentPath: {
-            ...state[id].childrenByParentPath,
-            ...children
-          },
-          offsetByPath: {
-            ...state[id].offsetByPath,
-            ...offsetByPath
-          },
-          totalByPath: {
-            ...state[id].totalByPath,
-            ...total
-          },
-          fetchingByPath: {
-            ...state[id].fetchingByPath,
-            ...createPresenceTable(
-              items.map((item) => item.path),
-              false
-            )
-          }
-        }
-      };
     },
-    [changeSite.type]: () => ({}),
-    [fetchSiteUiConfig.type]: () => ({})
+    // endregion
+    [pathNavigatorTreeRootMissing.type]: (state, { payload: { id } }) => {
+      state[id].isRootPathMissing = true;
+    },
+    // region deleteContentEvent
+    [deleteContentEvent.type]: (
+      state: LookupTable<PathNavigatorTreeStateProps>,
+      { payload: { targetPath } }: StandardAction<SocketEventBase>
+    ) => {
+      contentAndDeleteEventForEachApplicableTree(state, targetPath, (tree, targetPath, parentPathOfTargetPath) => {
+        if (targetPath === tree.rootPath) {
+          tree.isRootPathMissing = true;
+        } else if (parentPathOfTargetPath in tree.totalByPath) {
+          deleteItemFromState(tree, targetPath);
+        }
+      });
+    },
+    // endregion
+    [moveContentEvent.type]: (state, { payload: { sourcePath } }: StandardAction<MoveContentEventPayload>) => {
+      Object.values(state).forEach((tree) => {
+        if (tree.rootPath === sourcePath) {
+          tree.isRootPathMissing = true;
+        } else if (sourcePath in tree.totalByPath) {
+          deleteItemFromState(tree, sourcePath);
+        }
+      });
+    }
   }
 );
 

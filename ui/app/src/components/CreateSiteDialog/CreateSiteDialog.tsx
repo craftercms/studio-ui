@@ -15,9 +15,8 @@
  */
 
 import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import { makeStyles } from 'tss-react/mui';
+import { withStyles } from 'tss-react/mui';
 import Dialog from '@mui/material/Dialog';
 import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid';
@@ -25,7 +24,6 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import PluginCard from '../PluginCard/PluginCard';
 import Spinner from '../Spinner/Spinner';
-import clsx from 'clsx';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
 import LoadingState from '../LoadingState/LoadingState';
@@ -59,6 +57,7 @@ import { useEnv } from '../../hooks/useEnv';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { getSystemLink } from '../../utils/system';
 import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
+import { keyframes } from 'tss-react';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -173,7 +172,8 @@ const siteInitialState: SiteState = {
     token: false,
     key: false
   },
-  showIncompatible: true
+  showIncompatible: true,
+  gitBranch: ''
 };
 
 const searchInitialState = {
@@ -181,126 +181,122 @@ const searchInitialState = {
   searchSelected: false
 };
 
-const CustomTabs = withStyles({
+const CustomTabs = withStyles(Tabs, {
   root: {
     borderBottom: 'none',
     minHeight: 'inherit'
   }
-})(Tabs);
+});
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    '@keyframes fadeIn': fadeIn,
-    fadeIn: {
-      animationName: '$fadeIn',
-      animationDuration: '1s'
-    },
-    paperScrollPaper: {
-      height: 'calc(100% - 100px)',
-      maxHeight: '1200px'
-    },
-    searchContainer: {
-      position: 'absolute',
-      padding: '0 20px',
-      width: '100%',
-      left: '50%',
-      transform: 'translate(-50%)',
-      zIndex: 1
-    },
-    dialogContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%'
-    },
-    dialogContent: {
-      padding: '30px 0 0',
-      position: 'relative'
-    },
-    slide: {
-      flexWrap: 'wrap',
+const useStyles = makeStyles()((theme) => ({
+  fadeIn: {
+    animation: `${keyframes`${fadeIn}`} 1s`
+  },
+  paperScrollPaper: {
+    height: 'calc(100% - 100px)',
+    maxHeight: '1200px'
+  },
+  searchContainer: {
+    position: 'absolute',
+    padding: '0 20px',
+    width: '100%',
+    left: '50%',
+    transform: 'translate(-50%)',
+    zIndex: 1
+  },
+  dialogContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%'
+  },
+  dialogContent: {
+    padding: '30px 0 0',
+    position: 'relative'
+  },
+  slide: {
+    flexWrap: 'wrap',
+    height: '100%',
+    overflow: 'auto',
+    display: 'flex',
+    padding: '0 25px',
+    '&.selected': {
       height: '100%',
-      overflow: 'auto',
-      display: 'flex',
-      padding: '0 25px',
-      '&.selected': {
-        height: '100%',
-        paddingTop: '70px'
-      }
-    },
-    tabs: {
-      display: 'flex',
-      alignItems: 'center'
-    },
-    simpleTab: {
-      minWidth: '80px',
-      minHeight: '0',
-      padding: '0 0 5px 0',
-      marginRight: '20px',
-      opacity: 1,
-      '& span': {
-        textTransform: 'none'
-      }
-    },
-    tabIcon: {
-      fontSize: '1.2rem',
-      cursor: 'pointer',
-      '&.selected': {
-        color: theme.palette.primary.main
-      }
-    },
-    loading: {
-      position: 'relative',
-      padding: 16,
-      flexGrow: 1
-    },
-    spinner: {
-      marginRight: '10px',
-      color: theme.palette.text.secondary
-    },
-    statePaper: {
-      height: '100%'
-    },
-    loadingStateRoot: {
-      height: '100%',
-      margin: 0
-    },
-    loadingStateGraphicRoot: {
-      flexGrow: 1,
-      paddingBottom: '100px'
-    },
-    loadingStateGraphic: {
-      width: 200
-    },
-    errorPaperRoot: {
-      height: '100%'
-    },
-    headerRoot: {
-      paddingBottom: 0
-    },
-    headerSubTitle: {
-      marginBottom: 13
-    },
-    blueprintFormRoot: {
-      marginTop: 10
-    },
-    emptyStateRoot: {
-      position: 'absolute',
-      top: '40%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)'
-    },
-    showIncompatible: {
-      marginLeft: 'auto'
-    },
-    showIncompatibleInput: {
-      fontSize: '0.8125rem'
-    },
-    showIncompatibleCheckbox: {
-      paddingTop: 0,
-      paddingBottom: 0
+      paddingTop: '70px'
     }
-  })
-);
+  },
+  tabs: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  simpleTab: {
+    minWidth: '80px',
+    minHeight: '0',
+    padding: '0 0 5px 0',
+    marginRight: '20px',
+    opacity: 1,
+    '& span': {
+      textTransform: 'none'
+    }
+  },
+  tabIcon: {
+    fontSize: '1.2rem',
+    cursor: 'pointer',
+    '&.selected': {
+      color: theme.palette.primary.main
+    }
+  },
+  loading: {
+    position: 'relative',
+    padding: 16,
+    flexGrow: 1
+  },
+  spinner: {
+    marginRight: '10px',
+    color: theme.palette.text.secondary
+  },
+  statePaper: {
+    height: '100%'
+  },
+  loadingStateRoot: {
+    height: '100%',
+    margin: 0
+  },
+  loadingStateGraphicRoot: {
+    flexGrow: 1,
+    paddingBottom: '100px'
+  },
+  loadingStateGraphic: {
+    width: 200
+  },
+  errorPaperRoot: {
+    height: '100%'
+  },
+  headerRoot: {
+    paddingBottom: 0
+  },
+  headerSubTitle: {
+    marginBottom: 13
+  },
+  blueprintFormRoot: {
+    marginTop: 10
+  },
+  emptyStateRoot: {
+    position: 'absolute',
+    top: '40%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)'
+  },
+  showIncompatible: {
+    marginLeft: 'auto'
+  },
+  showIncompatibleInput: {
+    fontSize: '0.8125rem'
+  },
+  showIncompatibleCheckbox: {
+    paddingTop: 0,
+    paddingBottom: 0
+  }
+}));
 
 interface CreateSiteDialogProps {
   open: boolean;
@@ -324,12 +320,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   });
   const [search, setSearch] = useState(searchInitialState);
   const [site, setSite] = useSpreadState(siteInitialState);
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const finishRef = useRef(null);
   const { current: refts } = useRef<any>({});
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
-  const { authoringBase, useBaseDomain } = useEnv();
+  const { authoringBase, useBaseDomain, activeEnvironment } = useEnv();
 
   useEffect(() => {
     setDialog({ open: props.open });
@@ -630,7 +626,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         patch: site.blueprint.version.patch
       }
     };
-    if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
+    if (site.gitBranch) params.sandboxBranch = site.gitBranch as string;
     if (site.blueprintFields) params.siteParams = site.blueprintFields;
     return params;
   }
@@ -648,14 +644,14 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       } else {
         params.useRemote = true;
       }
-      if (site.sandboxBranch) params.sandboxBranch = site.sandboxBranch;
+      if (site.gitBranch) params.sandboxBranch = site.gitBranch as string;
       if (site.description) params.description = site.description;
       if (site.pushSite || site.blueprint.id === 'GIT') {
         params.authenticationType = site.repoAuthentication;
         if (site.repoRemoteName) params.remoteName = site.repoRemoteName;
         if (site.repoUrl) params.remoteUrl = site.repoUrl;
-        if (site.repoRemoteBranch) {
-          params.remoteBranch = site.repoRemoteBranch;
+        if (site.gitBranch) {
+          params.remoteBranch = site.gitBranch as string;
         }
         if (site.repoAuthentication === 'basic') {
           params.remoteUsername = site.repoUsername;
@@ -680,7 +676,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
       setSiteCookie(site.siteId, useBaseDomain);
       // TODO: Revisit this when site creation becomes asynchronous
-      fetchUseLegacyPreviewPreference(site.siteId).subscribe((useLegacy) => {
+      fetchUseLegacyPreviewPreference(site.siteId, activeEnvironment).subscribe((useLegacy) => {
         window.location.href = getSystemLink({
           systemLinkId: 'preview',
           authoringBase,
@@ -840,7 +836,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                   <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab} />
                 </CustomTabs>
                 <SearchIcon
-                  className={clsx(classes.tabIcon, search.searchSelected && 'selected')}
+                  className={cx(classes.tabIcon, search.searchSelected && 'selected')}
                   onClick={handleSearchClick}
                 />
                 {tab === 1 && (
@@ -879,7 +875,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 </div>
               )}
               {site.selectedView === 0 && (
-                <div className={clsx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
+                <div className={cx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
                   {tab === 0 ? (
                     <Grid container spacing={3}>
                       {renderBlueprints(filteredBlueprints)}
@@ -892,7 +888,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 </div>
               )}
               {site.selectedView === 1 && (
-                <div className={clsx(classes.slide, classes.fadeIn)}>
+                <div className={cx(classes.slide, classes.fadeIn)}>
                   {site.blueprint && (
                     <BlueprintForm
                       inputs={site}
@@ -906,7 +902,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 </div>
               )}
               {site.selectedView === 2 && (
-                <div className={clsx(classes.slide, classes.fadeIn)}>
+                <div className={cx(classes.slide, classes.fadeIn)}>
                   {site.blueprint && <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint} />}
                 </div>
               )}

@@ -471,7 +471,7 @@ const reducer = createReducer(initialState, {
     { payload: { record } }: GuestStandardAction<{ record: ElementRecord }>
   ) => ({
     ...state,
-    uploading: reversePluckProps(state.uploading, record.id)
+    uploading: reversePluckProps(state.uploading, `${record.id}`)
   }),
   // endregion
   // region desktopAssetUploadProgress

@@ -24,15 +24,13 @@ import CardActions from '@mui/material/CardActions';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
 import MobileStepper from '../MobileStepper/MobileStepper';
 import { backgroundColor } from '../../styles/theme';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import clsx from 'clsx';
 import cardTitleStyles from '../../styles/card';
 import SecondaryButton from '../SecondaryButton';
 
@@ -45,14 +43,13 @@ interface PluginCardProps {
   beingInstalled?: boolean;
   useLabel?: string | JSX.Element;
   disableCardActionClick?: boolean;
-
   onPluginSelected(plugin: MarketplacePlugin, view: number): any;
-
   onDetails(plugin: MarketplacePlugin, index?: number): any;
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
-const useStyles = makeStyles((theme: Theme) => ({
+
+const useStyles = makeStyles()((theme) => ({
   root: {
     flexGrow: 1
   },
@@ -73,8 +70,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& .developer': {
       overflow: 'hidden',
       display: '-webkit-box',
-      '-webkit-line-clamp': 1,
-      '-webkit-box-orient': 'vertical',
+      WebkitLineClamp: 1,
+      WebkitBoxOrient: 'vertical',
       marginBottom: 0
     }
   },
@@ -192,7 +189,7 @@ const messages = defineMessages({
 });
 
 function PluginCard(props: PluginCardProps) {
-  const classes = useStyles({});
+  const { classes, cx } = useStyles();
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
   const {
@@ -280,10 +277,10 @@ function PluginCard(props: PluginCardProps) {
         return (
           <div
             key={index}
-            className={clsx(classes.background, id === 'GIT' && 'git')}
+            className={cx(classes.background, id === 'GIT' && 'git')}
             onClick={(event) => onImageClick(event, index)}
           >
-            <img className={clsx(classes.carouselImg, id === 'GIT' && 'git')} src={item.url} alt={item.description} />
+            <img className={cx(classes.carouselImg, id === 'GIT' && 'git')} src={item.url} alt={item.description} />
           </div>
         );
       } else {

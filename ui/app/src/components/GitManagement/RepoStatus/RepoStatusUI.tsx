@@ -23,11 +23,9 @@ import GlobalAppGridCell from '../../GlobalAppGridCell';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Button from '@mui/material/Button';
 import ConfirmDropdown from '../../ConfirmDropdown';
-import clsx from 'clsx';
 import GlobalAppToolbar from '../../GlobalAppToolbar';
 import { messages } from './translations';
 import Alert from '@mui/material/Alert';
@@ -43,44 +41,42 @@ export interface RepoStatusUIProps {
   onDiffClick(path: string): void;
 }
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    sectionLabel: {
-      fontWeight: 400,
-      color: theme.palette.success.dark
-    },
-    conflictedFilesLabel: {
-      color: theme.palette.error.dark
-    },
-    fileName: {
-      fontWeight: 600
-    },
-    revertAllButton: {
-      color: theme.palette.error.dark,
-      borderColor: theme.palette.error.main,
-      marginRight: theme.spacing(2)
-    },
-    commitButton: {
-      color: theme.palette.success.dark,
-      borderColor: theme.palette.success.main
-    },
-    statusNote: {
-      color: theme.palette.text.secondary
-    },
-    conflictActions: {
-      textAlign: 'right'
-    },
-    conflictActionButton: {
-      marginRight: theme.spacing(2),
-      color: theme.palette.warning.dark,
-      borderColor: theme.palette.warning.main
-    }
-  })
-);
+const useStyles = makeStyles()((theme) => ({
+  sectionLabel: {
+    fontWeight: 400,
+    color: theme.palette.success.dark
+  },
+  conflictedFilesLabel: {
+    color: theme.palette.error.dark
+  },
+  fileName: {
+    fontWeight: 600
+  },
+  revertAllButton: {
+    color: theme.palette.error.dark,
+    borderColor: theme.palette.error.main,
+    marginRight: theme.spacing(2)
+  },
+  commitButton: {
+    color: theme.palette.success.dark,
+    borderColor: theme.palette.success.main
+  },
+  statusNote: {
+    color: theme.palette.text.secondary
+  },
+  conflictActions: {
+    textAlign: 'right'
+  },
+  conflictActionButton: {
+    marginRight: theme.spacing(2),
+    color: theme.palette.warning.dark,
+    borderColor: theme.palette.warning.main
+  }
+}));
 
 export function RepoStatusUI(props: RepoStatusUIProps) {
   const { status, onRevertPull, onCommitClick, onResolveConflict, onDiffClick } = props;
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const hasConflictsOrUncommitted = status.conflicting.length > 0 || status.uncommittedChanges.length > 0;
   return hasConflictsOrUncommitted ? (
@@ -125,7 +121,7 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
         <Grid container spacing={2}>
           {status.conflicting.length > 0 && (
             <Grid item md={12} xl={status.uncommittedChanges.length ? 6 : 12}>
-              <Typography variant="h6" className={clsx(classes.sectionLabel, classes.conflictedFilesLabel)}>
+              <Typography variant="h6" className={cx(classes.sectionLabel, classes.conflictedFilesLabel)}>
                 <FormattedMessage id="repository.conflictedFiles" defaultMessage="Conflicted Files" />
               </Typography>
               <TableContainer>

@@ -14,34 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
-import FolderBrowserTreeViewUI, { FolderBrowserTreeViewNode } from '../FolderBrowserTreeView/FolderBrowserTreeViewUI';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
-import LookupTable from '../../models/LookupTable';
-import { getIndividualPaths } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
+import { makeStyles } from 'tss-react/mui';
+import { withoutIndex } from '../../utils/path';
 import StandardAction from '../../models/StandardAction';
-import { ApiResponse } from '../../models/ApiResponse';
 import TranslationOrText from '../../models/TranslationOrText';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useUnmount } from '../../hooks/useUnmount';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
-import { legacyItemsToTreeNodes } from '../FolderBrowserTreeView/utils';
 import { useSelection } from '../../hooks/useSelection';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
-import { fetchLegacyItemsTree } from '../../services/content';
-import { LegacyItem } from '../../models/Item';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
-import Suspencified from '../Suspencified/Suspencified';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import CreateFolderDialog from '../CreateFolderDialog';
 import DialogHeader from '../DialogHeader';
+import FolderBrowserTreeView from '../FolderBrowserTreeView';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -49,15 +39,16 @@ export interface PathSelectionDialogBaseProps {
   rootPath: string;
   initialPath?: string;
   showCreateFolderOption?: boolean;
+  stripXmlIndex?: boolean;
 }
 
-interface PathSelectionDialogCallbacks {
+export interface PathSelectionDialogCallbacks {
   onClose(): void;
   onClosed?(): void;
   onOk?(response: { path: string }): void;
 }
 
-export type PathSelectionDialogProps = PropsWithChildren<PathSelectionDialogBaseProps & PathSelectionDialogCallbacks>;
+export type PathSelectionDialogProps = PathSelectionDialogBaseProps & PathSelectionDialogCallbacks;
 
 export interface PathSelectionDialogStateProps extends PathSelectionDialogBaseProps {
   onClose?: StandardAction;
@@ -65,241 +56,53 @@ export interface PathSelectionDialogStateProps extends PathSelectionDialogBasePr
   onOk?: StandardAction;
 }
 
-export type PathSelectionDialogBodyProps = PathSelectionDialogBaseProps &
-  PathSelectionDialogCallbacks & { site: string };
-
-export interface PathSelectionDialogBodyUIProps {
-  title?: TranslationOrText;
-  error?: ApiResponse;
-  treeNodes: FolderBrowserTreeViewNode;
-  isInvalidPath: boolean;
-  rootPath: string;
-  currentPath: string;
-  expandedItemPaths: string[];
-  isFetchingPath: boolean;
-  showCreateFolderOption?: boolean;
-  uncheckedInputValue: boolean;
-  createFolderDialogOpen: boolean;
-  onOk: (args: { path: string }) => void;
-  onClose?: () => void;
-  onPathInputKeyPress: (event: React.KeyboardEvent) => void;
-  onNodeToggle: (event: React.ChangeEvent, nodeIds: string[]) => void;
-  onNodeSelected: (event: React.ChangeEvent, nodeId: string) => void;
-  onPathChanged: (path: string) => void;
-  onCreateFolder: () => void;
-  onCloseCreateFolder: () => void;
-  onFolderCreated: (args: { path: string; name: string }) => void;
-}
-
-const useStyles = makeStyles(() =>
-  createStyles({
-    dialogBody: {
-      minHeight: '60vh'
-    },
-    createFolderBtn: {
-      marginRight: 'auto'
-    },
-    treeViewRoot: {
-      marginTop: '15px'
-    }
-  })
-);
-
 export function PathSelectionDialog(props: PathSelectionDialogProps) {
-  const site = useActiveSiteId();
   return (
     <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="sm">
-      {props.children ?? <PathSelectionDialogBody {...props} site={site} />}
+      <PathSelectionDialogContainer {...props} />
     </Dialog>
   );
 }
 
-export function PathSelectionDialogBody(props: PathSelectionDialogBodyProps) {
-  const { site, onClosed, onClose, onOk, rootPath, initialPath, title, showCreateFolderOption = true } = props;
+const useStyles = makeStyles()(() => ({
+  dialogBody: {
+    minHeight: '60vh'
+  },
+  createFolderBtn: {
+    marginRight: 'auto'
+  },
+  treeViewRoot: {
+    marginTop: '15px'
+  }
+}));
+
+export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
+  const { onClosed, onClose, onOk, rootPath, initialPath, showCreateFolderOption = true, stripXmlIndex = true } = props;
   const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
-  const [expanded, setExpanded] = useState(initialPath ? getIndividualPaths(initialPath) : [rootPath]);
-  const [invalidPath, setInvalidPath] = useState(false);
-  const [dirtyInput, setDirtyInput] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
-  const [treeNodes, setTreeNodes] = useState<FolderBrowserTreeViewNode>(null);
-  const [createFolder, setCreateFolder] = useState(false);
-  const nodesLookupRef = useRef<LookupTable<FolderBrowserTreeViewNode>>({});
-  const [error, setError] = useState<Partial<ApiResponse>>(null);
+  const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState(false);
+  const { classes } = useStyles();
+  const title = usePossibleTranslation(props.title);
+  const createFolderState = useSelection((state) => state.dialogs.createFolder);
 
   useUnmount(onClosed);
 
-  useEffect(() => {
-    if (currentPath) {
-      let nodesLookup = nodesLookupRef.current;
-      if (nodesLookup[currentPath] && nodesLookup[currentPath]?.fetched) {
-        setInvalidPath(false);
-      } else {
-        const allPaths = getIndividualPaths(currentPath, rootPath).filter(
-          (path) => !nodesLookup[path] || !nodesLookup[path].fetched
-        );
-        const requests: Observable<LegacyItem>[] = [];
-        allPaths.forEach((nextPath) => {
-          requests.push(fetchLegacyItemsTree(site, nextPath, { depth: 1, order: 'default' }));
-        });
+  const onCloseCreateFolder = () => setOpenCreateFolderDialog(false);
 
-        if (requests.length) {
-          setIsFetching(true);
-          forkJoin(requests).subscribe({
-            next: (responses) => {
-              let rootNode;
-              setIsFetching(false);
-              responses.forEach((item, i) => {
-                let parent;
+  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
 
-                if (i === requests.length - 1) {
-                  setInvalidPath(item.deleted);
-                }
-
-                if (item.deleted) {
-                  return;
-                }
-
-                if (!nodesLookup['root']) {
-                  parent = {
-                    id: item.path,
-                    name: item.name ? item.name : 'root',
-                    fetched: true,
-                    children: legacyItemsToTreeNodes(item.children)
-                  };
-                  rootNode = parent;
-                  nodesLookup[item.path] = parent;
-                  nodesLookup['root'] = parent;
-                } else {
-                  rootNode = nodesLookup['root'];
-                  parent = nodesLookup[item.path];
-                  parent.fetched = true;
-                  parent.children = legacyItemsToTreeNodes(item.children);
-                }
-
-                parent.children.forEach((child) => {
-                  nodesLookup[child.id] = child;
-                });
-              });
-              setTreeNodes({ ...rootNode });
-            },
-            error: (response) => {
-              setError(response);
-            }
-          });
-        }
-      }
-    }
-  }, [currentPath, rootPath, site]);
-
-  const onCreateFolder = () => {
-    setCreateFolder(true);
-  };
-
-  const onCloseCreateFolder = () => {
-    setCreateFolder(false);
-  };
+  const onCreateFolder = () => setOpenCreateFolderDialog(true);
 
   const onFolderCreated = ({ path, name }: { path: string; name: string }) => {
-    setCreateFolder(false);
+    setOpenCreateFolderDialog(false);
     let id = `${path}/${name}`;
-    nodesLookupRef.current[currentPath].children.push({
-      id,
-      name: name,
-      children: []
-    });
-    nodesLookupRef.current[id] = {
-      id,
-      name: name,
-      children: [],
-      fetched: true
-    };
     setCurrentPath(id);
-    setTreeNodes({ ...treeNodes });
-  };
-
-  const onNodeToggle = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
-    setExpanded(nodeIds);
-  };
-
-  const onNodeSelected = (event: React.ChangeEvent<{}>, nodeId: string) => {
-    setCurrentPath(nodeId);
   };
 
   const onPathChanged = (path: string) => {
+    console.log(path);
     setCurrentPath(path);
-    setDirtyInput(false);
-    setExpanded(rootPath === '/' ? ['/', ...getIndividualPaths(path)] : getIndividualPaths(path));
+    // setExpanded(rootPath === '/' ? ['/', ...getIndividualPaths(path)] : getIndividualPaths(path));
   };
-
-  const onPathInputKeyPress = () => {
-    setDirtyInput(true);
-  };
-
-  return (
-    <PathSelectionDialogBodyUI
-      title={title}
-      showCreateFolderOption={showCreateFolderOption}
-      onOk={onOk}
-      error={error}
-      onClose={onClose}
-      expandedItemPaths={expanded}
-      isInvalidPath={invalidPath}
-      uncheckedInputValue={dirtyInput}
-      isFetchingPath={isFetching}
-      createFolderDialogOpen={createFolder}
-      onCreateFolder={onCreateFolder}
-      onCloseCreateFolder={onCloseCreateFolder}
-      onFolderCreated={onFolderCreated}
-      onNodeToggle={onNodeToggle}
-      onNodeSelected={onNodeSelected}
-      onPathChanged={onPathChanged}
-      onPathInputKeyPress={onPathInputKeyPress}
-      currentPath={currentPath}
-      rootPath={rootPath}
-      treeNodes={treeNodes}
-    />
-  );
-}
-
-export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps) {
-  const {
-    error,
-    treeNodes,
-    isInvalidPath,
-    rootPath,
-    currentPath = '',
-    expandedItemPaths,
-    isFetchingPath,
-    showCreateFolderOption,
-    uncheckedInputValue,
-    createFolderDialogOpen,
-    onOk,
-    onClose,
-    onPathInputKeyPress,
-    onNodeToggle,
-    onNodeSelected,
-    onPathChanged,
-    onCreateFolder,
-    onCloseCreateFolder,
-    onFolderCreated
-  } = props;
-  const classes = useStyles({});
-  const title = usePossibleTranslation(props.title);
-  const createFolderState = useSelection((state) => state.dialogs.createFolder);
-  const resource = useLogicResource<
-    FolderBrowserTreeViewNode,
-    { treeNodes: FolderBrowserTreeViewNode; error?: ApiResponse }
-  >(
-    useMemo(() => ({ treeNodes, error }), [treeNodes, error]),
-    {
-      shouldResolve: ({ treeNodes }) => Boolean(treeNodes),
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: ({ treeNodes }, resource) => treeNodes === null && resource.complete,
-      resultSelector: ({ treeNodes }) => treeNodes,
-      errorSelector: ({ error }) => error
-    }
-  );
-  const onWithPendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseCreateFolder);
 
   return (
     <>
@@ -308,42 +111,21 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
         onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
-        <Suspencified>
-          <FolderBrowserTreeViewUI
-            classes={{
-              treeViewRoot: classes.treeViewRoot
-            }}
-            invalidPath={isInvalidPath}
-            onNodeToggle={onNodeToggle}
-            onNodeSelected={onNodeSelected}
-            rootPath={rootPath}
-            currentPath={currentPath}
-            expanded={expandedItemPaths}
-            selected={currentPath.replace(/\/$/, '')}
-            resource={resource}
-            onKeyPress={onPathInputKeyPress}
-            onPathChanged={onPathChanged}
-            isFetching={isFetchingPath}
-          />
-        </Suspencified>
+        {/*
+        <PathSelectionInput rootPath={rootPath} onChange={onPathChanged} />
+        */}
+        <FolderBrowserTreeView rootPath={rootPath} onPathSelected={onPathChanged} selectedPath={currentPath} />
       </DialogBody>
       <DialogFooter>
         {showCreateFolderOption && (
-          <SecondaryButton
-            disabled={isInvalidPath || isFetchingPath}
-            onClick={onCreateFolder}
-            className={classes.createFolderBtn}
-          >
+          <SecondaryButton onClick={onCreateFolder} className={classes.createFolderBtn}>
             <FormattedMessage id="pathSelectionDialog.createFolderButtonLabel" defaultMessage="Create Folder" />
           </SecondaryButton>
         )}
         <SecondaryButton onClick={onClose}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton
-          disabled={isInvalidPath || isFetchingPath || uncheckedInputValue}
-          onClick={() => onOk({ path: currentPath })}
-        >
+        <PrimaryButton onClick={() => onOk({ path: stripXmlIndex ? withoutIndex(currentPath) : currentPath })}>
           <FormattedMessage id="words.accept" defaultMessage="Accept" />
         </PrimaryButton>
       </DialogFooter>
@@ -354,7 +136,7 @@ export function PathSelectionDialogBodyUI(props: PathSelectionDialogBodyUIProps)
         hasPendingChanges={createFolderState.hasPendingChanges}
         isMinimized={createFolderState.isMinimized}
         onWithPendingChangesCloseRequest={onWithPendingChangesCloseRequest}
-        open={createFolderDialogOpen}
+        open={openCreateFolderDialog}
         onClose={onCloseCreateFolder}
         onCreated={onFolderCreated}
       />

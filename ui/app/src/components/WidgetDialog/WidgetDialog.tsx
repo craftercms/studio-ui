@@ -36,7 +36,7 @@ export function useWidgetDialogContext(): WidgetDialogContextType {
 
 export function WidgetDialog(props: WidgetDialogProps) {
   const { title, widget, onSubmittingAndOrPendingChange, isSubmitting, extraProps, ...rest } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const fnRefs = useRef({ onClose: rest.onClose });
   const context = useMemo<WidgetDialogContextType>(
     () => ({

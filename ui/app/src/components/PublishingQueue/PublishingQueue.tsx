@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -94,7 +94,7 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   publishingQueue: {},
   topBar: {
     display: 'flex',
@@ -191,7 +191,7 @@ function renderCount(selected: Selected) {
 }
 
 function PublishingQueue(props: PublishingQueueProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [packages, setPackages] = useState(null);
   const [filesPerPackage, setFilesPerPackage] = useState(null);
   const [selected, setSelected] = useState(selectedInitialState);

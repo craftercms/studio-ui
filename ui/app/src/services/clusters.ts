@@ -16,7 +16,7 @@
 
 import { del, get } from '../utils/ajax';
 import { ClusterMember } from '../models/Clusters';
-import { mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function fetchMembers(): Observable<ClusterMember[]> {
@@ -24,5 +24,5 @@ export function fetchMembers(): Observable<ClusterMember[]> {
 }
 
 export function deleteMember(id: number): Observable<true> {
-  return del(`/studio/api/2/cluster?id=${id}`).pipe(mapTo(true));
+  return del(`/studio/api/2/cluster?id=${id}`).pipe(map(() => true));
 }

@@ -136,8 +136,9 @@ export const assetDragEnded = /*#__PURE__*/ createAction('ASSET_DRAG_ENDED');
 export const componentDragStarted = /*#__PURE__*/ createAction<{ contentType: ContentType }>('COMPONENT_DRAG_STARTED');
 export const componentDragEnded = /*#__PURE__*/ createAction('COMPONENT_DRAG_ENDED');
 export const trashed = /*#__PURE__*/ createAction<{ iceId: number }>('TRASHED');
-export const contentTypesResponse =
-  /*#__PURE__*/ createAction<{ contentTypes: Array<ContentType> }>('CONTENT_TYPES_RESPONSE');
+export const contentTypesResponse = /*#__PURE__*/ createAction<{ contentTypes: Array<ContentType> }>(
+  'CONTENT_TYPES_RESPONSE'
+);
 export const instanceDragBegun = /*#__PURE__*/ createAction<number>('INSTANCE_DRAG_BEGUN');
 export const instanceDragEnded = /*#__PURE__*/ createAction('INSTANCE_DRAG_ENDED');
 export const navigationRequest = /*#__PURE__*/ createAction('NAVIGATION_REQUEST');
@@ -162,8 +163,9 @@ export const contentTypeDropTargetsResponse = /*#__PURE__*/ createAction<{
 }>('CONTENT_TYPE_DROP_TARGETS_RESPONSE');
 export const scrollToDropTarget = /*#__PURE__*/ createAction('SCROLL_TO_DROP_TARGET');
 export const clearHighlightedDropTargets = /*#__PURE__*/ createAction('CLEAR_HIGHLIGHTED_DROP_TARGETS');
-export const contentTreeFieldSelected =
-  /*#__PURE__*/ createAction<{ iceProps; scrollElement: string; name: string }>('CONTENT_TREE_FIELD_SELECTED');
+export const contentTreeFieldSelected = /*#__PURE__*/ createAction<{ iceProps; scrollElement: string; name: string }>(
+  'CONTENT_TREE_FIELD_SELECTED'
+);
 export const clearContentTreeFieldSelected = /*#__PURE__*/ createAction('CLEAR_CONTENT_TREE_FIELD_SELECTED');
 export const validationMessage = /*#__PURE__*/ createAction<ValidationResult>('VALIDATION_MESSAGE');
 export const editModeToggleHotkey = /*#__PURE__*/ createAction<{ mode: string }>('EDIT_MODE_TOGGLE_HOTKEY');
@@ -303,8 +305,9 @@ export function setItemBeingDragged(iceId: number): StandardAction {
   };
 }
 
-export const fetchAudiencesPanelModel =
-  /*#__PURE__*/ createAction<{ fields: LookupTable<ContentTypeField> }>('FETCH_AUDIENCES_PANEL_MODEL');
+export const fetchAudiencesPanelModel = /*#__PURE__*/ createAction<{ fields: LookupTable<ContentTypeField> }>(
+  'FETCH_AUDIENCES_PANEL_MODEL'
+);
 
 export const fetchAudiencesPanelModelComplete = /*#__PURE__*/ createAction<ContentInstance>(
   'FETCH_AUDIENCES_PANEL_MODEL_COMPLETE'
@@ -368,8 +371,9 @@ export const setContentTypeFilter = /*#__PURE__*/ createAction<string>(SET_CONTE
 
 export const updateToolsPanelWidth = /*#__PURE__*/ createAction<{ width: number }>('UPDATE_TOOLS_PANEL_WIDTH');
 
-export const setPreviewEditMode =
-  /*#__PURE__*/ createAction<{ editMode: boolean; highlightMode?: HighlightMode }>('EDIT_MODE_CHANGED');
+export const setPreviewEditMode = /*#__PURE__*/ createAction<{ editMode: boolean; highlightMode?: HighlightMode }>(
+  'EDIT_MODE_CHANGED'
+);
 
 export const previewItem = /*#__PURE__*/ createAction<{ item: DetailedItem; newTab?: boolean }>('PREVIEW_ITEM');
 
@@ -389,21 +393,25 @@ export const initIcePanelConfig = /*#__PURE__*/ createAction<{
   icePanelWidth?: number;
 }>('INIT_ICE_PANEL_CONFIG');
 
-export const initRichTextEditorConfig =
-  /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>('INIT_RICH_TEXT_EDITOR_CONFIG');
+export const initRichTextEditorConfig = /*#__PURE__*/ createAction<{ configXml: string; siteId: string }>(
+  'INIT_RICH_TEXT_EDITOR_CONFIG'
+);
 
-export const associateTemplate =
-  /*#__PURE__*/ createAction<{ contentTypeId: string; displayTemplate: string }>('ASSOCIATE_TEMPLATE');
+export const associateTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string; displayTemplate: string }>(
+  'ASSOCIATE_TEMPLATE'
+);
 
-export const associateTemplateComplete =
-  /*#__PURE__*/ createAction<{ contentTypeId: string; displayTemplate: string }>('ASSOCIATE_TEMPLATE_COMPLETE');
+export const associateTemplateComplete = /*#__PURE__*/ createAction<{ contentTypeId: string; displayTemplate: string }>(
+  'ASSOCIATE_TEMPLATE_COMPLETE'
+);
 
 export const associateTemplateFailed = /*#__PURE__*/ createAction('ASSOCIATE_TEMPLATE_FAILED');
 
 export const dissociateTemplate = /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE');
 
-export const dissociateTemplateComplete =
-  /*#__PURE__*/ createAction<{ contentTypeId: string }>('DISSOCIATE_TEMPLATE_COMPLETE');
+export const dissociateTemplateComplete = /*#__PURE__*/ createAction<{ contentTypeId: string }>(
+  'DISSOCIATE_TEMPLATE_COMPLETE'
+);
 
 export const dissociateTemplateFailed = /*#__PURE__*/ createAction('DISSOCIATE_TEMPLATE_FAILED');
 

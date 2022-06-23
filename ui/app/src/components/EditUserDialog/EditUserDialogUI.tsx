@@ -68,7 +68,7 @@ const translations = defineMessages({
 });
 
 export function EditUserDialogUI(props: EditUserDialogUIProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const managedInStudio = !props.user.externallyManaged;
   const {

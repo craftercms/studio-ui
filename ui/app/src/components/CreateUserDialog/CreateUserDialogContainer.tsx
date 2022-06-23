@@ -28,97 +28,93 @@ import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
-import clsx from 'clsx';
 import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
-import { mapTo, switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { addUserToGroup } from '../../services/groups';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    popper: {
-      zIndex: theme.zIndex.modal,
-      '&[x-placement*="bottom"] $arrow': {
-        top: 0,
-        left: 0,
-        marginTop: '-0.71em',
-        marginLeft: 4,
-        marginRight: 4,
-        '&::before': {
-          transformOrigin: '0 100%'
-        }
-      },
-      '&[x-placement*="top"] $arrow': {
-        bottom: 0,
-        left: 0,
-        marginBottom: '-0.71em',
-        marginLeft: 4,
-        marginRight: 4,
-        '&::before': {
-          transformOrigin: '100% 0'
-        }
-      },
-      '&[x-placement*="right"] $arrow': {
-        left: 0,
-        marginLeft: '-0.71em',
-        height: '1em',
-        width: '0.71em',
-        marginTop: 4,
-        marginBottom: 4,
-        '&::before': {
-          transformOrigin: '100% 100%'
-        }
-      },
-      '&[x-placement*="left"] $arrow': {
-        right: 0,
-        marginRight: '-0.71em',
-        height: '1em',
-        width: '0.71em',
-        marginTop: 4,
-        marginBottom: 4,
-        '&::before': {
-          transformOrigin: '0 0'
-        }
-      }
-    },
-    paper: {
-      padding: '10px'
-    },
-    arrow: {
-      overflow: 'hidden',
-      position: 'absolute',
-      width: '1em',
-      height: '0.71em',
-      boxSizing: 'border-box',
-      color: theme.palette.background.paper,
+const useStyles = makeStyles()((theme) => ({
+  popper: {
+    zIndex: theme.zIndex.modal,
+    [`&[data-popper-placement*="bottom"] [class*="-arrow"]`]: {
+      top: 0,
+      left: 0,
+      marginTop: '-0.71em',
+      marginLeft: 4,
+      marginRight: 4,
       '&::before': {
-        content: '""',
-        margin: 'auto',
-        display: 'block',
-        width: '100%',
-        height: '100%',
-        boxShadow: theme.shadows[1],
-        backgroundColor: 'currentColor',
-        transform: 'rotate(45deg)'
+        transformOrigin: '0 100%'
       }
     },
-    textField: {
-      marginBottom: theme.spacing(1)
+    [`&[data-popper-placement*="top"] [class*="-arrow"]`]: {
+      bottom: 0,
+      left: 0,
+      marginBottom: '-0.71em',
+      marginLeft: 4,
+      marginRight: 4,
+      '&::before': {
+        transformOrigin: '100% 0'
+      }
     },
-    form: {
-      display: 'contents'
+    [`&[data-popper-placement*="right"] [class*="-arrow"]`]: {
+      left: 0,
+      marginLeft: '-0.71em',
+      height: '1em',
+      width: '0.71em',
+      marginTop: 4,
+      marginBottom: 4,
+      '&::before': {
+        transformOrigin: '100% 100%'
+      }
     },
-    dialogBody: {
-      overflow: 'auto'
+    [`&[data-popper-placement*="left"] [class*="-arrow"]`]: {
+      right: 0,
+      marginRight: '-0.71em',
+      height: '1em',
+      width: '0.71em',
+      marginTop: 4,
+      marginBottom: 4,
+      '&::before': {
+        transformOrigin: '0 0'
+      }
     }
-  })
-);
+  },
+  paper: {
+    padding: '10px'
+  },
+  arrow: {
+    overflow: 'hidden',
+    position: 'absolute',
+    width: '1em',
+    height: '0.71em',
+    boxSizing: 'border-box',
+    color: theme.palette.background.paper,
+    '&::before': {
+      content: '""',
+      margin: 'auto',
+      display: 'block',
+      width: '100%',
+      height: '100%',
+      boxShadow: theme.shadows[1],
+      backgroundColor: 'currentColor',
+      transform: 'rotate(45deg)'
+    }
+  },
+  textField: {
+    marginBottom: theme.spacing(1)
+  },
+  form: {
+    display: 'contents'
+  },
+  dialogBody: {
+    overflow: 'auto'
+  }
+}));
 
 export function CreateUserDialogContainer(props: CreateUserDialogContainerProps) {
   const { onClose, passwordRequirementsRegex, onCreateSuccess, isSubmitting, onSubmittingAndOrPendingChange } = props;
@@ -135,7 +131,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   const [validPassword, setValidPassword] = useState(false);
   const [submitOk, setSubmitOk] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const classes = useStyles();
+  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const arrowRef = useRef();
@@ -157,7 +153,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
             switchMap((user) =>
               selectedGroupsRef.current.length
                 ? forkJoin(selectedGroupsRef.current.map((id) => addUserToGroup(Number(id), user.username))).pipe(
-                    mapTo(user)
+                    map(() => user)
                   )
                 : of(user)
             )
@@ -227,7 +223,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
               <Grid item sm={6}>
                 <TextField
                   autoFocus
-                  className={clsx(classes.textField)}
+                  className={cx(classes.textField)}
                   label={<FormattedMessage id="createUserDialog.firstName" defaultMessage="First Name" />}
                   required
                   fullWidth
@@ -247,7 +243,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
               </Grid>
               <Grid item sm={6}>
                 <TextField
-                  className={clsx(classes.textField)}
+                  className={cx(classes.textField)}
                   label={<FormattedMessage id="createUserDialog.lastName" defaultMessage="Last Name" />}
                   required
                   fullWidth

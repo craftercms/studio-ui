@@ -28,6 +28,8 @@ import {
   fetchQuickCreateListFailed,
   fetchSandboxItem,
   fetchSandboxItemComplete,
+  fetchSandboxItems,
+  fetchSandboxItemsComplete,
   reloadDetailedItem,
   restoreClipboard,
   setClipboard,
@@ -43,18 +45,17 @@ import {
 } from '../actions/pathNavigator';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable, reversePluckProps } from '../../utils/object';
-import { DetailedItem, SandboxItem } from '../../models/Item';
+import { SandboxItem } from '../../models/Item';
 import { changeSite } from '../actions/sites';
 import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
-  pathNavigatorTreeFetchPathsChildrenComplete,
-  pathNavigatorTreeRestoreComplete
+  pathNavigatorTreeRestoreComplete,
+  PathNavigatorTreeRestoreCompletePayload
 } from '../actions/pathNavigatorTree';
-import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import LookupTable from '../../models/LookupTable';
 import { STATE_LOCKED_MASK } from '../../utils/constants';
-import { lockContentEvent } from '../actions/system';
+import { deleteContentEvent, lockContentEvent, moveContentEvent, MoveContentEventPayload } from '../actions/system';
+import SocketEventBase from '../../models/SocketEvent';
 
 type ContentState = GlobalState['content'];
 
@@ -114,13 +115,13 @@ const updateItemByPath = (state: ContentState, { payload: { parent, children } }
 };
 
 const updateItemsBeingFetchedByPath = (state: ContentState, { payload: { path } }) => {
-  return {
-    ...state,
-    itemsBeingFetchedByPath: {
-      ...state.itemsBeingFetchedByPath,
-      [path]: true
-    }
-  };
+  state.itemsBeingFetchedByPath[path] = true;
+};
+
+const updateItemsBeingFetchedByPaths = (state, { payload: { paths } }) => {
+  paths.forEach((path) => {
+    state.itemsBeingFetchedByPath[path] = true;
+  });
 };
 
 const reducer = createReducer<ContentState>(initialState, {
@@ -151,6 +152,14 @@ const reducer = createReducer<ContentState>(initialState, {
   [reloadDetailedItem.type]: updateItemsBeingFetchedByPath,
   [completeDetailedItem.type]: updateItemsBeingFetchedByPath,
   [fetchSandboxItem.type]: updateItemsBeingFetchedByPath,
+  [fetchSandboxItems.type]: updateItemsBeingFetchedByPaths,
+  [fetchSandboxItemsComplete.type]: (state, { payload: { items } }) => {
+    items.forEach((item) => {
+      const path = item.path;
+      state.itemsByPath[path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
+      delete state.itemsBeingFetchedByPath[path];
+    });
+  },
   [fetchDetailedItemComplete.type]: (state, { payload }) => ({
     ...state,
     itemsByPath: {
@@ -161,46 +170,19 @@ const reducer = createReducer<ContentState>(initialState, {
       ...reversePluckProps(state.itemsBeingFetchedByPath, payload.path)
     }
   }),
-  [fetchDetailedItems.type]: (state, { payload }) => {
-    const itemsFetchedByPath = {};
-    payload.paths.forEach((path) => {
-      itemsFetchedByPath[path] = true;
-    });
-    return {
-      ...state,
-      itemsBeingFetchedByPath: {
-        ...state.itemsBeingFetchedByPath,
-        ...itemsFetchedByPath
-      }
-    };
-  },
-  [fetchDetailedItemsComplete.type]: (state, { payload: items }) => {
-    const nextByPath = {};
+  [fetchDetailedItems.type]: updateItemsBeingFetchedByPaths,
+  [fetchDetailedItemsComplete.type]: (state, { payload: { items } }) => {
     items.forEach((item) => {
-      nextByPath[item.path] = item;
+      const path = item.path;
+      state.itemsByPath[path] = item;
+      delete state.itemsBeingFetchedByPath[path];
     });
-
-    return {
-      ...state,
-      itemsByPath: {
-        ...state.itemsByPath,
-        ...nextByPath
-      },
-      itemsBeingFetchedByPath: {
-        ...reversePluckProps(state.itemsBeingFetchedByPath, ...items.map((item) => item.path))
-      }
-    };
   },
-  [fetchSandboxItemComplete.type]: (state, { payload: { item } }) => ({
-    ...state,
-    itemsByPath: {
-      ...state.itemsByPath,
-      [item.path]: parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path])
-    },
-    itemsBeingFetchedByPath: {
-      ...reversePluckProps(state.itemsBeingFetchedByPath, item.path)
-    }
-  }),
+  [fetchSandboxItemComplete.type]: (state, { payload: { item } }) => {
+    const path = item.path;
+    state.itemsByPath[path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
+    state.itemsBeingFetchedByPath[path] = false;
+  },
   [restoreClipboard.type]: (state, { payload }) => ({
     ...state,
     clipboard: payload
@@ -215,10 +197,7 @@ const reducer = createReducer<ContentState>(initialState, {
   }),
   [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
   [pathNavigatorFetchPathComplete.type]: updateItemByPath,
-  [pathNavigatorFetchParentItemsComplete.type]: (
-    state,
-    { payload: { items, children } }: { payload: { items: DetailedItem[]; children: GetChildrenResponse } }
-  ) => {
+  [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { items, children } }) => {
     return {
       ...state,
       itemsByPath: {
@@ -245,12 +224,12 @@ const reducer = createReducer<ContentState>(initialState, {
   },
   [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
   [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
-  [pathNavigatorTreeRestoreComplete.type]: (
-    state,
-    { payload: { data, items } }: { payload: { data: LookupTable<GetChildrenResponse>; items: DetailedItem[] } }
-  ) => {
+  [pathNavigatorTreeRestoreComplete.type]: (state, action: { payload: PathNavigatorTreeRestoreCompletePayload }) => {
+    const {
+      payload: { children, items }
+    } = action;
     let nextByPath = {};
-    Object.values(data).forEach((children) => {
+    Object.values(children).forEach((children) => {
       Object.assign(
         nextByPath,
         createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
@@ -267,25 +246,6 @@ const reducer = createReducer<ContentState>(initialState, {
     });
     return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
   },
-  [pathNavigatorTreeFetchPathsChildrenComplete.type]: (
-    state,
-    { payload: { data } }: { payload: { data: LookupTable<GetChildrenResponse> } }
-  ) => {
-    let nextByPath = {};
-    Object.values(data).forEach((children) => {
-      Object.assign(
-        nextByPath,
-        createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
-      );
-      if (children.levelDescriptor) {
-        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
-          children.levelDescriptor,
-          state.itemsByPath[children.levelDescriptor.path]
-        );
-      }
-    });
-    return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
-  },
   [updateItemsByPath.type]: (state, { payload }) => {
     return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
   },
@@ -295,7 +255,15 @@ const reducer = createReducer<ContentState>(initialState, {
       path: payload.targetPath,
       username: payload.user.username,
       locked: payload.locked
-    })
+    }),
+  [deleteContentEvent.type]: (state, { payload: { targetPath } }: StandardAction<SocketEventBase>) => {
+    delete state.itemsByPath[targetPath];
+    delete state.itemsBeingFetchedByPath[targetPath];
+  },
+  [moveContentEvent.type]: (state, { payload: { sourcePath } }: StandardAction<MoveContentEventPayload>) => {
+    delete state.itemsByPath[sourcePath];
+    delete state.itemsBeingFetchedByPath[sourcePath];
+  }
 });
 
 export default reducer;

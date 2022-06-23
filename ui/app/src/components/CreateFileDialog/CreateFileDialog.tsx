@@ -21,7 +21,7 @@ import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateFileDialog(props: CreateFileProps) {
-  const { isSubmitting, type, path, allowBraces, onCreated, ...rest } = props;
+  const { type, path, allowBraces, onCreated, ...rest } = props;
   return (
     <EnhancedDialog
       title={
@@ -32,16 +32,9 @@ export function CreateFileDialog(props: CreateFileProps) {
         )
       }
       maxWidth="xs"
-      isSubmitting={isSubmitting}
       {...rest}
     >
-      <CreateFileDialogContainer
-        path={path}
-        onCreated={onCreated}
-        type={type}
-        isSubmitting={isSubmitting}
-        allowBraces={allowBraces}
-      />
+      <CreateFileDialogContainer path={path} onCreated={onCreated} type={type} allowBraces={allowBraces} />
     </EnhancedDialog>
   );
 }

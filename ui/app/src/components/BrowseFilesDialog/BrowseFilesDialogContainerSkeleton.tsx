@@ -23,7 +23,7 @@ import MediaSkeletonCard from './MediaSkeletonCard';
 export interface BrowseFilesDialogContainerSkeletonProps {}
 
 export function BrowseFilesDialogContainerSkeleton(props: BrowseFilesDialogContainerSkeletonProps) {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   return (
     <>

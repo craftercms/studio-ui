@@ -24,7 +24,6 @@ import { SearchItem } from '../../models';
 import MediaCard from '../MediaCard/MediaCard';
 import { useStyles } from './styles';
 import SearchBar from '../SearchBar/SearchBar';
-import clsx from 'clsx';
 import MediaSkeletonCard from './MediaSkeletonCard';
 import EmptyState from '../EmptyState/EmptyState';
 import Pagination from '../Pagination';
@@ -35,6 +34,7 @@ import Divider from '@mui/material/Divider';
 import InputUnstyled from '@mui/base/InputUnstyled';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
+  // region const { ... } = props;
   const {
     items,
     guestBase,
@@ -61,18 +61,14 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onRefresh,
     onUpload
   } = props;
-  const classes = useStyles();
+  // endregion
+  const { classes, cx: clsx } = useStyles();
   return (
     <>
       <DialogBody className={classes.dialogBody}>
         <Box display="flex">
           <section className={classes.leftWrapper}>
-            <FolderBrowserTreeView
-              classes={{ root: classes.treeView, treeItemLabel: classes.treeItemLabel }}
-              rootPath={path}
-              showPathTextBox={false}
-              onPathSelected={onPathSelected}
-            />
+            <FolderBrowserTreeView rootPath={path} onPathSelected={onPathSelected} selectedPath={currentPath} />
           </section>
           <section className={classes.rightWrapper}>
             <InputUnstyled value={currentPath} className={classes.currentPath} disabled title={currentPath} />

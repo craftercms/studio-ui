@@ -15,7 +15,7 @@
  */
 
 import { errorSelectorApi1, get, getBinary, getGlobalHeaders, getText, post, postJSON } from '../utils/ajax';
-import { catchError, map, mapTo, pluck, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { cdataWrap, createElement, createElements, fromString, getInnerHtml, serialize } from '../utils/xml';
 import { ContentType } from '../models/ContentType';
@@ -242,7 +242,7 @@ function performMutation(
   path: string,
   mutation: (doc: Element) => void,
   modelId: string = null
-): Observable<any> {
+): Observable<{ updatedDocument: XMLDocument }> {
   return fetchContentDOM(site, path).pipe(
     switchMap((doc) => {
       const documentModelId = doc.querySelector(':scope > objectId').innerHTML.trim();
@@ -264,7 +264,7 @@ function performMutation(
           fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
         }),
         serialize(doc)
-      ).pipe(mapTo({ updatedDocument: doc }));
+      ).pipe(map(() => ({ updatedDocument: doc })));
     })
   );
 }
@@ -316,7 +316,7 @@ export function insertComponent(
           ...(shared ? {} : { inline: true })
         },
         key: shared ? path : id,
-        value: instance.craftercms.label,
+        value: cdataWrap(instance.craftercms.label),
         ...(shared
           ? {
               include: path,
@@ -355,11 +355,11 @@ export function insertInstance(
 
       createElements(newItem, {
         '@attributes': {
-          // TODO: Hardcoded value. Fix.
-          datasource: datasource ?? 'TODO'
+          // TODO: Review datasource persistence.
+          datasource: datasource ?? ''
         },
         key: path,
-        value: instance.craftercms.label,
+        value: cdataWrap(instance.craftercms.label),
         include: path,
         disableFlattening: 'false'
       });
@@ -437,7 +437,7 @@ export function duplicateItem(
             fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
           }),
           serialize(doc)
-        ).pipe(mapTo(returnValue));
+        ).pipe(map(() => returnValue));
       } else {
         return fetchContentDOM(site, itemPath).pipe(
           switchMap((componentDoc) => {
@@ -464,7 +464,12 @@ export function duplicateItem(
                 }),
                 serialize(componentDoc)
               )
-            ]).pipe(mapTo(returnValue));
+            ]).pipe(
+              map(() => {
+                returnValue.newItem.path += `/${returnValue.newItem.modelId}.xml`;
+                return returnValue;
+              })
+            );
           })
         );
       }
@@ -704,7 +709,7 @@ export function formatXML(site: string, path: string): Observable<boolean> {
         serialize(doc)
       )
     ),
-    mapTo(true)
+    map(() => true)
   );
 }
 
@@ -1118,11 +1123,15 @@ export function fetchChildrenByPath(
 
 export function fetchChildrenByPaths(
   siteId: string,
-  paths: LookupTable<Partial<GetChildrenOptions>>,
+  fetchOptionsByPath: LookupTable<Partial<GetChildrenOptions>>,
   options?: Partial<GetChildrenOptions>
 ): Observable<LookupTable<GetChildrenResponse>> {
-  const requests = Object.keys(paths).map((path) =>
-    fetchChildrenByPath(siteId, path, { ...options, ...paths[path] }).pipe(
+  const paths = Object.keys(fetchOptionsByPath);
+  if (paths.length === 0) {
+    return of({});
+  }
+  const requests = paths.map((path) =>
+    fetchChildrenByPath(siteId, path, { ...options, ...fetchOptionsByPath[path] }).pipe(
       catchError((error: AjaxError) => {
         if (error.status === 404) {
           return of([]);
@@ -1135,7 +1144,7 @@ export function fetchChildrenByPaths(
   return forkJoin(requests).pipe(
     map((responses) => {
       const data = {};
-      Object.keys(paths).forEach((path, i) => (data[path] = responses[i]));
+      Object.keys(fetchOptionsByPath).forEach((path, i) => (data[path] = responses[i]));
       return data;
     })
   );
@@ -1261,16 +1270,16 @@ export function deleteItems(
     items,
     optionalDependencies,
     comment
-  }).pipe(mapTo(true));
+  }).pipe(map(() => true));
 }
 
 export function lock(siteId: string, path: string): Observable<boolean> {
-  return postJSON('/studio/api/2/content/item_lock_by_path', { siteId, path }).pipe(mapTo(true));
+  return postJSON('/studio/api/2/content/item_lock_by_path', { siteId, path }).pipe(map(() => true));
 }
 
 export function unlock(siteId: string, path: string): Observable<boolean> {
   return postJSON('/studio/api/2/content/item_unlock_by_path', { siteId, path }).pipe(
-    mapTo(true),
+    map(() => true),
     // Do not throw/report 409 (item is already unlocked) as an error.
     catchError((error) => {
       if (error.status === 409) {

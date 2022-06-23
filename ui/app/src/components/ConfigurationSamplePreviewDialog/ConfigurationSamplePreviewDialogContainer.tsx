@@ -27,10 +27,8 @@ import { useUnmount } from '../../hooks/useUnmount';
 
 export function ConfigurationSamplePreviewDialogContainer(props: ConfigurationSamplePreviewDialogProps) {
   const { content, onClose, onClosed, onUseSampleClick } = props;
-  const classes = useStyles();
-
+  const { classes } = useStyles();
   useUnmount(onClosed);
-
   return (
     <>
       <DialogHeader

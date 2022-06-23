@@ -30,8 +30,9 @@ export const fetchSitePropertiesComplete = /*#__PURE__*/ createAction('FETCH_SIT
 
 export const fetchSitePropertiesFailed = /*#__PURE__*/ createAction('FETCH_SITE_PROPERTIES_FAILED');
 
-export const deleteProperties =
-  /*#__PURE__*/ createAction<{ properties: string[]; siteId?: string }>('DELETE_PROPERTIES');
+export const deleteProperties = /*#__PURE__*/ createAction<{ properties: string[]; siteId?: string }>(
+  'DELETE_PROPERTIES'
+);
 
 export const deletePropertiesComplete = /*#__PURE__*/ createAction('DELETE_PROPERTIES_COMPLETE');
 

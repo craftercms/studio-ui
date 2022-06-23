@@ -22,7 +22,7 @@ import { rand } from './utils';
 import React from 'react';
 
 function PathNavigatorSkeletonItem() {
-  const classes = useStyles();
+  const { classes } = useStyles();
   return (
     <ListItem className={classes.navItem} style={{ height: '25px' }}>
       <Skeleton animation="wave" variant="circular" className={classes.typeIcon} height={15} width={15} />

@@ -14,24 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import useObservable from './useObservable';
+import { Observable } from 'rxjs';
+import { useEffect } from 'react';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    collapseAll: {
-      marginRight: '10px'
-    },
-    actionsBarRoot: {
-      left: '0',
-      right: '0',
-      zIndex: 2,
-      position: 'absolute'
-    },
-    actionsBarCheckbox: {
-      margin: '2px'
-    }
-  })
-);
+export function useUnmount$(): Observable<void> {
+  const { subject, observable } = useObservable<void>();
+  useEffect(() => {
+    return () => {
+      subject.next();
+      subject.complete();
+    };
+  }, [subject]);
+  return observable;
+}
 
-export default useStyles;
+export default useUnmount$;

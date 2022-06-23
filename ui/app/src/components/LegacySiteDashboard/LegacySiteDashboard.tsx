@@ -32,7 +32,7 @@ export function LegacySiteDashboard(props: DashboardAppProps) {
   const site = useActiveSiteId();
   const user = useActiveUser();
   const userRoles = user.rolesBySite[site];
-  const classes = useStyles();
+  const { classes } = useStyles();
   const uiConfig = useSiteUIConfig();
   const dashboard = useDashboardState();
   const dispatch = useDispatch();

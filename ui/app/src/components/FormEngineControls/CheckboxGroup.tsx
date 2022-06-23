@@ -24,7 +24,7 @@ import useStyles from './styles';
 
 export function CheckboxGroup(props: Control) {
   const { field, value = [], onChange, disabled } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const handleChange = (e) =>
     onChange(e.target.checked ? value.concat(e.target.value) : value.filter((val) => val !== e.target.value));

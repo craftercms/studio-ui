@@ -13,10 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { DetailedItem } from '../../models/Item';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import clsx from 'clsx';
 import { isImage } from '../../utils/content';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
@@ -28,19 +26,18 @@ import { dependenciesDialogStyles } from './DependenciesDialog';
 import { assetsTypes, DependenciesListProps } from './utils';
 
 export function DependenciesList(props: DependenciesListProps) {
-  const { resource, compactView, showTypes, handleContextMenuClick } = props;
-  const classes = dependenciesDialogStyles({});
-  const dependencies: DetailedItem[] = resource.read();
+  const { dependencies, compactView, showTypes, handleContextMenuClick } = props;
+  const { classes, cx } = dependenciesDialogStyles();
 
   return (
     <List className={classes.dependenciesList}>
       {dependencies
-        .filter((dependency) => assetsTypes[showTypes].filter(dependency))
+        ?.filter((dependency) => assetsTypes[showTypes].filter(dependency))
         .map((dependency, i) => (
           <ListItem
             key={dependency.path}
             divider={dependencies.length - 1 !== i}
-            className={clsx(classes.dependenciesListItem, {
+            className={cx(classes.dependenciesListItem, {
               [classes.dependenciesCompactListItem]: compactView
             })}
           >

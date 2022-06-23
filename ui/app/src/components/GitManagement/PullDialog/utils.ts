@@ -20,7 +20,6 @@ import ApiResponse from '../../../models/ApiResponse';
 import { PullResponse } from '../../../services/repositories';
 
 export interface PullFromRemoteBaseProps {
-  branches: string[];
   remoteName: string;
   mergeStrategies: MergeStrategy[];
 }

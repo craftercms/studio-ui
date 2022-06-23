@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import Radio from '@mui/material/Radio';
@@ -24,7 +24,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import palette from '../../styles/palette';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()(() => ({
   menu: {
     padding: '5px 10px'
   },
@@ -58,7 +58,7 @@ interface ContentTypesFilterProps {
 
 export function ContentTypesFilter(props: ContentTypesFilterProps) {
   const { onFilterChange, selected, disabled, filters } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const filter = filters.find((filter) => filter.type === selected);

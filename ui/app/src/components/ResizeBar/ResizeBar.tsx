@@ -15,7 +15,6 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import clsx from 'clsx';
 import useStyles from './styles';
 
 export interface ResizeBarProps {
@@ -24,7 +23,7 @@ export interface ResizeBarProps {
 }
 
 export function ResizeBar(props: ResizeBarProps) {
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const [resizeActive, setResizeActive] = useState(false);
   const { onWidthChange, element } = props;
 

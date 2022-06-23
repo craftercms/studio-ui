@@ -17,7 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { PathNavigatorStateProps } from '../../components/PathNavigator';
 import LookupTable from '../../models/LookupTable';
-import { getIndividualPaths, withoutIndex } from '../../utils/path';
+import { getIndividualPaths, getParentPath, withoutIndex } from '../../utils/path';
 import {
   pathNavigatorChangeLimit,
   pathNavigatorChangePage,
@@ -38,221 +38,197 @@ import {
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
   pathNavigatorSetLocaleCode,
-  pathNavigatorUpdate
+  pathNavigatorUpdate,
+  PathNavInitPayload,
+  pathNavRootPathMissing
 } from '../actions/pathNavigator';
 import { changeSite } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
+import { contentEvent, deleteContentEvent, moveContentEvent, MoveContentEventPayload } from '../actions/system';
+import SocketEvent from '../../models/SocketEvent';
+import StandardAction from '../../models/StandardAction';
 
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
   {},
   {
-    [pathNavigatorInit.type]: (
-      state,
-      { payload: { id, path, currentPath, locale = 'en', collapsed = true, limit, keyword, offset, excludes } }
-    ) => {
-      return {
-        ...state,
-        [id]: {
-          rootPath: path,
-          currentPath: currentPath ?? path,
-          localeCode: locale,
-          keyword: keyword ?? '',
-          isSelectMode: false,
-          hasClipboard: false,
-          levelDescriptor: null,
-          itemsInPath: null,
-          breadcrumb: [],
-          selectedItems: [],
-          limit,
-          offset: offset ?? 0,
-          total: 0,
-          collapsed,
-          isFetching: null,
-          error: null,
-          excludes
-        }
+    [pathNavigatorInit.type]: (state, action: StandardAction<PathNavInitPayload>) => {
+      const {
+        id,
+        rootPath,
+        currentPath = rootPath,
+        locale = 'en_US',
+        collapsed = true,
+        limit = 10,
+        keyword = '',
+        offset = 0,
+        excludes
+      } = action.payload;
+      state[id] = {
+        id,
+        rootPath,
+        currentPath: currentPath,
+        localeCode: locale,
+        keyword: keyword,
+        isSelectMode: false,
+        hasClipboard: false,
+        levelDescriptor: null,
+        itemsInPath: null,
+        breadcrumb: [],
+        selectedItems: [],
+        limit,
+        offset,
+        total: 0,
+        collapsed,
+        isFetching: true,
+        error: null,
+        excludes,
+        isRootPathMissing: false
       };
     },
     [pathNavigatorSetLocaleCode.type]: (state, { payload: { id, locale } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          localeCode: locale
-        }
-      };
+      state[id].localeCode = locale;
     },
     [pathNavigatorSetCurrentPath.type]: (state, { payload: { id, path } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          keyword: '',
-          currentPath: path,
-          error: null
-        }
-      };
+      state[id].keyword = '';
+      state[id].currentPath = path;
+      state[id].error = null;
     },
-    [pathNavigatorConditionallySetPath.type]: (state, { payload }) => ({
-      ...state,
-      [payload.id]: { ...state[payload.id], isFetching: true, error: null }
-    }),
+    [pathNavigatorConditionallySetPath.type]: (state, { payload }) => {
+      state[payload.id].isFetching = true;
+      state[payload.id].error = null;
+    },
     [pathNavigatorConditionallySetPathComplete.type]: (state, { payload: { id, path, parent, children } }) => {
+      const chunk = state[id];
+      chunk.isFetching = false;
+      chunk.error = null;
       if (parent.childrenCount > 0) {
-        return {
-          ...state,
-          [id]: {
-            ...state[id],
-            currentPath: path,
-            offset: 0,
-            breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
-            itemsInPath: children.map((item) => item.path),
-            levelDescriptor: children.levelDescriptor?.path,
-            total: children.total,
-            isFetching: false,
-            error: null
-          }
-        };
-      } else {
-        return {
-          ...state,
-          [id]: {
-            ...state[id],
-            isFetching: false,
-            error: null
-          }
-        };
+        chunk.currentPath = path;
+        chunk.offset = 0;
+        chunk.breadcrumb = getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath));
+        chunk.itemsInPath = children.map((item) => item.path);
+        chunk.levelDescriptor = children.levelDescriptor?.path;
+        chunk.total = children.total;
       }
     },
-    [pathNavigatorConditionallySetPathFailed.type]: (state, { payload }) => ({
-      ...state,
-      [payload.id]: { ...state[payload.id], isFetching: false, error: payload.error }
-    }),
-    [pathNavigatorFetchPath.type]: (state, { payload }) => ({
-      ...state,
-      [payload.id]: { ...state[payload.id], isFetching: true, error: null }
-    }),
+    [pathNavigatorConditionallySetPathFailed.type]: (state, { payload }) => {
+      state[payload.id].isFetching = false;
+      state[payload.id].error = payload.error;
+    },
+    [pathNavigatorFetchPath.type]: (state, { payload }) => {
+      state[payload.id].isFetching = true;
+      state[payload.id].error = null;
+    },
     [pathNavigatorFetchPathComplete.type]: (state, { payload: { id, children, parent } }) => {
-      // If it's not the first page, and the fetched data has no children, stay on the previous page.
-      if (children.offset >= children.limit && children.length === 0) {
-        return state;
-      } else {
+      if (
+        // If it's not the first page, and the fetched data has no children, stay on the previous page.
+        !(children.offset >= children.limit && children.length === 0)
+      ) {
+        const chunk = state[id];
         const path = parent?.path ?? state[id].currentPath;
-        return {
-          ...state,
-          [id]: {
-            ...state[id],
-            currentPath: path,
-            breadcrumb: getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath)),
-            itemsInPath: children.length === 0 ? [] : children.map((item) => item.path),
-            levelDescriptor: children.levelDescriptor?.path,
-            total: children.total,
-            offset: children.offset,
-            limit: children.limit,
-            isFetching: false,
-            error: null
-          }
-        };
+        chunk.currentPath = path;
+        chunk.breadcrumb = getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath));
+        chunk.itemsInPath = children.length === 0 ? [] : children.map((item) => item.path);
+        chunk.levelDescriptor = children.levelDescriptor?.path;
+        chunk.total = children.total;
+        chunk.offset = children.offset;
+        chunk.limit = children.limit;
+        chunk.isFetching = false;
+        chunk.error = null;
       }
     },
-    [pathNavigatorFetchPathFailed.type]: (state, { payload: { id, error } }) => ({
-      ...state,
-      [id]: { ...state[id], isFetching: false, error: error }
-    }),
+    [pathNavigatorFetchPathFailed.type]: (state, { payload: { id, error } }) => {
+      state[id].isFetching = false;
+      state[id].error = error;
+    },
     [pathNavigatorFetchParentItems.type]: (state, { payload: { id, path } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          currentPath: path,
-          error: null
-        }
-      };
+      state[id].isFetching = true;
+      state[id].currentPath = path;
+      state[id].error = null;
     },
     [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { id, children } }) => {
-      const { currentPath, rootPath } = state[id];
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          itemsInPath: children.map((item) => item.path),
-          levelDescriptor: children.levelDescriptor?.path ?? null,
-          breadcrumb: getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath)),
-          limit: children.limit,
-          total: children.total,
-          offset: children.offset
-        }
-      };
+      const chunk = state[id];
+      const { currentPath, rootPath } = chunk;
+      chunk.itemsInPath = children.map((item) => item.path);
+      chunk.levelDescriptor = children.levelDescriptor?.path ?? null;
+      chunk.breadcrumb = getIndividualPaths(withoutIndex(currentPath), withoutIndex(rootPath));
+      chunk.limit = children.limit;
+      chunk.total = children.total;
+      chunk.offset = children.offset;
+      chunk.isFetching = false;
     },
     [pathNavigatorSetCollapsed.type]: (state, { payload: { id, collapsed } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          collapsed
-        }
-      };
+      state[id].collapsed = collapsed;
     },
-    [pathNavigatorSetKeyword.type]: (state, { payload: { id, keyword } }) =>
-      keyword === state.keyword
-        ? state
-        : {
-            ...state,
-            [id]: {
-              ...state[id],
-              keyword,
-              isFetching: true
-            }
-          },
+    [pathNavigatorSetKeyword.type]: (state, { payload: { id, keyword } }) => {
+      if (keyword !== state.keyword) {
+        state[id].keyword = keyword;
+        state[id].isFetching = true;
+      }
+    },
     [pathNavigatorItemChecked.type]: (state, { payload: { id, item } }) => {
-      let selectedItems = [...state[id].selectedItems];
-      selectedItems.push(item.path);
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          selectedItems
-        }
-      };
+      state[id].itemsInPath.push(item.path);
     },
     [pathNavigatorItemUnchecked.type]: (state, { payload: { id, item } }) => {
-      let checked = [...state[id].selectedItems];
-      checked.splice(checked.indexOf(item.path), 1);
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          selectedItems: checked
-        }
-      };
+      const chunk = state[id];
+      chunk.selectedItems.splice(chunk.selectedItems.indexOf(item.path), 1);
     },
     [pathNavigatorClearChecked.type]: (state, { payload: { id } }) => {
-      return {
-        ...state,
-        [id]: {
-          ...state[id],
-          selectedItems: []
-        }
-      };
+      state[id].selectedItems = [];
     },
-    [pathNavigatorUpdate.type]: (state, { payload }) => ({
-      ...state,
-      [payload.id]: { ...state[payload.id], ...payload }
-    }),
-    [pathNavigatorRefresh.type]: (state, { payload: { id } }) => ({
-      ...state,
-      [id]: { ...state[id], isFetching: true }
-    }),
-    [pathNavigatorChangePage.type]: (state, { payload: { id } }) => ({
-      ...state,
-      [id]: { ...state[id], isFetching: true }
-    }),
-    [pathNavigatorChangeLimit.type]: (state, { payload: { id, limit } }) => ({
-      ...state,
-      [id]: { ...state[id], limit, isFetching: true }
-    }),
+    [pathNavigatorUpdate.type]: (state, { payload }) => {
+      Object.assign(state[payload.id], payload);
+    },
+    [pathNavigatorRefresh.type]: (state, { payload: { id } }) => {
+      state[id].isFetching = true;
+    },
+    [pathNavigatorChangePage.type]: (state, { payload: { id } }) => {
+      state[id].isFetching = true;
+    },
+    [pathNavigatorChangeLimit.type]: (state, { payload: { id, limit } }) => {
+      state[id].limit = limit;
+      state[id].isFetching = true;
+    },
     [changeSite.type]: () => ({}),
-    [fetchSiteUiConfig.type]: () => ({})
+    [fetchSiteUiConfig.type]: () => ({}),
+    [pathNavRootPathMissing.type]: (state, { payload: { id } }) => {
+      state[id].isRootPathMissing = true;
+      state[id].isFetching = false;
+    },
+    [contentEvent.type]: (state, { payload: { targetPath } }: StandardAction<SocketEvent>) => {
+      Object.values(state).forEach((navigator) => {
+        if (navigator.isRootPathMissing && targetPath === navigator.rootPath) {
+          navigator.isRootPathMissing = false;
+        }
+      });
+    },
+    [moveContentEvent.type]: (state, action: StandardAction<MoveContentEventPayload>) => {
+      const {
+        payload: { targetPath, sourcePath }
+      } = action;
+      Object.values(state).forEach((navigator) => {
+        if (sourcePath === navigator.rootPath) {
+          navigator.isRootPathMissing = true;
+        } else if (navigator.isRootPathMissing && targetPath === navigator.rootPath) {
+          navigator.isRootPathMissing = false;
+        }
+      });
+    },
+    [deleteContentEvent.type]: (state, { payload: { targetPath } }: StandardAction<SocketEvent>) => {
+      Object.values(state).forEach((navigator) => {
+        const parentPath = getParentPath(targetPath);
+        if (targetPath === navigator.rootPath || navigator.rootPath.startsWith(targetPath)) {
+          navigator.isRootPathMissing = true;
+        } else if (parentPath === navigator.currentPath) {
+          if (!navigator.excludes?.includes(targetPath)) {
+            navigator.total = navigator.total - 1;
+          }
+          navigator.itemsInPath = navigator.itemsInPath.filter((path) => path !== targetPath);
+          navigator.selectedItems = navigator.selectedItems.filter((path) => path !== targetPath);
+        } else if (navigator.levelDescriptor === targetPath) {
+          navigator.levelDescriptor = null;
+        }
+      });
+    }
   }
 );
 

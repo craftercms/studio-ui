@@ -59,7 +59,7 @@ export function LogLevelGrid(props: LoggingLevelsGridUIProps) {
     loggerFilter = '',
     levelFilter = ''
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [displayAll, setDisplayAll] = useState(false);
   const onShowAllClick = () => setDisplayAll(true);
   useEffect(() => {

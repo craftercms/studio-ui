@@ -27,6 +27,7 @@ import { updateWidgetDialog } from '../../../state/actions/dialogs';
 
 interface EmbeddedSiteToolsProps {
   onMinimize?: () => void;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
@@ -37,16 +38,18 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   const siteTools = useReference('craftercms.siteTools');
   const tools: Tool[] = siteTools?.tools;
   const site = useActiveSiteId();
-  const classes = embeddedStyles();
+  const { classes } = embeddedStyles();
   const dispatch = useDispatch();
 
   const onNavItemClick = (id: string) => {
     setActiveToolId(id);
   };
 
-  const onSubmittingAndOrPendingChange = (value: onSubmittingAndOrPendingChangeProps) => {
-    dispatch(updateWidgetDialog(value));
-  };
+  const onSubmittingAndOrPendingChange =
+    props.onSubmittingAndOrPendingChange ??
+    ((value: onSubmittingAndOrPendingChangeProps) => {
+      dispatch(updateWidgetDialog(value));
+    });
 
   return (
     <SiteTools

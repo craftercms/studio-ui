@@ -39,10 +39,11 @@ import {
   sharedWorkerUnauthenticated
 } from './actions/auth';
 import { SHARED_WORKER_NAME } from '../utils/constants';
+import { fetchActiveEnvironment } from '../services/environment';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
-export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction>;
+export type CrafterCMSStore = EnhancedStore<GlobalState, StandardAction, any>;
 
 export type CrafterCMSEpic = Epic<StandardAction, StandardAction, GlobalState, EpicMiddlewareDependencies>;
 
@@ -159,7 +160,8 @@ export function fetchStateInitialization(): Observable<{
             tap((siteExists) => !siteExists && removeSiteCookie()),
             map((siteExists) => (siteExists ? siteCookieValue : null))
           )
-        : of(null)
+        : of(null),
+    activeEnvironment: fetchActiveEnvironment()
   });
 }
 

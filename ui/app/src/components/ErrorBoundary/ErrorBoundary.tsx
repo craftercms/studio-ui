@@ -17,18 +17,12 @@
 import React, { PropsWithChildren } from 'react';
 import ErrorState, { ErrorStateProps } from '../ErrorState/ErrorState';
 import ApiResponseErrorState from '../ApiResponseErrorState';
+import { isApiResponse } from '../../utils/object';
 
 export type ErrorBoundaryProps = PropsWithChildren<{
   onReset?(): void;
   errorStateProps?: ErrorStateProps;
 }>;
-
-function isApiResponse(source: object): boolean {
-  return (
-    Object.prototype.hasOwnProperty.call(source ?? {}, 'code') &&
-    Object.prototype.hasOwnProperty.call(source ?? {}, 'message')
-  );
-}
 
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
   state = { error: null };

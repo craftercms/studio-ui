@@ -1278,7 +1278,7 @@
   "settingsPanel.editMode": "Edit Mode",
   "settingsPanel.editModeHelperText": "Enable In-context editing, highlighting editable zones as you hover on them.",
   "settingsPanel.editModePaddingHelp": "Agrega relleno a las colecciones para facilitar la interacción en el modo de edición. Presione `p` en cualquier momento para activar / desactivar.",
-  "settingsPanel.editModePaddingLabel": "Relleno del modo de edición (p)",
+  "settingsPanel.editModePaddingLabel": "Modo espaciado (p)",
   "settingsPanel.highlightAllTargets": "Resalte todos los objetivos (e)",
   "settingsPanel.highlightMode": "Modo de resaltado",
   "settingsPanel.highlightModeHelperText": "When \"highlight movable\" is active, only content items you can move around drop targets highlight.",

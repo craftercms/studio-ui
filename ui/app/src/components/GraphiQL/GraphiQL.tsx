@@ -14,20 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-// @ts-ignore
-import GraphiQL from 'graphiql';
-
+import React, { useEffect, useMemo, useState } from 'react';
+import GraphiQLComponent, { FetcherOpts, FetcherParams, ToolbarButton } from 'graphiql';
 import 'graphiql/graphiql.min.css';
-
-// @ts-ignore
 import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { useStyles } from './styles';
-import clsx from 'clsx';
+import { toQueryString } from '../../utils/object';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { isBlank } from '../../utils/string';
+import { defaultQuery } from './utils';
 
 export interface GraphiQLProps {
   url?: string;
@@ -35,76 +35,77 @@ export interface GraphiQLProps {
   method?: string;
   embedded?: boolean;
   showAppsButton?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
-const storages: any = {};
-
-// Custom storage to store graphiQL info by key
-function makeStorage(storageKey: string) {
-  return {
-    setItem: (key: string, val: any) => window.localStorage.setItem(`${storageKey}${key}`, val),
-    getItem: (key: string) => window.localStorage.getItem(`${storageKey}${key}`),
-    removeItem: (key: string) => window.localStorage.removeItem(`${storageKey}${key}`)
-  };
-}
-
-// Returns custom storage by key
-function getStorage(storageKey: string) {
-  if (!storages[storageKey]) {
-    storages[storageKey] = makeStorage(storageKey);
-  }
-  return storages[storageKey];
-}
-
-function getGraphQLFetcher(url: string, method = 'post') {
-  return (graphQLParams: object) => {
-    url = url ?? window.location.origin + '/api/1/site/graphql';
-    method = method.toLowerCase();
-
-    if ('get' === method) {
-      if (typeof graphQLParams['variables'] === 'undefined') {
-        graphQLParams['variables'] = '{}';
-      }
-
-      const query = encodeURIComponent(graphQLParams['query']);
-      const variables = encodeURIComponent(JSON.stringify(graphQLParams['variables']));
-
-      url += `?query=${query}&variables=${variables}`;
-    }
-
-    return fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      ...(method === 'post' ? { body: JSON.stringify(graphQLParams) } : {})
-    }).then(function (responseBody: any) {
-      try {
-        return responseBody.json();
-      } catch (error) {
-        return responseBody;
-      }
-    });
-  };
-}
-
-function Graphi(props: GraphiQLProps) {
-  const { url, storageKey, method, embedded = false, showAppsButton } = props;
-  const [query, setQuery] = useState(() => window.localStorage.getItem(`${storageKey}graphiql:query`));
+function GraphiQL(props: GraphiQLProps) {
+  const { classes, cx: clsx } = useStyles();
+  const {
+    storageKey,
+    showAppsButton,
+    embedded = false,
+    method = 'post',
+    url = `${window.location.origin}/api/1/site/graphql`,
+    onSubmittingAndOrPendingChange
+  } = props;
+  // We don't want to update the initialQuery.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`) ?? defaultQuery, []);
+  const [query, setQuery] = useState(initialQuery);
   const [schema, setSchema] = useState<GraphQLSchema>(null);
   const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
-  const graphiql = useRef<GraphiQL>();
-  const classes = useStyles();
-
-  // Updates localStorage and query variable used by graphiQL and graphiQL explorer
-  function onEditQuery(newQuery: string) {
+  const storage = useMemo(
+    () =>
+      ({
+        setItem: (key: string, value: any) => window.localStorage.setItem(`${storageKey}${key}`, value),
+        getItem: (key: string) => window.localStorage.getItem(`${storageKey}${key}`),
+        removeItem: (key: string) => window.localStorage.removeItem(`${storageKey}${key}`)
+      } as Storage),
+    [storageKey]
+  );
+  const graphQLFetcher = useMemo(() => {
+    const lowercaseMethod = method.toLowerCase();
+    const then = (response: Response) => {
+      try {
+        return response.json();
+      } catch (error) {
+        return response;
+      }
+    };
+    if (lowercaseMethod === 'get') {
+      return (graphQLParams: FetcherParams, opts?: FetcherOpts) => {
+        return fetch(
+          `${url}${toQueryString({
+            query: encodeURIComponent(graphQLParams.query),
+            variables: encodeURIComponent(JSON.stringify(graphQLParams.variables ?? '{}'))
+          })}`,
+          {
+            method: 'get',
+            headers: { 'Content-Type': 'application/json' }
+          }
+        ).then(then);
+      };
+    } else {
+      return (graphQLParams: FetcherParams, opts?: FetcherOpts) => {
+        return fetch(url, {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(graphQLParams)
+        }).then(then);
+      };
+    }
+  }, [url, method]);
+  const handleToggleExplorer = () => setExplorerIsOpen(!explorerIsOpen);
+  const refs = useUpdateRefs({ onSubmittingAndOrPendingChange, graphiql: null });
+  const hasChanges = isBlank(query) ? false : initialQuery !== query;
+  const onEditQuery = (newQuery: string) => {
     setQuery(newQuery);
     window.localStorage.setItem(`${storageKey}graphiql:query`, newQuery);
-  }
+  };
 
-  const graphQLFetcher = useMemo(() => getGraphQLFetcher(url, method), [url, method]);
-
-  function handleToggleExplorer() {
-    setExplorerIsOpen(!explorerIsOpen);
-  }
+  useEffect(() => {
+    refs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasChanges });
+  }, [hasChanges, refs]);
 
   useEffect(() => {
     graphQLFetcher({
@@ -123,40 +124,28 @@ function Graphi(props: GraphiQLProps) {
         />
       )}
       <div className={clsx(classes.container, 'graphiql-container')}>
-        {/* Explorer plugin for GraphiQL  */}
         <GraphiQLExplorer
           schema={schema}
           query={query}
           onEdit={onEditQuery}
-          onRunOperation={(operationName: any) => graphiql.current.handleRunQuery(operationName)}
+          onRunOperation={(operationName: any) => refs.current.graphiql.handleRunQuery(operationName)}
           explorerIsOpen={explorerIsOpen}
           onToggleExplorer={handleToggleExplorer}
         />
-        <GraphiQL
-          ref={graphiql}
+        <GraphiQLComponent
+          ref={(ref) => (refs.current.graphiql = ref)}
           fetcher={graphQLFetcher}
           schema={schema}
           query={query}
-          storage={getStorage(`${storageKey}`)}
+          storage={storage}
           onEditQuery={onEditQuery}
-        >
-          <GraphiQL.Toolbar>
-            <GraphiQL.Button
-              onClick={() => graphiql.current.handlePrettifyQuery()}
-              label="Prettify"
-              title="Prettify Query (Shift-Ctrl-P)"
-            />
-            <GraphiQL.Button
-              onClick={() => graphiql.current.handleToggleHistory()}
-              label="History"
-              title="Show History"
-            />
-            <GraphiQL.Button onClick={handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
-          </GraphiQL.Toolbar>
-        </GraphiQL>
+          toolbar={{
+            additionalContent: <ToolbarButton onClick={handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
+          }}
+        />
       </div>
     </Box>
   );
 }
 
-export default Graphi;
+export default GraphiQL;

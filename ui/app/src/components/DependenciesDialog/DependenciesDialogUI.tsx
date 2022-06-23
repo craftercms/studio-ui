@@ -21,7 +21,6 @@ import SingleItemSelector from '../SingleItemSelector';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import DependenciesList from './DependenciesList';
 import Menu from '@mui/material/Menu';
 import DialogFooter from '../DialogFooter/DialogFooter';
@@ -30,10 +29,13 @@ import Checkbox from '@mui/material/Checkbox';
 import { assetsTypes, DependenciesDialogUIProps } from './utils';
 import Radio from '@mui/material/Radio';
 import { dependenciesDialogStyles } from './DependenciesDialog';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
+import { EmptyState } from '../EmptyState';
 
 export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
-    resource,
+    dependencies,
     item,
     rootPath,
     setItem,
@@ -48,9 +50,10 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
     handleHistoryDisplay,
     contextMenu,
     handleContextMenuClick,
-    handleContextMenuClose
+    handleContextMenuClose,
+    error
   } = props;
-  const classes = dependenciesDialogStyles({});
+  const { classes } = dependenciesDialogStyles();
   const [openSelector, setOpenSelector] = useState(false);
 
   return (
@@ -91,75 +94,71 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             </Select>
           </FormControl>
         </div>
-        <SuspenseWithEmptyState
-          resource={resource}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title:
-                dependenciesShown === 'depends-on' ? (
-                  <FormattedMessage
-                    id="dependenciesDialog.emptyDependantsMessage"
-                    defaultMessage={'{itemName} has no dependencies'}
-                    values={{ itemName: item?.label }}
-                  />
-                ) : (
-                  <FormattedMessage
-                    id="dependenciesDialog.emptyDependenciesMessage"
-                    defaultMessage={'Nothing depends on {itemName}'}
-                    values={{ itemName: item?.label }}
-                  />
-                ),
-              classes: {
-                root: classes.suspense,
-                title: classes.suspenseTitle
-              }
+        {error ? (
+          <ApiResponseErrorState error={error} />
+        ) : !dependencies ? (
+          <LoadingState classes={{ root: classes.suspense }} />
+        ) : dependencies?.length === 0 ? (
+          <EmptyState
+            title={
+              dependenciesShown === 'depends-on' ? (
+                <FormattedMessage
+                  id="dependenciesDialog.emptyDependantsMessage"
+                  defaultMessage={'{itemName} has no dependencies'}
+                  values={{ itemName: item?.label }}
+                />
+              ) : (
+                <FormattedMessage
+                  id="dependenciesDialog.emptyDependenciesMessage"
+                  defaultMessage={'Nothing depends on {itemName}'}
+                  values={{ itemName: item?.label }}
+                />
+              )
             }
-          }}
-          loadingStateProps={{
-            classes: {
-              root: classes.suspense
-            }
-          }}
-        >
-          <DependenciesList
-            resource={resource}
-            compactView={compactView}
-            showTypes={showTypes}
-            handleContextMenuClick={handleContextMenuClick}
+            classes={{ root: classes.suspense }}
           />
-          <Menu anchorEl={contextMenu.el} keepMounted open={Boolean(contextMenu.el)} onClose={handleContextMenuClose}>
-            {contextMenu.dependency && isEditableItem(contextMenu.dependency.path) && (
+        ) : (
+          <>
+            <DependenciesList
+              dependencies={dependencies}
+              compactView={compactView}
+              showTypes={showTypes}
+              handleContextMenuClick={handleContextMenuClick}
+            />
+            <Menu anchorEl={contextMenu.el} keepMounted open={Boolean(contextMenu.el)} onClose={handleContextMenuClose}>
+              {contextMenu.dependency && isEditableItem(contextMenu.dependency.path) && (
+                <MenuItem
+                  onClick={() => {
+                    handleEditorDisplay(contextMenu.dependency);
+                    handleContextMenuClose();
+                  }}
+                >
+                  <FormattedMessage id="dependenciesDialog.edit" defaultMessage="Edit" />
+                </MenuItem>
+              )}
+              {contextMenu.dependency && (
+                <MenuItem
+                  onClick={() => {
+                    setItem(contextMenu.dependency);
+                    handleContextMenuClose();
+                  }}
+                >
+                  <FormattedMessage id="dependenciesDialog.dependencies" defaultMessage="Dependencies" />
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={() => {
-                  handleEditorDisplay(contextMenu.dependency);
+                  handleHistoryDisplay(contextMenu.dependency);
                   handleContextMenuClose();
                 }}
               >
-                <FormattedMessage id="dependenciesDialog.edit" defaultMessage="Edit" />
+                {' '}
+                {/* TODO: pending, waiting for new history dialog */}
+                <FormattedMessage id="dependenciesDialog.history" defaultMessage="History" />
               </MenuItem>
-            )}
-            {contextMenu.dependency && (
-              <MenuItem
-                onClick={() => {
-                  setItem(contextMenu.dependency);
-                  handleContextMenuClose();
-                }}
-              >
-                <FormattedMessage id="dependenciesDialog.dependencies" defaultMessage="Dependencies" />
-              </MenuItem>
-            )}
-            <MenuItem
-              onClick={() => {
-                handleHistoryDisplay(contextMenu.dependency);
-                handleContextMenuClose();
-              }}
-            >
-              {' '}
-              {/* TODO: pending, waiting for new history dialog */}
-              <FormattedMessage id="dependenciesDialog.history" defaultMessage="History" />
-            </MenuItem>
-          </Menu>
-        </SuspenseWithEmptyState>
+            </Menu>
+          </>
+        )}
       </DialogBody>
       <DialogFooter
         classes={{

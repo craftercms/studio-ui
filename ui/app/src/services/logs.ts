@@ -17,7 +17,7 @@
 import { get } from '../utils/ajax';
 import { Observable } from 'rxjs';
 import { Log } from '../models/Log';
-import { mapTo, pluck } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { Logger, LoggerLevel } from '../models/Logger';
 
 export function fetchLogs(since: number): Observable<Log[]> {
@@ -30,6 +30,6 @@ export function fetchLoggers(): Observable<Logger[]> {
 
 export function setLogger(loggerName: string, level: LoggerLevel): Observable<true> {
   return get(`/studio/api/1/services/api/1/server/set-logger-state.json?level=${level}&logger=${loggerName}`).pipe(
-    mapTo(true)
+    map(() => true)
   );
 }

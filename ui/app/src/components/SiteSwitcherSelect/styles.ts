@@ -14,40 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles(() =>
-  createStyles({
-    menu: {
-      padding: '10px 10px'
+const useStyles = makeStyles()(() => ({
+  menu: {
+    padding: '10px 10px'
+  },
+  menuRoot: {
+    maxWidth: 150,
+    background: 'transparent',
+    '&.MuiInput-underline::before': {
+      display: 'none'
     },
-    menuRoot: {
-      maxWidth: 150,
-      background: 'transparent',
-      '&.MuiInput-underline::before': {
-        display: 'none'
-      },
-      '&.MuiInput-underline::after': {
-        display: 'none'
-      }
-    },
-    menuItem: {
-      maxWidth: 390,
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      display: 'block'
-    },
-    input: {
-      border: 'none',
-      background: 'transparent',
-      '&:focus:invalid, &:focus': {
-        border: 'none',
-        boxShadow: 'none'
-      }
+    '&.MuiInput-underline::after': {
+      display: 'none'
     }
-  })
-);
+  },
+  menuItem: {
+    maxWidth: 390,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: 'block'
+  },
+  input: {
+    border: 'none',
+    background: 'transparent',
+    '&:focus:invalid, &:focus': {
+      border: 'none',
+      boxShadow: 'none'
+    }
+  }
+}));
 
 export default useStyles;

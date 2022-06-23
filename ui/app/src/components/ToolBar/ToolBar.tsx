@@ -87,7 +87,7 @@ export function ToolBar() {
         <Suspense fallback="">
           {renderWidgets(toolbar.rightSection?.widgets, { userRoles, overrideProps: { site, item } })}
         </Suspense>
-        <LauncherOpenerButton sitesRailPosition="left" />
+        <LauncherOpenerButton />
       </section>
     </ViewToolbar>
   );

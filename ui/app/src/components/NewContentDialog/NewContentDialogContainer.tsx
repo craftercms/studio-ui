@@ -45,7 +45,7 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
 
   const [isCompact, setIsCompact] = useState(compact);

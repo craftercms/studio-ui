@@ -28,7 +28,7 @@ import { usePreviewState } from '../../hooks/usePreviewState';
 import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import { nnou } from '../../utils/object';
-import { getComputedEditMode } from '../../utils/content';
+import { isItemLockedForMe } from '../../utils/content';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import {
   getStoredICEToolsPanelPage,
@@ -36,6 +36,7 @@ import {
   setStoredICEToolsPanelWidth
 } from '../../utils/state';
 import useActiveSite from '../../hooks/useActiveSite';
+import Alert from '@mui/material/Alert';
 
 export function ICEToolsPanel() {
   const dispatch = useDispatch();
@@ -45,7 +46,8 @@ export function ICEToolsPanel() {
   const { rolesBySite, username } = useActiveUser();
   const { icePanelWidth: width, editMode, icePanelStack } = useSelection((state) => state.preview);
   const item = useCurrentPreviewItem();
-  const isOpen = getComputedEditMode({ item, editMode, username });
+  const isOpen = editMode;
+  const isLockedForMe = Boolean(item && isItemLockedForMe(item, username));
 
   const onWidthChange = (width) => {
     setStoredICEToolsPanelWidth(site, username, width);
@@ -64,9 +66,18 @@ export function ICEToolsPanel() {
     <ResizeableDrawer open={isOpen} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
       <Suspense fallback={<LoadingState />}>
         <ConditionalLoadingState isLoading={!Boolean(icePanel)}>
+          {isLockedForMe && (
+            <Alert variant="outlined" severity="warning" sx={{ borderStyle: 'none none solid', borderRadius: 0 }}>
+              <FormattedMessage
+                id="icePanel.itemLockedWarning"
+                defaultMessage="Item is locked, some functionality may be disabled"
+              />
+            </Alert>
+          )}
           {icePanel?.widgets && icePanel.widgets.length > 0 ? (
             renderWidgets(icePanelStack.length ? icePanelStack.slice(icePanelStack.length - 1) : icePanel.widgets, {
-              userRoles: rolesBySite[site]
+              userRoles: rolesBySite[site],
+              defaultProps: { disabled: isLockedForMe }
             })
           ) : (
             <EmptyState

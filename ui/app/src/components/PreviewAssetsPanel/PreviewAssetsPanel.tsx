@@ -18,13 +18,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { MediaItem } from '../../models/Search';
 import { alpha } from '@mui/material';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import { fromEvent, interval } from 'rxjs';
-import { filter, mapTo, share, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../../utils/subjects';
 import {
   assetDragEnded,
@@ -74,50 +73,48 @@ const translations = defineMessages({
   }
 });
 
-const assetsPanelStyles = makeStyles(() =>
-  createStyles({
-    assetsPanelWrapper: {
-      padding: '15px',
-      '&.dragInProgress': {
-        background: 'red'
-      }
-    },
-    search: {
-      padding: '15px 15px 0 15px'
-    },
-    card: {
-      cursor: 'move',
-      marginBottom: '16px'
-    },
-    noResultsImage: {
-      width: '150px'
-    },
-    noResultsTitle: {
-      fontSize: 'inherit',
-      marginTop: '10px'
-    },
-    uploadOverlay: {
-      position: 'absolute',
-      background: alpha(palette.black, 0.9),
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      display: 'flex',
-      justifyContent: 'center',
-      alignContent: 'center',
-      zIndex: 2
-    },
-    uploadIcon: {
-      fontSize: '8em',
-      color: palette.gray.light5,
-      margin: 'auto'
-    },
-    noScroll: {
-      overflow: 'hidden'
+const assetsPanelStyles = makeStyles()(() => ({
+  assetsPanelWrapper: {
+    padding: '15px',
+    '&.dragInProgress': {
+      background: 'red'
     }
-  })
-);
+  },
+  search: {
+    padding: '15px 15px 0 15px'
+  },
+  card: {
+    cursor: 'move',
+    marginBottom: '16px'
+  },
+  noResultsImage: {
+    width: '150px'
+  },
+  noResultsTitle: {
+    fontSize: 'inherit',
+    marginTop: '10px'
+  },
+  uploadOverlay: {
+    position: 'absolute',
+    background: alpha(palette.black, 0.9),
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    zIndex: 2
+  },
+  uploadIcon: {
+    fontSize: '8em',
+    color: palette.gray.light5,
+    margin: 'auto'
+  },
+  noScroll: {
+    overflow: 'hidden'
+  }
+}));
 
 interface AssetResource {
   count: number;
@@ -127,7 +124,7 @@ interface AssetResource {
 }
 
 export function PreviewAssetsPanel() {
-  const classes = assetsPanelStyles({});
+  const { classes } = assetsPanelStyles();
   const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
@@ -230,7 +227,7 @@ export function PreviewAssetsPanel() {
       const dragleaveSubscription = fromEvent(elementRef.current, 'dragleave')
         .pipe(
           switchMap(() => interval(100).pipe(takeUntil(dragover$))),
-          mapTo(false)
+          map(() => false)
         )
         .subscribe(setDragInProgress);
       const dropSubscription = fromEvent(elementRef.current, 'drop')

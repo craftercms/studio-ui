@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
 import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
@@ -28,8 +27,7 @@ import User from '../../models/User';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-// @ts-ignore
-import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover/Popover';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import moment from 'moment-timezone';
 import LookupTable from '../../models/LookupTable';
 import { Button, Typography } from '@mui/material';
@@ -39,7 +37,7 @@ import { useLocale } from '../../hooks/useLocale';
 
 export interface AuditGridUIProps {
   page: number;
-  resource: Resource<PagedArray<AuditLogEntry>>;
+  auditLogs: PagedArray<AuditLogEntry>;
   sites: Site[];
   users: PagedArray<User>;
   parametersLookup: LookupTable<AuditLogEntryParameter[]>;
@@ -121,7 +119,7 @@ export const fieldIdMapping = {
 export function AuditGridUI(props: AuditGridUIProps) {
   const {
     page,
-    resource,
+    auditLogs,
     onPageChange,
     onPageSizeChange,
     onFilterChange,
@@ -138,8 +136,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
     hasActiveFilters,
     siteMode = false
   } = props;
-  const auditLogs = resource.read();
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const [anchorPosition, setAnchorPosition] = useState(null);
   const [openedFilter, setOpenedFilter] = useState<string>();
@@ -151,7 +148,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
     if (props.open && anchorPosition === null) {
       setTimeout(() => {
         setOpenedFilter(props.currentColumn.field);
-        const element = document.querySelector(`#${props.labelledby}`);
+        const element = document.getElementById(props.labelledby);
         const anchorRect = element.getBoundingClientRect();
         const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
         const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
@@ -174,8 +171,8 @@ export function AuditGridUI(props: AuditGridUIProps) {
 
     if (newSort !== sort) {
       setSortModel(model);
-      if (sort === 'asc') {
-        onFilterChange({ id: 'order', value: sort.toUpperCase() });
+      if (newSort === 'asc') {
+        onFilterChange({ id: 'order', value: newSort.toUpperCase() });
       } else {
         onFilterChange({ id: 'order', value: undefined });
       }

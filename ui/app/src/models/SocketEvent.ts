@@ -17,6 +17,8 @@
 import Person from './Person';
 
 export interface SocketEventBase {
+  timestamp: number;
+  eventType: string;
   targetPath: string;
   user: Person;
 }

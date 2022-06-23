@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import {
   FETCH_ASSETS_PANEL_ITEMS,
   fetchAssetsPanelItemsComplete,
@@ -25,17 +25,18 @@ import { catchAjaxError } from '../../utils/ajax';
 import { search } from '../../services/search';
 import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
+import { CrafterCMSEpic } from '../store';
 
-const fetchAssets: Epic = (action$, state$: Observable<GlobalState>) =>
-  action$.pipe(
-    ofType(FETCH_ASSETS_PANEL_ITEMS),
-    withLatestFrom(state$),
-    switchMap(([, state]) =>
-      search(state.sites.active, state.preview.assets.query).pipe(
-        map(fetchAssetsPanelItemsComplete),
-        catchAjaxError(fetchAssetsPanelItemsFailed)
+export default [
+  (action$, state$: Observable<GlobalState>) =>
+    action$.pipe(
+      ofType(FETCH_ASSETS_PANEL_ITEMS),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        search(state.sites.active, state.preview.assets.query).pipe(
+          map(fetchAssetsPanelItemsComplete),
+          catchAjaxError(fetchAssetsPanelItemsFailed)
+        )
       )
     )
-  );
-
-export default [fetchAssets] as Epic[];
+] as CrafterCMSEpic[];

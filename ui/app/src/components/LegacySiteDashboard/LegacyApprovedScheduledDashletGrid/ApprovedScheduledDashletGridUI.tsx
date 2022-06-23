@@ -35,7 +35,6 @@ import LookupTable from '../../../models/LookupTable';
 import Checkbox from '@mui/material/Checkbox';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import ItemDisplay from '../../ItemDisplay';
-import clsx from 'clsx';
 import { AwaitingApprovalDashletDashboardItem } from '../LegacyAwaitingApprovalDashlet';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import { useLocale } from '../../../hooks/useLocale';
@@ -69,7 +68,7 @@ export function ApprovedScheduledDashletGridUI(props: ApprovedScheduledDashletGr
     onToggleCheckedAll
   } = props;
   const items = resource.read();
-  const classes = useStyles();
+  const { classes, cx: clsx } = useStyles();
   const locale = useLocale();
 
   return (

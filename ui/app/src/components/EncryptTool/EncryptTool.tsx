@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { encrypt as encryptService } from '../../services/security';
 import Snackbar from '@mui/material/Snackbar';
@@ -22,7 +22,7 @@ import SnackbarContent from '@mui/material/SnackbarContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import { green, red } from '@mui/material/colors';
@@ -33,11 +33,14 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import Box from '@mui/material/Box';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import Paper from '@mui/material/Paper';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface EncryptToolProps {
   site?: string;
   embedded?: boolean;
   showAppsButton?: boolean;
+  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 const messages = defineMessages({
@@ -63,7 +66,7 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
   form: {
     padding: '20px'
   },
@@ -108,15 +111,16 @@ function copyToClipboard(input: HTMLInputElement) {
 }
 
 export const EncryptTool = (props: EncryptToolProps) => {
-  const { site, embedded = false, showAppsButton } = props;
-  const classes = useStyles({});
+  const { site, embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
+  const { classes } = useStyles();
   const inputRef = useRef();
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
   const [fetching, setFetching] = useState(null);
   const [notificationSettings, setNotificationSettings] = useSpreadState(notificationInitialState);
-
   const { formatMessage } = useIntl();
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const hasText = Boolean(text);
 
   const focus = () => {
     const toolRawTextInput: HTMLInputElement = document.querySelector('#encryptionToolRawText');
@@ -156,6 +160,10 @@ export const EncryptTool = (props: EncryptToolProps) => {
     setResult(null);
     focus();
   };
+
+  useEffect(() => {
+    fnRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasText });
+  }, [hasText, fnRefs]);
 
   return (
     <Paper elevation={0}>

@@ -24,7 +24,7 @@ import React, {
   useLayoutEffect,
   useState
 } from 'react';
-import { DeprecatedThemeOptions } from '@mui/material/styles';
+import { ThemeOptions } from '@mui/material/styles';
 import { setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSStore, getStore } from '../../state/store';
 import { SnackbarProvider } from 'notistack';
@@ -32,11 +32,11 @@ import I18nProvider from '../I18nProvider';
 import StoreProvider from '../StoreProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
 import SnackbarCloseButton from '../SnackbarCloseButton';
-import { GenerateId } from 'jss';
 import { publishCrafterGlobal } from '../../env/craftercms';
 import { registerComponents } from '../../env/registerComponents';
 import LoadingState from '../LoadingState';
 import GlobalStyles from '../GlobalStyles';
+import ErrorState from '../ErrorState/ErrorState';
 
 const LegacyConcierge = lazy(() => import('../LegacyConcierge/LegacyConcierge'));
 const GlobalDialogManager = lazy(() => import('../GlobalDialogManager/GlobalDialogManager'));
@@ -47,16 +47,15 @@ export function CrafterCMSNextBridge(
     mountSnackbarProvider?: boolean;
     mountLegacyConcierge?: boolean;
     mountCssBaseline?: boolean;
-    generateClassName?: GenerateId;
     suspenseFallback?: ReactNode;
-    themeOptions?: DeprecatedThemeOptions;
+    themeOptions?: ThemeOptions;
   }>
 ) {
   const [store, setStore] = useState<CrafterCMSStore>(null);
+  const [storeError, setStoreError] = useState<string>();
   const {
     children,
     themeOptions,
-    generateClassName,
     suspenseFallback = '',
     mountCssBaseline = true,
     mountGlobalDialogManager = true,
@@ -76,13 +75,22 @@ export function CrafterCMSNextBridge(
     registerComponents();
     publishCrafterGlobal();
     setRequestForgeryToken();
-    getStore().subscribe((store) => setStore(store));
+    getStore().subscribe({
+      next: (store) => setStore(store),
+      error: (message) => setStoreError(message)
+    });
   }, []);
   return (
-    <CrafterThemeProvider themeOptions={themeOptions} generateClassName={generateClassName}>
+    <CrafterThemeProvider themeOptions={themeOptions}>
       <I18nProvider>
         <SnackbarOrFragment {...snackbarOrFragmentProps}>
-          {store ? (
+          {storeError ? (
+            <ErrorState
+              title={storeError}
+              imageUrl="/studio/static-assets/images/warning_state.svg"
+              styles={{ title: { textAlign: 'center' }, image: { width: 250, marginBottom: 10, marginTop: 10 } }}
+            />
+          ) : store ? (
             <StoreProvider store={store}>
               <Suspense fallback={suspenseFallback} children={children} />
               {mountGlobalDialogManager && (
