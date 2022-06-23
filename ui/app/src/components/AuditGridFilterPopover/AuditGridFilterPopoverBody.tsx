@@ -18,9 +18,9 @@ import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
-import DateTimePicker from '@mui/lab/DateTimePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -181,7 +181,6 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
                 open={pickersOpenState.from}
                 onOpen={() => setPickersOpenState({ from: true })}
                 onClose={() => setPickersOpenState({ from: false })}
-                clearable
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
                 value={fromDate}
                 onChange={onFromDateSelected}
@@ -200,7 +199,6 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
                 open={pickersOpenState.to}
                 onOpen={() => setPickersOpenState({ to: true })}
                 onClose={() => setPickersOpenState({ to: false })}
-                clearable
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
                 value={toDate}
                 onChange={onToDateSelected}
