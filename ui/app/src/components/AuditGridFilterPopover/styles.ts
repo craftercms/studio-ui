@@ -15,6 +15,7 @@
  */
 
 import { makeStyles } from 'tss-react/mui';
+import { textFieldClasses } from '@mui/material/TextField';
 
 const useStyles = makeStyles()((theme) => ({
   popover: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     alignItems: 'center',
     marginBottom: theme.spacing(2),
-    '& .MuiTextField-root:first-child': {
+    [`& .${textFieldClasses.root}:first-child`]: {
       marginRight: theme.spacing(1)
     }
   },

@@ -146,7 +146,9 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
   };
 
   const onFromDateSelected = (date) => {
-    onFilterChange('dateFrom', date ? moment(date).format() : 'all');
+    if (!isNaN(Date.parse(date))) {
+      onFilterChange('dateFrom', date ? moment(date).format() : 'all');
+    }
     setFromDate(date);
   };
 
@@ -184,16 +186,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
                 value={fromDate}
                 onChange={onFromDateSelected}
-                renderInput={(props) => (
-                  <TextField
-                    {...props}
-                    inputProps={{
-                      ...props.inputProps,
-                      onKeyDown: (e) => e.preventDefault(),
-                      onClick: () => setPickersOpenState({ from: true })
-                    }}
-                  />
-                )}
+                renderInput={(props) => <TextField {...props} />}
               />
               <DateTimePicker
                 open={pickersOpenState.to}
@@ -202,16 +195,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
                 value={toDate}
                 onChange={onToDateSelected}
-                renderInput={(props) => (
-                  <TextField
-                    {...props}
-                    inputProps={{
-                      ...props.inputProps,
-                      onKeyDown: (e) => e.preventDefault(),
-                      onClick: () => setPickersOpenState({ to: true })
-                    }}
-                  />
-                )}
+                renderInput={(props) => <TextField {...props} />}
               />
               <Button
                 className={classes.clearButton}
