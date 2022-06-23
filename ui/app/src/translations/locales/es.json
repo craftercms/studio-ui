@@ -138,6 +138,8 @@
   "createSiteDialog.finish": "Terminar",
   "createSiteDialog.gitBlueprintDescription": "Cree un nuevo sitio basado en un proyecto Crafter CMS en un repositorio de git remoto existente.",
   "createSiteDialog.gitBlueprintName": "Repositorio Git Remoto",
+  "createSiteDialog.gitBranch": "Rama Git",
+  "createSiteDialog.gitBranchDescription": "Nombre de la rama que seguirá este proyecto. Las operaciones de git pull se realizarán contra esta rama.",
   "createSiteDialog.gitStrategy": "Clon de repositorio git remoto existente",
   "createSiteDialog.nameAndDescription": "Nombra y describe tu sitio",
   "createSiteDialog.nameExist": "El nombre ya existe.",
