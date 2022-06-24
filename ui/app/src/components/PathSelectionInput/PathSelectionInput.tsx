@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -26,43 +26,30 @@ import { takeUntil } from 'rxjs/operators';
 import useUnmount$ from '../../hooks/useUnmount$';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import CircularProgress from '@mui/material/CircularProgress';
-import { isBlank } from '../../utils/string';
-import { CheckRounded, ErrorRounded, QuestionMarkRounded } from '@mui/icons-material';
-import { withoutFile } from '../../utils/path';
+import { CheckRounded, ErrorRounded } from '@mui/icons-material';
+import { withoutFile, withoutIndex } from '../../utils/path';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface PathSelectionInputProps {
   rootPath: string;
-  initialValue?: string;
+  currentPath?: string;
   allowFiles?: boolean;
-  // invalidPath: boolean;
-  // isFetching: boolean;
   onChange?(path: string): void;
-  // onKeyPress?(event: React.KeyboardEvent): void;
 }
 
-// TODO: Component is still WIP
-
 export function PathSelectionInput(props: PathSelectionInputProps) {
-  const { rootPath = '', initialValue = '', allowFiles = false, onChange: onChangeProp } = props;
+  const { rootPath = '', currentPath = '', allowFiles = false, onChange: onChangeProp } = props;
   const unmount$ = useUnmount$();
   const site = useActiveSiteId();
-  const [path, setPath] = useState(initialValue);
-  // const [lastValidPath, setLastValidPath] = useState(initialValue);
+  const [path, setPath] = useState('');
   const [pathExists, setPathExists] = useState<boolean | null>(null); // null = unchecked
   const [isChecking, setIsChecking] = useState(false);
-  const refs = useUpdateRefs({ rootPath, onChange: onChangeProp });
 
-  // const check = useCallback(
-  //   (rootPath, path) => {
-  //
-  //   },
-  //   [refs, site, unmount$, allowFiles]
-  // );
+  const getFullPath = () => `${rootPath}${path}`.trim();
 
   const check = () => {
     setIsChecking(true);
-    let value = `${rootPath}${path}`.trim();
+    let value = getFullPath();
     if (!allowFiles) {
       value = withoutFile(value);
     }
@@ -77,15 +64,6 @@ export function PathSelectionInput(props: PathSelectionInputProps) {
       });
   };
 
-  const onBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    // setFocus(false);
-    // let path = rootPath + value;
-    // if (path !== '/' && path.endsWith('/')) {
-    //   path = path.slice(0, -1);
-    // }
-    // onPathChanged(path);
-  };
-
   const onKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       check();
@@ -97,9 +75,16 @@ export function PathSelectionInput(props: PathSelectionInputProps) {
     setPathExists(null);
   };
 
-  // useEffect(() => {
-  //   check(rootPath, initialValue);
-  // }, [rootPath, initialValue]);
+  const refs = useUpdateRefs({ rootPath, onChange: onChangeProp, getFullPath });
+
+  useEffect(() => {
+    const newPath = withoutIndex(currentPath.startsWith(rootPath) ? currentPath.substr(rootPath.length) : currentPath);
+    if (`${rootPath}${newPath}` !== refs.current.getFullPath()) {
+      setPathExists(null);
+      setIsChecking(false);
+      setPath(newPath);
+    }
+  }, [refs, rootPath, currentPath]);
 
   return (
     <FormControl sx={{ mb: 1 }}>
@@ -108,7 +93,6 @@ export function PathSelectionInput(props: PathSelectionInputProps) {
         value={path}
         onKeyPress={onKeyPress}
         onChange={onChange}
-        onBlur={onBlur}
         error={pathExists === false}
         aria-describedby="pathInputTextField"
         label={<FormattedMessage id="words.path" defaultMessage="Path" />}
@@ -131,10 +115,6 @@ export function PathSelectionInput(props: PathSelectionInputProps) {
           ) : pathExists === false ? (
             <InputAdornment position="end">
               <ErrorRounded color="error" />
-            </InputAdornment>
-          ) : pathExists === null && !isBlank(path) ? (
-            <InputAdornment position="end">
-              <QuestionMarkRounded />
             </InputAdornment>
           ) : (
             UNDEFINED

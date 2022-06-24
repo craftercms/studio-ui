@@ -32,6 +32,7 @@ import PrimaryButton from '../PrimaryButton';
 import CreateFolderDialog from '../CreateFolderDialog';
 import DialogHeader from '../DialogHeader';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
+import PathSelectionInput from '../PathSelectionInput';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
@@ -99,9 +100,7 @@ export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
   };
 
   const onPathChanged = (path: string) => {
-    console.log(path);
     setCurrentPath(path);
-    // setExpanded(rootPath === '/' ? ['/', ...getIndividualPaths(path)] : getIndividualPaths(path));
   };
 
   return (
@@ -111,9 +110,7 @@ export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
         onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
-        {/*
-        <PathSelectionInput rootPath={rootPath} onChange={onPathChanged} />
-        */}
+        <PathSelectionInput rootPath={rootPath} onChange={onPathChanged} currentPath={currentPath} />
         <FolderBrowserTreeView rootPath={rootPath} onPathSelected={onPathChanged} selectedPath={currentPath} />
       </DialogBody>
       <DialogFooter>
@@ -125,7 +122,7 @@ export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
         <SecondaryButton onClick={onClose}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={() => onOk({ path: stripXmlIndex ? withoutIndex(currentPath) : currentPath })}>
+        <PrimaryButton onClick={() => onOk?.({ path: stripXmlIndex ? withoutIndex(currentPath) : currentPath })}>
           <FormattedMessage id="words.accept" defaultMessage="Accept" />
         </PrimaryButton>
       </DialogFooter>
