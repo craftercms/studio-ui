@@ -1363,7 +1363,8 @@ export function fetchContentByCommitId(site: string, path: string, commitId: str
       const type = ajax.xhr.getResponseHeader('content-type');
       if (
         /^text\//.test(type) ||
-        /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh)$/.test(type)
+        /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh)$/.test(type) ||
+        /^font\//.test(type)
       ) {
         return blob.text() as Promise<string>;
       } else if (/^image\//.test(type)) {

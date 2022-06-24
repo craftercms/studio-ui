@@ -155,15 +155,30 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     } else {
       fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
         const image = isImage(item);
-        dispatch(
-          showPreviewDialog({
-            type: image ? 'image' : 'editor',
-            title: item.label,
-            [image ? 'url' : 'content']: content,
-            mode: image ? void 0 : getEditorMode(item),
-            subtitle: `v.${version.versionNumber}`
-          })
-        );
+
+        if (content instanceof Blob) {
+          content.text().then((text) => {
+            dispatch(
+              showPreviewDialog({
+                type: 'editor',
+                title: item.label,
+                content: text,
+                mode: image ? void 0 : getEditorMode(item),
+                subtitle: `v.${version.versionNumber}`
+              })
+            );
+          });
+        } else {
+          dispatch(
+            showPreviewDialog({
+              type: image ? 'image' : 'editor',
+              title: item.label,
+              [image ? 'url' : 'content']: content,
+              mode: image ? void 0 : getEditorMode(item),
+              subtitle: `v.${version.versionNumber}`
+            })
+          );
+        }
       });
     }
   };
