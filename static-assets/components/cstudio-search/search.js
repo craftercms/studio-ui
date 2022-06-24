@@ -525,6 +525,9 @@
       ? CStudioSearch.typesMap[result.type].icon
       : CStudioSearch.typesMap['Other'].icon;
 
+    const $resultContainer = $('<div class="result-container"/>')
+    $($resultContainer).appendTo($resultsContainer);
+
     var permissionsCached = cache.get(permissionsKey),
       validateAndRender = function (results) {
         var isWriteAllowed = CStudioAuthoring.Service.validatePermission(results.permissions, 'write'),
@@ -538,7 +541,7 @@
         };
 
         html = template(result);
-        $(html).appendTo($resultsContainer);
+        $(html).appendTo($resultContainer);
       };
 
     if (permissionsCached) {
