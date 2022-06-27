@@ -104,7 +104,7 @@ import {
   hasUnlockAction,
   hasUploadAction
 } from './content';
-import { getEditorMode, isNavigable } from '../components/PathNavigator/utils';
+import { getEditorMode, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
@@ -358,10 +358,12 @@ export function generateSingleItemOptions(
   if (hasReadAction(item.availableActions) && actionsToInclude.view) {
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.view);
-    } else if (isImage) {
-      sectionA.push(menuOptions.viewImage);
-    } else {
-      sectionA.push(menuOptions.viewCode);
+    } else if (isPreviewable(item)) {
+      if (isImage) {
+        sectionA.push(menuOptions.viewImage);
+      } else {
+        sectionA.push(menuOptions.viewCode);
+      }
     }
   }
 

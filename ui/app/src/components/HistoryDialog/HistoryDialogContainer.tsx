@@ -37,7 +37,7 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { fetchContentTypes } from '../../state/actions/preview';
 import { fetchContentByCommitId } from '../../services/content';
-import { getEditorMode, isImage } from '../PathNavigator/utils';
+import { getEditorMode, isImage, isPreviewable } from '../PathNavigator/utils';
 import {
   compareBothVersions,
   compareToPreviousVersion,
@@ -93,7 +93,10 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           label: formatMessage(value.label, value.values)
         };
       });
-      const sections: ContextMenuOption[][] = [[contextMenuOptions.view]];
+      const sections: ContextMenuOption[][] = [];
+      if (isPreviewable(item)) {
+        sections.push([contextMenuOptions.view]);
+      }
       if (count > 1) {
         if (hasOptions) {
           if (initialCommit) {
@@ -118,7 +121,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         activeItem: version
       });
     },
-    [item?.systemType, item?.availableActionsMap.revert, count, setMenu, formatMessage, isConfig, item?.stateMap.locked]
+    [item, count, setMenu, formatMessage, isConfig]
   );
 
   const compareVersionDialogWithActions = () =>
@@ -152,33 +155,18 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           })
         ])
       );
-    } else {
+    } else if (isPreviewable(item)) {
       fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
         const image = isImage(item);
-
-        if (content instanceof Blob) {
-          content.text().then((text) => {
-            dispatch(
-              showPreviewDialog({
-                type: 'editor',
-                title: item.label,
-                content: text,
-                mode: image ? void 0 : getEditorMode(item),
-                subtitle: `v.${version.versionNumber}`
-              })
-            );
-          });
-        } else {
-          dispatch(
-            showPreviewDialog({
-              type: image ? 'image' : 'editor',
-              title: item.label,
-              [image ? 'url' : 'content']: content,
-              mode: image ? void 0 : getEditorMode(item),
-              subtitle: `v.${version.versionNumber}`
-            })
-          );
-        }
+        dispatch(
+          showPreviewDialog({
+            type: image ? 'image' : 'editor',
+            title: item.label,
+            [image ? 'url' : 'content']: content,
+            mode: image ? void 0 : getEditorMode(item),
+            subtitle: `v.${version.versionNumber}`
+          })
+        );
       });
     }
   };
