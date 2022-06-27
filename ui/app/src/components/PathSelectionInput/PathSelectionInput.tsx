@@ -57,10 +57,16 @@ export function PathSelectionInput(props: PathSelectionInputProps) {
     setPath(value.substr(rootPath.length));
     checkPathExistence(site, value)
       .pipe(takeUntil(unmount$))
-      .subscribe((exists) => {
-        setIsChecking(false);
-        setPathExists(exists);
-        exists && refs.current.onChange?.(value);
+      .subscribe({
+        next(exists) {
+          setIsChecking(false);
+          setPathExists(exists);
+          exists && refs.current.onChange?.(value);
+        },
+        error() {
+          setIsChecking(false);
+          setPathExists(false);
+        }
       });
   };
 

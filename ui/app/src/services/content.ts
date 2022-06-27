@@ -46,7 +46,7 @@ import { v4 as uuid } from 'uuid';
 import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
-  return getText(`/crafter-controller/component.html?path=${path}`).pipe(pluck('response'));
+  return getText(`/crafter-controller/component.html${toQueryString({ path })}`).pipe(pluck('response'));
 }
 
 interface GetContentOptions {
@@ -1032,20 +1032,21 @@ export function getBulkUploadUrl(site: string, path: string): string {
 }
 
 export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]> {
-  return get(`/studio/api/2/content/list_quick_create_content.json?siteId=${site}`).pipe(pluck('response', 'items'));
+  return get(`/studio/api/2/content/list_quick_create_content.json${toQueryString({ siteId: site })}`).pipe(
+    pluck('response', 'items')
+  );
 }
 
 export function fetchItemHistory(site: string, path: string): Observable<VersionsResponse> {
-  return get(
-    `/studio/api/1/services/api/1/content/get-item-versions.json?site=${site}&path=${encodeURIComponent(path)}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  return get(`/studio/api/1/services/api/1/content/get-item-versions.json${toQueryString({ site, path })}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function revertTo(site: string, path: string, versionNumber: string): Observable<Boolean> {
   return get(
-    `/studio/api/1/services/api/1/content/revert-content.json?site=${site}&path=${encodeURIComponent(
-      path
-    )}&version=${versionNumber}`
+    `/studio/api/1/services/api/1/content/revert-content.json${toQueryString({ site, path, version: versionNumber })}`
   ).pipe(
     pluck('response'),
     catchError((ajaxError) => {
@@ -1292,50 +1293,62 @@ export function unlock(siteId: string, path: string): Observable<boolean> {
 }
 
 export function fetchWorkflowAffectedItems(site: string, path: string): Observable<SandboxItem[]> {
-  return get(`/studio/api/2/workflow/affected_paths?siteId=${site}&path=${path}`).pipe(pluck('response', 'items'));
+  return get(
+    `/studio/api/2/workflow/affected_paths${toQueryString({
+      siteId: site,
+      path
+    })}`
+  ).pipe(pluck('response', 'items'));
 }
 
 export function createFolder(site: string, path: string, name: string): Observable<unknown> {
-  return post(
-    `/studio/api/1/services/api/1/content/create-folder.json?site=${site}&path=${encodeURIComponent(
-      path
-    )}&name=${encodeURIComponent(name)}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  return post(`/studio/api/1/services/api/1/content/create-folder.json${toQueryString({ site, path, name })}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function createFile(site: string, path: string, fileName: string): Observable<unknown> {
   return post(
-    `/studio/api/1/services/api/1/content/write-content.json?site=${site}&phase=onSave&path=${encodeURIComponent(
-      path
-    )}&fileName=${fileName}&unlock=true`
+    `/studio/api/1/services/api/1/content/write-content.json${toQueryString({
+      site,
+      path,
+      phase: 'onSave',
+      fileName,
+      unlock: true
+    })}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function renameFolder(site: string, path: string, name: string) {
-  return post(
-    `/studio/api/1/services/api/1/content/rename-folder.json?site=${site}&path=${encodeURIComponent(
-      path
-    )}&name=${encodeURIComponent(name)}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  return post(`/studio/api/1/services/api/1/content/rename-folder.json${toQueryString({ site, path, name })}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function changeContentType(site: string, path: string, contentType: string): Observable<boolean> {
   return post(
-    `/studio/api/1/services/api/1/content/change-content-type.json?site=${site}&path=${path}&contentType=${contentType}`
+    `/studio/api/1/services/api/1/content/change-content-type.json${toQueryString({
+      site,
+      path,
+      contentType: contentType
+    })}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
 export function checkPathExistence(site: string, path: string): Observable<boolean> {
-  return get(`/studio/api/1/services/api/1/content/content-exists.json?site_id=${site}&path=${path}`).pipe(
+  return get(`/studio/api/1/services/api/1/content/content-exists.json${toQueryString({ site_id: site, path })}`).pipe(
     pluck('response', 'content'),
     catchError(errorSelectorApi1)
   );
 }
 
 export function fetchLegacyItem(site: string, path: string): Observable<LegacyItem> {
-  return get(
-    `/studio/api/1/services/api/1/content/get-item.json?site_id=${site}&path=${encodeURIComponent(path)}`
-  ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
+  return get(`/studio/api/1/services/api/1/content/get-item.json${toQueryString({ site_id: site, path })}`).pipe(
+    pluck('response', 'item'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function fetchLegacyItemsTree(
@@ -1344,17 +1357,13 @@ export function fetchLegacyItemsTree(
   options?: Partial<{ depth: number; order: string }>
 ): Observable<LegacyItem> {
   return get(
-    `/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({
-      site_id: site,
-      path,
-      ...options
-    })}`
+    `/studio/api/1/services/api/1/content/get-items-tree.json${toQueryString({ site_id: site, path, ...options })}`
   ).pipe(pluck('response', 'item'), catchError(errorSelectorApi1));
 }
 
 export function fetchContentByCommitId(site: string, path: string, commitId: string): Observable<string | Blob> {
   return getBinary(
-    `/studio/api/2/content/get_content_by_commit_id?siteId=${site}&path=${path}&commitId=${commitId}`,
+    `/studio/api/2/content/get_content_by_commit_id${toQueryString({ siteId: site, path, commitId })}`,
     void 0,
     'blob'
   ).pipe(
