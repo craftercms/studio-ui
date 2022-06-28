@@ -37,7 +37,7 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { fetchContentTypes } from '../../state/actions/preview';
 import { fetchContentByCommitId } from '../../services/content';
-import { getEditorMode, isImage, isPreviewable } from '../PathNavigator/utils';
+import { getEditorMode, isImage, isPreviewable, isVideo } from '../PathNavigator/utils';
 import {
   compareBothVersions,
   compareToPreviousVersion,
@@ -158,13 +158,15 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     } else if (isPreviewable(item)) {
       fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
         const image = isImage(item);
+        const video = isVideo(item);
         dispatch(
           showPreviewDialog({
-            type: image ? 'image' : 'editor',
+            type: image ? 'image' : video ? 'video' : 'editor',
             title: item.label,
-            [image ? 'url' : 'content']: content,
-            mode: image ? void 0 : getEditorMode(item),
-            subtitle: `v.${version.versionNumber}`
+            [image || video ? 'url' : 'content']: content,
+            mode: image || video ? void 0 : getEditorMode(item),
+            subtitle: `v.${version.versionNumber}`,
+            ...(video ? { mimeType: item.mimeType } : {})
           })
         );
       });

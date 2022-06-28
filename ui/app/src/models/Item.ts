@@ -71,7 +71,7 @@ export type VirtualItemActions = 'preview' | 'copyWithChildren';
 export type AssessRemovalItemActions =
   | 'editCode'
   | 'viewCode'
-  | 'viewImage'
+  | 'viewMedia'
   | 'duplicateAsset'
   | 'createTemplate'
   | 'createController';

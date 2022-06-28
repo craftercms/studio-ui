@@ -26,6 +26,7 @@ export interface VideoPlayerProps {
   width?: number;
   muted?: boolean;
   poster?: string;
+  type?: string;
 }
 
 const SourceTypes = {
@@ -52,14 +53,14 @@ function VideoPlayer(props: VideoPlayerProps) {
       sources: [
         {
           src: props.src,
-          type: SourceTypes[extension]
+          type: props.type ?? SourceTypes[extension]
         }
       ]
     });
     return () => {
       player.current.dispose();
     };
-  }, [props.autoplay, props.controls, props.height, props.width, props.muted, props.poster, props.src]);
+  }, [props.autoplay, props.controls, props.height, props.width, props.muted, props.poster, props.src, props.type]);
 
   return <video ref={videoNode} className="video-js" />;
 }

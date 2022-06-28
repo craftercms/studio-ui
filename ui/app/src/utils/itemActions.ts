@@ -104,7 +104,7 @@ import {
   hasUnlockAction,
   hasUploadAction
 } from './content';
-import { getEditorMode, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
+import { getEditorMode, isImage, isNavigable, isPreviewable, isVideo } from '../components/PathNavigator/utils';
 import React from 'react';
 import { previewItem } from '../state/actions/preview';
 import { createPresenceTable } from './array';
@@ -229,8 +229,8 @@ const unparsedMenuOptions: Record<AllItemActions, ContextMenuOptionDescriptor<Al
   },
   // endregion
   // region AssessRemovalItemActions
-  viewImage: {
-    id: 'viewImage',
+  viewMedia: {
+    id: 'viewMedia',
     label: translations.view
   },
   duplicateAsset: {
@@ -302,7 +302,6 @@ export function generateSingleItemOptions(
   }
 
   const type = item.systemType;
-  const isImage = item.mimeType?.startsWith('image/');
   const isTemplate = item.path.startsWith('/templates');
   const isController = item.path.startsWith('/scripts');
   const isStaticAssets = item.path.startsWith('/static-assets');
@@ -359,8 +358,8 @@ export function generateSingleItemOptions(
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.view);
     } else if (isPreviewable(item)) {
-      if (isImage) {
-        sectionA.push(menuOptions.viewImage);
+      if (isImage(item) || isVideo(item)) {
+        sectionA.push(menuOptions.viewMedia);
       } else {
         sectionA.push(menuOptions.viewCode);
       }
@@ -836,10 +835,10 @@ export const itemActionDispatcher = ({
         );
         break;
       }
-      case 'viewImage': {
+      case 'viewMedia': {
         dispatch(
           showPreviewDialog({
-            type: 'image',
+            type: isImage(item) ? 'image' : 'video',
             title: item.label,
             url: item.path
           })
