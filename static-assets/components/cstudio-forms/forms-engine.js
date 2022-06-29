@@ -1497,7 +1497,7 @@ var CStudioForms =
               const saveContent = () => {
                 CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(serviceUrl), xml).subscribe(
                   function () {
-                    CStudioForms.currentValidFolder = CStudioForms.updatedModel['folder-name'];
+                    CStudioForms.currentValidFolder = CStudioForms.updatedModel?.['folder-name'];
                     YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
 
                     var getContentItemCb = {
