@@ -123,6 +123,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     },
     [item, count, setMenu, formatMessage, isConfig]
   );
+  const hasMenuOptions = isPreviewable(item) || count > 1;
 
   const compareVersionDialogWithActions = () =>
     showCompareVersionsDialog({
@@ -315,7 +316,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         <SuspenseWithEmptyState resource={versionsResource}>
           <VersionList
             versions={versionsResource}
-            onOpenMenu={handleOpenMenu}
+            onOpenMenu={hasMenuOptions ? handleOpenMenu : null}
             onItemClick={handleViewItem}
             current={current}
           />
