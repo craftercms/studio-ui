@@ -90,7 +90,6 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
       '<div class="contentTypePopupHeader">Upload</div> ' +
       '<div><form id="asset_upload_form">' +
       '<div class="contentTypeOuter">' +
-      '<div id="uploadContainer"></div>' +
       '<div><table><tr><td><input type="hidden" name="siteId" value="' +
       site +
       '"/></td>' +
@@ -101,6 +100,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
       profileId +
       '"/></td></tr>' +
       '</table></div>' +
+      '<div id="uploadContainer"></div>' +
       '</div>' +
       '<div class="contentTypePopupBtn"> ' +
       '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="Cancel"  /></div>' +
@@ -114,7 +114,7 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
     // Instantiate the Dialog
     upload_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
       width: '410px',
-      height: '255px',
+      'min-height': '255px',
       effect: {
         effect: YAHOO.widget.ContainerEffect.FADE,
         duration: 0.25
@@ -157,9 +157,8 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         me.uploadingFile = true;
         $('#uploadCancelButton').attr('disabled', true);
       },
-      onComplete: function (result) {
-        let item = result.successful[0].response.body.item,
-          uploaded = item.url ? item.url : item; // Will return only url
+      onComplete: function ({ successful }) {
+        let uploaded = JSON.parse(successful[0].response.body.response).item;
 
         $('#uploadCancelButton').attr('disabled', false);
         me.uploadingFile = false;
@@ -167,8 +166,8 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         me.callback.success(uploaded);
         CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
       },
-      onError: function (file, error, response) {
-        const res = response.body.response,
+      onError: function ({ response }) {
+        const res = JSON.parse(response.body.response).response,
           errorMsg = `${res.message}. ${res.remedialAction}`;
 
         me.uploadingFile = false;
