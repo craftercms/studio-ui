@@ -29,9 +29,8 @@ import PrimaryButton from '../PrimaryButton';
 import useDetailedItem from '../../hooks/useDetailedItem';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
-import { closeCodeEditorDialog, closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
+import { closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { conditionallyUnlockItem } from '../../state/actions/content';
 import { hasEditAction } from '../../utils/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
@@ -87,8 +86,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
         closePreviewDialog(),
         showCodeEditorDialog({
           path: url,
-          mode,
-          onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: url })])
+          mode
         })
       ])
     );
