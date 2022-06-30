@@ -249,7 +249,7 @@ export function PreviewAssetsPanel() {
           <ApiResponseErrorState error={assets.error} />
         ) : assets.isFetching ? (
           <LoadingState title={formatMessage(translations.retrieveAssets)} />
-        ) : (
+        ) : assets.page[assets.pageNumber] ? (
           <>
             {dragInProgress && (
               <div className={classes.uploadOverlay}>
@@ -289,6 +289,8 @@ export function PreviewAssetsPanel() {
               )}
             </div>
           </>
+        ) : (
+          <></>
         )}
       </div>
     </div>
