@@ -745,6 +745,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   text: '본문',
   minSize: '최소 크기',
   maxSize: '최대 크기',
+  minMax: '최소 - 최대',
   itemManager: '항목 관리자',
   disableFlatteningSearch: '검색 편평 해제',
   singleValueFilename: '단일 값의 파일 이름을 사용 (이전 버전과 호환)',

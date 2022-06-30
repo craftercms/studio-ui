@@ -198,6 +198,14 @@
           inputEl.size = prop.value;
         }
 
+        if (prop.name == 'Value') {
+          const value = JSON.parse(prop.value);
+          inputEl.maxValue = value.maxValue;
+          inputEl.setAttribute('max', value.maxValue);
+          inputEl.minValue = value.minValue;
+          inputEl.setAttribute('min', value.minValue);
+        }
+
         if (prop.name == 'maxValue') {
           inputEl.maxValue = prop.value;
           inputEl.setAttribute('max', prop.value);
@@ -279,14 +287,9 @@
           defaultValue: '50'
         },
         {
-          label: formatMessage(numericInputControlMessages.maximun),
-          name: 'maxValue',
-          type: 'float'
-        },
-        {
-          label: formatMessage(numericInputControlMessages.minimun),
-          name: 'minValue',
-          type: 'float'
+          label: CMgs.format(langBundle, 'minMax'),
+          name: 'Value',
+          type: 'minMax'
         },
         { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
         { label: 'Tokenize for Indexing', name: 'tokenize', type: 'boolean', defaultValue: 'false' }

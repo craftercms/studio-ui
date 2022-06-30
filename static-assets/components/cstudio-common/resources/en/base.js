@@ -800,6 +800,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'en', {
   renderAsHTML: 'Render as HTML',
   minSize: 'Min Size',
   maxSize: 'Max Size',
+  minMax: 'Minimum - Maximum',
   itemManager: 'Item Manager',
   disableFlatteningSearch: 'Disable Flattening for Search',
   singleValueFilename: 'Use single value filename (backward compat)',
