@@ -58,6 +58,7 @@ import { HistoryDialogPagination } from './HistoryDialogPagination';
 import { historyStyles } from './HistoryDialog';
 import useSelection from '../../hooks/useSelection';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import { UNDEFINED } from '../../utils/constants';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
@@ -165,7 +166,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             type: image ? 'image' : video ? 'video' : 'editor',
             title: item.label,
             [image || video ? 'url' : 'content']: content,
-            mode: image || video ? void 0 : getEditorMode(item),
+            mode: image || video ? UNDEFINED : getEditorMode(item),
             subtitle: `v.${version.versionNumber}`,
             ...(video ? { mimeType: item.mimeType } : {})
           })
