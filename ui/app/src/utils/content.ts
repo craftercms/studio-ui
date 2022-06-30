@@ -81,7 +81,7 @@ export function isEditableAsset(path: string) {
     path.endsWith('.txt') ||
     path.endsWith('.html') ||
     path.endsWith('.hbs') ||
-    path.endsWith('.xml') ||
+    (path.endsWith('.xml') && !path.startsWith('/config/studio/content-types')) ||
     path.endsWith('.tmpl') ||
     path.endsWith('.htm')
   );

@@ -18,6 +18,7 @@ import { errorSelectorApi1, post, postJSON } from '../utils/ajax';
 import { catchError, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { LegacyItem } from '../models/Item';
+import { toQueryString } from '../utils/object';
 
 export interface FetchDependenciesResponse {
   hardDependencies: string[];
@@ -31,18 +32,17 @@ export function fetchDependencies(siteId: string, items: any): Observable<FetchD
   }).pipe(pluck('response', 'items'));
 }
 
-export function fetchSimpleDependencies(siteId: string, path: string): Observable<LegacyItem> {
+export function fetchSimpleDependencies(site: string, path: string): Observable<LegacyItem[]> {
   return post(
-    `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json?site=${siteId}&path=${encodeURIComponent(
-      path
-    )}`
+    `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json${toQueryString({ site, path })}`
   ).pipe(pluck('response'), catchError(errorSelectorApi1));
 }
 
-export function fetchDependant(siteId: string, path: string): Observable<LegacyItem> {
-  return post(
-    `/studio/api/1/services/api/1/dependency/get-dependant.json?site=${siteId}&path=${encodeURIComponent(path)}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+export function fetchDependant(site: string, path: string): Observable<LegacyItem[]> {
+  return post(`/studio/api/1/services/api/1/dependency/get-dependant.json${toQueryString({ site, path })}`).pipe(
+    pluck('response'),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export interface FetchDeleteDependenciesResponse {
