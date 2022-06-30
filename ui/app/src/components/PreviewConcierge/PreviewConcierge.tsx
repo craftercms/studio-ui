@@ -653,7 +653,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             contentTypes[instance.craftercms.contentTypeId],
             instance,
             models[parentModelId ? parentModelId : modelId].craftercms.path,
-            shared
+            shared,
+            (instanceFieldId) =>
+              upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(instanceFieldId.match(pattern)))
           ).subscribe({
             next() {
               issueDescriptorRequest({
@@ -733,7 +735,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case insertItemOperation.type: {
           const { modelId, parentModelId, fieldId, index, instance } = payload;
           const path = models[parentModelId ?? modelId].craftercms.path;
-          insertItem(siteId, modelId, fieldId, index, instance, path).subscribe({
+          insertItem(siteId, modelId, fieldId, index, instance, path, (instanceFieldId) =>
+            upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(instanceFieldId.match(pattern)))
+          ).subscribe({
             next() {
               hostToGuest$.next(insertItemOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.insertItemOperationComplete));

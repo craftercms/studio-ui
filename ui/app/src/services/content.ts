@@ -19,7 +19,7 @@ import { catchError, map, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import { cdataWrap, createElement, createElements, fromString, getInnerHtml, serialize } from '../utils/xml';
 import { ContentType } from '../models/ContentType';
-import { createLookupTable, nnou, nou, reversePluckProps, toQueryString } from '../utils/object';
+import { createLookupTable, nnou, nou, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
@@ -280,7 +280,8 @@ export function insertComponent(
   contentType: ContentType,
   instance: ContentInstance,
   path: string,
-  shared = false
+  shared = false,
+  serializeValue?: (instanceFieldId: string) => boolean
 ): Observable<any> {
   return performMutation(
     site,
@@ -295,6 +296,13 @@ export function insertComponent(
       delete instance.fileName;
       delete instance.internalName;
 
+      const serializedInstance = {};
+      for (let key in instance) {
+        if (key !== 'craftercms') {
+          serializedInstance[key] = serializeValue?.(key) ? cdataWrap(`${instance[key]}`) : instance[key];
+        }
+      }
+
       // Create the new component that will be either embedded into the parent's XML or
       // shared stored on it's own.
       const component = mergeContentDocumentProps('component', {
@@ -305,14 +313,14 @@ export function insertComponent(
         'internal-name': cdataWrap(instance.craftercms.label),
         'file-name': `${id}.xml`,
         objectId: id,
-        ...reversePluckProps(instance, 'craftercms')
+        ...serializedInstance
       });
 
       // Add the child elements into the `item` node
       createElements(newItem, {
         '@attributes': {
           // TODO: Hardcoded value. Fix.
-          datasource: 'TODO',
+          datasource: '',
           ...(shared ? {} : { inline: true })
         },
         key: shared ? path : id,
@@ -376,7 +384,8 @@ export function insertItem(
   fieldId: string,
   index: string | number,
   instance: InstanceRecord,
-  path: string
+  path: string,
+  serializeValue?: (instanceFieldId: string) => boolean
 ): Observable<any> {
   return performMutation(
     site,
@@ -384,7 +393,13 @@ export function insertItem(
     (element) => {
       let node = extractNode(element, removeLastPiece(fieldId) || fieldId, index);
       const newItem = createElement('item');
-      createElements(newItem, instance);
+      const serializedInstance = {};
+      for (let key in instance) {
+        if (key !== 'craftercms') {
+          serializedInstance[key] = serializeValue?.(key) ? cdataWrap(`${instance[key]}`) : instance[key];
+        }
+      }
+      createElements(newItem, serializedInstance);
       node.appendChild(newItem);
     },
     modelId
