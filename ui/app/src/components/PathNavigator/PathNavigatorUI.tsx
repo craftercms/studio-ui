@@ -35,8 +35,7 @@ import { lookupItemByPath } from '../../utils/content';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import NavLoader from './NavLoader';
 import { ErrorState } from '../ErrorState';
-import { ApiResponseErrorState } from '../ApiResponseErrorState';
-import { isApiResponse } from '../../utils/object';
+import { renderErrorState } from '../ErrorState/util';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -234,11 +233,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             {state.isFetching ? (
               <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
             ) : state.error ? (
-              isApiResponse(state.error) ? (
-                <ApiResponseErrorState imageUrl={null} error={state.error} />
-              ) : (
-                <ErrorState imageUrl={null} message={state.error.message ?? state.error} />
-              )
+              renderErrorState(state.error, { imageUrl: null })
             ) : state.itemsInPath.length === 0 && !Boolean(levelDescriptor) ? (
               <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
             ) : (

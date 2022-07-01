@@ -15,7 +15,7 @@
  */
 
 import { ItemStateMap, LegacyItem } from '../models/Item';
-import { WidgetDescriptor } from '../models';
+import { LookupTable, WidgetDescriptor } from '../models';
 import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 import { LegacyDashboardPreferences } from '../models/Dashboard';
@@ -108,6 +108,12 @@ export function removeStoredPreviewToolsPanelPage(siteIdentifier: string, user: 
 
 export type StoredPathNavState = Pick<PathNavInitPayload, 'collapsed' | 'currentPath' | 'keyword' | 'offset' | 'limit'>;
 
+export interface StoredPathNavTree {
+  expanded: string[];
+  collapsed: boolean;
+  keywordByPath: LookupTable<string>;
+}
+
 export function setStoredPathNavigator(
   siteIdentifier: string,
   user: string,
@@ -125,11 +131,11 @@ export function removeStoredPathNavigator(siteIdentifier: string, user: string, 
   window.localStorage.removeItem(`craftercms.${user}.pathNavigator.${siteIdentifier}.${id}`);
 }
 
-export function setStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string, value: object) {
+export function setStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string, value: StoredPathNavTree) {
   window.localStorage.setItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`, JSON.stringify(value));
 }
 
-export function getStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string) {
+export function getStoredPathNavigatorTree(siteIdentifier: string, user: string, id: string): StoredPathNavTree {
   return JSON.parse(window.localStorage.getItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`));
 }
 
