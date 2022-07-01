@@ -2592,7 +2592,6 @@
         for (var i = 0; i < properties.length; i++) {
           // Loop through the properties supported by the content type
           property = properties[i];
-          const isMinMax = property.type === 'minMax';
 
           for (var j = item.properties.length - 1; j >= 0; j--) {
             itemProperty = null;
@@ -2605,25 +2604,15 @@
           }
 
           if (itemProperty != null) {
-            if (
-              (itemProperty.type === 'dropdown' && !Array.isArray(itemProperty.value)) ||
-              itemProperty.type === 'minMax'
-            ) {
+            if (itemProperty.type === 'dropdown' && !Array.isArray(itemProperty.value)) {
               value = itemProperty.value ? JSON.parse(itemProperty.value) : '';
             } else {
               value = itemProperty.value ? itemProperty.value : '';
             }
           } else {
-            if (isMinMax) {
-              value = {
-                minValue: item.properties.find((itemProp) => itemProp.name === `min${property.name}`)?.value,
-                maxValue: item.properties.find((itemProp) => itemProp.name === `max${property.name}`)?.value
-              };
-            } else {
-              // The property does not currently exist in the model instance => probably a new property added to the content type
-              // Add it to the model instance, using the property's default values
-              value = property.defaultValue ? property.defaultValue : '';
-            }
+            // The property does not currently exist in the model instance => probably a new property added to the content type
+            // Add it to the model instance, using the property's default values
+            value = property.defaultValue ? property.defaultValue : '';
 
             item.properties[item.properties.length] = {
               name: property.name,

@@ -21,8 +21,6 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.MinMax =
     this.containerEl = containerEl;
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
     this.contentTypesMessages = CrafterCMSNext.i18n.messages.contentTypesMessages;
-    this.value = { minValue: '', maxValue: '' };
-    this.inputClassName = 'min-max-property';
     return this;
   };
 
@@ -30,74 +28,63 @@ YAHOO.extend(
   CStudioAdminConsole.Tool.ContentTypes.PropertyType.MinMax,
   CStudioAdminConsole.Tool.ContentTypes.PropertyType,
   {
-    createInputEl: function (value, fieldName) {
-      const el = document.createElement('input');
-      el.classList.add('content-type-property-sheet-property-value', this.inputClassName);
-      el.value = value;
-      el.fieldName = fieldName;
-      return el;
-    },
-    render: function (value, updateFn) {
-      var _self = this;
-      var containerEl = this.containerEl;
-      this.value = value;
+    render: function (value, updateFn, fName, itemId, defaultValue, typeControl, disabled, properties) {
+      const _self = this;
+      const mode = properties.mode;
+      const containerEl = this.containerEl;
+      const valueEl = document.createElement('input');
+      valueEl.classList.add('content-type-property-sheet-property-value');
+      valueEl.setAttribute('id', `${properties.type}-${properties.name}`);
+      valueEl.value = value;
+      valueEl.fieldName = this.fieldName;
+      containerEl.appendChild(valueEl);
 
-      const minValueEl = this.createInputEl(value.minValue ?? '', `min${this.fieldName}`);
-      const maxValueEl = this.createInputEl(value.maxValue ?? '', `max${this.fieldName}`);
-      containerEl.appendChild(minValueEl);
-      containerEl.appendChild(maxValueEl);
-
-      // region Events
-      $(containerEl).on('focus', `.${this.inputClassName}`, function (e) {
-        e.target.setAttribute('type', 'number');
+      $(valueEl).on('focus', function () {
+        valueEl.setAttribute('type', 'number');
       });
 
-      $(minValueEl).on('blur', function (e) {
-        minValueEl.setAttribute('type', 'text');
+      $(valueEl).on('blur', function (e) {
+        valueEl.setAttribute('type', 'text');
 
-        const minValue =
-          Boolean(maxValueEl.value) && parseInt(minValueEl.value) > parseInt(maxValueEl.value)
-            ? maxValueEl.value
-            : minValueEl.value;
+        const counterpartEl = document.getElementById(`${properties.type}-${properties.counterpartControl}`);
+        const currentValue = this.value;
+        const isValueValid = !Boolean(counterpartEl?.value)
+          ? true
+          : mode === 'min'
+          ? parseInt(currentValue) <= parseInt(counterpartEl.value)
+          : parseInt(currentValue) >= parseInt(counterpartEl.value);
 
-        minValueEl.value = minValue;
-        _self.value.minValue = minValue;
+        if (!isValueValid) {
+          CStudioAuthoring.Utils.showNotification(
+            mode === 'min'
+              ? _self.formatMessage(_self.contentTypesMessages.minValueError)
+              : _self.formatMessage(_self.contentTypesMessages.maxValueError),
+            'top',
+            'right',
+            'error',
+            48,
+            'int-property'
+          );
+          this.value = counterpartEl.value;
+        }
 
         if (updateFieldFn) {
-          updateFieldFn(e);
+          updateFieldFn(e, this);
         }
       });
-
-      $(maxValueEl).on('blur', function (e) {
-        maxValueEl.setAttribute('type', 'text');
-
-        const maxValue =
-          Boolean(maxValueEl.value) && parseInt(maxValueEl.value) < parseInt(minValueEl.value)
-            ? minValueEl.value
-            : maxValueEl.value;
-
-        maxValueEl.value = maxValue;
-        _self.value.maxValue = maxValue;
-
-        if (updateFieldFn) {
-          updateFieldFn(e);
-        }
-      });
-      // endregion
 
       if (updateFn) {
-        var updateFieldFn = function (event) {
-          updateFn(event, {
-            fieldName: _self.fieldName,
-            value: _self.value
-          });
+        var updateFieldFn = function (event, el) {
+          updateFn(event, el);
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         };
       }
+
+      this.valueEl = valueEl;
     },
 
     getValue: function () {
-      return this.value;
+      return this.valueEl.value;
     }
   }
 );

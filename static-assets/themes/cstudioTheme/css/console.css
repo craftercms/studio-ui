@@ -577,8 +577,7 @@ input[type='checkbox'].content-type-selector--checkbox {
 }
 
 .property-label + input,
-.property-label + div .text-prop,
-.property-wrapper .min-max-property {
+.property-label + div .text-prop {
   border: 0 none;
   border-left: 1px solid #a0a0a0;
   margin-left: -1px;
@@ -588,10 +587,6 @@ input[type='checkbox'].content-type-selector--checkbox {
   width: 55%;
   text-overflow: ellipsis;
   background-color: #ffffff;
-}
-
-.property-wrapper .min-max-property {
-  width: 27.5%;
 }
 
 .property-label + div .text-prop {

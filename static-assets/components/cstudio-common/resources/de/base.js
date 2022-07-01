@@ -805,7 +805,6 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   text: 'Text',
   minSize: 'Min. Größe',
   maxSize: 'Max. Größe',
-  minMax: 'Minimal - Maximal',
   itemManager: 'Data Sources',
   disableFlatteningSearch: 'Zuklappen während der Suche deaktivieren',
   singleValueFilename: 'Einfache Dateienamen (Rückwärtskompatibilität)',
