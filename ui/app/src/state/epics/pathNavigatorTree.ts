@@ -135,6 +135,7 @@ export default [
             if (error.status === 404) {
               const uuid = state.sites.byId[state.sites.active].uuid;
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
+                expanded: state.pathNavigatorTree[id].expanded,
                 collapsed: state.pathNavigatorTree[id].collapsed,
                 keywordByPath: state.pathNavigatorTree[id].keywordByPath
               });

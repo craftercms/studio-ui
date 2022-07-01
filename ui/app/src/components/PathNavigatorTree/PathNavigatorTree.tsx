@@ -38,8 +38,7 @@ import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
-import PathNavigatorSkeletonTree from './PathNavigatorTreeSkeleton';
-import { withIndex, withoutIndex } from '../../utils/path';
+import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
 import { DetailedItem } from '../../models/Item';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { useSelection } from '../../hooks/useSelection';
@@ -195,17 +194,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   if (!rootItem || !state) {
     const storedState = getStoredPathNavigatorTree(uuid, user.username, id);
-    return (
-      <PathNavigatorSkeletonTree
-        numOfItems={
-          storedState?.expanded.some(
-            (path) => path === withIndex(props.rootPath) || path === withoutIndex(props.rootPath)
-          )
-            ? 5
-            : 1
-        }
-      />
-    );
+    return <PathNavigatorSkeleton renderBody={storedState ? !storedState.collapsed : !initialCollapsed} />;
   }
 
   // region Handlers

@@ -140,7 +140,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     limit = 10,
     locale,
     excludes,
-    initialCollapsed,
+    initialCollapsed = true,
     onItemClicked: onItemClickedProp,
     createItemClickedHandler = (defaultHandler) => defaultHandler,
     computeActiveItems
@@ -226,7 +226,8 @@ export function PathNavigator(props: PathNavigatorProps) {
   }, [dispatch, id, siteLocales.defaultLocaleCode, state?.localeCode]);
 
   if (!state) {
-    return <PathNavigatorSkeleton />;
+    const storedState = getStoredPathNavigator(uuid, user.username, id);
+    return <PathNavigatorSkeleton renderBody={storedState ? !storedState.collapsed : !initialCollapsed} />;
   }
 
   const onPathSelected = (item: DetailedItem) => {
