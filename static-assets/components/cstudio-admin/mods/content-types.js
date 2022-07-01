@@ -2613,7 +2613,6 @@
             // The property does not currently exist in the model instance => probably a new property added to the content type
             // Add it to the model instance, using the property's default values
             value = property.defaultValue ? property.defaultValue : '';
-
             item.properties[item.properties.length] = {
               name: property.name,
               value: value,
