@@ -73,6 +73,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);
+  const isItemPreviewable = isPreviewable(item);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
@@ -95,7 +96,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         };
       });
       const sections: ContextMenuOption[][] = [];
-      if (isPreviewable(item)) {
+      if (isItemPreviewable) {
         sections.push([contextMenuOptions.view]);
       }
       if (count > 1) {
@@ -122,9 +123,18 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         activeItem: version
       });
     },
-    [item, count, setMenu, formatMessage, isConfig]
+    [
+      item?.systemType,
+      item?.availableActionsMap.revert,
+      count,
+      setMenu,
+      formatMessage,
+      isConfig,
+      item?.stateMap.locked,
+      isItemPreviewable
+    ]
   );
-  const hasMenuOptions = isPreviewable(item) || count > 1;
+  const hasMenuOptions = isItemPreviewable || count > 1;
 
   const compareVersionDialogWithActions = () =>
     showCompareVersionsDialog({
@@ -157,7 +167,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           })
         ])
       );
-    } else if (isPreviewable(item)) {
+    } else if (isItemPreviewable) {
       fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
         const image = isImage(item);
         const video = isVideo(item);
