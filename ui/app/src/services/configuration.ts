@@ -25,6 +25,7 @@ import { VersionsResponse } from '../models/Version';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
+import { asArray } from '../utils/array';
 
 export type CrafterCMSModules = 'studio' | 'engine';
 
@@ -235,7 +236,7 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
           files = deserialize(filesXML).files.file;
         }
       }
-      return files;
+      return asArray(files);
     })
   );
 }
