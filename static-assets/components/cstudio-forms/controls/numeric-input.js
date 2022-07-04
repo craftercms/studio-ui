@@ -198,14 +198,6 @@
           inputEl.size = prop.value;
         }
 
-        if (prop.name == 'Value') {
-          const value = JSON.parse(prop.value);
-          inputEl.maxValue = value.maxValue;
-          inputEl.setAttribute('max', value.maxValue);
-          inputEl.minValue = value.minValue;
-          inputEl.setAttribute('min', value.minValue);
-        }
-
         if (prop.name == 'maxValue') {
           inputEl.maxValue = prop.value;
           inputEl.setAttribute('max', prop.value);
