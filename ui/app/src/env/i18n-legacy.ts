@@ -430,11 +430,11 @@ export const contentTypesMessages = defineMessages({
   },
   minValueError: {
     id: 'contentType.minSizeError',
-    defaultMessage: "Minimum value can't be higher than maximum value."
+    defaultMessage: "Minimum value can't be higher than maximum value"
   },
   maxValueError: {
     id: 'contentType.maxSizeError',
-    defaultMessage: "Maximum value can't be lower than minimum value."
+    defaultMessage: "Maximum value can't be lower than minimum value"
   }
 });
 
