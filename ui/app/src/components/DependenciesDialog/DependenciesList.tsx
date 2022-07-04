@@ -51,17 +51,19 @@ export function DependenciesList(props: DependenciesListProps) {
               primary={dependency.label}
               secondary={!compactView ? dependency.path : null}
             />
-
-            <IconButton
-              aria-haspopup="true"
-              onClick={(e) => {
-                handleContextMenuClick(e, dependency);
-              }}
-              className={classes.listEllipsis}
-              size="large"
-            >
-              <MoreVertIcon />
-            </IconButton>
+            {/* TODO: Improve logic to show/not-show menu when ready. */}
+            {!dependency.path.startsWith('/config/studio/content-types') && (
+              <IconButton
+                aria-haspopup="true"
+                onClick={(e) => {
+                  handleContextMenuClick(e, dependency);
+                }}
+                className={classes.listEllipsis}
+                size="large"
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )}
           </ListItem>
         ))}
     </List>

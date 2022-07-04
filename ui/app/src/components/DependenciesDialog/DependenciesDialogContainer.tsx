@@ -79,8 +79,8 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
     (siteId: string, path: string, newItem?: boolean) => {
       if (dialog.dependenciesShown === 'depends-on') {
         if (dialog.dependantItems === null || newItem) {
-          fetchDependant(siteId, path).subscribe(
-            (response) => {
+          fetchDependant(siteId, path).subscribe({
+            next: (response) => {
               const dependantItems = parseLegacyItemToSandBoxItem(response);
               setDialog({
                 dependantItems,
@@ -88,8 +88,8 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
               });
               setDeps(dependantItems);
             },
-            (error) => setError(error)
-          );
+            error: (error) => setError(error)
+          });
         } else {
           setDeps(dialog.dependantItems);
         }

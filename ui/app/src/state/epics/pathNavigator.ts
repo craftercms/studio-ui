@@ -156,7 +156,6 @@ export default [
       mergeMap(
         ([
           {
-            type,
             payload: { id, path }
           },
           state
@@ -408,8 +407,15 @@ export default [
     action$.pipe(
       ofType(pluginInstalled.type),
       withLatestFrom(state$),
-      // tap
-      ignoreElements()
+      mergeMap(([, state]) => {
+        const actions = [];
+        Object.values(state.pathNavigator).forEach((tree) => {
+          if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
+            actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+          }
+        });
+        return actions;
+      })
     ),
   // endregion
   // region publishEvent, workflowEvent
@@ -417,8 +423,13 @@ export default [
     action$.pipe(
       ofType(publishEvent.type, workflowEvent.type),
       withLatestFrom(state$),
-      // tap
-      ignoreElements()
+      mergeMap(([, state]) => {
+        const actions = [];
+        Object.values(state.pathNavigator).forEach((tree) => {
+          actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+        });
+        return actions;
+      })
     )
   // endregion
 ] as CrafterCMSEpic[];
