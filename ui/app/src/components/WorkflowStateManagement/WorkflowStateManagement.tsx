@@ -345,7 +345,6 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
         >
           <ItemStatesGridUI
             resource={resource}
-            rowsPerPageOptions={[5, 10, 15]}
             selectedItems={selectedItems}
             allItemsSelected={isSelectedItemsOnAllPages}
             hasThisPageItemsChecked={hasThisPageItemsChecked}

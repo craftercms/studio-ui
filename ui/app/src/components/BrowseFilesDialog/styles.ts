@@ -24,28 +24,17 @@ export const useStyles = makeStyles()((theme) => ({
     marginLeft: 'auto',
     maxWidth: '250px'
   },
-  emptyState: {
-    flexGrow: 1
-  },
-  paginationRoot: {
-    marginRight: 'auto'
-  },
   cardsContainer: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, max-content))',
     gridGap: '16px',
     padding: 'initial'
   },
-  cardHeader: {
-    padding: '0 9px'
-  },
   mediaCardRoot: {
-    width: '200px',
-    height: '155px',
-    cursor: 'pointer',
-    '&.selected': {
-      boxShadow: `0px 0px 4px 4px ${theme.palette.primary.main}`
-    }
+    cursor: 'pointer'
+  },
+  selectedCard: {
+    boxShadow: `0px 0px 4px 4px ${theme.palette.primary.main}`
   },
   leftWrapper: {
     width: '270px',
@@ -53,9 +42,6 @@ export const useStyles = makeStyles()((theme) => ({
   },
   rightWrapper: {
     flexGrow: 1
-  },
-  bodyEmptyState: {
-    height: '60vh'
   },
   currentPath: {
     '& input': {
@@ -68,20 +54,5 @@ export const useStyles = makeStyles()((theme) => ({
       fontSize: '1.25rem',
       lineHeight: '1.6'
     }
-  }
-}));
-
-export const useCardStyles = makeStyles()(() => ({
-  root: {
-    width: '200px',
-    height: '155px',
-    margin: '10px'
-  },
-  media: {
-    height: 0,
-    paddingTop: '56.25%' // 16:9
-  },
-  cardHeader: {
-    padding: '9px 12px'
   }
 }));

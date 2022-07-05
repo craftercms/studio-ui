@@ -34,7 +34,6 @@ import LookupTable from '../../models/LookupTable';
 
 export interface WorkflowStatesGridUIProps {
   resource: Resource<PagedArray<SandboxItem>>;
-  rowsPerPageOptions?: number[];
   selectedItems: LookupTable<SandboxItem>;
   allItemsSelected: boolean;
   hasThisPageItemsChecked: boolean;
@@ -51,7 +50,6 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
     resource,
     onPageChange,
     onRowsPerPageChange,
-    rowsPerPageOptions = [5, 10, 15],
     selectedItems,
     onItemSelected,
     onRowSelected,
@@ -180,12 +178,11 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
         </Table>
       </TableContainer>
       <Pagination
-        rowsPerPageOptions={rowsPerPageOptions}
-        classes={{ root: classes.paginationRoot }}
+        mode="table"
         count={itemStates.total}
         rowsPerPage={itemStates.limit}
         page={itemStates && Math.ceil(itemStates.offset / itemStates.limit)}
-        onPageChange={(page: number) => onPageChange(page)}
+        onPageChange={(e, page: number) => onPageChange(page)}
         onRowsPerPageChange={onRowsPerPageChange}
       />
     </>

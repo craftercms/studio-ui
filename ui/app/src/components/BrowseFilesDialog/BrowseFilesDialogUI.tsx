@@ -46,7 +46,6 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     limit,
     offset,
     keyword,
-    rowsPerPageOptions = [9, 15, 21],
     total,
     numOfLoaderItems = 12,
     onCardSelected,
@@ -88,22 +87,20 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                 classes={{ root: classes.searchRoot }}
               />
             </Box>
-
             <div className={classes.cardsContainer}>
               {items
                 ? items.map((item: SearchItem) => (
                     <MediaCard
                       classes={{
-                        root: clsx(classes.mediaCardRoot, item.path === selectedCard?.path && 'selected'),
-                        header: clsx(!multiSelect && classes.cardHeader)
+                        root: clsx(classes.mediaCardRoot, item.path === selectedCard?.path && classes.selectedCard)
                       }}
                       key={item.path}
                       item={item}
                       selected={multiSelect ? selectedArray : null}
                       onSelect={multiSelect ? onCheckboxChecked : null}
-                      onPreviewButton={item.type === 'Image' ? onPreviewImage : null}
+                      onPreview={() => onPreviewImage(item)}
                       previewAppBaseUri={guestBase}
-                      onCardClicked={onCardSelected}
+                      onClick={() => onCardSelected(item)}
                       hasSubheader={false}
                     />
                   ))
@@ -111,7 +108,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             </div>
             {items && items.length === 0 && (
               <EmptyState
-                classes={{ root: classes.emptyState }}
+                styles={{ root: { flexGrow: 1 } }}
                 title={<FormattedMessage id="browseFilesDialog.noResults" defaultMessage="No files found." />}
               />
             )}
@@ -121,12 +118,11 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
       <DialogFooter>
         {items && (
           <Pagination
-            rowsPerPageOptions={rowsPerPageOptions}
-            classes={{ root: classes.paginationRoot }}
+            sxs={{ root: { marginRight: 'auto' } }}
             count={total}
             rowsPerPage={limit}
             page={Math.ceil(offset / limit)}
-            onPageChange={(page: number) => onChangePage(page)}
+            onPageChange={(e, page: number) => onChangePage(page)}
             onRowsPerPageChange={onChangeRowsPerPage}
           />
         )}

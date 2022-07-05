@@ -31,7 +31,7 @@ import MobileStepper from '../MobileStepper/MobileStepper';
 import { backgroundColor } from '../../styles/theme';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import cardTitleStyles from '../../styles/card';
+import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
 import SecondaryButton from '../SecondaryButton';
 
 interface PluginCardProps {
@@ -68,10 +68,8 @@ const useStyles = makeStyles()((theme) => ({
       justifyContent: 'space-around'
     },
     '& .developer': {
-      overflow: 'hidden',
-      display: '-webkit-box',
+      ...cardSubtitleStyles,
       WebkitLineClamp: 1,
-      WebkitBoxOrient: 'vertical',
       marginBottom: 0
     }
   },

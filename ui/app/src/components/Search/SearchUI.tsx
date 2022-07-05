@@ -41,6 +41,9 @@ import { useIntl } from 'react-intl';
 import { AllItemActions, DetailedItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu';
 import ApiResponse from '../../models/ApiResponse';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
+import { UNDEFINED } from '../../utils/constants';
 
 interface SearchUIProps {
   selectedPath: string;
@@ -434,26 +437,31 @@ export function SearchUI(props: SearchUIProps) {
                     searchResults.items.map((item: MediaItem, i) => (
                       <Grid key={i} item xs={12} {...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {})}>
                         <MediaCard
-                          isList={currentView === 'list'}
                           classes={
                             currentView === 'list'
                               ? {
                                   root: classes.mediaCardListRoot,
                                   checkbox: classes.mediaCardListCheckbox,
-                                  header: classes.mediaCardListHeader,
                                   media: classes.mediaCardListMedia,
                                   mediaIcon: classes.mediaCardListMediaIcon
                                 }
                               : void 0
                           }
                           item={item}
-                          onPreview={(item) =>
-                            mode === 'select' ? handleSelect(item.path, !selected.includes(item.path)) : onPreview(item)
+                          onPreview={mode === 'default' ? () => onPreview(item) : UNDEFINED}
+                          onClick={
+                            mode === 'select' ? () => handleSelect(item.path, !selected.includes(item.path)) : UNDEFINED
                           }
                           onSelect={handleSelect}
                           selected={selected}
                           previewAppBaseUri={guestBase}
-                          onHeaderButtonClick={mode === 'default' ? onHeaderButtonClick : null}
+                          action={
+                            mode === 'default' ? (
+                              <IconButton onClick={(e) => onHeaderButtonClick(e, item)} size="small">
+                                <MoreVertRounded />
+                              </IconButton>
+                            ) : null
+                          }
                         />
                       </Grid>
                     ))

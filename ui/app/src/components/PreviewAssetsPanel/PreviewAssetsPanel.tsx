@@ -44,6 +44,7 @@ import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import Pagination from '../Pagination';
 import { LoadingState } from '../LoadingState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { showPreviewDialog } from '../../state/actions/dialogs';
 
 const translations = defineMessages({
   previewAssetsPanelTitle: {
@@ -72,12 +73,9 @@ const translations = defineMessages({
   }
 });
 
-const assetsPanelStyles = makeStyles()(() => ({
+const assetsPanelStyles = makeStyles()((theme) => ({
   assetsPanelWrapper: {
-    padding: '15px',
-    '&.dragInProgress': {
-      background: 'red'
-    }
+    padding: theme.spacing(2)
   },
   search: {
     padding: '15px 15px 0 15px'
@@ -256,16 +254,14 @@ export function PreviewAssetsPanel() {
                 <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
               </div>
             )}
+            <Pagination
+              count={assets.count}
+              rowsPerPage={assets.query.limit}
+              page={assets.pageNumber}
+              onPageChange={(e, page: number) => onPageChanged(page * assets.query.limit)}
+              onRowsPerPageChange={onRowsPerPageChange}
+            />
             <div className={classes.assetsPanelWrapper}>
-              <Pagination
-                rowsPerPageOptions={[5, 10, 15]}
-                sx={{ root: { marginRight: 'auto' }, toolbar: { paddingLeft: 0 } }}
-                count={assets.count}
-                rowsPerPage={assets.query.limit}
-                page={assets.pageNumber}
-                onPageChange={(page: number) => onPageChanged(page * assets.query.limit)}
-                onRowsPerPageChange={onRowsPerPageChange}
-              />
               {assets.page[assets.pageNumber]?.map((id) => {
                 const item = assets.byId[id];
                 return (
@@ -274,10 +270,20 @@ export function PreviewAssetsPanel() {
                     item={item}
                     previewAppBaseUri={guestBase}
                     hasSubheader={false}
-                    avatar={DragIndicatorRounded}
+                    avatar={<DragIndicatorRounded />}
                     classes={{ root: classes.card }}
-                    onDragStart={onDragStart}
-                    onDragEnd={onDragEnd}
+                    onDragStart={() => onDragStart(item)}
+                    onDragEnd={() => onDragEnd()}
+                    onPreview={() =>
+                      dispatch(
+                        showPreviewDialog({
+                          // TODO: check if it's image or video
+                          type: 'image',
+                          title: item.name,
+                          url: item.path
+                        })
+                      )
+                    }
                   />
                 );
               })}

@@ -15,11 +15,9 @@
  */
 
 import React, { ChangeEvent } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import TablePagination from '@mui/material/TablePagination';
+import { FormattedMessage } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import { useStyles } from './styles';
-import { translations } from './translations';
 import Header from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import PathNavigatorItem from './PathNavigatorItem';
@@ -36,6 +34,7 @@ import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import NavLoader from './NavLoader';
 import { ErrorState } from '../ErrorState';
 import { renderErrorState } from '../ErrorState/util';
+import { Pagination } from '../Pagination';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -156,7 +155,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onRowsPerPageChange
   } = props;
   // endregion
-  const { formatMessage } = useIntl();
   const items = state.itemsInPath?.flatMap((path) => itemsByPath[path] ?? []) ?? [];
   const levelDescriptor = itemsByPath[state.levelDescriptor];
   return (
@@ -263,18 +261,12 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             )}
             {/* region Pagination */}
             {state.total !== null && state.total > 0 && (
-              <TablePagination
-                classes={{
-                  root: clsx(classes.pagination, props.classes?.paginationRoot),
-                  toolbar: clsx(classes.paginationToolbar, classes.widgetSection)
-                }}
-                component="div"
-                labelRowsPerPage=""
+              <Pagination
+                showBottomBorder
+                classes={{ root: props.classes?.paginationRoot }}
                 count={state.total}
                 rowsPerPage={state.limit}
                 page={state && Math.ceil(state.offset / state.limit)}
-                backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-                nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
                 onRowsPerPageChange={onRowsPerPageChange}
                 onPageChange={(e, page: number) => onPageChanged(page)}
               />

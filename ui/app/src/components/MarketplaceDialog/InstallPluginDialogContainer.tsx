@@ -273,33 +273,23 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
       )}
       {!selectedDetailsPlugin && (
         <DialogFooter>
-          {!formPluginState.plugin && plugins ? (
-            <Pagination
-              rowsPerPageOptions={[6, 9, 15]}
-              sx={{
-                root: {
-                  marginLeft: 'auto',
-                  marginRight: '20px',
-                  minHeight: '40px'
-                },
-                selectRoot: {
-                  background: 'red'
-                }
-              }}
-              count={plugins.total}
-              rowsPerPage={plugins.limit}
-              page={plugins && Math.ceil(plugins.offset / plugins.limit)}
-              onPageChange={(page: number) => onPageChange(page)}
-              onRowsPerPageChange={onRowsPerPageChange}
-            />
+          {!formPluginState.plugin ? (
+            plugins ? (
+              <Pagination
+                rowsPerPageOptions={[6, 9, 15]}
+                mode="table"
+                count={plugins.total}
+                rowsPerPage={plugins.limit}
+                page={plugins && Math.ceil(plugins.offset / plugins.limit)}
+                onPageChange={(e, page: number) => onPageChange(page)}
+                onRowsPerPageChange={onRowsPerPageChange}
+              />
+            ) : (
+              <></>
+            )
           ) : (
             <>
-              <SecondaryButton
-                onClick={onPluginFormClose}
-                sx={{
-                  mr: '8px'
-                }}
-              >
+              <SecondaryButton onClick={onPluginFormClose} sx={{ mr: 1 }}>
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
               </SecondaryButton>
               <PrimaryButton
