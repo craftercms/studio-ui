@@ -20,10 +20,10 @@ import { PreviewDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 
 export function PreviewDialog(props: PreviewDialogProps) {
-  const { title, type, url, content, mode, ...rest } = props;
+  const { title, type, url, content, mode, mimeType, ...rest } = props;
   return (
     <EnhancedDialog maxWidth="xl" title={props.title} dialogHeaderProps={{ subtitle: props.subtitle }} {...rest}>
-      <PreviewDialogContainer type={type} title={title} url={url} content={content} mode={mode} />
+      <PreviewDialogContainer type={type} title={title} url={url} content={content} mode={mode} mimeType={mimeType} />
     </EnhancedDialog>
   );
 }

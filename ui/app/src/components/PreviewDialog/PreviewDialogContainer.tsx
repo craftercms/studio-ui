@@ -34,7 +34,7 @@ import { batchActions } from '../../state/actions/misc';
 import { hasEditAction } from '../../utils/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
-  const { title, content, mode, url, onClose, type } = props;
+  const { title, content, mode, url, onClose, type, mimeType } = props;
   const { classes } = useStyles();
   const item = useDetailedItem(url);
   const dispatch = useDispatch();
@@ -46,7 +46,9 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
       case 'image':
         return <img src={url} alt="" />;
       case 'video':
-        return <AsyncVideoPlayer playerOptions={{ src: url, autoplay: true }} />;
+        return (
+          <AsyncVideoPlayer playerOptions={{ src: url, autoplay: true, ...(mimeType ? { type: mimeType } : {}) }} />
+        );
       case 'page':
         return (
           <>
