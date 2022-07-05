@@ -13,23 +13,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import React from 'react';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
+import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
-import CardActionArea from '@mui/material/CardActionArea';
-import IconButton from '@mui/material/IconButton';
+import CardActionArea, { CardActionAreaProps } from '@mui/material/CardActionArea';
 import { makeStyles } from 'tss-react/mui';
 import { MediaItem } from '../../models/Search';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
-import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
-import cardTitleStyles from '../../styles/card';
+import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
 import { defineMessages, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import moment from 'moment-timezone';
 import SystemIcon from '../SystemIcon';
-import ZoomInRoundedIcon from '@mui/icons-material/ZoomInRounded';
 
 const translations = defineMessages({
   options: {
@@ -42,54 +40,20 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles()(() => ({
   card: {
-    '& .cardTitle': {
-      ...cardTitleStyles
-    },
-    '& .cardSubtitle': {
-      overflow: 'hidden',
-      display: '-webkit-box',
-      WebkitLineClamp: 2,
-      WebkitBoxOrient: 'vertical',
-      wordBreak: 'break-all'
-    },
     position: 'relative'
   },
-  cardHeaderRoot: {
-    padding: '9px 0',
-    cursor: 'pointer',
-    width: '100%'
+  cardTitle: {
+    ...cardTitleStyles
   },
-  avatar: {
-    color: palette.black,
-    margin: '0 10px'
+  cardSubtitle: {
+    ...cardSubtitleStyles
   },
-  cardHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%'
-  },
-  cardOptions: {
-    marginLeft: 'auto'
-  },
+  cardAction: { alignSelf: 'center' },
   media: {
     height: 0,
-    paddingTop: '56.25%' // 16:9
-  },
-  previewButton: {
-    margin: '5px',
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    color: theme.palette.primary.contrastText,
-    background: theme.palette.action.focus
-  },
-  listActionArea: {
-    paddingTop: 0,
-    height: '80px',
-    width: '80px',
-    order: -1
+    paddingTop: '56.25%'
   },
   mediaIcon: {
     paddingTop: '56.25%',
@@ -116,30 +80,28 @@ const useStyles = makeStyles()((theme) => ({
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '100%'
-  },
-  checkbox: {}
+  }
 }));
 
 interface MediaCardProps {
   item: MediaItem;
   hasSubheader?: boolean;
-  onPreviewButton?(item: MediaItem): void;
-  onCardClicked?(item: MediaItem): void;
-  isList?: boolean;
   selected?: Array<string>;
   previewAppBaseUri: string;
-  headerButtonIcon?: React.ElementType<any>;
-  avatar?: React.ElementType<any>;
-  classes?: Partial<Record<'root' | 'checkbox' | 'header' | 'media' | 'mediaIcon', string>>;
-  onHeaderButtonClick?(...props: any): any;
-  onPreview?(item: MediaItem): any;
+  action?: CardHeaderProps['action'];
+  avatar?: CardHeaderProps['avatar'];
+  classes?: Partial<Record<'root' | 'checkbox' | 'media' | 'mediaIcon', string>>;
+  onClick?(e): void;
+  onPreview?(e): any;
   onSelect?(path: string, selected: boolean): any;
+  // TODO: Fix types
   onDragStart?(...args: any): any;
   onDragEnd?(...args: any): any;
 }
 
 function MediaCard(props: MediaCardProps) {
   const { classes, cx } = useStyles();
+  // region const { ... } = props
   const {
     onPreview,
     onSelect,
@@ -147,173 +109,107 @@ function MediaCard(props: MediaCardProps) {
     item,
     previewAppBaseUri,
     hasSubheader = true,
-    isList = false,
-    onPreviewButton,
-    onCardClicked,
-    headerButtonIcon: HeaderButtonIcon = MoreVertRounded,
-    onHeaderButtonClick,
-    avatar: Avatar,
+    onClick,
+    action,
+    avatar,
     onDragStart,
     onDragEnd
   } = props;
+  // endregion
   const { name, path, type } = item;
   const { formatMessage } = useIntl();
-
-  const renderIcon = (type: string) => {
-    let iconClass = 'media-icon';
-    let icon = { id: '@mui/icons-material/InsertDriveFileOutlined' };
-    switch (type) {
-      case 'Page':
-        icon.id = '@mui/icons-material/InsertDriveFileOutlined';
-        break;
-      case 'Video':
-        icon.id = '@mui/icons-material/VideocamOutlined';
-        break;
-      case 'Template':
-        icon.id = '@mui/icons-material/CodeRounded';
-        break;
-      case 'Taxonomy':
-        icon.id = '@mui/icons-material/LocalOfferOutlined';
-        break;
-      case 'Component':
-        icon.id = '@mui/icons-material/ExtensionOutlined';
-        break;
-      case 'Groovy':
-      case 'JavaScript':
-      case 'CSS':
-        icon.id = '@mui/icons-material/CodeRounded';
-        break;
-      default:
-        break;
-    }
-    return onPreview ? (
-      <CardActionArea onClick={() => onPreview(item)} className={cx(isList && classes.listActionArea)}>
-        <div className={cx(classes.mediaIcon, props.classes?.mediaIcon)}>
-          {type === 'Video' ? (
-            <video className={classes.videoThumbnail}>
-              <source src={path} type="video/mp4" />
-              <SystemIcon icon={icon} svgIconProps={{ className: iconClass }} />
-            </video>
-          ) : (
-            <SystemIcon icon={icon} svgIconProps={{ className: iconClass }} />
-          )}
-        </div>
-      </CardActionArea>
-    ) : (
-      <div className={cx(classes.mediaIcon, props.classes?.mediaIcon)}>
-        {type === 'Video' ? (
-          <video className={classes.videoThumbnail}>
-            <source src={path} type="video/mp4" />
-            <SystemIcon icon={icon} svgIconProps={{ className: iconClass }} />
-          </video>
-        ) : (
-          <SystemIcon icon={icon} svgIconProps={{ className: iconClass }} />
-        )}
-      </div>
-    );
+  let iconMap = {
+    Page: '@mui/icons-material/InsertDriveFileOutlined',
+    Video: '@mui/icons-material/VideocamOutlined',
+    Template: '@mui/icons-material/CodeRounded',
+    Taxonomy: '@mui/icons-material/LocalOfferOutlined',
+    Component: '@mui/icons-material/ExtensionOutlined',
+    Groovy: '@mui/icons-material/CodeRounded',
+    JavaScript: '@mui/icons-material/CodeRounded',
+    CSS: '@mui/icons-material/CodeRounded'
   };
+  let icon = { id: iconMap[type] ?? '@mui/icons-material/InsertDriveFileOutlined' };
+  const systemIcon = <SystemIcon icon={icon} svgIconProps={{ className: 'media-icon' }} />;
+  const CardActionAreaOrFragment = onPreview ? CardActionArea : React.Fragment;
+  const cardActionAreaOrFragmentProps: CardActionAreaProps = onPreview
+    ? {
+        disableRipple: Boolean(onDragStart || onDragEnd),
+        onClick(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          onPreview(e);
+        }
+      }
+    : {};
 
   return (
     <Card
       className={cx(classes.card, props.classes?.root)}
-      draggable={!!onDragStart || !!onDragEnd}
-      onDragStart={() => onDragStart(item)}
-      onDragEnd={() => onDragEnd(item)}
-      onClick={() => onCardClicked?.(item)}
+      draggable={Boolean(onDragStart || onDragEnd)}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onClick={onClick}
     >
-      {isList && onSelect && (
-        <FormGroup className={cx(classes.checkbox, props.classes?.checkbox)}>
-          <Checkbox
-            checked={selected.includes(path)}
-            onClick={(e: any) => onSelect(path, e.target.checked)}
-            color="primary"
+      <CardHeader
+        classes={{ action: classes.cardAction }}
+        avatar={
+          onSelect ? (
+            <FormGroup className={props.classes?.checkbox}>
+              <Checkbox
+                checked={selected.includes(path)}
+                onClick={(e: any) => onSelect(path, e.target.checked)}
+                color="primary"
+                size="small"
+              />
+            </FormGroup>
+          ) : (
+            avatar
+          )
+        }
+        title={name}
+        subheader={
+          hasSubheader ? (
+            <>
+              {`${type}, ${formatMessage(translations.itemLastEdition, {
+                time: moment(item.lastModified).fromNow()
+              })}`}
+              <div title={item.path}>{item.path}</div>
+            </>
+          ) : null
+        }
+        action={action}
+        titleTypographyProps={{
+          variant: 'subtitle2',
+          component: 'h2',
+          className: classes.cardTitle
+        }}
+        subheaderTypographyProps={{
+          variant: 'subtitle2',
+          component: 'h2',
+          className: classes.cardSubtitle,
+          color: 'textSecondary'
+        }}
+      />
+      <CardActionAreaOrFragment {...cardActionAreaOrFragmentProps}>
+        {type === 'Image' ? (
+          <CardMedia
+            className={cx(classes.media, props.classes?.media)}
+            image={`${previewAppBaseUri}${path}`}
+            title={name}
           />
-        </FormGroup>
-      )}
-      <header className={cx(classes.cardHeader, props.classes?.header)}>
-        {!isList && onSelect && (
-          <FormGroup>
-            <Checkbox
-              checked={selected.includes(path)}
-              onClick={(e: any) => onSelect(path, e.target.checked)}
-              color="primary"
-            />
-          </FormGroup>
-        )}
-        {/*
-        // @ts-ignore */}
-        <CardHeader
-          title={name}
-          subheader={
-            hasSubheader ? (
-              <>
-                {`${type}, ${formatMessage(translations.itemLastEdition, {
-                  time: moment(item.lastModified).fromNow()
-                })}`}
-                <div title={item.path}>{item.path}</div>
-              </>
-            ) : null
-          }
-          avatar={Avatar ? <Avatar /> : null}
-          classes={{ root: classes.cardHeaderRoot, avatar: classes.avatar }}
-          onClick={() => onPreview?.(item)}
-          titleTypographyProps={{
-            variant: 'subtitle2',
-            component: 'h2',
-            className: 'cardTitle'
-          }}
-          subheaderTypographyProps={{
-            variant: 'subtitle2',
-            component: 'h2',
-            className: 'cardSubtitle',
-            color: 'textSecondary'
-          }}
-        />
-        {onHeaderButtonClick && (
-          <IconButton
-            aria-label={formatMessage(translations.options)}
-            className={classes.cardOptions}
-            onClick={(e) => onHeaderButtonClick(e, item)}
-            size="large"
-          >
-            <HeaderButtonIcon />
-          </IconButton>
-        )}
-      </header>
-      {type === 'Image' ? (
-        onPreviewButton || !onPreview ? (
-          <>
-            <CardMedia
-              className={cx(classes.media, props.classes?.media)}
-              image={`${previewAppBaseUri}${path}`}
-              title={name}
-            />
-            {onPreviewButton && (
-              <IconButton
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onPreviewButton(item);
-                }}
-                className={classes.previewButton}
-                size="large"
-              >
-                <ZoomInRoundedIcon />
-              </IconButton>
-            )}
-          </>
         ) : (
-          <CardActionArea onClick={() => onPreview(item)} className={cx(isList && classes.listActionArea)}>
-            <CardMedia
-              className={cx(classes.media, props.classes?.media)}
-              image={`${previewAppBaseUri}${path}`}
-              title={name}
-            />
-          </CardActionArea>
-        )
-      ) : (
-        renderIcon(type)
-      )}
+          <div className={cx(classes.mediaIcon, props.classes?.mediaIcon)}>
+            {type === 'Video' ? (
+              <video className={classes.videoThumbnail}>
+                <source src={path} type="video/mp4" />
+                {systemIcon}
+              </video>
+            ) : (
+              systemIcon
+            )}
+          </div>
+        )}
+      </CardActionAreaOrFragment>
     </Card>
   );
 }

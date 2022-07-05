@@ -37,19 +37,7 @@ export interface ComponentResource {
 export interface PreviewBrowseComponentsPanelUIProps {
   componentsResource: Resource<ComponentResource>;
   classes?: Partial<
-    Record<
-      | 'browsePanelWrapper'
-      | 'paginationContainer'
-      | 'pagination'
-      | 'toolbar'
-      | 'list'
-      | 'noResultsImage'
-      | 'noResultsTitle'
-      | 'emptyState'
-      | 'emptyStateImage'
-      | 'emptyStateTitle',
-      string
-    >
+    Record<'browsePanelWrapper' | 'pagination' | 'toolbar' | 'list' | 'noResultsImage' | 'noResultsTitle', string>
   >;
   onPageChanged(page: number): void;
   onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void;
@@ -64,41 +52,39 @@ export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPan
   const components = componentsResource.read();
   const { count, pageNumber, items, limit } = components;
   return (
-    <div className={classes.browsePanelWrapper}>
-      <div className={classes.paginationContainer}>
-        <Pagination
-          rowsPerPageOptions={[5, 10, 15]}
-          sx={{ root: { marginRight: 'auto' }, toolbar: { paddingLeft: 0 } }}
-          count={count}
-          rowsPerPage={limit}
-          page={pageNumber}
-          onPageChange={(page: number) => onPageChanged(page * limit)}
-          onRowsPerPageChange={onRowsPerPageChange}
-        />
-      </div>
-      <List className={classes.list}>
-        {items.map((item: ContentInstance) => (
-          <DraggablePanelListItem
-            key={item.craftercms.id}
-            primaryText={item.craftercms.label}
-            onDragStart={() => onDragStart(item)}
-            onDragEnd={onDragEnd}
+    <>
+      <Pagination
+        count={count}
+        rowsPerPage={limit}
+        page={pageNumber}
+        onPageChange={(e, page: number) => onPageChanged(page * limit)}
+        onRowsPerPageChange={onRowsPerPageChange}
+      />
+      <div className={classes.browsePanelWrapper}>
+        <List>
+          {items.map((item: ContentInstance) => (
+            <DraggablePanelListItem
+              key={item.craftercms.id}
+              primaryText={item.craftercms.label}
+              onDragStart={() => onDragStart(item)}
+              onDragEnd={onDragEnd}
+            />
+          ))}
+        </List>
+        {count === 0 && (
+          <EmptyState
+            title={formatMessage(translations.noResults)}
+            classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
           />
-        ))}
-      </List>
-      {count === 0 && (
-        <EmptyState
-          title={formatMessage(translations.noResults)}
-          classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
-        />
-      )}
-      <FormHelperText className={classes.helperTextWrapper}>
-        <FormattedMessage
-          id="previewBrowseComponentsPanel.sharedComponentsHelperText"
-          defaultMessage="Only shared components are shown here"
-        />
-      </FormHelperText>
-    </div>
+        )}
+        <FormHelperText className={classes.helperTextWrapper}>
+          <FormattedMessage
+            id="previewBrowseComponentsPanel.sharedComponentsHelperText"
+            defaultMessage="Only shared components are shown here"
+          />
+        </FormHelperText>
+      </div>
+    </>
   );
 }
 

@@ -33,22 +33,12 @@ import { BrowseFilesDialogContainerProps, initialParameters } from './utils';
 import { checkPathExistence } from '../../services/content';
 import { FormattedMessage } from 'react-intl';
 import EmptyState from '../EmptyState';
-import { useStyles } from './styles';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
-  const {
-    path,
-    onClose,
-    onSuccess,
-    rowsPerPageOptions,
-    multiSelect = false,
-    mimeTypes,
-    contentTypes,
-    numOfLoaderItems
-  } = props;
+  const { path, onClose, onSuccess, multiSelect = false, mimeTypes, contentTypes, numOfLoaderItems } = props;
   const [items, setItems] = useState<SearchItem[]>();
   const site = useActiveSiteId();
   const { guestBase } = useEnv();
@@ -70,7 +60,6 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [currentPath, setCurrentPath] = useState(browsePath);
   const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
   const [browsePathExists, setBrowsePathExists] = useState(false);
-  const { classes } = useStyles();
 
   const fetchItems = useCallback(
     () =>
@@ -202,12 +191,12 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       onPreviewImage={onPreviewImage}
       onSelectButtonClick={onSelectButtonClick}
       numOfLoaderItems={numOfLoaderItems}
-      rowsPerPageOptions={rowsPerPageOptions}
       onRefresh={onRefresh}
       onUpload={onUpload}
     />
   ) : (
     <EmptyState
+      styles={{ root: { height: '60vh' } }}
       title={
         <FormattedMessage
           id="browseFilesDialog.emptyStateMessage"
@@ -215,9 +204,6 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
           values={{ path: currentPath }}
         />
       }
-      classes={{
-        root: classes.bodyEmptyState
-      }}
     />
   );
 }

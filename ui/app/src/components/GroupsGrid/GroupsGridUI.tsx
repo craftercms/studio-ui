@@ -73,12 +73,11 @@ export function GroupsGridUI(props: GroupsGridUIProps) {
         </Table>
       </TableContainer>
       <Pagination
-        rowsPerPageOptions={[5, 10, 15]}
-        classes={{ root: classes.paginationRoot }}
+        mode="table"
         count={groups.total}
         rowsPerPage={groups.limit}
         page={groups && Math.ceil(groups.offset / groups.limit)}
-        onPageChange={(page: number) => onPageChange(page)}
+        onPageChange={(e, page: number) => onPageChange(page)}
         onRowsPerPageChange={onRowsPerPageChange}
       />
     </Box>

@@ -15,7 +15,7 @@
  */
 
 import { makeStyles } from 'tss-react/mui';
-import cardTitleStyles from '../../styles/card';
+import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
 
 export const useSitesGridStyles = makeStyles()(() => ({
   root: {
@@ -48,10 +48,8 @@ export const useSiteCardStyles = makeStyles()(() => ({
       ...cardTitleStyles
     },
     '& .cardSubtitle': {
-      overflow: 'hidden',
-      display: '-webkit-box',
-      WebkitLineClamp: 1,
-      WebkitBoxOrient: 'vertical'
+      ...cardSubtitleStyles,
+      WebkitLineClamp: 1
     }
   },
   cardActions: {

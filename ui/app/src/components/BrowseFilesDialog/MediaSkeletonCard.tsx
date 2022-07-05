@@ -17,19 +17,29 @@
 import React from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
-import { useCardStyles } from './styles';
 import Skeleton from '@mui/material/Skeleton';
 
 export function MediaSkeletonCard() {
-  const { classes } = useCardStyles();
   return (
-    <Card className={classes.root}>
+    <Card
+      sx={{
+        width: '200px',
+        height: '155px',
+        margin: '10px'
+      }}
+    >
       <CardHeader
-        className={classes.cardHeader}
         avatar={<Skeleton variant="circular" width={24} height={24} />}
         title={<Skeleton animation="wave" height={20} width="100%" />}
       />
-      <Skeleton animation="wave" variant="rectangular" className={classes.media} />
+      <Skeleton
+        animation="wave"
+        variant="rectangular"
+        sx={{
+          height: 0,
+          paddingTop: '56.25%' // 16:9
+        }}
+      />
     </Card>
   );
 }

@@ -22,10 +22,6 @@ const useStyles = makeStyles()(() => ({
   },
   tableRoot: {
     tableLayout: 'fixed'
-  },
-  paginationRoot: {
-    marginLeft: 'auto',
-    marginRight: '20px'
   }
 }));
 

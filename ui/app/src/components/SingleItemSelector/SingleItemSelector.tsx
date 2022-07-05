@@ -375,7 +375,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     }
   };
 
-  const onPageChanged = (page: number) => {
+  const onPageChanged = (e, page: number) => {
     const offset = page * state.limit;
     exec(changePage({ offset }));
   };
