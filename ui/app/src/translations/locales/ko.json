@@ -138,6 +138,8 @@
   "createSiteDialog.finish": "끝",
   "createSiteDialog.gitBlueprintDescription": "기존의 원격 git 리포지토리에서 Crafter CMS 프로젝트를 기반으로 새 사이트를 만듭니다.",
   "createSiteDialog.gitBlueprintName": "원격 Git 리포지토리",
+  "createSiteDialog.gitBranch": "Git Branch",
+  "createSiteDialog.gitBranchDescription": "이 프로젝트가 추적할 브랜치의 이름입니다. pull 작업은 이 분기에 대해 수행됩니다.",
   "createSiteDialog.gitStrategy": "기존 원격 git repo clone",
   "createSiteDialog.nameAndDescription": "사이트 이름 및 설명",
   "createSiteDialog.nameExist": "이름이 이미 존재합니다.",

@@ -437,6 +437,10 @@
         top: 0;
         left: 0;
     }
+
+    &.default {
+      bottom: 0;
+    }
 }
 
 #cstudio-command-controls {

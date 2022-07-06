@@ -138,6 +138,8 @@
   "createSiteDialog.finish": "Finish",
   "createSiteDialog.gitBlueprintDescription": "Create a new site based on a Crafter CMS project in an existing, remote git repository.",
   "createSiteDialog.gitBlueprintName": "Remote Git Repository",
+  "createSiteDialog.gitBranch": "Git Branch",
+  "createSiteDialog.gitBranchDescription": "Name of the branch this project will track. Pull operations will be done against this branch.",
   "createSiteDialog.gitStrategy": "Existing remote git repo clone",
   "createSiteDialog.nameAndDescription": "Name and describe your site",
   "createSiteDialog.nameExist": "The name already exist.",

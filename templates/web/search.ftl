@@ -169,65 +169,61 @@
     <div id="cstudio-command-controls-container"></div>
 
     <script id="hb-search-result" type="text/x-handlebars-template">
-        <div class="result-container">
-            <div class="result card clearfix">
-                <label class="checkbox-container list-select">
-                    <input type="checkbox" class="search-select-item" data-url="{{ path }}" value="None" name="check" />
-                    <span class="checkmark"></span>
-                </label>
+      <div class="result card clearfix">
+        <label class="checkbox-container list-select">
+          <input type="checkbox" class="search-select-item" data-url="{{ path }}" value="None" name="check" />
+          <span class="checkmark"></span>
+        </label>
 
-                <div class="result-preview {{#if previewUrl}}{{else}}result-asset{{/if}} {{#if previewable}}previewable{{/if}} {{#equal type 'Image'}}no-preview-background{{/equal}}"
-                     data-url="{{ path }}" data-type="{{ type }}">
-                    {{#equal type "Image"}}
-                        <div class="img-container">
-                            <img class="preview-img" src="{{ path }}"/>
-                        </div>
-                    {{/equal}}
-
-                    {{#if previewUrl}}
-                        <div class="img-container">
-                            <img class="preview-img" src="{{ previewUrl }}"/>
-                        </div>
-                    {{/if}}
-
-                    <i class="result-icon fa {{ icon }} {{#if previewUrl}}{{else}}result-asset{{/if}}" aria-hidden="true"></i>
-
-                    <div class="result-info">
-                        <div class="bold">{{ name }}</div>
-                        <div>{{ type }}</div>
-                    </div>
-                </div>
-                <div class="actions">
-                    <label class="checkbox-container grid-select">
-                        <input type="checkbox" class="search-select-item" data-url="{{ path }}" value="None" id="squaredFour" name="check" />
-                        <span class="checkmark"></span>
-                    </label>
-
-                    <span class="studio-actions">
-                        <#--  TODO: change data-type to mimetype  -->
-                        {{#equal type "Image"}}
-                        <a class="action search-preview" href="#" data-url="{{ path }}" data-type="{{ type }}">
-                            <i class="fa fa-search-plus" aria-hidden="true"></i>
-                        </a>
-                        {{/equal}}
-                        {{#equal type "Video"}}
-                        <a class="action search-preview" href="#" data-url="{{ path }}" data-type="{{ type }}">
-                            <i class="fa fa-search-plus" aria-hidden="true"></i>
-                        </a>
-                        {{/equal}}
-
-
-                        {{#if permissions.edit }}
-                        <a class="action search-edit" href="#" data-url="{{ path }}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                        {{/if}}
-                        {{#if permissions.delete }}
-                        <a class="action search-delete" href="#" data-url="{{ path }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                        {{/if}}
-                    </span>
-
-                </div>
+        <div class="result-preview {{#if previewUrl}}{{else}}result-asset{{/if}} {{#if previewable}}previewable{{/if}} {{#equal type 'Image'}}no-preview-background{{/equal}}"
+             data-url="{{ path }}" data-type="{{ type }}">
+          {{#equal type "Image"}}
+            <div class="img-container">
+              <img class="preview-img" src="{{ path }}"/>
             </div>
+          {{/equal}}
+
+          {{#if previewUrl}}
+            <div class="img-container">
+              <img class="preview-img" src="{{ previewUrl }}"/>
+            </div>
+          {{/if}}
+
+          <i class="result-icon fa {{ icon }} {{#if previewUrl}}{{else}}result-asset{{/if}}" aria-hidden="true"></i>
+
+          <div class="result-info">
+            <div class="bold">{{ name }}</div>
+            <div>{{ type }}</div>
+          </div>
         </div>
+        <div class="actions">
+          <label class="checkbox-container grid-select">
+            <input type="checkbox" class="search-select-item" data-url="{{ path }}" value="None" id="squaredFour" name="check" />
+            <span class="checkmark"></span>
+          </label>
+
+          <span class="studio-actions">
+            <#--  TODO: change data-type to mimetype  -->
+            {{#equal type "Image"}}
+            <a class="action search-preview" href="#" data-url="{{ path }}" data-type="{{ type }}">
+              <i class="fa fa-search-plus" aria-hidden="true"></i>
+            </a>
+            {{/equal}}
+            {{#equal type "Video"}}
+            <a class="action search-preview" href="#" data-url="{{ path }}" data-type="{{ type }}">
+              <i class="fa fa-search-plus" aria-hidden="true"></i>
+            </a>
+            {{/equal}}
+
+            {{#if permissions.edit }}
+            <a class="action search-edit" href="#" data-url="{{ path }}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+            {{/if}}
+            {{#if permissions.delete }}
+            <a class="action search-delete" href="#" data-url="{{ path }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+            {{/if}}
+          </span>
+        </div>
+      </div>
     </script>
 
     <script id="hb-filter-separator" type="text/x-handlebars-template">
