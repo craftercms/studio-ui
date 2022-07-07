@@ -427,6 +427,14 @@ export const contentTypesMessages = defineMessages({
   dependsOn: {
     id: 'contentType.dependsOn',
     defaultMessage: 'This property depends on "{dependency}"'
+  },
+  minValueError: {
+    id: 'contentType.minSizeError',
+    defaultMessage: "Minimum value can't be higher than maximum value"
+  },
+  maxValueError: {
+    id: 'contentType.maxSizeError',
+    defaultMessage: "Maximum value can't be lower than minimum value"
   }
 });
 
