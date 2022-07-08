@@ -50,12 +50,12 @@ export function WidgetDialog(props: WidgetDialogProps) {
     <EnhancedDialog
       title={title}
       maxWidth="xl"
-      classes={{ paper: classes.dialog }}
+      classes={{ paper: classes.widgetDialogPaper }}
       isSubmitting={isSubmitting}
       {...rest}
     >
       <WidgetDialogContext.Provider value={context}>
-        <section className={classes.toolPanelBody}>
+        <section className={classes.widgetDialogBody}>
           <Suspencified>
             <Widget
               {...widget}
