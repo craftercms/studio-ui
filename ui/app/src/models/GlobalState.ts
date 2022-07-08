@@ -147,6 +147,7 @@ export interface GlobalState {
     packageBuildDate: string;
     useBaseDomain: boolean;
     activeEnvironment: string;
+    socketConnected: boolean;
   };
   preview: {
     editMode: boolean;

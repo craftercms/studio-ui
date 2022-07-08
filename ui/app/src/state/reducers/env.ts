@@ -18,7 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
 import { fetchSystemVersionComplete } from '../actions/env';
 import { Version } from '../../models/monitoring/Version';
-import { storeInitialized } from '../actions/system';
+import { setSiteSocketStatus, storeInitialized } from '../actions/system';
 
 export const envInitialState: GlobalState['env'] = ((origin: string) => ({
   authoringBase: process.env.REACT_APP_AUTHORING_BASE ?? `${origin}/studio`,
@@ -35,7 +35,8 @@ export const envInitialState: GlobalState['env'] = ((origin: string) => ({
   packageBuild: null,
   packageVersion: null,
   packageBuildDate: null,
-  activeEnvironment: null
+  activeEnvironment: null,
+  socketConnected: false
 }))(window.location.origin);
 
 const reducer = createReducer<GlobalState['env']>(envInitialState, {
@@ -49,6 +50,10 @@ const reducer = createReducer<GlobalState['env']>(envInitialState, {
   [storeInitialized.type]: (state, { payload }) => ({
     ...state,
     activeEnvironment: payload.activeEnvironment
+  }),
+  [setSiteSocketStatus.type]: (state, { payload }) => ({
+    ...state,
+    socketConnected: payload.connected
   })
 });
 

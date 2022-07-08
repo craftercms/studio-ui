@@ -15,7 +15,7 @@ import {
 import { AjaxError } from 'rxjs/ajax';
 import { SHARED_WORKER_NAME, XSRF_TOKEN_HEADER_NAME } from './utils/constants';
 import { Client, StompSubscription } from '@stomp/stompjs';
-import { emitSystemEvent, openSiteSocket } from './state/actions/system';
+import { emitSystemEvent, openSiteSocket, setSiteSocketStatus } from './state/actions/system';
 
 declare const self: SharedWorkerGlobalScope;
 
@@ -171,6 +171,7 @@ function openSocket({ site, xsrfToken }) {
     ...(!isProduction && { debug: log }),
     connectHeaders: { [XSRF_TOKEN_HEADER_NAME]: xsrfToken },
     onConnect() {
+      broadcast(setSiteSocketStatus({ connected: true }));
       subscription = socketClient.subscribe(`/topic/studio/${site}`, (message) => {
         if (message.body) {
           if (message.headers['content-type'] === 'application/json') {
@@ -186,6 +187,14 @@ function openSocket({ site, xsrfToken }) {
           log('Received an empty message from websocket.');
         }
       });
+    },
+    onStompError() {
+      // Will be invoked in case of error encountered at Broker
+      // Bad login/passcode typically will cause an error
+      broadcast(setSiteSocketStatus({ connected: false }));
+    },
+    onWebSocketError() {
+      broadcast(setSiteSocketStatus({ connected: false }));
     },
     onDisconnect() {
       // TODO: When site is changed, subscription is terminated?
