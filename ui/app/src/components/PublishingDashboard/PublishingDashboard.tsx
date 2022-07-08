@@ -16,7 +16,6 @@
 
 import * as React from 'react';
 import PublishingStatusWidget from '../PublishingStatusWidget';
-import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import { PublishingQueueWidget } from '../PublishingQueue';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
@@ -24,23 +23,8 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
-
-const useStyles = makeStyles()((theme) => ({
-  root: {},
-  grid: {
-    padding: '20px'
-  },
-  gridNoEmbedded: {
-    height: 'calc(100vh - 65px)', // full viewport height - toolbar height
-    overflowY: 'auto'
-  },
-  warningText: {
-    display: 'block'
-  },
-  rowSpacing: {
-    marginBottom: theme.spacing(3)
-  }
-}));
+import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
 
 interface PublishingDashboardProps {
   embedded?: boolean;
@@ -50,29 +34,43 @@ interface PublishingDashboardProps {
 
 export function PublishingDashboard(props: PublishingDashboardProps) {
   const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
-  const { classes, cx } = useStyles();
   const site = useActiveSiteId();
-
+  const {
+    spacing,
+    palette: { mode }
+  } = useTheme();
   return (
-    <section className={classes.root}>
+    <Box component="section" sx={{ bgcolor: `grey.${mode === 'light' ? 100 : 800}`, height: '100%' }}>
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
           showAppsButton={showAppsButton}
         />
       )}
-      <Grid container className={cx(classes.grid, !embedded && classes.gridNoEmbedded)}>
-        <Grid className={classes.rowSpacing} item xs={12}>
+      <Grid
+        gap={2}
+        container
+        sx={{
+          padding: spacing(2),
+          ...(embedded
+            ? {}
+            : {
+                height: 'calc(100% - 65px)', // full viewport height - toolbar height
+                overflowY: 'auto'
+              })
+        }}
+      >
+        <Grid item xs={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>
-        <Grid className={classes.rowSpacing} item xs={12}>
+        <Grid item xs={12}>
           <PublishOnDemandWidget siteId={site} onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange} />
         </Grid>
         <Grid item xs={12}>
           <PublishingQueueWidget siteId={site} />
         </Grid>
       </Grid>
-    </section>
+    </Box>
   );
 }
 

@@ -87,7 +87,7 @@ interface SearchUIProps {
 
 const useStyles = makeStyles()((theme) => ({
   wrapper: {
-    height: '100%',
+    height: 'calc(100% - 65px)', // 100% - toolbar height
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',

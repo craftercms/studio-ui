@@ -16,7 +16,6 @@
 
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import useSelection from '../../../hooks/useSelection';
 import { useGlobalAppState } from '../../GlobalApp';
 import useReference from '../../../hooks/useReference';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
@@ -34,7 +33,6 @@ export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const [width, setWidth] = useState(240);
   const history = useHistory();
   const [activeToolId, setActiveToolId] = useState(history.location.pathname.replace('/', ''));
-  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const [{ openSidebar }] = useGlobalAppState();
   const tools: Tool[] = useReference('craftercms.siteTools')?.tools;
   const site = useActiveSiteId();
@@ -69,7 +67,6 @@ export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
       footerHtml={footerHtml}
       openSidebar={openSidebar || !activeToolId}
       tools={tools}
-      imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
       mountMode="page"
     />
   );
