@@ -50,7 +50,7 @@ const useStyles = makeStyles()(() => ({
   cardSubtitle: {
     ...cardSubtitleStyles
   },
-  cardAction: { alignSelf: 'center' },
+  cardHeader: { alignSelf: 'center' },
   media: {
     height: 0,
     paddingTop: '56.25%'
@@ -90,7 +90,7 @@ interface MediaCardProps {
   previewAppBaseUri: string;
   action?: CardHeaderProps['action'];
   avatar?: CardHeaderProps['avatar'];
-  classes?: Partial<Record<'root' | 'checkbox' | 'media' | 'mediaIcon', string>>;
+  classes?: Partial<Record<'root' | 'checkbox' | 'media' | 'mediaIcon' | 'cardActionArea' | 'cardHeader', string>>;
   onClick?(e): void;
   onPreview?(e): any;
   onSelect?(path: string, selected: boolean): any;
@@ -133,6 +133,7 @@ function MediaCard(props: MediaCardProps) {
   const CardActionAreaOrFragment = onPreview ? CardActionArea : React.Fragment;
   const cardActionAreaOrFragmentProps: CardActionAreaProps = onPreview
     ? {
+        className: props.classes?.cardActionArea,
         disableRipple: Boolean(onDragStart || onDragEnd),
         onClick(e) {
           e.preventDefault();
@@ -151,7 +152,7 @@ function MediaCard(props: MediaCardProps) {
       onClick={onClick}
     >
       <CardHeader
-        classes={{ action: classes.cardAction }}
+        classes={{ action: classes.cardHeader, root: props.classes?.cardHeader }}
         avatar={
           onSelect ? (
             <FormGroup className={props.classes?.checkbox}>
