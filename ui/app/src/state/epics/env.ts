@@ -15,20 +15,10 @@
  */
 
 import { Epic, ofType } from 'redux-observable';
-import { filter, ignoreElements, map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { fetchVersion } from '../../services/monitoring';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchSystemVersion, fetchSystemVersionComplete, fetchSystemVersionFailed } from '../actions/env';
-import { setSiteSocketStatus, showSystemNotification } from '../actions/system';
-import { getHostToHostBus } from '../../utils/subjects';
-import { defineMessages } from 'react-intl';
-
-const envMessages = defineMessages({
-  socketConnectionIssue: {
-    id: 'envMessages.socketConnectionIssue',
-    defaultMessage: 'Socket connection was interrupted. Studio will continue to retry the connection.'
-  }
-});
 
 export default [
   (action$) =>
@@ -40,25 +30,5 @@ export default [
           catchAjaxError(fetchSystemVersionFailed)
         )
       )
-    ),
-  (action$, state$, { getIntl }) =>
-    action$.pipe(
-      ofType(setSiteSocketStatus.type),
-      filter(({ payload }) => !payload.connected),
-      tap(() => {
-        const hostToHost$ = getHostToHostBus();
-        hostToHost$.next(
-          showSystemNotification({
-            message: getIntl().formatMessage(envMessages.socketConnectionIssue),
-            options: {
-              anchorOrigin: {
-                vertical: 'bottom',
-                horizontal: 'center'
-              }
-            }
-          })
-        );
-      }),
-      ignoreElements()
     )
 ] as Epic[];
