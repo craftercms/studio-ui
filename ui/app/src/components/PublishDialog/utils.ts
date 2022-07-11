@@ -91,7 +91,7 @@ export interface PublishDialogUIProps {
   onSelectAll(): void;
   onSelectAllSoftDependencies(): void;
   onClickShowAllDeps?: any;
-  showEmailCheckbox?: boolean;
+  isRequestPublish?: boolean;
   showRequestApproval: boolean;
   classes?: any;
   submitLabel: ReactNode;
