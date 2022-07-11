@@ -259,6 +259,13 @@ const useStyles = makeStyles()((theme) => ({
     height: '100%',
     position: 'relative',
     background: theme.palette.background.default
+  },
+  cardActionArea: {
+    width: 'auto',
+    display: 'flex'
+  },
+  cardHeader: {
+    flexGrow: 1
   }
 }));
 
@@ -443,9 +450,11 @@ export function SearchUI(props: SearchUIProps) {
                                   root: classes.mediaCardListRoot,
                                   checkbox: classes.mediaCardListCheckbox,
                                   media: classes.mediaCardListMedia,
-                                  mediaIcon: classes.mediaCardListMediaIcon
+                                  mediaIcon: classes.mediaCardListMediaIcon,
+                                  cardActionArea: classes.cardActionArea,
+                                  cardHeader: classes.cardHeader
                                 }
-                              : void 0
+                              : {}
                           }
                           item={item}
                           onPreview={mode === 'default' ? () => onPreview(item) : UNDEFINED}
