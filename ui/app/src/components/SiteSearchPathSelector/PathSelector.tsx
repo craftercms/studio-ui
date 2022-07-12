@@ -207,27 +207,29 @@ export function PathSelector(props: PathSelectorProps) {
           ))}
         </RadioGroup>
       </FormControl>
-      <Paper
-        variant="outlined"
-        onClick={disabled ? null : onOpenPathSelectionDialog}
-        className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
-      >
-        <InputBase
-          classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
-          disabled={disabled}
-          readOnly
-          value={path}
-          placeholder={formatMessage(messages.searchIn)}
-          startAdornment={<SearchIcon className={classes.pathSelectorSearchIcon} />}
-          endAdornment={
-            !disabled && value ? (
-              <IconButton onClick={onClean} size="small">
-                <CloseIcon />
-              </IconButton>
-            ) : null
-          }
-        />
-      </Paper>
+      {radioBasePath && (
+        <Paper
+          variant="outlined"
+          onClick={disabled ? null : onOpenPathSelectionDialog}
+          className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
+        >
+          <InputBase
+            classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
+            disabled={disabled}
+            readOnly
+            value={path}
+            placeholder={formatMessage(messages.searchIn)}
+            startAdornment={<SearchIcon className={classes.pathSelectorSearchIcon} />}
+            endAdornment={
+              !disabled && value ? (
+                <IconButton onClick={onClean} size="small">
+                  <CloseIcon />
+                </IconButton>
+              ) : null
+            }
+          />
+        </Paper>
+      )}
     </>
   );
 }
