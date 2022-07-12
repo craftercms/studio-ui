@@ -183,10 +183,11 @@ import { DetailedItem, MediaItem } from '../../models';
 import DataSourcesActionsList, { DataSourcesActionsListProps } from '../DataSourcesActionsList/DataSourcesActionsList';
 import { editControllerActionCreator, itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
+import useAuth from '../../hooks/useAuth';
 
 const originalDocDomain = document.domain;
 
-const startGuestDetectionTimeout = (timeoutRef, setShowSnackbar, timeout = 5000) => {
+const startCommunicationDetectionTimeout = (timeoutRef, setShowSnackbar, timeout = 5000) => {
   clearTimeout(timeoutRef.current);
   timeoutRef.current = setTimeout(() => setShowSnackbar(true), timeout);
 };
@@ -298,6 +299,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const priorState = useRef({ site: siteId });
   const { enqueueSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
+  const { active: authActive } = useAuth();
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
   const hierarchyMap = guest?.hierarchyMap;
@@ -374,7 +376,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       clearTimeout(socketConnectionTimeoutRef.current);
       setSocketConnectionSnackbarOpen(false);
     } else {
-      startGuestDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
+      startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
     }
   }, [socketConnected]);
 
@@ -432,7 +434,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       dispatch(setEditModePadding({ editModePadding: localPaddingMode }));
     }
 
-    startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+    startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
 
     return () => {
       document.domain = originalDocDomain;
@@ -596,7 +598,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
           dispatch(action);
-          startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+          startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
           break;
         }
         case sortItemOperation.type: {
@@ -1282,7 +1284,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     if (priorState.current.site !== siteId) {
       priorState.current.site = siteId;
-      startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
       if (guest) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
@@ -1360,8 +1362,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
       />
       <Snackbar
-        open={socketConnectionSnackbarOpen}
+        open={socketConnectionSnackbarOpen && authActive}
         onClose={() => void 0}
+        sx={(theme) => ({ ...(guestDetectionSnackbarOpen ? { bottom: `${theme.spacing(10)} !important` } : {}) })}
         message={
           <FormattedMessage
             id="socketConnectionIssue"

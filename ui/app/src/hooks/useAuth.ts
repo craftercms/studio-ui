@@ -14,21 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
-import { map, switchMap } from 'rxjs/operators';
-import { fetchVersion } from '../../services/monitoring';
-import { catchAjaxError } from '../../utils/ajax';
-import { fetchSystemVersion, fetchSystemVersionComplete, fetchSystemVersionFailed } from '../actions/env';
+import GlobalState from '../models/GlobalState';
+import { useSelector } from 'react-redux';
 
-export default [
-  (action$) =>
-    action$.pipe(
-      ofType(fetchSystemVersion.type),
-      switchMap(() =>
-        fetchVersion().pipe(
-          map((version) => fetchSystemVersionComplete(version)),
-          catchAjaxError(fetchSystemVersionFailed)
-        )
-      )
-    )
-] as Epic[];
+export function useAuth(): GlobalState['auth'] {
+  return useSelector<GlobalState, GlobalState['auth']>((state) => state.auth);
+}
+
+export default useAuth;
