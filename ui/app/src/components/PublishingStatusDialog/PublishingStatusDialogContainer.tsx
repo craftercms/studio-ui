@@ -21,6 +21,7 @@ import DialogBody from '../DialogBody/DialogBody';
 import * as React from 'react';
 import PublishingStatusDisplay, { publishingStatusMessages } from '../PublishingStatusDisplay';
 import { PublishingStatusDialogContainerProps } from './utils';
+import LockOpenRoundedIcon from '@mui/icons-material/LockOpenRounded';
 
 const useStyles = makeStyles()(() => ({
   body: {
@@ -55,9 +56,15 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
         onCloseButtonClick={onClose}
         rightActions={[
           onUnlock && {
-            icon: { id: '@mui/icons-material/LockOpenRounded' },
-            onClick: onUnlock,
-            tooltip: formatMessage(publishingStatusMessages.unlock)
+            confirmation: true,
+            confirmProps: {
+              cancelText: formatMessage(publishingStatusMessages.no),
+              confirmText: formatMessage(publishingStatusMessages.yes),
+              confirmHelperText: formatMessage(publishingStatusMessages.confirmUnlockPublisher),
+              iconTooltip: formatMessage(publishingStatusMessages.unlock),
+              icon: LockOpenRoundedIcon,
+              onConfirm: onUnlock
+            }
           },
           onStartStop && {
             icon: enabled

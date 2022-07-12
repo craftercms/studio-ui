@@ -34,7 +34,7 @@ export type ConfirmDropdownFullSx = FullSxRecord<ConfirmDropdownClassKey>;
 
 export type ConfirmDropdownPartialSx = PartialSxRecord<ConfirmDropdownClassKey>;
 
-interface ConfirmDropdownProps {
+export interface ConfirmDropdownProps {
   text?: ReactNode;
   cancelText: ReactNode;
   confirmText: ReactNode;

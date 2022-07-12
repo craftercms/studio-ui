@@ -103,6 +103,18 @@ export const publishingStatusMessages = defineMessages({
   disabledMessage: {
     id: 'publishingStatusMessages.isDisabledMessage',
     defaultMessage: 'The publisher is disabled.'
+  },
+  yes: {
+    id: 'words.yes',
+    defaultMessage: 'Yes'
+  },
+  no: {
+    id: 'words.no',
+    defaultMessage: 'No'
+  },
+  confirmUnlockPublisher: {
+    id: 'publishingStatusMessages.confirmUnlockPublisher',
+    defaultMessage: 'Confirm you wish to unlock the publisher?'
   }
 });
 

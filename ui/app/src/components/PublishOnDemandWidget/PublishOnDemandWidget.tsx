@@ -201,7 +201,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
             message: formatMessage(messages.publishSuccess)
           })
         );
-        setPublishGitFormData(initialPublishGitFormData);
+        setPublishGitFormData({ ...initialPublishGitFormData, environment });
         setMode(null);
       },
       error({ response }) {
@@ -233,7 +233,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
         bulkGoLive(siteId, path, environment, comment).subscribe({
           next() {
             setIsSubmitting(false);
-            setPublishStudioFormData(initialPublishStudioFormData);
+            setPublishStudioFormData({ ...initialPublishStudioFormData, environment });
             setMode(null);
             dispatch(
               showSystemNotification({
