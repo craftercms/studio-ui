@@ -21,6 +21,7 @@ import React from 'react';
 import { PublishDialogUIProps } from './utils';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
+import { Typography } from '@mui/material';
 
 export type PublishDialogContentUIProps = Pick<
   PublishDialogUIProps,
@@ -32,7 +33,7 @@ export type PublishDialogContentUIProps = Pick<
   | 'onSelectAll'
   | 'onSelectAllSoftDependencies'
   | 'state'
-  | 'showEmailCheckbox'
+  | 'isRequestPublish'
   | 'showRequestApproval'
   | 'publishingTargetsStatus'
   | 'onPublishingChannelsFailRetry'
@@ -54,7 +55,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     onSelectAll,
     onSelectAllSoftDependencies,
     state,
-    showEmailCheckbox,
+    isRequestPublish,
     showRequestApproval,
     publishingTargetsStatus,
     onPublishingChannelsFailRetry,
@@ -71,15 +72,27 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
       <Grid container spacing={3}>
         <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
           {published ? (
-            <DependencySelection
-              items={items}
-              selectedItems={selectedItems}
-              onItemClicked={onItemClicked}
-              dependencies={dependencies}
-              onSelectAllClicked={onSelectAll}
-              onSelectAllSoftClicked={onSelectAllSoftDependencies}
-              disabled={isSubmitting}
-            />
+            <>
+              {isRequestPublish && (
+                <Alert severity="info" sx={{ mb: '10px' }}>
+                  <Typography>
+                    <FormattedMessage
+                      id="publishDialog.requestPublishHint"
+                      defaultMessage="Items will be submitted for review and published upon approval"
+                    />
+                  </Typography>
+                </Alert>
+              )}
+              <DependencySelection
+                items={items}
+                selectedItems={selectedItems}
+                onItemClicked={onItemClicked}
+                dependencies={dependencies}
+                onSelectAllClicked={onSelectAll}
+                onSelectAllSoftClicked={onSelectAllSoftDependencies}
+                disabled={isSubmitting}
+              />
+            </>
           ) : (
             <Alert severity="warning">
               <FormattedMessage
@@ -93,7 +106,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
           <PublishDialogForm
             state={state}
             published={published}
-            showEmailCheckbox={showEmailCheckbox}
+            isRequestPublish={isRequestPublish}
             showRequestApproval={showRequestApproval}
             publishingChannels={publishingTargets}
             publishingTargetsStatus={publishingTargetsStatus}

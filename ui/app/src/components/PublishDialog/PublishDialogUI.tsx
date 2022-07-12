@@ -42,7 +42,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     onSelectAll,
     onSelectAllSoftDependencies,
     onClickShowAllDeps,
-    showEmailCheckbox,
+    isRequestPublish,
     showRequestApproval,
     classes,
     submitLabel,
@@ -75,7 +75,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
             onSelectAll={onSelectAll}
             onSelectAllSoftDependencies={onSelectAllSoftDependencies}
             state={state}
-            showEmailCheckbox={showEmailCheckbox}
+            isRequestPublish={isRequestPublish}
             showRequestApproval={showRequestApproval}
             publishingTargetsStatus={publishingTargetsStatus}
             onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
