@@ -96,7 +96,11 @@ const messages = defineMessages({
   },
   scripts: {
     id: 'words.scripts',
-    defaultMessage: 'scripts'
+    defaultMessage: 'Scripts'
+  },
+  anyPath: {
+    id: 'searchFilter.anyPath',
+    defaultMessage: 'Any Path'
   }
 });
 
@@ -190,7 +194,7 @@ export function PathSelector(props: PathSelectorProps) {
     <>
       <FormControl className={classes.basePathSelectorContainer}>
         <RadioGroup value={radioBasePath} onChange={handleBasePathChange}>
-          <FormControlLabel value="" control={<Radio size="small" />} label="Any path" />
+          <FormControlLabel value="" control={<Radio size="small" />} label={formatMessage(messages.anyPath)} />
           {basePaths.map((basePath) => (
             <FormControlLabel
               value={basePath.path}
