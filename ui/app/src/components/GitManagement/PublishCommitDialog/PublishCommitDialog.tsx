@@ -58,7 +58,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
     path: '',
     commitIds: '',
     comment: '',
-    environment: ''
+    publishingTarget: ''
   };
   const [state, setState] = useSpreadState<PublishCommitDialogState>(initialState);
   const { loadingPublishingTargets, isSubmitting, publishingTargets, publishSuccessful, ...data } = state;
@@ -71,7 +71,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
       publishByCommits(
         site,
         data.commitIds.replace(/\s/g, '').split(',').filter(Boolean),
-        data.environment,
+        data.publishingTarget,
         data.comment
       ).subscribe({
         next() {
@@ -96,7 +96,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
         const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
         // Set pre-selected environment.
         if (publishingTargets.length === 1) {
-          newData.environment = publishingTargets[0].name;
+          newData.publishingTarget = publishingTargets[0].name;
         }
         setState(newData);
       }
@@ -112,7 +112,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
     <EnhancedDialog
       {...dialogProps}
       onClosed={() => {
-        setState({ ...initialState, environment: state.environment, publishingTargets: publishingTargets });
+        setState({ ...initialState, publishingTarget: state.publishingTarget, publishingTargets: publishingTargets });
       }}
       isSubmitting={isSubmitting}
       title={<FormattedMessage id="publishCommitDialog.title" defaultMessage="Publish Commit" />}

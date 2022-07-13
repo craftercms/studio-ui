@@ -60,7 +60,7 @@ export interface PublishFormData {
   path?: string;
   commitIds?: string;
   comment: string;
-  environment: string;
+  publishingTarget: string;
 }
 
 export type PublishOnDemandMode = 'studio' | 'git';
