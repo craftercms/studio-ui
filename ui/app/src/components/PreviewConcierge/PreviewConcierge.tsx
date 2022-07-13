@@ -372,13 +372,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   };
 
   useEffect(() => {
-    if (socketConnected) {
+    if (!socketConnected && authActive) {
+      startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
+    } else {
       clearTimeout(socketConnectionTimeoutRef.current);
       setSocketConnectionSnackbarOpen(false);
-    } else {
-      startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
     }
-  }, [socketConnected]);
+  }, [socketConnected, authActive]);
 
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
@@ -1362,7 +1362,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
       />
       <Snackbar
-        open={socketConnectionSnackbarOpen && authActive}
+        open={socketConnectionSnackbarOpen}
         onClose={() => void 0}
         sx={(theme) => ({ ...(guestDetectionSnackbarOpen ? { bottom: `${theme.spacing(10)} !important` } : {}) })}
         message={
