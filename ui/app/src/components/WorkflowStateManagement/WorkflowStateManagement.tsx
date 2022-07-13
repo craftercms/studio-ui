@@ -52,6 +52,16 @@ import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import SecondaryButton from '../SecondaryButton';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { useDispatch } from 'react-redux';
+import { showSystemNotification } from '../../state/actions/system';
+import { defineMessages } from 'react-intl';
+
+const workflowStateManagementMessages = defineMessages({
+  statesUpdatedMessage: {
+    id: 'workflowStateManagementMessages.statesUpdatedMessage',
+    defaultMessage: '{count, plural, one {Item state updated.} other {Items states updated.}}'
+  }
+});
 
 export interface WorkflowStateManagementProps {
   embedded?: boolean;
@@ -93,6 +103,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const dispatch = useDispatch();
 
   const hasSelectedItems = useMemo(() => Object.values(selectedItems).some(Boolean), [selectedItems]);
   const selectedItemsLength = useMemo(() => Object.values(selectedItems).filter(Boolean).length, [selectedItems]);
@@ -245,15 +256,25 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
     }
   };
 
+  const showStatesUpdatedNotification = () => {
+    dispatch(
+      showSystemNotification({
+        message: formatMessage(workflowStateManagementMessages.statesUpdatedMessage, { count: selectedItemsLength })
+      })
+    );
+  };
+
   const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
     if (selectedItem) {
       setItemStates(siteId, [selectedItem.path], update).subscribe(() => {
         fetchStates();
+        showStatesUpdatedNotification();
       });
     } else if (isSelectedItemsOnAllPages) {
       let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
       setItemStatesByQuery(siteId, stateBitmap ? stateBitmap : null, update, debouncePathRegex).subscribe(() => {
         fetchStates();
+        showStatesUpdatedNotification();
       });
     } else {
       setItemStates(
@@ -264,6 +285,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
         update
       ).subscribe(() => {
         fetchStates();
+        showStatesUpdatedNotification();
       });
     }
 
