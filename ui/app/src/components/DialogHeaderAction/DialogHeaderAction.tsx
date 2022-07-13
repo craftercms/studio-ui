@@ -18,20 +18,15 @@ import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
-import { ConfirmDropdown, ConfirmDropdownProps } from '../ConfirmDropdown';
 
 export interface DialogHeaderActionProps extends IconButtonProps {
-  icon?: SystemIconDescriptor;
+  icon: SystemIconDescriptor;
   tooltip?: string;
-  confirmation?: boolean;
-  confirmProps?: ConfirmDropdownProps;
 }
 
 export function DialogHeaderAction(props: DialogHeaderActionProps) {
-  const { icon, tooltip, disabled = false, confirmation = false, confirmProps, ...rest } = props;
-  return confirmation ? (
-    <ConfirmDropdown {...confirmProps} />
-  ) : tooltip ? (
+  const { icon, tooltip, disabled = false, ...rest } = props;
+  return tooltip ? (
     <Tooltip title={disabled ? '' : tooltip}>
       <IconButton {...rest} disabled={disabled} size="large">
         <SystemIcon icon={icon} />
