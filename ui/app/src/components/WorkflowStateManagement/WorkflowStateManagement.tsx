@@ -59,7 +59,7 @@ import { defineMessages } from 'react-intl';
 const workflowStateManagementMessages = defineMessages({
   statesUpdatedMessage: {
     id: 'workflowStateManagementMessages.statesUpdatedMessage',
-    defaultMessage: 'State for {count} {count, plural, one {item} other {Items}} updated successfully'
+    defaultMessage: 'State for {count} {count, plural, one {item} other {items}} updated successfully'
   }
 });
 
