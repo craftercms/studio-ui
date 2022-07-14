@@ -21,6 +21,16 @@ import { clearLock, start, stop } from '../../services/publishing';
 import { fetchPublishingStatus } from '../../state/actions/publishingStatus';
 import { useDispatch } from 'react-redux';
 import { useSelection } from '../../hooks/useSelection';
+import { batchActions } from '../../state/actions/misc';
+import { showSystemNotification } from '../../state/actions/system';
+import { defineMessages, useIntl } from 'react-intl';
+
+const messages = defineMessages({
+  publisherUnlocked: {
+    id: 'publishingStatus.publisherUnlocked',
+    defaultMessage: 'Publisher Unlocked'
+  }
+});
 
 type PublishingStatusWidgetProps = {
   siteId: string;
@@ -32,6 +42,7 @@ export function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
   const { enabled, status, lockOwner, published, lockTTL, numberOfItems, publishingTarget, submissionId, totalItems } =
     state;
   const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
 
   const onStartStop = () => {
     const action = state.enabled ? stop : start;
@@ -43,7 +54,12 @@ export function PublishingStatusWidget(props: PublishingStatusWidgetProps) {
 
   const onUnlock = () => {
     clearLock(siteId).subscribe(() => {
-      dispatch(fetchPublishingStatus());
+      dispatch(
+        batchActions([
+          showSystemNotification({ message: formatMessage(messages.publisherUnlocked) }),
+          fetchPublishingStatus()
+        ])
+      );
     });
   };
 

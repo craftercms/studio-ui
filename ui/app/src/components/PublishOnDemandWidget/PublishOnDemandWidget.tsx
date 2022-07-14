@@ -109,12 +109,12 @@ const messages = defineMessages({
 
 const initialPublishStudioFormData = {
   path: '',
-  environment: '',
+  publishingTarget: '',
   comment: ''
 };
 const initialPublishGitFormData = {
   commitIds: '',
-  environment: '',
+  publishingTarget: '',
   comment: ''
 };
 
@@ -146,23 +146,23 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     mode === 'studio'
       ? publishStudioFormData.path !== initialPublishStudioFormData.path ||
         publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
-        publishStudioFormData.environment !== initialPublishingTarget
+        publishStudioFormData.publishingTarget !== initialPublishingTarget
       : publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
         publishGitFormData.comment !== initialPublishGitFormData.comment ||
-        publishGitFormData.environment !== initialPublishingTarget;
+        publishGitFormData.publishingTarget !== initialPublishingTarget;
 
   const setDefaultPublishingTarget = (targets, clearData?) => {
     if (targets.length) {
       const stagingEnv = targets.find((target) => target.name === 'staging');
-      const environment = stagingEnv?.name ?? targets[0].name;
-      setInitialPublishingTarget(environment);
+      const publishingTarget = stagingEnv?.name ?? targets[0].name;
+      setInitialPublishingTarget(publishingTarget);
       setPublishGitFormData({
         ...(clearData && initialPublishGitFormData),
-        environment
+        publishingTarget
       });
       setPublishStudioFormData({
         ...(clearData && initialPublishStudioFormData),
-        environment
+        publishingTarget
       });
     }
   };
@@ -191,9 +191,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 
   const onSubmitPublishBy = () => {
     setIsSubmitting(true);
-    const { commitIds, environment, comment } = publishGitFormData;
+    const { commitIds, publishingTarget, comment } = publishGitFormData;
     const ids = commitIds.replace(/\s/g, '').split(',');
-    publishByCommits(siteId, ids, environment, comment).subscribe({
+    publishByCommits(siteId, ids, publishingTarget, comment).subscribe({
       next() {
         setIsSubmitting(false);
         dispatch(
@@ -201,7 +201,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
             message: formatMessage(messages.publishSuccess)
           })
         );
-        setPublishGitFormData(initialPublishGitFormData);
+        setPublishGitFormData({ ...initialPublishGitFormData, publishingTarget });
         setMode(null);
       },
       error({ response }) {
@@ -229,11 +229,11 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
       if (button === 'ok') {
         setIsSubmitting(true);
-        const { path, environment, comment } = publishStudioFormData;
-        bulkGoLive(siteId, path, environment, comment).subscribe({
+        const { path, publishingTarget, comment } = publishStudioFormData;
+        bulkGoLive(siteId, path, publishingTarget, comment).subscribe({
           next() {
             setIsSubmitting(false);
-            setPublishStudioFormData(initialPublishStudioFormData);
+            setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
             setMode(null);
             dispatch(
               showSystemNotification({
@@ -262,13 +262,13 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     if (mode === 'studio') {
       setPublishStudioFormValid(
         publishStudioFormData.path.replace(/\s/g, '') !== '' &&
-          publishStudioFormData.environment !== '' &&
+          publishStudioFormData.publishingTarget !== '' &&
           (!bulkPublishCommentRequired || !isBlank(publishStudioFormData.comment))
       );
     } else {
       setPublishGitFormValid(
         publishGitFormData.commitIds.replace(/\s/g, '') !== '' &&
-          publishGitFormData.environment !== '' &&
+          publishGitFormData.publishingTarget !== '' &&
           (!publishByCommitCommentRequired || !isBlank(publishGitFormData.comment))
       );
     }

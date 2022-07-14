@@ -128,7 +128,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
                 id="publishingTargetDropdown"
                 labelId="publishingTargetLabel"
                 label={<FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />}
-                value={formData.environment}
+                value={formData.publishingTarget}
                 onChange={handleFormChange('environment')}
               >
                 {publishingTargets.map((target) => (
