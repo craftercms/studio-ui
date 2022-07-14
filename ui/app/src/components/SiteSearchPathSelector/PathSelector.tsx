@@ -30,6 +30,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles } from 'tss-react/mui';
 import Paper from '@mui/material/Paper';
 import palette from '../../styles/palette';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import Typography from '@mui/material/Typography';
 
 const useStyles = makeStyles()((theme) => ({
   pathSelectorInputRoot: {
@@ -66,6 +71,9 @@ const useStyles = makeStyles()((theme) => ({
       borderColor: 'none',
       boxShadow: 'inherit'
     }
+  },
+  basePathSelectorContainer: {
+    padding: `0 ${theme.spacing(1)} ${theme.spacing(2)}`
   }
 }));
 
@@ -73,8 +81,47 @@ const messages = defineMessages({
   searchIn: {
     id: 'searchFilter.searchIn',
     defaultMessage: 'Search in:'
+  },
+  content: {
+    id: 'words.content',
+    defaultMessage: 'Content'
+  },
+  assets: {
+    id: 'words.assets',
+    defaultMessage: 'Assets'
+  },
+  templates: {
+    id: 'words.templates',
+    defaultMessage: 'Templates'
+  },
+  scripts: {
+    id: 'words.scripts',
+    defaultMessage: 'Scripts'
+  },
+  anyPath: {
+    id: 'searchFilter.anyPath',
+    defaultMessage: 'Any Path'
   }
 });
+
+const basePaths = [
+  {
+    id: 'content',
+    path: '/site'
+  },
+  {
+    id: 'assets',
+    path: '/static-assets'
+  },
+  {
+    id: 'templates',
+    path: '/templates'
+  },
+  {
+    id: 'scripts',
+    path: '/scripts'
+  }
+];
 
 export interface PathSelectorProps {
   value: string;
@@ -90,6 +137,7 @@ export function PathSelector(props: PathSelectorProps) {
   const [path, setPath] = useState<string>(value ?? '');
   const idSuccess = 'pathSelectionSuccess';
   const idCancel = 'pathSelectionCancel';
+  const radioBasePath = path.split('/')[1] ? `/${path.split('/')[1]}` : '';
 
   useEffect(() => {
     setPath(value ?? '');
@@ -138,28 +186,55 @@ export function PathSelector(props: PathSelectorProps) {
     document.addEventListener(idCancel, cancelCallback, false);
   };
 
+  const handleBasePathChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onPathSelected((event.target as HTMLInputElement).value);
+  };
+
   return (
-    <Paper
-      variant="outlined"
-      onClick={disabled ? null : onOpenPathSelectionDialog}
-      className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
-    >
-      <InputBase
-        classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
-        disabled={disabled}
-        readOnly
-        value={path}
-        placeholder={formatMessage(messages.searchIn)}
-        startAdornment={<SearchIcon className={classes.pathSelectorSearchIcon} />}
-        endAdornment={
-          !disabled && value ? (
-            <IconButton onClick={onClean} size="small">
-              <CloseIcon />
-            </IconButton>
-          ) : null
-        }
-      />
-    </Paper>
+    <>
+      <FormControl className={classes.basePathSelectorContainer}>
+        <RadioGroup value={radioBasePath} onChange={handleBasePathChange}>
+          <FormControlLabel value="" control={<Radio size="small" />} label={formatMessage(messages.anyPath)} />
+          {basePaths.map((basePath) => (
+            <FormControlLabel
+              value={basePath.path}
+              control={<Radio size="small" />}
+              label={
+                <>
+                  {messages[basePath.id] ? formatMessage(messages[basePath.id]) : basePath.id}:{' '}
+                  <Typography color="text.secondary" variant="body2" component="span">
+                    {basePath.path}
+                  </Typography>
+                </>
+              }
+            />
+          ))}
+        </RadioGroup>
+      </FormControl>
+      {radioBasePath && (
+        <Paper
+          variant="outlined"
+          onClick={disabled ? null : onOpenPathSelectionDialog}
+          className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
+        >
+          <InputBase
+            classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
+            disabled={disabled}
+            readOnly
+            value={path}
+            placeholder={formatMessage(messages.searchIn)}
+            startAdornment={<SearchIcon className={classes.pathSelectorSearchIcon} />}
+            endAdornment={
+              !disabled && value ? (
+                <IconButton onClick={onClean} size="small">
+                  <CloseIcon />
+                </IconButton>
+              ) : null
+            }
+          />
+        </Paper>
+      )}
+    </>
   );
 }
 
