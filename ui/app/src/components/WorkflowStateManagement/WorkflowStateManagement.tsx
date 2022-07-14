@@ -257,9 +257,10 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   };
 
   const showStatesUpdatedNotification = () => {
+    const count = selectedItem ? 1 : isSelectedItemsOnAllPages ? items?.total : selectedItemsLength;
     dispatch(
       showSystemNotification({
-        message: formatMessage(workflowStateManagementMessages.statesUpdatedMessage, { count: selectedItemsLength })
+        message: formatMessage(workflowStateManagementMessages.statesUpdatedMessage, { count })
       })
     );
   };
