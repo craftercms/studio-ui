@@ -94,7 +94,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
     const sub = fetchPublishingTargets(site).subscribe({
       next({ publishingTargets }) {
         const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
-        // Set pre-selected environment.
+        // Set pre-selected publishing target.
         if (publishingTargets.length === 1) {
           newData.publishingTarget = publishingTargets[0].name;
         }
