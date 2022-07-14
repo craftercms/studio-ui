@@ -30,9 +30,9 @@ import {
 import { catchError, delay, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import * as auth from '../../services/auth';
 import { catchAjaxError } from '../../utils/ajax';
-import { getRequestForgeryToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
+import { getRequestForgeryToken, getXSRFToken, setJwt, setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSEpic } from '../store';
-import { messageSharedWorker, showSystemNotification } from '../actions/system';
+import { messageSharedWorker, openSiteSocket, showSystemNotification } from '../actions/system';
 import { sessionTimeout } from '../actions/user';
 
 const epics: CrafterCMSEpic[] = [
@@ -44,10 +44,18 @@ const epics: CrafterCMSEpic[] = [
     ),
   // endregion
   // region loginComplete
-  (action$) =>
+  (action$, state$) =>
     action$.pipe(
       ofType(loginComplete.type),
-      map(() => messageSharedWorker(refreshAuthToken()))
+      withLatestFrom(state$),
+      switchMap(([, state]) => {
+        const hasActiveSite = Boolean(state.sites.active);
+        return [
+          messageSharedWorker(refreshAuthToken()),
+          // This action here assumes this epic is ran only when login from session timeout, not on initial login too
+          hasActiveSite && messageSharedWorker(openSiteSocket({ site: state.sites.active, xsrfToken: getXSRFToken() }))
+        ].filter(Boolean);
+      })
     ),
   // endregion
   // region logout

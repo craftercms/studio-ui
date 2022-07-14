@@ -182,10 +182,12 @@ import BrowseFilesDialog from '../BrowseFilesDialog';
 import { DetailedItem, MediaItem } from '../../models';
 import DataSourcesActionsList, { DataSourcesActionsListProps } from '../DataSourcesActionsList/DataSourcesActionsList';
 import { editControllerActionCreator, itemActionDispatcher } from '../../utils/itemActions';
+import useEnv from '../../hooks/useEnv';
+import useAuth from '../../hooks/useAuth';
 
 const originalDocDomain = document.domain;
 
-const startGuestDetectionTimeout = (timeoutRef, setShowSnackbar, timeout = 5000) => {
+const startCommunicationDetectionTimeout = (timeoutRef, setShowSnackbar, timeout = 5000) => {
   clearTimeout(timeoutRef.current);
   timeoutRef.current = setTimeout(() => setShowSnackbar(true), timeout);
 };
@@ -297,12 +299,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const priorState = useRef({ site: siteId });
   const { enqueueSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
+  const { active: authActive } = useAuth();
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
   const hierarchyMap = guest?.hierarchyMap;
   const requestedSourceMapPaths = useRef({});
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
+  const { socketConnected } = useEnv();
+  const socketConnectionTimeoutRef = useRef<number>();
+  const [socketConnectionSnackbarOpen, setSocketConnectionSnackbarOpen] = useState(false);
   const currentItemPath = guest?.path;
   const uiConfig = useSiteUIConfig();
   const { cdataEscapedFieldPatterns } = uiConfig;
@@ -365,6 +371,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     });
   };
 
+  useEffect(() => {
+    if (!socketConnected && authActive) {
+      startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
+    } else {
+      clearTimeout(socketConnectionTimeoutRef.current);
+      setSocketConnectionSnackbarOpen(false);
+    }
+  }, [socketConnected, authActive]);
+
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
     if (editMode) {
@@ -419,7 +434,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       dispatch(setEditModePadding({ editModePadding: localPaddingMode }));
     }
 
-    startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+    startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
 
     return () => {
       document.domain = originalDocDomain;
@@ -583,7 +598,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
           dispatch(action);
-          startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+          startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
           break;
         }
         case sortItemOperation.type: {
@@ -1269,7 +1284,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     if (priorState.current.site !== siteId) {
       priorState.current.site = siteId;
-      startGuestDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
       if (guest) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
@@ -1342,6 +1357,26 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }}
         action={
           <IconButton color="secondary" size="small" onClick={() => setGuestDetectionSnackbarOpen(false)}>
+            <CloseRounded />
+          </IconButton>
+        }
+      />
+      <Snackbar
+        open={socketConnectionSnackbarOpen}
+        onClose={() => void 0}
+        sx={(theme) => ({ ...(guestDetectionSnackbarOpen ? { bottom: `${theme.spacing(10)} !important` } : {}) })}
+        message={
+          <FormattedMessage
+            id="socketConnectionIssue"
+            defaultMessage="Connection with the server was interrupted. Studio will continue to retry the connection."
+          />
+        }
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        action={
+          <IconButton color="secondary" size="small" onClick={() => setSocketConnectionSnackbarOpen(false)}>
             <CloseRounded />
           </IconButton>
         }
