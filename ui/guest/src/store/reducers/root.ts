@@ -29,7 +29,7 @@ import * as iceRegistry from '../../iceRegistry';
 import { findChildRecord, getById, getReferentialEntries } from '../../iceRegistry';
 import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import { ElementRecord } from '../../models/InContextEditing';
+import { DropZone, ElementRecord } from '../../models/InContextEditing';
 import { GuestState } from '../models/GuestStore';
 import { notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { updateDropZoneValidations } from '../../utils/dom';
@@ -68,6 +68,7 @@ import {
   setEditMode,
   startListening
 } from '../actions';
+import { contentController } from '../../index';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
@@ -109,6 +110,14 @@ const resetState: (state: GuestState) => GuestState = (state: GuestState) => ({
   highlighted: {},
   dragContext: null
 });
+
+const filterDropZones = (dropZones: DropZone[], instance) => {
+  return dropZones.filter((dropZone) => {
+    const instanceId = instance.craftercms.id;
+    const dropZoneId = iceRegistry.getById(dropZone.iceId).modelId;
+    return !contentController.modelHierarchyMap[dropZoneId].children.includes(instanceId);
+  });
+};
 
 const reducer = createReducer(initialState, {
   // region dblclick
@@ -348,7 +357,11 @@ const reducer = createReducer(initialState, {
 
     const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
 
-    const highlighted = getHighlighted(dropZones);
+    const instance = state.dragContext.instance;
+    const highlighted = getHighlighted(filterDropZones(dropZones, instance));
+    if (!highlighted[elementRecordId]) {
+      invalidDrop = true;
+    }
 
     return {
       ...state,
@@ -386,7 +399,8 @@ const reducer = createReducer(initialState, {
     }
 
     const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
-    const highlighted = getHighlighted(dropZones);
+    const instance = state.dragContext.instance;
+    const highlighted = getHighlighted(filterDropZones(dropZones, instance));
 
     return {
       ...state,
@@ -532,7 +546,8 @@ const reducer = createReducer(initialState, {
         dropTargets,
         validationsLookup
       );
-      const highlighted = getHighlighted(dropZones);
+
+      const highlighted = getHighlighted(filterDropZones(dropZones, instance));
 
       return {
         ...state,
