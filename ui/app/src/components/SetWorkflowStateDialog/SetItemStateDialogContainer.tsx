@@ -39,6 +39,8 @@ export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
   const [update, setUpdate] = useSpreadState({
     clearSystemProcessing: false,
     clearUserLocked: false,
+    clearNew: false,
+    clearModified: false,
     clearLive: false,
     clearStaged: false,
     live: false,
@@ -52,7 +54,9 @@ export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
       ...(update.clearSystemProcessing && { clearSystemProcessing: update.clearSystemProcessing }),
       ...(update.clearUserLocked && { clearUserLocked: update.clearUserLocked }),
       ...((update.clearLive || update.live) && { live: update.live }),
-      ...((update.clearStaged || update.staged) && { staged: update.staged })
+      ...((update.clearStaged || update.staged) && { staged: update.staged }),
+      ...(update.clearNew && { new: false }),
+      ...(update.clearModified && { modified: false })
     });
   };
 
@@ -91,6 +95,32 @@ export function SetItemStateDialogContainer(props: SetItemStateDialogProps) {
               />
             }
             label={<FormattedMessage id="setWorkflowStateDialog.clearUserLock" defaultMessage="Clear user lock" />}
+          />
+          <FormControlLabel
+            className={classes.paddedLeft}
+            control={
+              <Switch
+                checked={update.clearNew}
+                color="primary"
+                onChange={(e) => {
+                  setUpdate({ clearNew: e.target.checked });
+                }}
+              />
+            }
+            label={<FormattedMessage id="setWorkflowStateDialog.clearNew" defaultMessage="Clear new" />}
+          />
+          <FormControlLabel
+            className={classes.paddedLeft}
+            control={
+              <Switch
+                checked={update.clearModified}
+                color="primary"
+                onChange={(e) => {
+                  setUpdate({ clearModified: e.target.checked });
+                }}
+              />
+            }
+            label={<FormattedMessage id="setWorkflowStateDialog.clearModified" defaultMessage="Clear modified" />}
           />
           <Box display="flex" alignItems="center">
             <Bracket width="12px" height="42px" styles={{ bracket: { marginRight: '10px' } }} />
