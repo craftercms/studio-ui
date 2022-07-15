@@ -137,6 +137,14 @@ export function publishByCommits(
   }).pipe(map(() => true));
 }
 
+export function publishAll(siteId: string, publishingTarget: string, comment: string): Observable<true> {
+  return postJSON('/studio/api/2/publish/all', {
+    siteId,
+    publishingTarget
+    // comment // TODO: pending API update
+  }).pipe(map(() => true));
+}
+
 export function clearLock(siteId: string): Observable<boolean> {
   return postJSON('/studio/api/2/publish/clear_lock', { siteId }).pipe(map(() => true));
 }

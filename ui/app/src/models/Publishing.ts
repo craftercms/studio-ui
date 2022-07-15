@@ -63,7 +63,7 @@ export interface PublishFormData {
   publishingTarget: string;
 }
 
-export type PublishOnDemandMode = 'studio' | 'git';
+export type PublishOnDemandMode = 'studio' | 'git' | 'all';
 
 export interface PublishingTarget {
   name: string;
