@@ -63,13 +63,16 @@ const useStyles = makeStyles()((theme) => ({
   },
   invisibleInput: {
     border: 0,
-    padding: 0,
+    padding: '0 0 0 5px',
     height: '100%',
     cursor: 'pointer',
     background: 'none',
     '&:focus': {
       borderColor: 'none',
       boxShadow: 'inherit'
+    },
+    '&:disabled': {
+      cursor: 'default'
     }
   },
   basePathSelectorContainer: {
@@ -192,25 +195,29 @@ export function PathSelector(props: PathSelectorProps) {
 
   return (
     <>
-      <FormControl className={classes.basePathSelectorContainer}>
-        <RadioGroup value={radioBasePath} onChange={handleBasePathChange}>
-          <FormControlLabel value="" control={<Radio size="small" />} label={formatMessage(messages.anyPath)} />
-          {basePaths.map((basePath) => (
-            <FormControlLabel
-              value={basePath.path}
-              control={<Radio size="small" />}
-              label={
-                <>
-                  {messages[basePath.id] ? formatMessage(messages[basePath.id]) : basePath.id}:{' '}
-                  <Typography color="text.secondary" variant="body2" component="span">
-                    {basePath.path}
-                  </Typography>
-                </>
-              }
-            />
-          ))}
-        </RadioGroup>
-      </FormControl>
+      {/* If path selector is disabled, we shouldn't show the base paths selectors */}
+      {!disabled && (
+        <FormControl className={classes.basePathSelectorContainer}>
+          <RadioGroup value={radioBasePath} onChange={handleBasePathChange}>
+            <FormControlLabel value="" control={<Radio size="small" />} label={formatMessage(messages.anyPath)} />
+            {basePaths.map((basePath) => (
+              <FormControlLabel
+                value={basePath.path}
+                key={basePath.path}
+                control={<Radio size="small" />}
+                label={
+                  <>
+                    {messages[basePath.id] ? formatMessage(messages[basePath.id]) : basePath.id}:{' '}
+                    <Typography color="text.secondary" variant="body2" component="span">
+                      {basePath.path}
+                    </Typography>
+                  </>
+                }
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+      )}
       {radioBasePath && (
         <Paper
           variant="outlined"
@@ -223,7 +230,7 @@ export function PathSelector(props: PathSelectorProps) {
             readOnly
             value={path}
             placeholder={formatMessage(messages.searchIn)}
-            startAdornment={<SearchIcon className={classes.pathSelectorSearchIcon} />}
+            startAdornment={!disabled ? <SearchIcon className={classes.pathSelectorSearchIcon} /> : null}
             endAdornment={
               !disabled && value ? (
                 <IconButton onClick={onClean} size="small">
