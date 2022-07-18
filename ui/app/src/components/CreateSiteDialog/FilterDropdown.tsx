@@ -34,10 +34,8 @@ const useStyles = makeStyles()((theme: Theme) => ({
     width: '300px'
   },
   header: {
-    background: '#f9f9f9',
-    padding: '10px',
-    borderTop: '1px solid #dedede',
-    borderBottom: '1px solid #dedede'
+    background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
+    padding: '10px'
   },
   body: {
     padding: '10px',
