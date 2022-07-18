@@ -24,21 +24,8 @@ import { MediaItem } from '../../models/Search';
 import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
-import { defineMessages, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
-import moment from 'moment-timezone';
 import SystemIcon from '../SystemIcon';
-
-const translations = defineMessages({
-  options: {
-    id: 'media.card.title',
-    defaultMessage: 'options'
-  },
-  itemLastEdition: {
-    id: 'media.card.itemLastEdition',
-    defaultMessage: 'Edited {time}'
-  }
-});
 
 const useStyles = makeStyles()(() => ({
   card: {
@@ -48,7 +35,8 @@ const useStyles = makeStyles()(() => ({
     ...cardTitleStyles
   },
   cardSubtitle: {
-    ...cardSubtitleStyles
+    ...cardSubtitleStyles,
+    WebkitLineClamp: 1
   },
   cardHeader: { alignSelf: 'center' },
   media: {
@@ -85,7 +73,7 @@ const useStyles = makeStyles()(() => ({
 
 interface MediaCardProps {
   item: MediaItem;
-  hasSubheader?: boolean;
+  showPath?: boolean;
   selected?: Array<string>;
   previewAppBaseUri: string;
   action?: CardHeaderProps['action'];
@@ -108,7 +96,7 @@ function MediaCard(props: MediaCardProps) {
     selected,
     item,
     previewAppBaseUri,
-    hasSubheader = true,
+    showPath = true,
     onClick,
     action,
     avatar,
@@ -117,7 +105,6 @@ function MediaCard(props: MediaCardProps) {
   } = props;
   // endregion
   const { name, path, type } = item;
-  const { formatMessage } = useIntl();
   let iconMap = {
     Page: '@mui/icons-material/InsertDriveFileOutlined',
     Video: '@mui/icons-material/VideocamOutlined',
@@ -168,27 +155,20 @@ function MediaCard(props: MediaCardProps) {
           )
         }
         title={name}
-        subheader={
-          hasSubheader ? (
-            <>
-              {`${type}, ${formatMessage(translations.itemLastEdition, {
-                time: moment(item.lastModified).fromNow()
-              })}`}
-              <div title={item.path}>{item.path}</div>
-            </>
-          ) : null
-        }
+        subheader={showPath ? item.path : null}
         action={action}
         titleTypographyProps={{
           variant: 'subtitle2',
           component: 'h2',
-          className: classes.cardTitle
+          className: classes.cardTitle,
+          title: item.name
         }}
         subheaderTypographyProps={{
           variant: 'subtitle2',
-          component: 'h2',
+          component: 'div',
           className: classes.cardSubtitle,
-          color: 'textSecondary'
+          color: 'textSecondary',
+          title: item.path
         }}
       />
       <CardActionAreaOrFragment {...cardActionAreaOrFragmentProps}>
