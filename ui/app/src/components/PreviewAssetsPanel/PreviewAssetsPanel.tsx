@@ -269,7 +269,6 @@ export function PreviewAssetsPanel() {
                     key={item.path}
                     item={item}
                     previewAppBaseUri={guestBase}
-                    hasSubheader={false}
                     avatar={<DragIndicatorRounded />}
                     classes={{ root: classes.card }}
                     onDragStart={() => onDragStart(item)}
