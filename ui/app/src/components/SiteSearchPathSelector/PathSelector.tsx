@@ -151,8 +151,8 @@ export function PathSelector(props: PathSelectorProps) {
   const onClean = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    setPath('');
-    onPathSelected(undefined);
+    setPath(lockBasePath ? basePathRef.current : '');
+    onPathSelected(lockBasePath ? basePathRef.current : undefined);
   };
 
   const onOpenPathSelectionDialog = () => {
@@ -238,7 +238,7 @@ export function PathSelector(props: PathSelectorProps) {
             placeholder={formatMessage(messages.searchIn)}
             startAdornment={!disabled ? <SearchIcon className={classes.pathSelectorSearchIcon} /> : null}
             endAdornment={
-              !disabled && !lockBasePath && value ? (
+              !disabled && value ? (
                 <IconButton onClick={onClean} size="small">
                   <CloseIcon />
                 </IconButton>
