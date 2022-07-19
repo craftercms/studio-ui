@@ -570,7 +570,7 @@ const reducer = createReducer(initialState, {
 
       const dropTargets = iceRegistry.getMediaDropTargets(type).filter((record) => {
         let { field: { validations = [] } = {} } = getReferentialEntries(record);
-        return Boolean(validations['allowImageUpload']);
+        return Boolean(validations['allowImageUpload']) || Boolean(validations['allowVideoUpload']);
       });
       const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
       const highlighted = getHighlighted(dropZones);
@@ -608,7 +608,7 @@ const reducer = createReducer(initialState, {
       }
       const dropTargets = iceRegistry.getMediaDropTargets(type).filter((record) => {
         let { field: { validations = [] } = {} } = getReferentialEntries(record);
-        return Boolean(validations['allowImagesFromRepo']);
+        return Boolean(validations['allowImagesFromRepo']) || Boolean(validations['allowVideosFromRepo']);
       });
       const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
       const highlighted = getHighlighted(dropZones);

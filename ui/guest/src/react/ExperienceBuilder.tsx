@@ -493,7 +493,10 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         .subscribe((e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (e.dataTransfer.items[0].type.startsWith('image') && e.dataTransfer.items[0].kind === 'file') {
+          if (
+            (e.dataTransfer.items[0].type.startsWith('image') || e.dataTransfer.items[0].type.startsWith('video')) &&
+            e.dataTransfer.items[0].kind === 'file'
+          ) {
             dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
           }
         });
