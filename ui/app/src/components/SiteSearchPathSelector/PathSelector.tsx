@@ -16,7 +16,7 @@
 
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   closePathSelectionDialog,
   pathSelectionDialogClosed,
@@ -128,18 +128,20 @@ const basePaths = [
 
 export interface PathSelectorProps {
   value: string;
-  disabled: boolean;
+  disabled?: boolean;
+  lockBasePath?: boolean;
   onPathSelected(path: string): void;
 }
 
 export function PathSelector(props: PathSelectorProps) {
-  const { onPathSelected, value, disabled } = props;
+  const { onPathSelected, value, disabled = false, lockBasePath = false } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const { classes, cx } = useStyles();
   const [path, setPath] = useState<string>(value ?? '');
   const idSuccess = 'pathSelectionSuccess';
   const idCancel = 'pathSelectionCancel';
+  const basePathRef = useRef(value);
   const radioBasePath = path.split('/')[1] ? `/${path.split('/')[1]}` : '';
 
   useEffect(() => {
@@ -154,7 +156,11 @@ export function PathSelector(props: PathSelectorProps) {
   };
 
   const onOpenPathSelectionDialog = () => {
-    const rootPath = path.split('/')[1] ? `/${path.split('/')[1]}` : '/site';
+    const rootPath = lockBasePath
+      ? basePathRef.current.replace(/\/$/, '')
+      : path.split('/')[1]
+      ? `/${path.split('/')[1]}`
+      : '/site';
     dispatch(
       showPathSelectionDialog({
         rootPath,
@@ -196,7 +202,7 @@ export function PathSelector(props: PathSelectorProps) {
   return (
     <>
       {/* If path selector is disabled, we shouldn't show the base paths selectors */}
-      {!disabled && (
+      {!lockBasePath && !disabled && (
         <FormControl className={classes.basePathSelectorContainer}>
           <RadioGroup value={radioBasePath} onChange={handleBasePathChange}>
             <FormControlLabel value="" control={<Radio size="small" />} label={formatMessage(messages.anyPath)} />
@@ -232,7 +238,7 @@ export function PathSelector(props: PathSelectorProps) {
             placeholder={formatMessage(messages.searchIn)}
             startAdornment={!disabled ? <SearchIcon className={classes.pathSelectorSearchIcon} /> : null}
             endAdornment={
-              !disabled && value ? (
+              !disabled && !lockBasePath && value ? (
                 <IconButton onClick={onClean} size="small">
                   <CloseIcon />
                 </IconButton>

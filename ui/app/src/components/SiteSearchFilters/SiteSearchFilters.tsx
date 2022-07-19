@@ -297,7 +297,7 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
           <PathSelector
             value={selectedPath?.replace('.+', '')}
             onPathSelected={onPathSelected}
-            disabled={mode === 'select'}
+            lockBasePath={mode === 'select'}
           />
         </AccordionDetails>
       </Accordion>
