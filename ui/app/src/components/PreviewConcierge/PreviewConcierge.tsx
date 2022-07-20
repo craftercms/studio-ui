@@ -371,6 +371,25 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     });
   };
 
+  const onShortCutKeypress = (key: string) => {
+    switch (key) {
+      case 'e':
+        upToDateRefs.current.conditionallyToggleEditMode('all');
+        break;
+      case 'm':
+        upToDateRefs.current.conditionallyToggleEditMode('move');
+        break;
+      case 'p':
+        upToDateRefs.current.dispatch(toggleEditModePadding());
+        break;
+      case '?':
+        upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
+        break;
+      case 'r':
+        getHostToGuestBus().next(reloadRequest());
+    }
+  };
+
   useEffect(() => {
     if (!socketConnected && authActive) {
       startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
@@ -1005,20 +1024,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case hotKey.type: {
-          switch (payload.key) {
-            case 'e':
-              upToDateRefs.current.conditionallyToggleEditMode('all');
-              break;
-            case 'm':
-              upToDateRefs.current.conditionallyToggleEditMode('move');
-              break;
-            case 'p':
-              dispatch(toggleEditModePadding());
-              break;
-            case '?':
-              upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
-              break;
-          }
+          onShortCutKeypress(payload.key);
           break;
         }
         case showEditDialogAction.type: {
@@ -1302,21 +1308,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   }, [uiConfig.xml, siteId, rteConfig, dispatch]);
 
   // Host hotkeys
-  useHotkeys('e,m,p,shift+/', (e) => {
-    switch (e.key) {
-      case 'e':
-        upToDateRefs.current.conditionallyToggleEditMode('all');
-        break;
-      case 'm':
-        upToDateRefs.current.conditionallyToggleEditMode('move');
-        break;
-      case 'p':
-        upToDateRefs.current.dispatch(toggleEditModePadding());
-        break;
-      case '?':
-        upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
-        break;
-    }
+  useHotkeys('r,e,m,p,shift+/', (e) => {
+    onShortCutKeypress(e.key);
   });
 
   // Guest hotkeys

@@ -50,16 +50,13 @@ const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     cursor: 'pointer',
     padding: '0 0 0 10px',
-    backgroundColor: theme.palette.background.default,
     '&:hover': {
-      backgroundColor: theme.palette.action.hover
+      // TODO: add some hover styles similar to MUI input
     },
     '&.disabled': {
       opacity: 0.7,
-      cursor: 'default',
-      backgroundColor: theme.palette.action.disabled
-    },
-    '&:not(.disabled):hover': {}
+      cursor: 'default'
+    }
   },
   invisibleInput: {
     border: 0,
@@ -128,12 +125,12 @@ const basePaths = [
 
 export interface PathSelectorProps {
   value: string;
-  disabled: boolean;
+  disabled?: boolean;
   onPathSelected(path: string): void;
 }
 
 export function PathSelector(props: PathSelectorProps) {
-  const { onPathSelected, value, disabled } = props;
+  const { onPathSelected, value, disabled = false } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const { classes, cx } = useStyles();
