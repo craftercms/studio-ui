@@ -138,18 +138,26 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
   const [publishingTargets, setPublishingTargets] = useState(null);
   const [publishingTargetsError, setPublishingTargetsError] = useState(null);
-  const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
-  const [publishGitFormValid, setPublishGitFormValid] = useState(false);
-  const [publishStudioFormData, setPublishStudioFormData] =
-    useSpreadState<PublishFormData>(initialPublishStudioFormData);
-  const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
-  const [publishEverythingFormData, setPublishEverythingFormData] = useSpreadState<PublishFormData>(
-    initialPublishEverythingFormData
-  );
-  const [publishEverythingFormValid, setPublishEverythingFormValid] = useState(false);
   const { bulkPublishCommentRequired, publishByCommitCommentRequired, publishEverythingCommentRequired } = useSelection(
     (state) => state.uiConfig.publishing
   );
+  const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
+  const publishGitFormValid =
+    publishGitFormData.commitIds.replace(/\s/g, '') !== '' &&
+    publishGitFormData.publishingTarget !== '' &&
+    (!publishByCommitCommentRequired || !isBlank(publishGitFormData.comment));
+  const [publishStudioFormData, setPublishStudioFormData] =
+    useSpreadState<PublishFormData>(initialPublishStudioFormData);
+  const publishStudioFormValid =
+    publishStudioFormData.path.replace(/\s/g, '') !== '' &&
+    publishStudioFormData.publishingTarget !== '' &&
+    (!bulkPublishCommentRequired || !isBlank(publishStudioFormData.comment));
+  const [publishEverythingFormData, setPublishEverythingFormData] = useSpreadState<PublishFormData>(
+    initialPublishEverythingFormData
+  );
+  const publishEverythingFormValid =
+    publishEverythingFormData.publishingTarget !== '' &&
+    (!publishEverythingCommentRequired || !isBlank(publishEverythingFormData.comment));
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
   const currentFormData =
     mode === 'studio' ? publishStudioFormData : mode === 'git' ? publishGitFormData : publishEverythingFormData;
@@ -280,7 +288,6 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const onSubmitPublishEverything = () => {
-    console.log('publish everything!', publishEverythingFormData);
     setIsSubmitting(true);
     const { publishingTarget, comment } = publishEverythingFormData;
     publishAll(siteId, publishingTarget, comment).subscribe({
@@ -310,39 +317,6 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     setMode(null);
     setDefaultPublishingTarget(publishingTargets, true);
   };
-
-  useEffect(() => {
-    switch (mode) {
-      case 'studio':
-        setPublishStudioFormValid(
-          publishStudioFormData.path.replace(/\s/g, '') !== '' &&
-            publishStudioFormData.publishingTarget !== '' &&
-            (!bulkPublishCommentRequired || !isBlank(publishStudioFormData.comment))
-        );
-        break;
-      case 'git':
-        setPublishGitFormValid(
-          publishGitFormData.commitIds.replace(/\s/g, '') !== '' &&
-            publishGitFormData.publishingTarget !== '' &&
-            (!publishByCommitCommentRequired || !isBlank(publishGitFormData.comment))
-        );
-        break;
-      case 'all':
-        setPublishEverythingFormValid(
-          publishEverythingFormData.publishingTarget !== '' &&
-            (!publishEverythingCommentRequired || !isBlank(publishEverythingFormData.comment))
-        );
-        break;
-    }
-  }, [
-    publishStudioFormData,
-    publishGitFormData,
-    publishEverythingFormData,
-    mode,
-    bulkPublishCommentRequired,
-    publishByCommitCommentRequired,
-    publishEverythingCommentRequired
-  ]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMode((event.target as HTMLInputElement).value as PublishOnDemandMode);

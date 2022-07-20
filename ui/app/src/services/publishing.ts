@@ -137,11 +137,11 @@ export function publishByCommits(
   }).pipe(map(() => true));
 }
 
-export function publishAll(siteId: string, publishingTarget: string, comment: string): Observable<true> {
+export function publishAll(siteId: string, publishingTarget: string, submissionComment: string): Observable<true> {
   return postJSON('/studio/api/2/publish/all', {
     siteId,
-    publishingTarget
-    // comment // TODO: pending API update
+    publishingTarget,
+    submissionComment
   }).pipe(map(() => true));
 }
 
