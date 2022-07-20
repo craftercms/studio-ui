@@ -17,7 +17,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
-import { fetchContentXML, lock, unlock, writeContent } from '../../services/content';
+import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import useStyles from './styles';
@@ -48,19 +48,20 @@ import { CodeEditorDialogContainerProps, getContentModelSnippets } from './utils
 import { batchActions } from '../../state/actions/misc';
 import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 import useUpToDateRefs from '../../hooks/useUpdateRefs';
+import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimize, onClose, mode, isSubmitting, readonly, contentType, onFullScreen } = props;
+  const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen } = props;
+  const { open, isSubmitting } = useEnhancedDialogContext();
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
   const user = useActiveUser();
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState(null);
-  const [pathLocked, setPathLocked] = useState('');
   const itemLoaded = Boolean(item); // isLocked and isLockedForMe only hold accurate value if item was already loaded.
   const isLocked = isLockedState(item?.state);
   const isLockedForMe = isItemLockedForMe(item, user.username);
-  const shouldPerformLock = itemLoaded && !readonly && !isLockedForMe && !isLocked && pathLocked !== path;
+  const shouldPerformLock = open && itemLoaded && !readonly && !isLockedForMe && !isLocked;
   const { classes } = useStyles();
   const editorRef = useRef<any>();
   const dispatch = useDispatch();
@@ -127,7 +128,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     fnRefs.current.onClose(e, null);
-    pathLocked && unlock(site, pathLocked).subscribe();
   };
 
   const onMultiChoiceSaveButtonClick = (e, type) => {
@@ -197,9 +197,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
 
   useEffect(() => {
     if (shouldPerformLock) {
-      lock(site, path).subscribe(() => {
-        setPathLocked(path);
-      });
+      lock(site, path).subscribe();
     }
   }, [path, shouldPerformLock, site]);
 
