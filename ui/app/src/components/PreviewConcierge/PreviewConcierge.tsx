@@ -1018,6 +1018,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             case '?':
               upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
               break;
+            case 'r': {
+              hostToGuest$.next(reloadRequest());
+            }
           }
           break;
         }

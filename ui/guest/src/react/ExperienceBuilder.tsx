@@ -243,7 +243,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   // region Hotkeys
 
   // This requires maintenance as key shortcuts evolve/change.
-  useHotkeys('m,e,p,shift+/', (e) => {
+  useHotkeys('r,m,e,p,shift+/', (e) => {
     post(hotKey({ key: e.key, type: 'keydown' }));
   });
 
