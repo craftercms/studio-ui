@@ -350,9 +350,6 @@ const reducer = createReducer(initialState, {
     const dropZones = updateDropZoneValidations(currentDropZone, currentDropZones, rest);
 
     const highlighted = getHighlighted(dropZones);
-    if (!highlighted[elementRecordId]) {
-      invalidDrop = true;
-    }
 
     return {
       ...state,
