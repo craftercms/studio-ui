@@ -1399,7 +1399,7 @@
   "siteConfigurationManagement.confTabRoleMappingsDesc": "Defines a list of roles available in project",
   "siteConfigurationManagement.confTabSidebarConf": "Sidebar Configuration",
   "siteConfigurationManagement.confTabSidebarConfDesc": "Defines modules on the sidebar",
-  "siteConfigurationManagement.confTabSiteConf": "Project Config Tools",
+  "siteConfigurationManagement.confTabSiteConf": "Content Type Editor Config",
   "siteConfigurationManagement.confTabSiteConfDesc": "Defines the list of admin tools available",
   "siteConfigurationManagement.confTabSiteConfiguration": "Project Configuration",
   "siteConfigurationManagement.confTabSiteConfigurationDesc": "Defines the general project configuration",
