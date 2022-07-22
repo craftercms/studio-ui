@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, tap, throttleTime, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   checkPathExistence,
@@ -406,6 +406,7 @@ export default [
   (action$, state$) =>
     action$.pipe(
       ofType(pluginInstalled.type),
+      throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
         const actions = [];
@@ -422,6 +423,7 @@ export default [
   (action$, state$) =>
     action$.pipe(
       ofType(publishEvent.type, workflowEvent.type),
+      throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
         const actions = [];
