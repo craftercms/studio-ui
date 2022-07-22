@@ -234,6 +234,7 @@ export const components = {
   PluginDetailsView: lazy(() => import('../components/PluginDetailsView')),
   PluginDocumentation: lazy(() => import('../components/PluginDocumentation')),
   PluginFormBuilder: lazy(() => import('../components/PluginFormBuilder')),
+  PluginHostIFrame: lazy(() => import('../components/PluginHostIFrame')),
   PluginManagement: lazy(() => import('../components/PluginManagement')),
   PluginParametersForm: lazy(() => import('../components/PluginParametersForm')),
   Preview: lazy(() => import('../components/Preview')),
