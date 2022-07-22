@@ -22,27 +22,18 @@ import {
   pathSelectionDialogClosed,
   showPathSelectionDialog
 } from '../../state/actions/dialogs';
-import { dispatchDOMEvent } from '../../state/actions/misc';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/SearchRounded';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { makeStyles } from 'tss-react/mui';
 import Paper from '@mui/material/Paper';
-import palette from '../../styles/palette';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import Typography from '@mui/material/Typography';
+import SiteExplorer from '../../icons/SiteExplorer';
+import { createCustomDocumentEventListener } from '../../utils/dom';
 
-const useStyles = makeStyles()((theme) => ({
+const useStyles = makeStyles()((theme, a, b) => ({
   pathSelectorInputRoot: {
     flexGrow: 1
-  },
-  pathSelectorSearchIcon: {
-    marginRight: '3px 5px 3px 3px',
-    color: palette.gray.medium4
   },
   pathSelectorWrapper: {
     flex: 1,
@@ -50,8 +41,8 @@ const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     cursor: 'pointer',
     padding: '0 0 0 10px',
-    '&:hover': {
-      // TODO: add some hover styles similar to MUI input
+    '&:hover:not(.disabled)': {
+      borderColor: theme.palette.action.active
     },
     '&.disabled': {
       opacity: 0.7,
@@ -71,73 +62,29 @@ const useStyles = makeStyles()((theme) => ({
     '&:disabled': {
       cursor: 'default'
     }
-  },
-  basePathSelectorContainer: {
-    padding: `0 ${theme.spacing(1)} ${theme.spacing(2)}`
   }
 }));
 
 const messages = defineMessages({
   searchIn: {
-    id: 'searchFilter.searchIn',
-    defaultMessage: 'Search in:'
-  },
-  content: {
-    id: 'words.content',
-    defaultMessage: 'Content'
-  },
-  assets: {
-    id: 'words.assets',
-    defaultMessage: 'Assets'
-  },
-  templates: {
-    id: 'words.templates',
-    defaultMessage: 'Templates'
-  },
-  scripts: {
-    id: 'words.scripts',
-    defaultMessage: 'Scripts'
-  },
-  anyPath: {
-    id: 'searchFilter.anyPath',
-    defaultMessage: 'Any Path'
+    id: 'pathSelector.inputPlaceholderText',
+    defaultMessage: 'Select path'
   }
 });
-
-const basePaths = [
-  {
-    id: 'content',
-    path: '/site'
-  },
-  {
-    id: 'assets',
-    path: '/static-assets'
-  },
-  {
-    id: 'templates',
-    path: '/templates'
-  },
-  {
-    id: 'scripts',
-    path: '/scripts'
-  }
-];
 
 export interface PathSelectorProps {
   value: string;
   disabled?: boolean;
+  stripXmlIndex?: boolean;
   onPathSelected(path: string): void;
 }
 
 export function PathSelector(props: PathSelectorProps) {
-  const { onPathSelected, value, disabled = false } = props;
+  const { onPathSelected, value, disabled = false, stripXmlIndex = true } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const { classes, cx } = useStyles();
   const [path, setPath] = useState<string>(value ?? '');
-  const idSuccess = 'pathSelectionSuccess';
-  const idCancel = 'pathSelectionCancel';
-  const radioBasePath = path.split('/')[1] ? `/${path.split('/')[1]}` : '';
 
   useEffect(() => {
     setPath(value ?? '');
@@ -147,98 +94,53 @@ export function PathSelector(props: PathSelectorProps) {
     e.stopPropagation();
     e.preventDefault();
     setPath('');
-    onPathSelected(undefined);
+    onPathSelected('');
   };
 
   const onOpenPathSelectionDialog = () => {
-    const rootPath = path.split('/')[1] ? `/${path.split('/')[1]}` : '/site';
+    const callbackId = 'pathSelectionDialogCallback';
+    const callbackAccept = 'accept';
     dispatch(
       showPathSelectionDialog({
-        rootPath,
-        initialPath: path || rootPath,
+        rootPath: `/${path.split('/')[1] ?? ''}`,
+        initialPath: path,
         showCreateFolderOption: false,
-        onClosed: {
-          type: 'BATCH_ACTIONS',
-          payload: [dispatchDOMEvent({ id: idCancel }), pathSelectionDialogClosed()]
-        },
-        onOk: {
-          type: 'BATCH_ACTIONS',
-          payload: [dispatchDOMEvent({ id: idSuccess }), closePathSelectionDialog()]
-        }
+        stripXmlIndex,
+        onClosed: batchActions([dispatchDOMEvent({ id: callbackId, action: 'close' }), pathSelectionDialogClosed()]),
+        onOk: batchActions([dispatchDOMEvent({ id: callbackId, action: callbackAccept }), closePathSelectionDialog()])
       })
     );
-
-    const successCallback = (e) => {
-      const path = e.detail.path;
-      setPath(path);
-      onPathSelected(path);
-
-      document.removeEventListener(idSuccess, successCallback, false);
-      document.removeEventListener(idCancel, cancelCallback, false);
-    };
-
-    const cancelCallback = () => {
-      document.removeEventListener(idCancel, cancelCallback, false);
-      document.removeEventListener(idSuccess, successCallback, false);
-    };
-
-    document.addEventListener(idSuccess, successCallback, false);
-    document.addEventListener(idCancel, cancelCallback, false);
-  };
-
-  const handleBasePathChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onPathSelected((event.target as HTMLInputElement).value);
+    createCustomDocumentEventListener(callbackId, (detail) => {
+      if (detail.action === callbackAccept) {
+        const path = detail.path;
+        setPath(path);
+        onPathSelected(path);
+      }
+    });
   };
 
   return (
-    <>
-      {/* If path selector is disabled, we shouldn't show the base paths selectors */}
-      {!disabled && (
-        <FormControl className={classes.basePathSelectorContainer}>
-          <RadioGroup value={radioBasePath} onChange={handleBasePathChange}>
-            <FormControlLabel value="" control={<Radio size="small" />} label={formatMessage(messages.anyPath)} />
-            {basePaths.map((basePath) => (
-              <FormControlLabel
-                value={basePath.path}
-                key={basePath.path}
-                control={<Radio size="small" />}
-                label={
-                  <>
-                    {messages[basePath.id] ? formatMessage(messages[basePath.id]) : basePath.id}:{' '}
-                    <Typography color="text.secondary" variant="body2" component="span">
-                      {basePath.path}
-                    </Typography>
-                  </>
-                }
-              />
-            ))}
-          </RadioGroup>
-        </FormControl>
-      )}
-      {radioBasePath && (
-        <Paper
-          variant="outlined"
-          onClick={disabled ? null : onOpenPathSelectionDialog}
-          className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
-        >
-          <InputBase
-            classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
-            disabled={disabled}
-            readOnly
-            value={path}
-            placeholder={formatMessage(messages.searchIn)}
-            startAdornment={!disabled ? <SearchIcon className={classes.pathSelectorSearchIcon} /> : null}
-            endAdornment={
-              !disabled && value ? (
-                <IconButton onClick={onClean} size="small">
-                  <CloseIcon />
-                </IconButton>
-              ) : null
-            }
-          />
-        </Paper>
-      )}
-    </>
+    <Paper
+      variant="outlined"
+      onClick={disabled ? null : onOpenPathSelectionDialog}
+      className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
+    >
+      <InputBase
+        classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
+        disabled={disabled}
+        readOnly
+        value={path}
+        placeholder={formatMessage(messages.searchIn)}
+        startAdornment={disabled ? null : <SiteExplorer sx={{ color: 'text.secondary' }} />}
+        endAdornment={
+          !disabled && value ? (
+            <IconButton onClick={onClean} size="small">
+              <CloseIcon />
+            </IconButton>
+          ) : null
+        }
+      />
+    </Paper>
   );
 }
 

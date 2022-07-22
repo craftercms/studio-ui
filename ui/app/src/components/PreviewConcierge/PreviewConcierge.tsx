@@ -360,7 +360,25 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     setDataSourceActionsListState,
     showToolsPanel,
     toolsPanelWidth,
-    browseFilesDialogState
+    browseFilesDialogState,
+    onShortCutKeypress(key: string) {
+      switch (key) {
+        case 'e':
+          upToDateRefs.current.conditionallyToggleEditMode('all');
+          break;
+        case 'm':
+          upToDateRefs.current.conditionallyToggleEditMode('move');
+          break;
+        case 'p':
+          upToDateRefs.current.dispatch(toggleEditModePadding());
+          break;
+        case '?':
+          upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
+          break;
+        case 'r':
+          getHostToGuestBus().next(reloadRequest());
+      }
+    }
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -369,25 +387,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       type: rtePickerActionResult.type,
       payload
     });
-  };
-
-  const onShortCutKeypress = (key: string) => {
-    switch (key) {
-      case 'e':
-        upToDateRefs.current.conditionallyToggleEditMode('all');
-        break;
-      case 'm':
-        upToDateRefs.current.conditionallyToggleEditMode('move');
-        break;
-      case 'p':
-        upToDateRefs.current.dispatch(toggleEditModePadding());
-        break;
-      case '?':
-        upToDateRefs.current.keyboardShortcutsDialogState.onOpen();
-        break;
-      case 'r':
-        getHostToGuestBus().next(reloadRequest());
-    }
   };
 
   useEffect(() => {
@@ -1024,7 +1023,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case hotKey.type: {
-          onShortCutKeypress(payload.key);
+          upToDateRefs.current.onShortCutKeypress(payload.key);
           break;
         }
         case showEditDialogAction.type: {
@@ -1309,7 +1308,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Host hotkeys
   useHotkeys('r,e,m,p,shift+/', (e) => {
-    onShortCutKeypress(e.key);
+    upToDateRefs.current.onShortCutKeypress(e.key);
   });
 
   // Guest hotkeys

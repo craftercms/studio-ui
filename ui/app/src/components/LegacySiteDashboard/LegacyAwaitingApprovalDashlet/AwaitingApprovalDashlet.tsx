@@ -279,9 +279,9 @@ export function AwaitingApprovalDashlet() {
         <>
           <Button disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
             {showExpanded ? (
-              <FormattedMessage id="awaitingApprovalDashlet.expandedAll" defaultMessage="Expand All" />
+              <FormattedMessage id="common.expandAll" defaultMessage="Expand All" />
             ) : (
-              <FormattedMessage id="awaitingApprovalDashlet.collapseAll" defaultMessage="Collapse All" />
+              <FormattedMessage id="common.collapseAll" defaultMessage="Collapse All" />
             )}
           </Button>
           <Button disabled={isFetching} onClick={onShowInProgress}>

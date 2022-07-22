@@ -74,7 +74,7 @@ interface SearchUIProps {
   handleSearchKeyword(keyword: string): void;
   handleChangeView(): void;
   toggleDrawer(): void;
-  handleFilterChange(filter: Filter, isFilter: boolean): void;
+  handleFilterChange(filter: Filter, isFilter?: boolean): void;
   handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number): void;
   handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;
   handleSelect(path: string, isSelected: boolean): void;

@@ -246,9 +246,9 @@ export function LegacyRecentlyPublishedDashlet() {
         <>
           <Button onClick={onCollapseAll} className={classes.rightAction} disabled={fetchingHistory}>
             {!allCollapsed ? (
-              <FormattedMessage id="recentlyPublishedDashlet.collapseAll" defaultMessage="Collapse All" />
+              <FormattedMessage id="common.collapseAll" defaultMessage="Collapse All" />
             ) : (
-              <FormattedMessage id="recentlyPublishedDashlet.expandAll" defaultMessage="Expand All" />
+              <FormattedMessage id="common.expandAll" defaultMessage="Expand All" />
             )}
           </Button>
 
