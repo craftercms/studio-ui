@@ -178,6 +178,7 @@ export * from './PluginConfigDialog';
 export * from './PluginDetailsView';
 export * from './PluginDocumentation';
 export * from './PluginFormBuilder';
+export * from './PluginHostIFrame';
 export * from './PluginManagement';
 export * from './PluginParametersForm';
 export * from './Preview';
