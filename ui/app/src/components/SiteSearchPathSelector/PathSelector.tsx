@@ -31,7 +31,7 @@ import Paper from '@mui/material/Paper';
 import SiteExplorer from '../../icons/SiteExplorer';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 
-const useStyles = makeStyles()((theme, a, b) => ({
+const useStyles = makeStyles()((theme) => ({
   pathSelectorInputRoot: {
     flexGrow: 1
   },
