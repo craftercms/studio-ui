@@ -104,6 +104,10 @@ const messages = defineMessages({
   bulkPublishStarted: {
     id: 'publishingDashboard.bulkPublishStarted',
     defaultMessage: 'Bulk Publish process has been started.'
+  },
+  invalidForm: {
+    id: 'publishingDashboard.invalidForm',
+    defaultMessage: 'You cannot publish until form requirements are satisfied.'
   }
 });
 
@@ -143,15 +147,15 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   );
   const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
   const publishGitFormValid =
-    publishGitFormData.commitIds.replace(/\s/g, '') !== '' &&
-    publishGitFormData.publishingTarget !== '' &&
-    (!publishByCommitCommentRequired || !isBlank(publishGitFormData.comment));
+    !isBlank(publishGitFormData.publishingTarget) &&
+    (!publishByCommitCommentRequired || !isBlank(publishGitFormData.comment)) &&
+    publishGitFormData.commitIds.replace(/\s/g, '') !== '';
   const [publishStudioFormData, setPublishStudioFormData] =
     useSpreadState<PublishFormData>(initialPublishStudioFormData);
   const publishStudioFormValid =
-    publishStudioFormData.path.replace(/\s/g, '') !== '' &&
-    publishStudioFormData.publishingTarget !== '' &&
-    (!bulkPublishCommentRequired || !isBlank(publishStudioFormData.comment));
+    !isBlank(publishStudioFormData.publishingTarget) &&
+    (!bulkPublishCommentRequired || !isBlank(publishStudioFormData.comment)) &&
+    publishStudioFormData.path.replace(/\s/g, '') !== '';
   const [publishEverythingFormData, setPublishEverythingFormData] = useSpreadState<PublishFormData>(
     initialPublishEverythingFormData
   );
@@ -328,16 +332,24 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const onSubmitForm = () => {
-    switch (mode) {
-      case 'studio':
-        onSubmitBulkPublish();
-        break;
-      case 'git':
-        onSubmitPublishBy();
-        break;
-      case 'all':
-        onSubmitPublishEverything();
-        break;
+    if (currentFormValid) {
+      switch (mode) {
+        case 'studio':
+          onSubmitBulkPublish();
+          break;
+        case 'git':
+          onSubmitPublishBy();
+          break;
+        case 'all':
+          onSubmitPublishEverything();
+          break;
+      }
+    } else {
+      dispatch(
+        showSystemNotification({
+          message: formatMessage(messages.invalidForm)
+        })
+      );
     }
   };
 
