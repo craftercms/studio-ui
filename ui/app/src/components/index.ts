@@ -28,6 +28,7 @@ export * from './AuditLogEntryParametersDialog';
 export * from './AuditManagement';
 export * from './AuthBoundary';
 export * from './AuthMonitor';
+export * from './BasePathSelector';
 export * from './BrowseFilesDialog';
 export * from './ChangeContentTypeDialog';
 export * from './CharCountStatus';

@@ -23,6 +23,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ElasticParams, Filter } from '../../models/Search';
 import { initialSearchParameters, setCheckedParameterFromURL, URLDrivenSearchProps, useSearchState } from './utils';
 import SearchUI from './SearchUI';
+import { UNDEFINED } from '../../utils/constants';
 
 export function URLDrivenSearch(props: URLDrivenSearchProps) {
   const { history, location, mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
@@ -41,6 +42,7 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
   const [checkedFilters, setCheckedFilters] = useState({});
   // endregion
 
+  // region useSearchState({ ... })
   const {
     error,
     isFetching,
@@ -67,16 +69,17 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
     searchParameters,
     onSelect
   });
+  // endregion
 
   refs.current.createQueryString = createQueryString;
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400), distinctUntilChanged()).subscribe((keywords: string) => {
       if (!keywords) keywords = undefined;
-      let qs = refs.current.createQueryString({ name: 'keywords', value: keywords }, false, { offset: 0 });
+      let qs = refs.current.createQueryString({ name: 'keywords', value: keywords }, false, { offset: UNDEFINED });
       history.push({
         pathname: '/',
-        search: `?${qs}`
+        search: qs ? `?${qs}` : ''
       });
     });
     return () => subscription.unsubscribe();
@@ -91,8 +94,8 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
     onSearch$.next(keyword);
   }
 
-  function handleFilterChange(filter: Filter, isFilter: boolean) {
-    let qs = createQueryString(filter, isFilter, { offset: 0 });
+  function handleFilterChange(filter: Filter, isFilter?: boolean) {
+    let qs = createQueryString(filter, isFilter, { offset: UNDEFINED });
     if (qs || location.search) {
       history.push({
         pathname: '/',
@@ -120,10 +123,14 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
 
   function clearFilters() {
     Object.keys(checkedFilters).map((filter) => clearFilter(filter));
-    clearPath();
+    // TODO: Should change the path clearing to depend on a more specific prop (e.g. `pathLock`)
+    if (mode !== 'select') {
+      handleFilterChange({ name: 'path', value: UNDEFINED });
+      onSelectedPathChanges(UNDEFINED);
+      clearPath();
+    }
   }
 
-  // createQueryString:
   // isFilter: It means that the filter is nested on object filter
   function createQueryString(filter: Filter, isFilter = false, overrideQueryParams = {}) {
     let newFilters;

@@ -23,6 +23,7 @@ import DialogHeader, { DialogHeaderProps } from '../DialogHeader';
 import MinimizedBar from '../MinimizedBar';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogContext } from './useEnhancedDialogContext';
+import Suspencified from '../Suspencified';
 
 export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, EnhancedDialogState {
   title?: ReactNode;
@@ -103,7 +104,9 @@ export function EnhancedDialog(props: EnhancedDialogProps) {
             onCloseButtonClick={(e) => onClose(e, null)}
           />
         )}
-        {React.Children.map(children, (child) => React.cloneElement(child as React.ReactElement, { onClose }))}
+        <Suspencified>
+          {React.Children.map(children, (child) => React.cloneElement(child as React.ReactElement, { onClose }))}
+        </Suspencified>
         <OnClosedInvoker onClosed={onClosed} />
       </MuiDialog>
       <MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />

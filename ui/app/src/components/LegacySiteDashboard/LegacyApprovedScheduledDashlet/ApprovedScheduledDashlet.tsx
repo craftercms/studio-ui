@@ -270,9 +270,9 @@ export function ApprovedScheduledDashlet() {
         <>
           <Button disabled={isFetching} onClick={onToggleCollapse} className={classes.collapseAll}>
             {showExpanded ? (
-              <FormattedMessage id="approvedScheduledItemsDashlet.expandedAll" defaultMessage="Expand All" />
+              <FormattedMessage id="common.expandAll" defaultMessage="Expand All" />
             ) : (
-              <FormattedMessage id="approvedScheduledItemsDashlet.collapseAll" defaultMessage="Collapse All" />
+              <FormattedMessage id="common.collapseAll" defaultMessage="Collapse All" />
             )}
           </Button>
           <TextField

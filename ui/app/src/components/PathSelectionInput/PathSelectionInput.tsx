@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -34,11 +34,12 @@ export interface PathSelectionInputProps {
   rootPath: string;
   currentPath?: string;
   allowFiles?: boolean;
+  startAdornment?: ReactElement;
   onChange?(path: string): void;
 }
 
 export function PathSelectionInput(props: PathSelectionInputProps) {
-  const { rootPath = '', currentPath = '', allowFiles = false, onChange: onChangeProp } = props;
+  const { rootPath = '', currentPath = '', allowFiles = false, onChange: onChangeProp, startAdornment } = props;
   const unmount$ = useUnmount$();
   const site = useActiveSiteId();
   const [path, setPath] = useState('');
@@ -105,6 +106,7 @@ export function PathSelectionInput(props: PathSelectionInputProps) {
         InputProps={{
           startAdornment: rootPath ? (
             <InputAdornment position="start" sx={{ mr: 0 }}>
+              {startAdornment}
               {rootPath}
             </InputAdornment>
           ) : (

@@ -33,12 +33,18 @@ import CreateFolderDialog from '../CreateFolderDialog';
 import DialogHeader from '../DialogHeader';
 import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import PathSelectionInput from '../PathSelectionInput';
+import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import BasePathSelector from '../BasePathSelector';
+import { UNDEFINED } from '../../utils/constants';
 
 export interface PathSelectionDialogBaseProps {
   open: boolean;
   title?: TranslationOrText;
-  rootPath: string;
+  rootPath?: string;
   initialPath?: string;
+  allowSwitchingRootPath?: boolean;
   showCreateFolderOption?: boolean;
   stripXmlIndex?: boolean;
 }
@@ -78,8 +84,18 @@ const useStyles = makeStyles()(() => ({
 }));
 
 export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
-  const { onClosed, onClose, onOk, rootPath, initialPath, showCreateFolderOption = true, stripXmlIndex = true } = props;
-  const [currentPath, setCurrentPath] = useState(initialPath ?? rootPath);
+  const {
+    onClosed,
+    onClose,
+    onOk,
+    rootPath = '',
+    initialPath,
+    showCreateFolderOption = true,
+    stripXmlIndex = true,
+    allowSwitchingRootPath = true
+  } = props;
+  const [root, setRoot] = useState(rootPath);
+  const [currentPath, setCurrentPath] = useState(initialPath ?? root);
   const [openCreateFolderDialog, setOpenCreateFolderDialog] = useState(false);
   const { classes } = useStyles();
   const title = usePossibleTranslation(props.title);
@@ -110,8 +126,46 @@ export function PathSelectionDialogContainer(props: PathSelectionDialogProps) {
         onCloseButtonClick={onClose}
       />
       <DialogBody className={classes.dialogBody}>
-        <PathSelectionInput rootPath={rootPath} onChange={onPathChanged} currentPath={currentPath} />
-        <FolderBrowserTreeView rootPath={rootPath} onPathSelected={onPathChanged} selectedPath={currentPath} />
+        {root && root !== '/' ? (
+          <>
+            <PathSelectionInput
+              rootPath={root}
+              onChange={onPathChanged}
+              currentPath={currentPath}
+              startAdornment={
+                allowSwitchingRootPath ? (
+                  <Tooltip
+                    title={
+                      <FormattedMessage id="pathSelectionDialog.changeRootButtonLabel" defaultMessage="Change root" />
+                    }
+                  >
+                    <IconButton
+                      sx={{ mr: 0.5 }}
+                      onClick={() => {
+                        setRoot('');
+                        setCurrentPath('');
+                      }}
+                    >
+                      <KeyboardArrowLeftRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  UNDEFINED
+                )
+              }
+            />
+            <FolderBrowserTreeView rootPath={root} onPathSelected={onPathChanged} selectedPath={currentPath} />
+          </>
+        ) : (
+          <BasePathSelector
+            value=""
+            onChange={(e) => {
+              const path = e.target.value;
+              setRoot(path);
+              setCurrentPath(path);
+            }}
+          />
+        )}
       </DialogBody>
       <DialogFooter>
         {showCreateFolderOption && (

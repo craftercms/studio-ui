@@ -74,6 +74,7 @@ export const components = {
   AuditManagement: lazy(() => import('../components/AuditManagement')),
   AuthBoundary: lazy(() => import('../components/AuthBoundary')),
   AuthMonitor: lazy(() => import('../components/AuthMonitor')),
+  BasePathSelector: lazy(() => import('../components/BasePathSelector')),
   BrowseFilesDialog: lazy(() => import('../components/BrowseFilesDialog')),
   ChangeContentTypeDialog: lazy(() => import('../components/ChangeContentTypeDialog')),
   CharCountStatus: lazy(() => import('../components/CharCountStatus')),
