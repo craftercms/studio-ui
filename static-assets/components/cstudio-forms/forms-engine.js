@@ -2049,7 +2049,7 @@ var CStudioForms =
             });
             sendMessage({ type: FORM_ENGINE_RENDER_COMPLETE });
           }
-          CStudioAuthoring.InContextEdit.getIceCallback(editorId)?.renderComplete();
+          CStudioAuthoring.InContextEdit.getIceCallback(editorId)?.renderComplete?.();
         });
       },
 
