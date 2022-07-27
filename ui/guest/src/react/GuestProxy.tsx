@@ -419,9 +419,9 @@ export function GuestProxy() {
           if (fieldType === 'image') {
             const tagName = updatedField.eq(index).prop('tagName').toLowerCase();
             if (tagName === 'img') {
-              updatedField.eq(index).attr('src', value);
+              updatedField.attr('src', value);
             } else {
-              updatedField.eq(index).css('background-image', `url(${value})`);
+              updatedField.css('background-image', `url(${value})`);
             }
           } else if (fieldType === 'video-picker') {
             updatedField.eq(index).find('source').attr('src', value);
