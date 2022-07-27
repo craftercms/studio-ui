@@ -180,7 +180,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         // so there should be no lock or other actions.
         if (dropZone) {
           const { modelId } = iceRegistry.getById(dropZone.iceId);
-          const path = models[modelId].craftercms.path;
+          const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+          const path = models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
           const cachedSandboxItem = getCachedSandboxItem(path);
 
           // TODO: In the case of "move", only locking the source dropzone currently.
