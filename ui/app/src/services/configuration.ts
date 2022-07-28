@@ -284,7 +284,8 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
           publishCommentRequired: commentSettings['publishing-required'] ?? commentSettings.required,
           deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
           bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
-          publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
+          publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required,
+          publishEverythingCommentRequired: commentSettings['publish-everything-required'] ?? commentSettings.required
         };
       })(dom.querySelector(':scope > publishing'))
     }))
