@@ -515,7 +515,7 @@
         {
           label: formatMessage(checkboxGroupControlMessages.datasource),
           name: 'datasource',
-          type: 'datasource:item'
+          type: 'datasource:item:radio'
         },
         {
           label: formatMessage(checkboxGroupControlMessages.showSelectAll),
