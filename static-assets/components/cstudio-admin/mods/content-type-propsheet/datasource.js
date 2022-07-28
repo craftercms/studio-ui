@@ -25,7 +25,7 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource =
     const typeData = type.split(':');
     this['interface'] = isTypeDetailed ? typeData[1] : '' + type;
     this.fieldValue = [];
-    this.inputType = isTypeDetailed ? (typeData[2] === 'radio' ? 'radio' : 'checkbox') : 'checkbox';
+    this.inputType = isTypeDetailed ? (typeData[2] === 'singleSelection' ? 'radio' : 'checkbox') : 'checkbox';
 
     return this;
   };
