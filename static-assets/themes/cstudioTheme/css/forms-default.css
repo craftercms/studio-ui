@@ -72,6 +72,10 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   word-break: break-all;
 }
 
+.cstudio-form-control-node-selector-item .actions-container {
+  min-width: 51px;
+}
+
 .cstudio-form-control-video-selector-item {
   padding-right: 30px;
   position: relative;
