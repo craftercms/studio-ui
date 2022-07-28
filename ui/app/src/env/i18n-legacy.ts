@@ -735,6 +735,10 @@ export const formEngineMessages = defineMessages({
   edit: {
     id: 'words.edit',
     defaultMessage: 'Edit'
+  },
+  embeddedComponent: {
+    id: 'formEngine.embeddedComponent',
+    defaultMessage: 'Embedded component'
   }
 });
 

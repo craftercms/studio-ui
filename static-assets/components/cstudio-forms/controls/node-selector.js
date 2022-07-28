@@ -347,11 +347,19 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       }
 
       YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item');
-      itemEl.textContent = item.value;
       itemEl.style.backgroundColor = '#F0F0F0'; // stylesheet not working due to proxy?
       itemEl.style.overflowWrap = 'break-word';
       itemEl._index = i;
       itemEl.context = this;
+
+      $(itemEl).append(`<span class="name">${item.value}</span>`);
+      if (item.include) {
+        $(itemEl).append(`<span class="path">${item.include}</span>`);
+      } else {
+        $(itemEl).append(
+          `<span class="path">(${this.formatMessage(this.formEngineMessages.embeddedComponent)})</span>`
+        );
+      }
 
       if (this.readonly === true) {
         itemEl.classList.add('disabled');

@@ -62,6 +62,16 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   cursor: default;
 }
 
+.cstudio-form-control-node-selector-item .name {
+  margin-right: 5px;
+}
+
+.cstudio-form-control-node-selector-item .path {
+  color: #818181;
+  margin-right: 5px;
+  word-break: break-all;
+}
+
 .cstudio-form-control-video-selector-item {
   padding-right: 30px;
   position: relative;
