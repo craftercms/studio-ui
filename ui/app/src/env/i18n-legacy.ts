@@ -737,7 +737,7 @@ export const formEngineMessages = defineMessages({
     defaultMessage: 'Edit'
   },
   embeddedComponent: {
-    id: 'formEngine.embeddedComponent',
+    id: 'common.embeddedComponent',
     defaultMessage: 'Embedded component'
   }
 });
