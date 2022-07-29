@@ -1581,8 +1581,7 @@ var nodeOpen = false,
             systemLinkId: 'preview',
             authoringBase: state.env.authoringBase,
             site: CStudioAuthoringContext.site,
-            page: url,
-            useLegacy: Boolean(state.uiConfig.useLegacyPreviewLookup[CStudioAuthoringContext.site])
+            page: url
           });
         }
       },

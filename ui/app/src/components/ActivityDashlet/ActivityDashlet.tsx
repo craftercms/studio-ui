@@ -17,10 +17,9 @@
 import { Activity } from '../../models/Activity';
 import React, { useEffect, useMemo } from 'react';
 import { MoreVertRounded, RefreshRounded } from '@mui/icons-material';
-import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
+import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnv from '../../hooks/useEnv';
-import useLegacyPreviewPreference from '../../hooks/useLegacyPreviewPreference';
 import useLocale from '../../hooks/useLocale';
 import useSpreadState from '../../hooks/useSpreadState';
 import { fetchActivity } from '../../services/dashboard';
@@ -129,7 +128,6 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   const { borderLeftColor = 'success.main' } = props;
   const locale = useLocale();
   const site = useActiveSiteId();
-  const useLegacy = useLegacyPreviewPreference();
   const { authoringBase } = useEnv();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -241,7 +239,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   };
   const onItemClick = ({ previewUrl }, e) => {
     const pathname = window.location.pathname;
-    if (pathname.includes(PREVIEW_URL_PATH) && !pathname.includes(LEGACY_PREVIEW_URL_PATH)) {
+    if (pathname.includes(PREVIEW_URL_PATH)) {
       dispatch(changeCurrentUrl(previewUrl));
       widgetDialogContext?.onClose(e, null);
     } else {
@@ -249,8 +247,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
         page: previewUrl,
         systemLinkId: 'preview',
         site,
-        authoringBase,
-        useLegacy
+        authoringBase
       });
     }
   };

@@ -259,7 +259,6 @@ export interface GlobalState {
       submissionCommentMaxLength: number;
     };
     cdataEscapedFieldPatterns: string[];
-    useLegacyPreviewLookup: LookupTable<boolean>;
     references: LookupTable;
     xml: string;
   };

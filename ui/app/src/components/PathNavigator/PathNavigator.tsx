@@ -61,7 +61,6 @@ import { useSubject } from '../../hooks/useSubject';
 import { useSiteLocales } from '../../hooks/useSiteLocales';
 import { useMount } from '../../hooks/useMount';
 import { getSystemLink } from '../../utils/system';
-import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
@@ -162,7 +161,6 @@ export function PathNavigator(props: PathNavigatorProps) {
   const onSearch$ = useSubject<string>();
   const uiConfig = useSelection<GlobalState['uiConfig']>((state) => state.uiConfig);
   const siteLocales = useSiteLocales();
-  const useLegacy = useLegacyPreviewPreference();
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -357,7 +355,6 @@ export function PathNavigator(props: PathNavigatorProps) {
         if (isNavigable(item)) {
           const url = getSystemLink({
             site: siteId,
-            useLegacy,
             systemLinkId: 'preview',
             authoringBase,
             page: item.previewUrl
