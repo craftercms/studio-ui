@@ -307,7 +307,6 @@ var nodeOpen = false,
         '/static-assets/yui/animation/animation-min.js',
         '/static-assets/yui/container/container-min.js',
         '/static-assets/yui/selector/selector-min.js',
-        '/static-assets/components/cstudio-contextual-nav/contextual-nav.js',
         '/static-assets/yui/calendar/calendar-min.js',
         '/static-assets/components/cstudio-components/loader.js',
         '/static-assets/libs/notify/notify.min.js'
@@ -1526,37 +1525,6 @@ var nodeOpen = false,
             CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
           }
         }
-      },
-
-      refreshPreviewParent: function () {
-        var previewFrameEl = window.parent.document.getElementById('engineWindow');
-        if (previewFrameEl) {
-          previewFrameEl.contentWindow.location.reload();
-        }
-      },
-
-      refreshPreview: function (context) {
-        var previewFrameEl = document.getElementById('engineWindow');
-        if (previewFrameEl) {
-          if (!context || context.isComponent) {
-            amplify.publish(crafter.studio.preview.cstopic(crafter.studio.preview.Topics.REFRESH_PREVIEW));
-          } else {
-            if (context && context.browserUri) {
-              amplify.publish(
-                crafter.studio.preview.Topics.GUEST_CHECKIN,
-                CStudioAuthoring.Operations.getPreviewUrl(context, false)
-              );
-              return;
-            }
-
-            context.callingWindow.location.reload(true);
-          }
-        }
-      },
-
-      setPreview: function (url) {
-        var previewFrameEl = document.getElementById('engineWindow');
-        previewFrameEl.src = url;
       },
 
       /**

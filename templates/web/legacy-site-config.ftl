@@ -38,7 +38,6 @@
   <script type="text/javascript" src="/studio/static-assets/components/cstudio-admin/base.js"></script>
 
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
-  <#include "/templates/web/common/page-fragments/context-nav.ftl" />
 
   <script src="/studio/static-assets/libs/momentjs/moment.min.js"></script>
   <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js"></script>
@@ -55,7 +54,6 @@
     formsLangBundle = CMgs.getBundle("forms", CStudioAuthoringContext.lang);
   </script>
 
-  <script>window.entitlementValidator = '${applicationContext.get("crafter.entitlementValidator").getDescription()}';</script>
   <script>IS_LEGACY_TOP_WINDOW = true</script>
 
 </head>
@@ -67,6 +65,13 @@
 
 <body class="yui-skin-cstudioTheme <#if embedded>embedded</#if>">
   <div id="admin-console" class="categories-panel-active"></div>
+
+  <script>
+    (function (CStudioAuthoring) {
+      CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
+      CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
+    }) (CStudioAuthoring);
+  </script>
 </body>
 </html>
 <#else>
