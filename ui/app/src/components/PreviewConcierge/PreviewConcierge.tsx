@@ -209,6 +209,11 @@ const issueDescriptorRequest = (props) => {
         Object.values(obj.modelLookup).forEach((model) => {
           if (model.craftercms.path) {
             sandboxItemPaths.push(model.craftercms.path);
+            Object.values(model.craftercms.sourceMap).forEach((value) => {
+              if (!sandboxItemPaths.includes(value)) {
+                sandboxItemPaths.push(value);
+              }
+            });
           }
         });
 
