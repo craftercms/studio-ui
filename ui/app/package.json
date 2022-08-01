@@ -1,7 +1,7 @@
 {
   "name": "@craftercms/studio-ui",
   "description": "Services, components, models & utils to build CrafterCMS authoring extensions.",
-  "version": "1.0.0-rc.2",
+  "version": "1.0.0-rc.4",
   "private": true,
   "repository": {
     "type": "git",
@@ -95,13 +95,14 @@
     "build:worker": "rollup -c rollup.config.js --environment PRODUCTION",
     "build:worker:dev": "rollup -c rollup.config.js --environment PRODUCTION:false",
     "watch:worker": "rollup -w -c rollup.config.js --environment PRODUCTION:false",
+    "build:worker:npm": "rollup -c rollup.config.js --environment NPM",
     "build:app": "run-s build:react deploy:app",
     "compile": "tsc -p tsconfig.json",
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:node": "tsc -p tsconfig.node.json",
     "format:npm": "prettier --config ../../prettier.config.js ./build_tsc/**/*.{js,ts} --write",
     "package:npm": "node scripts/package.js",
-    "build:npm": "run-s clean:npm build:tsc clean:models package:npm",
+    "build:npm": "run-s clean:npm build:tsc clean:models package:npm build:worker:npm",
     "clean:npm": "rimraf ./build_tsc ./tsconfig.build.tsbuildinfo",
     "clean:models": "rimraf ./build_tsc/models/**/*.{js,map} && touch ./build_tsc/models/index.js",
     "test": "react-scripts test",
@@ -110,7 +111,6 @@
     "custom-prettier": "node ../../scripts/prettier.js"
   },
   "dependencies": {
-    "@craco/craco": "6.4.3",
     "@craftercms/uppy": "workspace:^",
     "@date-io/core": "^1.3.6",
     "@date-io/date-fns": "^1.3.11",
@@ -171,6 +171,7 @@
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
+    "@craco/craco": "6.4.3",
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.16.0",
     "@babel/runtime": "^7.17.2",
