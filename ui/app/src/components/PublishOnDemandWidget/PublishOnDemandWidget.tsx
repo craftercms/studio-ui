@@ -31,7 +31,7 @@ import PublishOnDemandForm from '../PublishOnDemandForm';
 import { PublishFormData, PublishOnDemandMode } from '../../models/Publishing';
 import { nnou } from '../../utils/object';
 import Typography from '@mui/material/Typography';
-import { bulkGoLive, fetchPublishingTargets, publishByCommits } from '../../services/publishing';
+import { bulkGoLive, fetchPublishingTargets, publishAll, publishByCommits } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
@@ -104,6 +104,10 @@ const messages = defineMessages({
   bulkPublishStarted: {
     id: 'publishingDashboard.bulkPublishStarted',
     defaultMessage: 'Bulk Publish process has been started.'
+  },
+  invalidForm: {
+    id: 'publishingDashboard.invalidForm',
+    defaultMessage: 'You cannot publish until form requirements are satisfied.'
   }
 });
 
@@ -114,6 +118,11 @@ const initialPublishStudioFormData = {
 };
 const initialPublishGitFormData = {
   commitIds: '',
+  publishingTarget: '',
+  comment: ''
+};
+
+const initialPublishEverythingFormData = {
   publishingTarget: '',
   comment: ''
 };
@@ -133,23 +142,48 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
   const [publishingTargets, setPublishingTargets] = useState(null);
   const [publishingTargetsError, setPublishingTargetsError] = useState(null);
-  const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
-  const [publishGitFormValid, setPublishGitFormValid] = useState(false);
-  const [publishStudioFormData, setPublishStudioFormData] =
-    useSpreadState<PublishFormData>(initialPublishStudioFormData);
-  const [publishStudioFormValid, setPublishStudioFormValid] = useState(false);
-  const { bulkPublishCommentRequired, publishByCommitCommentRequired } = useSelection(
+  const { bulkPublishCommentRequired, publishByCommitCommentRequired, publishEverythingCommentRequired } = useSelection(
     (state) => state.uiConfig.publishing
   );
+  const [publishGitFormData, setPublishGitFormData] = useSpreadState<PublishFormData>(initialPublishGitFormData);
+  const publishGitFormValid =
+    !isBlank(publishGitFormData.publishingTarget) &&
+    (!publishByCommitCommentRequired || !isBlank(publishGitFormData.comment)) &&
+    publishGitFormData.commitIds.replace(/\s/g, '') !== '';
+  const [publishStudioFormData, setPublishStudioFormData] =
+    useSpreadState<PublishFormData>(initialPublishStudioFormData);
+  const publishStudioFormValid =
+    !isBlank(publishStudioFormData.publishingTarget) &&
+    (!bulkPublishCommentRequired || !isBlank(publishStudioFormData.comment)) &&
+    publishStudioFormData.path.replace(/\s/g, '') !== '';
+  const [publishEverythingFormData, setPublishEverythingFormData] = useSpreadState<PublishFormData>(
+    initialPublishEverythingFormData
+  );
+  const publishEverythingFormValid =
+    publishEverythingFormData.publishingTarget !== '' &&
+    (!publishEverythingCommentRequired || !isBlank(publishEverythingFormData.comment));
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const currentFormData =
+    mode === 'studio' ? publishStudioFormData : mode === 'git' ? publishGitFormData : publishEverythingFormData;
+  const currentSetFormData =
+    mode === 'studio'
+      ? setPublishStudioFormData
+      : mode === 'git'
+      ? setPublishGitFormData
+      : setPublishEverythingFormData;
+  const currentFormValid =
+    mode === 'studio' ? publishStudioFormValid : mode === 'git' ? publishGitFormValid : publishEverythingFormValid;
   const hasChanges =
     mode === 'studio'
       ? publishStudioFormData.path !== initialPublishStudioFormData.path ||
         publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
         publishStudioFormData.publishingTarget !== initialPublishingTarget
-      : publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
+      : mode === 'git'
+      ? publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
         publishGitFormData.comment !== initialPublishGitFormData.comment ||
-        publishGitFormData.publishingTarget !== initialPublishingTarget;
+        publishGitFormData.publishingTarget !== initialPublishingTarget
+      : publishEverythingFormData.comment !== initialPublishEverythingFormData.comment ||
+        publishEverythingFormData.publishingTarget !== initialPublishingTarget;
 
   const setDefaultPublishingTarget = (targets, clearData?) => {
     if (targets.length) {
@@ -162,6 +196,10 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
       });
       setPublishStudioFormData({
         ...(clearData && initialPublishStudioFormData),
+        publishingTarget
+      });
+      setPublishEverythingFormData({
+        ...(clearData && initialPublishEverythingFormData),
         publishingTarget
       });
     }
@@ -253,26 +291,36 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     });
   };
 
+  const onSubmitPublishEverything = () => {
+    setIsSubmitting(true);
+    const { publishingTarget, comment } = publishEverythingFormData;
+    publishAll(siteId, publishingTarget, comment).subscribe({
+      next() {
+        setIsSubmitting(false);
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(messages.publishSuccess)
+          })
+        );
+        setPublishEverythingFormData({ ...initialPublishEverythingFormData, publishingTarget });
+        setMode(null);
+      },
+      error({ response }) {
+        setIsSubmitting(false);
+        dispatch(
+          showSystemNotification({
+            message: response.message,
+            options: { variant: 'error' }
+          })
+        );
+      }
+    });
+  };
+
   const onCancel = () => {
     setMode(null);
     setDefaultPublishingTarget(publishingTargets, true);
   };
-
-  useEffect(() => {
-    if (mode === 'studio') {
-      setPublishStudioFormValid(
-        publishStudioFormData.path.replace(/\s/g, '') !== '' &&
-          publishStudioFormData.publishingTarget !== '' &&
-          (!bulkPublishCommentRequired || !isBlank(publishStudioFormData.comment))
-      );
-    } else {
-      setPublishGitFormValid(
-        publishGitFormData.commitIds.replace(/\s/g, '') !== '' &&
-          publishGitFormData.publishingTarget !== '' &&
-          (!publishByCommitCommentRequired || !isBlank(publishGitFormData.comment))
-      );
-    }
-  }, [publishStudioFormData, publishGitFormData, mode, bulkPublishCommentRequired, publishByCommitCommentRequired]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
@@ -284,10 +332,24 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const onSubmitForm = () => {
-    if (mode === 'studio') {
-      onSubmitBulkPublish();
+    if (currentFormValid) {
+      switch (mode) {
+        case 'studio':
+          onSubmitBulkPublish();
+          break;
+        case 'git':
+          onSubmitPublishBy();
+          break;
+        case 'all':
+          onSubmitPublishEverything();
+          break;
+      }
     } else {
-      onSubmitPublishBy();
+      dispatch(
+        showSystemNotification({
+          message: formatMessage(messages.invalidForm)
+        })
+      );
     }
   };
 
@@ -331,31 +393,49 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                   />
                 }
               />
+              <FormControlLabel
+                disabled={isSubmitting}
+                value="all"
+                control={<Radio />}
+                label={
+                  <ListItemText
+                    primary={
+                      <FormattedMessage
+                        id="publishOnDemand.publishAllDescription"
+                        defaultMessage="Publish everything"
+                      />
+                    }
+                    secondary="Publish all changes on the repo to the publishing target you choose"
+                  />
+                }
+              />
             </RadioGroup>
           </form>
         </Paper>
         <Collapse in={nnou(mode)} timeout={300} unmountOnExit className={classes.formContainer}>
           <PublishOnDemandForm
             disabled={isSubmitting}
-            formData={mode === 'studio' ? publishStudioFormData : publishGitFormData}
-            setFormData={mode === 'studio' ? setPublishStudioFormData : setPublishGitFormData}
+            formData={currentFormData}
+            setFormData={currentSetFormData}
             mode={mode}
             publishingTargets={publishingTargets}
             publishingTargetsError={publishingTargetsError}
             bulkPublishCommentRequired={bulkPublishCommentRequired}
             publishByCommitCommentRequired={publishByCommitCommentRequired}
           />
-          <div className={classes.noteContainer}>
-            <Typography variant="caption" className={classes.note}>
-              {formatMessage(mode === 'studio' ? messages.publishStudioNote : messages.publishGitNote, {
-                a: (msg) => (
-                  <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
-                    {msg}
-                  </Link>
-                )
-              })}
-            </Typography>
-          </div>
+          {mode !== 'all' && (
+            <div className={classes.noteContainer}>
+              <Typography variant="caption" className={classes.note}>
+                {formatMessage(mode === 'studio' ? messages.publishStudioNote : messages.publishGitNote, {
+                  a: (msg) => (
+                    <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                      {msg}
+                    </Link>
+                  )
+                })}
+              </Typography>
+            </div>
+          )}
         </Collapse>
       </div>
       {mode && (
@@ -363,11 +443,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           <SecondaryButton onClick={onCancel} disabled={isSubmitting}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
           </SecondaryButton>
-          <PrimaryButton
-            loading={isSubmitting}
-            disabled={!(mode === 'studio' ? publishStudioFormValid : publishGitFormValid)}
-            onClick={onSubmitForm}
-          >
+          <PrimaryButton loading={isSubmitting} disabled={!currentFormValid} onClick={onSubmitForm}>
             <FormattedMessage id="words.publish" defaultMessage="Publish" />
           </PrimaryButton>
         </DialogFooter>

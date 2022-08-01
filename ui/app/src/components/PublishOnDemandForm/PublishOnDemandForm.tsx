@@ -79,46 +79,48 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
   return (
     <form>
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
-          <FormControl fullWidth>
-            <TextField
-              disabled={disabled}
-              value={mode === 'studio' ? formData.path : formData.commitIds}
-              label={
-                mode === 'studio' ? (
-                  <FormattedMessage id="publishOnDemand.formPathLabel" defaultMessage="Path to Publish" />
-                ) : (
-                  <FormattedMessage id="publishOnDemand.formPathLabelPreview" defaultMessage="Commit or tag IDs" />
-                )
-              }
-              fullWidth
-              required
-              helperText={
-                mode === 'studio' ? (
-                  <FormattedMessage
-                    id="publishOnDemand.formPathExample"
-                    defaultMessage="e.g. /site/website/about/index.xml"
-                  />
-                ) : (
-                  <FormattedMessage
-                    id="publishOnDemand.formPathExamplePreview"
-                    defaultMessage="You may enter multiple separate by comma"
-                  />
-                )
-              }
-              FormHelperTextProps={{ className: classes.formHelperText }}
-              onChange={handleFormChange(mode === 'studio' ? 'path' : 'commitIds')}
-              onBlur={
-                mode === 'studio'
-                  ? () => {
-                      setFormData({ path: formData.path.replace(/(.+)(\/$)/, '$1') });
-                    }
-                  : void 0
-              }
-            />
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} md={4}>
+        {mode !== 'all' && (
+          <Grid item xs={12} md={8}>
+            <FormControl fullWidth>
+              <TextField
+                disabled={disabled}
+                value={mode === 'studio' ? formData.path : formData.commitIds}
+                label={
+                  mode === 'studio' ? (
+                    <FormattedMessage id="publishOnDemand.formPathLabel" defaultMessage="Path to Publish" />
+                  ) : (
+                    <FormattedMessage id="publishOnDemand.formPathLabelPreview" defaultMessage="Commit or tag IDs" />
+                  )
+                }
+                fullWidth
+                required
+                helperText={
+                  mode === 'studio' ? (
+                    <FormattedMessage
+                      id="publishOnDemand.formPathExample"
+                      defaultMessage="e.g. /site/website/about/index.xml"
+                    />
+                  ) : (
+                    <FormattedMessage
+                      id="publishOnDemand.formPathExamplePreview"
+                      defaultMessage="You may enter multiple separate by comma"
+                    />
+                  )
+                }
+                FormHelperTextProps={{ className: classes.formHelperText }}
+                onChange={handleFormChange(mode === 'studio' ? 'path' : 'commitIds')}
+                onBlur={
+                  mode === 'studio'
+                    ? () => {
+                        setFormData({ path: formData.path.replace(/(.+)(\/$)/, '$1') });
+                      }
+                    : void 0
+                }
+              />
+            </FormControl>
+          </Grid>
+        )}
+        <Grid item xs={12} md={mode !== 'all' ? 4 : 12}>
           {publishingTargets ? (
             <FormControl fullWidth variant="outlined" required disabled={disabled}>
               <InputLabel id="publishingTargetLabel">
