@@ -343,7 +343,7 @@ export function insertComponent(
 }
 
 /**
- * Insert a *existing* (i.e. shared) component on to the document
+ * Insert an *existing* (i.e. shared) component on to the document
  * */
 export function insertInstance(
   site: string,
