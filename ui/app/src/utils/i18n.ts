@@ -94,8 +94,9 @@ export function getPossibleTranslation(
   return typeof titleOrDescriptor === 'object' ? formatMessage(titleOrDescriptor, values) : titleOrDescriptor;
 }
 
-export function getCurrentLocale(): string {
-  return getStoredLanguage(localStorage.getItem('username')) || 'en';
+export function getCurrentLocale(username?: string): string {
+  const user = username ?? localStorage.getItem('username');
+  return getStoredLanguage(user) || 'en';
 }
 
 export function getCurrentIntl(): IntlShape {
@@ -111,7 +112,10 @@ export function buildStoredLanguageKey(username: string): string {
 }
 
 export function getStoredLanguage(username?: string): string {
-  return localStorage.getItem(buildStoredLanguageKey(username)) ?? localStorage.getItem(`crafterStudioLanguage`);
+  return (
+    (username ? localStorage.getItem(buildStoredLanguageKey(username)) : null) ??
+    localStorage.getItem(`crafterStudioLanguage`)
+  );
 }
 
 export function setStoredLanguage(language: string, username?: string): void {

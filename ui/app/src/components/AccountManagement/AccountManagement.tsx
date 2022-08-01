@@ -77,7 +77,7 @@ export function AccountManagement(props: AccountManagementProps) {
 
   const onLanguageChanged = (language: string) => {
     setLanguage(language);
-    setStoredLanguage(language);
+    setStoredLanguage(language, user.username);
     dispatchLanguageChange(language);
     dispatch(
       showSystemNotification({
@@ -87,8 +87,8 @@ export function AccountManagement(props: AccountManagementProps) {
   };
 
   const onSave = () => {
-    setMyPassword(user.username, currentPassword, newPassword).subscribe(
-      () => {
+    setMyPassword(user.username, currentPassword, newPassword).subscribe({
+      next() {
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.passwordChanged)
@@ -98,10 +98,10 @@ export function AccountManagement(props: AccountManagementProps) {
         setVerifiedPassword('');
         setNewPassword('');
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   return (
