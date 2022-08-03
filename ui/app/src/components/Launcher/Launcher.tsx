@@ -54,6 +54,7 @@ import { useSiteList } from '../../hooks/useSiteList';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
 import { initLauncherConfig } from '../../state/actions/launcher';
 import { getSystemLink, SystemLinkId } from '../../utils/system';
+import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { WidgetDescriptor } from '../../models';
 import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import TranslationOrText from '../../models/TranslationOrText';
@@ -401,7 +402,16 @@ export function Launcher(props: LauncherStateProps) {
   const onSiteCardClick = (site: string) => {
     if (!checkMinimized()) {
       setSiteCookie(site, useBaseDomain);
-      dispatch(batchActions([changeSite(site), closeLauncher()]));
+      if (window.location.href.includes(PREVIEW_URL_PATH)) {
+        // If user is in UI next and switching to a site that's viewed in 4.
+        dispatch(batchActions([changeSite(site), closeLauncher()]));
+      } else {
+        window.location.href = getSystemLink({
+          systemLinkId: 'preview',
+          authoringBase,
+          site
+        });
+      }
     }
   };
 
