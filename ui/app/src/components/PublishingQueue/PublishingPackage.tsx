@@ -19,7 +19,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import React, { ChangeEvent, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import SelectButton from '../ConfirmDropdown';
 import Typography from '@mui/material/Typography';
 import { cancelPackage, fetchPackage } from '../../services/publishing';
@@ -126,10 +126,6 @@ const translations = defineMessages({
   fetchPackagesFiles: {
     id: 'publishingDashboard.fetchPackagesFiles',
     defaultMessage: 'Fetch Packages Files'
-  },
-  scheduled: {
-    id: 'publishingDashboard.scheduled',
-    defaultMessage: 'Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>'
   },
   status: {
     id: 'publishingDashboard.status',
@@ -326,15 +322,19 @@ export function PublishingPackage(props: PublishingPackageProps) {
       </section>
       <div className="status">
         <Typography variant="body2">
-          {formatMessage(translations.scheduled, {
-            schedule: new Date(schedule),
-            approver: approver,
-            b: (content) => (
-              <strong key={content} className={classes.username}>
-                {content}
-              </strong>
-            )
-          })}
+          <FormattedMessage
+            id="publishingDashboard.scheduled"
+            defaultMessage="Scheduled for <b>{schedule, date, medium} {schedule, time, short}</b> by <b>{approver}</b>"
+            values={{
+              schedule: new Date(schedule),
+              approver: approver,
+              b: (content: string[]) => (
+                <strong key={content[0]} className={classes.username}>
+                  {content[0]}
+                </strong>
+              )
+            }}
+          />
         </Typography>
         <Typography variant="body2">
           {formatMessage(translations.status, {

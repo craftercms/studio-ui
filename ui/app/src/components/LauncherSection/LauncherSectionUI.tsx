@@ -17,7 +17,7 @@
 import Typography from '@mui/material/Typography';
 import { renderWidgets } from '../Widget';
 import { WidgetDescriptor } from '../../models';
-import React, { PropsWithChildren, ReactElement } from 'react';
+import React, { PropsWithChildren } from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
 import { makeStyles } from 'tss-react/mui';
 import { EnhancedUser } from '../../models/User';
@@ -34,7 +34,8 @@ export type LauncherSectionUIProps = PropsWithChildren<{
   user?: EnhancedUser;
   site?: string;
   widgets?: WidgetDescriptor[];
-  translationValues?: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>;
+  // TODO: Fix FormatXMLElementFn generics
+  translationValues?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>;
   styles?: LauncherSectionUIStyles;
   classes?: Partial<Record<LauncherSectionUIClassKey, string>>;
 }>;

@@ -92,11 +92,6 @@ const messages = defineMessages({
     defaultMessage:
       'Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>.'
   },
-  publishGitNote: {
-    id: 'publishingDashboard.gitNote',
-    defaultMessage:
-      'Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please <a>publish by path</a>.'
-  },
   publishSuccess: {
     id: 'publishingDashboard.publishSuccess',
     defaultMessage: 'Published successfully.'
@@ -426,13 +421,31 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           {mode !== 'all' && (
             <div className={classes.noteContainer}>
               <Typography variant="caption" className={classes.note}>
-                {formatMessage(mode === 'studio' ? messages.publishStudioNote : messages.publishGitNote, {
-                  a: (msg) => (
-                    <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
-                      {msg}
-                    </Link>
-                  )
-                })}
+                {mode === 'studio' ? (
+                  <FormattedMessage
+                    id="publishingDashboard.studioNote"
+                    defaultMessage="Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>."
+                    values={{
+                      a: (msg) => (
+                        <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                          {msg}
+                        </Link>
+                      )
+                    }}
+                  />
+                ) : (
+                  <FormattedMessage
+                    id="publishingDashboard.gitNote"
+                    defaultMessage="Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please <a>publish by path</a>."
+                    values={{
+                      a: (msg) => (
+                        <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                          {msg}
+                        </Link>
+                      )
+                    }}
+                  />
+                )}
               </Typography>
             </div>
           )}
