@@ -1074,8 +1074,7 @@
               '*'
             );
             CStudioAdminConsole.renderWorkArea(null, {
-              tool: CStudioAdminConsole.toolsModules['content-types'],
-              toolbar: CStudioAdminConsole.toolbar
+              tool: CStudioAdminConsole.toolsModules['content-types']
             });
           }
         }).then((result) => (unmount = result.unmount));

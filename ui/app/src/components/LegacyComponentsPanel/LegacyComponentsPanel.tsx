@@ -161,6 +161,8 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
       let zonesKeys = Object.keys(zones);
       let fieldId = zonesKeys[0];
       let zone = zones[fieldId];
+      const parentPath = compPath ?? guestPath;
+      const parentModelId = guest.modelIdByPath[parentPath];
 
       if (isNew) {
         if (isNew === true) {
@@ -264,12 +266,13 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
               });
               fetchAndInsertContentInstance(
                 siteId,
-                compPath ? compPath : guestPath,
+                parentPath,
                 response.item.uri,
                 fieldId,
                 index,
                 datasource,
-                contentTypesLookup
+                contentTypesLookup,
+                parentModelId
               ).subscribe(() => {
                 dispatch(
                   showSystemNotification({
@@ -304,12 +307,13 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 
           fetchAndInsertContentInstance(
             siteId,
-            compPath ? compPath : guestPath,
+            parentPath,
             path,
             fieldId,
             index,
             datasource,
-            contentTypesLookup
+            contentTypesLookup,
+            parentModelId
           ).subscribe(() => {
             dispatch(
               showSystemNotification({
@@ -347,12 +351,13 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 
             fetchAndInsertContentInstance(
               siteId,
-              compPath ? compPath : guestPath,
+              parentPath,
               path,
               fieldId,
               index,
               datasource,
-              contentTypesLookup
+              contentTypesLookup,
+              parentModelId
             ).subscribe(() => {
               dispatch(
                 showSystemNotification({
@@ -413,7 +418,7 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
         // endregion
       }
     },
-    [authoringBase, contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId]
+    [authoringBase, contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId, guest?.modelIdByPath]
   );
 
   useEffect(() => {
@@ -580,7 +585,6 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
   };
 
   const onBrowseDialogItemSelected = (item: MediaItem) => {
-    setBrowsePath(null);
     browseFilesDialogState.onClose();
     fetchLegacyItem(siteId, item.path).subscribe((legacyItem) => {
       hostToGuest$.next({

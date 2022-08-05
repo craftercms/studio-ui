@@ -27,7 +27,6 @@ import { useEnv } from '../../hooks/useEnv';
 import { useSiteList } from '../../hooks/useSiteList';
 import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
-import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
@@ -40,7 +39,6 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
   const { classes, cx: clsx } = useStyles();
   const { authoringBase, useBaseDomain } = useEnv();
   const dispatch = useDispatch();
-  const useLegacy = useLegacyPreviewPreference();
   const checkMinimized = useMinimizedDialogWarning();
 
   const onSiteChange = ({ target: { value } }) => {
@@ -54,8 +52,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
             (window.location.href = getSystemLink({
               site: value,
               systemLinkId: 'preview',
-              authoringBase,
-              useLegacy
+              authoringBase
             }))
         );
       }

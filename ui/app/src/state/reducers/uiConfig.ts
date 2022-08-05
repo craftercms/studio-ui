@@ -24,7 +24,6 @@ import {
   fetchSiteUiConfigFailed
 } from '../actions/configuration';
 import { changeSite } from '../actions/sites';
-import { fetchUseLegacyPreviewPreferenceComplete } from '../actions/system';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
@@ -56,7 +55,6 @@ const initialState: GlobalState['uiConfig'] = {
       minute: 'numeric'
     }
   },
-  useLegacyPreviewLookup: {},
   references: null,
   xml: null,
   publishing: {
@@ -71,7 +69,7 @@ const initialState: GlobalState['uiConfig'] = {
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
-  [changeSite.type]: (state) => ({ ...initialState, useLegacyPreviewLookup: state.useLegacyPreviewLookup }),
+  [changeSite.type]: () => ({ ...initialState }),
   [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
     ...state,
     isFetching: true,
@@ -145,16 +143,9 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       error: payload
     }
   }),
-  [fetchUseLegacyPreviewPreferenceComplete.type]: (state, { payload: { site, useLegacyPreview } }) => ({
-    ...state,
-    useLegacyPreviewLookup: {
-      ...state.useLegacyPreviewLookup,
-      [site]: useLegacyPreview
-    }
-  }),
   [fetchSiteConfig.type]: (state) => ({ ...state }),
   [fetchSiteConfigComplete.type]: (state, { payload }) => {
-    const { cdataEscapedFieldPatterns, locale, publishing, site, usePreview3, upload } = payload;
+    const { cdataEscapedFieldPatterns, locale, publishing, upload } = payload;
     return {
       ...state,
       upload: {
@@ -171,10 +162,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       publishing: {
         ...state.publishing,
         ...publishing
-      },
-      useLegacyPreviewLookup: {
-        ...state.useLegacyPreviewLookup,
-        [site]: usePreview3
       }
     };
   }

@@ -241,15 +241,8 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
   );
 }
 
-export function fetchUseLegacyPreviewPreference(site: string, environment: string): Observable<boolean> {
-  return fetchSiteConfigDOM(site, environment).pipe(
-    map((dom) => getInnerHtml(dom.querySelector('usePreview3')) === 'true')
-  );
-}
-
 export interface StudioSiteConfig {
   site: string;
-  usePreview3: boolean;
   cdataEscapedFieldPatterns: string[];
   upload: {
     timeout: number;
@@ -272,7 +265,6 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
   return fetchSiteConfigDOM(site, environment).pipe(
     map((dom) => ({
       site,
-      usePreview3: getInnerHtml(dom.querySelector('usePreview3')) === 'true',
       cdataEscapedFieldPatterns: Array.from(dom.querySelectorAll('cdata-escaped-field-patterns > pattern'))
         .map(getInnerHtml as (node) => string)
         .filter(Boolean),

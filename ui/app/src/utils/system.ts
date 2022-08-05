@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LEGACY_PREVIEW_URL_PATH, PREVIEW_URL_PATH } from './constants';
+import { PREVIEW_URL_PATH } from './constants';
 import { ReplaySubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import Monaco from '../models/Monaco';
@@ -31,18 +31,16 @@ export type SystemLinkId =
 export function getSystemLink({
   systemLinkId,
   authoringBase,
-  useLegacy,
   site,
   page = '/'
 }: {
   systemLinkId: SystemLinkId;
   authoringBase: string;
-  useLegacy: boolean;
   site: string;
   page?: string;
 }) {
   return {
-    preview: `${authoringBase}${useLegacy ? LEGACY_PREVIEW_URL_PATH : PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
+    preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
     siteTools: `${authoringBase}/site-config`,
     siteSearch: `${authoringBase}/search`,
     siteDashboard: `${authoringBase}/site-dashboard`

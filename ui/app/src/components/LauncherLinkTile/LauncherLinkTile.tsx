@@ -25,7 +25,6 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import { getSystemLink, SystemLinkId } from '../../utils/system';
-import { useLegacyPreviewPreference } from '../../hooks/useLegacyPreviewPreference';
 
 export interface LauncherLinkTileProps {
   title: TranslationOrText;
@@ -38,7 +37,6 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
   const { icon, systemLinkId, title: propTitle } = props;
   const { authoringBase } = useEnv();
   const site = useActiveSiteId();
-  const useLegacy = useLegacyPreviewPreference();
   const dispatch = useDispatch();
   const title = usePossibleTranslation(propTitle);
   const isDialog = ['siteDashboardDialog', 'siteToolsDialog', 'siteSearchDialog'].includes(systemLinkId);
@@ -72,10 +70,9 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
     ? getSystemLink({
         systemLinkId: systemLinkId.replace(/Dialog$/, '') as SystemLinkId,
         authoringBase,
-        site,
-        useLegacy
+        site
       })
-    : props.link ?? getSystemLink({ systemLinkId, authoringBase, site, useLegacy });
+    : props.link ?? getSystemLink({ systemLinkId, authoringBase, site });
 
   return <LauncherTile icon={icon} onClick={onClick} title={usePossibleTranslation(title)} link={link} />;
 };
