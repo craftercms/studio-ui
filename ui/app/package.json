@@ -106,8 +106,8 @@
     "clean:npm": "rimraf ./build_tsc ./tsconfig.build.tsbuildinfo",
     "clean:models": "rimraf ./build_tsc/models/**/*.{js,map} && touch ./build_tsc/models/index.js",
     "test": "react-scripts test",
-    "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
-    "i18n:manage": "node scripts/i18n.js",
+    "i18n:extract": "formatjs extract './src/**/*.{ts,tsx}' --ignore='**/*.d.ts' --out-file src/translations/src.json",
+    "i18n:manage": "sh ./scripts/i18n.sh",
     "custom-prettier": "node ../../scripts/prettier.js"
   },
   "dependencies": {
@@ -176,6 +176,7 @@
     "@babel/core": "^7.16.0",
     "@babel/runtime": "^7.17.2",
     "@craco/craco": "6.4.3",
+    "@formatjs/cli": "^5.0.6",
     "@rollup/plugin-typescript": "^8.3.0",
     "@types/jquery": "^3.5.11",
     "@types/js-cookie": "^3",
@@ -187,7 +188,6 @@
     "npm-run-all": "^4.1.5",
     "postcss-normalize": "^10.0.1",
     "prop-types": "^15.8.1",
-    "react-intl-translations-manager": "^5.0.3",
     "rimraf": "^3.0.2",
     "rollup": "^2.59.0"
   }

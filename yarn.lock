@@ -4023,6 +4023,7 @@ __metadata:
     "@emotion/css": ^11.5.0
     "@emotion/react": ^11.5.0
     "@emotion/styled": ^11.3.0
+    "@formatjs/cli": ^5.0.6
     "@mui/icons-material": ^5.8.4
     "@mui/lab": ^5.0.0-alpha.87
     "@mui/material": ^5.8.5
@@ -4073,7 +4074,6 @@ __metadata:
     react-dom: 18.1.0
     react-hotkeys-hook: ^3.4.4
     react-intl: ^6.0.5
-    react-intl-translations-manager: ^5.0.3
     react-redux: ^7.2.6
     react-router-dom: ^5.3.0
     react-scripts: 5.0.1
@@ -4654,6 +4654,20 @@ __metadata:
     minimatch: ^3.1.2
     strip-json-comments: ^3.1.1
   checksum: a1e734ad31a8b5328dce9f479f185fd4fc83dd7f06c538e1fa457fd8226b89602a55cc6458cd52b29573b01cdfaf42331be8cfc1fec732570086b591f4ed6515
+  languageName: node
+  linkType: hard
+
+"@formatjs/cli@npm:^5.0.6":
+  version: 5.0.6
+  resolution: "@formatjs/cli@npm:5.0.6"
+  peerDependencies:
+    "@vue/compiler-sfc": ^3.2.34
+  peerDependenciesMeta:
+    "@vue/compiler-sfc":
+      optional: true
+  bin:
+    formatjs: bin/formatjs
+  checksum: e7627dc4035910226adc43b3d29d19bfdac3aaec5a7ea48512d554f03e31443040b72246f7bc457d974973ed3302aebf16414ba134fe7f17cdf6e8b6a95ff234
   languageName: node
   linkType: hard
 
@@ -8687,7 +8701,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^2.0.0, chalk@npm:^2.3.2, chalk@npm:^2.4.1":
+"chalk@npm:^2.0.0, chalk@npm:^2.4.1":
   version: 2.4.2
   resolution: "chalk@npm:2.4.2"
   dependencies:
@@ -13330,15 +13344,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-stable-stringify@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "json-stable-stringify@npm:1.0.1"
-  dependencies:
-    jsonify: ~0.0.0
-  checksum: 65d6cbf0fca72a4136999f65f4401cf39a129f7aeff0fdd987ac3d3423a2113659294045fb8377e6e20d865cac32b1b8d70f3d87346c9786adcee60661d96ca5
-  languageName: node
-  linkType: hard
-
 "json5@npm:^1.0.1":
   version: 1.0.1
   resolution: "json5@npm:1.0.1"
@@ -13392,13 +13397,6 @@ __metadata:
     graceful-fs:
       optional: true
   checksum: 7af3b8e1ac8fe7f1eccc6263c6ca14e1966fcbc74b618d3c78a0a2075579487547b94f72b7a1114e844a1e15bb00d440e5d1720bfc4612d790a6f285d5ea8354
-  languageName: node
-  linkType: hard
-
-"jsonify@npm:~0.0.0":
-  version: 0.0.0
-  resolution: "jsonify@npm:0.0.0"
-  checksum: d8d4ed476c116e6987a460dcb82f22284686caae9f498ac87b0502c1765ac1522f4f450a4cad4cc368d202fd3b27a3860735140a82867fc6d558f5f199c38bce
   languageName: node
   linkType: hard
 
@@ -14191,17 +14189,6 @@ __metadata:
     minipass: ^3.0.0
     yallist: ^4.0.0
   checksum: f1fdeac0b07cf8f30fcf12f4b586795b97be856edea22b5e9072707be51fc95d41487faec3f265b42973a304fe3a64acd91a44a3826a963e37b37bafde0212c3
-  languageName: node
-  linkType: hard
-
-"mkdirp@npm:^0.5.1":
-  version: 0.5.6
-  resolution: "mkdirp@npm:0.5.6"
-  dependencies:
-    minimist: ^1.2.6
-  bin:
-    mkdirp: bin/cmd.js
-  checksum: 0c91b721bb12c3f9af4b77ebf73604baf350e64d80df91754dc509491ae93bf238581e59c7188360cec7cb62fc4100959245a42cfe01834efedc5e9d068376c2
   languageName: node
   linkType: hard
 
@@ -16382,18 +16369,6 @@ __metadata:
     react: ">=16.8.1"
     react-dom: ">=16.8.1"
   checksum: c5553e18a0a4d9c642c797e5684f2cc51737d920636d9b6afce5e8c410856068079604eaea9e27648184a7e6566143b4d7b431e45362a8d4b5bf915f4d04c8a5
-  languageName: node
-  linkType: hard
-
-"react-intl-translations-manager@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "react-intl-translations-manager@npm:5.0.3"
-  dependencies:
-    chalk: ^2.3.2
-    glob: ^7.1.2
-    json-stable-stringify: ^1.0.1
-    mkdirp: ^0.5.1
-  checksum: 02bf6dcd6a56cad4205b6956628152c5184745929bedbe4ae9e13d0f11e4c86d3bcf5903df9971cc6db9b85d69c14ee42b4128f20088671c7c4b6df4bf383333
   languageName: node
   linkType: hard
 

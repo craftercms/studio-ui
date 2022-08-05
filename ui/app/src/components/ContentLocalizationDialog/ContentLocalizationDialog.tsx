@@ -42,11 +42,11 @@ const translations: { [id: string]: any } = defineMessages({
   },
   approveTranslation: {
     id: 'contentLocalization.approve',
-    label: 'Approve translation'
+    defaultMessage: 'Approve translation'
   },
   deleteTranslation: {
     id: 'contentLocalization.delete',
-    label: 'Delete translation'
+    defaultMessage: 'Delete translation'
   },
   locales: {
     id: 'words.locales',
