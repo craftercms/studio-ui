@@ -430,7 +430,7 @@ export function GuestProxy() {
             }
           } else if (fieldType === 'video-picker') {
             updatedField.find('source').attr('src', value);
-            $(updatedField).each((index, element) => {
+            updatedField.each((index, element) => {
               element.load();
             });
           }
