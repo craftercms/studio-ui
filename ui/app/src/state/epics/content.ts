@@ -382,6 +382,7 @@ const content: CrafterCMSEpic[] = [
                   });
             } else {
               return showConfirmDialog({
+                // @ts-ignore - Type '(siteId: string, path: string) => Observable<any>' is not assignable to type 'FormatXMLElementFn<string, string>' Error.
                 body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, { action: duplicate })
               });
             }
