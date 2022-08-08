@@ -425,7 +425,10 @@ export function insertComponent(
 
   Object.entries(contentType.fields).forEach(([id, field]) => {
     if (!systemProps.includes(field.id)) {
-      instance[id] = getDefaultValue(field);
+      const defaultValue = getDefaultValue(field);
+      if (defaultValue) {
+        instance[id] = defaultValue;
+      }
     }
   });
 
