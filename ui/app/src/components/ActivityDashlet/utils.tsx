@@ -213,7 +213,7 @@ export const activityNameLookup: Record<Activities | 'ALL', any> = {
   INITIAL_PUBLISH: <FormattedMessage id="operations.initialPublish" defaultMessage="Initial Publish" />,
   MOVE: <FormattedMessage id="words.move" defaultMessage="Move" />,
   PUBLISH: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
-  PUBLISHED: <FormattedMessage id="words.published" defaultMessage="Publish" />,
+  PUBLISHED: <FormattedMessage id="words.publish" defaultMessage="Publish" />,
   REJECT: <FormattedMessage id="words.reject" defaultMessage="Reject" />,
   REQUEST_PUBLISH: <FormattedMessage id="operations.requestPublish" defaultMessage="Request Publish" />,
   REVERT: <FormattedMessage id="words.revert" defaultMessage="Revert" />,
