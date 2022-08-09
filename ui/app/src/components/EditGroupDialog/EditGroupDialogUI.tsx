@@ -32,7 +32,7 @@ import TransferList from '../TransferList';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import FormHelperText from '@mui/material/FormHelperText';
-import { GroupEditDialogUIProps } from './utils';
+import { GROUP_DESCRIPTION_MAX_LENGTH, GROUP_NAME_MAX_LENGTH, GroupEditDialogUIProps } from './utils';
 
 const translations = defineMessages({
   confirmHelperText: {
@@ -129,6 +129,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   error={isDirty && group.name === ''}
                   fullWidth
                   autoFocus
+                  inputProps={{ maxLength: GROUP_NAME_MAX_LENGTH }}
                 />
               )}
             </Box>
@@ -155,6 +156,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 value={group.desc}
                 fullWidth
                 autoFocus={isEdit}
+                inputProps={{ maxLength: GROUP_DESCRIPTION_MAX_LENGTH }}
               />
             </Box>
             <div className={classes.formActions}>

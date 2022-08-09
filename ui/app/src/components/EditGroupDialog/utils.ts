@@ -51,3 +51,6 @@ export interface GroupEditDialogUIProps {
   members?: User[];
   inProgressIds?: (string | number)[];
 }
+
+export const GROUP_NAME_MAX_LENGTH = 512;
+export const GROUP_DESCRIPTION_MAX_LENGTH = 1024;
