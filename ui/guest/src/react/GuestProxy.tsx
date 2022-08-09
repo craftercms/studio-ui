@@ -433,24 +433,31 @@ export function GuestProxy() {
           break;
         }
         case updateFieldValueOperation.type:
-          const { modelId, fieldId, index = 0, value } = op.args;
-          const updatedField: JQuery<any> = $(
-            `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]`
+          const { modelId, fieldId, index, value } = op.args;
+          // TODO: consider index 'path'
+          // If index has a value, filter by `data-craftercms-index`
+          let updatedField: JQuery<any> = $(
+            `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]${
+              notNullOrUndefined(index) ? `[data-craftercms-index="${index}"]` : ''
+            }`
           );
           const model = getCachedModel(modelId);
           const contentType = getCachedContentType(model.craftercms.contentTypeId);
           const fieldType = ContentType.getField(contentType, fieldId).type;
 
           if (fieldType === 'image') {
-            const tagName = updatedField.eq(index).prop('tagName').toLowerCase();
+            // At this time all the items in updatedField have the same tagName, use first item
+            const tagName = updatedField.eq(0).prop('tagName').toLowerCase();
             if (tagName === 'img') {
-              updatedField.eq(index).attr('src', value);
+              updatedField.attr('src', value);
             } else {
-              updatedField.eq(index).css('background-image', `url(${value})`);
+              updatedField.css('background-image', `url(${value})`);
             }
           } else if (fieldType === 'video-picker') {
-            updatedField.eq(index).find('source').attr('src', value);
-            updatedField.eq(index)[0].load();
+            updatedField.find('source').attr('src', value);
+            updatedField.each((index, element) => {
+              element.load();
+            });
           }
 
           break;

@@ -16,15 +16,15 @@
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense, useEffect, useMemo } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { useStyles } from './styles';
-import { Redirect, Route, Switch } from 'react-router';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import SiteManagement from '../SiteManagement';
-import { urlMapping } from '../LauncherSection/utils';
+import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
 import EmptyState from '../EmptyState/EmptyState';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useGlobalAppState } from './GlobalAppContext';
 import Typography from '@mui/material/Typography';
 import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
@@ -33,6 +33,7 @@ import LauncherOpenerButton from '../LauncherOpenerButton';
 import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Skeleton from '@mui/material/Skeleton';
+import { globalMenuMessages } from '../../env/i18n-legacy';
 
 // Site management loaded normally above as it is usually where people first land.
 const UserManagement = lazy(() => import('../UserManagement'));
@@ -58,7 +59,27 @@ export function GlobalApp(props: GlobalAppProps) {
   const [width, setWidth] = useState(240);
   const globalNavigation = useGlobalNavigation();
   const [{ openSidebar }] = useGlobalAppState();
-
+  const { items } = useGlobalNavigation();
+  const { formatMessage } = useIntl();
+  const location = useLocation();
+  const idByPathLookup = useMemo(
+    () =>
+      items?.reduce((lookup, item) => {
+        lookup[getLauncherSectionLink(item.id, '').replace(/^#/, '')] = item.id;
+        return lookup;
+      }, {}),
+    [items]
+  );
+  useEffect(() => {
+    const path = location.pathname;
+    const id = idByPathLookup[path];
+    document.title = `CrafterCMS - ${formatMessage(
+      globalMenuMessages[id] ?? {
+        id: 'globalApp.routeNotFound',
+        defaultMessage: 'Route not found'
+      }
+    )}`;
+  }, [formatMessage, idByPathLookup, location.pathname]);
   return (
     <Paper className={classes.root} elevation={0}>
       <ResizeableDrawer
@@ -87,6 +108,9 @@ export function GlobalApp(props: GlobalAppProps) {
               width: '25px',
               height: '25px',
               margin: '5px 10px'
+            },
+            title: {
+              textAlign: 'left'
             }
           }}
         />

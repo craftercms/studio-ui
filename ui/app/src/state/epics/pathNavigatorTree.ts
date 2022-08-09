@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, mergeMap, switchMap, tap, throttleTime, withLatestFrom } from 'rxjs/operators';
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeBackgroundRefresh,
@@ -135,6 +135,7 @@ export default [
             if (error.status === 404) {
               const uuid = state.sites.byId[state.sites.active].uuid;
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
+                expanded: state.pathNavigatorTree[id].expanded,
                 collapsed: state.pathNavigatorTree[id].collapsed,
                 keywordByPath: state.pathNavigatorTree[id].keywordByPath
               });
@@ -351,6 +352,7 @@ export default [
   (action$: Observable<StandardAction<MarketplacePlugin>>, state$) =>
     action$.pipe(
       ofType(pluginInstalled.type),
+      throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
         const actions = [];
@@ -368,6 +370,7 @@ export default [
   (action$, state$) =>
     action$.pipe(
       ofType(workflowEvent.type, publishEvent.type),
+      throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
         const actions = [];

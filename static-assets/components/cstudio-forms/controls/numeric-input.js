@@ -281,12 +281,16 @@
         {
           label: formatMessage(numericInputControlMessages.maximun),
           name: 'maxValue',
-          type: 'float'
+          type: 'minMax',
+          mode: 'max',
+          counterpartControl: 'minValue'
         },
         {
           label: formatMessage(numericInputControlMessages.minimun),
           name: 'minValue',
-          type: 'float'
+          type: 'minMax',
+          mode: 'min',
+          counterpartControl: 'maxValue'
         },
         { label: CMgs.format(langBundle, 'readonly'), name: 'readonly', type: 'boolean' },
         { label: 'Tokenize for Indexing', name: 'tokenize', type: 'boolean', defaultValue: 'false' }

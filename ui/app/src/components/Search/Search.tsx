@@ -25,6 +25,7 @@ import { Filter } from '../../models/Search';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { reversePluckProps } from '../../utils/object';
 import LookupTable from '../../models/LookupTable';
+import { UNDEFINED } from '../../utils/constants';
 
 export function Search(props: SearchProps) {
   const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
@@ -80,11 +81,16 @@ export function Search(props: SearchProps) {
 
   const clearFilters = () => {
     setCheckedFilters({});
-    clearPath();
+    // TODO: Should change the path clearing to depend on a more specific prop (e.g. `pathLock`)
+    if (mode !== 'select') {
+      handleFilterChange({ name: 'path', value: UNDEFINED });
+      onSelectedPathChanges(UNDEFINED);
+      clearPath();
+    }
     setSearchParameters({ ...initialSearchParameters });
   };
 
-  const handleFilterChange = (filter: Filter, isFilter: boolean) => {
+  const handleFilterChange = (filter: Filter, isFilter?: boolean) => {
     switch (filter.name) {
       case 'path':
       case 'sortBy':

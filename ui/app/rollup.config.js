@@ -21,7 +21,8 @@ import treeshaking from 'rollup-plugin-ts-treeshaking';
 import { terser } from 'rollup-plugin-terser';
 import replace from '@rollup/plugin-replace';
 
-const isProd = process.env.PRODUCTION === 'true';
+const isNpm = process.env.NPM === 'true';
+const isProd = isNpm || process.env.PRODUCTION === 'true';
 
 const globals = {};
 
@@ -50,7 +51,7 @@ const config = [
     external,
     plugins,
     output: {
-      file: `./${isProd ? 'build' : 'public'}/shared-worker.js`,
+      file: `./${isNpm ? 'build_tsc' : isProd ? 'build' : 'public'}/shared-worker.js`,
       sourcemap: isProd ? false : 'inline',
       format: isProd ? 'iife' : 'es',
       globals,

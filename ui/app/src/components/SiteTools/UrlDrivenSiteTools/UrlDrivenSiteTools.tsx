@@ -16,14 +16,12 @@
 
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import useSelection from '../../../hooks/useSelection';
 import { useGlobalAppState } from '../../GlobalApp';
 import useReference from '../../../hooks/useReference';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import useEnv from '../../../hooks/useEnv';
 import SiteTools, { Tool } from '../SiteTools';
 import { getSystemLink } from '../../../utils/system';
-import useLegacyPreviewPreference from '../../../hooks/useLegacyPreviewPreference';
 
 interface UrlDrivenSiteToolsProps {
   footerHtml: string;
@@ -34,12 +32,10 @@ export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const [width, setWidth] = useState(240);
   const history = useHistory();
   const [activeToolId, setActiveToolId] = useState(history.location.pathname.replace('/', ''));
-  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const [{ openSidebar }] = useGlobalAppState();
   const tools: Tool[] = useReference('craftercms.siteTools')?.tools;
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
-  const useLegacy = useLegacyPreviewPreference();
 
   history.listen((location) => {
     setActiveToolId(location.pathname.replace('/', ''));
@@ -52,7 +48,6 @@ export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const onBackClick = () => {
     window.location.href = getSystemLink({
       site,
-      useLegacy,
       authoringBase,
       systemLinkId: 'preview'
     });
@@ -69,7 +64,6 @@ export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
       footerHtml={footerHtml}
       openSidebar={openSidebar || !activeToolId}
       tools={tools}
-      imageUrl={`${baseUrl}/static-assets/images/choose_option.svg`}
       mountMode="page"
     />
   );

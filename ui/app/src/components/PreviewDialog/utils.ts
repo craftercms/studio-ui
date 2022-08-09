@@ -25,6 +25,7 @@ export interface PreviewDialogBaseProps {
   mode?: string;
   url?: string;
   content?: string;
+  mimeType?: string;
 }
 
 export interface PreviewDialogProps extends PreviewDialogBaseProps, Omit<EnhancedDialogProps, 'title' | 'subtitle'> {}

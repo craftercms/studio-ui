@@ -14,16 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.drawing-board, .drawing-board * { -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; }
+import GlobalState from '../models/GlobalState';
+import { useSelector } from 'react-redux';
 
-.drawing-board-utils-hidden { display: none !important; }
+export function useAuth(): GlobalState['auth'] {
+  return useSelector<GlobalState, GlobalState['auth']>((state) => state.auth);
+}
 
-.drawing-board { position: relative; display: block; }
-
-.drawing-board-canvas-wrapper { position: relative; margin: 0; border: 1px solid #ddd; }
-
-.drawing-board-canvas { position: absolute; top: 0; left: 0; z-index: 10; width: auto; }
-
-.drawing-board-canvas { cursor: crosshair; z-index: 20; }
-
-.drawing-board-cursor { position: absolute; top: 0; left: 0; pointer-events: none; border-radius: 50%; background: #ccc; background: rgba(0, 0, 0, 0.2); z-index: 30; }
+export default useAuth;

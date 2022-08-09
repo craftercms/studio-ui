@@ -15,29 +15,22 @@
  */
 
 import { makeStyles } from 'tss-react/mui';
+import { textFieldClasses } from '@mui/material/TextField';
 
 const useStyles = makeStyles()((theme) => ({
   popover: {
-    padding: '20px',
+    padding: theme.spacing(1),
     minWidth: '300px',
     overflow: 'initial'
   },
-  popoverForm: {},
-  popoverCloseIcon: {
-    background: theme.palette.divider,
-    color: theme.palette.text.secondary,
-    position: 'absolute',
-    top: '-20px',
-    right: '-20px',
-    cursor: 'pointer',
-    '&:hover': {
-      opacity: '0.9'
+  timestampFiltersContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(2),
+    [`& .${textFieldClasses.root}:first-child`]: {
+      marginRight: theme.spacing(1)
     }
   },
-  fromDatePicker: {
-    marginRight: '20px'
-  },
-  toDatePicker: {},
   clearButton: {
     marginLeft: '20px'
   }

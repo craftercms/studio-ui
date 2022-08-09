@@ -123,15 +123,8 @@ export const fetchGlobalMenuComplete =
 
 export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU_FAILED');
 
-export const fetchUseLegacyPreviewPreference =
-  /*#__PURE__*/ createAction<Partial<{ site: string }>>('FETCH_USE_PREVIEW_3');
-export const fetchUseLegacyPreviewPreferenceComplete = /*#__PURE__*/ createAction<{
-  site: string;
-  useLegacyPreview: boolean;
-}>('FETCH_USE_PREVIEW_3_COMPLETE');
-export const fetchUseLegacyPreviewPreferenceFailed = /*#__PURE__*/ createAction('FETCH_USE_PREVIEW_3_FAILED');
-
 export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>('BLOCK_UI');
 export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 
 export const openSiteSocket = /*#__PURE__*/ createAction<{ site: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
+export const setSiteSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('SET_SITE_SOCKET_STATUS');

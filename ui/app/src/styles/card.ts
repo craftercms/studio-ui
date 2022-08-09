@@ -27,4 +27,12 @@ const cardTitleStyles: CSSObject = {
   wordBreak: 'break-all'
 };
 
+export const cardSubtitleStyles: CSSObject = {
+  overflow: 'hidden',
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  wordBreak: 'break-all'
+};
+
 export default cardTitleStyles;

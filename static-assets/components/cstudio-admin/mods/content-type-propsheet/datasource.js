@@ -20,8 +20,13 @@ CStudioAdminConsole.Tool.ContentTypes.PropertyType.Datasource =
     this.fieldName = fieldName;
     this.containerEl = containerEl;
     this.form = form;
-    this['interface'] = type.indexOf('datasource:') !== -1 ? type.split('datasource:')[1] : '' + type;
+
+    const isTypeDetailed = type.includes(':');
+    const typeData = type.split(':');
+    this['interface'] = isTypeDetailed ? typeData[1] : '' + type;
     this.fieldValue = [];
+    this.inputType = isTypeDetailed ? (typeData[2] === 'singleSelection' ? 'radio' : 'checkbox') : 'checkbox';
+
     return this;
   };
 
@@ -86,9 +91,8 @@ YAHOO.extend(
 
       cbEl = document.createElement('input');
 
-      var clickFn = function () {};
-
-      if (itemId === 'checkboxgroup') {
+      let clickFn;
+      if (itemId === 'checkboxgroup' || this.inputType === 'radio') {
         cbEl.type = 'radio';
         if (!this.radioGroupName) {
           this.radioGroupName = CStudioAuthoring.Utils.generateUUID();
@@ -96,7 +100,7 @@ YAHOO.extend(
         cbEl.name = this.radioGroupName;
         clickFn = function () {
           _self.removeAll();
-          _self.addValue(this.id);
+          _self.addValue(this.value);
           updateFn(null, { fieldName: _self.fieldName, value: _self.fieldValue.toString() });
         };
       } else {

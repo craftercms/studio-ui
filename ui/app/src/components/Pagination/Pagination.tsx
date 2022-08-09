@@ -14,29 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TablePagination, { tablePaginationClasses } from '@mui/material/TablePagination';
+import TablePagination, {
+  tablePaginationClasses,
+  TablePaginationClassKey,
+  TablePaginationProps
+} from '@mui/material/TablePagination';
 import React from 'react';
 import { defineMessages, useIntl } from 'react-intl';
-import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
-import { SxProps } from '@mui/system';
+import { PartialSxRecord } from '../../models/CustomRecord';
 import { Theme } from '@mui/material';
+import { inputBaseClasses } from '@mui/material/InputBase';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { UNDEFINED } from '../../utils/constants';
 
-export type PaginationClassKey = 'root' | 'selectRoot' | 'toolbar' | 'actions';
-
-export type PaginationFullSx = FullSxRecord<PaginationClassKey>;
+export type PaginationClassKey = TablePaginationClassKey;
 
 export type PaginationPartialSx = PartialSxRecord<PaginationClassKey>;
 
-export interface PaginationProps {
-  count: number;
-  rowsPerPage: number;
-  page: number;
-  onPageChange(page: number): void;
-  onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
-  labelRowsPerPage?: React.ReactNode;
-  rowsPerPageOptions?: Array<number | { value: number; label: string }>;
-  classes?: Partial<Record<PaginationClassKey, string>>;
-  sx?: PaginationPartialSx;
+export interface PaginationProps extends TablePaginationProps<any, {}> {
+  sxs?: PaginationPartialSx;
+  mode?: 'table' | 'items';
+  showBottomBorder?: boolean;
 }
 
 const translations = defineMessages({
@@ -47,97 +45,95 @@ const translations = defineMessages({
   nextPage: {
     id: 'pagination.nextPage',
     defaultMessage: 'Next page'
+  },
+  itemsPerPage: {
+    id: 'pagination.itemsPerPage',
+    defaultMessage: 'Items per page'
   }
 });
 
-function getStyles(sx: PaginationPartialSx): PaginationFullSx {
-  return {
-    root: {
+function getStyles(sx: PaginationPartialSx, props: PaginationProps): PaginationProps['sx'] {
+  sx = sx ?? {};
+  const { mode = 'items', showBottomBorder = false } = props;
+  return (theme) =>
+    ({
       display: 'flex',
-      '.MuiInputBase-root': {
-        margin: 0
+      [`.${inputBaseClasses.root}`]: { ml: 0, mr: 0 },
+      borderBottom: showBottomBorder ? `1px solid ${theme.palette.divider}` : UNDEFINED,
+      ...sx.root,
+      [`& .${tablePaginationClasses.toolbar}`]: {
+        width: '100%',
+        minHeight: '40px',
+        padding: `0 ${theme.spacing(1)}`,
+        justifyContent: mode === 'table' ? 'right' : 'space-between',
+        ...sx.toolbar
       },
-      '& p': {
-        padding: 0,
-        margin: 0
+      [`& .${tablePaginationClasses.select}`]: {
+        ...sx.select
       },
-      '& svg': {
-        top: 'inherit'
+      [`& .${tablePaginationClasses.selectLabel}`]: {
+        position: 'absolute',
+        width: '1px',
+        height: '1px',
+        padding: '0',
+        margin: '-1px',
+        overflow: 'hidden',
+        clip: 'rect(0, 0, 0, 0)',
+        whiteSpace: 'nowrap',
+        border: '0',
+        ...sx.selectLabel
       },
-      '& .hidden': {
-        display: 'none'
+      [`& .${tablePaginationClasses.selectRoot}`]: {
+        marginRight: 0,
+        ...sx.selectRoot
       },
-      ...sx?.root
-    },
-    selectRoot: {
-      marginRight: 0,
-      ...sx?.selectRoot
-    },
-    toolbar: {
-      display: 'flex',
-      padding: '0 0 0 12px',
-      width: '100%',
-      minHeight: '30px !important',
-      justifyContent: 'space-between',
-      '& .MuiTablePagination-spacer': {
-        display: 'none'
+      [`& .${tablePaginationClasses.selectIcon}`]: {
+        ...sx.selectIcon
       },
-      '& .MuiTablePagination-spacer + p': {
-        display: 'none'
+      [`& .${tablePaginationClasses.actions}`]: {
+        marginLeft: '0 !important',
+        ...sx.actions
       },
-      '& .MuiButtonBase-root': {
-        padding: 0
+      [`& .${tablePaginationClasses.spacer}`]: {
+        display: 'none',
+        ...sx.actions
       },
-      ...sx?.toolbar
-    },
-    actions: {
-      marginLeft: '0 !important',
-      ...sx?.actions
-    }
-  } as Record<PaginationClassKey, SxProps<Theme>>;
+      [`& .${tablePaginationClasses.displayedRows}`]: {
+        mt: 0,
+        mr: mode === 'table' ? 1 : 0,
+        mb: 0,
+        ml: mode === 'table' ? 1 : 0,
+        ...sx.displayedRows
+      },
+      [`& .${tablePaginationClasses.input}`]: {
+        ...sx.input
+      },
+      [`& .${tablePaginationClasses.menuItem}`]: {
+        ...sx.menuItem
+      }
+    } as SystemStyleObject<Theme>);
 }
 
 export function Pagination(props: PaginationProps) {
-  const {
-    count,
-    rowsPerPage,
-    page,
-    onPageChange,
-    labelRowsPerPage = '',
-    rowsPerPageOptions,
-    onRowsPerPageChange
-  } = props;
   const { formatMessage } = useIntl();
-  const sx = getStyles(props.sx);
+  const { sxs, mode, showBottomBorder, ...tablePaginationProps } = props;
   return (
     <TablePagination
-      classes={{
-        root: props.classes?.root,
-        selectRoot: props.classes?.selectRoot,
-        toolbar: props.classes?.toolbar
-      }}
-      sx={{
-        ...sx.root,
-        [`& .${tablePaginationClasses['toolbar']}`]: {
-          ...sx.toolbar
-        },
-        [`& .${tablePaginationClasses['selectRoot']}`]: {
-          ...sx.selectRoot
-        },
-        [`& .${tablePaginationClasses['actions']}`]: {
-          ...sx.actions
-        }
-      }}
       component="div"
-      rowsPerPageOptions={rowsPerPageOptions}
-      labelRowsPerPage={labelRowsPerPage}
-      count={count}
-      rowsPerPage={rowsPerPage}
-      page={page}
-      backIconButtonProps={{ 'aria-label': formatMessage(translations.previousPage) }}
-      nextIconButtonProps={{ 'aria-label': formatMessage(translations.nextPage) }}
-      onPageChange={(e, page: number) => onPageChange(page)}
-      onRowsPerPageChange={onRowsPerPageChange}
+      sx={getStyles(sxs, props)}
+      labelRowsPerPage={formatMessage(translations.itemsPerPage)}
+      {...tablePaginationProps}
+      rowsPerPageOptions={props.rowsPerPageOptions ?? [5, 10, 25, 50]}
+      backIconButtonProps={{
+        'aria-label': formatMessage(translations.previousPage),
+        size: 'small',
+        ...props.backIconButtonProps
+      }}
+      nextIconButtonProps={{
+        'aria-label': formatMessage(translations.nextPage),
+        size: 'small',
+        ...props.nextIconButtonProps
+      }}
     />
   );
 }

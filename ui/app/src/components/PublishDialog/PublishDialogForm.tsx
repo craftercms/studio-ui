@@ -165,7 +165,7 @@ export type PublishFormProps = Pick<
   PublishDialogUIProps,
   | 'state'
   | 'published'
-  | 'showEmailCheckbox'
+  | 'isRequestPublish'
   | 'showRequestApproval'
   | 'publishingTargetsStatus'
   | 'onPublishingChannelsFailRetry'
@@ -185,7 +185,7 @@ export function PublishDialogForm(props: PublishFormProps) {
   const {
     state,
     published,
-    showEmailCheckbox,
+    isRequestPublish,
     showRequestApproval,
     publishingChannels,
     publishingTargetsStatus,
@@ -235,7 +235,7 @@ export function PublishDialogForm(props: PublishFormProps) {
             label={<FormattedMessage id="publishForm.requestApproval" defaultMessage="Request approval" />}
           />
         )}
-        {showEmailCheckbox && (
+        {isRequestPublish && (
           <FormControlLabel
             label={formatMessage(messages.emailLabel)}
             control={

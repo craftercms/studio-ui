@@ -17,12 +17,10 @@
 import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
-import DatePicker from '@mui/lab/DatePicker';
-import TimePicker from '@mui/lab/TimePicker';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -143,12 +141,16 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
   };
 
   const onFromDateSelected = (date) => {
-    onFilterChange('dateFrom', date ? moment(date).format() : 'all');
+    if (!isNaN(Date.parse(date))) {
+      onFilterChange('dateFrom', date ? moment(date).format() : 'all');
+    }
     setFromDate(date);
   };
 
   const onToDateSelected = (date) => {
-    onFilterChange('dateTo', date ? moment(date).format() : 'all');
+    if (!isNaN(Date.parse(date))) {
+      onFilterChange('dateTo', date ? moment(date).format() : 'all');
+    }
     setToDate(date);
   };
 
@@ -165,25 +167,22 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
 
   return (
     <>
-      <Avatar className={classes.popoverCloseIcon} onClick={onClose}>
-        <ClearRoundedIcon fontSize="small" />
-      </Avatar>
+      <Box display="flex" justifyContent="end" marginBottom="10px">
+        <IconButton onClick={onClose}>
+          <ClearRoundedIcon fontSize="small" />
+        </IconButton>
+      </Box>
       {filterId === 'operationTimestamp' && (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <form className={classes.popoverForm} noValidate autoComplete="off">
-            <Box display="flex" alignItems="center" marginBottom="20px">
-              <DatePicker
-                className={classes.fromDatePicker}
-                clearable
+          <form noValidate autoComplete="off">
+            <Box className={classes.timestampFiltersContainer}>
+              <DateTimePicker
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
-                inputFormat="MM/dd/yyyy"
                 value={fromDate}
                 onChange={onFromDateSelected}
                 renderInput={(props) => <TextField {...props} />}
               />
-              <TimePicker
-                className={classes.toDatePicker}
-                clearable
+              <DateTimePicker
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
                 value={toDate}
                 onChange={onToDateSelected}

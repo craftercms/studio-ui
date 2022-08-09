@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, tap, throttleTime, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   checkPathExistence,
@@ -156,7 +156,6 @@ export default [
       mergeMap(
         ([
           {
-            type,
             payload: { id, path }
           },
           state
@@ -407,18 +406,32 @@ export default [
   (action$, state$) =>
     action$.pipe(
       ofType(pluginInstalled.type),
+      throttleTime(500),
       withLatestFrom(state$),
-      // tap
-      ignoreElements()
+      mergeMap(([, state]) => {
+        const actions = [];
+        Object.values(state.pathNavigator).forEach((tree) => {
+          if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
+            actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+          }
+        });
+        return actions;
+      })
     ),
   // endregion
   // region publishEvent, workflowEvent
   (action$, state$) =>
     action$.pipe(
       ofType(publishEvent.type, workflowEvent.type),
+      throttleTime(500),
       withLatestFrom(state$),
-      // tap
-      ignoreElements()
+      mergeMap(([, state]) => {
+        const actions = [];
+        Object.values(state.pathNavigator).forEach((tree) => {
+          actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+        });
+        return actions;
+      })
     )
   // endregion
 ] as CrafterCMSEpic[];

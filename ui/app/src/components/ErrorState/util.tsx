@@ -15,17 +15,17 @@
  */
 
 import React from 'react';
-import { PreviewDialogContainer } from './PreviewDialogContainer';
-import { PreviewDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import { ErrorState, ErrorStateProps } from './ErrorState';
+import { isAjaxError, isApiResponse } from '../../utils/object';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
-export function PreviewDialog(props: PreviewDialogProps) {
-  const { title, type, url, content, mode, mimeType, ...rest } = props;
-  return (
-    <EnhancedDialog maxWidth="xl" title={props.title} dialogHeaderProps={{ subtitle: props.subtitle }} {...rest}>
-      <PreviewDialogContainer type={type} title={title} url={url} content={content} mode={mode} mimeType={mimeType} />
-    </EnhancedDialog>
+export function renderErrorState(error: any, errorStateProps?: ErrorStateProps): JSX.Element {
+  const errorObj = error.response ?? error;
+  return isApiResponse(errorObj) ? (
+    <ApiResponseErrorState error={errorObj} {...errorStateProps} />
+  ) : isAjaxError(errorObj) ? (
+    <ErrorState title={`${errorObj.name} ${errorObj.status}`} message={errorObj.message} {...errorStateProps} />
+  ) : (
+    <ErrorState message={errorObj.message ?? errorObj} {...errorStateProps} />
   );
 }
-
-export default PreviewDialog;

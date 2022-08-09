@@ -15,9 +15,8 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import ErrorState, { ErrorStateProps } from '../ErrorState/ErrorState';
-import ApiResponseErrorState from '../ApiResponseErrorState';
-import { isApiResponse } from '../../utils/object';
+import { ErrorStateProps } from '../ErrorState/ErrorState';
+import { renderErrorState } from '../ErrorState/util';
 
 export type ErrorBoundaryProps = PropsWithChildren<{
   onReset?(): void;
@@ -55,15 +54,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps> {
         }
       }
     };
-    return this.state.error ? (
-      isApiResponse(this.state.error) ? (
-        <ApiResponseErrorState {...errorStateProps} error={this.state.error} />
-      ) : (
-        <ErrorState {...errorStateProps} message={this.state.error.message ?? this.state.error} />
-      )
-    ) : (
-      this.props.children
-    );
+    return this.state.error ? renderErrorState(this.state.error, errorStateProps) : this.props.children;
   }
 }
 

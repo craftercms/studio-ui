@@ -29,13 +29,12 @@ import PrimaryButton from '../PrimaryButton';
 import useDetailedItem from '../../hooks/useDetailedItem';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
-import { closeCodeEditorDialog, closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
+import { closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { conditionallyUnlockItem } from '../../state/actions/content';
 import { hasEditAction } from '../../utils/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
-  const { title, content, mode, url, onClose, type } = props;
+  const { title, content, mode, url, onClose, type, mimeType } = props;
   const { classes } = useStyles();
   const item = useDetailedItem(url);
   const dispatch = useDispatch();
@@ -47,7 +46,9 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
       case 'image':
         return <img src={url} alt="" />;
       case 'video':
-        return <AsyncVideoPlayer playerOptions={{ src: url, autoplay: true }} />;
+        return (
+          <AsyncVideoPlayer playerOptions={{ src: url, autoplay: true, ...(mimeType ? { type: mimeType } : {}) }} />
+        );
       case 'page':
         return (
           <>
@@ -87,8 +88,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
         closePreviewDialog(),
         showCodeEditorDialog({
           path: url,
-          mode,
-          onClose: batchActions([closeCodeEditorDialog(), conditionallyUnlockItem({ path: url })])
+          mode
         })
       ])
     );

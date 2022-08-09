@@ -54,7 +54,6 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import Paper from '@mui/material/Paper';
 import { getSystemLink } from '../../utils/system';
-import { fetchUseLegacyPreviewPreference } from '../../services/configuration';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 
@@ -68,7 +67,7 @@ const translations = defineMessages({
 export function SiteManagement() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { authoringBase, useBaseDomain, activeEnvironment } = useEnv();
+  const { authoringBase, useBaseDomain } = useEnv();
   const [openCreateSiteDialog, setOpenCreateSiteDialog] = useState(false);
   const user = useActiveUser();
   const [currentView, setCurrentView] = useState<'grid' | 'list'>(
@@ -126,13 +125,10 @@ export function SiteManagement() {
 
   const onSiteClick = (site: Site) => {
     setSiteCookie(site.id, useBaseDomain);
-    fetchUseLegacyPreviewPreference(site.id, activeEnvironment).subscribe((useLegacy) => {
-      window.location.href = getSystemLink({
-        systemLinkId: 'preview',
-        authoringBase,
-        site: site.id,
-        useLegacy
-      });
+    window.location.href = getSystemLink({
+      systemLinkId: 'preview',
+      authoringBase,
+      site: site.id
     });
   };
 

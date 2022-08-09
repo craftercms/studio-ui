@@ -41,6 +41,9 @@ import { useIntl } from 'react-intl';
 import { AllItemActions, DetailedItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu';
 import ApiResponse from '../../models/ApiResponse';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
+import { UNDEFINED } from '../../utils/constants';
 
 interface SearchUIProps {
   selectedPath: string;
@@ -71,7 +74,7 @@ interface SearchUIProps {
   handleSearchKeyword(keyword: string): void;
   handleChangeView(): void;
   toggleDrawer(): void;
-  handleFilterChange(filter: Filter, isFilter: boolean): void;
+  handleFilterChange(filter: Filter, isFilter?: boolean): void;
   handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number): void;
   handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void;
   handleSelect(path: string, isSelected: boolean): void;
@@ -84,7 +87,7 @@ interface SearchUIProps {
 
 const useStyles = makeStyles()((theme) => ({
   wrapper: {
-    height: '100%',
+    height: 'calc(100% - 65px)', // 100% - toolbar height
     margin: 'auto',
     display: 'flex',
     flexDirection: 'column',
@@ -256,6 +259,13 @@ const useStyles = makeStyles()((theme) => ({
     height: '100%',
     position: 'relative',
     background: theme.palette.background.default
+  },
+  cardActionArea: {
+    width: 'auto',
+    display: 'flex'
+  },
+  cardHeader: {
+    flexGrow: 1
   }
 }));
 
@@ -434,26 +444,33 @@ export function SearchUI(props: SearchUIProps) {
                     searchResults.items.map((item: MediaItem, i) => (
                       <Grid key={i} item xs={12} {...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {})}>
                         <MediaCard
-                          isList={currentView === 'list'}
                           classes={
                             currentView === 'list'
                               ? {
                                   root: classes.mediaCardListRoot,
                                   checkbox: classes.mediaCardListCheckbox,
-                                  header: classes.mediaCardListHeader,
                                   media: classes.mediaCardListMedia,
-                                  mediaIcon: classes.mediaCardListMediaIcon
+                                  mediaIcon: classes.mediaCardListMediaIcon,
+                                  cardActionArea: classes.cardActionArea,
+                                  cardHeader: classes.cardHeader
                                 }
-                              : void 0
+                              : {}
                           }
                           item={item}
-                          onPreview={(item) =>
-                            mode === 'select' ? handleSelect(item.path, !selected.includes(item.path)) : onPreview(item)
+                          onPreview={mode === 'default' ? () => onPreview(item) : UNDEFINED}
+                          onClick={
+                            mode === 'select' ? () => handleSelect(item.path, !selected.includes(item.path)) : UNDEFINED
                           }
                           onSelect={handleSelect}
                           selected={selected}
                           previewAppBaseUri={guestBase}
-                          onHeaderButtonClick={mode === 'default' ? onHeaderButtonClick : null}
+                          action={
+                            mode === 'default' ? (
+                              <IconButton onClick={(e) => onHeaderButtonClick(e, item)} size="small">
+                                <MoreVertRounded />
+                              </IconButton>
+                            ) : null
+                          }
                         />
                       </Grid>
                     ))

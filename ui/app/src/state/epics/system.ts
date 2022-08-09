@@ -33,9 +33,6 @@ import {
   fetchGlobalMenu,
   fetchGlobalMenuComplete,
   fetchGlobalMenuFailed,
-  fetchUseLegacyPreviewPreference,
-  fetchUseLegacyPreviewPreferenceComplete,
-  fetchUseLegacyPreviewPreferenceFailed,
   messageSharedWorker,
   openSiteSocket,
   showCopyItemSuccessNotification,
@@ -67,10 +64,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import { interval } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
-import {
-  fetchGlobalMenuItems,
-  fetchUseLegacyPreviewPreference as fetchUseLegacyPreviewPreferenceService
-} from '../../services/configuration';
+import { fetchGlobalMenuItems } from '../../services/configuration';
 import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
@@ -429,28 +423,6 @@ const systemEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchGlobalMenu.type),
       exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
-    ),
-  // endregion
-  // region fetchUseLegacyPreviewPreference
-  (action$, state$) =>
-    action$.pipe(
-      ofType(fetchUseLegacyPreviewPreference.type),
-      withLatestFrom(state$),
-      filter(([action, state]) => Boolean(state.sites.active || action.payload?.site)),
-      exhaustMap(([action, state]) =>
-        fetchUseLegacyPreviewPreferenceService(
-          action.payload?.site || state.sites.active,
-          state.env.activeEnvironment
-        ).pipe(
-          map((useLegacyPreview) =>
-            fetchUseLegacyPreviewPreferenceComplete({
-              useLegacyPreview,
-              site: action.payload?.site || state.sites.active
-            })
-          ),
-          catchAjaxError(fetchUseLegacyPreviewPreferenceFailed)
-        )
-      )
     )
   // endregion
 ];

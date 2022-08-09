@@ -43,7 +43,7 @@ export interface CodeEditorDialogStateProps extends CodeEditorDialogBaseProps, E
 
 export interface CodeEditorDialogContainerProps
   extends CodeEditorDialogBaseProps,
-    Pick<CodeEditorDialogProps, 'onMinimize' | 'isSubmitting' | 'onSuccess' | 'onClose'> {
+    Pick<CodeEditorDialogProps, 'onMinimize' | 'onSuccess' | 'onClose'> {
   title: string;
   onFullScreen(): void;
 }

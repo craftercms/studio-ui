@@ -36,6 +36,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { styled } from '@mui/material/styles';
 import useContentTypes from '../../hooks/useContentTypes';
 import { getMimeTypeTranslation } from '../../utils/mimeTypes';
+import Box from '@mui/material/Box';
 
 interface SiteSearchFiltersProps {
   className: any;
@@ -79,12 +80,6 @@ const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     fontWeight: 600,
     alignItems: 'center'
-  },
-  clearButtonContainer: {
-    padding: '10px 20px',
-    '& button': {
-      fontWeight: 600
-    }
   },
   divider: {
     width: 'auto',
@@ -136,6 +131,14 @@ const messages: any = defineMessages({
   clearFilters: {
     id: 'searchFilter.clearFilters',
     defaultMessage: 'Clear Filters'
+  },
+  expandAll: {
+    id: 'common.expandAll',
+    defaultMessage: 'Expand all'
+  },
+  collapseAll: {
+    id: 'common.collapseAll',
+    defaultMessage: 'Collapse all'
   }
 });
 
@@ -259,8 +262,34 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
     setSelectedPath(path);
   };
 
+  const expandCollapseAll = (expand: boolean) => {
+    const state: any = {};
+    state.path = expand;
+    state.sortBy = expand;
+    filterKeys.forEach((key) => {
+      state[key] = expand;
+    });
+    setExpanded(state);
+  };
+
   return (
-    <div>
+    <Box>
+      <Box sx={{ p: 1, display: 'flex', justifyContent: 'space-evenly' }}>
+        <Button size="small" onClick={() => expandCollapseAll(true)}>
+          {formatMessage(messages.expandAll)}
+        </Button>
+        <Button size="small" onClick={() => expandCollapseAll(false)}>
+          {formatMessage(messages.collapseAll)}
+        </Button>
+        <Button
+          size="small"
+          disabled={Object.keys(checkedFilters).length === 0 && !Boolean(selectedPath)}
+          onClick={clearFilters}
+        >
+          {formatMessage(messages.clearFilters)}
+        </Button>
+      </Box>
+      <Divider className={classes.divider} />
       <Accordion expanded={expanded.sortBy} elevation={0} onChange={() => handleExpandClick('sortBy')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.accordionTitle}>
@@ -275,17 +304,6 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
           </>
         </AccordionDetails>
       </Accordion>
-      <Divider className={classes.divider} />
-      <div className={classes.clearButtonContainer}>
-        <Button
-          variant="outlined"
-          fullWidth
-          disabled={Object.keys(checkedFilters).length === 0 && !Boolean(selectedPath)}
-          onClick={clearFilters}
-        >
-          {formatMessage(messages.clearFilters)}
-        </Button>
-      </div>
       <Accordion expanded={expanded.path} elevation={0} onChange={() => handleExpandClick('path')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={classes.accordionTitle}>
@@ -297,6 +315,7 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
           <PathSelector
             value={selectedPath?.replace('.+', '')}
             onPathSelected={onPathSelected}
+            // TODO: Should change the path clearing to depend on a more specific prop (e.g. `pathLock`)
             disabled={mode === 'select'}
           />
         </AccordionDetails>
@@ -322,7 +341,7 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
           </AccordionDetails>
         </Accordion>
       ))}
-    </div>
+    </Box>
   );
 }
 

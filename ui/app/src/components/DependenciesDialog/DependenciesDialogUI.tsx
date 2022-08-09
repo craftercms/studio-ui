@@ -32,6 +32,7 @@ import { dependenciesDialogStyles } from './DependenciesDialog';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
+import { getRootPath } from '../../utils/path';
 
 export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
@@ -67,6 +68,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             onDropdownClick={() => setOpenSelector(!openSelector)}
             rootPath={rootPath}
             selectedItem={item}
+            disabled={rootPath !== getRootPath(item.path)}
             onItemClicked={(item) => {
               setOpenSelector(false);
               setItem(item);

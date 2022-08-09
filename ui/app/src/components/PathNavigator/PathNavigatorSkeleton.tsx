@@ -17,57 +17,31 @@
 import * as React from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from './utils';
-import { makeStyles } from 'tss-react/mui';
+import Box from '@mui/material/Box';
+import NavLoader from './NavLoader';
 
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
 
 interface PathNavigatorSkeletonProps {
   numOfItems?: number;
+  renderBody?: boolean;
 }
 
-const useStyles = makeStyles()((theme) => ({
-  skeletonRoot: {
-    margin: '10px 0'
-  },
-  skeletonHeader: {
-    display: 'flex',
-    marginBottom: '5px',
-    padding: '0 10px'
-  },
-  skeletonBody: {
-    paddingLeft: '5px'
-  },
-  skeletonBodyItem: { display: 'flex', padding: '5px 5px' },
-  childrenRail: {
-    marginLeft: 10,
-    borderLeft: `3px solid ${theme.palette.divider}`
-  }
-}));
-
-function PathNavigatorSkeleton({ numOfItems = 5 }: PathNavigatorSkeletonProps) {
-  const { classes, cx } = useStyles();
-  return (
-    <section className={classes.skeletonRoot}>
-      <header className={classes.skeletonHeader}>
-        <Skeleton variant="rectangular" width="20px" />
-        <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(40, 70)}%` }} />
-      </header>
-      <section className={cx(classes.skeletonBody)}>
-        <div className={classes.skeletonBodyItem}>
-          <Skeleton variant="text" style={{ width: `${rand(80, 150)}px` }} />
-        </div>
-        {new Array(numOfItems).fill(null).map((_, index) => (
-          <div className={classes.skeletonBodyItem} key={index}>
-            <Skeleton variant="circular" width="20px" />
-            <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(60, 95)}%` }} />
-          </div>
-        ))}
-        <div className={classes.skeletonBodyItem}>
-          <Skeleton variant="text" style={{ width: `120px` }} />
-        </div>
-      </section>
-    </section>
-  );
-}
+const PathNavigatorSkeleton = React.memo(({ numOfItems = 5, renderBody = false }: PathNavigatorSkeletonProps) => (
+  <div>
+    <Box
+      component="header"
+      sx={{
+        display: 'flex',
+        padding: '12px 18px',
+        alignItems: 'center'
+      }}
+    >
+      <Skeleton variant="rectangular" width="20px" />
+      <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(40, 70)}%` }} />
+    </Box>
+    {renderBody && <NavLoader numOfItems={numOfItems} />}
+  </div>
+));
 
 export default PathNavigatorSkeleton;

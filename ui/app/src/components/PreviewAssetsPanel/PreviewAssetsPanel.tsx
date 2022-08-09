@@ -21,7 +21,7 @@ import { alpha } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
-import GlobalState, { PagedEntityState } from '../../models/GlobalState';
+import GlobalState from '../../models/GlobalState';
 import { fromEvent, interval } from 'rxjs';
 import { filter, map, share, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { getHostToGuestBus } from '../../utils/subjects';
@@ -35,16 +35,16 @@ import MediaCard from '../MediaCard/MediaCard';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import EmptyState from '../EmptyState/EmptyState';
 import UploadIcon from '@mui/icons-material/Publish';
-import { nnou, pluckProps } from '../../utils/object';
+import { pluckProps } from '../../utils/object';
 import { uploadDataUrl } from '../../services/content';
-import Suspencified from '../Suspencified/Suspencified';
 import palette from '../../styles/palette';
-import { Resource } from '../../models/Resource';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import Pagination from '../Pagination';
+import { LoadingState } from '../LoadingState';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { showPreviewDialog } from '../../state/actions/dialogs';
 
 const translations = defineMessages({
   previewAssetsPanelTitle: {
@@ -73,12 +73,9 @@ const translations = defineMessages({
   }
 });
 
-const assetsPanelStyles = makeStyles()(() => ({
+const assetsPanelStyles = makeStyles()((theme) => ({
   assetsPanelWrapper: {
-    padding: '15px',
-    '&.dragInProgress': {
-      background: 'red'
-    }
+    padding: theme.spacing(2)
   },
   search: {
     padding: '15px 15px 0 15px'
@@ -116,13 +113,6 @@ const assetsPanelStyles = makeStyles()(() => ({
   }
 }));
 
-interface AssetResource {
-  count: number;
-  limit: number;
-  pageNumber: number;
-  items: Array<MediaItem>;
-}
-
 export function PreviewAssetsPanel() {
   const { classes } = assetsPanelStyles();
   const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
@@ -140,19 +130,6 @@ export function PreviewAssetsPanel() {
     }
   }, [assets, dispatch, site]);
 
-  const resource = useLogicResource<AssetResource, PagedEntityState<MediaItem>>(assets, {
-    shouldRenew: (source, resource) => resource.complete,
-    shouldResolve: (source) => !source.isFetching && nnou(source.page[source.pageNumber]),
-    shouldReject: (source) => nnou(source.error),
-    errorSelector: (source) => source.error,
-    resultSelector: (source) => {
-      const items = source.page[source.pageNumber].map((id) => source.byId[id]);
-      return {
-        ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber'),
-        items
-      } as AssetResource;
-    }
-  });
   const { guestBase, xsrfArgument } = useSelector<GlobalState, GlobalState['env']>((state) => state.env);
   const { formatMessage } = useIntl();
   const elementRef = useRef();
@@ -167,10 +144,7 @@ export function PreviewAssetsPanel() {
     });
   };
 
-  const onDragEnd = () =>
-    hostToGuest$.next({
-      type: assetDragEnded.type
-    });
+  const onDragEnd = () => hostToGuest$.next(assetDragEnded());
 
   const onDragDrop = useCallback(
     (e) => {
@@ -189,13 +163,11 @@ export function PreviewAssetsPanel() {
           },
           '/static-assets/images/',
           xsrfArgument
-        ).subscribe(
-          () => {},
-          () => {},
-          () => {
+        ).subscribe({
+          complete() {
             dispatch(fetchAssetsPanelItems({}));
           }
-        );
+        });
       };
       reader.readAsDataURL(file);
       setDragInProgress(false);
@@ -271,76 +243,61 @@ export function PreviewAssetsPanel() {
         <div className={classes.search}>
           <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
         </div>
-        <Suspencified loadingStateProps={{ title: formatMessage(translations.retrieveAssets) }}>
-          {dragInProgress && (
-            <div className={classes.uploadOverlay}>
-              <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
+        {assets.error ? (
+          <ApiResponseErrorState error={assets.error} />
+        ) : assets.isFetching ? (
+          <LoadingState title={formatMessage(translations.retrieveAssets)} />
+        ) : assets.page[assets.pageNumber] ? (
+          <>
+            {dragInProgress && (
+              <div className={classes.uploadOverlay}>
+                <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
+              </div>
+            )}
+            <Pagination
+              count={assets.count}
+              rowsPerPage={assets.query.limit}
+              page={assets.pageNumber}
+              onPageChange={(e, page: number) => onPageChanged(page * assets.query.limit)}
+              onRowsPerPageChange={onRowsPerPageChange}
+            />
+            <div className={classes.assetsPanelWrapper}>
+              {assets.page[assets.pageNumber]?.map((id) => {
+                const item = assets.byId[id];
+                return (
+                  <MediaCard
+                    key={item.path}
+                    item={item}
+                    previewAppBaseUri={guestBase}
+                    avatar={<DragIndicatorRounded />}
+                    classes={{ root: classes.card }}
+                    onDragStart={() => onDragStart(item)}
+                    onDragEnd={() => onDragEnd()}
+                    onPreview={() =>
+                      dispatch(
+                        showPreviewDialog({
+                          // TODO: check if it's image or video
+                          type: 'image',
+                          title: item.name,
+                          url: item.path
+                        })
+                      )
+                    }
+                  />
+                );
+              })}
+              {assets.count === 0 && (
+                <EmptyState
+                  title={formatMessage(translations.noResults)}
+                  classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+                />
+              )}
             </div>
-          )}
-          <AssetsPanelUI
-            classes={classes}
-            assetsResource={resource}
-            onPageChanged={onPageChanged}
-            onRowsPerPageChange={onRowsPerPageChange}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-            guestBase={guestBase}
-          />
-        </Suspencified>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
-    </div>
-  );
-}
-
-interface AssetsPanelUIProps {
-  guestBase: string;
-  classes?: Partial<
-    Record<'assetsPanelWrapper' | 'pagination' | 'toolbar' | 'card' | 'noResultsImage' | 'noResultsTitle', string>
-  >;
-  assetsResource: Resource<AssetResource>;
-  onPageChanged(page: number): void;
-  onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>): void;
-  onDragStart(mediaItem: MediaItem): void;
-  onDragEnd(): void;
-}
-
-export function AssetsPanelUI(props: AssetsPanelUIProps) {
-  const { classes, assetsResource, onPageChanged, onDragStart, onDragEnd, guestBase, onRowsPerPageChange } = props;
-  const assets = assetsResource.read();
-  const { count, pageNumber, items, limit } = assets;
-  const { formatMessage } = useIntl();
-
-  return (
-    <div className={classes.assetsPanelWrapper}>
-      <Pagination
-        rowsPerPageOptions={[5, 10, 15]}
-        sx={{ root: { marginRight: 'auto' }, toolbar: { paddingLeft: 0 } }}
-        count={count}
-        rowsPerPage={limit}
-        page={pageNumber}
-        onPageChange={(page: number) => onPageChanged(page * limit)}
-        onRowsPerPageChange={onRowsPerPageChange}
-      />
-      {items.map((item: MediaItem) => {
-        return (
-          <MediaCard
-            key={item.path}
-            item={item}
-            previewAppBaseUri={guestBase}
-            hasSubheader={false}
-            avatar={DragIndicatorRounded}
-            classes={{ root: classes.card }}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-          />
-        );
-      })}
-      {count === 0 && (
-        <EmptyState
-          title={formatMessage(translations.noResults)}
-          classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
-        />
-      )}
     </div>
   );
 }

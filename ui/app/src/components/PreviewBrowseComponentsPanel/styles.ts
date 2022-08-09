@@ -17,100 +17,26 @@
 import { makeStyles } from 'tss-react/mui';
 
 const useStyles = makeStyles()((theme) => ({
-  browsePanelWrapper: {
-    padding: '16px 0 55px 0'
-  },
-  paginationContainer: {
-    padding: '0 16px'
-  },
-  list: {
-    padding: 0
-  },
   search: {
-    padding: '15px 15px 0 15px'
-  },
-  pagination: {
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    '& p': {
-      padding: 0
-    },
-    '& svg': {
-      top: 'inherit'
-    },
-    '& .hidden': {
-      display: 'none'
-    }
-  },
-  toolbar: {
-    padding: 0,
-    display: 'flex',
-    justifyContent: 'space-between',
-    paddingLeft: '12px',
-    '& .MuiTablePagination-spacer': {
-      display: 'none'
-    },
-    '& .MuiTablePagination-spacer + p': {
-      display: 'none'
-    }
-  },
-  noResultsImage: {
-    width: '150px'
-  },
-  noResultsTitle: {
-    fontSize: 'inherit',
-    marginTop: '10px'
+    padding: `${theme.spacing(1)} ${theme.spacing(1)} 0`
   },
   select: {
     width: '100%',
-    marginTop: '15px'
-  },
-  emptyState: {
-    margin: `${theme.spacing(4)} ${theme.spacing(1)}`
-  },
-  emptyStateImage: {
-    width: '50%',
-    marginBottom: theme.spacing(1)
-  },
-  emptyStateTitle: {
-    fontSize: '1em'
+    marginTop: theme.spacing(1)
   }
 }));
 
 export const useComponentsPanelUI = makeStyles()((theme) => ({
   browsePanelWrapper: {
-    padding: '16px 0 55px 0'
+    padding: `0 0 ${theme.spacing(4)} 0`
   },
-
-  paginationContainer: {
-    padding: '0 16px'
-  },
-
-  list: {
-    padding: 0
-  },
-
   noResultsImage: {
     width: '150px'
   },
-
   noResultsTitle: {
     fontSize: 'inherit',
     marginTop: '10px'
   },
-
-  emptyState: {
-    margin: `${theme.spacing(4)} ${theme.spacing(1)}`
-  },
-
-  emptyStateImage: {
-    width: '50%',
-    marginBottom: theme.spacing(1)
-  },
-
-  emptyStateTitle: {
-    fontSize: '1em'
-  },
-
   helperTextWrapper: {
     margin: '10px 16px',
     paddingTop: '10px',

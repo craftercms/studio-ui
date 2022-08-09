@@ -25,6 +25,7 @@ import { VersionsResponse } from '../models/Version';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
+import { asArray } from '../utils/array';
 
 export type CrafterCMSModules = 'studio' | 'engine';
 
@@ -235,20 +236,13 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
           files = deserialize(filesXML).files.file;
         }
       }
-      return files;
+      return asArray(files);
     })
-  );
-}
-
-export function fetchUseLegacyPreviewPreference(site: string, environment: string): Observable<boolean> {
-  return fetchSiteConfigDOM(site, environment).pipe(
-    map((dom) => getInnerHtml(dom.querySelector('usePreview3')) === 'true')
   );
 }
 
 export interface StudioSiteConfig {
   site: string;
-  usePreview3: boolean;
   cdataEscapedFieldPatterns: string[];
   upload: {
     timeout: number;
@@ -271,7 +265,6 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
   return fetchSiteConfigDOM(site, environment).pipe(
     map((dom) => ({
       site,
-      usePreview3: getInnerHtml(dom.querySelector('usePreview3')) === 'true',
       cdataEscapedFieldPatterns: Array.from(dom.querySelectorAll('cdata-escaped-field-patterns > pattern'))
         .map(getInnerHtml as (node) => string)
         .filter(Boolean),
@@ -283,7 +276,8 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
           publishCommentRequired: commentSettings['publishing-required'] ?? commentSettings.required,
           deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
           bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
-          publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required
+          publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required,
+          publishEverythingCommentRequired: commentSettings['publish-everything-required'] ?? commentSettings.required
         };
       })(dom.querySelector(':scope > publishing'))
     }))

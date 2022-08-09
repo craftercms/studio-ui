@@ -375,7 +375,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     }
   };
 
-  const onPageChanged = (page: number) => {
+  const onPageChanged = (e, page: number) => {
     const offset = page * state.limit;
     exec(changePage({ offset }));
   };
@@ -391,14 +391,6 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
         className: cx(classes.root, !onDropdownClick && 'disable', propClasses?.root),
         elevation: 0
       };
-
-  // const itemsResource = useLogicResource<DetailedItem[], SingleItemSelectorState>(state, {
-  //   shouldResolve: (consumer) => Boolean(consumer.byId) && !consumer.isFetching,
-  //   shouldReject: (consumer) => Boolean(consumer.error),
-  //   shouldRenew: (consumer, resource) => consumer.isFetching && resource.complete,
-  //   resultSelector: (consumer) => consumer.items.map((id) => consumer.byId[id]),
-  //   errorSelector: (consumer) => consumer.error
-  // });
 
   return (
     <Wrapper {...wrapperProps}>

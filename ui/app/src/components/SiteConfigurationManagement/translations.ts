@@ -131,10 +131,10 @@ export const translations = defineMessages({
     id: 'siteConfigurationManagement.confTabSiteConfigurationDesc',
     defaultMessage: 'Defines the general project configuration'
   },
-  confTabSiteConf: { id: 'siteConfigurationManagement.confTabSiteConf', defaultMessage: 'Project Config Tools' },
+  confTabSiteConf: { id: 'siteConfigurationManagement.confTabSiteConf', defaultMessage: 'Content Type Editor Config' },
   confTabSiteConfDesc: {
     id: 'siteConfigurationManagement.confTabSiteConfDesc',
-    defaultMessage: 'Defines the list of admin tools available'
+    defaultMessage: 'Defines controls and datasources available for content type editing'
   },
   confTabWorkflowConf: {
     id: 'siteConfigurationManagement.confTabWorkflowConf',

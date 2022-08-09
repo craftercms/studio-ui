@@ -378,13 +378,13 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       onSelectAllSoftDependencies={onSelectAllSoft}
       onClickShowAllDeps={onFetchDependenciesClick}
       classes={useStyles().classes}
-      showEmailCheckbox={!hasPublishPermission || state.requestApproval}
+      isRequestPublish={!hasPublishPermission || state.requestApproval}
       showRequestApproval={hasPublishPermission && items.every((item) => !item.stateMap.submitted)}
       submitLabel={
         state.scheduling === 'custom' ? (
           <FormattedMessage id="words.schedule" defaultMessage="Schedule" />
         ) : !hasPublishPermission || state.requestApproval ? (
-          <FormattedMessage id="words.submit" defaultMessage="Submit" />
+          <FormattedMessage id="publishDialog.requestPublish" defaultMessage="Request Publish" />
         ) : (
           <FormattedMessage id="words.publish" defaultMessage="Publish" />
         )

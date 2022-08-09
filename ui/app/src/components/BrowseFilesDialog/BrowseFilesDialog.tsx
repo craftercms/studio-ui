@@ -21,18 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import EnhancedDialog from '../EnhancedDialog';
 
 export function BrowseFilesDialog(props: BrowseFilesDialogProps) {
-  const {
-    path,
-    onClose,
-    onSuccess,
-    contentTypes,
-    multiSelect,
-    mimeTypes,
-    rowsPerPageOptions,
-    numOfLoaderItems,
-    ...rest
-  } = props;
-
+  const { path, onClose, onSuccess, contentTypes, multiSelect, mimeTypes, numOfLoaderItems, ...rest } = props;
   return (
     <EnhancedDialog
       title={<FormattedMessage id="browseFilesDialog.uploadImage" defaultMessage="Select a file" />}
@@ -45,7 +34,6 @@ export function BrowseFilesDialog(props: BrowseFilesDialogProps) {
         contentTypes={contentTypes}
         mimeTypes={mimeTypes}
         multiSelect={multiSelect}
-        rowsPerPageOptions={rowsPerPageOptions}
         onClose={onClose}
         onSuccess={onSuccess}
         numOfLoaderItems={numOfLoaderItems}

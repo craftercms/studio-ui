@@ -14,30 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import GraphiQL from '../GraphiQL';
-import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useEnv } from '../../hooks/useEnv';
-import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import GraphiQL from '../GraphiQL/GraphiQL';
 
-interface SiteGraphiQLProps {
-  embedded?: boolean;
-  showAppsButton?: boolean;
-  onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
-}
+/**
+ * @deprecated Use GraphiQL component instead
+ **/
+const SiteGraphiQL = GraphiQL;
 
-export function SiteGraphiQL(props: SiteGraphiQLProps) {
-  const site = useActiveSiteId();
-  const { guestBase } = useEnv();
-  return (
-    <GraphiQL
-      storageKey={site}
-      url={`${guestBase}/api/1/site/graphql`}
-      embedded={props.embedded}
-      showAppsButton={props.showAppsButton}
-      onSubmittingAndOrPendingChange={props.onSubmittingAndOrPendingChange}
-    />
-  );
-}
+export { SiteGraphiQL };
 
 export default SiteGraphiQL;

@@ -41,6 +41,10 @@ const messages = defineMessages({
   editModePadding: {
     id: 'shortcuts.editModePadding',
     defaultMessage: 'Toggle edit mode padding'
+  },
+  reload: {
+    id: 'shortcuts.reloadPreview',
+    defaultMessage: 'Reload preview'
   }
 });
 
@@ -63,6 +67,10 @@ export const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
       {
         label: messages.editModePadding,
         shortcut: 'p'
+      },
+      {
+        label: messages.reload,
+        shortcut: 'r'
       },
       {
         label: messages.showShortcuts,

@@ -20,6 +20,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../../models/GetChildrenOptions';
 import LookupTable from '../../models/LookupTable';
+import SystemType from '../../models/SystemType';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -30,6 +31,7 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
     excludes?: string[];
     limit: number;
     expanded?: string[];
+    systemTypes?: SystemType[];
   }>
 >('PATH_NAV_TREE_INIT');
 

@@ -147,6 +147,7 @@ export interface GlobalState {
     packageBuildDate: string;
     useBaseDomain: boolean;
     activeEnvironment: string;
+    socketConnected: boolean;
   };
   preview: {
     editMode: boolean;
@@ -255,10 +256,10 @@ export interface GlobalState {
       deleteCommentRequired: boolean;
       bulkPublishCommentRequired: boolean;
       publishByCommitCommentRequired: boolean;
+      publishEverythingCommentRequired: boolean;
       submissionCommentMaxLength: number;
     };
     cdataEscapedFieldPatterns: string[];
-    useLegacyPreviewLookup: LookupTable<boolean>;
     references: LookupTable;
     xml: string;
   };

@@ -268,8 +268,17 @@ export function deepCopy<T extends object = any>(target: T): T {
 export const foo = {};
 
 export function isApiResponse(source: object): boolean {
+  source = source ?? {};
   return (
-    Object.prototype.hasOwnProperty.call(source ?? {}, 'code') &&
-    Object.prototype.hasOwnProperty.call(source ?? {}, 'message')
+    Object.prototype.hasOwnProperty.call(source, 'code') && Object.prototype.hasOwnProperty.call(source, 'message')
+  );
+}
+
+export function isAjaxError(source: object): boolean {
+  source = source ?? {};
+  return (
+    Object.prototype.hasOwnProperty.call(source, 'message') &&
+    Object.prototype.hasOwnProperty.call(source, 'status') &&
+    Object.prototype.hasOwnProperty.call(source, 'name')
   );
 }

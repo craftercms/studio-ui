@@ -92,12 +92,11 @@ export function UsersGridUI(props: UsersGridUIProps) {
         </Table>
       </TableContainer>
       <Pagination
-        rowsPerPageOptions={[5, 10, 15]}
-        classes={{ root: classes.paginationRoot }}
+        mode="table"
         count={users.total}
         rowsPerPage={users.limit}
         page={users && Math.ceil(users.offset / users.limit)}
-        onPageChange={(page: number) => onPageChange(page)}
+        onPageChange={(e, page: number) => onPageChange(page)}
         onRowsPerPageChange={onRowsPerPageChange}
       />
     </Box>

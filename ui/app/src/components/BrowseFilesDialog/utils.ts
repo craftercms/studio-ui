@@ -24,7 +24,6 @@ export interface BrowseFilesDialogBaseProps {
   multiSelect?: boolean;
   contentTypes?: string[];
   mimeTypes?: string[];
-  rowsPerPageOptions?: number[];
   numOfLoaderItems?: number;
 }
 
@@ -53,7 +52,6 @@ export interface BrowseFilesDialogUIProps {
   limit: number;
   offset: number;
   keyword: string;
-  rowsPerPageOptions?: number[];
   total: number;
   numOfLoaderItems?: number;
   onCardSelected(item: MediaItem): void;
@@ -73,7 +71,7 @@ export const initialParameters: ElasticParams = {
   query: '',
   keywords: '',
   offset: 0,
-  limit: 21,
+  limit: 25,
   sortBy: '_score',
   sortOrder: 'desc',
   filters: {}

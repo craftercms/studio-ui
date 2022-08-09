@@ -127,29 +127,9 @@ export const useStyles = makeStyles()((theme) => ({
     color: theme.palette.mode === 'dark' ? palette.teal.tint : palette.teal.shade,
     textDecoration: 'underline'
   },
-
   breadcrumbActionsWrapper: {
     display: 'flex',
     marginLeft: 'auto'
-  },
-  // endregion
-  // region Pagination
-  pagination: {
-    marginBottom: 10,
-    '& p': {
-      padding: 0,
-      margin: 0
-    },
-    '& svg': {
-      top: 'inherit'
-    },
-    '& .hidden': {
-      display: 'none'
-    }
-  },
-  paginationToolbar: {
-    justifyContent: 'space-between',
-    borderBottom: `1px solid ${theme.palette.divider}`
   },
   // endregion
   menuPaper: {

@@ -37,6 +37,7 @@ import TranslationOrText from '../../models/TranslationOrText';
 import Suspencified from '../Suspencified/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import useSelection from '../../hooks/useSelection';
 
 export interface Tool {
   title: TranslationOrText;
@@ -51,7 +52,6 @@ export interface SiteToolsProps {
   footerHtml?: string;
   openSidebar: boolean;
   sidebarWidth: number;
-  imageUrl: string;
   tools: Tool[];
   sidebarBelowToolbar?: boolean;
   hideSidebarLogo?: boolean;
@@ -79,7 +79,6 @@ export function SiteTools(props: SiteToolsProps) {
     onBackClick,
     openSidebar,
     sidebarWidth,
-    imageUrl,
     onWidthChange,
     tools,
     onNavItemClick,
@@ -89,9 +88,8 @@ export function SiteTools(props: SiteToolsProps) {
   } = props;
   const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
-
+  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
-
   return (
     <Paper className={clsx(classes.root, props.classes?.root)} elevation={0}>
       <ResizeableDrawer
@@ -179,32 +177,18 @@ export function SiteTools(props: SiteToolsProps) {
                 <LauncherOpenerButton />
               </section>
               <EmptyState
-                styles={{
-                  root: {
-                    height: '100%',
-                    margin: 0
-                  }
-                }}
+                styles={{ root: { height: '100%', margin: 0 } }}
                 title="404"
                 subtitle={<FormattedMessage id="siteTools.toolNotFound" defaultMessage="Tool not found" />}
               />
             </Box>
           )
         ) : (
-          <Box display="flex" flexDirection="column" height="100%">
-            <EmptyState
-              styles={{
-                root: {
-                  height: '100%',
-                  margin: 0
-                }
-              }}
-              title={
-                <FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />
-              }
-              image={imageUrl}
-            />
-          </Box>
+          <EmptyState
+            styles={{ root: { height: '100%', margin: 0 } }}
+            title={<FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />}
+            image={`${baseUrl}/static-assets/images/choose_option.svg`}
+          />
         )}
       </Box>
     </Paper>

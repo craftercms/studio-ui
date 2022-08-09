@@ -14,15 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSelection } from './useSelection';
-import { useActiveSiteId } from './useActiveSiteId';
+export { default } from './PluginHostIFrame';
 
-export function useLegacyPreviewPreference() {
-  const site = useActiveSiteId();
-  return useSelection((state) =>
-    // If preference isn't loaded yet it'll still default to false. This isn't time sensitive.
-    Boolean(state.uiConfig.useLegacyPreviewLookup[site])
-  );
-}
-
-export default useLegacyPreviewPreference;
+export * from './PluginHostIFrame';

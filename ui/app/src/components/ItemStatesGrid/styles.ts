@@ -34,10 +34,6 @@ const useStyles = makeStyles()((theme) => ({
   },
   upperCase: {
     textTransform: 'uppercase'
-  },
-  paginationRoot: {
-    marginLeft: 'auto',
-    marginRight: '20px'
   }
 }));
 

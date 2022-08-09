@@ -243,7 +243,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   // region Hotkeys
 
   // This requires maintenance as key shortcuts evolve/change.
-  useHotkeys('m,e,p,shift+/', (e) => {
+  useHotkeys('r,m,e,p,shift+/', (e) => {
     post(hotKey({ key: e.key, type: 'keydown' }));
   });
 
@@ -493,7 +493,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         .subscribe((e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (e.dataTransfer.items[0].type.startsWith('image') && e.dataTransfer.items[0].kind === 'file') {
+          if (/^(video|image)/.test(e.dataTransfer.items[0].type) && e.dataTransfer.items[0].kind === 'file') {
             dispatch(desktopAssetDragStarted({ asset: e.dataTransfer.items[0] }));
           }
         });

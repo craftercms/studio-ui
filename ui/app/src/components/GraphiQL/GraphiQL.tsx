@@ -22,12 +22,13 @@ import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
-import { useStyles } from './styles';
 import { toQueryString } from '../../utils/object';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { isBlank } from '../../utils/string';
 import { defaultQuery } from './utils';
+import useEnv from '../../hooks/useEnv';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 export interface GraphiQLProps {
   url?: string;
@@ -39,13 +40,14 @@ export interface GraphiQLProps {
 }
 
 function GraphiQL(props: GraphiQLProps) {
-  const { classes, cx: clsx } = useStyles();
+  const { guestBase } = useEnv();
+  const site = useActiveSiteId();
   const {
-    storageKey,
+    storageKey = site,
     showAppsButton,
     embedded = false,
     method = 'post',
-    url = `${window.location.origin}/api/1/site/graphql`,
+    url = `${guestBase}/api/1/site/graphql${site ? `?crafterSite=${site}` : ''}`,
     onSubmittingAndOrPendingChange
   } = props;
   // We don't want to update the initialQuery.
@@ -116,14 +118,32 @@ function GraphiQL(props: GraphiQLProps) {
   }, [graphQLFetcher]);
 
   return (
-    <Box display="flex" flexDirection="column" height="100vh">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%'
+      }}
+    >
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="words.graphQL" defaultMessage="GraphQL" />}
           showAppsButton={showAppsButton}
         />
       )}
-      <div className={clsx(classes.container, 'graphiql-container')}>
+      <Box
+        className="graphiql-container"
+        sx={{
+          height: 'calc(100% - 65px)',
+          position: 'relative',
+          '.title': {
+            display: 'none'
+          },
+          '.doc-explorer-title-bar, .history-title-bar': {
+            height: 'auto!important'
+          }
+        }}
+      >
         <GraphiQLExplorer
           schema={schema}
           query={query}
@@ -143,7 +163,7 @@ function GraphiQL(props: GraphiQLProps) {
             additionalContent: <ToolbarButton onClick={handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
           }}
         />
-      </div>
+      </Box>
     </Box>
   );
 }

@@ -94,10 +94,10 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
       '</div> ' +
       '<div><form id="asset_upload_form">' +
       '<div class="contentTypeOuter">' +
-      '<div id="uploadContainer"></div>' +
       '<div><table>' +
       '<tr id="asset_upload-hidden"></tr>' +
       '</table></div>' +
+      '<div id="uploadContainer"></div>' +
       '</div>' +
       '<div class="contentTypePopupBtn"> ' +
       '<input type="button" class="btn btn-default cstudio-xform-button" id="uploadCancelButton" value="' +
@@ -140,7 +140,7 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
     // Instantiate the Dialog
     upload_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
       width: '410px',
-      height: '255px',
+      'min-height': '255px',
       effect: {
         effect: YAHOO.widget.ContainerEffect.FADE,
         duration: 0.25
@@ -183,9 +183,8 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
         me.uploadingFile = true;
         $('#uploadCancelButton').attr('disabled', true);
       },
-      onComplete: function (result) {
-        let item = result.successful[0].response.body.item,
-          uploaded = item.url ? item.url : item; // Will return only url
+      onComplete: function ({ successful }) {
+        let uploaded = JSON.parse(successful[0].response.body.response).item;
 
         $('#uploadCancelButton').attr('disabled', false);
         me.uploadingFile = false;
@@ -193,8 +192,8 @@ CStudioAuthoring.Dialogs.UploadS3Dialog = CStudioAuthoring.Dialogs.UploadS3Dialo
         me.callback.success(uploaded);
         CStudioAuthoring.Dialogs.UploadS3Dialog.closeDialog();
       },
-      onError: function (file, error, response) {
-        const res = response.body.response,
+      onError: function ({ response }) {
+        const res = JSON.parse(response.body.response).response,
           errorMsg = `${res.message}. ${res.remedialAction}`;
 
         me.uploadingFile = false;

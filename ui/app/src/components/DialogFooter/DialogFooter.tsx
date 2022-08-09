@@ -23,7 +23,8 @@ const styles = makeStyles()((theme) => ({
     minHeight: '50px',
     backgroundColor: theme.palette.background.paper,
     borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`
+    padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`,
+    alignItems: 'center'
   }
 }));
 

@@ -1461,8 +1461,8 @@ var CStudioForms =
             }
 
             var serviceUrl =
-              '/api/1/services/api/1/content/write-content.json' +
-              '?site=' +
+              CStudioAuthoring.Service.createServiceUri('/api/1/services/api/1/content/write-content.json') +
+              'site=' +
               CStudioAuthoringContext.site +
               '&phase=onSave' +
               '&path=' +
@@ -1495,9 +1495,9 @@ var CStudioForms =
               });
             } else {
               const saveContent = () => {
-                CrafterCMSNext.util.ajax.post(CStudioAuthoring.Service.createServiceUri(serviceUrl), xml).subscribe(
+                CrafterCMSNext.util.ajax.post(serviceUrl, xml).subscribe(
                   function () {
-                    CStudioForms.currentValidFolder = CStudioForms.updatedModel['folder-name'];
+                    CStudioForms.currentValidFolder = CStudioForms.updatedModel?.['folder-name'];
                     YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
 
                     var getContentItemCb = {
@@ -1507,7 +1507,7 @@ var CStudioForms =
                         var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
                         var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
 
-                        //TODO: We need a method to set disable the .render Buttons;
+                        // TODO: We need a method to set disable the .render Buttons;
                         setButtonsEnabled(true);
                         sendMessage({ type: CHILD_FORM_DRAFT_COMPLETE });
 
@@ -2049,7 +2049,7 @@ var CStudioForms =
             });
             sendMessage({ type: FORM_ENGINE_RENDER_COMPLETE });
           }
-          CStudioAuthoring.InContextEdit.getIceCallback(editorId)?.renderComplete();
+          CStudioAuthoring.InContextEdit.getIceCallback(editorId)?.renderComplete?.();
         });
       },
 

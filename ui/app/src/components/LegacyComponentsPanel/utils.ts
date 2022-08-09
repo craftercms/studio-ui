@@ -238,11 +238,12 @@ export const fetchAndInsertContentInstance = (
   fieldId: string,
   index: number,
   datasource: string,
-  contentTypesLookup: LookupTable<ContentType>
+  contentTypesLookup: LookupTable<ContentType>,
+  parentModelId: string
 ): Observable<any> => {
   return fetchContentInstance(siteId, path, contentTypesLookup).pipe(
     switchMap((contentInstance) =>
-      insertInstance(siteId, parentPath, fieldId, index, contentInstance, null, datasource)
+      insertInstance(siteId, parentModelId, fieldId, index, contentInstance, parentPath, datasource)
     )
   );
 };

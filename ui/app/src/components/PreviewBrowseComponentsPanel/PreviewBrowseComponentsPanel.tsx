@@ -147,6 +147,7 @@ export function PreviewBrowseComponentsPanel() {
           />
           {contentTypes && (
             <Select
+              size="small"
               value={contentTypeFilter}
               displayEmpty
               className={classes.select}

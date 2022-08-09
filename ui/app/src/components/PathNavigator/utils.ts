@@ -37,8 +37,23 @@ export function isVideo(item: DetailedItem | SandboxItem): boolean {
   return item?.mimeType.startsWith('video/');
 }
 
+export function isTextContent(mimeType: string): boolean {
+  return (
+    /^text\//.test(mimeType) ||
+    /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh)$/.test(mimeType)
+  );
+}
+
+export function isMediaContent(mimeType: string) {
+  return /^image\//.test(mimeType) || /^video\//.test(mimeType);
+}
+
 export function isPreviewable(item: DetailedItem | SandboxItem): boolean {
-  return ['page', 'component', 'asset', 'renderingTemplate', 'script', 'taxonomy'].includes(item?.systemType);
+  if (item?.systemType === 'asset') {
+    return isMediaContent(item.mimeType) || isTextContent(item.mimeType);
+  } else {
+    return ['page', 'component', 'renderingTemplate', 'script', 'taxonomy'].includes(item?.systemType);
+  }
 }
 
 export function isFolder(item: DetailedItem | SandboxItem): boolean {
