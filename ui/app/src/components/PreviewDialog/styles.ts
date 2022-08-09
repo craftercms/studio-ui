@@ -15,6 +15,7 @@
  */
 
 import { makeStyles } from 'tss-react/mui';
+import palette from '../../styles/palette';
 
 export const useStyles = makeStyles()((theme) => ({
   container: {
@@ -29,6 +30,9 @@ export const useStyles = makeStyles()((theme) => ({
     '& img': {
       maxWidth: '100%'
     }
+  },
+  containerBackgroundToggled: {
+    backgroundColor: theme.palette.mode === 'dark' ? palette.gray.light0 : palette.gray.dark7
   },
   editor: {
     position: 'absolute',

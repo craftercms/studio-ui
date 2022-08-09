@@ -34,8 +34,8 @@ import { batchActions } from '../../state/actions/misc';
 import { hasEditAction } from '../../utils/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
-  const { title, content, mode, url, onClose, type, mimeType } = props;
-  const { classes } = useStyles();
+  const { title, content, mode, url, onClose, type, mimeType, backgroundToggled } = props;
+  const { classes, cx } = useStyles();
   const item = useDetailedItem(url);
   const dispatch = useDispatch();
 
@@ -96,7 +96,9 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 
   return (
     <>
-      <DialogBody className={classes.container}>{renderPreview()}</DialogBody>
+      <DialogBody className={cx(classes.container, backgroundToggled && classes.containerBackgroundToggled)}>
+        {renderPreview()}
+      </DialogBody>
       {type === 'editor' && (
         <DialogFooter>
           <SecondaryButton onClick={(e) => onClose(e, null)}>

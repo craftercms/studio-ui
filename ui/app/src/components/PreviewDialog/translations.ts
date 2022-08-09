@@ -20,5 +20,9 @@ export const translations = defineMessages({
   edit: {
     id: 'words.edit',
     defaultMessage: 'Edit'
+  },
+  toggleBackgroundColor: {
+    id: 'previewDialog.toggleBackgroundColor',
+    defaultMessage: 'Toggle background color'
   }
 });
