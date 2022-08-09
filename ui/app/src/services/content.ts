@@ -300,7 +300,8 @@ export function insertComponent(
       const serializedInstance = {};
       for (let key in instance) {
         if (key !== 'craftercms') {
-          serializedInstance[key] = serializeValue?.(key) ? cdataWrap(`${instance[key]}`) : instance[key];
+          serializedInstance[key] =
+            instance[key] && serializeValue?.(key) ? cdataWrap(`${instance[key]}`) : instance[key];
         }
       }
 
