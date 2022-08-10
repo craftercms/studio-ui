@@ -31,8 +31,20 @@ export const useStyles = makeStyles()((theme) => ({
       maxWidth: '100%'
     }
   },
-  containerBackgroundToggled: {
-    backgroundColor: theme.palette.mode === 'dark' ? palette.gray.light0 : palette.gray.dark7
+  containerBackgroundInverse: {
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black
+  },
+  containerBackgroundSquaredLight: {
+    backgroundSize: '30px 30px',
+    backgroundColor: 'transparent',
+    backgroundPosition: '0px 0px, 0px 15px, 15px -15px, -15px 0px',
+    backgroundImage: `linear-gradient(45deg, ${theme.palette.grey[200]} 25%, transparent 25%), linear-gradient(-45deg, ${theme.palette.grey[200]} 25%, transparent 25%), linear-gradient(45deg, transparent 75%, ${theme.palette.grey[200]} 75%), linear-gradient(-45deg, transparent 75%, ${theme.palette.grey[200]} 75%)`
+  },
+  containerBackgroundSquaredDark: {
+    backgroundSize: '30px 30px',
+    backgroundColor: theme.palette.common.black,
+    backgroundPosition: '0px 0px, 0px 15px, 15px -15px, -15px 0px',
+    backgroundImage: `linear-gradient(45deg, ${palette.gray.dark4} 25%, transparent 25%), linear-gradient(-45deg, ${palette.gray.dark4} 25%, transparent 25%), linear-gradient(45deg, transparent 75%, ${palette.gray.dark4} 75%), linear-gradient(-45deg, transparent 75%, ${palette.gray.dark4} 75%)`
   },
   editor: {
     position: 'absolute',

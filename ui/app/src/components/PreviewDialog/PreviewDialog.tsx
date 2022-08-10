@@ -16,14 +16,17 @@
 
 import React, { useState } from 'react';
 import { PreviewDialogContainer } from './PreviewDialogContainer';
-import { PreviewDialogProps } from './utils';
+import { backgroundModes, PreviewDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import { useIntl } from 'react-intl';
 import { translations } from './translations';
+import { getStoredPreviewBackgroundMode, setStoredPreviewBackgroundMode } from '../../utils/state';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export function PreviewDialog(props: PreviewDialogProps) {
   const { title, type, url, content, mode, mimeType, ...rest } = props;
-  const [backgroundToggled, setBackgroundToggled] = useState(false);
+  const { username } = useActiveUser();
+  const [backgroundModeIndex, setBackgroundModeIndex] = useState(getStoredPreviewBackgroundMode(username) ?? 0);
   const { formatMessage } = useIntl();
 
   return (
@@ -33,9 +36,13 @@ export function PreviewDialog(props: PreviewDialogProps) {
       dialogHeaderProps={{
         subtitle: props.subtitle,
         rightActions: [
-          type === 'image' && {
+          (type === 'image' || type === 'video') && {
             icon: { id: '@mui/icons-material/ColorLensOutlined' },
-            onClick: () => setBackgroundToggled(!backgroundToggled),
+            onClick: () => {
+              const index = (backgroundModeIndex + 1) % backgroundModes.length;
+              setBackgroundModeIndex(index);
+              setStoredPreviewBackgroundMode(username, index);
+            },
             tooltip: formatMessage(translations.toggleBackgroundColor)
           }
         ].filter(Boolean)
@@ -49,7 +56,7 @@ export function PreviewDialog(props: PreviewDialogProps) {
         content={content}
         mode={mode}
         mimeType={mimeType}
-        backgroundToggled={backgroundToggled}
+        backgroundModeIndex={backgroundModeIndex}
       />
     </EnhancedDialog>
   );

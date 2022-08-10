@@ -306,3 +306,11 @@ export function getStoredPullMergeStrategy(siteId: string, username: string): st
 export function removeStoredPullMergeStrategy(siteId: string, username: string): void {
   localStorage.removeItem(`craftercms.${username}.${siteId}.pullMergeStrategy`);
 }
+
+export function setStoredPreviewBackgroundMode(username: string, mode: number): void {
+  localStorage.setItem(`craftercms.${username}.backgroundMode`, JSON.stringify(mode));
+}
+
+export function getStoredPreviewBackgroundMode(username: string): number {
+  return JSON.parse(localStorage.getItem(`craftercms.${username}.backgroundMode`));
+}
