@@ -40,7 +40,7 @@ function LauncherSection(props: LauncherSectionProps) {
         siteName: sites[site]?.name ?? '',
         muted: (value) => (
           <span className="muted" key={value[0]}>
-            {value}
+            {value[0]}
           </span>
         )
       }}

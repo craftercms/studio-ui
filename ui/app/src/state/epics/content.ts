@@ -121,6 +121,10 @@ export const sitePolicyMessages = defineMessages({
   itemPasteValidating: {
     id: 'words.validating',
     defaultMessage: 'Validating'
+  },
+  duplicate: {
+    id: 'words.duplicate',
+    defaultMessage: 'Duplicate'
   }
 });
 
@@ -348,7 +352,7 @@ const content: CrafterCMSEpic[] = [
             if (allowed && modifiedValue) {
               return showConfirmDialog({
                 body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-                  action: 'duplicate',
+                  action: getIntl().formatMessage(sitePolicyMessages.duplicate),
                   path: target,
                   modifiedPath: modifiedValue
                 }),
@@ -382,8 +386,9 @@ const content: CrafterCMSEpic[] = [
                   });
             } else {
               return showConfirmDialog({
-                // @ts-ignore - Type '(siteId: string, path: string) => Observable<any>' is not assignable to type 'FormatXMLElementFn<string, string>' Error.
-                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, { action: duplicate })
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+                  action: getIntl().formatMessage(sitePolicyMessages.duplicate)
+                })
               });
             }
           })
