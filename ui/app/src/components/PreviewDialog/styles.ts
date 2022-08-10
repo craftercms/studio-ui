@@ -36,7 +36,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   containerBackgroundSquaredLight: {
     backgroundSize: '30px 30px',
-    backgroundColor: 'transparent',
+    backgroundColor: theme.palette.common.white,
     backgroundPosition: '0px 0px, 0px 15px, 15px -15px, -15px 0px',
     backgroundImage: `linear-gradient(45deg, ${theme.palette.grey[200]} 25%, transparent 25%), linear-gradient(-45deg, ${theme.palette.grey[200]} 25%, transparent 25%), linear-gradient(45deg, transparent 75%, ${theme.palette.grey[200]} 75%), linear-gradient(-45deg, transparent 75%, ${theme.palette.grey[200]} 75%)`
   },
