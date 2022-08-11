@@ -29,7 +29,8 @@ const useStyles = makeStyles()((theme) => ({
     maxWidth: '100%',
     border: 'none',
     height: '100%',
-    transition: 'width .25s ease, height .25s ease'
+    transition: 'width .25s ease, height .25s ease',
+    margin: 'auto'
   },
   iframeWithBorder: {
     borderRadius: 20,
