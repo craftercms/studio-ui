@@ -312,5 +312,5 @@ export function setStoredPreviewBackgroundMode(username: string, mode: number): 
 }
 
 export function getStoredPreviewBackgroundMode(username: string): number {
-  return JSON.parse(localStorage.getItem(`craftercms.${username}.backgroundMode`));
+  return JSON.parse(localStorage.getItem(`craftercms.${username}.previewDialog.backgroundMode`));
 }
