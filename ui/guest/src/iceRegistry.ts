@@ -31,6 +31,7 @@ import { notNullOrUndefined, nou, nullOrUndefined, pluckProps } from '@craftercm
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { determineRecordType, findComponentContainerFields } from './utils/ice';
 import { isSimple, removeLastPiece } from '@craftercms/studio-ui/utils/string';
+import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 
 const validationChecks: Record<ValidationKeys, Function> = {
   allowVideoUpload(p0) {},
@@ -215,10 +216,10 @@ export function getRecordDropTargets(id: number): ICERecord[] {
 
     flattenChildren(id, allChildren);
 
-    return getContentTypeDropTargets(contentType).filter((rec) => {
-      // Not the current item nor a descendant of it (i.e. can't
-      // move a item deeper inside itself).
-      return rec.modelId !== id && !allChildren.includes(rec.modelId);
+    return getContentTypeDropTargets(contentType, (rec) => {
+      // Exclude if it's the current item or a descendant of it (i.e. can't
+      // move an item deeper inside itself).
+      return rec.modelId === id || allChildren.includes(rec.modelId);
     });
   } else if (field.type === 'repeat') {
     return getRepeatGroupItemDropTargets(record);
@@ -269,11 +270,19 @@ export function getComponentItemDropTargets(record: ICERecord): number[] {
   return getContentTypeDropTargets(contentType).map((rec) => rec.id);
 }
 
-export function getContentTypeDropTargets(contentType: string | ContentType): ICERecord[] {
+/**
+ * Returns a list of ICE records that matches a content type
+ * @param contentType {string | ContentType} The content type that the records should match.
+ * @param excludeFn {(record: ICERecord, hierarchyMap: ModelHierarchyMap) => boolean} function that returns true if record has to be excluded, and false it not.
+ */
+export function getContentTypeDropTargets(
+  contentType: string | ContentType,
+  excludeFn?: (record: ICERecord, hierarchyMap: ModelHierarchyMap) => boolean
+): ICERecord[] {
   const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
   return Array.from(registry.values()).filter((record) => {
     const { fieldId, index } = record;
-    if (notNullOrUndefined(fieldId)) {
+    if (notNullOrUndefined(fieldId) && !excludeFn?.(record, contentController.modelHierarchyMap)) {
       const { field, contentType: _contentType, model } = getReferentialEntries(record);
       const acceptedTypes = field?.validations?.allowedContentTypes?.value;
       const accepts = acceptedTypes && (acceptedTypes.includes(contentTypeId) || acceptedTypes.includes('*'));

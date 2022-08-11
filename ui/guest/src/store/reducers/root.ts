@@ -29,7 +29,7 @@ import * as iceRegistry from '../../iceRegistry';
 import { findChildRecord, getById, getReferentialEntries } from '../../iceRegistry';
 import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import { ElementRecord } from '../../models/InContextEditing';
+import { ElementRecord, ICERecord } from '../../models/InContextEditing';
 import { GuestState } from '../models/GuestStore';
 import { notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { updateDropZoneValidations } from '../../utils/dom';
@@ -68,6 +68,7 @@ import {
   setEditMode,
   startListening
 } from '../actions';
+import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
@@ -526,12 +527,19 @@ const reducer = createReducer(initialState, {
     const { instance, contentType } = action.payload;
 
     if (notNullOrUndefined(instance)) {
-      const dropTargets = iceRegistry.getContentTypeDropTargets(instance.craftercms.contentTypeId);
+      const dropTargets = iceRegistry.getContentTypeDropTargets(
+        instance.craftercms.contentTypeId,
+        (record: ICERecord, hierarchyMap: ModelHierarchyMap) => {
+          const instanceId = instance.craftercms.id;
+          return hierarchyMap[record.modelId]?.children.includes(instanceId);
+        }
+      );
       const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
       const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(
         dropTargets,
         validationsLookup
       );
+
       const highlighted = getHighlighted(dropZones);
 
       return {
