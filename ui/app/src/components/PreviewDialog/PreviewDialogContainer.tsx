@@ -20,7 +20,7 @@ import LoadingState, { ConditionalLoadingState } from '../LoadingState/LoadingSt
 import IFrame from '../IFrame/IFrame';
 import { nou } from '../../utils/object';
 import AceEditor from '../AceEditor/AceEditor';
-import { PreviewDialogContainerProps } from './utils';
+import { backgroundModes, PreviewDialogContainerProps } from './utils';
 import { useStyles } from './styles';
 import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
@@ -34,8 +34,8 @@ import { batchActions } from '../../state/actions/misc';
 import { hasEditAction } from '../../utils/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
-  const { title, content, mode, url, onClose, type, mimeType } = props;
-  const { classes } = useStyles();
+  const { title, content, mode, url, onClose, type, mimeType, backgroundModeIndex } = props;
+  const { classes, cx } = useStyles();
   const item = useDetailedItem(url);
   const dispatch = useDispatch();
 
@@ -96,7 +96,15 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
 
   return (
     <>
-      <DialogBody className={classes.container}>{renderPreview()}</DialogBody>
+      <DialogBody
+        className={cx(
+          classes.container,
+          backgroundModes[backgroundModeIndex]?.mode !== 'default' &&
+            classes[backgroundModes[backgroundModeIndex].classKey]
+        )}
+      >
+        {renderPreview()}
+      </DialogBody>
       {type === 'editor' && (
         <DialogFooter>
           <SecondaryButton onClick={(e) => onClose(e, null)}>

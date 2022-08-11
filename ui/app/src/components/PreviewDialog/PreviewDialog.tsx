@@ -14,16 +14,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PreviewDialogContainer } from './PreviewDialogContainer';
-import { PreviewDialogProps } from './utils';
+import { backgroundModes, PreviewDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
+import { useIntl } from 'react-intl';
+import { translations } from './translations';
+import { getStoredPreviewBackgroundMode, setStoredPreviewBackgroundMode } from '../../utils/state';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export function PreviewDialog(props: PreviewDialogProps) {
   const { title, type, url, content, mode, mimeType, ...rest } = props;
+  const { username } = useActiveUser();
+  const [backgroundModeIndex, setBackgroundModeIndex] = useState(getStoredPreviewBackgroundMode(username) ?? 0);
+  const { formatMessage } = useIntl();
+
   return (
-    <EnhancedDialog maxWidth="xl" title={props.title} dialogHeaderProps={{ subtitle: props.subtitle }} {...rest}>
-      <PreviewDialogContainer type={type} title={title} url={url} content={content} mode={mode} mimeType={mimeType} />
+    <EnhancedDialog
+      maxWidth="xl"
+      title={props.title}
+      dialogHeaderProps={{
+        subtitle: props.subtitle,
+        rightActions: [
+          (type === 'image' || type === 'video') && {
+            icon: { id: '@mui/icons-material/ColorLensOutlined' },
+            onClick: () => {
+              const index = (backgroundModeIndex + 1) % backgroundModes.length;
+              setBackgroundModeIndex(index);
+              setStoredPreviewBackgroundMode(username, index);
+            },
+            tooltip: formatMessage(translations.toggleBackgroundColor)
+          }
+        ].filter(Boolean)
+      }}
+      {...rest}
+    >
+      <PreviewDialogContainer
+        type={type}
+        title={title}
+        url={url}
+        content={content}
+        mode={mode}
+        mimeType={mimeType}
+        backgroundModeIndex={backgroundModeIndex}
+      />
     </EnhancedDialog>
   );
 }

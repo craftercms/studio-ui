@@ -26,6 +26,7 @@ export interface PreviewDialogBaseProps {
   url?: string;
   content?: string;
   mimeType?: string;
+  backgroundModeIndex?: number;
 }
 
 export interface PreviewDialogProps extends PreviewDialogBaseProps, Omit<EnhancedDialogProps, 'title' | 'subtitle'> {}
@@ -40,3 +41,22 @@ export interface PreviewDialogStateProps extends PreviewDialogBaseProps, Enhance
 }
 
 export interface PreviewDialogContainerProps extends PreviewDialogBaseProps, Pick<PreviewDialogProps, 'onClose'> {}
+
+export const backgroundModes = [
+  {
+    mode: 'default',
+    classKey: ''
+  },
+  {
+    mode: 'inverse',
+    classKey: 'containerBackgroundInverse'
+  },
+  {
+    mode: 'squaredLight',
+    classKey: 'containerBackgroundSquaredLight'
+  },
+  {
+    mode: 'squaredDark',
+    classKey: 'containerBackgroundSquaredDark'
+  }
+];
