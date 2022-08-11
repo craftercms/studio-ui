@@ -180,7 +180,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         // so there should be no lock or other actions.
         if (dropZone) {
           const { modelId } = iceRegistry.getById(dropZone.iceId);
+          // get parentModelId in case the current dropZone is an embedded component
           const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+          // if path of current model doesn't exist (current component is embedded), then use the parent model id (shared)
           const path = models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
           const cachedSandboxItem = getCachedSandboxItem(path);
 

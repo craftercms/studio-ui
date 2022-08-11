@@ -366,12 +366,37 @@ export function GuestProxy() {
           const { modelId, fieldId, targetIndex, instance } = op.args;
 
           const $spinner = $(`
-            <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-              <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
-            </svg>
+            <div style="text-align: center">
+              <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
+              </svg>
+            </div>
           `);
 
           const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
+
+          // If $daddy has children, get the closest  one to the one that is being added, and get its width to set it
+          // to the spinner container.
+          const childrenLength = $daddy.children().length;
+          if (childrenLength) {
+            const index = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
+            const child = $daddy.children()[index < childrenLength ? index : childrenLength - 1];
+            const daddyDisplay = $daddy.css('display');
+            // set spinner styles according to the parent display
+            $spinner.css(
+              daddyDisplay === 'flex'
+                ? {
+                    display: 'flex',
+                    width: `${child.offsetWidth}px`,
+                    'align-items': 'center',
+                    'justify-content': 'center'
+                  }
+                : {
+                    display: 'inline-block',
+                    width: `${child.offsetWidth}px`
+                  }
+            );
+          }
 
           $daddy.removeClass(emptyCollectionClass);
           insertElement($spinner, $daddy, targetIndex);
