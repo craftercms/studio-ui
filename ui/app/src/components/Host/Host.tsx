@@ -28,7 +28,6 @@ const useStyles = makeStyles()((theme) => ({
   hostContainer: {
     flexGrow: 1,
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
     background: '#f3f3f3',
     height: '100%',
