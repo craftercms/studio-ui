@@ -219,7 +219,7 @@ export function getRecordDropTargets(id: number): ICERecord[] {
     return getContentTypeDropTargets(contentType, (rec) => {
       // Exclude if it's the current item or a descendant of it (i.e. can't
       // move an item deeper inside itself).
-      return !(rec.modelId !== id && !allChildren.includes(rec.modelId));
+      return rec.modelId === id || allChildren.includes(rec.modelId);
     });
   } else if (field.type === 'repeat') {
     return getRepeatGroupItemDropTargets(record);
