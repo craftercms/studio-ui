@@ -308,7 +308,7 @@ export function removeStoredPullMergeStrategy(siteId: string, username: string):
 }
 
 export function setStoredPreviewBackgroundMode(username: string, mode: number): void {
-  localStorage.setItem(`craftercms.${username}.backgroundMode`, JSON.stringify(mode));
+  localStorage.setItem(`craftercms.${username}.previewDialog.backgroundMode`, JSON.stringify(mode));
 }
 
 export function getStoredPreviewBackgroundMode(username: string): number {
