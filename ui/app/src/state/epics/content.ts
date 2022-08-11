@@ -121,6 +121,10 @@ export const sitePolicyMessages = defineMessages({
   itemPasteValidating: {
     id: 'words.validating',
     defaultMessage: 'Validating'
+  },
+  duplicate: {
+    id: 'words.duplicate',
+    defaultMessage: 'Duplicate'
   }
 });
 
@@ -142,11 +146,11 @@ export const itemFailureMessages = defineMessages({
 const inProgressMessages = defineMessages({
   pasting: {
     id: 'words.pasting',
-    defaultMessage: 'Pasting...'
+    defaultMessage: 'Pasting'
   },
   processing: {
     id: 'words.processing',
-    defaultMessage: 'Processing...'
+    defaultMessage: 'Processing'
   }
 });
 
@@ -348,7 +352,7 @@ const content: CrafterCMSEpic[] = [
             if (allowed && modifiedValue) {
               return showConfirmDialog({
                 body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
-                  action: 'duplicate',
+                  action: getIntl().formatMessage(sitePolicyMessages.duplicate),
                   path: target,
                   modifiedPath: modifiedValue
                 }),
@@ -382,7 +386,9 @@ const content: CrafterCMSEpic[] = [
                   });
             } else {
               return showConfirmDialog({
-                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, { action: duplicate })
+                body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
+                  action: getIntl().formatMessage(sitePolicyMessages.duplicate)
+                })
               });
             }
           })
@@ -413,7 +419,7 @@ const content: CrafterCMSEpic[] = [
           of(
             blockUI({
               progress: 'indeterminate',
-              message: getIntl().formatMessage(inProgressMessages.pasting)
+              message: `${getIntl().formatMessage(inProgressMessages.pasting)}...`
             })
           ),
           paste(state.sites.active, payload.path, state.content.clipboard).pipe(
@@ -509,7 +515,7 @@ const content: CrafterCMSEpic[] = [
           );
         } else {
           return merge(
-            of(blockUI({ message: getIntl().formatMessage(inProgressMessages.processing) })),
+            of(blockUI({ message: `${getIntl().formatMessage(inProgressMessages.processing)}...` })),
             fetchItemByPath(state.sites.active, path).pipe(
               switchMap((itemToDelete) => [
                 showDeleteDialog({

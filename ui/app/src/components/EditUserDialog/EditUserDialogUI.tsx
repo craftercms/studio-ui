@@ -203,7 +203,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                 <div className={classes.row}>
                   <InputLabel htmlFor="email" className={classes.label}>
                     <Typography color="textSecondary">
-                      <FormattedMessage id="words.email" defaultMessage="Email" />
+                      <FormattedMessage id="words.email" defaultMessage="E-mail" />
                     </Typography>
                   </InputLabel>
                   {managedInStudio ? (

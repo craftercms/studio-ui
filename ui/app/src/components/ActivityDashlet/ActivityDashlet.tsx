@@ -237,7 +237,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       });
     });
   };
-  const onItemClick = ({ previewUrl }, e) => {
+  const onItemClick = (previewUrl, e) => {
     const pathname = window.location.pathname;
     if (pathname.includes(PREVIEW_URL_PATH)) {
       dispatch(changeCurrentUrl(previewUrl));

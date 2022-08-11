@@ -37,7 +37,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { AllItemActions, DetailedItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu';
 import ApiResponse from '../../models/ApiResponse';
@@ -393,23 +393,31 @@ export function SearchUI(props: SearchUIProps) {
             labelRowsPerPage={null}
             labelDisplayedRows={({ from, to, count }) => (
               <>
-                {formatMessage(translations.resultsCaption, {
-                  from,
-                  to,
-                  count,
-                  keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
-                  keywordLength: keyword.length,
-                  b: (content) => <strong key={content}>{content}</strong>
-                })}
+                <FormattedMessage
+                  id="search.resultsCaption"
+                  defaultMessage="{from}-{to} of {count} results {keywordLength, plural, =0 {}other{ for <b>“{keyword}”</b>}}"
+                  values={{
+                    from,
+                    to,
+                    count,
+                    keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
+                    keywordLength: keyword.length,
+                    b: (content: string[]) => <strong key={content[0]}>{content[0]}</strong>
+                  }}
+                />
                 {(Object.keys(checkedFilters).length > 0 || Boolean(selectedPath)) && (
                   <strong>
-                    {formatMessage(translations.filtersActive, {
-                      span: (content) => (
-                        <span key={content} className={classes.filtersActive}>
-                          {content}
-                        </span>
-                      )
-                    })}
+                    <FormattedMessage
+                      id="search.filtersActive"
+                      defaultMessage=" • <span>Filters Active</span>"
+                      values={{
+                        span: (content: string[]) => (
+                          <span key={content[0]} className={classes.filtersActive}>
+                            {content[0]}
+                          </span>
+                        )
+                      }}
+                    />
                   </strong>
                 )}
               </>

@@ -47,7 +47,7 @@ export const GroupsGridSkeletonTable = React.memo((props: GroupsGridSkeletonTabl
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left">
               <Typography variant="subtitle2">
-                <FormattedMessage id="words.username" defaultMessage="Description" />
+                <FormattedMessage id="words.description" defaultMessage="Description" />
               </Typography>
             </GlobalAppGridCell>
           </GlobalAppGridRow>

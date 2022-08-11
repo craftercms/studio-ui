@@ -106,8 +106,7 @@
     "clean:npm": "rimraf ./build_tsc ./tsconfig.build.tsbuildinfo",
     "clean:models": "rimraf ./build_tsc/models/**/*.{js,map} && touch ./build_tsc/models/index.js",
     "test": "react-scripts test",
-    "i18n:extract": "NODE_ENV=production babel ./src --extensions '.ts,.tsx' --out-file /dev/null",
-    "i18n:manage": "node scripts/i18n.js",
+    "i18n:extract": "formatjs extract './src/**/*.{ts,tsx}' --ignore='**/*.d.ts' --out-file src/translations/src.json",
     "custom-prettier": "node ../../scripts/prettier.js"
   },
   "dependencies": {
@@ -128,6 +127,7 @@
     "@types/ace": "^0.0.48",
     "@types/graphql": "^14.5.0",
     "@types/marked": "^4.0.1",
+    "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.5",
     "@types/react-swipeable-views": "^0.13.1",
     "@types/video.js": "^7.3.27",
@@ -154,7 +154,7 @@
     "react-animations": "^1.0.0",
     "react-dom": "18.1.0",
     "react-hotkeys-hook": "^3.4.4",
-    "react-intl": "^3.9.2",
+    "react-intl": "^6.0.5",
     "react-redux": "^7.2.6",
     "react-router-dom": "^5.3.0",
     "react-scripts": "5.0.1",
@@ -175,6 +175,7 @@
     "@babel/core": "^7.16.0",
     "@babel/runtime": "^7.17.2",
     "@craco/craco": "6.4.3",
+    "@formatjs/cli": "^5.0.6",
     "@rollup/plugin-typescript": "^8.3.0",
     "@types/jquery": "^3.5.11",
     "@types/js-cookie": "^3",
@@ -186,7 +187,6 @@
     "npm-run-all": "^4.1.5",
     "postcss-normalize": "^10.0.1",
     "prop-types": "^15.8.1",
-    "react-intl-translations-manager": "^5.0.3",
     "rimraf": "^3.0.2",
     "rollup": "^2.59.0"
   }

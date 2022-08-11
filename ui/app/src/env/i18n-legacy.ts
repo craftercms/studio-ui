@@ -591,7 +591,7 @@ export const codeEditorMessages = defineMessages({
   },
   saved: {
     id: 'codeEditor.saved',
-    defaultMessage: 'Save successful'
+    defaultMessage: 'Item saved successfully'
   },
   saveAndClose: {
     id: 'codeEditor.saveAndClose',

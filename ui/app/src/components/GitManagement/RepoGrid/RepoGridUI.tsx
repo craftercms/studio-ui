@@ -108,7 +108,7 @@ export function RepositoriesGridTableHead() {
         </GlobalAppGridCell>
         <GlobalAppGridCell>
           <Typography variant="subtitle2">
-            <FormattedMessage id="words.url" defaultMessage="URL" />
+            <FormattedMessage id="words.url" defaultMessage="Url" />
           </Typography>
         </GlobalAppGridCell>
         <GlobalAppGridCell>

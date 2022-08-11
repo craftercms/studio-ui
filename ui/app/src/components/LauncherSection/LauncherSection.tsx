@@ -39,8 +39,8 @@ function LauncherSection(props: LauncherSectionProps) {
       translationValues={{
         siteName: sites[site]?.name ?? '',
         muted: (value) => (
-          <span className="muted" key={value}>
-            {value}
+          <span className="muted" key={value[0]}>
+            {value[0]}
           </span>
         )
       }}

@@ -23,7 +23,7 @@ import { Subject } from 'rxjs';
 import TranslationOrText from '../models/TranslationOrText';
 import { nou } from './object';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
-import { ReactElement, ReactNodeArray } from 'react';
+import { ReactNode } from 'react';
 
 export type BundledTranslationsLocaleCodes = 'en' | 'es' | 'de' | 'ko';
 
@@ -86,8 +86,9 @@ export function getTranslation(key: string, table: any, formatMessage = (descrip
 export function getPossibleTranslation(
   titleOrDescriptor: TranslationOrText,
   formatMessage: IntlShape['formatMessage'],
-  values?: Record<string, PrimitiveType | ReactElement | FormatXMLElementFn>
-): string | ReactNodeArray {
+  // TODO: Fix FormatXMLElementFn generics
+  values?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>
+): string | ReactNode[] {
   if (nou(titleOrDescriptor)) {
     return null;
   }

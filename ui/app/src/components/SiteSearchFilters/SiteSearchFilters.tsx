@@ -134,11 +134,11 @@ const messages: any = defineMessages({
   },
   expandAll: {
     id: 'common.expandAll',
-    defaultMessage: 'Expand all'
+    defaultMessage: 'Expand All'
   },
   collapseAll: {
     id: 'common.collapseAll',
-    defaultMessage: 'Collapse all'
+    defaultMessage: 'Collapse All'
   }
 });
 

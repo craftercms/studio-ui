@@ -48,12 +48,11 @@ export function renderActivity(
   if (messages[systemType]) {
     systemType = formatMessage(messages[systemType]).toLowerCase();
   }
-  const anchor = (item) => {
-    const { label, systemType } = item;
+  const anchor = ([label, systemType, previewUrl]) => {
     return systemType !== 'page' && systemType !== 'component' ? (
       <em>{label}</em>
     ) : (
-      <Link sx={{ cursor: 'pointer' }} onClick={(e) => onItemClick(item, e)}>
+      <Link sx={{ cursor: 'pointer' }} onClick={(e) => onItemClick(previewUrl, e)}>
         {label}
       </Link>
     );
@@ -76,7 +75,7 @@ export function renderActivity(
         <FormattedMessage
           id="activityDashlet.createActivityMessage"
           defaultMessage="Created <anchor>{item}</anchor> {systemType}"
-          values={{ item, systemType, anchor }}
+          values={{ item: [item.label, item.systemType, item.previewUrl], systemType, anchor }}
         />
       );
     case 'UPDATE':
@@ -89,7 +88,7 @@ export function renderActivity(
         <FormattedMessage
           id="activityDashlet.updateActivityMessage"
           defaultMessage="Updated <anchor>{item}</anchor> {systemType}"
-          values={{ item, systemType, anchor }}
+          values={{ item: [item.label, item.systemType, item.previewUrl], systemType, anchor }}
         />
       );
     case 'DELETE':
@@ -115,7 +114,7 @@ export function renderActivity(
         <FormattedMessage
           id="activityDashlet.moveActivityMessage"
           defaultMessage="Moved <anchor>{item}</anchor> {systemType}"
-          values={{ item, anchor, systemType }}
+          values={{ item: [item.label, item.systemType, item.previewUrl], anchor, systemType }}
         />
       );
     case 'REQUEST_PUBLISH':
@@ -128,7 +127,7 @@ export function renderActivity(
         <FormattedMessage
           id="activityDashlet.requestPublishActivityMessage"
           defaultMessage="Requested publishing for <anchor>{item}</anchor> {systemType}"
-          values={{ item, anchor, systemType }}
+          values={{ item: [item.label, item.systemType, item.previewUrl], anchor, systemType }}
         />
       );
     case 'PUBLISH':
@@ -142,7 +141,7 @@ export function renderActivity(
         <FormattedMessage
           id="activityDashlet.approveActivityMessage"
           defaultMessage="Approved <anchor>{item}</anchor> {systemType} as part of <render_package_link>a package</render_package_link>"
-          values={{ item, anchor, render_package_link, systemType }}
+          values={{ item: [item.label, item.systemType, item.previewUrl], anchor, render_package_link, systemType }}
         />
       );
     case 'REJECT':
@@ -155,7 +154,7 @@ export function renderActivity(
         <FormattedMessage
           id="activityDashlet.rejectActivityMessage"
           defaultMessage="Rejected <anchor>{item}</anchor> {systemType}"
-          values={{ item, anchor, systemType }}
+          values={{ item: [item.label, item.systemType, item.previewUrl], anchor, systemType }}
         />
       );
     case 'REVERT':
@@ -168,7 +167,7 @@ export function renderActivity(
         <FormattedMessage
           id="activityDashlet.revertActivityMessage"
           defaultMessage="Reverted <anchor>{item}</anchor> {systemType}"
-          values={{ item, anchor, systemType }}
+          values={{ item: [item.label, item.systemType, item.previewUrl], anchor, systemType }}
         />
       );
     case 'PUBLISHED':
@@ -213,7 +212,7 @@ export const activityNameLookup: Record<Activities | 'ALL', any> = {
   INITIAL_PUBLISH: <FormattedMessage id="operations.initialPublish" defaultMessage="Initial Publish" />,
   MOVE: <FormattedMessage id="words.move" defaultMessage="Move" />,
   PUBLISH: <FormattedMessage id="words.approve" defaultMessage="Approve" />,
-  PUBLISHED: <FormattedMessage id="words.published" defaultMessage="Publish" />,
+  PUBLISHED: <FormattedMessage id="words.publish" defaultMessage="Publish" />,
   REJECT: <FormattedMessage id="words.reject" defaultMessage="Reject" />,
   REQUEST_PUBLISH: <FormattedMessage id="operations.requestPublish" defaultMessage="Request Publish" />,
   REVERT: <FormattedMessage id="words.revert" defaultMessage="Revert" />,

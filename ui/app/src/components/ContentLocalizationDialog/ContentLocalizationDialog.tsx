@@ -22,7 +22,7 @@ import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
-import ContextMenu from '../ContextMenu';
+import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import { markForTranslation } from '../../services/translation';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
@@ -35,18 +35,18 @@ import ActionsBar from '../ActionsBar';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useUnmount } from '../../hooks/useUnmount';
 
-const translations = defineMessages({
+const translations: { [id: string]: any } = defineMessages({
   mark: {
     id: 'contentLocalization.mark',
     defaultMessage: 'Mark for translation'
   },
   approveTranslation: {
     id: 'contentLocalization.approve',
-    label: 'Approve translation'
+    defaultMessage: 'Approve translation'
   },
   deleteTranslation: {
     id: 'contentLocalization.delete',
-    label: 'Delete translation'
+    defaultMessage: 'Delete translation'
   },
   locales: {
     id: 'words.locales',
@@ -130,7 +130,7 @@ const localizationMap: any = {
   de: 'German (de)'
 };
 
-const menuSections = [
+const menuSections: ContextMenuOption[] = [
   {
     id: 'edit',
     label: translations.edit

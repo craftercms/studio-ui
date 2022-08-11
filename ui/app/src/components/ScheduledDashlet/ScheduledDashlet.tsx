@@ -116,14 +116,14 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                     values={{
                       name: item.submitter.firstName,
                       publishingTarget: item.publishingTarget,
-                      render_target(target) {
+                      render_target(target: string[]) {
                         return (
                           <Typography
                             component="span"
                             fontWeight="bold"
-                            color={target === 'live' ? LIVE_COLOUR : STAGING_COLOUR}
+                            color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}
                           >
-                            {messages[target] ? formatMessage(messages[target]).toLowerCase() : target}
+                            {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Typography>
                         );
                       }

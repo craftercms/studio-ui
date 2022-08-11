@@ -264,7 +264,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
             </Grid>
             <TextField
               className={classes.textField}
-              label={<FormattedMessage id="words.email" defaultMessage="Email" />}
+              label={<FormattedMessage id="words.email" defaultMessage="E-mail" />}
               required
               fullWidth
               value={newUser.email}

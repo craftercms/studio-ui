@@ -62,7 +62,7 @@ export function PluginDocumentation(props: PluginDocumentationProps) {
           <FormattedMessage
             id="pluginDetails.markdownError"
             defaultMessage="Unable to render documentation. Visit <a>{link}</a> to view."
-            values={{ link: plugin.documentation, a: (text) => <a href={text}>{text}</a> }}
+            values={{ link: plugin.documentation, a: (text: string[]) => <a href={text[0]}>{text[0]}</a> }}
           />
         </Typography>
       )}

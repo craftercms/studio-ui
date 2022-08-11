@@ -49,7 +49,7 @@ export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
         </Box>
         <Box display="flex" p="10px 0" alignItems="center">
           <Typography color="textSecondary" className={classes.label}>
-            <FormattedMessage id="words.timestamp" defaultMessage="timestamp" />
+            <FormattedMessage id="words.timestamp" defaultMessage="Timestamp" />
           </Typography>
           <Box display="flex" width="100%" alignItems="center">
             <Typography>

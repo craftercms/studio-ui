@@ -57,14 +57,6 @@ export const translations = defineMessages({
     id: 'search.goToPreview',
     defaultMessage: 'Go to page'
   },
-  resultsCaption: {
-    id: 'search.resultsCaption',
-    defaultMessage: '{from}-{to} of {count} results {keywordLength, plural, =0 {}other{ for <b>“{keyword}”</b>}} '
-  },
-  filtersActive: {
-    id: 'search.filtersActive',
-    defaultMessage: ' • <span>Filters Active</span>'
-  },
   search: {
     id: 'words.search',
     defaultMessage: 'Search'

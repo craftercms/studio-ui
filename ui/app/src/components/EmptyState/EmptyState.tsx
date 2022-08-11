@@ -91,8 +91,10 @@ export function EmptyState(props: EmptyStateProps) {
   const { classes, cx } = useStyles(props.styles);
   const { formatMessage } = useIntl();
   const { image = emptyImage, classes: propClasses, children } = props;
-  const title = isValidElement(props.title) ? props.title : formatMessage(props.title as MessageDescriptor);
-  const subtitle = isValidElement(props.subtitle) ? props.subtitle : formatMessage(props.subtitle as MessageDescriptor);
+  const title = isValidElement(props.title) ? (props.title as string) : formatMessage(props.title as MessageDescriptor);
+  const subtitle = isValidElement(props.subtitle)
+    ? (props.subtitle as string)
+    : formatMessage(props.subtitle as MessageDescriptor);
   return (
     <div className={cx(classes.root, propClasses?.root)}>
       {image && <img className={cx(classes.image, propClasses?.image)} src={image} alt="" />}

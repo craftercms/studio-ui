@@ -69,7 +69,6 @@ interface FancyFormattedDateProps {
 }
 
 export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
-  const ordinals = 'selectordinal, one {#st} two {#nd} few {#rd} other {#th}';
   const { date, locale } = props;
   const hour12 = locale?.dateTimeFormatOptions?.hour12 ?? true;
 
@@ -80,7 +79,7 @@ export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
           {`${parts[0].value} ${parts[2].value} `}
           <FormattedMessage
             id="dateTime.ordinals"
-            defaultMessage={`{day, ${ordinals}}`}
+            defaultMessage="{day, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}"
             values={{ day: parts[4].value }}
           />{' '}
           {parts[6].value} @ <FormattedTime value={date} hour12={hour12} />
