@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get } from '../utils/ajax';
+import { get, post } from '../utils/ajax';
 import { Observable } from 'rxjs';
 import { Log } from '../models/Log';
 import { map, pluck } from 'rxjs/operators';
@@ -25,11 +25,9 @@ export function fetchLogs(since: number): Observable<Log[]> {
 }
 
 export function fetchLoggers(): Observable<Logger[]> {
-  return get('/studio/api/1/services/api/1/server/get-loggers.json').pipe(pluck('response'));
+  return get('/studio/api/2/loggers').pipe(pluck('response', 'results'));
 }
 
-export function setLogger(loggerName: string, level: LoggerLevel): Observable<true> {
-  return get(`/studio/api/1/services/api/1/server/set-logger-state.json?level=${level}&logger=${loggerName}`).pipe(
-    map(() => true)
-  );
+export function setLogger(name: string, level: LoggerLevel): Observable<true> {
+  return post('/studio/api/2/loggers/logger_level', { name, level }).pipe(map(() => true));
 }
