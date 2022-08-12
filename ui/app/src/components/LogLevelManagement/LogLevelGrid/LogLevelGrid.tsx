@@ -45,7 +45,7 @@ export interface LoggingLevelsGridUIProps {
   onChangeLevel(logger: Logger, level: LoggerLevel): void;
 }
 
-const levels: LoggerLevel[] = ['off', 'fatal', 'error', 'warn', 'info', 'debug', 'trace', 'all'];
+const levels: LoggerLevel[] = ['off', 'error', 'warn', 'info', 'debug', 'trace', 'all'];
 const capitalizedLevels = levels.map(capitalize) as LoggerLevel[];
 
 const CHUNK_SIZE = 30;
