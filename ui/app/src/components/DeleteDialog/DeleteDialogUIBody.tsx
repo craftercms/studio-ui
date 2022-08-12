@@ -58,13 +58,6 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             disabled={isDisabled}
           />
           <SelectionList
-            title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
-            subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
-            emptyMessage={<FormattedMessage id="deleteDialog.emptyChildItems" defaultMessage="No child items" />}
-            paths={deleteDependencies.childItems}
-            displayItemTitle={false}
-          />
-          <SelectionList
             title={<FormattedMessage id="deleteDialog.dependentItems" defaultMessage="Dependent Items" />}
             subtitle={<FormattedMessage id="deleteDialog.brokenItems" defaultMessage="Will have broken references" />}
             emptyMessage={
@@ -77,6 +70,13 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             selectedItems={selectedItems}
             disabled={isDisabled}
             onEditClick={onEditDependantClick}
+          />
+          <SelectionList
+            title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
+            subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
+            emptyMessage={<FormattedMessage id="deleteDialog.emptyChildItems" defaultMessage="No child items" />}
+            paths={deleteDependencies.childItems}
+            displayItemTitle={false}
           />
         </div>
       </Grid>

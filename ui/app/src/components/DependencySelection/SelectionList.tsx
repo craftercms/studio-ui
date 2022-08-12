@@ -25,7 +25,7 @@ import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import Box from '@mui/material/Box';
 import ItemStateIcon from '../ItemStateIcon';
-import { getDateScheduled } from '../../utils/content';
+import { getDateScheduled, isEditableAsset } from '../../utils/content';
 import { FormattedMessage } from 'react-intl';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
@@ -278,7 +278,7 @@ export function SelectionList(props: SelectionListProps) {
                       classes: { root: classes.overflowText }
                     }}
                   />
-                  {onEditClick && (
+                  {onEditClick && isEditableAsset(path) && (
                     <ListItemSecondaryAction>
                       <Button
                         color="primary"

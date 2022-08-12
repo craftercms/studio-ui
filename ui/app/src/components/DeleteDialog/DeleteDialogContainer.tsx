@@ -94,7 +94,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   };
 
   const fetchOrCleanDependencies = (nextChecked) => {
-    let paths = createCheckedList(nextChecked, dependentItems);
+    let paths = createCheckedList(nextChecked);
     if (paths.length) {
       dispatch(fetchDeleteDependencies({ paths }));
     } else {
@@ -109,8 +109,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     // If there aren't any checked main items, uncheck everything.
     const checkedMainItems = createCheckedList(nextChecked, dependentItems);
     checkedMainItems.length === 0 && (nextChecked = {});
-    // Only recalculate dependencies for changes the main set items, not dependant.
-    !dependentItems.includes(path) && fetchOrCleanDependencies(nextChecked);
+    fetchOrCleanDependencies(nextChecked);
     setSelectedItems(nextChecked);
   };
 
