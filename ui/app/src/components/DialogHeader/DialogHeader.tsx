@@ -82,8 +82,8 @@ const translations = defineMessages({
     defaultMessage: 'Back'
   },
   dismiss: {
-    id: 'words.dismiss',
-    defaultMessage: 'Dismiss'
+    id: 'words.close',
+    defaultMessage: 'Close'
   },
   minimize: {
     id: 'words.minimize',

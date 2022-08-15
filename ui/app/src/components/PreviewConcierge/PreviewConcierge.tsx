@@ -206,24 +206,23 @@ const issueDescriptorRequest = (props) => {
       switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
         let requests: Array<Observable<ContentInstance>> = [];
         let sandboxItemPaths = [];
+        let sandboxItemPathLookup = {};
         Object.values(obj.modelLookup).forEach((model) => {
           if (model.craftercms.path) {
             sandboxItemPaths.push(model.craftercms.path);
-            Object.values(model.craftercms.sourceMap).forEach((value) => {
-              if (!sandboxItemPaths.includes(value)) {
-                sandboxItemPaths.push(value);
+            sandboxItemPathLookup[model.craftercms.path] = true;
+            Object.values(model.craftercms.sourceMap).forEach((path) => {
+              if (!sandboxItemPathLookup[path]) {
+                sandboxItemPathLookup[path] = true;
+                sandboxItemPaths.push(path);
+              }
+              if (!requestedSourceMapPaths.current[path]) {
+                requestedSourceMapPaths.current[path] = true;
+                requests.push(fetchContentInstance(site, path, contentTypes));
               }
             });
           }
         });
-
-        Object.values(obj.model.craftercms.sourceMap).forEach((path) => {
-          if (!requestedSourceMapPaths.current[path]) {
-            requestedSourceMapPaths.current[path] = true;
-            requests.push(fetchContentInstance(site, path, contentTypes));
-          }
-        });
-
         return forkJoin({
           sandboxItems: fetchItemsByPath(site, sandboxItemPaths),
           models: requests.length

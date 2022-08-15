@@ -65,7 +65,8 @@ import {
   STATE_TRANSLATION_IN_PROGRESS_MASK,
   STATE_TRANSLATION_PENDING_MASK,
   STATE_TRANSLATION_UP_TO_DATE_MASK,
-  pageControllersFieldId
+  pageControllersFieldId,
+  pageControllersLegacyFieldId
 } from './constants';
 import { SystemType } from '../models/SystemType';
 import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
@@ -439,7 +440,7 @@ function parseElementByContentType(
     case 'node-selector': {
       const array = [];
       const items = element.querySelectorAll(':scope > item');
-      if (field.id === pageControllersFieldId) {
+      if (field.id === pageControllersFieldId || field.id === pageControllersLegacyFieldId) {
         items.forEach((item) => {
           array.push({
             key: getInnerHtml(item.querySelector(':scope > key')),
@@ -565,13 +566,19 @@ export function createModelHierarchyDescriptorMap(
       ) {
         if (field.type === 'node-selector') {
           field.id !== pageControllersFieldId &&
+            field.id !== pageControllersLegacyFieldId &&
             source[field.id].forEach((component, index) => {
               lookup[currentModelId].children.push(component);
               if (lookup[component]) {
                 if (lookup[component].parentId !== null && lookup[component].parentId !== model.craftercms.id) {
-                  console.error(
-                    `Model ${component} was found in multiple parents (${lookup[component].parentId} and ${model.craftercms.id}). ` +
-                      `Same model twice on a single page may have unexpected behaviours for in-context editing.`
+                  console.error.apply(
+                    console,
+                    [
+                      `Model ${component} was found in multiple parents (${lookup[component].parentId} and ${model.craftercms.id}). ` +
+                        `Same model twice on a single page may have unexpected behaviours for in-context editing.`,
+                      // @ts-ignore
+                      typeof component !== 'string' && component
+                    ].filter(Boolean)
                   );
                 }
               } else {
