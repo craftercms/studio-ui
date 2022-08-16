@@ -156,14 +156,19 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
 
                   callback = {
                     success: function (isWrite, perms) {
-                      var totalPerms, isWrite;
+                      var totalPerms;
 
                       this._self.addFilePermissions(this.filePath, perms, filePermissions, permissionAggregateCounter);
-                      totalPerms = this._self.getAgreggatePermissions(
-                        filePermissions.fileLen,
-                        permissionAggregateCounter
-                      );
-                      isWrite = this._self.hasWritePermission(totalPerms);
+                      if (selectedContent.length > 1) {
+                        totalPerms = this._self.getAgreggatePermissions(
+                          filePermissions.fileLen,
+                          permissionAggregateCounter
+                        );
+                        isWrite = this._self.hasWritePermission(totalPerms);
+                      } else {
+                        totalPerms = perms;
+                      }
+
                       this._self._drawNav(selectedContent, isWrite, totalPerms);
 
                       if (CStudioAuthoringContext.isPreview == true && selectedContent[0].disabled == true) {
