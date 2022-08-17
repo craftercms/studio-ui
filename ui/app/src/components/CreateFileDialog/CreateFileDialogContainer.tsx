@@ -27,7 +27,7 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog';
-import { CreateFileContainerProps, getExtension, getName } from './utils';
+import { CreateFileContainerProps } from './utils';
 import { translations } from './translations';
 import { updateCreateFileDialog, updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
@@ -38,6 +38,7 @@ import { isBlank } from '../../utils/string';
 import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { cleanupAssetName, getExtension, getName } from '../../utils/content';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const { onClose, onCreated, type, path, allowBraces } = props;
@@ -187,13 +188,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) =>
-              onInputChanges(
-                event.target.value
-                  .replace(allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '')
-                  .replace(/\.{1,}/g, '.')
-              )
-            }
+            onChange={(event) => onInputChanges(cleanupAssetName(event.target.value, allowBraces))}
           />
         </form>
       </DialogBody>

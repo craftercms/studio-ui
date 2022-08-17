@@ -36,6 +36,8 @@ import {
   fetchDeleteDependencies,
   fetchDeleteDependenciesComplete,
   fetchDeleteDependenciesFailed,
+  fetchRenameAssetDependants,
+  fetchRenameAssetDependantsComplete,
   newContentCreationComplete,
   showCodeEditorDialog,
   showConfirmDialog,
@@ -46,7 +48,7 @@ import {
   updateEditConfig,
   updatePreviewDialog
 } from '../actions/dialogs';
-import { fetchDeleteDependencies as fetchDeleteDependenciesService } from '../../services/dependencies';
+import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { batchActions } from '../actions/misc';
@@ -59,6 +61,8 @@ import infoGraphic from '../../assets/information.svg';
 import { nnou, nou } from '../../utils/object';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { fetchDetailedItems, unlockItem } from '../actions/content';
+import { parseLegacyItemToDetailedItem } from '../../utils/content';
+import { LegacyItem } from '../../models';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -243,6 +247,21 @@ const dialogEpics: CrafterCMSEpic[] = [
         return item.stateMap.locked && item.lockOwner === username;
       }),
       map(([, state]) => unlockItem({ path: state.dialogs.codeEditor.path }))
+    ),
+  // endregion
+  // region renameAssetDialog
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchRenameAssetDependants.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        fetchDependant(state.sites.active, state.dialogs.renameAsset.path).pipe(
+          map((response: LegacyItem[]) => {
+            const dependantItems = parseLegacyItemToDetailedItem(response);
+            return fetchRenameAssetDependantsComplete(dependantItems);
+          })
+        )
+      )
     )
   // endregion
 ] as CrafterCMSEpic[];

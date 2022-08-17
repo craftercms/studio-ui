@@ -46,7 +46,8 @@ import { EditSiteDialogStateProps } from '../../components/EditSiteDialog/utils'
 import { LegacyFormDialogStateProps } from '../../components/LegacyFormDialog/utils';
 import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUploadDialog';
 import ContentInstance from '../../models/ContentInstance';
-import { ContentTypeFieldValidation } from '../../models';
+import { ContentTypeFieldValidation, DetailedItem } from '../../models';
+import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -180,6 +181,20 @@ export const closeCreateFileDialog = /*#__PURE__*/ createAction<StandardAction>(
 export const createFileDialogClosed = /*#__PURE__*/ createAction('CREATE_FILE_DIALOG_CLOSED');
 export const updateCreateFileDialog =
   /*#__PURE__*/ createAction<Partial<CreateFileStateProps>>('UPDATE_CREATE_FILE_DIALOG');
+// endregion
+
+// region Rename Asset Dialog
+export const showRenameAssetDialog =
+  /*#__PURE__*/ createAction<Partial<RenameAssetStateProps>>('SHOW_RENAME_ASSET_DIALOG');
+export const closeRenameAssetDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_RENAME_ASSET_DIALOG');
+export const renameAssetDialogClosed = /*#__PURE__*/ createAction('RENAME_ASSET_DIALOG_CLOSED');
+export const updateRenameAssetDialog =
+  /*#__PURE__*/ createAction<Partial<RenameAssetStateProps>>('UPDATE_RENAME_ASSET_DIALOG');
+export const fetchRenameAssetDependants = /*#__PURE__*/ createAction('FETCH_RENAME_ASSET_DEPENDANTS');
+export const fetchRenameAssetDependantsComplete = /*#__PURE__*/ createAction<DetailedItem[]>(
+  'FETCH_RENAME_ASSET_DEPENDANTS_COMPLETE'
+);
+export const fetchRenameAssetDependantsFailed = /*#__PURE__*/ createAction('FETCH_RENAME_ASSET_DEPENDANTS_FAILED');
 // endregion
 
 // region Copy Dialog

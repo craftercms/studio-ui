@@ -14,24 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import StandardAction from '../../models/StandardAction';
+import { ApiResponse, DetailedItem } from '../../models';
 
-export interface CreateFileBaseProps {
-  type: 'controller' | 'template';
+export interface RenameAssetBaseProps {
   path: string;
+  type: 'controller' | 'template';
+  dependantItems: DetailedItem[];
+  value?: string;
   allowBraces?: boolean;
 }
 
-export interface CreateFileProps extends CreateFileBaseProps, EnhancedDialogProps {
-  onCreated?(response: { path: string; fileName: string; mode: string; openOnSuccess: boolean }): void;
+export interface RenameAssetProps extends RenameAssetBaseProps, EnhancedDialogProps {
+  onRenamed?(response: { path: string; name: string }): void;
 }
 
-export interface CreateFileStateProps extends CreateFileBaseProps, EnhancedDialogState {
+export interface RenameAssetStateProps extends RenameAssetBaseProps, EnhancedDialogState {
   onClose?: StandardAction;
   onClosed?: StandardAction;
-  onCreated?: StandardAction;
+  onRenamed?: StandardAction;
 }
 
-export interface CreateFileContainerProps extends CreateFileBaseProps, Pick<CreateFileProps, 'onCreated' | 'onClose'> {}
+export interface RenameAssetContainerProps
+  extends Pick<RenameAssetProps, 'path' | 'value' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type'> {
+  dependantItems: DetailedItem[];
+}
