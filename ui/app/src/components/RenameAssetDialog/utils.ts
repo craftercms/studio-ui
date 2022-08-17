@@ -17,7 +17,7 @@
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import StandardAction from '../../models/StandardAction';
-import { ApiResponse, DetailedItem } from '../../models';
+import { DetailedItem } from '../../models';
 
 export interface RenameAssetBaseProps {
   path: string;
