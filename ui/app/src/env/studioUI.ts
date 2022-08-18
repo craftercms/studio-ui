@@ -269,6 +269,7 @@ export const components = {
   PublishingStatusWidget: lazy(() => import('../components/PublishingStatusWidget')),
   QuickCreate: lazy(() => import('../components/QuickCreate')),
   RecentlyPublishedDashlet: lazy(() => import('../components/RecentlyPublishedDashlet')),
+  RecycleBin: lazy(() => import('../components/RecycleBin')),
   RejectDialog: lazy(() => import('../components/RejectDialog')),
   ResetPasswordDialog: lazy(() => import('../components/ResetPasswordDialog')),
   ResizeBar: lazy(() => import('../components/ResizeBar')),

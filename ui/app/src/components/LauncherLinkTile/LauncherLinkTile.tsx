@@ -39,7 +39,9 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const title = usePossibleTranslation(propTitle);
-  const isDialog = ['siteDashboardDialog', 'siteToolsDialog', 'siteSearchDialog'].includes(systemLinkId);
+  const isDialog = ['siteDashboardDialog', 'siteToolsDialog', 'siteSearchDialog', 'siteRecycleBin'].includes(
+    systemLinkId
+  );
 
   const onClick = isDialog
     ? (e) => {
@@ -50,6 +52,8 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
           const id = systemLinkId === 'siteDashboardDialog' ? 'craftercms.components.Dashboard' : (
             systemLinkId === 'siteToolsDialog'
               ? 'craftercms.components.EmbeddedSiteTools'
+              : systemLinkId === 'siteRecycleBin'
+              ? 'craftercms.components.RecycleBin'
               : 'craftercms.components.Search'
           );
           dispatch(
