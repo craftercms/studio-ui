@@ -21,7 +21,7 @@ import { DetailedItem } from '../../models';
 
 export interface RenameAssetBaseProps {
   path: string;
-  type: 'controller' | 'template';
+  type: 'controller' | 'template' | 'asset';
   dependantItems: DetailedItem[];
   value?: string;
   allowBraces?: boolean;

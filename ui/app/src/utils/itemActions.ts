@@ -103,8 +103,7 @@ import {
   hasRenameAction,
   hasSchedulePublishAction,
   hasUnlockAction,
-  hasUploadAction,
-  removeExtension
+  hasUploadAction
 } from './content';
 import { getEditorMode, isImage, isNavigable, isPreviewable, isVideo } from '../components/PathNavigator/utils';
 import React from 'react';
@@ -592,7 +591,7 @@ export const itemActionDispatcher = ({
               path: item.path,
               allowBraces: item.path.startsWith('/scripts/rest'),
               type,
-              value: removeExtension(item.label)
+              value: item.label
             })
           );
         }

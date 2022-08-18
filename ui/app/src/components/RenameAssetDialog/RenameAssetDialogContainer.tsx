@@ -22,7 +22,7 @@ import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { fetchRenameAssetDependants, updateRenameAssetDialog } from '../../state/actions/dialogs';
-import { cleanupAssetName, editorDisplay, getExtension, isEditableAsset } from '../../utils/content';
+import { cleanupAssetName, editorDisplay, getName, isEditableAsset } from '../../utils/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { DependenciesList } from '../DependenciesDialog';
 import useItemsByPath from '../../hooks/useItemsByPath';
@@ -38,7 +38,6 @@ import { renameContent } from '../../services/content';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from '../CreateFileDialog/translations';
 import Typography from '@mui/material/Typography';
-import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -46,6 +45,7 @@ import { DetailedItem } from '../../models';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import useSelection from '../../hooks/useSelection';
+import Alert from '@mui/material/Alert';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const { onClose, onRenamed, path, value = '', allowBraces = false, type, dependantItems } = props;
@@ -53,9 +53,9 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
   const itemLookupTable = useItemsByPath();
-  const assetExtension = getExtension(type, path);
-  const newAssetPath = `${getParentPath(path)}/${name}.${assetExtension}`;
-  const assetExists = name !== value && itemLookupTable[newAssetPath] !== UNDEFINED;
+  const newAssetName = type !== 'asset' ? getName(type, name) : name;
+  const newAssetPath = `${getParentPath(path)}/${newAssetName}`;
+  const assetExists = newAssetName !== value && itemLookupTable[newAssetPath] !== UNDEFINED;
   const isValid = !isBlank(name) && !assetExists && name !== value;
   const siteId = useActiveSiteId();
   const [confirm, setConfirm] = useState(null);
@@ -76,7 +76,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   };
 
   const onRenameAsset = (siteId: string, path: string, name: string) => {
-    renameContent(siteId, path, `${name}.${assetExtension}`).subscribe({
+    const fileName = type !== 'asset' ? getName(type, name) : name;
+    renameContent(siteId, path, `${fileName}`).subscribe({
       next() {
         onRenamed?.({ path, name });
         dispatch(updateRenameAssetDialog({ isSubmitting: false, hasPendingChanges: false }));
@@ -198,9 +199,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
                 </MenuItem>
               )}
             </Menu>
-            <FormGroup>
+            <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
               <FormControlLabel
-                sx={{ mt: 2 }}
                 control={
                   <Checkbox
                     checked={confirmBrokenReferences}
@@ -215,7 +215,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
                   />
                 }
               />
-            </FormGroup>
+            </Alert>
           </>
         )}
       </DialogBody>
