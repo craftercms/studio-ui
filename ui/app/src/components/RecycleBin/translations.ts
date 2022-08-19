@@ -36,5 +36,33 @@ export const translations = defineMessages({
   deletedBy: {
     id: 'recycleBin.deletedBy',
     defaultMessage: 'Deleted by'
+  },
+  live: {
+    id: 'words.live',
+    defaultMessage: 'Live'
+  },
+  staged: {
+    id: 'words.staged',
+    defaultMessage: 'Staged'
+  },
+  restore: {
+    id: 'words.restore',
+    defaultMessage: 'Restore'
+  },
+  publishDeletion: {
+    id: 'recycleBin.publishDeletion',
+    defaultMessage: 'Publish Deletion'
+  },
+  item: {
+    id: 'words.item',
+    defaultMessage: 'Item'
+  },
+  lastModified: {
+    id: 'recycleBin.lastModified',
+    defaultMessage: 'Last modified'
+  },
+  lastPublish: {
+    id: 'recycleBin.lastPublish',
+    defaultMessage: 'Last publish'
   }
 });

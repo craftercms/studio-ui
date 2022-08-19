@@ -23,10 +23,12 @@ import TranslationOrText from '../../models/TranslationOrText';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import Box, { BoxProps } from '@mui/material/Box';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
 export interface ActionsBarAction {
   id: string;
   label: TranslationOrText;
+  icon?: SystemIconDescriptor;
 }
 
 interface ActionsBarProps {
@@ -97,6 +99,7 @@ export function ActionsBar(props: ActionsBarProps) {
                 disabled={disabled}
                 {...buttonProps}
                 onClick={() => onOptionClicked(option.id)}
+                startIcon={option.icon ? <SystemIcon icon={option.icon} /> : null}
               >
                 {getPossibleTranslation(option.label, formatMessage)}
               </Button>

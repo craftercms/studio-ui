@@ -14,16 +14,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import RecycleBinGridUI from './RecycleBinGridUI';
 import Box from '@mui/material/Box';
 import { ViewToolbar } from '../ViewToolbar';
 import { makeStyles } from 'tss-react/mui';
 import { Theme } from '@mui/material/styles';
 import { SearchBar } from '../SearchBar';
+import { ActionsBar } from '../ActionsBar';
+import useEnhancedDialogState from '../../hooks/useEnhancedDialogState';
+import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
+import { RecycleBinPackageDialog } from '../RecycleBinPackageDialog';
+import { recycleBinPackages } from './utils';
+import { useIntl } from 'react-intl';
+import { translations } from './translations';
 
-// TODO: update to use sx
-const useStyles = makeStyles()((theme: Theme) => ({
+export const useStyles = makeStyles()((theme: Theme) => ({
   searchBarContainer: {
     width: '30%',
     [theme.breakpoints.up('md')]: {
@@ -32,39 +38,56 @@ const useStyles = makeStyles()((theme: Theme) => ({
   },
   searchPaper: {
     flex: 1
+  },
+  actionsBarRoot: {
+    left: '0',
+    right: '0',
+    zIndex: 2,
+    position: 'absolute'
+  },
+  actionsBarCheckbox: {
+    margin: '7px 2px'
+  },
+  recycleBinPackageDialogFooter: {
+    justifyContent: 'space-between'
+  },
+  itemTableContainer: {
+    borderTop: `1px solid ${theme.palette.divider}`
+  },
+  noBorder: {
+    border: 'none !important'
   }
 }));
 
-// TODO: remove - for testing purposes
-const deletePackages = [
-  {
-    id: 1,
-    comment: 'Delete Screenshot 2022-08-02 at 12.44.44.png',
-    numOfItems: 1,
-    published: null,
-    dateDeleted: '2022-08-18T13:42:48-06:00',
-    deletedBy: 'parturient.ipsum@eidiculus.esque'
-  },
-  {
-    id: 2,
-    comment: 'Delete Entertainment page and 6 more items',
-    numOfItems: 1,
-    published: 'live',
-    dateDeleted: '2022-08-18T13:42:48-06:00',
-    deletedBy: 'parturient.ipsum@eidiculus.esque'
-  },
-  {
-    id: 3,
-    comment: 'Cleanup for site 2022 redesign',
-    numOfItems: 1,
-    published: 'stage',
-    dateDeleted: '2022-08-18T13:42:48-06:00',
-    deletedBy: 'parturient.ipsum@eidiculus.esque'
-  }
-];
-
+// TODO: embedded prop
 export function RecycleBin() {
   const { classes } = useStyles();
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedPackages, setSelectedPackages] = useState([]);
+  const [recycleBinPackage, setRecycleBinPackage] = useState(null);
+  const isAllChecked = recycleBinPackages.length > 0 && selectedPackages.length === recycleBinPackages.length;
+  const isIndeterminate = selectedPackages.length > 0 && selectedPackages.length < recycleBinPackages.length;
+  const { formatMessage } = useIntl();
+
+  const recycleBinPackageDialogState = useEnhancedDialogState();
+  const recycleBinPackageDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(
+    recycleBinPackageDialogState.onClose
+  );
+
+  const onToggleCheckedAll = () => {
+    if (isAllChecked) {
+      setSelectedPackages([]);
+    } else {
+      const checked = [];
+      recycleBinPackages.forEach((recycleBinPackage) => checked.push(recycleBinPackage.id));
+      setSelectedPackages(checked);
+    }
+  };
+
+  const onOpenPackageDetails = (recycleBinPackage) => {
+    setRecycleBinPackage(recycleBinPackage);
+    recycleBinPackageDialogState.onOpen();
+  };
 
   return (
     <Box>
@@ -79,7 +102,50 @@ export function RecycleBin() {
           />
         </section>
       </ViewToolbar>
-      <RecycleBinGridUI packages={deletePackages} />
+      <Box>
+        {(isIndeterminate || isAllChecked) && (
+          <ActionsBar
+            classes={{
+              root: classes.actionsBarRoot,
+              checkbox: classes.actionsBarCheckbox
+            }}
+            options={[
+              {
+                id: 'restore',
+                label: formatMessage(translations.restore),
+                icon: { id: '@mui/icons-material/SettingsBackupRestoreOutlined' }
+              },
+              {
+                id: 'publish',
+                label: formatMessage(translations.publishDeletion),
+                icon: { id: '@mui/icons-material/CloudUploadOutlined' }
+              }
+            ]}
+            isIndeterminate={isIndeterminate}
+            isChecked={isAllChecked}
+            numOfSkeletonItems={2}
+            onOptionClicked={() => {
+              console.log('option clicked');
+            }}
+            onCheckboxChange={onToggleCheckedAll}
+          />
+        )}
+        <RecycleBinGridUI
+          packages={recycleBinPackages}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          selectedPackages={selectedPackages}
+          setSelectedPackages={setSelectedPackages}
+          onOpenPackageDetails={onOpenPackageDetails}
+        />
+      </Box>
+      <RecycleBinPackageDialog
+        open={recycleBinPackageDialogState.open}
+        onClose={recycleBinPackageDialogState.onClose}
+        recycleBinPackage={recycleBinPackage}
+        onWithPendingChangesCloseRequest={recycleBinPackageDialogPendingChangesCloseRequest}
+        onSubmittingAndOrPendingChange={recycleBinPackageDialogState.onSubmittingAndOrPendingChange}
+      />
     </Box>
   );
 }

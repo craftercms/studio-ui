@@ -22,9 +22,13 @@ import Typography from '@mui/material/Typography';
 import { translations } from './translations';
 import { useIntl } from 'react-intl';
 import { RecycleBinGridUIProps } from './utils';
+import { nou } from '../../utils/object';
+import Chip from '@mui/material/Chip';
+import ItemDisplay from '../ItemDisplay';
+import { status } from '../IconGuideDashlet';
 
 export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
-  const { packages } = props;
+  const { packages, pageSize, setPageSize, selectedPackages, setSelectedPackages, onOpenPackageDetails } = props;
   const localeBranch = useLocale();
   const { formatMessage } = useIntl();
 
@@ -48,7 +52,19 @@ export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
       headerName: formatMessage(translations.published),
       flex: 0.3,
       sortable: false,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params: GridCellParams) => {
+        if (nou(params.value)) {
+          return <Chip label="No" size="small" />;
+        } else {
+          return (
+            <>
+              <ItemDisplay item={status[params.value]} showItemType={false} />{' '}
+              {formatMessage(translations[params.value])}
+            </>
+          );
+        }
+      }
     },
     {
       field: 'dateDeleted',
@@ -82,8 +98,12 @@ export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
         autoHeight
         rows={packages}
         columns={columns}
-        pageSize={10} /* TODO: pending */
+        pageSize={pageSize}
         rowsPerPageOptions={[10, 15, 20]}
+        onPageSizeChange={setPageSize}
+        selectionModel={selectedPackages}
+        onSelectionModelChange={(selectionModel) => setSelectedPackages(selectionModel as number[])}
+        onRowClick={(params) => onOpenPackageDetails(params.row)}
         checkboxSelection
         disableSelectionOnClick
       />

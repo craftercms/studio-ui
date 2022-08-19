@@ -14,18 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from '../../models';
+export { default } from './RecycleBinPackageDialog';
 
-export interface RecycleBinPackage {
-  id: number;
-  comment: string;
-  numOfItems: number;
-  published: string;
-  deletedBy: string;
-  dateDeleted: string;
-  items: SandboxItem[];
-}
+export * from './RecycleBinPackageDialog';
 
-export interface RecycleBinGridUIProps {
-  packages: any; // TODO: pending - update when getting APIs from backend.
-}
+export * from './RecycleBinPackageDialogContainer';

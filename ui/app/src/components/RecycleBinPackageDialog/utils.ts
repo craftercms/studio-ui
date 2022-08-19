@@ -14,18 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from '../../models';
+import { EnhancedDialogProps } from '../EnhancedDialog';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { RecycleBinPackage } from '../RecycleBin';
 
-export interface RecycleBinPackage {
-  id: number;
-  comment: string;
-  numOfItems: number;
-  published: string;
-  deletedBy: string;
-  dateDeleted: string;
-  items: SandboxItem[];
+interface RecycleBinPackageDialogBase {
+  recycleBinPackage: RecycleBinPackage;
 }
 
-export interface RecycleBinGridUIProps {
-  packages: any; // TODO: pending - update when getting APIs from backend.
+export interface RecycleBinPackageDialogProps extends RecycleBinPackageDialogBase, EnhancedDialogProps {
+  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
+
+export interface RecycleBinPackageDialogContainerProps extends RecycleBinPackageDialogBase {}
