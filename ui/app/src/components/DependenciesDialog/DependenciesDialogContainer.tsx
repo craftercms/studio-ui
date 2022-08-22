@@ -29,6 +29,7 @@ import { getRootPath } from '../../utils/path';
 import { fetchDependant, fetchSimpleDependencies } from '../../services/dependencies';
 import { isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
 import DependenciesDialogUI from './DependenciesDialogUI';
+import useMount from '../../hooks/useMount';
 
 export function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
   const { item, dependenciesShown = 'depends-on', rootPath } = props;
@@ -76,8 +77,8 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
   };
 
   const getDepsItems = useCallback(
-    (siteId: string, path: string, newItem?: boolean) => {
-      if (dialog.dependenciesShown === 'depends-on') {
+    (siteId: string, path: string, dependenciesShown: string, newItem?: boolean) => {
+      if (dependenciesShown === 'depends-on') {
         if (dialog.dependantItems === null || newItem) {
           fetchDependant(siteId, path).subscribe({
             next: (response) => {
@@ -111,8 +112,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
         }
       }
     },
-    // eslint-disable-next-line
-    [dialog.item, dialog.dependenciesShown, setDialog]
+    [dialog.dependantItems, dialog.dependencies, setDialog]
   );
 
   useEffect(() => {
@@ -123,17 +123,9 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
     setDialog({ dependenciesShown });
   }, [dependenciesShown, setDialog]);
 
-  useEffect(() => {
-    if (dialog.item) {
-      getDepsItems(siteId, dialog.item.path, true);
-    }
-  }, [dialog.item, siteId, getDepsItems]);
-
-  useEffect(() => {
-    if (dialog.item) {
-      getDepsItems(siteId, dialog.item.path);
-    }
-  }, [dialog.dependenciesShown, dialog.item, getDepsItems, siteId]);
+  useMount(() => {
+    getDepsItems(siteId, item.path, dependenciesShown, true);
+  });
 
   const setCompactView = (active: boolean) => {
     setDialog({ compactView: active });
@@ -145,10 +137,12 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
 
   const setItem = (item: DetailedItem) => {
     setDialog({ item });
+    getDepsItems(siteId, item.path, dialog.dependenciesShown, true);
   };
 
   const setDependenciesShow = (dependenciesShown: string) => {
     setDialog({ dependenciesShown });
+    getDepsItems(siteId, dialog.item.path, dependenciesShown);
   };
 
   const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
