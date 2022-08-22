@@ -16,7 +16,7 @@
 
 import { RenameAssetContainerProps } from './utils';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { DialogBody } from '../DialogBody';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -117,7 +117,6 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   };
 
   const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
-    console.log('dependency', dependency);
     setContextMenu({
       el: event.currentTarget,
       dependency
@@ -134,12 +133,6 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const handleEditorDisplay = (item: DetailedItem) => {
     editorDisplay(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
   };
-
-  useEffect(() => {
-    if (path) {
-      dispatch(fetchRenameAssetDependants());
-    }
-  }, [path, dispatch]);
 
   return (
     <>
