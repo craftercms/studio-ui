@@ -20,14 +20,14 @@ import { FormattedMessage } from 'react-intl';
 import { RecycleBinPackageDialogContainer } from './RecycleBinPackageDialogContainer';
 
 export function RecycleBinPackageDialog(props: RecycleBinPackageDialogProps) {
-  const { recycleBinPackage, onSubmittingAndOrPendingChange, ...rest } = props;
+  const { recycleBinPackage, onSubmittingAndOrPendingChange, onRestore, ...rest } = props;
 
   return (
     <EnhancedDialog
       title={<FormattedMessage id="recycleBinPackageDialog.title" defaultMessage="Package Details" />}
       {...rest}
     >
-      <RecycleBinPackageDialogContainer recycleBinPackage={recycleBinPackage} />
+      <RecycleBinPackageDialogContainer recycleBinPackage={recycleBinPackage} onRestore={onRestore} />
     </EnhancedDialog>
   );
 }

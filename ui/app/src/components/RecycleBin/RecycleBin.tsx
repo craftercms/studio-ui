@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import RecycleBinGridUI from './RecycleBinGridUI';
 import Box from '@mui/material/Box';
 import { ViewToolbar } from '../ViewToolbar';
@@ -25,9 +25,17 @@ import { ActionsBar } from '../ActionsBar';
 import useEnhancedDialogState from '../../hooks/useEnhancedDialogState';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { RecycleBinPackageDialog } from '../RecycleBinPackageDialog';
-import { recycleBinPackages } from './utils';
+import { RecycleBinPackage } from './utils';
 import { useIntl } from 'react-intl';
 import { translations } from './translations';
+import UseWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
+import { RecycleBinRestoreDialog } from '../RecycleBinRestoreDialog';
+import { asArray } from '../../utils/array';
+import { fetchRecycleBinPackages, restoreRecycleBinPackages } from '../../services/content';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import { showSystemNotification } from '../../state/actions/system';
 
 export const useStyles = makeStyles()((theme: Theme) => ({
   searchBarContainer: {
@@ -63,16 +71,36 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 export function RecycleBin() {
   const { classes } = useStyles();
   const [pageSize, setPageSize] = useState(10);
+  const [recycleBinPackages, setRecycleBinPackages] = useState<RecycleBinPackage[]>([]);
   const [selectedPackages, setSelectedPackages] = useState([]);
   const [recycleBinPackage, setRecycleBinPackage] = useState(null);
+  const [restorePackages, setRestorePackages] = useState([]);
   const isAllChecked = recycleBinPackages.length > 0 && selectedPackages.length === recycleBinPackages.length;
   const isIndeterminate = selectedPackages.length > 0 && selectedPackages.length < recycleBinPackages.length;
   const { formatMessage } = useIntl();
+  const siteId = useActiveSiteId();
+  const dispatch = useDispatch();
+  const fetchPackages = useCallback((siteId) => {
+    return fetchRecycleBinPackages(siteId).subscribe({
+      next(packages) {
+        setRecycleBinPackages(packages);
+      }
+    });
+  }, []);
 
   const recycleBinPackageDialogState = useEnhancedDialogState();
   const recycleBinPackageDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(
     recycleBinPackageDialogState.onClose
   );
+
+  const recycleBinRestoreDialogState = useEnhancedDialogState();
+  const recycleBinRestoreDialogPendingChangesCloseRequest = UseWithPendingChangesCloseRequest(
+    recycleBinRestoreDialogState.onClose
+  );
+
+  useEffect(() => {
+    fetchPackages(siteId);
+  }, [siteId, fetchPackages]);
 
   const onToggleCheckedAll = () => {
     if (isAllChecked) {
@@ -87,6 +115,40 @@ export function RecycleBin() {
   const onOpenPackageDetails = (recycleBinPackage) => {
     setRecycleBinPackage(recycleBinPackage);
     recycleBinPackageDialogState.onOpen();
+  };
+
+  const onShowRestoreDialog = (packages: RecycleBinPackage[] | RecycleBinPackage) => {
+    setRestorePackages(asArray(packages));
+    recycleBinRestoreDialogState.onOpen();
+  };
+
+  const onRestore = (ids: string[]) => {
+    recycleBinRestoreDialogState.onSubmittingAndOrPendingChange({ isSubmitting: true });
+    restoreRecycleBinPackages(ids).subscribe({
+      next() {
+        recycleBinRestoreDialogState.onSubmittingAndOrPendingChange({ isSubmitting: false });
+        recycleBinRestoreDialogState.onClose();
+        fetchPackages(siteId);
+        dispatch(
+          showSystemNotification({
+            message: formatMessage(translations.restoreSuccess)
+          })
+        );
+      },
+      error(error) {
+        dispatch(showErrorDialog({ error }));
+        recycleBinRestoreDialogState.onSubmittingAndOrPendingChange({ isSubmitting: false });
+      }
+    });
+  };
+
+  const onActionBarOptionClicked = (option: string) => {
+    if (option === 'restore') {
+      const packages = recycleBinPackages.filter((recycleBinPackage) =>
+        selectedPackages.includes(recycleBinPackage.id)
+      );
+      onShowRestoreDialog(packages);
+    }
   };
 
   return (
@@ -124,9 +186,7 @@ export function RecycleBin() {
             isIndeterminate={isIndeterminate}
             isChecked={isAllChecked}
             numOfSkeletonItems={2}
-            onOptionClicked={() => {
-              console.log('option clicked');
-            }}
+            onOptionClicked={onActionBarOptionClicked}
             onCheckboxChange={onToggleCheckedAll}
           />
         )}
@@ -143,8 +203,20 @@ export function RecycleBin() {
         open={recycleBinPackageDialogState.open}
         onClose={recycleBinPackageDialogState.onClose}
         recycleBinPackage={recycleBinPackage}
+        onRestore={() => {
+          recycleBinPackageDialogState.onClose();
+          onShowRestoreDialog(recycleBinPackage);
+        }}
         onWithPendingChangesCloseRequest={recycleBinPackageDialogPendingChangesCloseRequest}
         onSubmittingAndOrPendingChange={recycleBinPackageDialogState.onSubmittingAndOrPendingChange}
+      />
+      <RecycleBinRestoreDialog
+        open={recycleBinRestoreDialogState.open}
+        onClose={recycleBinRestoreDialogState.onClose}
+        packages={restorePackages}
+        onRestore={onRestore}
+        onWithPendingChangesCloseRequest={recycleBinRestoreDialogPendingChangesCloseRequest}
+        onSubmittingAndOrPendingChange={recycleBinRestoreDialogState.onSubmittingAndOrPendingChange}
       />
     </Box>
   );

@@ -20,6 +20,7 @@ import { RecycleBinPackage } from '../RecycleBin';
 
 interface RecycleBinPackageDialogBase {
   recycleBinPackage: RecycleBinPackage;
+  onRestore(): void;
 }
 
 export interface RecycleBinPackageDialogProps extends RecycleBinPackageDialogBase, EnhancedDialogProps {

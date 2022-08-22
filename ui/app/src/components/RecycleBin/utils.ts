@@ -16,6 +16,11 @@
 
 import { SandboxItem } from '../../models';
 
+export interface Conflict {
+  conflictingPath: string;
+  resolvedPath: string;
+}
+
 export interface RecycleBinPackage {
   id: number;
   comment: string;
@@ -24,8 +29,14 @@ export interface RecycleBinPackage {
   deletedBy: string;
   dateDeleted: string;
   items: SandboxItem[];
+  conflicts: Conflict[];
 }
 
 export interface RecycleBinGridUIProps {
-  packages: any; // TODO: pending - update when getting APIs from backend.
+  packages: RecycleBinPackage[];
+  pageSize: number;
+  selectedPackages: number[];
+  setSelectedPackages(packages: number[]): void;
+  setPageSize(size: number): void;
+  onOpenPackageDetails(recycleBinPackage: RecycleBinPackage): void;
 }

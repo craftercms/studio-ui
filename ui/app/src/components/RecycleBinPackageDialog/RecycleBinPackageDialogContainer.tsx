@@ -39,12 +39,11 @@ import { useStyles } from '../RecycleBin';
 
 // TODO: Add loader
 export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogContainerProps) {
-  const { recycleBinPackage } = props;
+  const { recycleBinPackage, onRestore } = props;
   const { formatMessage } = useIntl();
   const localeBranch = useLocale();
   const { classes } = useStyles();
 
-  // TODO: i18n
   const itemsColumns: GridColDef[] = [
     {
       field: 'item',
@@ -144,6 +143,7 @@ export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogC
                 columns={itemsColumns}
                 rows={recycleBinPackage.items}
                 pageSize={10}
+                rowsPerPageOptions={[10]}
                 disableSelectionOnClick
                 classes={{
                   root: classes.noBorder,
@@ -161,6 +161,7 @@ export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogC
         <Button
           variant="text"
           startIcon={<SystemIcon icon={{ id: '@mui/icons-material/SettingsBackupRestoreOutlined' }} />}
+          onClick={onRestore}
         >
           <FormattedMessage id="words.restore" defaultMessage="Restore" />
         </Button>

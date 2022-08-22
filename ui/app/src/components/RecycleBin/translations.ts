@@ -64,5 +64,9 @@ export const translations = defineMessages({
   lastPublish: {
     id: 'recycleBin.lastPublish',
     defaultMessage: 'Last publish'
+  },
+  restoreSuccess: {
+    id: 'recycleBin.restoreSuccess',
+    defaultMessage: 'Items successfully restored.'
   }
 });
