@@ -62,7 +62,12 @@ const LauncherLinkTile = (props: LauncherLinkTileProps) => {
               showWidgetDialog({
                 id: systemLinkId,
                 title,
-                widget: { id, ...(systemLinkId === 'siteSearchDialog' && { configuration: { embedded: true } }) }
+                widget: {
+                  id,
+                  ...((systemLinkId === 'siteSearchDialog' || systemLinkId === 'siteRecycleBin') && {
+                    configuration: { embedded: true }
+                  })
+                }
               })
             ])
           );
