@@ -18,15 +18,13 @@ import React, { useCallback, useEffect, useState } from 'react';
 import RecycleBinGridUI from './RecycleBinGridUI';
 import Box from '@mui/material/Box';
 import { ViewToolbar } from '../ViewToolbar';
-import { makeStyles } from 'tss-react/mui';
-import { Theme } from '@mui/material/styles';
 import { SearchBar } from '../SearchBar';
 import { ActionsBar } from '../ActionsBar';
 import useEnhancedDialogState from '../../hooks/useEnhancedDialogState';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { RecycleBinPackageDialog } from '../RecycleBinPackageDialog';
-import { RecycleBinPackage } from './utils';
-import { useIntl } from 'react-intl';
+import { RecycleBinPackage, RecycleBinProps } from './utils';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { translations } from './translations';
 import UseWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { RecycleBinRestoreDialog } from '../RecycleBinRestoreDialog';
@@ -36,39 +34,13 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
+import { useStyles } from './styles';
+import { GlobalAppToolbar } from '../GlobalAppToolbar';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
 
-export const useStyles = makeStyles()((theme: Theme) => ({
-  searchBarContainer: {
-    width: '30%',
-    [theme.breakpoints.up('md')]: {
-      minWidth: '500px'
-    }
-  },
-  searchPaper: {
-    flex: 1
-  },
-  actionsBarRoot: {
-    left: '0',
-    right: '0',
-    zIndex: 2,
-    position: 'absolute'
-  },
-  actionsBarCheckbox: {
-    margin: '7px 2px'
-  },
-  recycleBinPackageDialogFooter: {
-    justifyContent: 'space-between'
-  },
-  itemTableContainer: {
-    borderTop: `1px solid ${theme.palette.divider}`
-  },
-  noBorder: {
-    border: 'none !important'
-  }
-}));
-
-// TODO: embedded prop
-export function RecycleBin() {
+export function RecycleBin(props: RecycleBinProps) {
+  const { embedded } = props;
   const { classes } = useStyles();
   const [pageSize, setPageSize] = useState(10);
   const [recycleBinPackages, setRecycleBinPackages] = useState<RecycleBinPackage[]>([]);
@@ -80,10 +52,18 @@ export function RecycleBin() {
   const { formatMessage } = useIntl();
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
+  const [fetchingPackages, setFetchingPackages] = useState(false);
+  const [error, setError] = useState();
   const fetchPackages = useCallback((siteId) => {
+    setFetchingPackages(true);
     return fetchRecycleBinPackages(siteId).subscribe({
       next(packages) {
         setRecycleBinPackages(packages);
+        setFetchingPackages(false);
+      },
+      error(error) {
+        setError(error);
+        setFetchingPackages(false);
       }
     });
   }, []);
@@ -128,6 +108,7 @@ export function RecycleBin() {
       next() {
         recycleBinRestoreDialogState.onSubmittingAndOrPendingChange({ isSubmitting: false });
         recycleBinRestoreDialogState.onClose();
+        setSelectedPackages([]);
         fetchPackages(siteId);
         dispatch(
           showSystemNotification({
@@ -153,52 +134,67 @@ export function RecycleBin() {
 
   return (
     <Box>
-      <ViewToolbar styles={{ toolbar: { justifyContent: 'center' } }}>
-        <section className={classes.searchBarContainer}>
-          <SearchBar
-            onChange={() => {}}
-            keyword={null}
-            showActionButton={false}
-            showDecoratorIcon
-            classes={{ root: classes.searchPaper }}
-          />
-        </section>
-      </ViewToolbar>
-      <Box>
-        {(isIndeterminate || isAllChecked) && (
-          <ActionsBar
-            classes={{
-              root: classes.actionsBarRoot,
-              checkbox: classes.actionsBarCheckbox
-            }}
-            options={[
-              {
-                id: 'restore',
-                label: formatMessage(translations.restore),
-                icon: { id: '@mui/icons-material/SettingsBackupRestoreOutlined' }
-              },
-              {
-                id: 'publish',
-                label: formatMessage(translations.publishDeletion),
-                icon: { id: '@mui/icons-material/CloudUploadOutlined' }
-              }
-            ]}
-            isIndeterminate={isIndeterminate}
-            isChecked={isAllChecked}
-            numOfSkeletonItems={2}
-            onOptionClicked={onActionBarOptionClicked}
-            onCheckboxChange={onToggleCheckedAll}
-          />
-        )}
-        <RecycleBinGridUI
-          packages={recycleBinPackages}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          selectedPackages={selectedPackages}
-          setSelectedPackages={setSelectedPackages}
-          onOpenPackageDetails={onOpenPackageDetails}
+      {!embedded && (
+        <GlobalAppToolbar
+          title={<FormattedMessage id="recycleBin.title" defaultMessage="Recycle Bin" />}
+          showHamburgerMenuButton
+          showAppsButton
         />
-      </Box>
+      )}
+      {error ? (
+        <ApiResponseErrorState error={error} />
+      ) : fetchingPackages ? (
+        <LoadingState />
+      ) : (
+        <>
+          <ViewToolbar styles={{ toolbar: { justifyContent: 'center' } }}>
+            <section className={classes.searchBarContainer}>
+              <SearchBar
+                onChange={() => {}} // TODO: pending
+                keyword={null}
+                showActionButton={false}
+                showDecoratorIcon
+                classes={{ root: classes.searchPaper }}
+              />
+            </section>
+          </ViewToolbar>
+          <Box>
+            {(isIndeterminate || isAllChecked) && (
+              <ActionsBar
+                classes={{
+                  root: classes.actionsBarRoot,
+                  checkbox: classes.actionsBarCheckbox
+                }}
+                options={[
+                  {
+                    id: 'restore',
+                    label: formatMessage(translations.restore),
+                    icon: { id: '@mui/icons-material/SettingsBackupRestoreOutlined' }
+                  },
+                  {
+                    id: 'publish',
+                    label: formatMessage(translations.publishDeletion),
+                    icon: { id: '@mui/icons-material/CloudUploadOutlined' }
+                  }
+                ]}
+                isIndeterminate={isIndeterminate}
+                isChecked={isAllChecked}
+                numOfSkeletonItems={2}
+                onOptionClicked={onActionBarOptionClicked}
+                onCheckboxChange={onToggleCheckedAll}
+              />
+            )}
+            <RecycleBinGridUI
+              packages={recycleBinPackages}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              selectedPackages={selectedPackages}
+              setSelectedPackages={setSelectedPackages}
+              onOpenPackageDetails={onOpenPackageDetails}
+            />
+          </Box>
+        </>
+      )}
       <RecycleBinPackageDialog
         open={recycleBinPackageDialogState.open}
         onClose={recycleBinPackageDialogState.onClose}

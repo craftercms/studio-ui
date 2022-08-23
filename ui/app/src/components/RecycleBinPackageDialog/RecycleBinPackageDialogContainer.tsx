@@ -16,7 +16,7 @@
 
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import { RecycleBinPackageDialogContainerProps } from './utils';
@@ -35,13 +35,14 @@ import { DialogBody } from '../DialogBody';
 import { DialogFooter } from '../DialogFooter';
 import Button from '@mui/material/Button';
 import { SystemIcon } from '../SystemIcon';
-import { useStyles } from '../RecycleBin';
+import { getStyles } from './styles';
+import { useStyles } from '../RecycleBin/styles';
 
-// TODO: Add loader
 export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogContainerProps) {
   const { recycleBinPackage, onRestore } = props;
   const { formatMessage } = useIntl();
   const localeBranch = useLocale();
+  const sx = getStyles();
   const { classes } = useStyles();
 
   const itemsColumns: GridColDef[] = [
@@ -88,13 +89,7 @@ export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogC
           <>
             <Box display="flex" sx={{ mb: 5 }}>
               <TableContainer>
-                <Table
-                  sx={{
-                    [`& .${tableCellClasses.root}`]: {
-                      borderBottom: 'none'
-                    }
-                  }}
-                >
+                <Table sx={sx.packageDetailsTableRoot}>
                   <TableBody>
                     <TableRow>
                       <GlobalAppGridCell component="th" scope="row" className="width15">
@@ -111,7 +106,11 @@ export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogC
                           <Chip label="No" size="small" />
                         ) : (
                           <>
-                            <ItemDisplay item={status[recycleBinPackage.published]} showItemType={false} />{' '}
+                            <ItemDisplay
+                              item={status[recycleBinPackage.published]}
+                              showItemType={false}
+                              className={classes.packageDetailsItemDisplay}
+                            />{' '}
                             {formatMessage(translations[recycleBinPackage.published])}
                           </>
                         )}
@@ -137,27 +136,21 @@ export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogC
                 </Table>
               </TableContainer>
             </Box>
-            <Box display="flex" className={classes.itemTableContainer}>
+            <Box display="flex" sx={sx.itemsTableContainer}>
               <DataGrid
                 autoHeight
                 columns={itemsColumns}
                 rows={recycleBinPackage.items}
-                pageSize={10}
-                rowsPerPageOptions={[10]}
+                pageSize={5}
+                rowsPerPageOptions={[5]}
                 disableSelectionOnClick
-                classes={{
-                  root: classes.noBorder,
-                  columnHeaders: classes.noBorder,
-                  cell: classes.noBorder,
-                  'cell--withRenderer': classes.noBorder,
-                  footerContainer: classes.noBorder
-                }}
+                sx={sx.itemsTable}
               />
             </Box>
           </>
         )}
       </DialogBody>
-      <DialogFooter className={classes.recycleBinPackageDialogFooter}>
+      <DialogFooter sx={sx.footer}>
         <Button
           variant="text"
           startIcon={<SystemIcon icon={{ id: '@mui/icons-material/SettingsBackupRestoreOutlined' }} />}

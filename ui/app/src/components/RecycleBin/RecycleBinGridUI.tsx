@@ -26,11 +26,13 @@ import { nou } from '../../utils/object';
 import Chip from '@mui/material/Chip';
 import ItemDisplay from '../ItemDisplay';
 import { status } from '../IconGuideDashlet';
+import { useStyles } from './styles';
 
 export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
   const { packages, pageSize, setPageSize, selectedPackages, setSelectedPackages, onOpenPackageDetails } = props;
   const localeBranch = useLocale();
   const { formatMessage } = useIntl();
+  const { classes } = useStyles();
 
   const columns: GridColDef[] = [
     {
@@ -106,6 +108,7 @@ export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
         onRowClick={(params) => onOpenPackageDetails(params.row)}
         checkboxSelection
         disableSelectionOnClick
+        className={classes.tableRoot}
       />
     </Box>
   );
