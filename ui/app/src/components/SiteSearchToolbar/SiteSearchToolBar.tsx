@@ -98,6 +98,7 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
           showActionButton={showActionButton}
           showDecoratorIcon
           classes={{ root: classes.searchPaper }}
+          autoFocus
         />
       </section>
       <section>
