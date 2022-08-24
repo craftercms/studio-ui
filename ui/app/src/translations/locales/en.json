@@ -500,7 +500,7 @@
   "item.requestedToPublishNow": "{count, plural, one {The selected item has been requested to be pushed to {environment}} other {The selected items has been requested to be pushed to {environment}}}",
   "item.requestedToSchedulePublish": "{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}",
   "item.reverted": "Item reverted successfully",
-  "item.savedAsDraft": "Item draft saved",
+  "item.savedAsDraft": "Draft saved. Required fields left blank may cause errors when previewed or deployed.",
   "item.schedulePublished": "{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}",
   "item.templateNotFound": "Template not found.",
   "item.unlocked": "Item unlocked successfully",

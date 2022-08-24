@@ -1417,7 +1417,7 @@ export const itemSuccessMessages = defineMessages({
   },
   itemSavedAsDraft: {
     id: 'item.savedAsDraft',
-    defaultMessage: 'Item draft saved'
+    defaultMessage: 'Draft saved. Required fields left blank may cause errors when previewed or deployed.'
   },
   folderCreated: {
     id: 'folder.created',

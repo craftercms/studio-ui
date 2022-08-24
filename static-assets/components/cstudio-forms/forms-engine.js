@@ -1907,7 +1907,23 @@ var CStudioForms =
                   defaultSelected,
                   disablePortal: false,
                   storageKey: storedId,
-                  onClick: onMultiChoiceSaveButtonClick
+                  options: [
+                    {
+                      id: 'saveDraft',
+                      label: 'Save Draft',
+                      callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
+                    },
+                    {
+                      id: 'saveAndClose',
+                      label: 'Save & Close',
+                      callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndClose')
+                    },
+                    {
+                      id: 'saveAndMinimize',
+                      label: 'Save & Minimize',
+                      callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndMinimize')
+                    }
+                  ]
                 });
               },
               failure: function () {}
