@@ -44,7 +44,6 @@ import {
   showEditDialog,
   showPreviewDialog,
   showPublishDialog,
-  showRenameAssetDialog,
   updateCodeEditorDialog,
   updateEditConfig,
   updatePreviewDialog
@@ -253,26 +252,13 @@ const dialogEpics: CrafterCMSEpic[] = [
   // region renameAssetDialog
   (action$, state$) =>
     action$.pipe(
-      ofType(showRenameAssetDialog.type),
-      withLatestFrom(state$),
-      switchMap(([{ payload }, state]) =>
-        fetchDependant(state.sites.active, payload.path).pipe(
-          map((response: LegacyItem[]) => {
-            const dependantItems = parseLegacyItemToDetailedItem(response);
-            return fetchRenameAssetDependantsComplete(dependantItems);
-          })
-        )
-      )
-    ),
-  (action$, state$) =>
-    action$.pipe(
       ofType(fetchRenameAssetDependants.type),
       withLatestFrom(state$),
       switchMap(([, state]) =>
         fetchDependant(state.sites.active, state.dialogs.renameAsset.path).pipe(
           map((response: LegacyItem[]) => {
-            const dependantItems = parseLegacyItemToDetailedItem(response);
-            return fetchRenameAssetDependantsComplete(dependantItems);
+            const dependants = parseLegacyItemToDetailedItem(response);
+            return fetchRenameAssetDependantsComplete({ dependants });
           })
         )
       )

@@ -986,7 +986,7 @@ export function removeExtension(name: string) {
   return name.replace(/\.[^/.]+$/, '');
 }
 
-export const editorDisplay = (
+export const openItemEditor = (
   item: DetailedItem,
   authoringBase: string,
   siteId: string,

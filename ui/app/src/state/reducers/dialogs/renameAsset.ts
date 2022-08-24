@@ -55,6 +55,6 @@ export default createReducer<GlobalState['dialogs']['renameAsset']>(initialState
   [renameAssetDialogClosed.type]: () => initialState,
   [fetchRenameAssetDependantsComplete.type]: (state, { payload }) => ({
     ...state,
-    dependantItems: payload
+    dependantItems: payload.dependants
   })
 });

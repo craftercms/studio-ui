@@ -27,7 +27,7 @@ import { batchActions } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/actions/versions';
 import { getRootPath } from '../../utils/path';
 import { fetchDependant, fetchSimpleDependencies } from '../../services/dependencies';
-import { editorDisplay, isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
+import { openItemEditor, isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
 import DependenciesDialogUI from './DependenciesDialogUI';
 
 export function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
@@ -48,7 +48,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
   const dispatch = useDispatch();
 
   const handleEditorDisplay = (item: DetailedItem) => {
-    editorDisplay(item, authoringBase, siteId, dispatch);
+    openItemEditor(item, authoringBase, siteId, dispatch);
   };
 
   const handleHistoryDisplay = (item: DetailedItem) => {

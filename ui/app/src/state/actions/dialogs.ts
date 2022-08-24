@@ -191,7 +191,7 @@ export const renameAssetDialogClosed = /*#__PURE__*/ createAction('RENAME_ASSET_
 export const updateRenameAssetDialog =
   /*#__PURE__*/ createAction<Partial<RenameAssetStateProps>>('UPDATE_RENAME_ASSET_DIALOG');
 export const fetchRenameAssetDependants = /*#__PURE__*/ createAction('FETCH_RENAME_ASSET_DEPENDANTS');
-export const fetchRenameAssetDependantsComplete = /*#__PURE__*/ createAction<DetailedItem[]>(
+export const fetchRenameAssetDependantsComplete = /*#__PURE__*/ createAction<{ dependants: DetailedItem[] }>(
   'FETCH_RENAME_ASSET_DEPENDANTS_COMPLETE'
 );
 export const fetchRenameAssetDependantsFailed = /*#__PURE__*/ createAction('FETCH_RENAME_ASSET_DEPENDANTS_FAILED');

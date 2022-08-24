@@ -16,13 +16,13 @@
 
 import { RenameAssetContainerProps } from './utils';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DialogBody } from '../DialogBody';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { fetchRenameAssetDependants, updateRenameAssetDialog } from '../../state/actions/dialogs';
-import { cleanupAssetName, editorDisplay, getName, isEditableAsset } from '../../utils/content';
+import { cleanupAssetName, openItemEditor, getName, isEditableAsset } from '../../utils/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { DependenciesList } from '../DependenciesDialog';
 import useItemsByPath from '../../hooks/useItemsByPath';
@@ -68,6 +68,10 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
     dependency: null
   });
 
+  useEffect(() => {
+    dispatch(fetchRenameAssetDependants());
+  }, [dispatch]);
+
   const onInputChanges = (newValue: string) => {
     setName(newValue);
     const newHasPendingChanges = newValue !== value;
@@ -77,7 +81,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 
   const onRenameAsset = (siteId: string, path: string, name: string) => {
     const fileName = type !== 'asset' ? getName(type, name) : name;
-    renameContent(siteId, path, `${fileName}`).subscribe({
+    renameContent(siteId, path, fileName).subscribe({
       next() {
         onRenamed?.({ path, name });
         dispatch(updateRenameAssetDialog({ isSubmitting: false, hasPendingChanges: false }));
@@ -131,7 +135,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   };
 
   const handleEditorDisplay = (item: DetailedItem) => {
-    editorDisplay(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
+    openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
   };
 
   return (
@@ -140,7 +144,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (isValid) {
+            if (renameDisabled) {
               onRename();
             }
           }}
