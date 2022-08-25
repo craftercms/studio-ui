@@ -16,12 +16,9 @@
 
 import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import { withStyles } from 'tss-react/mui';
 import Dialog from '@mui/material/Dialog';
 import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import PluginCard from '../PluginCard/PluginCard';
 import Spinner from '../Spinner/Spinner';
 import BlueprintForm from './BlueprintForm';
@@ -180,13 +177,6 @@ const searchInitialState = {
   searchSelected: false
 };
 
-const CustomTabs = withStyles(Tabs, {
-  root: {
-    borderBottom: 'none',
-    minHeight: 'inherit'
-  }
-});
-
 const useStyles = makeStyles()((theme) => ({
   fadeIn: {
     animation: `${keyframes`${fadeIn}`} 1s`
@@ -217,7 +207,7 @@ const useStyles = makeStyles()((theme) => ({
     height: '100%',
     overflow: 'auto',
     display: 'flex',
-    padding: '0 25px',
+    padding: '0 25px 30px',
     '&.selected': {
       height: '100%',
       paddingTop: '70px'
@@ -271,7 +261,8 @@ const useStyles = makeStyles()((theme) => ({
     height: '100%'
   },
   headerRoot: {
-    paddingBottom: 0
+    paddingBottom: 0,
+    width: '100%'
   },
   headerSubTitle: {
     marginBottom: 13
@@ -305,7 +296,6 @@ interface CreateSiteDialogProps {
 function CreateSiteDialog(props: CreateSiteDialogProps) {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
-  const [tab, setTab] = useState(0);
   const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
   const [dialog, setDialog] = useSpreadState({
     open: nnou(props.open) ? props.open : true,
@@ -375,7 +365,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   useEffect(() => {
     let subscriptions: Subscription[] = [];
-    if (tab === 0 && blueprints === null && !apiState.error) {
+    if (blueprints === null && !apiState.error) {
       subscriptions.push(
         fetchBuiltInBlueprints().subscribe({
           next: (blueprints) => {
@@ -407,7 +397,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         })
       );
     }
-    if (tab === 1 && marketplace === null && !apiState.error) {
+    if (marketplace === null && !apiState.error) {
       subscriptions.push(
         fetchMarketplaceBlueprints({
           showIncompatible: site.showIncompatible
@@ -429,22 +419,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     return () => {
       subscriptions.forEach((sub) => sub.unsubscribe());
     };
-  }, [
-    apiState.error,
-    blueprints,
-    formatMessage,
-    marketplace,
-    setApiState,
-    site.selectedView,
-    tab,
-    site.showIncompatible
-  ]);
+  }, [apiState.error, blueprints, formatMessage, marketplace, setApiState, site.selectedView, site.showIncompatible]);
 
   function cleanDialogState() {
     setDialog({ open: false, inProgress: false });
     setSite(siteInitialState);
     setSearch(searchInitialState);
-    setTab(0);
   }
 
   function handleClose(event?: any, reason?: string) {
@@ -549,10 +529,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function handleBack() {
     let back = site.selectedView - 1;
     setSite({ selectedView: back });
-  }
-
-  function handleChange(e: object, value: number) {
-    setTab(value);
   }
 
   function handleGoTo(step: number) {
@@ -736,16 +712,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     setSite({ details: { blueprint: blueprint, index: index } });
   }
 
-  function renderBlueprints(list: MarketplacePlugin[]) {
-    if (list.length === 0) {
-      return (
-        <EmptyState
-          title={formatMessage(messages.noBlueprints)}
-          subtitle={formatMessage(messages.changeQuery)}
-          classes={{ root: classes.emptyStateRoot }}
-        />
-      );
-    }
+  function renderBlueprints(list: MarketplacePlugin[], isMarketplace: boolean = false) {
     return list.map((item: MarketplacePlugin) => {
       return (
         <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
@@ -753,7 +720,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             plugin={item}
             onPluginSelected={handleBlueprintSelected}
             changeImageSlideInterval={5000}
-            isMarketplacePlugin={tab === 1}
+            isMarketplacePlugin={isMarketplace}
             onDetails={onDetails}
           />
         </Grid>
@@ -807,7 +774,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             onBlueprintSelected={handleBlueprintSelected}
             onCloseDetails={handleCloseDetails}
             changeImageSlideInterval={5000}
-            isMarketplacePlugin={tab === 1}
+            isMarketplacePlugin={Boolean(site?.details.blueprint.url)}
           />
         ))
       ) : (
@@ -826,38 +793,32 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           >
             {site.selectedView === 0 && (
               <div className={classes.tabs}>
-                <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                  <Tab label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab} />
-                  <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab} />
-                </CustomTabs>
                 <SearchIcon
                   className={cx(classes.tabIcon, search.searchSelected && 'selected')}
                   onClick={handleSearchClick}
                 />
-                {tab === 1 && (
-                  <FormControlLabel
-                    className={classes.showIncompatible}
-                    control={
-                      <Checkbox
-                        checked={site.showIncompatible}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
-                        color="primary"
-                        className={classes.showIncompatibleCheckbox}
-                      />
-                    }
-                    label={
-                      <Typography className={classes.showIncompatibleInput}>
-                        {formatMessage(messages.showIncompatible)}
-                      </Typography>
-                    }
-                    labelPlacement="start"
-                  />
-                )}
+                <FormControlLabel
+                  className={classes.showIncompatible}
+                  control={
+                    <Checkbox
+                      checked={site.showIncompatible}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                      color="primary"
+                      className={classes.showIncompatibleCheckbox}
+                    />
+                  }
+                  label={
+                    <Typography className={classes.showIncompatibleInput}>
+                      {formatMessage(messages.showIncompatible)}
+                    </Typography>
+                  }
+                  labelPlacement="start"
+                />
               </div>
             )}
           </DialogHeader>
 
-          {(tab === 0 && blueprints) || (tab === 1 && marketplace) ? (
+          {blueprints ? (
             <DialogBody classes={{ root: classes.dialogContent }}>
               {search.searchSelected && site.selectedView === 0 && (
                 <div className={classes.searchContainer}>
@@ -871,15 +832,20 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
               )}
               {site.selectedView === 0 && (
                 <div className={cx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
-                  {tab === 0 ? (
-                    <Grid container spacing={3}>
-                      {renderBlueprints(filteredBlueprints)}
-                    </Grid>
-                  ) : (
-                    <Grid container spacing={3}>
-                      {renderBlueprints(filteredMarketplace)}
-                    </Grid>
-                  )}
+                  <Grid container spacing={3}>
+                    {filteredBlueprints.length === 0 && (!filteredMarketplace || filteredMarketplace?.length === 0) ? (
+                      <EmptyState
+                        title={formatMessage(messages.noBlueprints)}
+                        subtitle={formatMessage(messages.changeQuery)}
+                        classes={{ root: classes.emptyStateRoot }}
+                      />
+                    ) : (
+                      <>
+                        {renderBlueprints(filteredBlueprints)}
+                        {marketplace && renderBlueprints(filteredMarketplace, true)}
+                      </>
+                    )}
+                  </Grid>
                 </div>
               )}
               {site.selectedView === 1 && (
