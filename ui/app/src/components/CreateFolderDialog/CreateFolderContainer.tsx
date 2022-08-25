@@ -18,10 +18,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
-import { createFolder, fetchSandboxItem, renameFolder } from '../../services/content';
+import { createFolder, fetchDetailedItem, fetchSandboxItem, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -51,7 +50,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const item = useDetailedItem(props.path);
+  const siteId = useActiveSiteId();
+  const [item, setItem] = useState(null);
   const [openSelector, setOpenSelector] = useState(false);
   const [selectedItem, setSelectedItem] = useState<DetailedItem>(null);
   const path = useMemo(() => {
@@ -63,6 +63,12 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
     ? name !== value && itemLookupTable[newFolderPath] !== UNDEFINED
     : itemLookupTable[newFolderPath] !== UNDEFINED;
   const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
+
+  // If folder name changes, useDetailedItem will try to re-fetch a non-existing item (old path), so we will only re-fetch
+  // if path changes
+  useEffect(() => {
+    fetchDetailedItem(siteId, path).subscribe(setItem);
+  }, [siteId, path]);
 
   useEffect(() => {
     if (item && rename === false) {

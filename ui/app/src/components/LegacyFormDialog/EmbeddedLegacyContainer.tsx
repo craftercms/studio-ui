@@ -46,9 +46,10 @@ import LoadingState from '../LoadingState/LoadingState';
 import ErrorDialog from '../ErrorDialog/ErrorDialog';
 import { translations } from './translations';
 import { useStyles } from './styles';
-import useDetailedItem from '../../hooks/useDetailedItem';
 import { hasEditAction } from '../../utils/content';
 import { nnou } from '../../utils/object';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { fetchDetailedItem } from '../../services/content';
 
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
   props: LegacyFormDialogContainerProps,
@@ -79,8 +80,15 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
   const [error, setError] = useState<ApiResponse>(null);
-  const item = useDetailedItem(path);
+  const [item, setItem] = useState(null);
+  const siteId = useActiveSiteId();
   const availableActions = item?.availableActions;
+
+  // If filename changes, useDetailedItem will try to re-fetch a non-existing item (old path), so we will only re-fetch
+  // if path changes
+  useEffect(() => {
+    fetchDetailedItem(siteId, path).subscribe(setItem);
+  }, [siteId, path]);
 
   const src = useMemo(
     () =>
