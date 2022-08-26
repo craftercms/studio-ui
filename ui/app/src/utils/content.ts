@@ -389,7 +389,7 @@ export function parseContentXML(
             );
           }
         }
-        const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId]?.fields[tagName];
+        const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId]?.fields?.[tagName];
         if (!field) {
           console.error(
             `[parseContentXML] Field "${tagName}" was not found on "${
@@ -701,15 +701,17 @@ export function normalizeModel(model: ContentInstance): ContentInstance {
   Object.entries(model).forEach(([prop, value]) => {
     if (prop === pageControllersFieldId) {
       normalized[prop] = value;
-    } else if (prop.endsWith('_o')) {
+    } else if (
+      // Using `prop.endsWith('_o')` causes issues with old sites which might not be using the post fix.
+      Array.isArray(value) &&
+      value.length
+    ) {
       const collection: ContentInstance[] = value;
-      if (Array.isArray(collection) && collection.length) {
-        const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
-        if (isNodeSelector) {
-          normalized[prop] = collection.map((item) => item.craftercms.id);
-        } else {
-          normalized[prop] = collection.map((item) => normalizeModel(item));
-        }
+      const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
+      if (isNodeSelector) {
+        normalized[prop] = collection.map((item) => item.craftercms.id);
+      } else {
+        normalized[prop] = collection.map((item) => normalizeModel(item));
       }
     }
   });

@@ -27,6 +27,7 @@ import { fromTopic, post } from './utils/communicator';
 import queryString from 'query-string';
 import { crafterConf } from '@craftercms/classes';
 import { fetchIsAuthoring, BaseCrafterConfig } from '@craftercms/ice';
+import { xbLoadedEvent } from './constants';
 
 export interface ICEAttributes {
   'data-craftercms-model-path': string;
@@ -98,3 +99,5 @@ export function initExperienceBuilder(props: ExperienceBuilderProps) {
 export const initInContextEditing = initExperienceBuilder;
 
 export { elementRegistry, iceRegistry, contentController, fromTopic, post };
+
+setTimeout(() => document?.dispatchEvent(new CustomEvent(xbLoadedEvent)));

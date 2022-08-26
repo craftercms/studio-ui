@@ -44,3 +44,4 @@ export const dragAndDropActiveClass = 'craftercms-drag-n-drop-active';
 export const editModePaddingClass = 'craftercms-edit-mode-padding';
 export const editModeIceBypassEvent = 'craftercms.iceBypass';
 export const editModeEvent = 'craftercms.editMode';
+export const xbLoadedEvent = 'craftercms.xb:loaded';
