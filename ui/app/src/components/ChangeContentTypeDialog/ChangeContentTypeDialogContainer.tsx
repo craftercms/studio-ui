@@ -18,7 +18,7 @@ import { ChangeContentTypeDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import React, { useEffect, useMemo, useState } from 'react';
-import { LegacyContentType, LegacyFormConfig } from '../../models/ContentType';
+import { LegacyContentType } from '../../models/ContentType';
 import { fetchLegacyContentTypes } from '../../services/contentTypes';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useLogicResource } from '../../hooks/useLogicResource';
@@ -64,12 +64,12 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
   const [keyword, setKeyword] = useState('');
   const [debounceKeyword, setDebounceKeyword] = useState('');
 
-  const getPrevImg = (content: LegacyFormConfig) =>
+  const getPrevImg = (content: LegacyContentType) =>
     content?.imageThumbnail
       ? `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types${content.form}/${content.imageThumbnail}`
       : '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
 
-  const onSelectedContentType = (contentType: LegacyFormConfig) => {
+  const onSelectedContentType = (contentType: LegacyContentType) => {
     onContentTypeSelected?.({
       newContentTypeId: contentType.form
     });

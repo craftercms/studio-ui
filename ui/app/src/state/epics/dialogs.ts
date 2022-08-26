@@ -127,6 +127,9 @@ const dialogEpics: CrafterCMSEpic[] = [
       )
     ),
   // endregion
+  // region showNewContent
+
+  // endregion
   // region newContentCreationComplete
   (action$, state$) =>
     action$.pipe(

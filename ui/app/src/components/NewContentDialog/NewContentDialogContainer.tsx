@@ -20,8 +20,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
-import React, { useEffect, useMemo, useState } from 'react';
-import { LegacyContentType, LegacyFormConfig } from '../../models/ContentType';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { LegacyContentType } from '../../models/ContentType';
 import translations from './translations';
 import { withoutIndex } from '../../utils/path';
 import { batchActions } from '../../state/actions/misc';
@@ -71,22 +71,25 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
     }
   ];
 
-  const getPrevImg = (content: LegacyFormConfig) => {
+  const getPrevImg = (content: LegacyContentType) => {
     return content?.imageThumbnail
       ? `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types${content.form}/${content.imageThumbnail}`
       : '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
   };
 
-  const onSelectedContentType = (contentType: LegacyFormConfig) => {
-    const path = withoutIndex(selectedItem.path);
-    onContentTypeSelected?.({
-      authoringBase,
-      path,
-      isNewContent: true,
-      contentTypeId: contentType.form,
-      onSaveSuccess: batchActions([closeNewContentDialog(), newContentCreationComplete()])
-    });
-  };
+  const onSelectedContentType = useCallback(
+    (contentType: LegacyContentType) => {
+      const path = withoutIndex(selectedItem.path);
+      onContentTypeSelected?.({
+        authoringBase,
+        path,
+        isNewContent: true,
+        contentTypeId: contentType.form,
+        onSaveSuccess: batchActions([closeNewContentDialog(), newContentCreationComplete()])
+      });
+    },
+    [authoringBase, onContentTypeSelected, selectedItem?.path]
+  );
 
   useEffect(() => {
     if (selectedItem.path) {
@@ -96,16 +99,21 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
           ? `${selectedItem.path}/`
           : selectedItem.path;
 
-      fetchLegacyContentTypes(site, path).subscribe(
-        (response) => {
-          setContentTypes(response);
+      fetchLegacyContentTypes(site, path).subscribe({
+        next(response) {
+          if (response.length === 1) {
+            dispatch(closeNewContentDialog());
+            onSelectedContentType(response[0]);
+          } else {
+            setContentTypes(response);
+          }
         },
-        (response) => {
+        error(response) {
           dispatch(showErrorDialog({ error: response }));
         }
-      );
+      });
     }
-  }, [dispatch, selectedItem, site]);
+  }, [dispatch, selectedItem, site, onSelectedContentType]);
 
   const resource = useLogicResource(
     useMemo(() => ({ contentTypes, selectedFilter, debounceKeyword }), [contentTypes, selectedFilter, debounceKeyword]),

@@ -15,18 +15,18 @@
  */
 
 import { Resource } from '../../models/Resource';
-import { LegacyFormConfig } from '../../models/ContentType';
+import { LegacyContentType } from '../../models/ContentType';
 import { DetailedItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface ContentTypesGridProps {
-  resource: Resource<LegacyFormConfig[] | any>;
+  resource: Resource<LegacyContentType[] | any>;
   isCompact: boolean;
   selectedContentType?: string;
-  onTypeOpen(data: LegacyFormConfig): void;
-  getPrevImg(data: LegacyFormConfig): string;
+  onTypeOpen(data: LegacyContentType): void;
+  getPrevImg(data: LegacyContentType): string;
 }
 
 export interface NewContentDialogBaseProps {
