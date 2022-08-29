@@ -27,7 +27,7 @@
                 <button type="button" class="btn btn-default dropdown-toggle text-capitalize" uib-dropdown-toggle title="{{audit.site || 'admin.audit.ALL_SITES' | translate}}" >
                     {{audit.siteLabel || audit.site || 'admin.audit.ALL_SITES' | translate }}  <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu" role="menu">
+                <ul class="dropdown-menu sites-list" role="menu">
                     <li>
                         <a ng-click="audit.updateSite()">{{ 'admin.audit.ALL_SITES' | translate }}</a>
                     </li>

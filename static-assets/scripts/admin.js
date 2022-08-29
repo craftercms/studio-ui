@@ -453,7 +453,9 @@
 
       function getSites() {
         sitesService
-          .getSitesPerUser('me')
+          .getSitesPerUser('me', {
+            limit: 60
+          })
           .success(function (data) {
             audit.sites = data.sites;
             audit.site = '';
