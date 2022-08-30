@@ -14,23 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SandboxItem } from '../../models';
-
-export interface Conflict {
-  conflictingPath: string;
-  resolvedPath: string;
-}
-
-export interface RecycleBinPackage {
-  id: number;
-  comment: string;
-  numOfItems: number;
-  published: string;
-  deletedBy: string;
-  dateDeleted: string;
-  items: SandboxItem[];
-  conflicts: Conflict[];
-}
+import { RecycleBinPackage } from '../../models/RecycleBin';
 
 export interface RecycleBinProps {
   embedded?: boolean;

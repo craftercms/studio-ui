@@ -21,7 +21,6 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import { RecycleBinPackageDialogContainerProps } from './utils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { nou } from '../../utils/object';
 import Chip from '@mui/material/Chip';
 import ItemDisplay from '../ItemDisplay';
 import { status } from '../IconGuideDashlet';
@@ -102,7 +101,7 @@ export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogC
                         <FormattedMessage id="words.published" defaultMessage="Published" />
                       </GlobalAppGridCell>
                       <TableCell>
-                        {nou(recycleBinPackage.published) ? (
+                        {recycleBinPackage.published === 'no' ? (
                           <Chip label="No" size="small" />
                         ) : (
                           <>
@@ -120,7 +119,7 @@ export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogC
                       <GlobalAppGridCell component="th" scope="row" className="width15">
                         <FormattedMessage id="recycleBin.deletedBy" defaultMessage="Deleted by" />
                       </GlobalAppGridCell>
-                      <GlobalAppGridCell>{recycleBinPackage.deletedBy}</GlobalAppGridCell>
+                      <GlobalAppGridCell>{`${recycleBinPackage.user.firstName} ${recycleBinPackage.user.lastName}`}</GlobalAppGridCell>
                     </TableRow>
                     <TableRow>
                       <GlobalAppGridCell component="th" scope="row" className="width15">
@@ -128,7 +127,7 @@ export function RecycleBinPackageDialogContainer(props: RecycleBinPackageDialogC
                       </GlobalAppGridCell>
                       <GlobalAppGridCell>
                         {new Intl.DateTimeFormat(localeBranch.localeCode, localeBranch.dateTimeFormatOptions).format(
-                          new Date(recycleBinPackage.dateDeleted)
+                          new Date(recycleBinPackage.timestamp)
                         )}
                       </GlobalAppGridCell>
                     </TableRow>

@@ -21,7 +21,9 @@ export type RecycleBinRestoreDialogClassKey =
   | 'itemsListRoot'
   | 'listItem'
   | 'divider'
-  | 'conflictsTitle';
+  | 'conflictsTitle'
+  | 'conflictsTableContainer'
+  | 'conflictsTableRoot';
 
 export type RecycleBinRestoreDialogFullSx = FullSxRecord<RecycleBinRestoreDialogClassKey>;
 
@@ -45,10 +47,25 @@ export function getStyles(sx?: RecycleBinRestoreDialogPartialSx): RecycleBinRest
     },
     divider: {
       mt: 2,
-      mb: 2
+      mb: 2,
+      ml: -2,
+      mr: -2,
+      width: 'calc(100% + 32px)'
     },
     conflictsTitle: {
       mb: 1
+    },
+    conflictsTableContainer: {
+      marginLeft: '-16px',
+      marginRight: '-16px',
+      marginBottom: '-16px',
+      backgroundColor: (theme) => theme.palette.background.paper,
+      width: 'calc(100% + 32px)'
+    },
+    conflictsTableRoot: {
+      '& .MuiTableRow-root:last-child .MuiTableCell-root': {
+        borderBottom: 'none'
+      }
     }
   };
 }

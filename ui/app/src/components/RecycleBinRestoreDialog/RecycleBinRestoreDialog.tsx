@@ -20,12 +20,12 @@ import { FormattedMessage } from 'react-intl';
 import { RecycleBinRestoreDialogContainer } from './RecycleBinRestoreDialogContainer';
 
 export function RecycleBinRestoreDialog(props: RecycleBinRestoreDialogProps) {
-  const { packages, onRestore, ...rest } = props;
+  const { restorePackage, onRestore, ...rest } = props;
 
   return (
     <EnhancedDialog title={<FormattedMessage id="words.restore" defaultMessage="Restore" />} maxWidth="sm" {...rest}>
       <RecycleBinRestoreDialogContainer
-        packages={packages}
+        restorePackage={restorePackage}
         onRestore={onRestore}
         onClose={props.onClose}
         isSubmitting={props.isSubmitting}

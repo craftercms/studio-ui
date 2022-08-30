@@ -23,13 +23,16 @@ import { ActionsBar } from '../ActionsBar';
 import useEnhancedDialogState from '../../hooks/useEnhancedDialogState';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { RecycleBinPackageDialog } from '../RecycleBinPackageDialog';
-import { RecycleBinPackage, RecycleBinProps } from './utils';
+import { RecycleBinProps } from './utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { translations } from './translations';
 import UseWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { RecycleBinRestoreDialog } from '../RecycleBinRestoreDialog';
-import { asArray } from '../../utils/array';
-import { fetchRecycleBinPackages, restoreRecycleBinPackages } from '../../services/content';
+import {
+  fetchRecycleBinPackageMock,
+  fetchRecycleBinPackagesMock,
+  restoreRecycleBinPackagesMock
+} from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -38,6 +41,9 @@ import { useStyles } from './styles';
 import { GlobalAppToolbar } from '../GlobalAppToolbar';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
+import { RecycleBinConflict, RecycleBinDetailedPackage, RecycleBinPackage } from '../../models/RecycleBin';
+import useSpreadState from '../../hooks/useSpreadState';
+import { LookupTable } from '../../models';
 
 export function RecycleBin(props: RecycleBinProps) {
   const { embedded } = props;
@@ -46,7 +52,7 @@ export function RecycleBin(props: RecycleBinProps) {
   const [recycleBinPackages, setRecycleBinPackages] = useState<RecycleBinPackage[]>([]);
   const [selectedPackages, setSelectedPackages] = useState([]);
   const [recycleBinPackage, setRecycleBinPackage] = useState(null);
-  const [restorePackages, setRestorePackages] = useState([]);
+  const [restorePackage, setRestorePackage] = useState<RecycleBinDetailedPackage>();
   const isAllChecked = recycleBinPackages.length > 0 && selectedPackages.length === recycleBinPackages.length;
   const isIndeterminate = selectedPackages.length > 0 && selectedPackages.length < recycleBinPackages.length;
   const { formatMessage } = useIntl();
@@ -56,7 +62,7 @@ export function RecycleBin(props: RecycleBinProps) {
   const [error, setError] = useState();
   const fetchPackages = useCallback((siteId) => {
     setFetchingPackages(true);
-    return fetchRecycleBinPackages(siteId).subscribe({
+    return fetchRecycleBinPackagesMock(siteId).subscribe({
       next(packages) {
         setRecycleBinPackages(packages);
         setFetchingPackages(false);
@@ -67,6 +73,22 @@ export function RecycleBin(props: RecycleBinProps) {
       }
     });
   }, []);
+  const [detailedPackages, setDetailedPackages] = useSpreadState<LookupTable<RecycleBinDetailedPackage>>({});
+  const getDetailedPackage = useCallback(
+    (id, onSuccessDetailedPackage) => {
+      if (detailedPackages[id]) {
+        onSuccessDetailedPackage(detailedPackages[id]);
+      } else {
+        fetchRecycleBinPackageMock(siteId, id).subscribe({
+          next(detailedPackage) {
+            setDetailedPackages({ [id]: detailedPackage });
+            onSuccessDetailedPackage(detailedPackage);
+          }
+        });
+      }
+    },
+    [siteId, detailedPackages, setDetailedPackages]
+  );
 
   const recycleBinPackageDialogState = useEnhancedDialogState();
   const recycleBinPackageDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(
@@ -92,19 +114,32 @@ export function RecycleBin(props: RecycleBinProps) {
     }
   };
 
-  const onOpenPackageDetails = (recycleBinPackage) => {
-    setRecycleBinPackage(recycleBinPackage);
-    recycleBinPackageDialogState.onOpen();
+  const onOpenPackageDetails = ({ id }) => {
+    getDetailedPackage(id, (detailedPackage) => {
+      setRecycleBinPackage(detailedPackage);
+      recycleBinPackageDialogState.onOpen();
+    });
   };
 
-  const onShowRestoreDialog = (packages: RecycleBinPackage[] | RecycleBinPackage) => {
-    setRestorePackages(asArray(packages));
+  const onShowRestoreDialog = (restorePackage: RecycleBinDetailedPackage) => {
+    setRestorePackage(restorePackage);
     recycleBinRestoreDialogState.onOpen();
   };
 
-  const onRestore = (ids: string[]) => {
+  const onRestore = (conflicts: RecycleBinConflict[]) => {
     recycleBinRestoreDialogState.onSubmittingAndOrPendingChange({ isSubmitting: true });
-    restoreRecycleBinPackages(ids).subscribe({
+
+    const resolutions = conflicts.map((conflict) => ({
+      path: conflict.path,
+      resolutionStrategy: conflict.resolutionStrategies[0].strategy
+    }));
+
+    restoreRecycleBinPackagesMock({
+      siteId,
+      packageId: restorePackage.id,
+      comment: restorePackage.comment,
+      items: resolutions
+    }).subscribe({
       next() {
         recycleBinRestoreDialogState.onSubmittingAndOrPendingChange({ isSubmitting: false });
         recycleBinRestoreDialogState.onClose();
@@ -125,10 +160,9 @@ export function RecycleBin(props: RecycleBinProps) {
 
   const onActionBarOptionClicked = (option: string) => {
     if (option === 'restore') {
-      const packages = recycleBinPackages.filter((recycleBinPackage) =>
-        selectedPackages.includes(recycleBinPackage.id)
-      );
-      onShowRestoreDialog(packages);
+      getDetailedPackage(selectedPackages[0], (detailedPackage) => {
+        onShowRestoreDialog(detailedPackage);
+      });
     }
   };
 
@@ -166,11 +200,15 @@ export function RecycleBin(props: RecycleBinProps) {
                   checkbox: classes.actionsBarCheckbox
                 }}
                 options={[
-                  {
-                    id: 'restore',
-                    label: formatMessage(translations.restore),
-                    icon: { id: '@mui/icons-material/SettingsBackupRestoreOutlined' }
-                  },
+                  ...(selectedPackages.length === 1
+                    ? [
+                        {
+                          id: 'restore',
+                          label: formatMessage(translations.restore),
+                          icon: { id: '@mui/icons-material/SettingsBackupRestoreOutlined' }
+                        }
+                      ]
+                    : []),
                   {
                     id: 'publish',
                     label: formatMessage(translations.publishDeletion),
@@ -209,7 +247,7 @@ export function RecycleBin(props: RecycleBinProps) {
       <RecycleBinRestoreDialog
         open={recycleBinRestoreDialogState.open}
         onClose={recycleBinRestoreDialogState.onClose}
-        packages={restorePackages}
+        restorePackage={restorePackage}
         onRestore={onRestore}
         onWithPendingChangesCloseRequest={recycleBinRestoreDialogPendingChangesCloseRequest}
         onSubmittingAndOrPendingChange={recycleBinRestoreDialogState.onSubmittingAndOrPendingChange}

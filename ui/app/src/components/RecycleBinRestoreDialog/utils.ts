@@ -16,11 +16,11 @@
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
-import { RecycleBinPackage } from '../RecycleBin';
+import { RecycleBinConflict, RecycleBinDetailedPackage } from '../../models/RecycleBin';
 
 interface RecycleBinRestoreDialogBase {
-  packages: RecycleBinPackage[];
-  onRestore(ids: string[]): void;
+  restorePackage: RecycleBinDetailedPackage;
+  onRestore(conflicts: RecycleBinConflict[]): void;
 }
 
 export interface RecycleBinRestoreDialogProps extends RecycleBinRestoreDialogBase, EnhancedDialogProps {

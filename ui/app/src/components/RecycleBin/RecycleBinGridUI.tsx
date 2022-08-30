@@ -22,7 +22,6 @@ import Typography from '@mui/material/Typography';
 import { translations } from './translations';
 import { useIntl } from 'react-intl';
 import { RecycleBinGridUIProps } from './utils';
-import { nou } from '../../utils/object';
 import Chip from '@mui/material/Chip';
 import ItemDisplay from '../ItemDisplay';
 import { status } from '../IconGuideDashlet';
@@ -43,7 +42,7 @@ export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
       disableColumnMenu: true
     },
     {
-      field: 'numOfItems',
+      field: 'numberOfItems',
       headerName: formatMessage(translations.numOfItems),
       flex: 0.3,
       sortable: false,
@@ -56,7 +55,7 @@ export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
       sortable: false,
       disableColumnMenu: true,
       renderCell: (params: GridCellParams) => {
-        if (nou(params.value)) {
+        if (params.value === 'no') {
           return <Chip label="No" size="small" />;
         } else {
           return (
@@ -69,7 +68,7 @@ export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
       }
     },
     {
-      field: 'dateDeleted',
+      field: 'timestamp',
       headerName: formatMessage(translations.dateDeleted),
       flex: 0.4,
       sortable: false,
@@ -86,11 +85,14 @@ export function RecycleBinGridUI(props: RecycleBinGridUIProps) {
       }
     },
     {
-      field: 'deletedBy',
+      field: 'user',
       headerName: formatMessage(translations.deletedBy),
       flex: 0.6,
       sortable: false,
-      disableColumnMenu: true
+      disableColumnMenu: true,
+      renderCell: (params: GridCellParams) => {
+        return <Typography variant="body2">{`${params.value.firstName} ${params.value.lastName}`}</Typography>;
+      }
     }
   ];
 

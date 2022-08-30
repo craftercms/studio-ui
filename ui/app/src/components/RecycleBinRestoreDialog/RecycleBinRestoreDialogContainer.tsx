@@ -16,7 +16,7 @@
 
 import { RecycleBinRestoreDialogContainerProps } from './utils';
 import { useEffect, useState } from 'react';
-import { validateRestore } from '../../services/content';
+import { validateRestoreMock } from '../../services/content';
 import { ApiResponse } from '../../models';
 import { DialogBody } from '../DialogBody';
 import { DialogFooter } from '../DialogFooter';
@@ -41,7 +41,7 @@ import SettingsBackupRestoreOutlinedIcon from '@mui/icons-material/SettingsBacku
 import { getStyles } from './styles';
 
 export function RecycleBinRestoreDialogContainer(props: RecycleBinRestoreDialogContainerProps) {
-  const { packages, onRestore, onClose, isSubmitting } = props;
+  const { restorePackage, onRestore, onClose, isSubmitting } = props;
   const [conflicts, setConflicts] = useState(null);
   const [fetchingValidation, setFetchingValidation] = useState(false);
   const [error, setError] = useState<ApiResponse>(null);
@@ -49,20 +49,22 @@ export function RecycleBinRestoreDialogContainer(props: RecycleBinRestoreDialogC
 
   useEffect(() => {
     setFetchingValidation(true);
-    validateRestore(packages.map((recycleBinPackage) => recycleBinPackage.id)).subscribe({
-      next(response: any) {
-        setConflicts(response.conflicts ?? []);
-        setFetchingValidation(false);
-      },
-      error(error) {
-        setError(error);
-        setFetchingValidation(false);
-      }
-    });
-  }, [packages]);
+    if (restorePackage) {
+      validateRestoreMock(restorePackage.id).subscribe({
+        next(response: any) {
+          setConflicts(response.conflicts ?? []);
+          setFetchingValidation(false);
+        },
+        error(error) {
+          setError(error);
+          setFetchingValidation(false);
+        }
+      });
+    }
+  }, [restorePackage]);
 
   const restorePackages = () => {
-    onRestore([]);
+    onRestore(conflicts);
   };
 
   return (
@@ -78,15 +80,14 @@ export function RecycleBinRestoreDialogContainer(props: RecycleBinRestoreDialogC
               <SettingsBackupRestoreOutlinedIcon sx={sx.confirmTitleIcon} />
               <FormattedMessage
                 id="recycleBin.confirmRestoring"
-                defaultMessage="Confirm the restoring of the packages listed below"
+                defaultMessage="Confirm the restoring of the package listed below"
               />
             </DialogContentText>
+            {/* TODO: update this: not a list anymore */}
             <List dense sx={sx.itemsListRoot}>
-              {packages.map((recycleBinPackage) => (
-                <ListItem sx={sx.listItem}>
-                  <ListItemText primary={recycleBinPackage.comment} />
-                </ListItem>
-              ))}
+              <ListItem sx={sx.listItem}>
+                <ListItemText primary={restorePackage.comment} />
+              </ListItem>
             </List>
 
             {conflicts?.length > 0 && (
@@ -97,8 +98,8 @@ export function RecycleBinRestoreDialogContainer(props: RecycleBinRestoreDialogC
                   <FormattedMessage id="words.conflicts" defaultMessage="Conflicts" />
                 </Typography>
 
-                <TableContainer>
-                  <Table>
+                <TableContainer sx={sx.conflictsTableContainer}>
+                  <Table sx={sx.conflictsTableRoot}>
                     <TableHead>
                       <TableRow>
                         <TableCell>
@@ -112,8 +113,8 @@ export function RecycleBinRestoreDialogContainer(props: RecycleBinRestoreDialogC
                     <TableBody>
                       {conflicts?.map((conflict) => (
                         <TableRow>
-                          <TableCell>{conflict.conflictingPath}</TableCell>
-                          <TableCell>{conflict.resolvedPath}</TableCell>
+                          <TableCell>{conflict.path}</TableCell>
+                          <TableCell>{conflict.resolutionStrategies[0].resolvedPath}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

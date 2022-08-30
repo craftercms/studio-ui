@@ -40,7 +40,12 @@ export function getStyles(sx?: RecycleBinPackageDialogPartialSx): RecycleBinPack
       }
     },
     itemsTableContainer: {
-      borderTop: (theme) => `1px solid ${theme.palette.divider}`
+      borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+      marginLeft: -2,
+      marginRight: -2,
+      marginBottom: -2,
+      width: 'calc(100% + 32px)',
+      backgroundColor: (theme) => theme.palette.background.paper
     },
     itemsTable: {
       border: 'none !important',
