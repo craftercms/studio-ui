@@ -41,7 +41,7 @@ import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { cleanupFolderName } from '../../utils/content';
+import { applyFolderNameRules } from '../../utils/content';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -222,7 +222,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) => onInputChanges(cleanupFolderName(event.target.value, allowBraces))}
+            onChange={(event) => onInputChanges(applyFolderNameRules(event.target.value, { allowBraces }))}
           />
         </form>
       </DialogBody>

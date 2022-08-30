@@ -26,5 +26,3 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 export {};
-export { getName } from './utils/content';
-export { getExtension } from './utils/content';

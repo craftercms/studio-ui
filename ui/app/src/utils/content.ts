@@ -955,7 +955,7 @@ export function getComputedPublishingTarget(item: DetailedItem): PublishingTarge
       : null;
 }
 
-export function cleanupFolderName(name: string, allowBraces: boolean = false): string {
+export function applyFolderNameRules(name: string, options?: { allowBraces: boolean }): string {
   let cleanedUpName = slugify(name, {
     // Setting `strict: true` would disallow `_`, which we don't want.
     strict: false,
@@ -963,27 +963,11 @@ export function cleanupFolderName(name: string, allowBraces: boolean = false): s
     // at the beginning or end of the slug.
     trim: false
   });
-  return cleanedUpName.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '');
+  return cleanedUpName.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '');
 }
 
-export function cleanupAssetName(name: string, allowBraces: boolean = false): string {
-  return name.replace(allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '').replace(/\.{1,}/g, '.');
-}
-
-export const getExtension = (type: string, name?: string) => {
-  if (type === 'asset') {
-    const regexFileExtension = /[^\\]*\.(\w+)$/;
-    return name?.match(regexFileExtension)[1];
-  } else {
-    return type === 'controller' ? `groovy` : `ftl`;
-  }
-};
-
-export const getName = (type: string, name: string) =>
-  `${name}.${getExtension(type)}`.replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3').replace(/\.{2,}/g, '.');
-
-export function removeExtension(name: string) {
-  return name.replace(/\.[^/.]+$/, '');
+export function applyAssetNameRules(name: string, options?: { allowBraces: boolean }): string {
+  return name.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '').replace(/\.{1,}/g, '.');
 }
 
 export const openItemEditor = (

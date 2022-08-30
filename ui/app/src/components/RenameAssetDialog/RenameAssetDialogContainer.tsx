@@ -22,11 +22,11 @@ import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { fetchRenameAssetDependants, updateRenameAssetDialog } from '../../state/actions/dialogs';
-import { cleanupAssetName, openItemEditor, getName, isEditableAsset } from '../../utils/content';
+import { applyAssetNameRules, openItemEditor, isEditableAsset } from '../../utils/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { DependenciesList } from '../DependenciesDialog';
 import useItemsByPath from '../../hooks/useItemsByPath';
-import { getParentPath } from '../../utils/path';
+import { getParentPath, getFileNameWithExtensionForItemType } from '../../utils/path';
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
 import SecondaryButton from '../SecondaryButton';
@@ -53,7 +53,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
   const itemLookupTable = useItemsByPath();
-  const newAssetName = type !== 'asset' ? getName(type, name) : name;
+  const newAssetName = type !== 'asset' ? getFileNameWithExtensionForItemType(type, name) : name;
   const newAssetPath = `${getParentPath(path)}/${newAssetName}`;
   const assetExists = newAssetName !== value && itemLookupTable[newAssetPath] !== UNDEFINED;
   const isValid = !isBlank(name) && !assetExists && name !== value;
@@ -80,7 +80,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   };
 
   const onRenameAsset = (siteId: string, path: string, name: string) => {
-    const fileName = type !== 'asset' ? getName(type, name) : name;
+    const fileName = type !== 'asset' ? getFileNameWithExtensionForItemType(type, name) : name;
     renameContent(siteId, path, fileName).subscribe({
       next() {
         onRenamed?.({ path, name });
@@ -175,7 +175,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) => onInputChanges(cleanupAssetName(event.target.value, allowBraces))}
+            onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
           />
         </form>
         {dependantItems.length > 0 && (
