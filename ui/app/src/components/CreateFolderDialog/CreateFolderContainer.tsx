@@ -20,7 +20,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
-import { createFolder, fetchDetailedItem, fetchSandboxItem, renameFolder } from '../../services/content';
+import { createFolder, fetchSandboxItem, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -41,6 +41,7 @@ import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { applyFolderNameRules } from '../../utils/content';
+import { useDetailedItemNoState } from '../../hooks/useDetailedItemNoState';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -50,25 +51,21 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const siteId = useActiveSiteId();
-  const [item, setItem] = useState(null);
   const [openSelector, setOpenSelector] = useState(false);
   const [selectedItem, setSelectedItem] = useState<DetailedItem>(null);
   const path = useMemo(() => {
     return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
   }, [props.path, selectedItem]);
+  // When folder name changes, path prop will still be the previous one, and useDetailedItem will try to re-fetch the
+  // non-existing item (old folder name path), so we will only re-fetch when the actual path prop of the component
+  // changes (useDetailedItemNoState).
+  const item = useDetailedItemNoState(path);
   const itemLookupTable = useItemsByPath();
   const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
   const folderExists = rename
     ? name !== value && itemLookupTable[newFolderPath] !== UNDEFINED
     : itemLookupTable[newFolderPath] !== UNDEFINED;
   const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
-
-  // If folder name changes, useDetailedItem will try to re-fetch a non-existing item (old path), so we will only re-fetch
-  // if path changes
-  useEffect(() => {
-    fetchDetailedItem(siteId, path).subscribe(setItem);
-  }, [siteId, path]);
 
   useEffect(() => {
     if (item && rename === false) {
