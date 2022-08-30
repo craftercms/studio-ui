@@ -39,6 +39,7 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import SettingsBackupRestoreOutlinedIcon from '@mui/icons-material/SettingsBackupRestoreOutlined';
 import { getStyles } from './styles';
+import Alert from '@mui/material/Alert';
 
 export function RecycleBinRestoreDialogContainer(props: RecycleBinRestoreDialogContainerProps) {
   const { restorePackage, onRestore, onClose, isSubmitting } = props;
@@ -77,13 +78,13 @@ export function RecycleBinRestoreDialogContainer(props: RecycleBinRestoreDialogC
         ) : (
           <>
             <DialogContentText color="textPrimary" variant="body1">
-              <SettingsBackupRestoreOutlinedIcon sx={sx.confirmTitleIcon} />
-              <FormattedMessage
-                id="recycleBin.confirmRestoring"
-                defaultMessage="Confirm the restoring of the package listed below"
-              />
+              <Alert severity="info" icon={<SettingsBackupRestoreOutlinedIcon />}>
+                <FormattedMessage
+                  id="recycleBin.confirmRestoring"
+                  defaultMessage="Confirm the restoring of the package listed below"
+                />
+              </Alert>
             </DialogContentText>
-            {/* TODO: update this: not a list anymore */}
             <List dense sx={sx.itemsListRoot}>
               <ListItem sx={sx.listItem}>
                 <ListItemText primary={restorePackage.comment} />

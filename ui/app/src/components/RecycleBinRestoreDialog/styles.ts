@@ -17,7 +17,6 @@
 import { FullSxRecord, PartialSxRecord } from '../../models';
 
 export type RecycleBinRestoreDialogClassKey =
-  | 'confirmTitleIcon'
   | 'itemsListRoot'
   | 'listItem'
   | 'divider'
@@ -31,13 +30,8 @@ export type RecycleBinRestoreDialogPartialSx = PartialSxRecord<RecycleBinRestore
 
 export function getStyles(sx?: RecycleBinRestoreDialogPartialSx): RecycleBinRestoreDialogFullSx {
   return {
-    confirmTitleIcon: {
-      fontSize: 16,
-      verticalAlign: 'middle',
-      mr: 1
-    },
     itemsListRoot: {
-      pl: 1
+      pl: '26px'
     },
     listItem: {
       display: 'list-item',
