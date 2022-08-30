@@ -1910,7 +1910,7 @@ var CStudioForms =
                   options: [
                     {
                       id: 'saveDraft',
-                      label: formatMessage(words.save),
+                      label: formatMessage(formEngineMessages.saveDraft),
                       callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
                     },
                     {

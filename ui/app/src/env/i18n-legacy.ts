@@ -715,6 +715,10 @@ export const formEngineMessages = defineMessages({
     id: 'formEngine.saveAndMinimize',
     defaultMessage: 'Save & Minimize'
   },
+  saveDraft: {
+    id: 'formEngine.saveDraft',
+    defaultMessage: 'Save Draft'
+  },
   createPolicy: {
     id: 'formEngine.createPolicy',
     defaultMessage:
