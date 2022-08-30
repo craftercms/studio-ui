@@ -83,7 +83,7 @@ const states = {
   disabled: { stateMap: { disabled: true } }
 };
 
-const status = {
+export const status = {
   staged: { stateMap: { staged: true } },
   live: { stateMap: { live: true } }
 };

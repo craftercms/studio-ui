@@ -26,7 +26,8 @@ export type SystemLinkId =
   | 'siteDashboard'
   | 'siteToolsDialog'
   | 'siteSearchDialog'
-  | 'siteDashboardDialog';
+  | 'siteDashboardDialog'
+  | 'siteRecycleBin';
 
 export function getSystemLink({
   systemLinkId,
