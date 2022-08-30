@@ -1910,17 +1910,17 @@ var CStudioForms =
                   options: [
                     {
                       id: 'saveDraft',
-                      label: 'Save Draft',
+                      label: formatMessage(words.save),
                       callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
                     },
                     {
                       id: 'saveAndClose',
-                      label: 'Save & Close',
+                      label: formatMessage(formEngineMessages.saveAndClose),
                       callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndClose')
                     },
                     {
                       id: 'saveAndMinimize',
-                      label: 'Save & Minimize',
+                      label: formatMessage(formEngineMessages.saveAndMinimize),
                       callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndMinimize')
                     }
                   ]
