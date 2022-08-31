@@ -34,7 +34,12 @@ import Typography from '@mui/material/Typography';
 import { bulkGoLive, fetchPublishingTargets, publishAll, publishByCommits } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import { closeConfirmDialog, showConfirmDialog, showPublishDialog } from '../../state/actions/dialogs';
+import {
+  closeConfirmDialog,
+  closePublishDialog,
+  showConfirmDialog,
+  showPublishDialog
+} from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import Link from '@mui/material/Link';
 import { useSpreadState } from '../../hooks/useSpreadState';
@@ -50,6 +55,8 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import useDetailedItem from '../../hooks/useDetailedItem';
+import { getUserPermissions } from '../../services/security';
+import useMount from '../../hooks/useMount';
 
 const useStyles = makeStyles()((theme) => ({
   content: {
@@ -90,6 +97,10 @@ const useStyles = makeStyles()((theme) => ({
   initialPublishDescription: {
     maxWidth: '470px',
     textAlign: 'center'
+  },
+  initialPublishIcon: {
+    color: theme.palette.text.secondary,
+    fontSize: '1.75rem'
   }
 }));
 
@@ -150,6 +161,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const { formatMessage } = useIntl();
   const [mode, setMode] = useState<PublishOnDemandMode>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasPublishPermission, setHasPublishPermission] = useState<boolean>(false);
   const [hasInitialPublish, setHasInitialPublish] = useState(false);
   const initialPublishItem = useDetailedItem('/site/website/index.xml');
   const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
@@ -217,6 +229,12 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
       });
     }
   };
+
+  useMount(() => {
+    getUserPermissions(siteId, '/').subscribe((permissions) => {
+      setHasPublishPermission(permissions.includes('publish'));
+    });
+  });
 
   useEffect(() => {
     fnRefs.current.onSubmittingAndOrPendingChange?.({
@@ -371,12 +389,25 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     }
   };
 
+  const publishDialogSuccess = 'publishDialogSuccess';
+  const publishDialogClosed = 'publishDialogClosed';
   const onInitialPublish = () => {
     dispatch(
       showPublishDialog({
-        items: [initialPublishItem]
+        items: [initialPublishItem],
+        onSuccess: batchActions([closePublishDialog(), dispatchDOMEvent({ id: publishDialogSuccess })]),
+        onClosed: dispatchDOMEvent({ id: publishDialogClosed })
       })
     );
+
+    let unsubscribe, cancelUnsubscribe;
+    unsubscribe = createCustomDocumentEventListener(publishDialogSuccess, () => {
+      setHasInitialPublish(true);
+      cancelUnsubscribe();
+    });
+    cancelUnsubscribe = createCustomDocumentEventListener(publishDialogClosed, () => {
+      unsubscribe();
+    });
   };
 
   return (
@@ -488,16 +519,18 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           </>
         ) : (
           <Box className={classes.initialPublishContainer}>
-            <InfoOutlinedIcon />
+            <InfoOutlinedIcon className={classes.initialPublishIcon} />
             <Typography variant="body1" className={classes.initialPublishDescription}>
               <FormattedMessage
                 id="publishOnDemand.noInitialPublish"
                 defaultMessage="The project needs to undergo its initial publish before other publishing options become available"
               />
             </Typography>
-            <Button variant="contained" onClick={onInitialPublish}>
-              <FormattedMessage id="publishOnDemand.publishEntireSite" defaultMessage="Publish Entire Site" />
-            </Button>
+            {hasPublishPermission && (
+              <Button variant="contained" onClick={onInitialPublish}>
+                <FormattedMessage id="publishOnDemand.publishEntireSite" defaultMessage="Publish Entire Site" />
+              </Button>
+            )}
           </Box>
         )}
       </div>
