@@ -48,7 +48,7 @@ import { translations } from './translations';
 import { useStyles } from './styles';
 import { hasEditAction } from '../../utils/content';
 import { nnou } from '../../utils/object';
-import { useDetailedItemNoState } from '../../hooks/useDetailedItemNoState';
+import { useFetchItem } from '../../hooks/useFetchItem';
 
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
   props: LegacyFormDialogContainerProps,
@@ -82,7 +82,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   // When filename, path prop will still be the previous one, and useDetailedItem will try to re-fetch the
   // non-existing item (old filename path), so we will only re-fetch when the actual path prop of the component
   // changes (useDetailedItemNoState).
-  const item = useDetailedItemNoState(path);
+  const item = useFetchItem(path);
   const availableActions = item?.availableActions;
 
   const src = useMemo(

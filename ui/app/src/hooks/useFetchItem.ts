@@ -14,18 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem } from '../models';
 import { useEffect, useState } from 'react';
-import { fetchDetailedItem } from '../services/content';
 import useActiveSiteId from './useActiveSiteId';
+import { fetchDetailedItem, fetchSandboxItem } from '../services/content';
+import { DetailedItem } from '../models';
 
-export function useDetailedItemNoState(path: string): DetailedItem {
+export function useFetchItem(path: string, detailed: boolean = false): DetailedItem {
   const [item, setItem] = useState(null);
   const siteId = useActiveSiteId();
-
   useEffect(() => {
-    fetchDetailedItem(siteId, path).subscribe(setItem);
-  }, [siteId, path]);
-
+    if (detailed) {
+      fetchDetailedItem(siteId, path).subscribe(setItem);
+    } else {
+      fetchSandboxItem(siteId, path, { castAsDetailedItem: true }).subscribe(setItem);
+    }
+  }, [siteId, path, detailed]);
   return item;
 }

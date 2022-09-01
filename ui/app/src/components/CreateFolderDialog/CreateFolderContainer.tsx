@@ -41,7 +41,7 @@ import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { applyFolderNameRules } from '../../utils/content';
-import { useDetailedItemNoState } from '../../hooks/useDetailedItemNoState';
+import { useFetchItem } from '../../hooks/useFetchItem';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -59,7 +59,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   // When folder name changes, path prop will still be the previous one, and useDetailedItem will try to re-fetch the
   // non-existing item (old folder name path), so we will only re-fetch when the actual path prop of the component
   // changes (useDetailedItemNoState).
-  const item = useDetailedItemNoState(path);
+  const item = useFetchItem(path);
   const itemLookupTable = useItemsByPath();
   const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
   const folderExists = rename
