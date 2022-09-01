@@ -191,7 +191,8 @@ const systemEpics: CrafterCMSEpic[] = [
         const hostToHost$ = getHostToHostBus();
         hostToHost$.next(
           showSystemNotification({
-            message
+            message,
+            options: { variant: action === 'save' ? 'warning' : 'default' }
           })
         );
       }),

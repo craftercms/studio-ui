@@ -499,7 +499,7 @@
   "item.requestedToPublishNow": "{count, plural, one {The selected item has been requested to be pushed to {environment}} other {The selected items has been requested to be pushed to {environment}}}",
   "item.requestedToSchedulePublish": "{count, plural, one {El ítem seleccionado ha sido programados para {environment}} other {Los elementos seleccionados han sido programados para {environment}}}",
   "item.reverted": "Elemento revertido con éxito",
-  "item.savedAsDraft": "Se guardó el borrador del artículo",
+  "item.savedAsDraft": "Borrador guardado. Los campos obligatorios que se dejan en blanco pueden causar errores cuando se visualicen o implementan.",
   "item.schedulePublished": "{count, plural, one {El ítem seleccionado ha sido programados para {environment}} other {Los elementos seleccionados han sido programados para {environment}}}",
   "item.templateNotFound": "Plantilla no encontrada.",
   "item.unlocked": "Artículo desbloqueado con éxito",
