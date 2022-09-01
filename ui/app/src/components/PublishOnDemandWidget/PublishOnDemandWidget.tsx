@@ -52,11 +52,10 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { hasInitialPublish as hasInitialPublishService } from '../../services/sites';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import useDetailedItem from '../../hooks/useDetailedItem';
-import { getUserPermissions } from '../../services/security';
-import useMount from '../../hooks/useMount';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import usePermissionsBySite from '../../hooks/usePermissionsBySite';
 
 const useStyles = makeStyles()((theme) => ({
   content: {
@@ -161,7 +160,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const { formatMessage } = useIntl();
   const [mode, setMode] = useState<PublishOnDemandMode>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasPublishPermission, setHasPublishPermission] = useState<boolean>(false);
+  const permissionsBySite = usePermissionsBySite();
+  const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
   const [hasInitialPublish, setHasInitialPublish] = useState(false);
   const initialPublishItem = useDetailedItem('/site/website/index.xml');
   const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
@@ -230,12 +230,6 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     }
   };
 
-  useMount(() => {
-    getUserPermissions(siteId, '/').subscribe((permissions) => {
-      setHasPublishPermission(permissions.includes('publish'));
-    });
-  });
-
   useEffect(() => {
     fnRefs.current.onSubmittingAndOrPendingChange?.({
       hasPendingChanges: hasChanges,
@@ -247,6 +241,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     hasInitialPublishService(siteId).subscribe({
       next(response) {
         setHasInitialPublish(response);
+      },
+      error(error) {
+        dispatch(showErrorDialog(error));
       }
     });
     fetchPublishingTargets(siteId).subscribe({
@@ -390,23 +387,16 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const publishDialogSuccess = 'publishDialogSuccess';
-  const publishDialogClosed = 'publishDialogClosed';
   const onInitialPublish = () => {
     dispatch(
       showPublishDialog({
         items: [initialPublishItem],
-        onSuccess: batchActions([closePublishDialog(), dispatchDOMEvent({ id: publishDialogSuccess })]),
-        onClosed: dispatchDOMEvent({ id: publishDialogClosed })
+        onSuccess: batchActions([closePublishDialog(), dispatchDOMEvent({ id: publishDialogSuccess })])
       })
     );
 
-    let unsubscribe, cancelUnsubscribe;
-    unsubscribe = createCustomDocumentEventListener(publishDialogSuccess, () => {
+    createCustomDocumentEventListener(publishDialogSuccess, () => {
       setHasInitialPublish(true);
-      cancelUnsubscribe();
-    });
-    cancelUnsubscribe = createCustomDocumentEventListener(publishDialogClosed, () => {
-      unsubscribe();
     });
   };
 
@@ -527,9 +517,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
               />
             </Typography>
             {hasPublishPermission && (
-              <Button variant="contained" onClick={onInitialPublish}>
+              <PrimaryButton onClick={onInitialPublish}>
                 <FormattedMessage id="publishOnDemand.publishEntireSite" defaultMessage="Publish Entire Site" />
-              </Button>
+              </PrimaryButton>
             )}
           </Box>
         )}
