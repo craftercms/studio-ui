@@ -144,7 +144,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (renameDisabled) {
+            if (!renameDisabled) {
               onRename();
             }
           }}
