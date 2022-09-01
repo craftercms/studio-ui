@@ -125,6 +125,7 @@ const useLauncherStyles = makeStyles()((theme) => ({
     display: 'inline-flex'
   },
   sitesRail: {
+    minWidth: '350px',
     backgroundColor: theme.palette.mode === 'dark' ? palette.gray.dark1 : palette.gray.light1
   },
   appsRail: {},
@@ -468,7 +469,7 @@ export function Launcher(props: LauncherStateProps) {
       onClose={onMenuClose}
       classes={{ paper: classes.popover }}
       anchorOrigin={{
-        vertical: 'bottom',
+        vertical: 'top',
         horizontal: 'right'
       }}
       transformOrigin={{
