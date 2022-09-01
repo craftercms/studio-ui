@@ -64,9 +64,9 @@ const messages = defineMessages({
     id: 'common.marketplace',
     defaultMessage: 'Marketplace'
   },
-  publicMarketplace: {
-    id: 'createSiteDialog.publicMarketplace',
-    defaultMessage: 'Public Marketplace'
+  publicMarketplaceBlueprints: {
+    id: 'createSiteDialog.publicMarketplaceBlueprints',
+    defaultMessage: 'Public Marketplace Blueprints'
   },
   back: {
     id: 'common.back',
@@ -127,11 +127,6 @@ const messages = defineMessages({
   reviewSite: {
     id: 'createSiteDialog.reviewSite',
     defaultMessage: 'Review set up summary and create your project'
-  },
-  chooseCreationStrategy: {
-    id: 'createSiteDialog.chooseCreationStrategy',
-    defaultMessage:
-      'Choose creation strategy: start from an existing Git repo or create based on a plugin that suits you best.'
   },
   showIncompatible: {
     id: 'createSiteDialog.showIncompatible',
@@ -213,10 +208,6 @@ const useStyles = makeStyles()((theme) => ({
       paddingTop: '70px'
     }
   },
-  tabs: {
-    display: 'flex',
-    alignItems: 'center'
-  },
   simpleTab: {
     minWidth: '80px',
     minHeight: '0',
@@ -285,6 +276,9 @@ const useStyles = makeStyles()((theme) => ({
   showIncompatibleCheckbox: {
     paddingTop: 0,
     paddingBottom: 0
+  },
+  marketplaceActions: {
+    display: 'flex'
   }
 }));
 
@@ -322,8 +316,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   const views: Views = {
     0: {
-      title: formatMessage(messages.createSite),
-      subtitle: formatMessage(messages.chooseCreationStrategy)
+      title: formatMessage(messages.createSite)
     },
     1: {
       title: formatMessage(messages.createSite),
@@ -714,8 +707,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   function renderBlueprints(list: MarketplacePlugin[], isMarketplace: boolean = false) {
     return list.map((item: MarketplacePlugin) => {
+      const isGitItem = item.id === 'GIT';
       return (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
+        <Grid item xs={12} sm={isGitItem ? 12 : 6} md={isGitItem ? 12 : 4} lg={isGitItem ? 12 : 3} key={item.id}>
           <PluginCard
             plugin={item}
             onPluginSelected={handleBlueprintSelected}
@@ -790,33 +784,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 root: classes.headerSubTitle
               }
             }}
-          >
-            {site.selectedView === 0 && (
-              <div className={classes.tabs}>
-                <SearchIcon
-                  className={cx(classes.tabIcon, search.searchSelected && 'selected')}
-                  onClick={handleSearchClick}
-                />
-                <FormControlLabel
-                  className={classes.showIncompatible}
-                  control={
-                    <Checkbox
-                      checked={site.showIncompatible}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
-                      color="primary"
-                      className={classes.showIncompatibleCheckbox}
-                    />
-                  }
-                  label={
-                    <Typography className={classes.showIncompatibleInput}>
-                      {formatMessage(messages.showIncompatible)}
-                    </Typography>
-                  }
-                  labelPlacement="start"
-                />
-              </div>
-            )}
-          </DialogHeader>
+          />
 
           {blueprints ? (
             <DialogBody classes={{ root: classes.dialogContent }}>
@@ -842,6 +810,32 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                     ) : (
                       <>
                         {renderBlueprints(filteredBlueprints)}
+                        <Grid item xs={12} className={classes.marketplaceActions}>
+                          <Typography color="text.secondary" variant="body1" sx={{ mr: 2 }}>
+                            {formatMessage(messages.publicMarketplaceBlueprints)}
+                          </Typography>
+                          <SearchIcon
+                            className={cx(classes.tabIcon, search.searchSelected && 'selected')}
+                            onClick={handleSearchClick}
+                          />
+                          <FormControlLabel
+                            className={classes.showIncompatible}
+                            control={
+                              <Checkbox
+                                checked={site.showIncompatible}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                                color="primary"
+                                className={classes.showIncompatibleCheckbox}
+                              />
+                            }
+                            label={
+                              <Typography className={classes.showIncompatibleInput}>
+                                {formatMessage(messages.showIncompatible)}
+                              </Typography>
+                            }
+                            labelPlacement="start"
+                          />
+                        </Grid>
                         {marketplace && renderBlueprints(filteredMarketplace, true)}
                       </>
                     )}
