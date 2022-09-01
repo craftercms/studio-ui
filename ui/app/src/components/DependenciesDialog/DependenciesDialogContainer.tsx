@@ -22,12 +22,12 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSelection } from '../../hooks/useSelection';
 import { useDispatch } from 'react-redux';
 import { DetailedItem } from '../../models/Item';
-import { showCodeEditorDialog, showEditDialog, showHistoryDialog } from '../../state/actions/dialogs';
+import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { fetchItemVersions } from '../../state/actions/versions';
 import { getRootPath } from '../../utils/path';
 import { fetchDependant, fetchSimpleDependencies } from '../../services/dependencies';
-import { isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
+import { openItemEditor, isEditableAsset, parseLegacyItemToSandBoxItem } from '../../utils/content';
 import DependenciesDialogUI from './DependenciesDialogUI';
 import useMount from '../../hooks/useMount';
 
@@ -49,19 +49,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
   const dispatch = useDispatch();
 
   const handleEditorDisplay = (item: DetailedItem) => {
-    let type = 'controller';
-
-    if (item.systemType === 'component' || item.systemType === 'page') {
-      type = 'form';
-    } else if (item.contentTypeId === 'renderingTemplate') {
-      type = 'template';
-    }
-
-    if (type === 'form') {
-      dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId }));
-    } else {
-      dispatch(showCodeEditorDialog({ site: siteId, authoringBase, path: item.path, type }));
-    }
+    openItemEditor(item, authoringBase, siteId, dispatch);
   };
 
   const handleHistoryDisplay = (item: DetailedItem) => {

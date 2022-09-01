@@ -27,6 +27,7 @@ import Launcher from '../Launcher/Launcher';
 import useSelection from '../../hooks/useSelection';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import MinimizedBar from '../MinimizedBar';
+import { RenameAssetDialog } from '../RenameAssetDialog';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
@@ -304,7 +305,19 @@ function GlobalDialogManager() {
       />
       {/* endregion */}
 
-      {/* region Create Folder */}
+      {/* region Rename Asset */}
+      <RenameAssetDialog
+        {...state.renameAsset}
+        onClose={createCallback(state.renameAsset.onClose, dispatch)}
+        onClosed={createCallback(state.renameAsset.onClosed, dispatch)}
+        onRenamed={createCallback(state.renameAsset.onRenamed, dispatch)}
+        onWithPendingChangesCloseRequest={useWithPendingChangesCloseRequest(
+          createCallback(state.renameAsset.onClose, dispatch)
+        )}
+      />
+      {/* endregion */}
+
+      {/* region Copy Items */}
       <CopyItemsDialog
         {...state.copy}
         onClose={createCallback(state.copy.onClose, dispatch)}

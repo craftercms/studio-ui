@@ -34,7 +34,6 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import slugify from 'slugify';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
@@ -42,6 +41,7 @@ import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { applyFolderNameRules } from '../../utils/content';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -161,17 +161,6 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  const cleanupName = (name: string) => {
-    let cleanedUpName = slugify(name, {
-      // Setting `strict: true` would disallow `_`, which we don't want.
-      strict: false,
-      // Because of the moment where the library trims, `trim: true` caused undesired replacement of `-`
-      // at the beginning or end of the slug.
-      trim: false
-    });
-    return cleanedUpName.replace(allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '');
-  };
-
   return (
     <>
       <DialogBody>
@@ -233,7 +222,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) => onInputChanges(cleanupName(event.target.value))}
+            onChange={(event) => onInputChanges(applyFolderNameRules(event.target.value, { allowBraces }))}
           />
         </form>
       </DialogBody>

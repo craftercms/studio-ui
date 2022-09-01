@@ -44,6 +44,8 @@ import {
   CONTENT_REVERT_MASK,
   CONTENT_UPLOAD_MASK,
   FOLDER_CREATE_MASK,
+  pageControllersFieldId,
+  pageControllersLegacyFieldId,
   PUBLISH_APPROVE_MASK,
   PUBLISH_MASK,
   PUBLISH_REJECT_MASK,
@@ -64,14 +66,16 @@ import {
   STATE_SYSTEM_PROCESSING_MASK,
   STATE_TRANSLATION_IN_PROGRESS_MASK,
   STATE_TRANSLATION_PENDING_MASK,
-  STATE_TRANSLATION_UP_TO_DATE_MASK,
-  pageControllersFieldId,
-  pageControllersLegacyFieldId
+  STATE_TRANSLATION_UP_TO_DATE_MASK
 } from './constants';
 import { SystemType } from '../models/SystemType';
 import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
 import { forEach } from './array';
 import { PublishingTargets } from '../models';
+import slugify from 'slugify';
+import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
+import { Dispatch } from 'react';
+import { AnyAction } from 'redux';
 
 export function isEditableAsset(path: string) {
   return (
@@ -952,3 +956,40 @@ export function getComputedPublishingTarget(item: DetailedItem): PublishingTarge
       ? 'staging'
       : null;
 }
+
+export function applyFolderNameRules(name: string, options?: { allowBraces: boolean }): string {
+  let cleanedUpName = slugify(name, {
+    // Setting `strict: true` would disallow `_`, which we don't want.
+    strict: false,
+    // Because of the moment where the library trims, `trim: true` caused undesired replacement of `-`
+    // at the beginning or end of the slug.
+    trim: false
+  });
+  return cleanedUpName.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '');
+}
+
+export function applyAssetNameRules(name: string, options?: { allowBraces: boolean }): string {
+  return name.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '').replace(/\.{1,}/g, '.');
+}
+
+export const openItemEditor = (
+  item: DetailedItem,
+  authoringBase: string,
+  siteId: string,
+  dispatch: Dispatch<AnyAction>,
+  onSaveSuccess?: AnyAction
+) => {
+  let type = 'controller';
+
+  if (item.systemType === 'component' || item.systemType === 'page') {
+    type = 'form';
+  } else if (item.contentTypeId === 'renderingTemplate') {
+    type = 'template';
+  }
+
+  if (type === 'form') {
+    dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, onSaveSuccess }));
+  } else {
+    dispatch(showCodeEditorDialog({ site: siteId, authoringBase, path: item.path, type, onSuccess: onSaveSuccess }));
+  }
+};

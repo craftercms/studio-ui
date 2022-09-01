@@ -45,6 +45,7 @@ import publishingStatus from './publishingStatus';
 import unlockPublisher from './unlockPublisher';
 import widget from './widget';
 import uiBlocker from './uiBlocker';
+import renameAsset from './renameAsset';
 
 export default combineReducers({
   confirm,
@@ -64,6 +65,7 @@ export default combineReducers({
   editSite,
   createFolder,
   createFile,
+  renameAsset,
   copy,
   upload,
   singleFileUpload,

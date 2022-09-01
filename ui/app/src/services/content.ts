@@ -1344,6 +1344,10 @@ export function renameFolder(site: string, path: string, name: string) {
   );
 }
 
+export function renameContent(siteId: string, path: string, name: string) {
+  return postJSON(`/studio/api/2/content/rename`, { siteId, path, name }).pipe(pluck('response'));
+}
+
 export function changeContentType(site: string, path: string, contentType: string): Observable<boolean> {
   return post(
     `/studio/api/1/services/api/1/content/change-content-type.json${toQueryString({

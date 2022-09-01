@@ -40,6 +40,7 @@ import {
   showPreviewDialog,
   showPublishDialog,
   showRejectDialog,
+  showRenameAssetDialog,
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
@@ -568,15 +569,32 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'rename': {
-        // TODO: handle rename of different item types
-        dispatch(
-          showCreateFolderDialog({
-            path: item.path,
-            allowBraces: item.path.startsWith('/scripts/rest'),
-            rename: true,
-            value: item.label
-          })
-        );
+        if (item.systemType === 'folder') {
+          dispatch(
+            showCreateFolderDialog({
+              path: item.path,
+              allowBraces: item.path.startsWith('/scripts/rest'),
+              rename: true,
+              value: item.label
+            })
+          );
+        } else {
+          const type =
+            item.systemType === 'renderingTemplate'
+              ? 'template'
+              : item.systemType === 'script'
+              ? 'controller'
+              : 'asset';
+
+          dispatch(
+            showRenameAssetDialog({
+              path: item.path,
+              allowBraces: item.path.startsWith('/scripts/rest'),
+              type,
+              value: item.label
+            })
+          );
+        }
         break;
       }
       case 'createContent': {

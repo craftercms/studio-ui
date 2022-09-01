@@ -27,7 +27,7 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog';
-import { CreateFileContainerProps, getExtension, getName } from './utils';
+import { CreateFileContainerProps } from './utils';
 import { translations } from './translations';
 import { updateCreateFileDialog, updateCreateFolderDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
@@ -38,6 +38,8 @@ import { isBlank } from '../../utils/string';
 import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { applyAssetNameRules } from '../../utils/content';
+import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const { onClose, onCreated, type, path, allowBraces } = props;
@@ -48,7 +50,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const itemLookup = useItemsByPath();
-  const computedFilePath = `${path}/${getName(type, name)}`;
+  const computedFilePath = `${path}/${getFileNameWithExtensionForItemType(type, name)}`;
   const fileExists = itemLookup[computedFilePath] !== UNDEFINED;
   const isValid = !isBlank(name) && !fileExists;
 
@@ -67,7 +69,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
       )
       .subscribe({
         next() {
-          onCreated?.({ path, fileName, mode: getExtension(type), openOnSuccess: true });
+          onCreated?.({ path, fileName, mode: pickExtensionForItemType(type), openOnSuccess: true });
           dispatch(
             updateCreateFileDialog({
               hasPendingChanges: false,
@@ -105,7 +107,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
               body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
             });
           } else {
-            const fileName = getName(type, name);
+            const fileName = getFileNameWithExtensionForItemType(type, name);
             onCreateFile(site, path, fileName);
           }
         } else {
@@ -124,7 +126,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   };
 
   const onConfirm = () => {
-    const fileName = getName(type, name);
+    const fileName = getFileNameWithExtensionForItemType(type, name);
     onCreateFile(site, path, fileName);
   };
 
@@ -187,13 +189,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) =>
-              onInputChanges(
-                event.target.value
-                  .replace(allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '')
-                  .replace(/\.{1,}/g, '.')
-              )
-            }
+            onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
           />
         </form>
       </DialogBody>
