@@ -160,7 +160,10 @@ export default [
           },
           state
         ]) =>
-          fetchItemWithChildrenByPath(state.sites.active, path, { excludes: state.pathNavigator[id].excludes }).pipe(
+          fetchItemWithChildrenByPath(state.sites.active, path, {
+            excludes: state.pathNavigator[id].excludes,
+            limit: state.pathNavigator[id].limit
+          }).pipe(
             map(({ item, children }) =>
               pathNavigatorConditionallySetPathComplete({ id, path, parent: item, children })
             ),
