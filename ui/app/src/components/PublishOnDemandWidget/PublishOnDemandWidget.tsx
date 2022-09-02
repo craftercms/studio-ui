@@ -386,17 +386,18 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     }
   };
 
-  const publishDialogSuccess = 'publishDialogSuccess';
+  const customEventId = 'dialogDismissConfirm';
   const onInitialPublish = () => {
     dispatch(
       showPublishDialog({
         items: [initialPublishItem],
-        onSuccess: batchActions([closePublishDialog(), dispatchDOMEvent({ id: publishDialogSuccess })])
+        onSuccess: batchActions([closePublishDialog(), dispatchDOMEvent({ id: customEventId, type: 'publish' })]),
+        onClosed: dispatchDOMEvent({ id: customEventId, type: 'cancel' })
       })
     );
 
-    createCustomDocumentEventListener(publishDialogSuccess, () => {
-      setHasInitialPublish(true);
+    createCustomDocumentEventListener(customEventId, ({ type }) => {
+      type === 'publish' && setHasInitialPublish(true);
     });
   };
 
