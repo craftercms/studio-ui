@@ -31,3 +31,6 @@ export function useFetchItem(path: string, detailed: boolean = false): DetailedI
   }, [siteId, path, detailed]);
   return item;
 }
+
+export default useFetchItem;
+
