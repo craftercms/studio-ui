@@ -1226,7 +1226,7 @@
   "repositories.noConflicts": "Das lokale Repository ist konfliktfrei.",
   "repositories.pendingCommit": "Repo enthält Dateien, für die ein Commit aussteht. Weitere Informationen finden Sie unter Repository-Status.",
   "repositories.pullFromCreatedBranchOnlyHint": "Sie dürfen nur aus dem Zweig ziehen, aus dem die Site erstellt wurde; Jede Feature-Branch-Arbeit sollte Upstream zusammengeführt werden.",
-  "repositories.pullSuccessMessage": " {numberOfCommits} Commits erfolgreich abgerufen. Zusammenführungs-Commit-ID wurde in die Zwischenablage kopiert. Möchten Sie diese jetzt veröffentlichen?",
+  "repositories.pullSuccessMessage": " {numberOfCommits} Commits erfolgreich abgerufen. Möchten Sie diese jetzt veröffentlichen?",
   "repositories.pullSuccessNoChangesMessage": "Pull erfolgreich: bereits aktuell.",
   "repositories.pushSuccessMessage": "Erfolgreich geschoben.",
   "repositories.pushUrl": "Push-URL",
