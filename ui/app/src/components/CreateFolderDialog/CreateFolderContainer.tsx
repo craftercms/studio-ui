@@ -18,7 +18,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDetailedItem } from '../../hooks/useDetailedItem';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
 import { createFolder, fetchSandboxItem, renameFolder } from '../../services/content';
@@ -42,6 +41,7 @@ import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { applyFolderNameRules } from '../../utils/content';
+import { useFetchItem } from '../../hooks/useFetchItem';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -51,12 +51,15 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const item = useDetailedItem(props.path);
   const [openSelector, setOpenSelector] = useState(false);
   const [selectedItem, setSelectedItem] = useState<DetailedItem>(null);
   const path = useMemo(() => {
     return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
   }, [props.path, selectedItem]);
+  // When folder name changes, path prop will still be the previous one, and useDetailedItem will try to re-fetch the
+  // non-existing item (old folder name path), so we will only re-fetch when the actual path prop of the component
+  // changes (useDetailedItemNoState).
+  const item = useFetchItem(path);
   const itemLookupTable = useItemsByPath();
   const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
   const folderExists = rename

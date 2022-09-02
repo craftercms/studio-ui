@@ -545,7 +545,6 @@ export const itemActionDispatcher = ({
             authoringBase,
             onSaveSuccess: batchActions([
               showEditItemSuccessNotification(),
-              reloadDetailedItem({ path }),
               ...(onActionSuccess ? [onActionSuccess] : [])
             ]),
             ...extraPayload
