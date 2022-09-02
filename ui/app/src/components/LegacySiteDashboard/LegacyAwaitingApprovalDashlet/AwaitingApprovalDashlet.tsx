@@ -145,6 +145,10 @@ export function AwaitingApprovalDashlet() {
           total: response.total
         });
         setIsFetching(false);
+
+        // Update selected lookup
+        const selectedKeys = Object.keys(selectedLookup).filter((selected) => Boolean(itemsLookup[selected]));
+        setSelectedLookup(createPresenceTable(selectedKeys, true));
       },
       ({ response }) => {
         setError(response);

@@ -141,6 +141,10 @@ export function ApprovedScheduledDashlet() {
           total: response.total
         });
         setIsFetching(false);
+
+        // Update selected lookup
+        const selectedKeys = Object.keys(selectedLookup).filter((selected) => Boolean(itemsLookup[selected]));
+        setSelectedLookup(createPresenceTable(selectedKeys, true));
       },
       error({ response }) {
         setError(response);
