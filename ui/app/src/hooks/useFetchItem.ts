@@ -33,4 +33,3 @@ export function useFetchItem(path: string, detailed: boolean = false): DetailedI
 }
 
 export default useFetchItem;
-
