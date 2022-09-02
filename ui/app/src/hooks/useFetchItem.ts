@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react';
 import useActiveSiteId from './useActiveSiteId';
 import { fetchDetailedItem, fetchSandboxItem } from '../services/content';
-import { DetailedItem } from '../models';
+import { DetailedItem } from '../models/Item';
 
 export function useFetchItem(path: string, detailed: boolean = false): DetailedItem {
   const [item, setItem] = useState(null);
