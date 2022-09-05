@@ -1226,7 +1226,7 @@
   "repositories.noConflicts": "El repositorio local está libre de conflictos.",
   "repositories.pendingCommit": "Repo contiene archivos pendientes de confirmación. Consulte el estado del repositorio a continuación para obtener más detalles.",
   "repositories.pullFromCreatedBranchOnlyHint": "Solo puede hacer pull de la rama desde la que se creó el sitio; cualquier trabajo de fusión debe hacerse en el repositorio remoto.",
-  "repositories.pullSuccessMessage": "Extrajo con éxito {numberOfCommits} confirmaciones. ¿Te gustaría publicar esto ahora?",
+  "repositories.pullSuccessMessage": "Extrajo con éxito {numberOfCommits} confirmaciones. ¿Desea publicar esto ahora?",
   "repositories.pullSuccessNoChangesMessage": "Pull exitoso: ya actualizado.",
   "repositories.pushSuccessMessage": "Empujado con éxito.",
   "repositories.pushUrl": "URL de inserción",
