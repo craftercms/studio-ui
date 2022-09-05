@@ -35,10 +35,12 @@ export const useStyles = makeStyles()((theme) => ({
     top: 0,
     right: 0,
     display: 'flex',
-    visibility: 'hidden',
     position: 'absolute'
   },
-  optionsWrapperOver: {
+  itemMenu: {
+    visibility: 'hidden'
+  },
+  itemMenuOver: {
     visibility: 'visible'
   },
   headerTitle: {
