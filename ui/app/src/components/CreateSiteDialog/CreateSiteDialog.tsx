@@ -56,6 +56,8 @@ import { getSystemLink } from '../../utils/system';
 import { keyframes } from 'tss-react';
 import { SignalWifiBadRounded } from '@mui/icons-material';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -203,15 +205,14 @@ const useStyles = makeStyles()((theme) => ({
     height: '100%'
   },
   dialogContent: {
-    padding: '30px 0 0',
-    position: 'relative'
+    padding: 0
   },
   slide: {
     flexWrap: 'wrap',
     height: '100%',
     overflow: 'auto',
     display: 'flex',
-    padding: '0 25px 30px'
+    padding: '25px'
   },
   simpleTab: {
     minWidth: '80px',
@@ -256,10 +257,6 @@ const useStyles = makeStyles()((theme) => ({
   errorPaperRoot: {
     height: '100%'
   },
-  headerRoot: {
-    paddingBottom: 0,
-    width: '100%'
-  },
   headerSubTitle: {
     marginBottom: 13
   },
@@ -280,7 +277,8 @@ const useStyles = makeStyles()((theme) => ({
     paddingBottom: 0
   },
   marketplaceActions: {
-    display: 'flex'
+    display: 'flex',
+    alignItems: 'center'
   },
   marketplaceUnavailable: {
     width: '100%',
@@ -313,6 +311,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     error: false,
     global: false,
     errorResponse: null,
+    fetchingMarketplace: false,
     marketplaceError: false
   });
   const [search, setSearch] = useState(searchInitialState);
@@ -354,16 +353,22 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   const filteredMarketplace: MarketplacePlugin[] = filterBlueprints(marketplace, search.searchKey);
 
   const fetchMarketplaceBlueprints = useCallback(() => {
+    setApiState({ fetchingMarketplace: true });
     return fetchMarketplaceBlueprintsService({
       showIncompatible: site.showIncompatible
     }).subscribe({
       next: (plugins) => {
-        setApiState({ marketplaceError: false });
+        setApiState({ marketplaceError: false, fetchingMarketplace: false });
         setMarketplace(plugins);
       },
       error: ({ response }) => {
         if (response) {
-          setApiState({ creatingSite: false, error: true, marketplaceError: response.response });
+          setApiState({
+            creatingSite: false,
+            error: true,
+            marketplaceError: response.response,
+            fetchingMarketplace: false
+          });
         }
       }
     });
@@ -446,12 +451,15 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   }
 
   function handleClose(event?: any, reason?: string) {
+    const formInProgress = isFormInProgress();
+
     if (reason === 'escapeKeyDown' && site.details.blueprint) {
       setSite({ details: { blueprint: null, index: null } });
-    } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
+    } else if (
+      (reason === 'escapeKeyDown' || reason === 'closeButton' || reason === 'backdropClick') &&
+      formInProgress
+    ) {
       setDialog({ inProgress: true });
-    } else if (reason === 'backdropClick') {
-      return false;
     } else {
       // call externalClose fn
       cleanDialogState();
@@ -467,7 +475,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     setDialog({ inProgress: false });
   }
 
-  function isFormOnProgress() {
+  function isFormInProgress() {
     let inProgress = false;
     const keys = [
       'siteId',
@@ -803,7 +811,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             subtitle={views[site.selectedView].subtitle}
             id="create-site-dialog"
             onCloseButtonClick={handleClose}
-            classes={{ root: classes.headerRoot, subtitleWrapper: classes.headerRoot }}
             subtitleTypographyProps={{
               classes: {
                 root: classes.headerSubTitle
@@ -817,14 +824,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                 <div className={cx(classes.slide, classes.fadeIn)}>
                   <Grid container spacing={3} className={classes.containerGrid}>
                     {renderBlueprints(blueprints)}
+                    <Grid item xs={12}>
+                      <Divider sx={{ ml: -3, mr: -3 }} />
+                    </Grid>
                     <Grid item xs={12} className={classes.marketplaceActions}>
-                      <Typography color="text.secondary" variant="body1" sx={{ mr: 2 }}>
+                      <Typography color="text.secondary" variant="overline" sx={{ mr: 2 }}>
                         {formatMessage(messages.publicMarketplaceBlueprints)}
                       </Typography>
-                      <SearchIcon
-                        className={cx(classes.tabIcon, search.searchSelected && 'selected')}
-                        onClick={handleSearchClick}
-                      />
+                      <IconButton size="small" onClick={handleSearchClick}>
+                        <SearchIcon />
+                      </IconButton>
                       <FormControlLabel
                         className={classes.showIncompatible}
                         control={
@@ -843,8 +852,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                         labelPlacement="start"
                       />
                     </Grid>
-                    <Grid item xs={12}>
-                      {search.searchSelected && site.selectedView === 0 && (
+                    {search.searchSelected && site.selectedView === 0 && (
+                      <Grid item xs={12}>
                         <div className={classes.searchContainer}>
                           <SearchBar
                             showActionButton={Boolean(search.searchKey)}
@@ -853,8 +862,8 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                             autoFocus={true}
                           />
                         </div>
-                      )}
-                    </Grid>
+                      </Grid>
+                    )}
                     {apiState.marketplaceError ? (
                       <Box className={classes.marketplaceUnavailable}>
                         <SignalWifiBadRounded className={classes.marketplaceUnavailableIcon} />
@@ -864,6 +873,10 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
                         <Button variant="text" onClick={fetchMarketplaceBlueprints}>
                           {formatMessage(messages.retry)}
                         </Button>
+                      </Box>
+                    ) : apiState?.fetchingMarketplace ? ( // TODO: test - should I empty bps and check for null?
+                      <Box sx={{ width: '100%' }}>
+                        <LoadingState />
                       </Box>
                     ) : !filteredMarketplace || filteredMarketplace?.length === 0 ? (
                       <EmptyState
