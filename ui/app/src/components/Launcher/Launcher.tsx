@@ -125,7 +125,6 @@ const useLauncherStyles = makeStyles()((theme) => ({
     display: 'inline-flex'
   },
   sitesRail: {
-    minWidth: '350px',
     backgroundColor: theme.palette.mode === 'dark' ? palette.gray.dark1 : palette.gray.light1
   },
   appsRail: {},
@@ -147,7 +146,8 @@ const useLauncherStyles = makeStyles()((theme) => ({
   },
   gridContainer: {
     height: '100%',
-    maxHeight: '100%'
+    maxHeight: '100%',
+    minWidth: 1065
   },
   versionText: {},
   titleCard: {
@@ -331,7 +331,7 @@ const SiteRailSkeleton = ({ classes, formatMessage, version }) => (
       <List>
         {new Array(3).fill(null).map((_, i) => (
           <ListItem key={i}>
-            <Skeleton variant="rectangular" width="100%" height="72px" />
+            <Skeleton variant="rectangular" width="300px" height="72px" />
           </ListItem>
         ))}
       </List>
