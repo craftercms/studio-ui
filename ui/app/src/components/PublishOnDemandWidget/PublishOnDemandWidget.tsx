@@ -34,7 +34,12 @@ import Typography from '@mui/material/Typography';
 import { bulkGoLive, fetchPublishingTargets, publishAll, publishByCommits } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
+import {
+  closeConfirmDialog,
+  closePublishDialog,
+  showConfirmDialog,
+  showPublishDialog
+} from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import Link from '@mui/material/Link';
 import { useSpreadState } from '../../hooks/useSpreadState';
@@ -45,6 +50,12 @@ import SecondaryButton from '../SecondaryButton';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { hasInitialPublish as hasInitialPublishService } from '../../services/sites';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import Box from '@mui/material/Box';
+import useDetailedItem from '../../hooks/useDetailedItem';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
+import usePermissionsBySite from '../../hooks/usePermissionsBySite';
 
 const useStyles = makeStyles()((theme) => ({
   content: {
@@ -74,6 +85,21 @@ const useStyles = makeStyles()((theme) => ({
   noteLink: {
     color: 'inherit',
     textDecoration: 'underline'
+  },
+  initialPublishContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    rowGap: theme.spacing(2),
+    padding: theme.spacing(5)
+  },
+  initialPublishDescription: {
+    maxWidth: '470px',
+    textAlign: 'center'
+  },
+  initialPublishIcon: {
+    color: theme.palette.text.secondary,
+    fontSize: '1.75rem'
   }
 }));
 
@@ -134,6 +160,10 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const { formatMessage } = useIntl();
   const [mode, setMode] = useState<PublishOnDemandMode>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const permissionsBySite = usePermissionsBySite();
+  const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
+  const [hasInitialPublish, setHasInitialPublish] = useState(false);
+  const initialPublishItem = useDetailedItem('/site/website/index.xml');
   const [initialPublishingTarget, setInitialPublishingTarget] = useState(null);
   const [publishingTargets, setPublishingTargets] = useState(null);
   const [publishingTargetsError, setPublishingTargetsError] = useState(null);
@@ -208,6 +238,14 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   }, [isSubmitting, hasChanges, fnRefs]);
 
   useEffect(() => {
+    hasInitialPublishService(siteId).subscribe({
+      next(response) {
+        setHasInitialPublish(response);
+      },
+      error(error) {
+        dispatch(showErrorDialog(error));
+      }
+    });
     fetchPublishingTargets(siteId).subscribe({
       next({ publishingTargets: targets }) {
         setPublishingTargets(targets);
@@ -348,110 +386,144 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     }
   };
 
+  const customEventId = 'dialogDismissConfirm';
+  const onInitialPublish = () => {
+    dispatch(
+      showPublishDialog({
+        items: [initialPublishItem],
+        onSuccess: batchActions([closePublishDialog(), dispatchDOMEvent({ id: customEventId, type: 'publish' })]),
+        onClosed: dispatchDOMEvent({ id: customEventId, type: 'cancel' })
+      })
+    );
+
+    createCustomDocumentEventListener(customEventId, ({ type }) => {
+      type === 'publish' && setHasInitialPublish(true);
+    });
+  };
+
   return (
     <Paper elevation={2}>
       <DialogHeader title={<FormattedMessage id="publishOnDemand.title" defaultMessage="Publish on Demand" />} />
       <div className={classes.content}>
-        <Paper elevation={0} className={classes.modeSelector}>
-          <form>
-            <RadioGroup value={mode} onChange={handleChange}>
-              <FormControlLabel
-                disabled={isSubmitting}
-                value="studio"
-                control={<Radio />}
-                label={
-                  <ListItemText
-                    primary={
-                      <FormattedMessage
-                        id="publishOnDemand.pathModeDescription"
-                        defaultMessage="Publish changes made in Studio via the UI"
+        {hasInitialPublish ? (
+          <>
+            <Paper elevation={0} className={classes.modeSelector}>
+              <form>
+                <RadioGroup value={mode} onChange={handleChange}>
+                  <FormControlLabel
+                    disabled={isSubmitting}
+                    value="studio"
+                    control={<Radio />}
+                    label={
+                      <ListItemText
+                        primary={
+                          <FormattedMessage
+                            id="publishOnDemand.pathModeDescription"
+                            defaultMessage="Publish changes made in Studio via the UI"
+                          />
+                        }
+                        secondary="By path"
                       />
                     }
-                    secondary="By path"
+                    className={classes.byPathModeSelector}
                   />
-                }
-                className={classes.byPathModeSelector}
-              />
-              <FormControlLabel
-                disabled={isSubmitting}
-                value="git"
-                control={<Radio />}
-                label={
-                  <ListItemText
-                    primary={
-                      <FormattedMessage
-                        id="publishOnDemand.tagsModeDescription"
-                        defaultMessage="Publish changes made via direct git actions against the repository or pulled from a remote repository"
+                  <FormControlLabel
+                    disabled={isSubmitting}
+                    value="git"
+                    control={<Radio />}
+                    label={
+                      <ListItemText
+                        primary={
+                          <FormattedMessage
+                            id="publishOnDemand.tagsModeDescription"
+                            defaultMessage="Publish changes made via direct git actions against the repository or pulled from a remote repository"
+                          />
+                        }
+                        secondary="By tags or commit ids"
                       />
                     }
-                    secondary="By tags or commit ids"
                   />
-                }
-              />
-              <FormControlLabel
-                disabled={isSubmitting}
-                value="all"
-                control={<Radio />}
-                label={
-                  <ListItemText
-                    primary={
-                      <FormattedMessage
-                        id="publishOnDemand.publishAllDescription"
-                        defaultMessage="Publish everything"
+                  <FormControlLabel
+                    disabled={isSubmitting}
+                    value="all"
+                    control={<Radio />}
+                    label={
+                      <ListItemText
+                        primary={
+                          <FormattedMessage
+                            id="publishOnDemand.publishAllDescription"
+                            defaultMessage="Publish everything"
+                          />
+                        }
+                        secondary="Publish all changes on the repo to the publishing target you choose"
                       />
                     }
-                    secondary="Publish all changes on the repo to the publishing target you choose"
                   />
-                }
+                </RadioGroup>
+              </form>
+            </Paper>
+            <Collapse in={nnou(mode)} timeout={300} unmountOnExit className={classes.formContainer}>
+              <PublishOnDemandForm
+                disabled={isSubmitting}
+                formData={currentFormData}
+                setFormData={currentSetFormData}
+                mode={mode}
+                publishingTargets={publishingTargets}
+                publishingTargetsError={publishingTargetsError}
+                bulkPublishCommentRequired={bulkPublishCommentRequired}
+                publishByCommitCommentRequired={publishByCommitCommentRequired}
               />
-            </RadioGroup>
-          </form>
-        </Paper>
-        <Collapse in={nnou(mode)} timeout={300} unmountOnExit className={classes.formContainer}>
-          <PublishOnDemandForm
-            disabled={isSubmitting}
-            formData={currentFormData}
-            setFormData={currentSetFormData}
-            mode={mode}
-            publishingTargets={publishingTargets}
-            publishingTargetsError={publishingTargetsError}
-            bulkPublishCommentRequired={bulkPublishCommentRequired}
-            publishByCommitCommentRequired={publishByCommitCommentRequired}
-          />
-          {mode !== 'all' && (
-            <div className={classes.noteContainer}>
-              <Typography variant="caption" className={classes.note}>
-                {mode === 'studio' ? (
-                  <FormattedMessage
-                    id="publishingDashboard.studioNote"
-                    defaultMessage="Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>."
-                    values={{
-                      a: (msg: string[]) => {
-                        return (
-                          <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
-                            {msg[0]}
-                          </Link>
-                        );
-                      }
-                    }}
-                  />
-                ) : (
-                  <FormattedMessage
-                    id="publishingDashboard.gitNote"
-                    defaultMessage="Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please <a>publish by path</a>."
-                    values={{
-                      a: (msg: string[]) => (
-                        <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
-                          {msg[0]}
-                        </Link>
-                      )
-                    }}
-                  />
-                )}
-              </Typography>
-            </div>
-          )}
-        </Collapse>
+              {mode !== 'all' && (
+                <div className={classes.noteContainer}>
+                  <Typography variant="caption" className={classes.note}>
+                    {mode === 'studio' ? (
+                      <FormattedMessage
+                        id="publishingDashboard.studioNote"
+                        defaultMessage="Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>."
+                        values={{
+                          a: (msg: string[]) => {
+                            return (
+                              <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                                {msg[0]}
+                              </Link>
+                            );
+                          }
+                        }}
+                      />
+                    ) : (
+                      <FormattedMessage
+                        id="publishingDashboard.gitNote"
+                        defaultMessage="Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please <a>publish by path</a>."
+                        values={{
+                          a: (msg: string[]) => (
+                            <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                              {msg[0]}
+                            </Link>
+                          )
+                        }}
+                      />
+                    )}
+                  </Typography>
+                </div>
+              )}
+            </Collapse>
+          </>
+        ) : (
+          <Box className={classes.initialPublishContainer}>
+            <InfoOutlinedIcon className={classes.initialPublishIcon} />
+            <Typography variant="body1" className={classes.initialPublishDescription}>
+              <FormattedMessage
+                id="publishOnDemand.noInitialPublish"
+                defaultMessage="The project needs to undergo its initial publish before other publishing options become available"
+              />
+            </Typography>
+            {hasPublishPermission && (
+              <PrimaryButton onClick={onInitialPublish}>
+                <FormattedMessage id="publishOnDemand.publishEntireSite" defaultMessage="Publish Entire Site" />
+              </PrimaryButton>
+            )}
+          </Box>
+        )}
       </div>
       {mode && (
         <DialogFooter>
