@@ -72,7 +72,7 @@ export function GlobalApp(props: GlobalAppProps) {
   );
   useEffect(() => {
     const path = location.pathname;
-    const id = idByPathLookup[path];
+    const id = idByPathLookup?.[path];
     document.title = `CrafterCMS - ${formatMessage(
       globalMenuMessages[id] ?? {
         id: 'globalApp.routeNotFound',
