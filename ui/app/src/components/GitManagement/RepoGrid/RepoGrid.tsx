@@ -62,8 +62,7 @@ const messages = defineMessages({
   },
   pullSuccessMessage: {
     id: 'repositories.pullSuccessMessage',
-    defaultMessage:
-      'Successfully pulled {numberOfCommits} commits. Merge commit id was copied to clipboard. Would you like to publish this now?'
+    defaultMessage: 'Successfully pulled {numberOfCommits} commits. Would you like to publish this now?'
   },
   pullSuccessNoChangesMessage: {
     id: 'repositories.pullSuccessNoChangesMessage',
