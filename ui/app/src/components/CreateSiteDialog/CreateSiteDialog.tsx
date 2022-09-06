@@ -257,9 +257,6 @@ const useStyles = makeStyles()((theme) => ({
   errorPaperRoot: {
     height: '100%'
   },
-  headerSubTitle: {
-    marginBottom: 13
-  },
   blueprintFormRoot: {
     marginTop: 10
   },
@@ -811,11 +808,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             subtitle={views[site.selectedView].subtitle}
             id="create-site-dialog"
             onCloseButtonClick={handleClose}
-            subtitleTypographyProps={{
-              classes: {
-                root: classes.headerSubTitle
-              }
-            }}
           />
 
           {blueprints ? (
