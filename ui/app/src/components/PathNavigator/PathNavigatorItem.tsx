@@ -134,9 +134,12 @@ function PathNavigatorItem(props: NavItemProps) {
         labelTypographyProps={{ variant: 'body2' }}
       />
       {(onOpenItemMenu || showItemNavigateToButton) && (
-        <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
+        <div className={classes.optionsWrapper}>
           {onOpenItemMenu && (
-            <Tooltip title={formatMessage(translations.itemMenu)}>
+            <Tooltip
+              title={formatMessage(translations.itemMenu)}
+              className={clsx(classes.itemMenu, over && classes.itemMenuOver)}
+            >
               <IconButton
                 aria-label={formatMessage(translations.itemMenu)}
                 className={classes.itemIconButton}
