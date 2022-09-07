@@ -14,14 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import { withStyles } from 'tss-react/mui';
 import Dialog from '@mui/material/Dialog';
 import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import PluginCard from '../PluginCard/PluginCard';
 import Spinner from '../Spinner/Spinner';
 import BlueprintForm from './BlueprintForm';
@@ -37,7 +34,7 @@ import { setRequestForgeryToken, setSiteCookie } from '../../utils/auth';
 import { create, exists, fetchBlueprints as fetchBuiltInBlueprints } from '../../services/sites';
 import {
   createSite as createSiteFromMarketplace,
-  fetchBlueprints as fetchMarketplaceBlueprints
+  fetchBlueprints as fetchMarketplaceBlueprintsService
 } from '../../services/marketplace';
 import gitLogo from '../../assets/git-logo.svg';
 import { fadeIn } from 'react-animations';
@@ -57,6 +54,10 @@ import { useEnv } from '../../hooks/useEnv';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { getSystemLink } from '../../utils/system';
 import { keyframes } from 'tss-react';
+import SignalWifiBadRounded from '@mui/icons-material/SignalWifiBadRounded';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
 
 const messages = defineMessages({
   privateBlueprints: {
@@ -67,17 +68,17 @@ const messages = defineMessages({
     id: 'common.marketplace',
     defaultMessage: 'Marketplace'
   },
-  publicMarketplace: {
-    id: 'createSiteDialog.publicMarketplace',
-    defaultMessage: 'Public Marketplace'
+  publicMarketplaceBlueprints: {
+    id: 'createSiteDialog.publicMarketplaceBlueprints',
+    defaultMessage: 'Public Marketplace Blueprints'
   },
   back: {
     id: 'common.back',
     defaultMessage: 'Back'
   },
-  noBlueprints: {
-    id: 'createSiteDialog.noBlueprints',
-    defaultMessage: 'No Blueprints Were Found'
+  noMarketplaceBlueprints: {
+    id: 'createSiteDialog.noMarketplaceBlueprints',
+    defaultMessage: 'No Marketplace Blueprints Were Found'
   },
   changeQuery: {
     id: 'createSiteDialog.changeQuery',
@@ -131,14 +132,17 @@ const messages = defineMessages({
     id: 'createSiteDialog.reviewSite',
     defaultMessage: 'Review set up summary and create your project'
   },
-  chooseCreationStrategy: {
-    id: 'createSiteDialog.chooseCreationStrategy',
-    defaultMessage:
-      'Choose creation strategy: start from an existing Git repo or create based on a plugin that suits you best.'
-  },
   showIncompatible: {
     id: 'createSiteDialog.showIncompatible',
     defaultMessage: 'Show Incompatible Plugins'
+  },
+  marketplaceUnavailable: {
+    id: 'createSiteDialog.marketplaceUnavailable',
+    defaultMessage: 'CrafterCMS Marketplace is unavailable at this time'
+  },
+  retry: {
+    id: 'words.retry',
+    defaultMessage: 'Retry'
   }
 });
 
@@ -180,27 +184,19 @@ const searchInitialState = {
   searchSelected: false
 };
 
-const CustomTabs = withStyles(Tabs, {
-  root: {
-    borderBottom: 'none',
-    minHeight: 'inherit'
-  }
-});
-
 const useStyles = makeStyles()((theme) => ({
   fadeIn: {
     animation: `${keyframes`${fadeIn}`} 1s`
+  },
+  containerGrid: {
+    alignContent: 'baseline'
   },
   paperScrollPaper: {
     height: 'calc(100% - 100px)',
     maxHeight: '1200px'
   },
   searchContainer: {
-    position: 'absolute',
-    padding: '0 20px',
     width: '100%',
-    left: '50%',
-    transform: 'translate(-50%)',
     zIndex: 1
   },
   dialogContainer: {
@@ -209,23 +205,14 @@ const useStyles = makeStyles()((theme) => ({
     height: '100%'
   },
   dialogContent: {
-    padding: '30px 0 0',
-    position: 'relative'
+    padding: 0
   },
   slide: {
     flexWrap: 'wrap',
     height: '100%',
     overflow: 'auto',
     display: 'flex',
-    padding: '0 25px',
-    '&.selected': {
-      height: '100%',
-      paddingTop: '70px'
-    }
-  },
-  tabs: {
-    display: 'flex',
-    alignItems: 'center'
+    padding: '25px'
   },
   simpleTab: {
     minWidth: '80px',
@@ -270,20 +257,11 @@ const useStyles = makeStyles()((theme) => ({
   errorPaperRoot: {
     height: '100%'
   },
-  headerRoot: {
-    paddingBottom: 0
-  },
-  headerSubTitle: {
-    marginBottom: 13
-  },
   blueprintFormRoot: {
     marginTop: 10
   },
   emptyStateRoot: {
-    position: 'absolute',
-    top: '40%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)'
+    width: '100%'
   },
   showIncompatible: {
     marginLeft: 'auto'
@@ -294,6 +272,21 @@ const useStyles = makeStyles()((theme) => ({
   showIncompatibleCheckbox: {
     paddingTop: 0,
     paddingBottom: 0
+  },
+  marketplaceActions: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  marketplaceUnavailable: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column',
+    rowGap: theme.spacing(2),
+    padding: theme.spacing(5)
+  },
+  marketplaceUnavailableIcon: {
+    color: theme.palette.text.secondary
   }
 }));
 
@@ -305,7 +298,6 @@ interface CreateSiteDialogProps {
 function CreateSiteDialog(props: CreateSiteDialogProps) {
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
-  const [tab, setTab] = useState(0);
   const [disableEnforceFocus, setDisableEnforceFocus] = useState(false);
   const [dialog, setDialog] = useSpreadState({
     open: nnou(props.open) ? props.open : true,
@@ -315,7 +307,9 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     creatingSite: false,
     error: false,
     global: false,
-    errorResponse: null
+    errorResponse: null,
+    fetchingMarketplace: false,
+    marketplaceError: false
   });
   const [search, setSearch] = useState(searchInitialState);
   const [site, setSite] = useSpreadState(siteInitialState);
@@ -332,8 +326,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   const views: Views = {
     0: {
-      title: formatMessage(messages.createSite),
-      subtitle: formatMessage(messages.chooseCreationStrategy)
+      title: formatMessage(messages.createSite)
     },
     1: {
       title: formatMessage(messages.createSite),
@@ -354,8 +347,29 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       : blueprints;
   }
 
-  const filteredBlueprints: MarketplacePlugin[] = filterBlueprints(blueprints, search.searchKey);
   const filteredMarketplace: MarketplacePlugin[] = filterBlueprints(marketplace, search.searchKey);
+
+  const fetchMarketplaceBlueprints = useCallback(() => {
+    setApiState({ fetchingMarketplace: true });
+    return fetchMarketplaceBlueprintsService({
+      showIncompatible: site.showIncompatible
+    }).subscribe({
+      next: (plugins) => {
+        setApiState({ marketplaceError: false, fetchingMarketplace: false });
+        setMarketplace(plugins);
+      },
+      error: ({ response }) => {
+        if (response) {
+          setApiState({
+            creatingSite: false,
+            error: true,
+            marketplaceError: response.response,
+            fetchingMarketplace: false
+          });
+        }
+      }
+    });
+  }, [setApiState, site?.showIncompatible]);
 
   setRequestForgeryToken();
 
@@ -375,7 +389,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
 
   useEffect(() => {
     let subscriptions: Subscription[] = [];
-    if (tab === 0 && blueprints === null && !apiState.error) {
+    if (blueprints === null && !apiState.error) {
       subscriptions.push(
         fetchBuiltInBlueprints().subscribe({
           next: (blueprints) => {
@@ -401,27 +415,14 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
           },
           error: ({ response }) => {
             if (response) {
-              setApiState({ creatingSite: false, error: true, errorResponse: response.response });
+              setApiState({ creatingSite: false, errorResponse: response.response });
             }
           }
         })
       );
     }
-    if (tab === 1 && marketplace === null && !apiState.error) {
-      subscriptions.push(
-        fetchMarketplaceBlueprints({
-          showIncompatible: site.showIncompatible
-        }).subscribe({
-          next: (plugins) => {
-            setMarketplace(plugins);
-          },
-          error: ({ response }) => {
-            if (response) {
-              setApiState({ creatingSite: false, error: true, errorResponse: response.response });
-            }
-          }
-        })
-      );
+    if (marketplace === null && !apiState.error) {
+      subscriptions.push(fetchMarketplaceBlueprints());
     }
     if (finishRef && finishRef.current && site.selectedView === 2) {
       finishRef.current.focus();
@@ -436,24 +437,26 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     marketplace,
     setApiState,
     site.selectedView,
-    tab,
-    site.showIncompatible
+    site.showIncompatible,
+    fetchMarketplaceBlueprints
   ]);
 
   function cleanDialogState() {
     setDialog({ open: false, inProgress: false });
     setSite(siteInitialState);
     setSearch(searchInitialState);
-    setTab(0);
   }
 
   function handleClose(event?: any, reason?: string) {
+    const formInProgress = isFormInProgress();
+
     if (reason === 'escapeKeyDown' && site.details.blueprint) {
       setSite({ details: { blueprint: null, index: null } });
-    } else if ((reason === 'escapeKeyDown' || reason === 'closeButton') && isFormOnProgress()) {
+    } else if (
+      (reason === 'escapeKeyDown' || reason === 'closeButton' || reason === 'backdropClick') &&
+      formInProgress
+    ) {
       setDialog({ inProgress: true });
-    } else if (reason === 'backdropClick') {
-      return false;
     } else {
       // call externalClose fn
       cleanDialogState();
@@ -469,7 +472,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     setDialog({ inProgress: false });
   }
 
-  function isFormOnProgress() {
+  function isFormInProgress() {
     let inProgress = false;
     const keys = [
       'siteId',
@@ -549,10 +552,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   function handleBack() {
     let back = site.selectedView - 1;
     setSite({ selectedView: back });
-  }
-
-  function handleChange(e: object, value: number) {
-    setTab(value);
   }
 
   function handleGoTo(step: number) {
@@ -736,24 +735,16 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
     setSite({ details: { blueprint: blueprint, index: index } });
   }
 
-  function renderBlueprints(list: MarketplacePlugin[]) {
-    if (list.length === 0) {
-      return (
-        <EmptyState
-          title={formatMessage(messages.noBlueprints)}
-          subtitle={formatMessage(messages.changeQuery)}
-          classes={{ root: classes.emptyStateRoot }}
-        />
-      );
-    }
+  function renderBlueprints(list: MarketplacePlugin[], isMarketplace: boolean = false) {
     return list.map((item: MarketplacePlugin) => {
+      const isGitItem = item.id === 'GIT';
       return (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
+        <Grid item xs={12} sm={isGitItem ? 12 : 6} md={isGitItem ? 12 : 4} lg={isGitItem ? 12 : 3} key={item.id}>
           <PluginCard
             plugin={item}
             onPluginSelected={handleBlueprintSelected}
             changeImageSlideInterval={5000}
-            isMarketplacePlugin={tab === 1}
+            isMarketplacePlugin={isMarketplace}
             onDetails={onDetails}
           />
         </Grid>
@@ -807,7 +798,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             onBlueprintSelected={handleBlueprintSelected}
             onCloseDetails={handleCloseDetails}
             changeImageSlideInterval={5000}
-            isMarketplacePlugin={tab === 1}
+            isMarketplacePlugin={Boolean(site?.details.blueprint.url)}
           />
         ))
       ) : (
@@ -817,69 +808,78 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
             subtitle={views[site.selectedView].subtitle}
             id="create-site-dialog"
             onCloseButtonClick={handleClose}
-            classes={{ root: classes.headerRoot, subtitleWrapper: classes.headerRoot }}
-            subtitleTypographyProps={{
-              classes: {
-                root: classes.headerSubTitle
-              }
-            }}
-          >
-            {site.selectedView === 0 && (
-              <div className={classes.tabs}>
-                <CustomTabs value={tab} onChange={handleChange} aria-label="blueprint tabs">
-                  <Tab label={formatMessage(messages.privateBlueprints)} className={classes.simpleTab} />
-                  <Tab label={formatMessage(messages.publicMarketplace)} className={classes.simpleTab} />
-                </CustomTabs>
-                <SearchIcon
-                  className={cx(classes.tabIcon, search.searchSelected && 'selected')}
-                  onClick={handleSearchClick}
-                />
-                {tab === 1 && (
-                  <FormControlLabel
-                    className={classes.showIncompatible}
-                    control={
-                      <Checkbox
-                        checked={site.showIncompatible}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
-                        color="primary"
-                        className={classes.showIncompatibleCheckbox}
-                      />
-                    }
-                    label={
-                      <Typography className={classes.showIncompatibleInput}>
-                        {formatMessage(messages.showIncompatible)}
-                      </Typography>
-                    }
-                    labelPlacement="start"
-                  />
-                )}
-              </div>
-            )}
-          </DialogHeader>
+          />
 
-          {(tab === 0 && blueprints) || (tab === 1 && marketplace) ? (
+          {blueprints ? (
             <DialogBody classes={{ root: classes.dialogContent }}>
-              {search.searchSelected && site.selectedView === 0 && (
-                <div className={classes.searchContainer}>
-                  <SearchBar
-                    showActionButton={Boolean(search.searchKey)}
-                    onChange={handleOnSearchChange}
-                    keyword={search.searchKey}
-                    autoFocus={true}
-                  />
-                </div>
-              )}
               {site.selectedView === 0 && (
-                <div className={cx(classes.slide, classes.fadeIn, search.searchSelected && 'selected')}>
-                  {tab === 0 ? (
-                    <Grid container spacing={3}>
-                      {renderBlueprints(filteredBlueprints)}
+                <div className={cx(classes.slide, classes.fadeIn)}>
+                  <Grid container spacing={3} className={classes.containerGrid}>
+                    {renderBlueprints(blueprints)}
+                    <Grid item xs={12}>
+                      <Divider sx={{ ml: -3, mr: -3 }} />
                     </Grid>
-                  ) : (
-                    <Grid container spacing={3}>
-                      {renderBlueprints(filteredMarketplace)}
+                    <Grid item xs={12} className={classes.marketplaceActions}>
+                      <Typography color="text.secondary" variant="overline" sx={{ mr: 2 }}>
+                        {formatMessage(messages.publicMarketplaceBlueprints)}
+                      </Typography>
+                      <IconButton size="small" onClick={handleSearchClick}>
+                        <SearchIcon />
+                      </IconButton>
+                      <FormControlLabel
+                        className={classes.showIncompatible}
+                        control={
+                          <Checkbox
+                            checked={site.showIncompatible}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                            color="primary"
+                            className={classes.showIncompatibleCheckbox}
+                          />
+                        }
+                        label={
+                          <Typography className={classes.showIncompatibleInput}>
+                            {formatMessage(messages.showIncompatible)}
+                          </Typography>
+                        }
+                        labelPlacement="start"
+                      />
                     </Grid>
-                  )}
+                    {search.searchSelected && site.selectedView === 0 && (
+                      <Grid item xs={12}>
+                        <div className={classes.searchContainer}>
+                          <SearchBar
+                            showActionButton={Boolean(search.searchKey)}
+                            onChange={handleOnSearchChange}
+                            keyword={search.searchKey}
+                            autoFocus={true}
+                          />
+                        </div>
+                      </Grid>
+                    )}
+                    {apiState.marketplaceError ? (
+                      <Box className={classes.marketplaceUnavailable}>
+                        <SignalWifiBadRounded className={classes.marketplaceUnavailableIcon} />
+                        <Typography variant="body1" color="text.secondary">
+                          {formatMessage(messages.marketplaceUnavailable)}
+                        </Typography>
+                        <Button variant="text" onClick={fetchMarketplaceBlueprints}>
+                          {formatMessage(messages.retry)}
+                        </Button>
+                      </Box>
+                    ) : apiState?.fetchingMarketplace ? ( // TODO: test - should I empty bps and check for null?
+                      <Box sx={{ width: '100%' }}>
+                        <LoadingState />
+                      </Box>
+                    ) : !filteredMarketplace || filteredMarketplace?.length === 0 ? (
+                      <EmptyState
+                        title={formatMessage(messages.noMarketplaceBlueprints)}
+                        subtitle={formatMessage(messages.changeQuery)}
+                        classes={{ root: classes.emptyStateRoot }}
+                      />
+                    ) : (
+                      renderBlueprints(filteredMarketplace, true)
+                    )}
+                  </Grid>
                 </div>
               )}
               {site.selectedView === 1 && (
