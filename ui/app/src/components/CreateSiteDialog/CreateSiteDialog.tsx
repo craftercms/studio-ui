@@ -54,7 +54,7 @@ import { useEnv } from '../../hooks/useEnv';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { getSystemLink } from '../../utils/system';
 import { keyframes } from 'tss-react';
-import { SignalWifiBadRounded } from '@mui/icons-material';
+import SignalWifiBadRounded from '@mui/icons-material/SignalWifiBadRounded';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
