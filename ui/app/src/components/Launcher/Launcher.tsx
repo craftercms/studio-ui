@@ -331,7 +331,7 @@ const SiteRailSkeleton = ({ classes, formatMessage, version }) => (
       <List>
         {new Array(3).fill(null).map((_, i) => (
           <ListItem key={i}>
-            <Skeleton variant="rectangular" width="300px" height="72px" />
+            <Skeleton variant="rectangular" width="100%" height="72px" />
           </ListItem>
         ))}
       </List>
