@@ -151,6 +151,10 @@ const inProgressMessages = defineMessages({
   processing: {
     id: 'words.processing',
     defaultMessage: 'Processing'
+  },
+  duplicating: {
+    id: 'words.duplicating',
+    defaultMessage: 'Duplicating'
   }
 });
 
@@ -255,22 +259,33 @@ const content: CrafterCMSEpic[] = [
     ),
   // endregion
   // region duplicateItem
-  (action$, state$) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(duplicateItem.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        return duplicate(state.sites.active, payload.path).pipe(
-          map(({ item: path }) =>
-            showEditDialog({
-              site: state.sites.active,
-              path,
-              authoringBase: state.env.authoringBase,
-              onSaveSuccess: payload.onSuccess
+      switchMap(([{ payload }, state]) =>
+        merge(
+          of(
+            blockUI({
+              progress: 'indeterminate',
+              message: `${getIntl().formatMessage(inProgressMessages.duplicating)}...`
             })
+          ),
+          duplicate(state.sites.active, payload.path).pipe(
+            map(({ item: path }) =>
+              batchActions([
+                unblockUI(),
+                showEditDialog({
+                  site: state.sites.active,
+                  path,
+                  authoringBase: state.env.authoringBase,
+                  onSaveSuccess: payload.onSuccess
+                })
+              ])
+            )
           )
-        );
-      })
+        )
+      )
     ),
   // endregion
   // region unlockItem
@@ -314,27 +329,41 @@ const content: CrafterCMSEpic[] = [
     ),
   // endregion
   // region duplicateAsset
-  (action$, state$) =>
+  (action$, state$, { getIntl }) =>
     action$.pipe(
       ofType(duplicateAsset.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        return duplicate(state.sites.active, payload.path).pipe(
-          map(({ item: path }) => {
-            const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
-            const editableAsset = isEditableAsset(payload.path);
-            if (editableAsset) {
-              return showCodeEditorDialog({
-                authoringBase: state.env.authoringBase,
-                site: state.sites.active,
-                path,
-                mode,
-                onSuccess: payload.onSuccess
-              });
-            }
-          })
-        );
-      })
+      switchMap(([{ payload }, state]) =>
+        merge(
+          of(
+            blockUI({
+              progress: 'indeterminate',
+              message: `${getIntl().formatMessage(inProgressMessages.duplicating)}...`
+            })
+          ),
+          duplicate(state.sites.active, payload.path).pipe(
+            map(({ item: path }) => {
+              const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
+              const editableAsset = isEditableAsset(payload.path);
+
+              return batchActions([
+                unblockUI(),
+                ...(editableAsset
+                  ? [
+                      showCodeEditorDialog({
+                        authoringBase: state.env.authoringBase,
+                        site: state.sites.active,
+                        path,
+                        mode,
+                        onSuccess: payload.onSuccess
+                      })
+                    ]
+                  : [])
+              ]);
+            })
+          )
+        )
+      )
     ),
   // endregion
   // region duplicateWithPolicyValidation
