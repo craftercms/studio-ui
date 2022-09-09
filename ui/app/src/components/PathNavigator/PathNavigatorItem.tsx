@@ -124,7 +124,9 @@ function PathNavigatorItem(props: NavItemProps) {
               : over
               ? // Level descriptor doesn't ever have children, so will
                 // always have only one action button.
-                `calc(100% - ${isLevelDescriptor ? 25 : 50}px)`
+                `calc(100% - ${isLevelDescriptor || isLeaf ? 25 : 50}px)`
+              : !isLeaf
+              ? `calc(100% - 25px)`
               : '100%'
           }
         }}
