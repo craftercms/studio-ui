@@ -18,6 +18,8 @@ export { default } from './CreateSiteDialog';
 
 export * from './CreateSiteDialog';
 
+export * from './CreateSiteDialogContainer';
+
 export * from './BlueprintForm';
 
 export * from './BlueprintReview';
