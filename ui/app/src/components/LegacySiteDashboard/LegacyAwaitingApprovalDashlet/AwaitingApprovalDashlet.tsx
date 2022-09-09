@@ -77,7 +77,8 @@ export function AwaitingApprovalDashlet() {
     total: null
   });
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
-  const selectedPathsRef = useRef([]);
+  const selectedLookupRef = useRef({});
+  selectedLookupRef.current = selectedLookup;
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
@@ -148,7 +149,9 @@ export function AwaitingApprovalDashlet() {
         setIsFetching(false);
 
         // Update selected lookup
-        const selectedKeys = selectedPathsRef.current.filter((selected) => Boolean(itemsLookup[selected]));
+        const selectedKeys = Object.keys(selectedLookupRef.current).filter((selected) =>
+          Boolean(itemsLookup[selected])
+        );
         setSelectedLookup(createPresenceTable(selectedKeys, true));
       },
       ({ response }) => {
@@ -156,10 +159,6 @@ export function AwaitingApprovalDashlet() {
       }
     );
   }, [setExpandedLookup, siteId, preferences.showUnpublished]);
-
-  useEffect(() => {
-    selectedPathsRef.current = Object.keys(selectedLookup);
-  }, [selectedLookup]);
 
   useEffect(() => {
     refresh();

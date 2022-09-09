@@ -64,7 +64,8 @@ const dashletInitialPreferences: LegacyDashboardPreferences = {
 
 export function ApprovedScheduledDashlet() {
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
-  const selectedPathsRef = useRef([]);
+  const selectedLookupRef = useRef({});
+  selectedLookupRef.current = selectedLookup;
   const [error, setError] = useState<ApiResponse>();
   const { id: siteId, uuid } = useActiveSite();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
@@ -144,7 +145,9 @@ export function ApprovedScheduledDashlet() {
         setIsFetching(false);
 
         // Update selected lookup
-        const selectedKeys = selectedPathsRef.current.filter((selected) => Boolean(itemsLookup[selected]));
+        const selectedKeys = Object.keys(selectedLookupRef.current).filter((selected) =>
+          Boolean(itemsLookup[selected])
+        );
         setSelectedLookup(createPresenceTable(selectedKeys, true));
       },
       error({ response }) {
@@ -152,10 +155,6 @@ export function ApprovedScheduledDashlet() {
       }
     });
   }, [siteId, preferences.filterBy, setExpandedLookup, locale.localeCode, locale.dateTimeFormatOptions]);
-
-  useEffect(() => {
-    selectedPathsRef.current = Object.keys(selectedLookup);
-  }, [selectedLookup]);
 
   useEffect(() => {
     refresh();
