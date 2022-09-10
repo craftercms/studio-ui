@@ -272,17 +272,15 @@ const content: CrafterCMSEpic[] = [
             })
           ),
           duplicate(state.sites.active, payload.path).pipe(
-            map(({ item: path }) =>
-              batchActions([
-                unblockUI(),
-                showEditDialog({
-                  site: state.sites.active,
-                  path,
-                  authoringBase: state.env.authoringBase,
-                  onSaveSuccess: payload.onSuccess
-                })
-              ])
-            )
+            switchMap(({ item: path }) => [
+              unblockUI(),
+              showEditDialog({
+                site: state.sites.active,
+                path,
+                authoringBase: state.env.authoringBase,
+                onSaveSuccess: payload.onSuccess
+              })
+            ])
           )
         )
       )
@@ -342,11 +340,11 @@ const content: CrafterCMSEpic[] = [
             })
           ),
           duplicate(state.sites.active, payload.path).pipe(
-            map(({ item: path }) => {
+            switchMap(({ item: path }) => {
               const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
               const editableAsset = isEditableAsset(payload.path);
 
-              return batchActions([
+              return [
                 unblockUI(),
                 ...(editableAsset
                   ? [
@@ -359,7 +357,7 @@ const content: CrafterCMSEpic[] = [
                       })
                     ]
                   : [])
-              ]);
+              ];
             })
           )
         )
