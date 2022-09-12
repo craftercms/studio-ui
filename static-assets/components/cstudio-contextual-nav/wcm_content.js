@@ -156,18 +156,14 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
 
                   callback = {
                     success: function (isWrite, perms) {
-                      var totalPerms;
+                      var totalPerms, isWrite;
 
                       this._self.addFilePermissions(this.filePath, perms, filePermissions, permissionAggregateCounter);
-                      if (selectedContent.length > 1) {
-                        totalPerms = this._self.getAgreggatePermissions(
-                          filePermissions.fileLen,
-                          permissionAggregateCounter
-                        );
-                        isWrite = this._self.hasWritePermission(totalPerms);
-                      } else {
-                        totalPerms = perms;
-                      }
+                      totalPerms = this._self.getAgreggatePermissions(
+                        filePermissions.fileLen,
+                        permissionAggregateCounter
+                      );
+                      isWrite = this._self.hasWritePermission(totalPerms);
 
                       this._self._drawNav(selectedContent, isWrite, totalPerms);
 
