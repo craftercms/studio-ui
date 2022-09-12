@@ -3461,16 +3461,18 @@
         CStudioAuthoring.Clipboard.pasteContent(oCurrentTextNode.data, pasteCb);
       },
       duplicateContent: function (sType, args, tree) {
+        // Get the element where the loading class can be added.
+        // For that we need to get the parent of the item being duplicated (which is going to be the parent of the
+        // duplicated item too.
+        const selectedElementParent = oCurrentTextNode.parent.html;
+        const loaderElement = selectedElementParent.parentElement.previousElementSibling;
+
         var duplicateContentCallback = {
           success: function () {
-            if (YDom.get('duplicate-loading')) {
-              YDom.get('duplicate-loading').style.display = 'none';
-            }
+            loaderElement.classList.remove('ygtvloading');
           },
           failure: function () {
-            if (YDom.get('duplicate-loading')) {
-              YDom.get('duplicate-loading').style.display = 'none';
-            }
+            loaderElement.classList.remove('ygtvloading');
           }
         };
 
@@ -3484,6 +3486,7 @@
               text: 'Duplicate',
               handler: function () {
                 this.destroy();
+                loaderElement.classList.add('ygtvloading');
                 CStudioAuthoring.Operations.duplicateContent(
                   CStudioAuthoringContext.site,
                   oCurrentTextNode.data.uri,
