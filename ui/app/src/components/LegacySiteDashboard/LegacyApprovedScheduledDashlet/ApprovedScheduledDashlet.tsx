@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import LookupTable from '../../../models/LookupTable';
 import LegacyDashletCard from '../LegacyDashletCard';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -64,6 +64,8 @@ const dashletInitialPreferences: LegacyDashboardPreferences = {
 
 export function ApprovedScheduledDashlet() {
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
+  const selectedLookupRef = useRef({});
+  selectedLookupRef.current = selectedLookup;
   const [error, setError] = useState<ApiResponse>();
   const { id: siteId, uuid } = useActiveSite();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
@@ -141,6 +143,12 @@ export function ApprovedScheduledDashlet() {
           total: response.total
         });
         setIsFetching(false);
+
+        // Update selected lookup
+        const selectedKeys = Object.keys(selectedLookupRef.current).filter((selected) =>
+          Boolean(itemsLookup[selected])
+        );
+        setSelectedLookup(createPresenceTable(selectedKeys, true));
       },
       error({ response }) {
         setError(response);

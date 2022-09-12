@@ -32,7 +32,7 @@ export function useFetchSandboxItems(paths: string[]): void {
     },
     // Interested in renewing the effect when paths change, not when the paths array instance changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    paths
+    [paths.join('')]
   );
 }
 
