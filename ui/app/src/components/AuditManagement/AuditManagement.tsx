@@ -37,6 +37,8 @@ import { useSiteList } from '../../hooks/useSiteList';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { useDispatch } from 'react-redux';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 interface AuditManagementProps {
   site?: string;
@@ -67,6 +69,7 @@ export function AuditManagement(props: AuditManagementProps) {
   });
   const [page, setPage] = useState(0);
   const auditLogEntryParametersDialogState = useEnhancedDialogState();
+  const dispatch = useDispatch();
 
   const refresh = useCallback(() => {
     fetchAuditLog(options).subscribe({
@@ -129,11 +132,16 @@ export function AuditManagement(props: AuditManagementProps) {
       setDialogParams(parametersLookup[id]);
       auditLogEntryParametersDialogState.onOpen();
     } else {
-      fetchAuditLogEntry(id).subscribe((response) => {
-        setParametersLookup({ [id]: response.parameters });
-        if (response.parameters.length) {
-          setDialogParams(response.parameters);
-          auditLogEntryParametersDialogState.onOpen();
+      fetchAuditLogEntry(id).subscribe({
+        next(response) {
+          setParametersLookup({ [id]: response.parameters });
+          if (response.parameters.length) {
+            setDialogParams(response.parameters);
+            auditLogEntryParametersDialogState.onOpen();
+          }
+        },
+        error({ response }) {
+          dispatch(showErrorDialog({ error: response.response }));
         }
       });
     }

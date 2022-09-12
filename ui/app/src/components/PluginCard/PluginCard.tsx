@@ -73,19 +73,34 @@ const useStyles = makeStyles()((theme) => ({
       marginBottom: 0
     }
   },
+  gitCard: {
+    minHeight: 'unset'
+  },
+  gitCardActionArea: {
+    display: 'flex',
+    justifyContent: 'start'
+  },
+  gitCardContent: {
+    height: 'unset !important'
+  },
   carouselImg: {
     width: '100%',
     height: '180px',
     objectFit: 'cover',
     '&.git': {
-      objectFit: 'fill'
+      objectFit: 'fill',
+      height: 'unset',
+      width: '120px'
     }
   },
   video: {
     width: '100%',
     height: '180px',
     outline: 'none',
-    background: backgroundColor
+    background: backgroundColor,
+    '&.git': {
+      height: 'unset'
+    }
   },
   chip: {
     fontSize: '11px',
@@ -141,7 +156,8 @@ const useStyles = makeStyles()((theme) => ({
     height: '180px',
     overflow: 'hidden',
     '&.git': {
-      background: 'none'
+      background: 'none',
+      height: 'unset'
     }
   },
   subtitleContainer: {
@@ -204,6 +220,7 @@ function PluginCard(props: PluginCardProps) {
   } = props;
   const { media, name, license, id, developer } = plugin;
   const { formatMessage } = useIntl();
+  const isGitCard = id === 'GIT';
 
   function handleChangeIndex(value: number) {
     setIndex(value);
@@ -305,7 +322,7 @@ function PluginCard(props: PluginCardProps) {
   plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
   return (
-    <Card className={classes.card}>
+    <Card className={cx(classes.card, id === 'GIT' ? classes.gitCard : null)}>
       {id !== 'GIT' && (
         <CardActionArea
           disabled={disableCardActionClick}
@@ -340,6 +357,7 @@ function PluginCard(props: PluginCardProps) {
         onClick={() => {
           onPluginSelected(plugin, 1);
         }}
+        className={isGitCard ? classes.gitCardActionArea : null}
       >
         <AutoPlaySwipeableViews
           index={index}
@@ -351,7 +369,7 @@ function PluginCard(props: PluginCardProps) {
           {renderMedias(id)}
         </AutoPlaySwipeableViews>
         {id === 'GIT' && (
-          <CardContent className="cardContent">
+          <CardContent className={cx('cardContent', isGitCard ? classes.gitCardContent : null)}>
             <Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">
               {name}
             </Typography>

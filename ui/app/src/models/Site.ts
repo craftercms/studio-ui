@@ -18,7 +18,7 @@ import { MarketplacePlugin } from './MarketplacePlugin';
 
 interface View {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   btnText?: string;
 }
 

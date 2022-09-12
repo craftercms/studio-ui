@@ -1231,7 +1231,7 @@
   "repositories.noConflicts": "Local repository is free of conflicts.",
   "repositories.pendingCommit": "Repo contains files pending commit. See Repository status below for details.",
   "repositories.pullFromCreatedBranchOnlyHint": "You may only pull from the branch the site was created from; any feature branch work should be merged upstream.",
-  "repositories.pullSuccessMessage": "Successfully pulled {numberOfCommits} commits. Merge commit id was copied to clipboard. Would you like to publish this now?",
+  "repositories.pullSuccessMessage": "Successfully pulled {numberOfCommits} commits. Would you like to publish this now?",
   "repositories.pullSuccessNoChangesMessage": "Pull successful: already up to date.",
   "repositories.pushSuccessMessage": "Successfully pushed.",
   "repositories.pushUrl": "Push URL",

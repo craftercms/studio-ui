@@ -112,12 +112,6 @@ const useLauncherStyles = makeStyles()((theme) => ({
     borderRadius: '10px',
     overflowY: 'hidden'
   },
-  launcherSkeletonWrapper: {
-    display: 'flex',
-    '@media(min-width: 1097px)': {
-      width: 1065
-    }
-  },
   appsSkeletonTile: {
     margin: 5,
     width: 120,
@@ -125,7 +119,6 @@ const useLauncherStyles = makeStyles()((theme) => ({
     display: 'inline-flex'
   },
   sitesRail: {
-    minWidth: '350px',
     backgroundColor: theme.palette.mode === 'dark' ? palette.gray.dark1 : palette.gray.light1
   },
   appsRail: {},
@@ -147,7 +140,10 @@ const useLauncherStyles = makeStyles()((theme) => ({
   },
   gridContainer: {
     height: '100%',
-    maxHeight: '100%'
+    maxHeight: '100%',
+    '@media(min-width: 1097px)': {
+      width: 1065
+    }
   },
   versionText: {},
   titleCard: {
@@ -491,7 +487,7 @@ export function Launcher(props: LauncherStateProps) {
       {/* endregion */}
       <Suspense
         fallback={
-          <div className={classes.launcherSkeletonWrapper}>
+          <Grid container spacing={0} className={classes.gridContainer}>
             {sitesRailPosition === 'left' ? (
               <>
                 {sitesRailSkeleton()}
@@ -505,7 +501,7 @@ export function Launcher(props: LauncherStateProps) {
             ) : (
               appsRailSkeleton()
             )}
-          </div>
+          </Grid>
         }
       >
         <Grid container spacing={0} className={classes.gridContainer}>

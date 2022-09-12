@@ -23,6 +23,7 @@ import { PaginationOptions } from '../models/PaginationOptions';
 import { MarketplacePlugin } from '../models/MarketplacePlugin';
 import { underscore } from '../utils/string';
 import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
+import { FetchPublishingTargetsResponse } from './publishing';
 
 interface BuiltInBlueprint {
   descriptorVersion: string;
@@ -129,4 +130,10 @@ export function validateActionPolicy(
 
 export function fetchLegacySite(siteId: string): Observable<LegacySite> {
   return get(`/studio/api/1/services/api/1/site/get.json?site_id=${siteId}`).pipe(pluck('response'));
+}
+
+export function hasInitialPublish(siteId: string): Observable<boolean> {
+  return get<FetchPublishingTargetsResponse>(`/studio/api/2/publish/available_targets?siteId=${siteId}`).pipe(
+    pluck('response', 'published')
+  );
 }

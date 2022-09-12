@@ -124,7 +124,9 @@ function PathNavigatorItem(props: NavItemProps) {
               : over
               ? // Level descriptor doesn't ever have children, so will
                 // always have only one action button.
-                `calc(100% - ${isLevelDescriptor ? 25 : 50}px)`
+                `calc(100% - ${isLevelDescriptor || isLeaf ? 25 : 50}px)`
+              : !isLeaf
+              ? `calc(100% - 25px)`
               : '100%'
           }
         }}
@@ -134,9 +136,12 @@ function PathNavigatorItem(props: NavItemProps) {
         labelTypographyProps={{ variant: 'body2' }}
       />
       {(onOpenItemMenu || showItemNavigateToButton) && (
-        <div className={clsx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
+        <div className={classes.optionsWrapper}>
           {onOpenItemMenu && (
-            <Tooltip title={formatMessage(translations.itemMenu)}>
+            <Tooltip
+              title={formatMessage(translations.itemMenu)}
+              className={clsx(classes.itemMenu, over && classes.itemMenuOver)}
+            >
               <IconButton
                 aria-label={formatMessage(translations.itemMenu)}
                 className={classes.itemIconButton}

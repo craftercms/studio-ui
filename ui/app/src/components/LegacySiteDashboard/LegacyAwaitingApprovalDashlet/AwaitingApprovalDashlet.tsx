@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useStyles from './styles';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../../services/dashboard';
@@ -77,6 +77,8 @@ export function AwaitingApprovalDashlet() {
     total: null
   });
   const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
+  const selectedLookupRef = useRef({});
+  selectedLookupRef.current = selectedLookup;
   const [expandedLookup, setExpandedLookup] = useSpreadState<LookupTable<boolean>>({});
   const [error, setError] = useState<ApiResponse>();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
@@ -145,6 +147,12 @@ export function AwaitingApprovalDashlet() {
           total: response.total
         });
         setIsFetching(false);
+
+        // Update selected lookup
+        const selectedKeys = Object.keys(selectedLookupRef.current).filter((selected) =>
+          Boolean(itemsLookup[selected])
+        );
+        setSelectedLookup(createPresenceTable(selectedKeys, true));
       },
       ({ response }) => {
         setError(response);
