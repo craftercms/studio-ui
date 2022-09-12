@@ -434,25 +434,23 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
         })
       );
     }
-    if (marketplace === null && !apiState.error) {
-      subscriptions.push(fetchMarketplaceBlueprints());
-    }
     if (finishRef && finishRef.current && site.selectedView === 2) {
       finishRef.current.focus();
     }
     return () => {
       subscriptions.forEach((sub) => sub.unsubscribe());
     };
-  }, [
-    apiState.error,
-    blueprints,
-    formatMessage,
-    marketplace,
-    setApiState,
-    site.selectedView,
-    site.showIncompatible,
-    fetchMarketplaceBlueprints
-  ]);
+  }, [apiState.error, blueprints, formatMessage, setApiState, site.selectedView]);
+
+  useEffect(() => {
+    let subscriptions: Subscription[] = [];
+    if (marketplace === null && !apiState.error) {
+      subscriptions.push(fetchMarketplaceBlueprints());
+    }
+    return () => {
+      subscriptions.forEach((sub) => sub.unsubscribe());
+    };
+  }, [apiState.error, fetchMarketplaceBlueprints, marketplace]);
 
   return (
     <>
@@ -560,7 +558,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                           {formatMessage(messages.retry)}
                         </Button>
                       </Box>
-                    ) : apiState?.fetchingMarketplace ? ( // TODO: test - should I empty bps and check for null?
+                    ) : apiState?.fetchingMarketplace ? (
                       <Box sx={{ width: '100%' }}>
                         <LoadingState />
                       </Box>
