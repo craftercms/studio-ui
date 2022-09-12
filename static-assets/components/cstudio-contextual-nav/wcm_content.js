@@ -164,7 +164,6 @@ CStudioAuthoring.ContextualNav.WcmActiveContentMod =
                         permissionAggregateCounter
                       );
                       isWrite = this._self.hasWritePermission(totalPerms);
-
                       this._self._drawNav(selectedContent, isWrite, totalPerms);
 
                       if (CStudioAuthoringContext.isPreview == true && selectedContent[0].disabled == true) {
