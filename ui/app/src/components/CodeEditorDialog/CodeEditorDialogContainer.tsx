@@ -147,6 +147,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
     }
   };
 
+  // @ts-ignore
   const onAceInit = (editor: AceAjax.Editor) => {
     editor.commands.addCommand({
       name: 'saveToCrafter',

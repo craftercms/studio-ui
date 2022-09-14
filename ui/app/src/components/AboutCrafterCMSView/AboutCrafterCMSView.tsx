@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import Paper from '@mui/material/Paper';
 import useStyles from './styles';

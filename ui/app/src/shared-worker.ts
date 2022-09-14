@@ -31,7 +31,7 @@ let current: ObtainAuthTokenResponse = {
 };
 let refreshInterval;
 let isRetrieving = false;
-let isProduction = process.env.PRODUCTION !== 'development';
+let isProduction = import.meta.env.PRODUCTION !== 'development';
 let socketClient: Client;
 
 const log = !isProduction

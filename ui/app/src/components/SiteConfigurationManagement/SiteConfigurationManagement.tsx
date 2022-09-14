@@ -31,7 +31,7 @@ import { translations } from './translations';
 import { getTranslation } from '../../utils/i18n';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';

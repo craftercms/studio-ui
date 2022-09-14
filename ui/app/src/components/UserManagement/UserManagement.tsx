@@ -25,7 +25,7 @@ import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
 import { ApiResponse } from '../../models/ApiResponse';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import SearchBar from '../SearchBar/SearchBar';

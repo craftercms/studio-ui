@@ -22,10 +22,12 @@ import { makeStyles } from 'tss-react/mui';
 import palette from '../styles/palette';
 import AuthBoundary from './AuthBoundary';
 
-const DevServerRoot = process.env.REACT_APP_COMPONENT ? lazy(() => import(process.env.REACT_APP_COMPONENT)) : Intro;
+const DevServerRoot = import.meta.env.VITE_COMPONENT
+  ? lazy(() => import(/* @vite-ignore */ import.meta.env.VITE_COMPONENT))
+  : Intro;
 
 export default function App() {
-  return Boolean(process.env.REACT_APP_OMIT_BRIDGE) ? (
+  return Boolean(import.meta.env.VITE_OMIT_BRIDGE) ? (
     <Suspense fallback="">
       <DevServerRoot />
     </Suspense>
@@ -85,17 +87,17 @@ function Intro() {
       <img className={classes.logo} src={crafterIconUrl} alt="" />
       <h1>CrafterCMS Codebase Next</h1>
       <p className={classes.hint}>
-        Create a <em>.env.local</em> file and add the content below. Point the <em>REACT_APP_COMPONENT</em> variable to
-        the component you'd like to see in your local dev server.
+        Create a <em>.env.local</em> file and add the content below. Point the <em>VITE_COMPONENT</em> variable to the
+        component you'd like to see in your local dev server.
       </p>
       <code className={classes.code}>
         INLINE_RUNTIME_CHUNK=false
         <br />
-        PUBLIC_URL=/studio/static-assets/next/
+        VITE_PUBLIC_URL=/studio/static-assets/next/
         <br />
         BROWSER=chrome
         <br />
-        REACT_APP_COMPONENT=../pages/Preview
+        VITE_COMPONENT=../pages/Preview
         <br />
       </code>
     </section>

@@ -31,7 +31,7 @@ import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
 import LoadingState from '../LoadingState/LoadingState';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import Skeleton from '@mui/material/Skeleton';
 import { globalMenuMessages } from '../../env/i18n-legacy';
 

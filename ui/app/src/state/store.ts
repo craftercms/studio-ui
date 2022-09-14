@@ -83,7 +83,7 @@ export function getStore(): Observable<CrafterCMSStore> {
 
 function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: SharedWorker }> {
   if ('SharedWorker' in window) {
-    const worker = new SharedWorker(`${process.env.PUBLIC_URL}/shared-worker.js`, {
+    const worker = new SharedWorker(`${import.meta.env.VITE_PUBLIC_URL}/shared-worker.js`, {
       name: SHARED_WORKER_NAME,
       credentials: 'same-origin'
     });
@@ -135,7 +135,7 @@ export function createStoreSync(args: { preloadedState?: any; dependencies?: any
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: false }).concat(epicMiddleware as Middleware),
     preloadedState,
     devTools: { name: 'Studio Store' }
-    // devTools: process.env.NODE_ENV === 'production' ? false : { name: 'Studio Store' }
+    // devTools: import.meta.env.NODE_ENV === 'production' ? false : { name: 'Studio Store' }
   });
   epicMiddleware.run(epic);
   return store;

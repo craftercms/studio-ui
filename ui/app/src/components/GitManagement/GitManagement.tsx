@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';

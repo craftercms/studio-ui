@@ -18,7 +18,7 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { Logger, LoggerLevel } from '../../models/Logger';
 import { fetchLoggers as fetchLoggersService, setLogger } from '../../services/logs';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import LogLevelGrid, { LogLevelGridSkeleton } from './LogLevelGrid';
 import { useDispatch } from 'react-redux';

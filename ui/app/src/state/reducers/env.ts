@@ -21,16 +21,16 @@ import { Version } from '../../models/monitoring/Version';
 import { setSiteSocketStatus, storeInitialized } from '../actions/system';
 
 export const envInitialState: GlobalState['env'] = ((origin: string) => ({
-  authoringBase: process.env.REACT_APP_AUTHORING_BASE ?? `${origin}/studio`,
-  logoutUrl: process.env.REACT_APP_AUTHORING_BASE
-    ? `${process.env.REACT_APP_AUTHORING_BASE}/logout`
+  authoringBase: import.meta.env.VITE_AUTHORING_BASE ?? `${origin}/studio`,
+  logoutUrl: import.meta.env.VITE_AUTHORING_BASE
+    ? `${import.meta.env.VITE_AUTHORING_BASE}/logout`
     : `${origin}/studio/logout`,
-  guestBase: process.env.REACT_APP_GUEST_BASE ?? origin,
+  guestBase: import.meta.env.VITE_GUEST_BASE ?? origin,
   xsrfHeader: document.querySelector('#xsrfHeader')?.textContent ?? 'X-XSRF-TOKEN',
   xsrfArgument: document.querySelector('#xsrfArgument')?.textContent ?? '_csrf',
   useBaseDomain: document.querySelector('#useBaseDomain')?.textContent === 'true',
   siteCookieName: 'crafterSite',
-  previewLandingBase: process.env.REACT_APP_PREVIEW_LANDING ?? `${origin}/studio/preview-landing`,
+  previewLandingBase: import.meta.env.VITE_PREVIEW_LANDING ?? `${origin}/studio/preview-landing`,
   version: null,
   packageBuild: null,
   packageVersion: null,

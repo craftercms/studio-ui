@@ -26,7 +26,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from 'tss-react/mui';
 import Button from '@mui/material/Button';
 import ConfirmDropdown from '../../ConfirmDropdown';
-import GlobalAppToolbar from '../../GlobalAppToolbar';
+import GlobalAppToolbar from '../../GlobalAppToolbar/GlobalAppToolbar';
 import { messages } from './translations';
 import Alert from '@mui/material/Alert';
 import translations from '../translations';

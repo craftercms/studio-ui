@@ -19,7 +19,7 @@ import PublishingStatusWidget from '../PublishingStatusWidget';
 import Grid from '@mui/material/Grid';
 import { PublishingQueueWidget } from '../PublishingQueue';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';

@@ -17,7 +17,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchItemStates, setItemStates, setItemStatesByQuery, StatesToUpdate } from '../../services/workflow';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SuspenseWithEmptyState } from '../Suspencified';
 import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../ItemStatesGrid';

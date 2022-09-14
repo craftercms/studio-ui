@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useDispatch } from 'react-redux';

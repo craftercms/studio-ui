@@ -45,7 +45,7 @@ import TableBody from '@mui/material/TableBody';
 import Chip from '@mui/material/Chip';
 import Switch from '@mui/material/Switch';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';

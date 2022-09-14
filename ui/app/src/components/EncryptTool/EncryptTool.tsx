@@ -29,7 +29,7 @@ import { green, red } from '@mui/material/colors';
 import { setRequestForgeryToken } from '../../utils/auth';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import Box from '@mui/material/Box';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import Paper from '@mui/material/Paper';

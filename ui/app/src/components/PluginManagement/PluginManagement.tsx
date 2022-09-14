@@ -48,7 +48,7 @@ import {
 } from '../../state/actions/system';
 import LookupTable from '../../models/LookupTable';
 import GlobalState from '../../models/GlobalState';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';

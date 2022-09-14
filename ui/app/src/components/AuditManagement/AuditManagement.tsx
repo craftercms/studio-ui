@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useState } from 'react';
 import { PagedArray } from '../../models/PagedArray';

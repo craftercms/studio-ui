@@ -118,11 +118,13 @@ export interface AceEditorProps extends Partial<AceOptions> {
   styles?: AceEditorStyles;
   extensions?: string[];
   onChange?(e: any): void;
+  // @ts-ignore
   onInit?(editor: AceAjax.Editor): void;
 }
 
 declare global {
   interface Window {
+    // @ts-ignore
     ace: AceAjax.Ace;
   }
 }
@@ -204,6 +206,7 @@ const useStyles = makeStyles<AceEditorStyles, AceEditorClassKey>()(
   })
 );
 
+// @ts-ignore
 function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
   const {
     value = '',
@@ -238,6 +241,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
   useMount(() => {
     let unmounted = false;
     let initialized = false;
+    // @ts-ignore
     let aceEditor: AceAjax.Editor;
     let deps = { ace: false, emmet: false, languageTools: false };
     const init = () => {
@@ -370,6 +374,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
   );
 }
 
+// @ts-ignore
 export const AceEditor = React.forwardRef<AceAjax.Editor, AceEditorProps>(AceEditorComp);
 
 export default AceEditor;

@@ -19,7 +19,7 @@ import GraphiQLComponent, { FetcherOpts, FetcherParams, ToolbarButton } from 'gr
 import 'graphiql/graphiql.min.css';
 import GraphiQLExplorer from 'graphiql-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import { toQueryString } from '../../utils/object';

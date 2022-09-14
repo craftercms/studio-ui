@@ -17,7 +17,7 @@
 import Box from '@mui/material/Box';
 import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import GlobalAppToolbar from '../GlobalAppToolbar';
+import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { Typography } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import useStyles from './styles';
