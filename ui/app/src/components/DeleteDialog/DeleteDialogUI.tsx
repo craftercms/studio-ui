@@ -17,10 +17,10 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
-import { SuspenseWithEmptyState } from '../Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import DeleteDialogUIBody from './DeleteDialogUIBody';
 import { DeleteDialogUIProps } from './utils';
 

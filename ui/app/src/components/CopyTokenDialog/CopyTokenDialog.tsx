@@ -18,7 +18,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { CopyTokenProps } from './utils';
 import { CopyTokenContainer } from './CopyTokenContainer';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 
 export function CopyTokenDialog(props: CopyTokenProps) {
   const { token, onCopy, ...rest } = props;

@@ -18,7 +18,7 @@ import Group from '../../models/Group';
 import React from 'react';
 import User from '../../models/User';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 
 export interface EditGroupBaseProps {
   group?: Group;

@@ -18,7 +18,7 @@ import { SandboxItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
 import { Resource } from '../../models/Resource';
 import React from 'react';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export type Source = SandboxItem[];

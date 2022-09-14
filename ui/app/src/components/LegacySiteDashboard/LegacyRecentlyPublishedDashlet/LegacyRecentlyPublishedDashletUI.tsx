@@ -32,7 +32,7 @@ import LookupTable from '../../../models/LookupTable';
 import Collapse from '@mui/material/Collapse';
 import { RecentlyPublishedDashletDashboardItem } from './LegacyRecentlyPublishedDashlet';
 import { DetailedItem } from '../../../models/Item';
-import ItemDisplay from '../../ItemDisplay';
+import ItemDisplay from '../../ItemDisplay/ItemDisplay';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import Box from '@mui/material/Box';
 import useStyles from './styles';

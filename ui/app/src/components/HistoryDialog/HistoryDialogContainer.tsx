@@ -22,7 +22,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { HistoryDialogContainerProps, Menu, menuInitialState, menuOptions } from './utils';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
-import ContextMenu, { ContextMenuOption } from '../ContextMenu';
+import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import {
   closeConfirmDialog,
   fetchContentVersion,
@@ -52,7 +52,7 @@ import { asDayMonthDateTime } from '../../utils/datetime';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import VersionList from '../VersionList';
+import VersionList from '../VersionList/VersionList';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from './HistoryDialogPagination';
 import { historyStyles } from './HistoryDialog';

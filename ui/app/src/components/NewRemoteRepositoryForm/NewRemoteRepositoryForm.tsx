@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
-import GitAuthForm from '../GitAuthForm';
+import GitAuthForm from '../GitAuthForm/GitAuthForm';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';

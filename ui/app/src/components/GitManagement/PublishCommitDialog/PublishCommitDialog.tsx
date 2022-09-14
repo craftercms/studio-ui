@@ -16,12 +16,12 @@
 
 import React, { useEffect } from 'react';
 import DialogBody from '../../DialogBody/DialogBody';
-import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
+import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog/EnhancedDialog';
 import PublishOnDemandForm from '../../PublishOnDemandForm';
 import SecondaryButton from '../../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
-import PrimaryButton from '../../PrimaryButton';
-import DialogFooter from '../../DialogFooter';
+import PrimaryButton from '../../PrimaryButton/PrimaryButton';
+import DialogFooter from '../../DialogFooter/DialogFooter';
 import { PublishFormData, PublishingTarget } from '../../../models';
 import { fetchPublishingTargets, publishByCommits } from '../../../services/publishing';
 import useSpreadState from '../../../hooks/useSpreadState';

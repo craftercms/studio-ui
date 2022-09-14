@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { PublishDialogContainer } from './PublishDialogContainer';
 import { PublishDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';

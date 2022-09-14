@@ -25,7 +25,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { useDetailedItems } from '../../hooks/useDetailedItems';
-import { ContextMenuOption } from '../ContextMenu';
+import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
 import LookupTable from '../../models/LookupTable';

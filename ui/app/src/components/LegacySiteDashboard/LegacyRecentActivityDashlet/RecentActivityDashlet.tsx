@@ -51,7 +51,7 @@ import {
   itemActionDispatcher
 } from '../../../utils/itemActions';
 import { useEnv } from '../../../hooks/useEnv';
-import ActionsBar, { ActionsBarAction } from '../../ActionsBar';
+import ActionsBar, { ActionsBarAction } from '../../ActionsBar/ActionsBar';
 import translations from './translations';
 import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';

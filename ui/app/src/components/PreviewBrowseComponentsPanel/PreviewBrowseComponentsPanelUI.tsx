@@ -24,7 +24,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import { Resource } from '../../models/Resource';
 import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@mui/material/FormHelperText';
-import Pagination from '../Pagination';
+import Pagination from '../Pagination/Pagination';
 
 export interface ComponentResource {
   count: number;

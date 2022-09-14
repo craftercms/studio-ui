@@ -24,7 +24,7 @@ import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { ApiResponse } from '../../models/ApiResponse';
 import { deleteMember, fetchMembers } from '../../services/clusters';
 import { ClusterMember } from '../../models/Clusters';
-import ClusterGridUI from '../ClusterGrid';
+import ClusterGridUI from '../ClusterGrid/ClusterGridUI';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';

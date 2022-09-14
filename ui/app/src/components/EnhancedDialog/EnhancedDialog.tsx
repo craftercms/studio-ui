@@ -19,11 +19,11 @@ import { ReactNode, useMemo } from 'react';
 import { useOnClose } from '../../hooks/useOnClose';
 import MuiDialog, { DialogProps as MuiDialogProps } from '@mui/material/Dialog';
 import { useUnmount } from '../../hooks/useUnmount';
-import DialogHeader, { DialogHeaderProps } from '../DialogHeader';
-import MinimizedBar from '../MinimizedBar';
+import DialogHeader, { DialogHeaderProps } from '../DialogHeader/DialogHeader';
+import MinimizedBar from '../MinimizedBar/MinimizedBar';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogContext } from './useEnhancedDialogContext';
-import Suspencified from '../Suspencified';
+import Suspencified from '../Suspencified/Suspencified';
 
 export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, EnhancedDialogState {
   title?: ReactNode;

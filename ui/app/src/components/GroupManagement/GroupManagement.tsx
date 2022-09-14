@@ -22,7 +22,8 @@ import { ApiResponse } from '../../models/ApiResponse';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/groups';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
+import GroupsGridUI from '../GroupsGrid/GroupsGridUI';
+import { GroupsGridSkeletonTable } from '../GroupsGrid';
 import EditGroupDialog from '../EditGroupDialog';
 import Button from '@mui/material/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
@@ -30,7 +31,7 @@ import { useLogicResource } from '../../hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
-import SearchBar from '../SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 import useStyles from '../UserManagement/styles';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
 

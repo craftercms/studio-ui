@@ -22,7 +22,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import React from 'react';
 import { WorkflowCancellationDialogUIProps } from './utils';
 

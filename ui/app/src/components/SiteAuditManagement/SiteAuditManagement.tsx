@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import AuditManagement from '../AuditManagement';
+import AuditManagement from '../AuditManagement/AuditManagement';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
 interface SiteAuditManagementProps {

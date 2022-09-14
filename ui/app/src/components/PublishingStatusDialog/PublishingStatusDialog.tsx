@@ -17,7 +17,7 @@
 import * as React from 'react';
 import PublishingStatusDialogContainer from './PublishingStatusDialogContainer';
 import { PublishingStatusDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 
 function PublishingStatusDialog(props: PublishingStatusDialogProps) {
   const {

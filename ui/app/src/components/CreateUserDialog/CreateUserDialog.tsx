@@ -17,7 +17,7 @@
 import React from 'react';
 import { CreateUserDialogContainer } from './CreateUserDialogContainer';
 import { CreateUserDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateUserDialog(props: CreateUserDialogProps) {

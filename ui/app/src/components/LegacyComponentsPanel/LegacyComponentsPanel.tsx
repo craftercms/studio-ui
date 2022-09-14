@@ -16,7 +16,7 @@
 
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';

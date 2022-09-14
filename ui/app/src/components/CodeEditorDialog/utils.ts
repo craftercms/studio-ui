@@ -17,7 +17,7 @@
 import { LookupTable } from '../../models/LookupTable';
 import { ContentTypeField } from '../../models/ContentType';
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface CodeEditorDialogBaseProps {

@@ -17,7 +17,7 @@
 import React from 'react';
 import { DeleteDialogContainer } from './DeleteDialogContainer';
 import { DeleteDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function DeleteDialog(props: DeleteDialogProps) {

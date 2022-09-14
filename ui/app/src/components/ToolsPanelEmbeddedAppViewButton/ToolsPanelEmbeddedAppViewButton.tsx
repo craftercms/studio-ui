@@ -16,7 +16,7 @@
 
 import React from 'react';
 import ToolsPanelListItemButton, { ToolsPanelListItemButtonProps } from '../ToolsPanelListItemButton';
-import WidgetDialog from '../WidgetDialog';
+import WidgetDialog from '../WidgetDialog/WidgetDialog';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import { WidgetDescriptor } from '../../models';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { EditUserDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import EditUserDialogContainer from './EditUserDialogContainer';
 
 export function EditUserDialog(props: EditUserDialogProps) {

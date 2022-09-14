@@ -16,7 +16,7 @@
 import ContentType from '../../models/ContentType';
 import { Resource } from '../../models/Resource';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 import React from 'react';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 

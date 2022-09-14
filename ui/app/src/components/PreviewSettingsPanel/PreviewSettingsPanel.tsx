@@ -30,7 +30,7 @@ import {
 } from '@mui/material';
 import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
-import EditModeSwitch from '../EditModeSwitch';
+import EditModeSwitch from '../EditModeSwitch/EditModeSwitch';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { HighlightMode } from '../../models/GlobalState';

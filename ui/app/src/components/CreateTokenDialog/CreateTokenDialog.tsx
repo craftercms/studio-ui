@@ -17,7 +17,7 @@
 import React from 'react';
 import CreateTokenDialogContainer from './CreateTokenDialogContainer';
 import { CreateTokenDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateTokenDialog(props: CreateTokenDialogProps) {

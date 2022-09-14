@@ -25,7 +25,7 @@ import Switch from '@mui/material/Switch';
 import { useStyles } from './styles';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { makeStyles } from 'tss-react/mui';
 
 import Box from '@mui/material/Box';

@@ -16,7 +16,7 @@
 
 import { ElasticParams, MediaItem, SearchItem } from '../../models/Search';
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 import React from 'react';
 
 export interface BrowseFilesDialogBaseProps {

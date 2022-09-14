@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DialogBody from '../DialogBody';
-import DialogFooter from '../DialogFooter';
+import DialogBody from '../DialogBody/DialogBody';
+import DialogFooter from '../DialogFooter/DialogFooter';
 import { PluginConfigDialogContainerProps } from './utils';
 import React, { useEffect, useRef, useState } from 'react';
-import { ConditionalLoadingState } from '../LoadingState';
+import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { getPluginConfiguration, setPluginConfiguration } from '../../services/marketplace';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useUpdateRefs from '../../hooks/useUpdateRefs';

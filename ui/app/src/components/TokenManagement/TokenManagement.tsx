@@ -28,7 +28,7 @@ import { Token } from '../../models/Token';
 import CreateTokenDialog from '../CreateTokenDialog';
 import { showSystemNotification } from '../../state/actions/system';
 import ConfirmDropdown from '../ConfirmDropdown';
-import ActionsBar from '../ActionsBar';
+import ActionsBar from '../ActionsBar/ActionsBar';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import EmptyState from '../EmptyState/EmptyState';
 import CopyTokenDialog from '../CopyTokenDialog/CopyTokenDialog';

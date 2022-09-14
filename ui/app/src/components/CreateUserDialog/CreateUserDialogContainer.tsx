@@ -27,7 +27,7 @@ import Paper from '@mui/material/Paper';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import UserGroupMembershipEditor from '../UserGroupMembershipEditor';

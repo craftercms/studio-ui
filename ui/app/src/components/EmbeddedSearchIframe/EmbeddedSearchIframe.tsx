@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import LegacyIFrame from '../LegacyIFrame';
+import LegacyIFrame from '../LegacyIFrame/LegacyIFrame';
 import React from 'react';
 
 export function EmbeddedSearchIframe() {

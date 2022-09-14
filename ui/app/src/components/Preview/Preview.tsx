@@ -20,7 +20,7 @@ import Host from '../Host/Host';
 import ToolBar from '../ToolBar/ToolBar';
 import PreviewConcierge from '../PreviewConcierge/PreviewConcierge';
 import usePreviewUrlControl from '../../hooks/usePreviewUrlControl';
-import ICEToolsPanel from '../ICEToolsPanel';
+import ICEToolsPanel from '../ICEToolsPanel/ICEToolsPanel';
 import Box from '@mui/material/Box';
 
 function Preview(props) {

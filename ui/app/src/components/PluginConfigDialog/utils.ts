@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface PluginConfigDialogBaseProps {

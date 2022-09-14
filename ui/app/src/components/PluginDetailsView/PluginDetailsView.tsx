@@ -31,7 +31,7 @@ import Alert from '@mui/material/Alert';
 import { backgroundColor } from '../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import PluginDocumentation from '../PluginDocumentation';
 
 const useStyles = makeStyles()((theme) => ({

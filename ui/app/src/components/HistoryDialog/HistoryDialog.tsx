@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
-import { EnhancedDialog } from '../EnhancedDialog';
+import { EnhancedDialog } from '../EnhancedDialog/EnhancedDialog';
 import { HistoryDialogContainer } from './HistoryDialogContainer';
 import { HistoryDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';

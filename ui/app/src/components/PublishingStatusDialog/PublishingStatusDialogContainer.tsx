@@ -16,7 +16,7 @@
 
 import { makeStyles } from 'tss-react/mui';
 import { useIntl } from 'react-intl';
-import DialogHeader from '../DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
 import * as React from 'react';
 import PublishingStatusDisplay, { publishingStatusMessages } from '../PublishingStatusDisplay';

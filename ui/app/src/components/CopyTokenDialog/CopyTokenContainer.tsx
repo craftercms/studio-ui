@@ -21,7 +21,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputBase from '@mui/material/InputBase';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { CopyTokenContainerProps } from './utils';
 import { makeStyles } from 'tss-react/mui';
 import { copyToClipboard } from '../../utils/system';

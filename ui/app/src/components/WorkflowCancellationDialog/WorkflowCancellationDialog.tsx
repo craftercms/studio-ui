@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import WorkflowCancellationDialogContainer from './WorkflowCancellationDialogContainer';
 import { WorkflowCancellationDialogProps } from './utils';
 

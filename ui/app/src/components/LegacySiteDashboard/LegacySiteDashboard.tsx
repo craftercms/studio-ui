@@ -17,7 +17,7 @@
 import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import useStyles from './styles';
-import { renderWidgets } from '../Widget';
+import { renderWidgets } from '../Widget/Widget';
 import EmptyState from '../EmptyState/EmptyState';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useActiveUser } from '../../hooks/useActiveUser';

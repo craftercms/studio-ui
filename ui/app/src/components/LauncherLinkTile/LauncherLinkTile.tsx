@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import LauncherTile from '../LauncherTile';
+import LauncherTile from '../LauncherTile/LauncherTile';
 import React from 'react';
-import { SystemIconDescriptor } from '../SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useDispatch } from 'react-redux';
 import { closeLauncher, showWidgetDialog } from '../../state/actions/dialogs';

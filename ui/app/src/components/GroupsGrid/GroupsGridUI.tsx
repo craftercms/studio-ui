@@ -23,7 +23,7 @@ import { FormattedMessage } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import React from 'react';
 import { PagedArray } from '../../models/PagedArray';
-import Pagination from '../Pagination';
+import Pagination from '../Pagination/Pagination';
 import { useStyles } from './styles';
 import Group from '../../models/Group';
 import GlobalAppGridRow from '../GlobalAppGridRow';

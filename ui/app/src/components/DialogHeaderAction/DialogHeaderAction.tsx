@@ -17,7 +17,7 @@
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
-import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
 
 export interface DialogHeaderActionProps extends IconButtonProps {
   icon: SystemIconDescriptor;

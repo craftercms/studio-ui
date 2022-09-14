@@ -17,7 +17,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { PluginConfigDialogProps } from './utils';
-import { EnhancedDialog } from '../EnhancedDialog';
+import { EnhancedDialog } from '../EnhancedDialog/EnhancedDialog';
 import { PluginConfigDialogContainer } from './PluginConfigDialogContainer';
 
 export function PluginConfigDialog(props: PluginConfigDialogProps) {

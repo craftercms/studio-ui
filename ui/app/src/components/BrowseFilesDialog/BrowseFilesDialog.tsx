@@ -18,7 +18,7 @@ import React from 'react';
 import { BrowseFilesDialogContainer } from './BrowseFilesDialogContainer';
 import { BrowseFilesDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 
 export function BrowseFilesDialog(props: BrowseFilesDialogProps) {
   const { path, onClose, onSuccess, contentTypes, multiSelect, mimeTypes, numOfLoaderItems, ...rest } = props;

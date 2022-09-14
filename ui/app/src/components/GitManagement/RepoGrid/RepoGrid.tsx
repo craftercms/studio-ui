@@ -17,9 +17,9 @@
 import { MergeStrategy, Repository } from '../../../models/Repository';
 import RepoGridUI from './RepoGridUI';
 import React, { useState } from 'react';
-import PullDialog from '../PullDialog';
+import PullDialog from '../PullDialog/PullDialog';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import PushDialog from '../PushDialog';
+import PushDialog from '../PushDialog/PushDialog';
 import { deleteRemote as deleteRemoteService, PullResponse } from '../../../services/repositories';
 import { showSystemNotification } from '../../../state/actions/system';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';

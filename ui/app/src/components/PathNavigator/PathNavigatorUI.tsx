@@ -28,13 +28,13 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import GlobalState from '../../models/GlobalState';
 import { PathNavigatorStateProps } from './PathNavigator';
-import { SystemIconDescriptor } from '../SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
 import { lookupItemByPath } from '../../utils/content';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import NavLoader from './NavLoader';
 import { ErrorState } from '../ErrorState';
 import { renderErrorState } from '../ErrorState/util';
-import { Pagination } from '../Pagination';
+import { Pagination } from '../Pagination/Pagination';
 
 export type PathNavigatorUIClassKey =
   | 'root'

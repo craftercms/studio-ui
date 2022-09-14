@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './Preview';
+// export { default } from './Preview';
 
 export * from './Preview';

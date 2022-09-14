@@ -46,7 +46,7 @@ import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSubject } from '../../hooks/useSubject';
-import Pagination from '../Pagination';
+import Pagination from '../Pagination/Pagination';
 import { getFileNameFromPath } from '../../utils/path';
 import { makeStyles } from 'tss-react/mui';
 

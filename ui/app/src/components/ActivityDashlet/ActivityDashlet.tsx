@@ -52,7 +52,7 @@ import { DashletAvatar, DashletEmptyMessage, PersonAvatar, PersonFullName } from
 import { getSystemLink } from '../../utils/system';
 import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
-import { useWidgetDialogContext } from '../WidgetDialog';
+import { useWidgetDialogContext } from '../WidgetDialog/WidgetDialog';
 import PackageDetailsDialog from '../PackageDetailsDialog/PackageDetailsDialog';
 
 export interface ActivityDashletProps extends CommonDashletProps {}

@@ -17,7 +17,7 @@
 import { DetailedItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 
 export interface ChangeContentTypeDialogBaseProps {
   item: DetailedItem;

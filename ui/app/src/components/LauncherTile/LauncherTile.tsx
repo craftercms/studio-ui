@@ -16,7 +16,7 @@
 
 import Link from '@mui/material/Link';
 import Avatar from '@mui/material/Avatar';
-import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';

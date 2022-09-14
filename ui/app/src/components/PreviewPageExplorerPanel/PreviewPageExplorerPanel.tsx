@@ -49,7 +49,7 @@ import palette from '../../styles/palette';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import ItemActionsMenu from '../ItemActionsMenu';
+import ItemActionsMenu from '../ItemActionsMenu/ItemActionsMenu';
 import SearchBar from '../SearchBar/SearchBar';
 import Divider from '@mui/material/Divider';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';

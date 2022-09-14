@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import ApiResponse from '../../../models/ApiResponse';
-import { EnhancedDialogProps } from '../../EnhancedDialog';
+import { EnhancedDialogProps } from '../../EnhancedDialog/EnhancedDialog';
 
 export interface PushDialogBaseProps {
   branches: string[];

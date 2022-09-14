@@ -17,7 +17,7 @@
 import React from 'react';
 import { RejectDialogContainer } from './RejectDialogContainer';
 import { RejectDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function RejectDialog(props: RejectDialogProps) {

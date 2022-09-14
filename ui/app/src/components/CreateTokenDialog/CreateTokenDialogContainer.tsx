@@ -28,7 +28,7 @@ import Collapse from '@mui/material/Collapse';
 import DateTimePicker from '../DateTimePicker/DateTimePicker';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { useSelection } from '../../hooks/useSelection';
 import { getUserTimeZone } from '../../utils/datetime';
 import { CreateTokenContainerProps } from './utils';

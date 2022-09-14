@@ -25,7 +25,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { makeStyles } from 'tss-react/mui';
 import { pull } from '../../../services/repositories';
 import SecondaryButton from '../../SecondaryButton';
-import PrimaryButton from '../../PrimaryButton';
+import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import { isBlank } from '../../../utils/string';
 import { PullFromRemoteDialogContainerProps } from './utils';
 import {

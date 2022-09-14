@@ -24,7 +24,7 @@ import { StateStylingProps } from '../../models/UiConfig';
 import PathNavigatorTreeItem, { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem } from '../../models/Item';
-import { SystemIconDescriptor } from '../SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { FormattedMessage } from 'react-intl';
 import { ErrorState } from '../ErrorState';

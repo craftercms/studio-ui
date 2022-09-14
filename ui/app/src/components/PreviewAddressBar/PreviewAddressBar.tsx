@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Paper from '@mui/material/Paper';
-import ItemDisplay from '../ItemDisplay';
+import ItemDisplay from '../ItemDisplay/ItemDisplay';
 import PagesSearchAhead from '../PagesSearchAhead';
 import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';

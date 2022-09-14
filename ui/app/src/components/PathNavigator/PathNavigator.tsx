@@ -51,7 +51,7 @@ import { debounceTime } from 'rxjs/operators';
 import PathNavigatorUI from './PathNavigatorUI';
 import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
-import { SystemIconDescriptor } from '../SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';

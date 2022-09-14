@@ -39,7 +39,7 @@ import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AllItemActions, DetailedItem } from '../../models/Item';
-import { ContextMenuOption } from '../ContextMenu';
+import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import ApiResponse from '../../models/ApiResponse';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';

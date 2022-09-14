@@ -19,7 +19,7 @@ import ToolsPanelListItemButton from '../ToolsPanelListItemButton';
 import { useDispatch } from 'react-redux';
 import { pushIcePanelPage, pushToolsPanelPage } from '../../state/actions/preview';
 import { createWidgetDescriptor } from '../../utils/state';
-import { SystemIconDescriptor } from '../SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
 import ToolsPanelTarget from '../../models/ToolsPanelTarget';
 
 export interface ToolsPanelPageButtonProps {

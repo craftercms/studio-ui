@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { UninstallPluginDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { UninstallPluginDialogContainer } from './UninstallPluginDialogContainer';
 
 function UninstallPluginDialog(props: UninstallPluginDialogProps) {

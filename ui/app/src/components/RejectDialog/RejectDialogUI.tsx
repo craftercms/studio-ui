@@ -25,15 +25,15 @@ import MenuItem from '@mui/material/MenuItem';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import React from 'react';
 import { RejectDialogContentUI } from './RejectDialogContentUI';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import { nnou } from '../../utils/object';
-import { LoadingState } from '../LoadingState';
+import { LoadingState } from '../LoadingState/LoadingState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
-import { EmptyState } from '../EmptyState';
+import { EmptyState } from '../EmptyState/EmptyState';
 import { useStyles } from './styles';
 
 export function RejectDialogUI(props: RejectDialogUIProps) {

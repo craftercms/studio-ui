@@ -16,10 +16,10 @@
 
 import React, { useRef } from 'react';
 import { useIntl } from 'react-intl';
-import DialogHeader from '../DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import { LegacyFormDialogProps } from './utils';
 import { EmbeddedLegacyContainer } from './EmbeddedLegacyContainer';
-import MinimizedBar from '../MinimizedBar';
+import MinimizedBar from '../MinimizedBar/MinimizedBar';
 import Dialog from '@mui/material/Dialog';
 import { useStyles } from './styles';
 import { translations } from './translations';

@@ -25,7 +25,7 @@ import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import User from '../../models/User';
 import { PagedArray } from '../../models/PagedArray';
-import Pagination from '../Pagination';
+import Pagination from '../Pagination/Pagination';
 import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';

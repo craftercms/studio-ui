@@ -24,7 +24,7 @@ import React from 'react';
 // import { useDispatch } from 'react-redux';
 // import { initDashboardConfig } from '../../state/actions/dashboard';
 // import { renderWidgets } from '../Widget';
-// import EmptyState from '../EmptyState';
+// import EmptyState from '../EmptyState/EmptyState';
 // import { FormattedMessage } from 'react-intl';
 // import Skeleton from '@mui/material/Skeleton';
 import { useTheme } from '@mui/material/styles';

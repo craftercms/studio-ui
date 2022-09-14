@@ -18,7 +18,7 @@ import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { DeleteContentTypeDialogProps } from './utils';
 import { DeleteContentTypeDialogContainer } from './DeleteContentTypeDialogContainer';
-import { EnhancedDialog } from '../EnhancedDialog';
+import { EnhancedDialog } from '../EnhancedDialog/EnhancedDialog';
 
 function DeleteContentTypeDialog(props: DeleteContentTypeDialogProps) {
   const { contentType, onSubmittingAndOrPendingChange, isSubmitting, onComplete, ...rest } = props;

@@ -15,7 +15,7 @@
  */
 
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 import { PublishingStatus } from '../../models/Publishing';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 

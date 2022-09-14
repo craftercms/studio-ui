@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DialogHeaderStateAction } from '../DialogHeader';
+import { DialogHeaderStateAction } from '../DialogHeader/DialogHeader';
 import StandardAction from '../../models/StandardAction';
 import ApiResponse from '../../models/ApiResponse';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 

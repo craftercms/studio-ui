@@ -16,7 +16,7 @@
 
 import React, { useState } from 'react';
 import PullDialogContainer from './PullDialogContainer';
-import { EnhancedDialog } from '../../EnhancedDialog';
+import { EnhancedDialog } from '../../EnhancedDialog/EnhancedDialog';
 import { PullFromRemoteDialogProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 

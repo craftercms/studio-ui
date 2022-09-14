@@ -24,7 +24,7 @@ import LauncherOpenerButton from '../LauncherOpenerButton/LauncherOpenerButton';
 import SearchBar from '../SearchBar/SearchBar';
 import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
 import GridViewIcon from '@mui/icons-material/GridOnRounded';
-import ViewToolbar from '../ViewToolbar';
+import ViewToolbar from '../ViewToolbar/ViewToolbar';
 import Tooltip from '@mui/material/Tooltip';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 

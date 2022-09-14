@@ -21,7 +21,7 @@ import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { useStyles } from './styles';
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
-import SiteManagement from '../SiteManagement';
+import SiteManagement from '../SiteManagement/SiteManagement';
 import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
 import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -36,17 +36,17 @@ import Skeleton from '@mui/material/Skeleton';
 import { globalMenuMessages } from '../../env/i18n-legacy';
 
 // Site management loaded normally above as it is usually where people first land.
-const UserManagement = lazy(() => import('../UserManagement'));
-const GroupManagement = lazy(() => import('../GroupManagement'));
-const ClusterManagement = lazy(() => import('../ClusterManagement'));
-const AuditManagement = lazy(() => import('../AuditManagement'));
-const LogLevelManagement = lazy(() => import('../LogLevelManagement'));
-const LogConsole = lazy(() => import('../LogConsole'));
-const GlobalConfigManagement = lazy(() => import('../GlobalConfigManagement'));
-const EncryptTool = lazy(() => import('../EncryptTool'));
-const TokenManagement = lazy(() => import('../TokenManagement'));
-const AboutCrafterCMSView = lazy(() => import('../AboutCrafterCMSView'));
-const AccountManagement = lazy(() => import('../AccountManagement'));
+const UserManagement = lazy(() => import('../UserManagement/UserManagement'));
+const GroupManagement = lazy(() => import('../GroupManagement/GroupManagement'));
+const ClusterManagement = lazy(() => import('../ClusterManagement/ClusterManagement'));
+const AuditManagement = lazy(() => import('../AuditManagement/AuditManagement'));
+const LogLevelManagement = lazy(() => import('../LogLevelManagement/LogLevelManagement'));
+const LogConsole = lazy(() => import('../LogConsole/LogConsole'));
+const GlobalConfigManagement = lazy(() => import('../GlobalConfigManagement/GlobalConfigManagement'));
+const EncryptTool = lazy(() => import('../EncryptTool/EncryptTool'));
+const TokenManagement = lazy(() => import('../TokenManagement/TokenManagement'));
+const AboutCrafterCMSView = lazy(() => import('../AboutCrafterCMSView/AboutCrafterCMSView'));
+const AccountManagement = lazy(() => import('../AccountManagement/AccountManagement'));
 
 interface GlobalAppProps {
   passwordRequirementsRegex: string;

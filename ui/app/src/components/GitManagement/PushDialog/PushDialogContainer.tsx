@@ -25,7 +25,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { push } from '../../../services/repositories';
 import SecondaryButton from '../../SecondaryButton';
-import PrimaryButton from '../../PrimaryButton';
+import PrimaryButton from '../../PrimaryButton/PrimaryButton';
 import { isBlank } from '../../../utils/string';
 import { PushDialogContainerProps } from './utils';
 import { FormControlLabel, Switch } from '@mui/material';

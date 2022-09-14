@@ -22,7 +22,7 @@ import Menu from '@mui/material/Menu';
 import Button from '@mui/material/Button';
 import { makeStyles } from 'tss-react/mui';
 
-import { ContextMenuOption } from '../ContextMenu';
+import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 
 export type ActionsGroupPropsClassKey = 'root' | 'action' | 'more';
 

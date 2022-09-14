@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './HistoryDialog';
+// export { default } from './HistoryDialog';
 
 export * from './HistoryDialog';
 

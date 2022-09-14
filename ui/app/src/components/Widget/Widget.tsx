@@ -20,7 +20,7 @@ import { importPlugin } from '../../services/plugin';
 import { components } from '../../utils/constants';
 import EmptyState from '../EmptyState/EmptyState';
 import { defineMessages, useIntl } from 'react-intl';
-import ErrorState from '../ErrorState';
+import ErrorState from '../ErrorState/ErrorState';
 import { isValidElementType } from 'react-is';
 import WidgetDescriptor from '../../models/WidgetDescriptor';
 

@@ -20,7 +20,7 @@ import NewRemoteRepositoryForm from '../NewRemoteRepositoryForm/NewRemoteReposit
 import DialogFooter from '../DialogFooter/DialogFooter';
 import React from 'react';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { NewRemoteRepositoryDialogUIProps } from './utils';
 
 export function NewRemoteRepositoryDialogUI(props: NewRemoteRepositoryDialogUIProps) {

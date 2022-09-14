@@ -32,7 +32,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Skeleton from '@mui/material/Skeleton';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import { setMyPassword } from '../../services/users';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';

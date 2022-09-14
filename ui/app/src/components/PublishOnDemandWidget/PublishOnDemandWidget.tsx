@@ -45,7 +45,7 @@ import Link from '@mui/material/Link';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSelection } from '../../hooks/useSelection';
 import { isBlank } from '../../utils/string';
-import PrimaryButton from '../PrimaryButton';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';

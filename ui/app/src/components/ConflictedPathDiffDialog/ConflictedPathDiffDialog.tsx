@@ -16,14 +16,14 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
-import DialogHeader from '../DialogHeader';
+import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { diffConflictedFile } from '../../services/repositories';
 import ApiResponse from '../../models/ApiResponse';
 import { FileDiff } from '../../models/Repository';
-import { SuspenseWithEmptyState } from '../Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import ConflictedPathDiffDialogUI from './ConflictedPathDiffDialogUI';
 import SecondaryButton from '../SecondaryButton';
 import ConfirmDropdown from '../ConfirmDropdown';

@@ -17,7 +17,7 @@
 import GlobalAppToolbar from '../GlobalAppToolbar/GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useState } from 'react';
-import LegacyIFrame from '../LegacyIFrame';
+import LegacyIFrame from '../LegacyIFrame/LegacyIFrame';
 import Box from '@mui/material/Box';
 import LoadingState from '../LoadingState/LoadingState';
 import { fromEvent } from 'rxjs';

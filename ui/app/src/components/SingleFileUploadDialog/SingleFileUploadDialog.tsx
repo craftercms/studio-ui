@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { SingleFileUploadDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import SingleFileUploadDialogContainer from './SingleFileUploadDialogContainer';
 

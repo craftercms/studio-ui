@@ -17,7 +17,7 @@
 import React, { createContext, useContext, useMemo } from 'react';
 import useStyles from './styles';
 import { WidgetDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import Suspencified from '../Suspencified/Suspencified';
 import { Widget } from '../Widget/Widget';
 import useRef from '../../hooks/useUpdateRefs';

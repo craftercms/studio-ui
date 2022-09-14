@@ -15,14 +15,14 @@
  */
 
 import React, { useEffect, Suspense } from 'react';
-import ViewToolbar from '../ViewToolbar';
+import ViewToolbar from '../ViewToolbar/ViewToolbar';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { closeToolsPanel, initToolbarConfig, openToolsPanel } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { defineMessages, useIntl } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
-import { renderWidgets } from '../Widget';
+import { renderWidgets } from '../Widget/Widget';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewGuest } from '../../hooks/usePreviewGuest';
 import { usePreviewState } from '../../hooks/usePreviewState';

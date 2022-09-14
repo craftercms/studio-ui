@@ -28,14 +28,14 @@ import { ThemeOptions } from '@mui/material/styles';
 import { setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSStore, getStore } from '../../state/store';
 import { SnackbarProvider } from 'notistack';
-import I18nProvider from '../I18nProvider';
-import StoreProvider from '../StoreProvider';
+import I18nProvider from '../I18nProvider/I18nProvider';
+import StoreProvider from '../StoreProvider/StoreProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
 import SnackbarCloseButton from '../SnackbarCloseButton';
 import { publishCrafterGlobal } from '../../env/craftercms';
 import { registerComponents } from '../../env/registerComponents';
-import LoadingState from '../LoadingState';
-import GlobalStyles from '../GlobalStyles';
+import LoadingState from '../LoadingState/LoadingState';
+import GlobalStyles from '../GlobalStyles/GlobalStyles';
 import ErrorState from '../ErrorState/ErrorState';
 
 const LegacyConcierge = lazy(() => import('../LegacyConcierge/LegacyConcierge'));

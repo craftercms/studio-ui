@@ -28,7 +28,7 @@ import useStyles from './styles';
 import Checkbox from '@mui/material/Checkbox';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import ItemDisplay from '../../ItemDisplay';
+import ItemDisplay from '../../ItemDisplay/ItemDisplay';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import LookupTable from '../../../models/LookupTable';

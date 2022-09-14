@@ -18,7 +18,7 @@ import { Resource } from '../../models/Resource';
 import { LegacyContentType } from '../../models/ContentType';
 import { DetailedItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface ContentTypesGridProps {
