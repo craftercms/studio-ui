@@ -55,7 +55,6 @@ import PrimaryButton from '../PrimaryButton';
 import { useStyles } from './styles';
 import messages from './translations';
 
-// TODO: enhance this props
 interface CreateSiteDialogContainerProps {
   site: SiteState;
   setSite(site): void;
