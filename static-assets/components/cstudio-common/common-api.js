@@ -2566,16 +2566,24 @@ var nodeOpen = false,
                       success: function () {
                         var pasteCb = {
                           success: function (pasteResponse) {
+                            opCallBack.success();
                             var filePath = pasteResponse.status[0];
                             var extension = filePath.split('.')[filePath.split('.').length - 1];
 
                             var editCb = {
                               success: function (newItem) {
                                 refreshFn(parentItemTo.item, newItem.item);
-                                opCallBack.success();
                               },
                               failure: function (errorResponse) {
-                                opCallBack.failure(errorResponse);
+                                CStudioAuthoring.Operations.showSimpleDialog(
+                                  'message-dialog',
+                                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                  CMgs.format(langBundle, 'notification'),
+                                  errorResponse.response.message,
+                                  null,
+                                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                  'studioDialog'
+                                );
                               },
 
                               cancelled: function () {
