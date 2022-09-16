@@ -93,7 +93,9 @@ export function AwaitingApprovalDashlet() {
 
   const showExpanded = useMemo(() => Object.values(expandedLookup).some((value) => !value), [expandedLookup]);
   const isAllChecked = useMemo(
-    () => !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]),
+    () =>
+      Boolean(Object.keys(selectedLookup).length) &&
+      !Object.keys(state.itemsLookup).some((path) => !selectedLookup[path]),
     [selectedLookup, state.itemsLookup]
   );
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
