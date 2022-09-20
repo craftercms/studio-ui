@@ -8,12 +8,14 @@ import { SelectionListProps } from '../DependencySelection/SelectionList';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DeleteDependencies } from '../DependencySelection';
+import ApiResponse from '../../models/ApiResponse';
 
 export interface DeleteDialogBaseProps {
   items: DetailedItem[];
   isFetching: boolean;
   childItems: string[];
   dependentItems: string[];
+  error: ApiResponse;
 }
 
 export interface DeleteDialogProps extends DeleteDialogBaseProps, EnhancedDialogProps {

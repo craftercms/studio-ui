@@ -52,7 +52,7 @@ function createCheckedLookup(items: Array<DetailedItem | string>, setChecked = t
 }
 
 export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
-  const { items, onClose, isSubmitting, onSuccess, isFetching, childItems, dependentItems } = props;
+  const { items, onClose, isSubmitting, onSuccess, isFetching, childItems, dependentItems, error } = props;
   const [comment, setComment] = useState('');
   const [apiState, setApiState] = useSpreadState({
     error: null
@@ -68,6 +68,12 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);
   const authoringBase = useSelection((state) => state.env.authoringBase);
+
+  useEffect(() => {
+    if (error) {
+      setApiState({ error });
+    }
+  }, [error, setApiState]);
 
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);

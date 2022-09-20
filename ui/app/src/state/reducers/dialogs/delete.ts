@@ -21,6 +21,7 @@ import {
   deleteDialogClosed,
   fetchDeleteDependencies,
   fetchDeleteDependenciesComplete,
+  fetchDeleteDependenciesFailed,
   showDeleteDialog,
   updateDeleteDialog
 } from '../../actions/dialogs';
@@ -34,7 +35,8 @@ const initialState: DeleteDialogStateProps = {
   items: null,
   isFetching: false,
   childItems: null,
-  dependentItems: null
+  dependentItems: null,
+  error: null
 };
 
 export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
@@ -59,5 +61,10 @@ export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
     ...state,
     isFetching: false,
     ...payload
+  }),
+  [fetchDeleteDependenciesFailed.type]: (state, { payload }) => ({
+    ...state,
+    isFetching: false,
+    error: payload
   })
 });
