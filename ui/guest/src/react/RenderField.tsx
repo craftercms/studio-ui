@@ -20,6 +20,7 @@ import { useICE } from './hooks';
 import { FieldProps, Field } from './Field';
 import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 import { extractCollectionItem, value as getModelValue } from '@craftercms/studio-ui/utils/model';
+import { contentController } from '../index';
 
 export type RenderFieldProps<P, V = any, F = V> = Omit<FieldProps<P>, 'children'> & {
   renderTarget?: string;
@@ -61,6 +62,18 @@ export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {
       render(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId)
     );
   });
+  passDownProps['data-craftercms-model-id'] = model.craftercms.id;
+
+  const contentTypeId = model.craftercms.contentTypeId;
+  const contentType = contentController.getCachedContentType(contentTypeId);
+  const field = contentType?.fields[fieldId];
+
+  if (field && ['node-selector', 'checkbox-group', 'repeat'].includes(field.type)) {
+    passDownProps['data-craftercms-type'] = 'collection';
+  }
+
+  console.log('contentType', contentType);
+
   return <Component {...passDownProps} />;
 });
 

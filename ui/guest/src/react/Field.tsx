@@ -19,6 +19,7 @@ import PropTypes from 'prop-types';
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { useICE } from './hooks';
+import { contentController } from '../index';
 
 export type FieldProps<P = {}> = PropsWithChildren<
   P & {
@@ -41,10 +42,18 @@ export const Field = forwardRef<any, FieldProps>(function <P = {}>(props: FieldP
     ref
   });
   const Component = component as ComponentType<P>;
+
+  const contentTypeId = model.craftercms.contentTypeId;
+  const contentType = contentController.getCachedContentType(contentTypeId);
+  const field = contentType?.fields[fieldId];
+
   const passDownProps = {
     ...other,
     ...ice,
     ...componentProps,
+    'data-craftercms-model-id': model.craftercms.id,
+    ...(field &&
+      ['node-selector', 'checkbox-group', 'repeat'].includes(field.type) && { 'data-craftercms-type': 'collection' }),
     // If the component is an html element, `model` would end up written as an
     // attribute model="[object Object]".
     ...(typeof component === 'string' ? {} : { model })
