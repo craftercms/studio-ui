@@ -55,20 +55,24 @@ import PrimaryButton from '../PrimaryButton';
 import { useStyles } from './styles';
 import messages from './translations';
 
+interface SearchState {
+  searchKey: string;
+  searchSelected: boolean;
+}
+
+interface DialogState {
+  open: boolean;
+  inProgress: boolean;
+}
+
 interface CreateSiteDialogContainerProps {
   site: SiteState;
   setSite(site): void;
-  search: {
-    searchKey: string;
-    searchSelected: boolean;
-  };
-  setSearch(search): void;
-  handleClose(event?, reason?): void;
-  dialog: {
-    open: boolean;
-    inProgress: boolean;
-  };
-  setDialog(dialog): void;
+  search: SearchState;
+  setSearch(search: SearchState): void;
+  handleClose(event?: React.MouseEvent, reason?: string): void;
+  dialog: DialogState;
+  setDialog(dialog: Partial<DialogState>): void;
   disableEnforceFocus: boolean;
 }
 
