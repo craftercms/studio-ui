@@ -187,7 +187,7 @@ const styles = (
       },
       // region craftercms-ice-on
       [`.${editModeClass}`]: {
-        '[data-craftercms-model-id], & [data-craftercms-model-id] a': {
+        '[data-craftercms-model-id], & [data-craftercms-model-id] a, & [data-craftercms-field]': {
           cursor: 'url("/studio/static-assets/images/cursor-edit@1.5x.png"), pointer !important'
         }
       },

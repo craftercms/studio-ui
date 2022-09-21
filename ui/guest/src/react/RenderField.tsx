@@ -62,17 +62,17 @@ export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {
       render(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId)
     );
   });
-  passDownProps['data-craftercms-model-id'] = model.craftercms.id;
 
+  // `data-craftercms-field` attribute is added to all fields for the elements to get the XB on hover cursor styles.
+  // `data-craftercms-type="collection"` attribute is added to node-selector and repeat fields for the elements to get
+  // the XB padding mode styles.
   const contentTypeId = model.craftercms.contentTypeId;
   const contentType = contentController.getCachedContentType(contentTypeId);
   const field = contentType?.fields[fieldId];
-
+  passDownProps['data-craftercms-field'] = '';
   if (field && ['node-selector', 'checkbox-group', 'repeat'].includes(field.type)) {
     passDownProps['data-craftercms-type'] = 'collection';
   }
-
-  console.log('contentType', contentType);
 
   return <Component {...passDownProps} />;
 });

@@ -43,21 +43,26 @@ export const Field = forwardRef<any, FieldProps>(function <P = {}>(props: FieldP
   });
   const Component = component as ComponentType<P>;
 
-  const contentTypeId = model.craftercms.contentTypeId;
-  const contentType = contentController.getCachedContentType(contentTypeId);
-  const field = contentType?.fields[fieldId];
-
   const passDownProps = {
     ...other,
     ...ice,
     ...componentProps,
-    'data-craftercms-model-id': model.craftercms.id,
-    ...(field &&
-      ['node-selector', 'checkbox-group', 'repeat'].includes(field.type) && { 'data-craftercms-type': 'collection' }),
     // If the component is an html element, `model` would end up written as an
     // attribute model="[object Object]".
     ...(typeof component === 'string' ? {} : { model })
   } as P;
+
+  // `data-craftercms-field` attribute is added to all fields for the elements to get the XB on hover cursor styles.
+  // `data-craftercms-type="collection"` attribute is added to node-selector and repeat fields for the elements to get
+  // the XB padding mode styles.
+  const contentTypeId = model.craftercms.contentTypeId;
+  const contentType = contentController.getCachedContentType(contentTypeId);
+  const field = contentType?.fields[fieldId];
+  passDownProps['data-craftercms-field'] = '';
+  if (field && ['node-selector', 'repeat'].includes(field.type)) {
+    passDownProps['data-craftercms-type'] = 'collection';
+  }
+
   return <Component {...passDownProps} />;
 });
 
