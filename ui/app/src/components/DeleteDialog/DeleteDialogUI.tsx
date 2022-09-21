@@ -17,17 +17,21 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
-import { SuspenseWithEmptyState } from '../Suspencified';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import DeleteDialogUIBody from './DeleteDialogUIBody';
 import { DeleteDialogUIProps } from './utils';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
 
 export function DeleteDialogUI(props: DeleteDialogUIProps) {
   const {
-    resource,
     items,
+    childItems,
+    dependentItems,
+    error,
+    isFetching,
     selectedItems,
     comment,
     onCommentChange,
@@ -47,15 +51,20 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
   return (
     <>
       <DialogBody minHeight>
-        <SuspenseWithEmptyState resource={resource}>
+        {error ? (
+          <ApiResponseErrorState error={error} />
+        ) : isFetching || (!childItems && !dependentItems) ? (
+          <LoadingState />
+        ) : (
           <DeleteDialogUIBody
             isDisabled={isDisabled}
             onItemClicked={onItemClicked}
             onSelectAllClicked={onSelectAllClicked}
             onSelectAllDependantClicked={onSelectAllDependantClicked}
-            resource={resource}
             selectedItems={selectedItems}
             items={items}
+            childItems={childItems}
+            dependentItems={dependentItems}
             comment={comment}
             onCommentChange={onCommentChange}
             isCommentRequired={isCommentRequired}
@@ -63,7 +72,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
             isConfirmDeleteChecked={isConfirmDeleteChecked}
             onEditDependantClick={onEditDependantClick}
           />
-        </SuspenseWithEmptyState>
+        )}
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onCloseButtonClick} disabled={isDisabled}>

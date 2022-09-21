@@ -65,6 +65,6 @@ export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
   [fetchDeleteDependenciesFailed.type]: (state, { payload }) => ({
     ...state,
     isFetching: false,
-    error: payload
+    error: payload.response
   })
 });

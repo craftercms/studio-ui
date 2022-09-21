@@ -1,13 +1,11 @@
 import StandardAction from '../../models/StandardAction';
 import { DetailedItem } from '../../models/Item';
 import React from 'react';
-import { Resource } from '../../models/Resource';
 import LookupTable from '../../models/LookupTable';
 import { InputProps } from '@mui/material/Input';
 import { SelectionListProps } from '../DependencySelection/SelectionList';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { DeleteDependencies } from '../DependencySelection';
 import ApiResponse from '../../models/ApiResponse';
 
 export interface DeleteDialogBaseProps {
@@ -33,8 +31,9 @@ export interface DeleteDialogContainerProps
     Pick<DeleteDialogProps, 'isSubmitting' | 'onClose' | 'onSuccess'> {}
 
 export interface DeleteDialogContentUIProps {
-  resource: Resource<DeleteDependencies>;
   items: DetailedItem[];
+  childItems: string[];
+  dependentItems: string[];
   comment: string;
   selectedItems: LookupTable<boolean>;
   isCommentRequired: boolean;
@@ -51,6 +50,8 @@ export interface DeleteDialogContentUIProps {
 export interface DeleteDialogUIProps extends DeleteDialogContentUIProps {
   isSubmitting: boolean;
   isSubmitButtonDisabled: boolean;
+  error: ApiResponse;
+  isFetching: boolean;
   onSubmit(): void;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
 }

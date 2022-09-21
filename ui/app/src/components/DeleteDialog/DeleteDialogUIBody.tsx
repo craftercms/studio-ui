@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { DeleteDependencies } from '../DependencySelection';
 import { useDeleteDialogUIStyles } from './styles';
 import Grid from '@mui/material/Grid';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
@@ -28,8 +27,9 @@ import Alert from '@mui/material/Alert';
 
 export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
   const {
-    resource,
     items,
+    childItems,
+    dependentItems,
     comment,
     selectedItems,
     isCommentRequired = false,
@@ -42,7 +42,6 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
     onConfirmDeleteChange,
     onEditDependantClick
   } = props;
-  const deleteDependencies: DeleteDependencies = resource.read();
   const { classes } = useDeleteDialogUIStyles();
   return (
     <Grid container spacing={3}>
@@ -63,7 +62,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             emptyMessage={
               <FormattedMessage id="deleteDialog.emptyDependentItems" defaultMessage="No dependent items" />
             }
-            paths={deleteDependencies.dependentItems}
+            paths={dependentItems}
             displayItemTitle={false}
             onSelectAllClicked={onSelectAllDependantClicked}
             onItemClicked={onItemClicked}
@@ -75,7 +74,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             title={<FormattedMessage id="deleteDialog.childItemsText" defaultMessage="Child Items" />}
             subtitle={<FormattedMessage id="deleteDialog.willGetDeleted" defaultMessage="Will get deleted" />}
             emptyMessage={<FormattedMessage id="deleteDialog.emptyChildItems" defaultMessage="No child items" />}
-            paths={deleteDependencies.childItems}
+            paths={childItems}
             displayItemTitle={false}
           />
         </div>

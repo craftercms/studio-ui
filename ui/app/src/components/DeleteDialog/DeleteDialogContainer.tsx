@@ -14,11 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import {
   fetchDeleteDependencies,
   fetchDeleteDependenciesComplete,
@@ -29,8 +28,6 @@ import { deleteItems } from '../../services/content';
 import { DeleteDialogUI } from './DeleteDialogUI';
 import { DeleteDialogContainerProps } from './utils';
 import { useSelection } from '../../hooks/useSelection';
-import { DeleteDependencies } from '../DependencySelection/DependencySelection';
-import { Resource } from '../../models/Resource';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
 import { DetailedItem } from '../../models/Item';
@@ -61,10 +58,6 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const isCommentRequired = useSelection((state) => state.uiConfig.publishing.deleteCommentRequired);
   const [selectedItems, setSelectedItems] = useState<LookupTable<boolean>>({});
   const dispatch = useDispatch();
-  const depsSource = useMemo(
-    () => ({ childItems, dependentItems, apiState, isFetching }),
-    [childItems, dependentItems, apiState, isFetching]
-  );
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);
   const authoringBase = useSelection((state) => state.env.authoringBase);
@@ -166,14 +159,6 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
     dispatch(showEditDialog({ path, authoringBase, site, onSaveSuccess: fetchDeleteDependencies({ paths }) }));
   };
 
-  const resource: Resource<DeleteDependencies> = useLogicResource(depsSource, {
-    shouldResolve: (source) => Boolean(source.childItems && source.dependentItems && !source.isFetching),
-    shouldReject: (source) => Boolean(source.apiState.error),
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => ({ childItems: source.childItems, dependentItems: source.dependentItems }),
-    errorSelector: (source) => source.apiState.error
-  });
-
   useEffect(() => {
     if (items.length) {
       const nextChecked = createPresenceTable(items, true, (item) => item.path);
@@ -193,9 +178,12 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
 
   return (
     <DeleteDialogUI
-      resource={resource}
       items={items}
+      childItems={childItems}
+      dependentItems={dependentItems}
       selectedItems={selectedItems}
+      error={apiState.error}
+      isFetching={isFetching}
       comment={comment}
       onCommentChange={onCommentChange}
       isDisabled={isSubmitting}
