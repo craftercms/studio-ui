@@ -67,7 +67,7 @@ interface DialogState {
 
 interface CreateSiteDialogContainerProps {
   site: SiteState;
-  setSite(site): void;
+  setSite(site: Partial<SiteState>): void;
   search: SearchState;
   setSearch(search: SearchState): void;
   handleClose(event?: React.MouseEvent, reason?: string): void;
