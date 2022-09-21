@@ -51,6 +51,7 @@ export interface DeleteDialogUIProps extends DeleteDialogContentUIProps {
   isSubmitting: boolean;
   isSubmitButtonDisabled: boolean;
   error: ApiResponse;
+  submitError: ApiResponse;
   isFetching: boolean;
   onSubmit(): void;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;

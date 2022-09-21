@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useSpreadState } from '../../hooks/useSpreadState';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import {
@@ -32,6 +31,7 @@ import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
 import { DetailedItem } from '../../models/Item';
 import { isBlank } from '../../utils/string';
+import { ApiResponse } from '../../models';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
   return Object.entries(selectedItems)
@@ -51,9 +51,7 @@ function createCheckedLookup(items: Array<DetailedItem | string>, setChecked = t
 export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const { items, onClose, isSubmitting, onSuccess, isFetching, childItems, dependentItems, error } = props;
   const [comment, setComment] = useState('');
-  const [apiState, setApiState] = useSpreadState({
-    error: null
-  });
+  const [submitError, setSubmitError] = useState<ApiResponse>(null);
   const site = useActiveSiteId();
   const isCommentRequired = useSelection((state) => state.uiConfig.publishing.deleteCommentRequired);
   const [selectedItems, setSelectedItems] = useState<LookupTable<boolean>>({});
@@ -61,12 +59,6 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);
   const authoringBase = useSelection((state) => state.env.authoringBase);
-
-  useEffect(() => {
-    if (error) {
-      setApiState({ error });
-    }
-  }, [error, setApiState]);
 
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);
@@ -78,9 +70,9 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
           items: paths.map((path) => items.find((item) => item.path === path))
         });
       },
-      error(error) {
+      error({ response }) {
         dispatch(updateDeleteDialog({ isSubmitting: false }));
-        setApiState({ error });
+        setSubmitError(response);
       }
     });
   };
@@ -182,7 +174,8 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
       childItems={childItems}
       dependentItems={dependentItems}
       selectedItems={selectedItems}
-      error={apiState.error}
+      error={error}
+      submitError={submitError}
       isFetching={isFetching}
       comment={comment}
       onCommentChange={onCommentChange}

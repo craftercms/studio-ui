@@ -31,6 +31,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
     childItems,
     dependentItems,
     error,
+    submitError,
     isFetching,
     selectedItems,
     comment,
@@ -51,8 +52,8 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
   return (
     <>
       <DialogBody minHeight>
-        {error ? (
-          <ApiResponseErrorState error={error} />
+        {error || submitError ? (
+          <ApiResponseErrorState error={error ?? submitError} />
         ) : isFetching || (!childItems && !dependentItems) ? (
           <LoadingState />
         ) : (
