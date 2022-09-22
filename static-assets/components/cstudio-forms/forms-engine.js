@@ -1254,6 +1254,7 @@ var CStudioForms =
           var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
           var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceComponent');
           const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
+          const fieldsIndexes = CStudioAuthoring.Utils.getQueryVariable(location.search, 'fieldsIndexes');
 
           if (iceId && iceId != '') {
             var html = me._renderIceLayout(form);
@@ -1267,7 +1268,8 @@ var CStudioForms =
             var html = me._renderIceLayout(form);
             form.containerEl.innerHTML = html;
             const fields = JSON.parse(decodeURIComponent(selectedFields));
-            me._renderFields(form, fields);
+            const fieldsIndexesObj = JSON.parse(decodeURIComponent(fieldsIndexes));
+            me._renderFields(form, fields, fieldsIndexesObj);
           } else {
             var html = me._renderFormLayout(form);
             form.containerEl.innerHTML = html;
@@ -2664,15 +2666,19 @@ var CStudioForms =
 
       /* Render a list of fields from the form */
       /* fields: string[] - fields ids */
-      _renderFields: function (form, fields) {
+      _renderFields: function (form, fields, fieldsIndexes) {
         const formDef = form.definition;
         const sectionContainerEl = document.getElementById('ice-container');
         const sectionBodyEl = YDom.getElementsByClassName('cstudio-form-section-body', null, sectionContainerEl)[0];
         const formSection = new CStudioFormSection(form, sectionContainerEl);
+        // Only base fields (no subfields dot-separated).
+        const baseFields = fields.map((fieldId) => {
+          return fieldId.substring(0, fieldId.indexOf('.'));
+        });
 
         formDef.sections.forEach((section) => {
           section.fields
-            .filter((field) => fields.includes(field.id))
+            .filter((field) => baseFields.includes(field.id))
             .forEach((field) => {
               if (field.type !== 'repeat') {
                 this._renderField(formDef, field, form, formSection, sectionBodyEl, null, null, true);

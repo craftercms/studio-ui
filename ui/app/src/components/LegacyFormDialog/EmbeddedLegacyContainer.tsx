@@ -71,7 +71,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
     onClose,
     onClosed,
     iceGroupId,
-    newEmbedded
+    newEmbedded,
+    fieldsIndexes
   } = props;
 
   const { formatMessage } = useIntl();
@@ -100,7 +101,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         iceGroupId,
         ...(nnou(availableActions) && !isNewContent ? { canEdit: hasEditAction(availableActions) } : {}),
         ...(selectedFields && selectedFields.length ? { selectedFields: JSON.stringify(selectedFields) } : {}),
-        ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {})
+        ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {}),
+        ...(fieldsIndexes ? { fieldsIndexes: JSON.stringify(fieldsIndexes) } : {})
       }),
     [
       path,
@@ -115,7 +117,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       iceGroupId,
       selectedFields,
       newEmbedded,
-      availableActions
+      availableActions,
+      fieldsIndexes
     ]
   );
 

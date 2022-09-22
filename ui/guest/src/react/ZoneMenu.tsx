@@ -193,8 +193,19 @@ export function ZoneMenu(props: ZoneMenuProps) {
       const parentModelId = getParentModelId(componentId, getCachedModels(), modelHierarchyMap);
       post(requestEdit({ typeOfEdit, modelId: componentId, parentModelId }));
     } else {
+      const fieldsIndexes = {
+        [fieldId]: index
+      };
       const parentModelId = getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
-      post(requestEdit({ typeOfEdit, modelId, parentModelId, fields: record.fieldId }));
+      post(
+        requestEdit({
+          typeOfEdit,
+          modelId,
+          parentModelId,
+          fields: record.fieldId,
+          fieldsIndexes
+        })
+      );
     }
     onCancel();
   };
