@@ -20,7 +20,7 @@ import { useICE } from './hooks';
 import { FieldProps, Field } from './Field';
 import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 import { extractCollectionItem, value as getModelValue } from '@craftercms/studio-ui/utils/model';
-import { contentController } from '../index';
+import * as contentController from '../contentController';
 
 export type RenderFieldProps<P, V = any, F = V> = Omit<FieldProps<P>, 'children'> & {
   renderTarget?: string;

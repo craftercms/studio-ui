@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { useICE } from './hooks';
-import { contentController } from '../index';
+import * as contentController from '../contentController';
 
 export type FieldProps<P = {}> = PropsWithChildren<
   P & {
