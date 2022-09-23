@@ -2376,7 +2376,7 @@ var CStudioForms =
         }
 
         const repeatIndex = repeatContainerEl.index;
-        const showControls = Boolean(repeatIndex);
+        const showControls = !Boolean(repeatIndex);
         for (var i = 0; i < repeatCount; i++) {
           if (!repeatIndex || repeatIndex === i) {
             var repeatInstanceContainerEl = document.createElement('div');
