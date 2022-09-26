@@ -70,7 +70,7 @@ export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {
   const contentType = contentController.getCachedContentType(contentTypeId);
   const field = contentType?.fields[fieldId];
   passDownProps['data-craftercms-field'] = '';
-  if (field && ['node-selector', 'checkbox-group', 'repeat'].includes(field.type)) {
+  if (field && ['node-selector', 'repeat'].includes(field.type)) {
     passDownProps['data-craftercms-type'] = 'collection';
   }
 
