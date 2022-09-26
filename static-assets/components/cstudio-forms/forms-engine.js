@@ -2376,9 +2376,9 @@ var CStudioForms =
         }
 
         const repeatIndex = repeatContainerEl.index;
-        const showControls = !Boolean(repeatIndex);
+        const repeatIndexNOU = repeatIndex === null || repeatIndex === undefined;
         for (var i = 0; i < repeatCount; i++) {
-          if (!repeatIndex || repeatIndex === i) {
+          if (repeatIndexNOU || repeatIndex === i) {
             var repeatInstanceContainerEl = document.createElement('div');
             YAHOO.util.Dom.addClass(repeatInstanceContainerEl, 'cstudio-form-repeat-container');
             repeatInstanceContainerEl._repeatIndex = i;
@@ -2388,7 +2388,7 @@ var CStudioForms =
             YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
             titleEl.textContent = repeat.title;
 
-            if (showControls) {
+            if (repeatIndexNOU) {
               var addEl = document.createElement('a');
               repeatInstanceContainerEl.appendChild(addEl);
               YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
@@ -2684,24 +2684,29 @@ var CStudioForms =
         const sectionBodyEl = YDom.getElementsByClassName('cstudio-form-section-body', null, sectionContainerEl)[0];
         const formSection = new CStudioFormSection(form, sectionContainerEl);
         // Only base fields (no subfields dot-separated).
-        const baseFields = fields.map((fieldId) => {
-          return fieldId.replace(/(\.).+$/, '');
+        // baseFields will be an array of objects with the baseField, full field and the index from fieldsIndexes
+        const fieldsData = fields.map((fieldId) => {
+          return {
+            id: fieldId,
+            baseField: fieldId.replace(/(\.).+$/, ''),
+            index: fieldsIndexes[fieldId]
+          };
         });
 
         formDef.sections.forEach((section) => {
-          section.fields.forEach((field, index) => {
-            if (baseFields.includes(field.id)) {
+          section.fields
+            .filter((field) => fieldsData.find((fieldData) => fieldData.baseField === field.id))
+            .forEach((field) => {
               if (field.type !== 'repeat') {
                 this._renderField(formDef, field, form, formSection, sectionBodyEl, null, null, true);
                 CStudioAuthoring.InContextEdit.autoSizeIceDialog();
               } else {
-                const fieldId = fields[index];
-                const fieldIndex = fieldsIndexes[fieldId];
+                const fieldData = fieldsData.find((fieldData) => fieldData.baseField === field.id);
+                const fieldIndex = fieldData.index;
                 this._renderRepeat(formDef, field, form, formSection, sectionBodyEl, fieldIndex);
                 CStudioAuthoring.InContextEdit.autoSizeIceDialog();
               }
-            }
-          });
+            });
         });
       },
 
