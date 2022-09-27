@@ -26,10 +26,6 @@ if (import.meta.env.NODE_ENV === 'production') {
   registerComponents();
   createCodebaseBridge();
 } else {
-  // const React = require('react');
-  // const { createRoot } = require('react-dom/client');
-  // const App = require('./components/App').default;
-  // createRoot(document.getElementById('root')).render(<App />);
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
       <App />
