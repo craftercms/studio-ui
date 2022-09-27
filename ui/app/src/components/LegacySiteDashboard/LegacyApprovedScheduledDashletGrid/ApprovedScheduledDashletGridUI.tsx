@@ -34,7 +34,7 @@ import GlobalAppGridCell from '../../GlobalAppGridCell';
 import LookupTable from '../../../models/LookupTable';
 import Checkbox from '@mui/material/Checkbox';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
-import ItemDisplay from '../../ItemDisplay/ItemDisplay';
+import ItemDisplay from '../../ItemDisplay';
 import { AwaitingApprovalDashletDashboardItem } from '../LegacyAwaitingApprovalDashlet';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import { useLocale } from '../../../hooks/useLocale';

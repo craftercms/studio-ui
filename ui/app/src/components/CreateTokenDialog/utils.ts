@@ -15,7 +15,7 @@
  */
 
 import { Token } from '../../models/Token';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 export interface CreateTokenBaseProps {}

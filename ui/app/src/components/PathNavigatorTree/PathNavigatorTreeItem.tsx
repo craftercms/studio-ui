@@ -22,7 +22,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from 'tss-react/mui';
-import ItemDisplay from '../ItemDisplay/ItemDisplay';
+import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';

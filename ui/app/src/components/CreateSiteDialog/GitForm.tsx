@@ -20,7 +20,7 @@ import { makeStyles } from 'tss-react/mui';
 import TextField from '@mui/material/TextField';
 import { SiteState } from '../../models/Site';
 import { defineMessages, useIntl } from 'react-intl';
-import GitAuthForm from '../GitAuthForm/GitAuthForm';
+import GitAuthForm from '../GitAuthForm';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Typography from '@mui/material/Typography';

@@ -20,9 +20,9 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { makeStyles } from 'tss-react/mui';
-import ItemStateIcon from '../ItemStateIcon/ItemStateIcon';
+import ItemStateIcon from '../ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
-import ItemTypeIcon from '../ItemTypeIcon/ItemTypeIcon';
+import ItemTypeIcon from '../ItemTypeIcon';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 
 export interface IconGuideDashletProps {

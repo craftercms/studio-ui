@@ -17,7 +17,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
-import SkeletonSitesGrid from '../SitesGrid/SitesGridSkeleton/SitesGridSkeleton';
+import SkeletonSitesGrid from '../SitesGrid/SitesGridSkeleton';
 import CreateSiteDialog from '../CreateSiteDialog/CreateSiteDialog';
 import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
 import GridViewIcon from '@mui/icons-material/GridOnRounded';

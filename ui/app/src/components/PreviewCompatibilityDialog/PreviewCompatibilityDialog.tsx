@@ -22,7 +22,7 @@ import React, { useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import { useUnmount } from '../../hooks/useUnmount';
 
 const translations = defineMessages({

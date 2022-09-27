@@ -20,7 +20,7 @@ import crafterIconUrl from '../assets/crafter-icon.svg';
 import { makeStyles } from 'tss-react/mui';
 
 import palette from '../styles/palette';
-import AuthBoundary from './AuthBoundary/AuthBoundary';
+import AuthBoundary from './AuthBoundary';
 
 const DevServerRoot = import.meta.env.VITE_COMPONENT
   ? lazy(() => import(/* @vite-ignore */ import.meta.env.VITE_COMPONENT))

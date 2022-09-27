@@ -16,10 +16,10 @@
 
 import { WidgetDescriptor } from '../../models';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
-import WidgetDialog from '../WidgetDialog/WidgetDialog';
+import WidgetDialog from '../WidgetDialog';
 import React from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
-import SystemIcon, { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { IconButton, Tooltip } from '@mui/material';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';

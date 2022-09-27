@@ -27,7 +27,7 @@ import { useUnmount } from '../../hooks/useUnmount';
 import { Button, IconButton } from '@mui/material';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../DialogBody/DialogBody';
-import UppyDashboard from '../UppyDashboard/UppyDashboard';
+import UppyDashboard from '../UppyDashboard';
 import { makeStyles } from 'tss-react/mui';
 
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';

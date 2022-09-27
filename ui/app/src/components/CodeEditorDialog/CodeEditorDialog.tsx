@@ -19,7 +19,7 @@ import { useIntl } from 'react-intl';
 import translations from './translations';
 import { CodeEditorDialogContainer } from './CodeEditorDialogContainer';
 import { CodeEditorDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog';
 
 export function CodeEditorDialog(props: CodeEditorDialogProps) {
   const { formatMessage } = useIntl();

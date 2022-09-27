@@ -5,7 +5,7 @@ import { Resource } from '../../models/Resource';
 import LookupTable from '../../models/LookupTable';
 import { InputProps } from '@mui/material/Input';
 import { SelectionListProps } from '../DependencySelection/SelectionList';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DeleteDependencies } from '../DependencySelection';
 

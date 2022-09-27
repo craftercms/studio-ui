@@ -17,7 +17,7 @@
 import React, { useEffect, useState } from 'react';
 import Login from '../../pages/Login';
 import { obtainAuthToken } from '../../services/auth';
-import I18nProvider from '../I18nProvider/I18nProvider';
+import I18nProvider from '../I18nProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
 import { getRequestForgeryToken } from '../../utils/auth';
 

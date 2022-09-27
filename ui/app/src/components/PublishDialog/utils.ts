@@ -18,7 +18,7 @@ import { DetailedItem } from '../../models/Item';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { Resource } from '../../models/Resource';
 import React, { ReactNode } from 'react';

@@ -29,7 +29,7 @@ import {
   versionsChangeItem,
   versionsChangePage
 } from '../../state/actions/versions';
-import VersionList from '../VersionList/VersionList';
+import VersionList from '../VersionList';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';

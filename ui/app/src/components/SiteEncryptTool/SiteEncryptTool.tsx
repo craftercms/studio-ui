@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import EncryptTool from '../EncryptTool/EncryptTool';
+import EncryptTool from '../EncryptTool';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 

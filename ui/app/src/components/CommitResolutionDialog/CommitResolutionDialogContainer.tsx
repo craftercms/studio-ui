@@ -22,7 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import TextField from '@mui/material/TextField';
 import { commitResolution } from '../../services/repositories';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import { isBlank } from '../../utils/string';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { RepositoryStatus } from '../../models';

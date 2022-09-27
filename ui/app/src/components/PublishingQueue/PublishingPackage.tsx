@@ -30,7 +30,7 @@ import '../../styles/animations.scss';
 import { READY_FOR_LIVE } from './constants';
 import { alpha } from '@mui/material/styles';
 import palette from '../../styles/palette';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 const useStyles = makeStyles()((theme) => ({
   package: {

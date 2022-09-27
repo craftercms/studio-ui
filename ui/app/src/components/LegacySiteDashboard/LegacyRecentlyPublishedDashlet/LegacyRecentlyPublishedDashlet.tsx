@@ -44,7 +44,7 @@ import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '..
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { showItemMegaMenu } from '../../../state/actions/dialogs';
-import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
+import { getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import { reversePluckProps } from '../../../utils/object';

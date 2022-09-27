@@ -25,11 +25,11 @@ import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
 import { Resource } from '../../models/Resource';
 import Checkbox from '@mui/material/Checkbox';
-import ItemDisplay from '../ItemDisplay/ItemDisplay';
+import ItemDisplay from '../ItemDisplay';
 import useStyles from './styles';
 import { SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
-import Pagination from '../Pagination/Pagination';
+import Pagination from '../Pagination';
 import LookupTable from '../../models/LookupTable';
 
 export interface WorkflowStatesGridUIProps {

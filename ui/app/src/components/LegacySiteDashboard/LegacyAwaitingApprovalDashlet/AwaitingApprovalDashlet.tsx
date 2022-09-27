@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../../services/dashboard';
 import { AllItemActions, DetailedItem, LegacyItem } from '../../../models/Item';
 import AwaitingApprovalDashletGridUI from '../LegacyAwaitingApprovalDashletGrid';
-import { SuspenseWithEmptyState } from '../../Suspencified/Suspencified';
+import { SuspenseWithEmptyState } from '../../Suspencified';
 import LookupTable from '../../../models/LookupTable';
 import {
   getNumOfMenuOptionsForItem,
@@ -41,12 +41,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
 import { showItemMegaMenu } from '../../../state/actions/dialogs';
-import ActionsBar from '../../ActionsBar/ActionsBar';
+import ActionsBar from '../../ActionsBar';
 import translations from './translations';
 import { createPresenceTable } from '../../../utils/array';
 import { itemActionDispatcher } from '../../../utils/itemActions';
 import { useEnv } from '../../../hooks/useEnv';
-import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
+import { getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';

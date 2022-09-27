@@ -17,10 +17,10 @@ import { LookupTable } from '../../models/LookupTable';
 import { MessageDescriptor } from 'react-intl';
 import translations from './translations';
 import React from 'react';
-import { ContextMenuOption } from '../ContextMenu/ContextMenu';
+import { ContextMenuOption } from '../ContextMenu';
 import { LegacyVersion, VersionsStateProps } from '../../models/Version';
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface Menu {

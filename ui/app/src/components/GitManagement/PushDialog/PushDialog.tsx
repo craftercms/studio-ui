@@ -17,7 +17,7 @@
 import React from 'react';
 import PushDialogContainer from './PushDialogContainer';
 import { PushDialogProps } from './utils';
-import { EnhancedDialog } from '../../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialog } from '../../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function PushDialog(props: PushDialogProps) {

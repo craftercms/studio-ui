@@ -22,7 +22,7 @@ import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import translations from './translations';
 import SecondaryButton from '../SecondaryButton';
 import React from 'react';

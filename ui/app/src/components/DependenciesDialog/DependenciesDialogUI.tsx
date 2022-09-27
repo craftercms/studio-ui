@@ -30,8 +30,8 @@ import { assetsTypes, DependenciesDialogUIProps } from './utils';
 import Radio from '@mui/material/Radio';
 import { dependenciesDialogStyles } from './DependenciesDialog';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
-import { LoadingState } from '../LoadingState/LoadingState';
-import { EmptyState } from '../EmptyState/EmptyState';
+import { LoadingState } from '../LoadingState';
+import { EmptyState } from '../EmptyState';
 import { getRootPath } from '../../utils/path';
 
 export function DependenciesDialogUI(props: DependenciesDialogUIProps) {

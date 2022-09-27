@@ -16,7 +16,7 @@
 
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface SingleFileUploadDialogBaseProps {
   site: string;

@@ -22,8 +22,8 @@ import { CSSObject as CSSProperties } from 'tss-react';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
-import ItemStateIcon from '../ItemStateIcon/ItemStateIcon';
-import ItemTypeIcon from '../ItemTypeIcon/ItemTypeIcon';
+import ItemStateIcon from '../ItemStateIcon';
+import ItemTypeIcon from '../ItemTypeIcon';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { isInWorkflow } from './utils';
 

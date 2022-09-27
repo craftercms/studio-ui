@@ -19,7 +19,7 @@ import Grid from '@mui/material/Grid';
 import { AudiencesFormSection } from './AudiencesFormSection';
 import SecondaryButton from '../SecondaryButton';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';

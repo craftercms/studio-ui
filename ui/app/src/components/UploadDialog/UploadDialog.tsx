@@ -26,7 +26,7 @@ import { batchActions } from '../../state/actions/misc';
 import { UploadDialogProps } from './util';
 import { translations } from './translations';
 import { UploadDialogContainer } from './UploadDialogContainer';
-import MinimizedBar from '../MinimizedBar/MinimizedBar';
+import MinimizedBar from '../MinimizedBar';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export function UploadDialog(props: UploadDialogProps) {

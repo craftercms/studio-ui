@@ -27,7 +27,7 @@ import DateTimePicker from '@mui/lab/DateTimePicker';
 import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 
 interface RangePickerModalProps {

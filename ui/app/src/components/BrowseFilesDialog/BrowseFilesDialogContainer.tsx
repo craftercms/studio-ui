@@ -32,7 +32,7 @@ import { BrowseFilesDialogUI } from '.';
 import { BrowseFilesDialogContainerProps, initialParameters } from './utils';
 import { checkPathExistence } from '../../services/content';
 import { FormattedMessage } from 'react-intl';
-import EmptyState from '../EmptyState/EmptyState';
+import EmptyState from '../EmptyState';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';

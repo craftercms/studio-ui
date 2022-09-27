@@ -17,7 +17,7 @@
 import React from 'react';
 import AuditLogEntryParametersDialogUI from './AuditLogEntryParametersDialogUI';
 import { AuditLogEntryParametersDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function AuditLogEntryParametersDialog(props: AuditLogEntryParametersDialogProps) {

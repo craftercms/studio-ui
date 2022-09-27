@@ -29,7 +29,7 @@ import loginGraphicUrl from '../../assets/authenticate.svg';
 import { isBlank } from '../../utils/string';
 import Typography from '@mui/material/Typography';
 import OpenInNewRounded from '@mui/icons-material/OpenInNewRounded';
-import LogInForm from '../LoginForm/LoginForm';
+import LogInForm from '../LoginForm';
 import { me } from '../../services/users';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import ErrorState from '../ErrorState/ErrorState';

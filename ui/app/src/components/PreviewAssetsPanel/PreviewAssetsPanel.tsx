@@ -41,8 +41,8 @@ import palette from '../../styles/palette';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
-import Pagination from '../Pagination/Pagination';
-import { LoadingState } from '../LoadingState/LoadingState';
+import Pagination from '../Pagination';
+import { LoadingState } from '../LoadingState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { showPreviewDialog } from '../../state/actions/dialogs';
 

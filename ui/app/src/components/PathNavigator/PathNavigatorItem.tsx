@@ -25,7 +25,7 @@ import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import { isFolder, isNavigable, isPreviewable } from './utils';
 import Tooltip from '@mui/material/Tooltip';
 import { defineMessages, useIntl } from 'react-intl';
-import ItemDisplay from '../ItemDisplay/ItemDisplay';
+import ItemDisplay from '../ItemDisplay';
 
 export interface NavItemProps {
   item: DetailedItem;

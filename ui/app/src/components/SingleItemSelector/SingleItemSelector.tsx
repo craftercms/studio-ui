@@ -37,10 +37,10 @@ import { forkJoin } from 'rxjs';
 import { isFolder } from '../PathNavigator/utils';
 import { lookupItemByPath, parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
-import Pagination from '../Pagination/Pagination';
+import Pagination from '../Pagination';
 import NavItem from '../PathNavigator/PathNavigatorItem';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import ItemDisplay from '../ItemDisplay/ItemDisplay';
+import ItemDisplay from '../ItemDisplay';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
 
 const useStyles = makeStyles()((theme) => ({

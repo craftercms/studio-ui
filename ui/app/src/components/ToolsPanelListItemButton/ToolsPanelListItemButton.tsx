@@ -21,7 +21,7 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import ChevronRounded from '@mui/icons-material/ChevronRightRounded';
 import React from 'react';
-import SystemIcon, { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import TranslationOrText from '../../models/TranslationOrText';
 

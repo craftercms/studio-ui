@@ -16,7 +16,7 @@
 
 import { WidgetDescriptor } from '../../models';
 import StandardAction from '../../models/StandardAction';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState, onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 interface WidgetDialogBaseProps {

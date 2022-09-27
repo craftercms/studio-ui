@@ -21,7 +21,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import AccordionSummary from '@mui/material/AccordionSummary';
-import SystemIcon, { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
+import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
 interface HeaderProps {
   locale: string;

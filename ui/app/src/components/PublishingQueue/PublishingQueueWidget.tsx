@@ -18,7 +18,7 @@ import * as React from 'react';
 import PublishingQueue, { PublishingQueueProps } from './PublishingQueue';
 import Paper from '@mui/material/Paper';
 import { makeStyles } from 'tss-react/mui';
-import DialogHeader from '../DialogHeader/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles()((theme) => ({

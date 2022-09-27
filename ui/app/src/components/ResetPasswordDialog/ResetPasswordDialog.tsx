@@ -23,7 +23,7 @@ import DialogBody from '../DialogBody/DialogBody';
 import { Typography } from '@mui/material';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import { setPassword } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';

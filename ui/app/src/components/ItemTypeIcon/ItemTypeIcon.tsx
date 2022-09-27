@@ -26,7 +26,7 @@ import PageIcon from '../../icons/Page';
 import LevelDescriptorIcon from '../../icons/LevelDescriptor';
 import Tooltip from '@mui/material/Tooltip';
 import * as React from 'react';
-import { ItemDisplayProps } from '../ItemDisplay/ItemDisplay';
+import { ItemDisplayProps } from '../ItemDisplay';
 import ImageIcon from '@mui/icons-material/ImageOutlined';
 import VideoIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
 import CodeRounded from '@mui/icons-material/CodeRounded';

@@ -19,7 +19,7 @@ import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { PublishDialogUIProps } from './utils';
 import PublishDialogContentUI from './PublishDialogContentUI';

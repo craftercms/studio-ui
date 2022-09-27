@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import LauncherTile, { LauncherTileProps } from '../LauncherTile/LauncherTile';
+import LauncherTile, { LauncherTileProps } from '../LauncherTile';
 import { getSimplifiedVersion } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
 import TranslationOrText from '../../models/TranslationOrText';

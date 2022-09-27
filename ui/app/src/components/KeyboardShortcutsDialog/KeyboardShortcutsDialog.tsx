@@ -21,7 +21,7 @@ import {
   KeyboardShortcutsDialogPartialSx,
   KeyboardShortcutsDialogProps
 } from './utils';
-import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
 import Card from '@mui/material/Card';

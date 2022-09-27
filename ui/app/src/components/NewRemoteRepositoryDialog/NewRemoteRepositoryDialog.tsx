@@ -17,7 +17,7 @@
 import React from 'react';
 import NewRemoteRepositoryDialogContainer from './NewRemoteRepositoryDialogContainer';
 import { NewRemoteRepositoryDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function NewRemoteRepositoryDialog(props: NewRemoteRepositoryDialogProps) {

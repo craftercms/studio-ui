@@ -26,7 +26,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import Action, { DialogHeaderActionProps } from '../DialogHeaderAction/DialogHeaderAction';
 import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
-import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon';
 import { CSSObject } from 'tss-react';
 
 const dialogTitleStyles = makeStyles()((theme) => ({

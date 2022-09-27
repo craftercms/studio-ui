@@ -19,7 +19,7 @@ import { defineMessages, FormattedMessage } from 'react-intl';
 import { initToolsPanelConfig, updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
-import { renderWidgets } from '../Widget/Widget';
+import { renderWidgets } from '../Widget';
 import { WidgetDescriptor } from '../../models';
 import { Resource } from '../../models/Resource';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';

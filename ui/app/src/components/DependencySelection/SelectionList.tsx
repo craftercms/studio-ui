@@ -24,7 +24,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import Box from '@mui/material/Box';
-import ItemStateIcon from '../ItemStateIcon/ItemStateIcon';
+import ItemStateIcon from '../ItemStateIcon';
 import { getDateScheduled, isEditableAsset } from '../../utils/content';
 import { FormattedMessage } from 'react-intl';
 import { asLocalizedDateTime } from '../../utils/datetime';

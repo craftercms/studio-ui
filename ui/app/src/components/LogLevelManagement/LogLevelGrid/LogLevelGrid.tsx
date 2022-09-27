@@ -33,7 +33,7 @@ import TextField from '@mui/material/TextField';
 import { capitalize } from '@mui/material';
 import { LightbulbOutlined, WarningRounded } from '@mui/icons-material';
 import FormHelperText from '@mui/material/FormHelperText';
-import EmptyState from '../../EmptyState/EmptyState';
+import EmptyState from '../../EmptyState';
 import Box from '@mui/material/Box';
 
 export interface LoggingLevelsGridUIProps {

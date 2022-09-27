@@ -25,7 +25,7 @@ import FormGroup from '@mui/material/FormGroup';
 import Checkbox from '@mui/material/Checkbox';
 import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
 import palette from '../../styles/palette';
-import SystemIcon from '../SystemIcon/SystemIcon';
+import SystemIcon from '../SystemIcon';
 
 const useStyles = makeStyles()(() => ({
   card: {

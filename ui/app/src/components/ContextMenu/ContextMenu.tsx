@@ -24,7 +24,7 @@ import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { rand } from '../PathNavigator/utils';
 import Skeleton from '@mui/material/Skeleton';
 
-import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface ContextMenuOption {
   id: string;

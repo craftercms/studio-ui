@@ -31,7 +31,7 @@ import SingleItemSelector from '../SingleItemSelector';
 import TextField from '@mui/material/TextField';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';

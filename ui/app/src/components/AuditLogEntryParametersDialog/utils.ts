@@ -15,7 +15,7 @@
  */
 
 import { AuditLogEntryParameter } from '../../models/Audit';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface AuditLogEntryParametersBase {
   parameters: AuditLogEntryParameter[];

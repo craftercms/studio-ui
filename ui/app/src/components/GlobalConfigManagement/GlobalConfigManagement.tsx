@@ -22,7 +22,7 @@ import { fetchConfigurationXML, writeConfiguration } from '../../services/config
 import AceEditor from '../AceEditor/AceEditor';
 import useStyles from './styles';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 import { forkJoin } from 'rxjs';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialog';

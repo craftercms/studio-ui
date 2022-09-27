@@ -21,13 +21,13 @@ import { fetchPublishingHistoryPackageItems } from '../../services/dashboard';
 import { delay } from 'rxjs/operators';
 import { FormattedMessage } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
-import { LoadingState } from '../LoadingState/LoadingState';
+import { LoadingState } from '../LoadingState';
 import Typography from '@mui/material/Typography';
-import { EmptyState } from '../EmptyState/EmptyState';
+import { EmptyState } from '../EmptyState';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ItemDisplay from '../ItemDisplay/ItemDisplay';
-import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import ItemDisplay from '../ItemDisplay';
+import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 
 export interface PackageDetailsDialogProps extends EnhancedDialogProps {
   packageId: string;

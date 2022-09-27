@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EnhancedDialogProps } from '../../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../../EnhancedDialog';
 import { MergeStrategy } from '../../../models/Repository';
 import ApiResponse from '../../../models/ApiResponse';
 import { PullResponse } from '../../../services/repositories';

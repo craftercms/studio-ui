@@ -21,7 +21,7 @@ import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
 import { AuditOptions, fetchAuditLog, fetchAuditLogEntry } from '../../services/audit';
-import AuditGridUI from '../AuditGrid/AuditGridUI';
+import AuditGridUI from '../AuditGrid';
 import User from '../../models/User';
 import { fetchAll } from '../../services/users';
 import { Operations, OperationsMessages } from './operations';

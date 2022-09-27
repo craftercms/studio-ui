@@ -17,10 +17,9 @@
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import UsersGridUI from '../UsersGrid/UsersGridUI';
-import { UsersGridSkeletonTable } from '../UsersGrid/UsersGridSkeletonTable';
+import UsersGridUI, { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
-import EditUserDialog from '../EditUserDialog/EditUserDialog';
+import EditUserDialog from '../EditUserDialog';
 import { fetchAll } from '../../services/users';
 import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';

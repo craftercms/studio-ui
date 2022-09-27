@@ -17,7 +17,7 @@
 import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import React from 'react';
 

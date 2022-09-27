@@ -16,13 +16,13 @@
 
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
-import { DialogHeaderStateAction } from '../DialogHeader/DialogHeader';
+import { DialogHeaderStateAction } from '../DialogHeader';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { LookupTable } from '../../models/LookupTable';
 import { Resource } from '../../models/Resource';
-import { EnhancedDialogProps } from '../EnhancedDialog/EnhancedDialog';
+import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface VersionViewProps {

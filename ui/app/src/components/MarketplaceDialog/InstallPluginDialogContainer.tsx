@@ -31,17 +31,17 @@ import { blockUI, unblockUI } from '../../state/actions/system';
 import { translations } from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import DialogHeader from '../DialogHeader/DialogHeader';
+import DialogHeader from '../DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
 import PluginDetailsView from '../PluginDetailsView';
 import SearchBar from '../SearchBar/SearchBar';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
+import { SuspenseWithEmptyState } from '../Suspencified';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import Pagination from '../Pagination/Pagination';
+import Pagination from '../Pagination';
 import { PluginList } from './PluginList';
 import { PluginParametersForm } from '../PluginParametersForm';
 import SecondaryButton from '../SecondaryButton';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 const useStyles = makeStyles()(() => ({
   searchWrapper: {

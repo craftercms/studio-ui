@@ -37,7 +37,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import { setSiteCookie } from '../../utils/auth';
 import List from '@mui/material/List';
 import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
-import { renderWidgets } from '../Widget/Widget';
+import { renderWidgets } from '../Widget';
 import { logout } from '../../state/actions/auth';
 import { ListItem, Tooltip } from '@mui/material';
 import { closeLauncher } from '../../state/actions/dialogs';
@@ -58,7 +58,7 @@ import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { WidgetDescriptor } from '../../models';
 import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import TranslationOrText from '../../models/TranslationOrText';
-import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon';
 
 export interface LauncherStateProps {
   open: boolean;

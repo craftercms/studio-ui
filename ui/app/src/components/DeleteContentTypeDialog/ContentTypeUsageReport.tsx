@@ -17,7 +17,7 @@
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import { ListItem, ListItemText } from '@mui/material';
-import ItemDisplay from '../ItemDisplay/ItemDisplay';
+import ItemDisplay from '../ItemDisplay';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';

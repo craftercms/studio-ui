@@ -18,10 +18,10 @@ import React, { useMemo } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import LoginView, { LoginViewProps } from '../components/LoginView/LoginView';
 import CrafterThemeProvider from '../components/CrafterThemeProvider';
-import I18nProvider from '../components/I18nProvider/I18nProvider';
-import GlobalStyles from '../components/GlobalStyles/GlobalStyles';
+import I18nProvider from '../components/I18nProvider';
+import GlobalStyles from '../components/GlobalStyles';
 import { UNDEFINED } from '../utils/constants';
-import ErrorState from '../components/ErrorState/ErrorState';
+import ErrorState from '../components/ErrorState';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 

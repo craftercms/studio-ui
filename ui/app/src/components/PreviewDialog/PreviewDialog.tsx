@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { PreviewDialogContainer } from './PreviewDialogContainer';
 import { backgroundModes, PreviewDialogProps } from './utils';
-import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
+import EnhancedDialog from '../EnhancedDialog';
 import { useIntl } from 'react-intl';
 import { translations } from './translations';
 import { getStoredPreviewBackgroundMode, setStoredPreviewBackgroundMode } from '../../utils/state';

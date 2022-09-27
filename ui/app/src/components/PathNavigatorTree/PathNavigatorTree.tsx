@@ -40,7 +40,7 @@ import { getStoredPathNavigatorTree } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
 import { DetailedItem } from '../../models/Item';
-import { SystemIconDescriptor } from '../SystemIcon/SystemIcon';
+import { SystemIconDescriptor } from '../SystemIcon';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
 import { useActiveUser } from '../../hooks/useActiveUser';

@@ -23,7 +23,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
 import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
-import RepoGrid from './RepoGrid/RepoGrid';
+import RepoGrid from './RepoGrid';
 import RepoStatus from './RepoStatus/RepoStatus';
 import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
 import { showSystemNotification } from '../../state/actions/system';

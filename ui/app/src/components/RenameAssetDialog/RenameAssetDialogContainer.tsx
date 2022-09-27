@@ -17,7 +17,7 @@
 import { RenameAssetContainerProps } from './utils';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 import React, { useEffect, useState } from 'react';
-import { DialogBody } from '../DialogBody/DialogBody';
+import { DialogBody } from '../DialogBody';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
@@ -30,10 +30,10 @@ import { getParentPath, getFileNameWithExtensionForItemType } from '../../utils/
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
 import SecondaryButton from '../SecondaryButton';
-import { DialogFooter } from '../DialogFooter/DialogFooter';
-import PrimaryButton from '../PrimaryButton/PrimaryButton';
+import { DialogFooter } from '../DialogFooter';
+import PrimaryButton from '../PrimaryButton';
 import { validateActionPolicy } from '../../services/sites';
-import { ConfirmDialog } from '../ConfirmDialog/ConfirmDialog';
+import { ConfirmDialog } from '../ConfirmDialog';
 import { renameContent } from '../../services/content';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from '../CreateFileDialog/translations';

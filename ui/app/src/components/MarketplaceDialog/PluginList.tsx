@@ -16,7 +16,7 @@
 
 import { PluginListProps } from './utils';
 import Grid from '@mui/material/Grid';
-import PluginCard from '../PluginCard/PluginCard';
+import PluginCard from '../PluginCard';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
 
