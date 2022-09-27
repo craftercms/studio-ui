@@ -88,7 +88,7 @@
   },
   "scripts": {
     "startVite": "vite",
-    "buildVite": "tsc && vite build",
+    "buildVite": "tsc && NODE_OPTIONS=--max-old-space-size=4096 vite build",
     "start": "craco start",
     "build": "run-s --max_old_space_size=4096 build:react build:worker deploy:app",
     "build:install": "yarn",
