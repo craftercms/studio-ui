@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import { ICEProps } from '../models/InContextEditing';
 import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 import { useICE } from './hooks';
-import * as contentController from '../contentController';
+import { getCachedContentType } from '../contentController';
 
 export type FieldProps<P = {}> = PropsWithChildren<
   P & {
@@ -56,7 +56,7 @@ export const Field = forwardRef<any, FieldProps>(function <P = {}>(props: FieldP
   // `data-craftercms-type="collection"` attribute is added to node-selector and repeat fields for the elements to get
   // the XB padding mode styles.
   const contentTypeId = model.craftercms.contentTypeId;
-  const contentType = contentController.getCachedContentType(contentTypeId);
+  const contentType = getCachedContentType(contentTypeId);
   const field = contentType?.fields[fieldId];
   passDownProps['data-craftercms-field'] = '';
   if (field && ['node-selector', 'repeat'].includes(field.type)) {
