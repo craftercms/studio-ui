@@ -76,7 +76,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
                 <Alert severity="warning">
                   <FormattedMessage
                     id="rejectDialog.firstPublish"
-                    defaultMessage="The entire site publish will be rejected since this is the first publish request"
+                    defaultMessage="The entire project publish will be rejected since this is the first publish request"
                   />
                 </Alert>
               )
