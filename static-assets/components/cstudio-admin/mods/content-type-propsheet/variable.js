@@ -107,11 +107,7 @@ YAHOO.extend(
           }
         };
 
-        YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
-
-        $(valueEl).on('paste', function (e) {
-          updateFieldFn(e, valueEl);
-        });
+        YAHOO.util.Event.on(valueEl, 'input', updateFieldFn, valueEl);
 
         if ((fName == 'id' || fName == 'name') && value !== '') {
           var titleEl = YDom.getElementsByClassName('property-input-title');
