@@ -34,12 +34,16 @@ YAHOO.extend(
       valueEl.fieldName = this.fieldName;
 
       if (updateFn) {
+        const cleanVariable = (value) => {
+          return value.replace(/[^A-Za-z0-9-_]/g, '').replace(/[-]/g, '_');
+        };
+
         var updateFieldFn = function (event, el) {
           if (fName === 'id' && this.value) {
             var input = YDom.getElementsByClassName('property-input-id')[0];
 
             if (CStudioAdminConsole.ignorePostfixFields.filter((field) => field.startsWith(input.value)).length === 0) {
-              input.value = this.value.replace(/[-]/g, '_');
+              input.value = cleanVariable(this.value);
             } else {
               input.value = this.value;
             }
@@ -84,8 +88,7 @@ YAHOO.extend(
               ? YDom.getElementsByClassName('property-input-name')[0]
               : YDom.getElementsByClassName('property-input-id')[0];
             if (idDatasource) {
-              idDatasource.value = this.value.replace(/[^A-Za-z0-9-_]/g, '');
-              idDatasource.value = idDatasource.value.replace(/[-]/g, '_');
+              idDatasource.value = cleanVariable(this.value);
               idDatasource.value =
                 idDatasource.value.substr(0, 1).toLowerCase() + idDatasource.value.substr(1) + addPostfixes;
 
@@ -104,11 +107,7 @@ YAHOO.extend(
           }
         };
 
-        YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
-
-        $(valueEl).on('paste', function (e) {
-          updateFieldFn(e, valueEl);
-        });
+        YAHOO.util.Event.on(valueEl, 'input', updateFieldFn, valueEl);
 
         if ((fName == 'id' || fName == 'name') && value !== '') {
           var titleEl = YDom.getElementsByClassName('property-input-title');
