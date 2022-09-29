@@ -20,6 +20,7 @@ import { useICE } from './hooks';
 import { FieldProps, Field } from './Field';
 import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 import { extractCollectionItem, value as getModelValue } from '@craftercms/studio-ui/utils/model';
+import { getCachedContentType } from '../contentController';
 
 export type RenderFieldProps<P, V = any, F = V> = Omit<FieldProps<P>, 'children'> & {
   renderTarget?: string;
@@ -61,6 +62,18 @@ export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {
       render(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId)
     );
   });
+
+  // `data-craftercms-field` attribute is added to all fields for the elements to get the XB on hover cursor styles.
+  // `data-craftercms-type="collection"` attribute is added to node-selector and repeat fields for the elements to get
+  // the XB padding mode styles.
+  const contentTypeId = model.craftercms.contentTypeId;
+  const contentType = getCachedContentType(contentTypeId);
+  const field = contentType?.fields[fieldId];
+  passDownProps['data-craftercms-field'] = '';
+  if (field && ['node-selector', 'repeat'].includes(field.type)) {
+    passDownProps['data-craftercms-type'] = 'collection';
+  }
+
   return <Component {...passDownProps} />;
 });
 

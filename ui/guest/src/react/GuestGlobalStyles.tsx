@@ -187,9 +187,10 @@ const styles = (
       },
       // region craftercms-ice-on
       [`.${editModeClass}`]: {
-        '[data-craftercms-model-id], & [data-craftercms-model-id] a': {
-          cursor: 'url("/studio/static-assets/images/cursor-edit@1.5x.png"), pointer !important'
-        }
+        '[data-craftercms-model-id], & [data-craftercms-model-id] a, & [data-craftercms-field], & [data-craftercms-field] a':
+          {
+            cursor: 'url("/studio/static-assets/images/cursor-edit@1.5x.png"), pointer !important'
+          }
       },
       [`.${moveModeClass}`]: {
         '[draggable="true"]': {
