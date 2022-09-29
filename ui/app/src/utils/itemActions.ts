@@ -539,13 +539,12 @@ export const itemActionDispatcher = ({
         // const src = `${defaultSrc}site=${site}&path=${embeddedParentPath}&isHidden=true&modelId=${modelId}&type=form`
         const path = item.path;
         fetchWorkflowAffectedItems(site, path).subscribe((items) => {
-          const extraPayloadWIndexes = { ...extraPayload };
+          let fieldsIndexes;
           if (extraPayload?.selectedFields && extraPayload?.index) {
-            const fieldsIndexes = {};
+            fieldsIndexes = {};
             extraPayload.selectedFields.forEach((id) => {
               fieldsIndexes[id] = extraPayload.index;
             });
-            extraPayloadWIndexes['fieldsIndexes'] = fieldsIndexes;
           }
 
           let actionToDispatch = showEditDialog({
@@ -556,7 +555,10 @@ export const itemActionDispatcher = ({
               showEditItemSuccessNotification(),
               ...(onActionSuccess ? [onActionSuccess] : [])
             ]),
-            ...extraPayloadWIndexes
+            ...{
+              ...extraPayload,
+              fieldsIndexes
+            }
           });
           if (items?.length > 0) {
             dispatch(showWorkflowCancellationDialog({ items, onContinue: actionToDispatch }));
