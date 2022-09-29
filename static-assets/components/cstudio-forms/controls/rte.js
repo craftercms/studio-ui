@@ -372,7 +372,6 @@ CStudioAuthoring.Module.requireModule(
             // Adding 78px (toolbar's height) so that the toolbar doesn't eat up on the height set on the content modelling tool.
             height: _thisControl.rteHeight + 78,
             min_height: _thisControl.rteHeight,
-            theme: 'silver',
             plugins: pluginList,
             toolbar_sticky: true,
             image_advtab: true,
@@ -497,7 +496,9 @@ CStudioAuthoring.Module.requireModule(
             },
             ...(rteConfig?.tinymceOptions && {
               ...CrafterCMSNext.util.object.reversePluckProps(
-                rteConfig.tinymceOptions,
+                // Tiny seems to somehow mutate the options object which would cause crashes when attempting
+                // to mutate immutable object (possibly from redux). Also, we don't want the state to get mutated.
+                JSON.parse(JSON.stringify(rteConfig.tinymceOptions)),
                 'target', // Target can't be changed
                 'inline', // The control will always have the default (false) in forms-engine.
                 'setup',
