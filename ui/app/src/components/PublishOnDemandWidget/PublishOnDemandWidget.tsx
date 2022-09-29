@@ -519,7 +519,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
             </Typography>
             {hasPublishPermission && (
               <PrimaryButton onClick={onInitialPublish}>
-                <FormattedMessage id="publishOnDemand.publishEntireSite" defaultMessage="Publish Entire Site" />
+                <FormattedMessage id="publishOnDemand.publishEntireProject" defaultMessage="Publish Entire Project" />
               </PrimaryButton>
             )}
           </Box>

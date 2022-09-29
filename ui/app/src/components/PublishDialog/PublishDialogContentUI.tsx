@@ -97,7 +97,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             <Alert severity="warning">
               <FormattedMessage
                 id="publishDialog.firstPublish"
-                defaultMessage="The entire site will be published since this is the first publish request"
+                defaultMessage="The entire project will be published since this is the first publish request"
               />
             </Alert>
           )}
