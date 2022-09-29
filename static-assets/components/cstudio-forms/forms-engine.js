@@ -2689,7 +2689,7 @@ var CStudioForms =
           return {
             id: fieldId,
             baseField: fieldId.replace(/(\.).+$/, ''),
-            index: fieldsIndexes[fieldId]
+            index: fieldsIndexes?.[fieldId]
           };
         });
 

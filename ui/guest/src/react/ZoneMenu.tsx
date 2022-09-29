@@ -204,7 +204,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
           modelId,
           parentModelId,
           fields: record.fieldId,
-          fieldsIndexes
+          index
         })
       );
     }

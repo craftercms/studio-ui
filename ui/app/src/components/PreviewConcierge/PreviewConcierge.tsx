@@ -1048,7 +1048,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         case requestEdit.type: {
           let { store } = upToDateRefs.current;
-          const { modelId, parentModelId, fields, typeOfEdit: type, fieldsIndexes } = payload;
+          const { modelId, parentModelId, fields, typeOfEdit: type, index } = payload;
           const path = models[parentModelId ? parentModelId : modelId].craftercms.path;
           let item = store.getState().content.itemsByPath[path];
           const model = models[modelId] as ContentInstance;
@@ -1069,7 +1069,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 extraPayload: {
                   modelId: parentModelId ? modelId : null,
                   selectedFields: fields,
-                  fieldsIndexes
+                  index
                 }
               });
             });
