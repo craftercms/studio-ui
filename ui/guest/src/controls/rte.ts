@@ -332,13 +332,15 @@ export function initTinyMCE(
     },
     ...(rteSetup?.tinymceOptions && {
       ...reversePluckProps(
-        rteSetup.tinymceOptions,
+        // Tiny seems to somehow mutate the options object which would cause crashes when attempting
+        // to mutate immutable object (possibly from redux). Also, we don't want the state to get mutated.
+        JSON.parse(JSON.stringify(rteSetup.tinymceOptions)),
         'target', // Target can't be changed
         'inline', // Not using inline view doesn't behave well on pageBuilder, this setting shouldn't be changed.
         'setup',
         'base_url',
         'encoding',
-        'autosave_ask_before_unload', // Autosave options are removed since it is not supported in control.
+        'autosave_ask_before_unload', // Auto-save options are removed since it is not supported in control.
         'autosave_interval',
         'autosave_prefix',
         'autosave_restore_when_empty',
