@@ -98,13 +98,19 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       ':</span>' +
       '<input title="' +
       CMgs.format(formsLangBundle, 'newContTypeDialogLabelMsg') +
-      '" id="contentTypeDisplayName" type="text" autofocus focus-me="true"></label>' +
+      '" id="contentTypeDisplayName" type="text" autofocus focus-me="true">' +
+      '<span class="error-message hidden">' +
+      CMgs.format(formsLangBundle, 'contentTypeDisplayNameExists') +
+      '</span></label>' +
       '<label for="contentTypeName"><span>' +
       CMgs.format(formsLangBundle, 'newContTypeDialogContentTypeName') +
       ':</span>' +
       '<input style="disabled" title="' +
       CMgs.format(formsLangBundle, 'newContTypeDialogContentTypeNamelMsg') +
-      '" id="contentTypeName" type="text"></label>' +
+      '" id="contentTypeName" type="text">' +
+      '<span class="error-message hidden">' +
+      CMgs.format(formsLangBundle, 'contentTypeNameExists') +
+      '</span></label>' +
       '<div class="selectInput">' +
       `<label for="contentTypeObjectType">${CMgs.format(formsLangBundle, 'newContTypeDialogType')}:</label>` +
       `<select title="${CMgs.format(formsLangBundle, 'newContTypeDialogTypeMsg')}" id="contentTypeObjectType">` +
@@ -193,7 +199,6 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
     // 'Display Label' input
     YEvent.on('contentTypeDisplayName', 'keyup', function () {
-      YAHOO.Bubbling.fire('content-type.values.changed');
       value = document.getElementById('contentTypeDisplayName').value;
 
       value = value.replace(/[^a-z0-9]/gi, '');
@@ -202,6 +207,17 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       self.onSetDirty(Boolean(value));
 
       document.getElementById('contentTypeName').value = value;
+      YAHOO.Bubbling.fire('content-type.values.changed');
+    });
+
+    // 'Content Type Name' input event
+    YEvent.on('contentTypeName', 'input', function () {
+      YAHOO.Bubbling.fire('content-type.values.changed');
+    });
+
+    // 'Type' dropdown change event
+    YEvent.on('contentTypeObjectType', 'change', function () {
+      YAHOO.Bubbling.fire('content-type.values.changed');
     });
 
     YEvent.addListener('createButton', 'click', this.createClick, eventParams);
@@ -509,6 +525,34 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
     CStudioAuthoring.Dialogs.NewContentType.closeDialog();
   },
 
+  // Checks if content type name already exists and is not empty.
+  // Returns a boolean indicating if the contentType is valid or not.
+  validateContentType() {
+    const contentTypeName = document.getElementById('contentTypeName').value;
+    const contentTypeNameErrorMessage = document.querySelector('[for="contentTypeName"] .error-message');
+    const contentTypeLabel = document.getElementById('contentTypeDisplayName').value;
+    const contentTypeLabelErrorMessage = document.querySelector('[for="contentTypeDisplayName"] .error-message');
+    const type = document.getElementById('contentTypeObjectType').value;
+    const contentTypes = this.config.contentTypes;
+    const newContentType = `/${type}/${contentTypeName}`;
+
+    const contentTypeIdExists = Boolean(contentTypes.find((contentType) => contentType.name === newContentType));
+    if (contentTypeIdExists) {
+      contentTypeNameErrorMessage.classList.remove('hidden');
+    } else {
+      contentTypeNameErrorMessage.classList.add('hidden');
+    }
+
+    const contentTypeLabelExists = Boolean(contentTypes.find((contentType) => contentType.label === contentTypeLabel));
+    if (contentTypeLabelExists) {
+      contentTypeLabelErrorMessage.classList.remove('hidden');
+    } else {
+      contentTypeLabelErrorMessage.classList.add('hidden');
+    }
+
+    return !contentTypeIdExists && !contentTypeLabelExists && contentTypeName.trim() !== '';
+  },
+
   /**
    * Disables a specific button if one of the inputs in a list match a non-accepted value. Otherwise, enables the button.
    * This method listens to the onBlur events of the inputs it controls
@@ -521,10 +565,12 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       button = YDom.get(buttonId),
       configObj = inputConfigObj,
       inputEl = null,
-      regExp;
+      regExp,
+      me = this;
 
     var checkButton = function () {
       enableButton = true;
+      const isValid = me.validateContentType();
 
       controlLoop: for (var inputId in configObj) {
         if (configObj.hasOwnProperty(inputId)) {
@@ -542,7 +588,7 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       }
 
       if (button) {
-        if (enableButton) {
+        if (enableButton && isValid) {
           button.removeAttribute('disabled');
         } else {
           button.setAttribute('disabled', 'disabled');

@@ -719,6 +719,14 @@ div[id*='expandComponentError'].yui-dialog {
   width: 50%;
 }
 
+.contentTypePopupContent .content label .error-message {
+  width: 100%;
+  text-align: left !important;
+  font-weight: normal;
+  color: red;
+  padding-left: 40%;
+}
+
 .contentTypePopupContent .content .selectInput label {
   display: inline-block;
   width: 40%;
