@@ -723,7 +723,7 @@ div[id*='expandComponentError'].yui-dialog {
   width: 100%;
   text-align: left !important;
   font-weight: normal;
-  color: red;
+  color: #ff3b30;
   padding-left: 40%;
 }
 
