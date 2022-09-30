@@ -190,7 +190,6 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
   },
 
   setDefaultTemplate(contentTypes) {
-    var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
     var contentTypesSelect = YDom.get('wcm-content-types-dropdown');
     if (!contentTypesSelect) return;
     var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
@@ -213,10 +212,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
           const extensionRegex = /(?:\.([^.]+))?$/;
           const extension = extensionRegex.exec(imageName)[1];
 
-          this.getImage(
-            `${configFilesPath}/content-types${contentTypesSelect.value}/${imageName}`,
-            imageName
-          ).subscribe((response) => {
+          this.getImage(contentTypesSelect.value).subscribe((response) => {
             contentTypePreviewImg.src = URL.createObjectURL(
               new Blob([response.response], { type: `image/${extension}` })
             );
@@ -268,7 +264,6 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
       var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
       var defaultImg = 'default-contentType.jpg';
       var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
-      var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
       for (var k = 0; k < contentTypes.length; k++) {
         if (this.value == contentTypes[k].form) {
@@ -286,10 +281,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
             const extensionRegex = /(?:\.([^.]+))?$/;
             const extension = extensionRegex.exec(imageName)[1];
 
-            me.getImage(
-              `${configFilesPath}/content-types${contentTypesSelect.value}/${imageName}`,
-              imageName
-            ).subscribe((response) => {
+            me.getImage(contentTypesSelect.value).subscribe((response) => {
               contentTypePreviewImg.src = URL.createObjectURL(
                 new Blob([response.response], { type: `image/${extension}` })
               );
@@ -304,13 +296,13 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
     $('#wcm-content-types-dropdown').fadeIn('fast');
   },
 
-  getImage(path) {
+  getImage(contentTypeId) {
     const qs = CrafterCMSNext.util.object.toQueryString({
-      site: CStudioAuthoringContext.site,
-      path
+      siteId: CStudioAuthoringContext.site,
+      contentTypeId
     });
 
-    return CrafterCMSNext.util.ajax.getBinary(`/studio/api/1/services/api/1/content/get-content-at-path.bin${qs}`);
+    return CrafterCMSNext.util.ajax.getBinary(`/studio/api/2/configuration/content-type/preview_image${qs}`);
   },
 
   closeDialog() {

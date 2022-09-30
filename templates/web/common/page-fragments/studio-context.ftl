@@ -38,7 +38,6 @@
     formServerUri: `${'$'}{origin}/form`,
     previewAppBaseUri: origin,
     contextMenuOffsetPage: false,
-    brandedLogoUri: '/api/1/services/api/1/content/get-content-at-path.bin?path=/configuration/app-logo.png',
     homeUri: `${'$'}{origin}/site-dashboard`,
     navContext: 'default',
     cookieDomain: "${cookieDomain!'UNSET'}",

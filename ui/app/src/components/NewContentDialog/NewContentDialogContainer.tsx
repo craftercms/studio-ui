@@ -73,7 +73,7 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
 
   const getPrevImg = (content: LegacyContentType) => {
     return content?.imageThumbnail
-      ? `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types${content.form}/${content.imageThumbnail}`
+      ? `/studio/api/2/configuration/content-type/preview_image?siteId=${site}&contentTypeId=${content.name}`
       : '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
   };
 

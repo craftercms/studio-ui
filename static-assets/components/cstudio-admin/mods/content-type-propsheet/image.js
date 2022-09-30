@@ -172,7 +172,7 @@ YAHOO.extend(
                   );
                 });
 
-                _self.getImage(url).subscribe((response) => {
+                _self.getImage(CStudioAdminConsole.contentTypeSelected).subscribe((response) => {
                   imageData.previewUrl = URL.createObjectURL(
                     new Blob([response.response], { type: `image/${to.fileExtension}` })
                   );
@@ -220,24 +220,14 @@ YAHOO.extend(
       return CStudioAuthoringContext.previewAppBaseUri + imagePath + '';
     },
 
-    createImageData: function (imageData, path) {
-      var url = this.createPreviewUrl(
-        '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-          CStudioAuthoringContext.site +
-          '&path=' +
-          path
-      );
-      imageData.previewUrl = url;
-      imageData.relativeUrl = path;
-    },
-
-    getImage(path) {
+    // TODO: API not working in here (Site does not have a preview image for content type)
+    getImage(contentTypeId) {
       const qs = CrafterCMSNext.util.object.toQueryString({
-        site: CStudioAuthoringContext.site,
-        path
+        siteId: CStudioAuthoringContext.site,
+        contentTypeId
       });
 
-      return CrafterCMSNext.util.ajax.getBinary(`/studio/api/1/services/api/1/content/get-content-at-path.bin${qs}`);
+      return CrafterCMSNext.util.ajax.getBinary(`/studio/api/2/configuration/content-type/preview_image${qs}`);
     },
 
     isImageValid: function (width, originalWidth, height, originalHeight) {

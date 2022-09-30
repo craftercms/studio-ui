@@ -57,7 +57,7 @@ interface NewContentCardProps {
 function useContentTypePreviewImage(img: string) {
   const [src, setSrc] = useState('/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg');
   useEffect(() => {
-    if (img.includes('content-at-path')) {
+    if (img.includes('/studio/api/2/configuration/content-type/preview_image')) {
       getBinary(img).subscribe((response) => {
         setSrc(
           URL.createObjectURL(new Blob([response.response], { type: `image/${/(?:\\.([^.]+))?$/.exec(img)[1]}` }))
