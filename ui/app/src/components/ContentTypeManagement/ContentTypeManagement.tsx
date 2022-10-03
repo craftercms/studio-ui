@@ -94,7 +94,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
     <Box height="100%" display="flex" flexDirection="column">
       {!embedded && (
         <GlobalAppToolbar
-          title={<FormattedMessage id="dropTargetsMessages.contentTypes" defaultMessage="Content Types" />}
+          title={<FormattedMessage id="componentsMessages.contentTypes" defaultMessage="Content Types" />}
           showAppsButton={showAppsButton}
         />
       )}

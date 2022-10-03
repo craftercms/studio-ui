@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioForms.Datasources.SiteComponent =
-  CStudioForms.Datasources.SiteComponent ||
+CStudioForms.Datasources.SimpleTaxonomy =
+  CStudioForms.Datasources.SimpleTaxonomy ||
   function (id, form, properties, constraints) {
     this.id = id;
     this.form = form;
@@ -24,7 +24,7 @@ CStudioForms.Datasources.SiteComponent =
     this.callbacks = [];
     var _self = this;
     this.messages = {
-      siteComponentDSMessages: CrafterCMSNext.i18n.messages.siteComponentDSMessages,
+      simpleTaxonomyDSMessages: CrafterCMSNext.i18n.messages.simpleTaxonomyDSMessages,
       words: CrafterCMSNext.i18n.messages.words
     };
 
@@ -51,7 +51,7 @@ CStudioForms.Datasources.SiteComponent =
               'unableLoad-dialog',
               CStudioAuthoring.Operations.simpleDialogTypeINFO,
               CrafterCMSNext.i18n.intl.formatMessage(_self.messages.words.notification),
-              CrafterCMSNext.i18n.intl.formatMessage(_self.messages.siteComponentDSMessages.unableLoad, {
+              CrafterCMSNext.i18n.intl.formatMessage(_self.messages.simpleTaxonomyDSMessages.unableLoad, {
                 file: property.value
               }),
               null,
@@ -66,9 +66,9 @@ CStudioForms.Datasources.SiteComponent =
     return this;
   };
 
-YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDatasource, {
+YAHOO.extend(CStudioForms.Datasources.SimpleTaxonomy, CStudioForms.CStudioFormDatasource, {
   getLabel: function () {
-    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.siteComponentDSMessages.siteComponent);
+    return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.simpleTaxonomyDSMessages.simpleTaxonomy);
   },
 
   getInterface: function () {
@@ -100,13 +100,13 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   },
 
   getName: function () {
-    return 'site-component';
+    return 'simple-taxonomy';
   },
 
   getSupportedProperties: function () {
     return [
       {
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.dataType),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.simpleTaxonomyDSMessages.dataType),
         name: 'dataType',
         type: 'dropdown',
         defaultValue: [
@@ -118,33 +118,33 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
           },
           {
             value: 'value_s',
-            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.string),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.simpleTaxonomyDSMessages.string),
             selected: false
           },
           {
             value: 'value_i',
-            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.integer),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.simpleTaxonomyDSMessages.integer),
             selected: false
           },
           {
             value: 'value_f',
-            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.float),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.simpleTaxonomyDSMessages.float),
             selected: false
           },
           {
             value: 'value_dt',
-            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.date),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.simpleTaxonomyDSMessages.date),
             selected: false
           },
           {
             value: 'value_html',
-            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.html),
+            label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.simpleTaxonomyDSMessages.html),
             selected: false
           }
         ]
       },
       {
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.componentPath),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.simpleTaxonomyDSMessages.componentPath),
         name: 'componentPath',
         type: 'string'
       }
@@ -154,7 +154,7 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   getSupportedConstraints: function () {
     return [
       {
-        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.siteComponentDSMessages.required),
+        label: CrafterCMSNext.i18n.intl.formatMessage(this.messages.simpleTaxonomyDSMessages.required),
         name: 'required',
         type: 'boolean'
       }
@@ -170,4 +170,4 @@ YAHOO.extend(CStudioForms.Datasources.SiteComponent, CStudioForms.CStudioFormDat
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-site-component', CStudioForms.Datasources.SiteComponent);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-simple-taxonomy', CStudioForms.Datasources.SimpleTaxonomy);
