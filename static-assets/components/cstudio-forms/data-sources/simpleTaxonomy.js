@@ -100,7 +100,7 @@ YAHOO.extend(CStudioForms.Datasources.SimpleTaxonomy, CStudioForms.CStudioFormDa
   },
 
   getName: function () {
-    return 'simple-taxonomy';
+    return 'simpleTaxonomy';
   },
 
   getSupportedProperties: function () {
@@ -170,4 +170,4 @@ YAHOO.extend(CStudioForms.Datasources.SimpleTaxonomy, CStudioForms.CStudioFormDa
   }
 });
 
-CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-simple-taxonomy', CStudioForms.Datasources.SimpleTaxonomy);
+CStudioAuthoring.Module.moduleLoaded('cstudio-forms-controls-simpleTaxonomy', CStudioForms.Datasources.SimpleTaxonomy);
