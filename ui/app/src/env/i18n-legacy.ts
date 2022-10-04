@@ -512,50 +512,50 @@ export const words = defineMessages({
   }
 });
 
-export const siteComponentDSMessages = defineMessages({
+export const simpleTaxonomyDSMessages = defineMessages({
   label: {
-    id: 'siteComponentDS.label',
+    id: 'simpleTaxonomyDS.label',
     defaultMessage: 'Taxonomy Selector'
   },
   unableLoad: {
-    id: 'siteComponentDS.unableLoad',
+    id: 'simpleTaxonomyDS.unableLoad',
     defaultMessage: 'The system was unable to load {file}.'
   },
   required: {
-    id: 'siteComponentDS.required',
+    id: 'simpleTaxonomyDS.required',
     defaultMessage: 'Required'
   },
   componentPath: {
-    id: 'siteComponentDS.componentPath',
+    id: 'simpleTaxonomyDS.componentPath',
     defaultMessage: 'Component Path'
   },
   dataType: {
-    id: 'siteComponentDS.dataType',
+    id: 'simpleTaxonomyDS.dataType',
     defaultMessage: 'Data Type'
   },
   string: {
-    id: 'siteComponentDS.string',
+    id: 'simpleTaxonomyDS.string',
     defaultMessage: 'String'
   },
   integer: {
-    id: 'siteComponentDS.integer',
+    id: 'simpleTaxonomyDS.integer',
     defaultMessage: 'Integer'
   },
   float: {
-    id: 'siteComponentDS.float',
+    id: 'simpleTaxonomyDS.float',
     defaultMessage: 'Float'
   },
   date: {
-    id: 'siteComponentDS.date',
+    id: 'simpleTaxonomyDS.date',
     defaultMessage: 'Date'
   },
   html: {
-    id: 'siteComponentDS.html',
+    id: 'simpleTaxonomyDS.html',
     defaultMessage: 'Data Type'
   },
-  siteComponent: {
-    id: 'siteComponentDS.siteComponent',
-    defaultMessage: 'Project Component'
+  simpleTaxonomy: {
+    id: 'simpleTaxonomyDS.simpleTaxonomy',
+    defaultMessage: 'Site Taxonomy'
   }
 });
 
@@ -993,57 +993,57 @@ export const embeddedLegacyFormMessages = defineMessages({
   }
 });
 
-export const dropTargetsMessages = defineMessages({
-  dropTargets: {
-    id: 'dropTargetsMessages.dropTargets',
-    defaultMessage: 'Drop Targets'
+export const componentsMessages = defineMessages({
+  components: {
+    id: 'componentsMessages.components',
+    defaultMessage: 'Components'
   },
   createNewEmbedded: {
-    id: 'dropTargetsMessages.createNewEmbedded',
+    id: 'componentsMessages.createNewEmbedded',
     defaultMessage: 'Create new embedded'
   },
   createNewShared: {
-    id: 'dropTargetsMessages.createNewShared',
+    id: 'componentsMessages.createNewShared',
     defaultMessage: 'Create new shared'
   },
   allowShared: {
-    id: 'dropTargetsMessages.allowShared',
+    id: 'componentsMessages.allowShared',
     defaultMessage: 'Allow Shared'
   },
   allowEmbedded: {
-    id: 'dropTargetsMessages.allowEmbedded',
+    id: 'componentsMessages.allowEmbedded',
     defaultMessage: 'Allow Embedded'
   },
   enableBrowse: {
-    id: 'dropTargetsMessages.enableBrowse',
+    id: 'componentsMessages.enableBrowse',
     defaultMessage: 'Enable Browse'
   },
   enableSearch: {
-    id: 'dropTargetsMessages.enableSearch',
+    id: 'componentsMessages.enableSearch',
     defaultMessage: 'Enable Search'
   },
   baseRepositoryPath: {
-    id: 'dropTargetsMessages.baseRepositoryPath',
+    id: 'componentsMessages.baseRepositoryPath',
     defaultMessage: 'Base Repository Path'
   },
   baseBrowsePath: {
-    id: 'dropTargetsMessages.baseBrowsePath',
+    id: 'componentsMessages.baseBrowsePath',
     defaultMessage: 'Base Browse Path'
   },
   contentTypes: {
-    id: 'dropTargetsMessages.contentTypes',
+    id: 'componentsMessages.contentTypes',
     defaultMessage: 'Content Types'
   },
   tags: {
-    id: 'dropTargetsMessages.tags',
+    id: 'componentsMessages.tags',
     defaultMessage: 'Tags'
   },
   browseExisting: {
-    id: 'dropTargetsMessages.browseExisting',
+    id: 'componentsMessages.browseExisting',
     defaultMessage: 'Browse existing'
   },
   searchExisting: {
-    id: 'dropTargetsMessages.searchExisting',
+    id: 'componentsMessages.searchExisting',
     defaultMessage: 'Search existing components'
   }
 });

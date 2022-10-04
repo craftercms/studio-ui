@@ -21,7 +21,7 @@ node_modules
 /static-assets/components/cstudio-admin/mods/content-type-propsheet/contentTypes.js
 /static-assets/components/cstudio-admin/mods/content-type-propsheet/content-path-input.js
 /static-assets/components/cstudio-forms/controls/locale-selector.js
-/static-assets/components/cstudio-forms/data-sources/dropTargets.js
+/static-assets/components/cstudio-forms/data-sources/components.js
 /static-assets/libs/*
 /static-assets/js/*
 /static-assets/modules/*
