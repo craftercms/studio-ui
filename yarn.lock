@@ -2409,9 +2409,9 @@ __metadata:
     typescript: ^4.1.2
     uppy: ^2.10.0
     video.js: ^7.20.0
-    vite: ^3.1.0
+    vite: ^3.1.4
     vite-plugin-svgr: ^2.2.1
-    vite-tsconfig-paths: ^3.5.0
+    vite-tsconfig-paths: ^3.5.1
     web-vitals: ^1.0.1
   languageName: unknown
   linkType: soft
@@ -11869,9 +11869,9 @@ typescript@^4.1.2:
   languageName: node
   linkType: hard
 
-"vite-tsconfig-paths@npm:^3.5.0":
-  version: 3.5.0
-  resolution: "vite-tsconfig-paths@npm:3.5.0"
+"vite-tsconfig-paths@npm:^3.5.1":
+  version: 3.5.1
+  resolution: "vite-tsconfig-paths@npm:3.5.1"
   dependencies:
     debug: ^4.1.1
     globrex: ^0.1.2
@@ -11879,13 +11879,13 @@ typescript@^4.1.2:
     tsconfig-paths: ^4.0.0
   peerDependencies:
     vite: ">2.0.0-0"
-  checksum: d6d4828fdba639445251b3baf06901f2eb46a98b2741ba5e30e3d791c8a25f8533d23df13c5422eece63cf449865750dcd57e825dbe43b5c985e5edf42b17fea
+  checksum: 99755d754ceda2c49b862947e991bb0d6e3ca10221bd0edb0441f2c0b6c973d970601f2baada13647330d4d22d5a682c9558c746fda8db00413ee2a82d2ef28e
   languageName: node
   linkType: hard
 
-"vite@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "vite@npm:3.1.0"
+"vite@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "vite@npm:3.1.4"
   dependencies:
     esbuild: ^0.15.6
     fsevents: ~2.3.2
@@ -11911,7 +11911,7 @@ typescript@^4.1.2:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 1a343e3d46450181f79f34ff49cca5ff59bb7472de51ea2c4a042aa076f597d27d25c49f48405e82f607af7d8c1c13a9e789402ccb1b23570132382132ec3903
+  checksum: f3e532952b896ca7f746de0e51fc8c98ac482b2a5f0b89538ec89ac615f6edbfe45628fe4fbabab4c5fe07f6e4c2e624360af00d8c5c454af31771952b8c6e72
   languageName: node
   linkType: hard
 
