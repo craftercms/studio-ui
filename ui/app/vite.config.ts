@@ -14,6 +14,11 @@ export default defineConfig({
   },
   server: {
     open: true,
-    port: 3000
+    port: 3000,
+    proxy: {
+      '/studio/api': 'http://localhost:8080',
+      '/studio/refresh': 'http://localhost:8080',
+      '/studio/static-assets/': 'http://localhost:8080'
+    }
   }
 });
