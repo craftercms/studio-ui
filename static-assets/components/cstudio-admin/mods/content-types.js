@@ -823,6 +823,7 @@
        * action that is fired when the user clicks on the open existing item in the context nav
        */
       onOpenExistingClick: function (inline) {
+        const me = this;
         var path = '/';
 
         var openExistingItemRender = this.context
@@ -835,6 +836,7 @@
 
         var chooseTemplateCb = {
           success: function (contentTypes) {
+            me.config.contentTypes = contentTypes;
             var selectTemplateDialogCb = {
               moduleLoaded: function (moduleName, dialogClass, moduleConfig) {
                 $('#openExistingInlineTarget').html('<div/>');

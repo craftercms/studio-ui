@@ -482,6 +482,8 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
   newContTypeDialogLabelMsg: 'Proporcione una etiqueta de visualización de este Tipo de Contenido',
   newContTypeDialogContentTypeNamelMsg: 'Proporcione un nombre de sistema para este Tipo de Contenido',
   newContTypeDialogTypeMsg: 'Seleccione el tipo de este Tipo de Contenido',
+  contentTypeDisplayNameExists: 'La etiqueta ya existe',
+  contentTypeNameExists: 'El nombre ya existe',
 
   adminHelpDialogTitle: 'Contenido del Campo',
 

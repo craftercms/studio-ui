@@ -458,6 +458,8 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
   newContTypeDialogLabelMsg: '이 콘텐츠 유형 표시 라벨을 제공',
   newContTypeDialogContentTypeNamelMsg: '이 콘텐츠 유형에 대한 시스템 이름을 입력합니다',
   newContTypeDialogTypeMsg: '이 콘텐츠 유형에 대한 유형을 선택',
+  contentTypeDisplayNameExists: '라벨이 이미 존재합니다.',
+  contentTypeNameExists: '이름이 이미 존재합니다.',
 
   adminHelpDialogTitle: '필드 내용',
 
