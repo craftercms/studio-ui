@@ -264,7 +264,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
           if (modifiedValue) {
-            const modifiedName = modifiedValue.replace(`${path}`, '');
+            const modifiedName = modifiedValue.replace(path, '');
             setConfirm({
               body: formatMessage(messages.createPolicy, { name: modifiedName })
             });
