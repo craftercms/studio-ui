@@ -2956,34 +2956,7 @@ var CStudioForms =
       LoadFormConfig: function (formId, cb) {
         var configCb = {
           success: function (formConfig) {
-            if (formConfig['controller'] && formConfig['controller'] == 'true') {
-              var moduleCb = {
-                moduleLoaded: function (moduleName, clazz, config) {
-                  cb.success(clazz, formConfig);
-                },
-                failure: function () {
-                  cb.failure();
-                }
-              };
-
-              var moduleConfig = {};
-              var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
-
-              CStudioAuthoring.Module.requireModule(
-                formId + '-controller',
-                '/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-                  CStudioAuthoringContext.site +
-                  '&path=' +
-                  configFilesPath +
-                  '/content-types/' +
-                  formId +
-                  '/form-controller.js',
-                moduleConfig,
-                moduleCb
-              );
-            } else {
-              cb.success(undefined, formConfig);
-            }
+            cb.success(undefined, formConfig);
           },
           failure: function () {
             cb.failure();
