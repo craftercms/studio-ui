@@ -3294,10 +3294,12 @@ var nodeOpen = false,
           path = path.replace('{month}', ('0' + (currentDate.getMonth() + 1)).slice(-2));
         }
 
-        const fullParentPath =
-          CStudioAuthoring.Utils.getQueryParameterByName('path') !== ''
-            ? CStudioAuthoring.Utils.getQueryParameterByName('path')
-            : CStudioAuthoring.Utils.getQueryParameterByName('parentPath');
+        const pathParam = CStudioAuthoring.Utils.getQueryParameterByName('path');
+        // pathParam may be an objectId (embedded components)
+        const isPath = pathParam.startsWith('/');
+        const fullParentPath = isPath
+          ? pathParam
+          : CStudioAuthoring.Utils.getQueryParameterByName('parentPath');
         const parentPathPieces = fullParentPath.substr(1).split('/');
         path = path.replace(/{parentPath(\[\s*?(\d+)\s*?])?}/g, function (fullMatch, indexExp, index) {
           if (indexExp === void 0) {
