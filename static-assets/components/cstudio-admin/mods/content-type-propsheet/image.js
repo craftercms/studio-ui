@@ -276,14 +276,8 @@ YAHOO.extend(
       return CStudioAuthoringContext.previewAppBaseUri + imagePath + '';
     },
 
-    // TODO: API not working in here (Site does not have a preview image for content type)
     getImage(contentTypeId) {
-      const qs = CrafterCMSNext.util.object.toQueryString({
-        siteId: CStudioAuthoringContext.site,
-        contentTypeId
-      });
-
-      return CrafterCMSNext.util.ajax.getBinary(`/studio/api/2/configuration/content-type/preview_image${qs}`);
+      return CrafterCMSNext.services.contentTypes.fetchPreviewImage(CStudioAuthoringContext.site, contentTypeId);
     },
 
     isImageValid: function (width, originalWidth, height, originalHeight) {

@@ -297,12 +297,7 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
   },
 
   getImage(contentTypeId) {
-    const qs = CrafterCMSNext.util.object.toQueryString({
-      siteId: CStudioAuthoringContext.site,
-      contentTypeId
-    });
-
-    return CrafterCMSNext.util.ajax.getBinary(`/studio/api/2/configuration/content-type/preview_image${qs}`);
+    return CrafterCMSNext.services.contentTypes.fetchPreviewImage(CStudioAuthoringContext.site, contentTypeId);
   },
 
   closeDialog() {
