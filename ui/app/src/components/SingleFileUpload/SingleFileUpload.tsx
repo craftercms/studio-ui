@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
@@ -134,6 +134,9 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
   const dispatch = useDispatch();
   const [description, setDescription] = useState<string>(formatMessage(messages.selectFileMessage));
   const [file, setFile] = useState<UppyFile>(null);
+  const fileRef = useRef(null);
+  const [suggestedName, setSuggestedName] = useState(null);
+  const suggestedNameRef = useRef(null);
   const [fileNameErrorClass, setFileNameErrorClass] = useState<string>();
   const [disableInput, setDisableInput] = useState(false);
   const { upload } = useSiteUIConfig();
@@ -141,6 +144,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     body: string;
     error?: boolean;
   }>(null);
+  fileRef.current = file;
+  suggestedNameRef.current = suggestedName;
 
   const { classes, cx } = singleFileUploadStyles();
   const uppy = useMemo(
@@ -161,7 +166,26 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
                 };
               }
             }
-          : {})
+          : {}),
+        onBeforeUpload: (files) => {
+          if (suggestedNameRef.current) {
+            const updatedFiles = {
+              ...files,
+              [fileRef.current.id]: {
+                ...files[fileRef.current.id],
+                name: suggestedNameRef.current,
+                meta: {
+                  ...files[fileRef.current.id].meta,
+                  name: suggestedNameRef.current
+                }
+              }
+            };
+            setSuggestedName(null);
+            return updatedFiles;
+          } else {
+            return files;
+          }
+        }
       }),
     [fileTypes, customFileName]
   );
@@ -240,9 +264,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
           if (modifiedValue) {
+            const modifiedName = modifiedValue.replace(path, '');
             setConfirm({
-              body: formatMessage(messages.createPolicy, { name: modifiedValue.replace(`${path}`, '') })
+              body: formatMessage(messages.createPolicy, { name: modifiedName })
             });
+            setSuggestedName(modifiedName);
           } else {
             setDisableInput(true);
             uppy.upload();
@@ -267,6 +293,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 
   const onConfirm = () => {
     uppy.upload().then(() => {});
+    setSuggestedName(null);
     setDescription(`${formatMessage(messages.uploadingFile)}:`);
     onUploadStart?.();
     setConfirm(null);
