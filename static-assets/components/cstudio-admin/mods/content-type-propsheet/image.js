@@ -117,123 +117,111 @@ YAHOO.extend(
               }
 
               if (valid) {
-                const formDef = CStudioAdminConsole.selectedFormDef;
-                const configPath = `/content-types/${CStudioAdminConsole.contentTypeSelected}/config.xml`;
                 const defPath = `/content-types/${CStudioAdminConsole.contentTypeSelected}/form-definition.xml`;
-                CStudioAuthoring.Service.lookupConfigurtion(CStudioAuthoringContext.site, configPath, {
-                  success: function (config) {
-                    CStudioAdminConsole.selectedFormDef.imageThumbnail = to.fileName;
-                    const xmlConfig = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeConfigToXml(
-                      config,
-                      formDef
-                    );
-                    const xmlFormDef =
-                      CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef);
+                CrafterCMSNext.services.configuration
+                  .fetchConfigurationDOM(CStudioAuthoringContext.site, defPath, 'studio')
+                  .subscribe({
+                    next(doc) {
+                      let imageThumbnail = doc.querySelector('imageThumbnail');
 
-                    CrafterCMSNext.rxjs
-                      .forkJoin([
-                        CrafterCMSNext.services.configuration.writeConfiguration(
-                          CStudioAuthoringContext.site,
-                          defPath,
-                          'studio',
-                          xmlFormDef
-                        ),
-                        CrafterCMSNext.services.configuration.writeConfiguration(
-                          CStudioAuthoringContext.site,
-                          configPath,
-                          'studio',
-                          xmlConfig
-                        )
-                      ])
-                      .subscribe({
-                        next() {
-                          const image = new Image();
+                      if (!imageThumbnail) {
+                        imageThumbnail = document.createElement('imageThumbnail');
+                        doc.appendChild(imageThumbnail);
+                      }
+                      imageThumbnail.innerHTML = to.fileName;
 
-                          function imageLoaded() {
-                            const originalWidth = this.width,
-                              originalHeight = this.height,
-                              widthConstrains = _self.WIDTHCONSTRAINS,
-                              heightConstrains = _self.HEIGHTCONSTRAINS;
-                            message = CMgs.format(langBundle, 'constraintsError');
+                      const xmlFormDef = CrafterCMSNext.util.xml.beautify(CrafterCMSNext.util.xml.serialize(doc));
+                      CrafterCMSNext.services.configuration
+                        .writeConfiguration(CStudioAuthoringContext.site, defPath, 'studio', xmlFormDef)
+                        .subscribe({
+                          next() {
+                            const image = new Image();
 
-                            if (
-                              widthConstrains &&
-                              originalWidth <= widthConstrains &&
-                              heightConstrains &&
-                              originalHeight <= heightConstrains
-                            ) {
-                              const itemURL = to.fileName;
-                              _self.valueEl.value = itemURL;
-                              _self.value = itemURL;
-                              _self.updateFn(null, _self.valueEl);
-                            } else {
-                              var callback = {
-                                success: function (content) {
-                                  const itemURL = content.message.internalName;
-                                  _self.valueEl.value = itemURL;
-                                  _self.value = itemURL;
-                                  _self.updateFn(null, _self.valueEl);
-                                }
-                              };
+                            function imageLoaded() {
+                              const originalWidth = this.width,
+                                originalHeight = this.height,
+                                widthConstrains = _self.WIDTHCONSTRAINS,
+                                heightConstrains = _self.HEIGHTCONSTRAINS;
+                              message = CMgs.format(langBundle, 'constraintsError');
 
-                              CStudioAuthoring.Operations.cropperImage(
-                                CStudioAuthoringContext.site,
-                                message,
-                                imageData,
-                                widthConstrains,
-                                heightConstrains,
-                                widthConstrains / heightConstrains,
-                                null,
-                                callback
-                              );
+                              if (
+                                widthConstrains &&
+                                originalWidth <= widthConstrains &&
+                                heightConstrains &&
+                                originalHeight <= heightConstrains
+                              ) {
+                                const itemURL = to.fileName;
+                                _self.valueEl.value = itemURL;
+                                _self.value = itemURL;
+                                _self.updateFn(null, _self.valueEl);
+                              } else {
+                                var callback = {
+                                  success: function (content) {
+                                    const itemURL = content.message.internalName;
+                                    _self.valueEl.value = itemURL;
+                                    _self.value = itemURL;
+                                    _self.updateFn(null, _self.valueEl);
+                                  }
+                                };
+
+                                CStudioAuthoring.Operations.cropperImage(
+                                  CStudioAuthoringContext.site,
+                                  message,
+                                  imageData,
+                                  widthConstrains,
+                                  heightConstrains,
+                                  widthConstrains / heightConstrains,
+                                  null,
+                                  callback
+                                );
+                              }
                             }
-                          }
-                          image.addEventListener('load', imageLoaded, false);
-                          image.addEventListener('error', function (e) {
-                            message = CMgs.format(langBundle, 'loadImageError');
+                            image.addEventListener('load', imageLoaded, false);
+                            image.addEventListener('error', function (e) {
+                              message = CMgs.format(langBundle, 'loadImageError');
+                              CStudioAuthoring.Operations.showSimpleDialog(
+                                'error-dialog',
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(langBundle, 'notification'),
+                                message,
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                'studioDialog'
+                              );
+                            });
+
+                            _self.getImage(CStudioAdminConsole.contentTypeSelected).subscribe((response) => {
+                              imageData.previewUrl = URL.createObjectURL(
+                                new Blob([response.response], { type: `image/${to.fileExtension}` })
+                              );
+                              image.src = imageData.previewUrl;
+                            });
+                          },
+                          error() {
                             CStudioAuthoring.Operations.showSimpleDialog(
-                              'error-dialog',
+                              'errorDialog-dialog',
                               CStudioAuthoring.Operations.simpleDialogTypeINFO,
                               CMgs.format(langBundle, 'notification'),
-                              message,
+                              CMgs.format(langBundle, 'saveFailed'),
                               null, // use default button
                               YAHOO.widget.SimpleDialog.ICON_BLOCK,
                               'studioDialog'
                             );
-                          });
-
-                          _self.getImage(CStudioAdminConsole.contentTypeSelected).subscribe((response) => {
-                            imageData.previewUrl = URL.createObjectURL(
-                              new Blob([response.response], { type: `image/${to.fileExtension}` })
-                            );
-                            image.src = imageData.previewUrl;
-                          });
-                        },
-                        error() {
-                          CStudioAuthoring.Operations.showSimpleDialog(
-                            'errorDialog-dialog',
-                            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                            CMgs.format(langBundle, 'notification'),
-                            CMgs.format(langBundle, 'saveFailed'),
-                            null, // use default button
-                            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                            'studioDialog'
-                          );
-                        }
-                      });
-                  },
-                  failure: function () {
-                    CStudioAuthoring.Operations.showSimpleDialog(
-                      'errorDialog-dialog',
-                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                      CMgs.format(langBundle, 'notification'),
-                      CMgs.format(langBundle, 'failConfig'),
-                      null, // use default button
-                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                      'studioDialog'
-                    );
-                  }
-                });
+                          }
+                        });
+                    },
+                    error() {
+                      CStudioAuthoring.Operations.showSimpleDialog(
+                        'errorDialog-dialog',
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, 'notification'),
+                        CMgs.format(langBundle, 'failConfig'),
+                        null, // use default button
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        'studioDialog'
+                      );
+                    }
+                  });
               } else {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'error-dialog',

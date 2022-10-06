@@ -59,6 +59,7 @@ import * as stateUtil from '../utils/state';
 import * as stringUtil from '../utils/string';
 import * as subjectsUtil from '../utils/subjects';
 import * as systemUtil from '../utils/system';
+import * as xml from '../utils/xml';
 export const components = {
   AboutCrafterCMSView: lazy(() => import('../components/AboutCrafterCMSView')),
   AccountManagement: lazy(() => import('../components/AccountManagement')),
@@ -424,5 +425,6 @@ export const utils = {
   state: stateUtil,
   string: stringUtil,
   subjects: subjectsUtil,
-  system: systemUtil
+  system: systemUtil,
+  xml
 };
