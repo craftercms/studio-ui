@@ -2784,7 +2784,10 @@ var nodeOpen = false,
        */
       processPathsForMacros: function (path, model, useUUID) {
         const urlParams = new URLSearchParams(window.location.search);
-        const fullParentPath = urlParams.get('path') ?? urlParams.get('parentPath');
+        const pathParam = urlParams.get('path');
+        // pathParam may be an objectId (embedded components)
+        const isPath = pathParam.startsWith('/');
+        const fullParentPath = isPath ? pathParam : urlParams.get('parentPath');
         return CrafterCMSNext.util.path.processPathMacros({
           path,
           useUUID,

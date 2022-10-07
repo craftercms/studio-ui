@@ -124,7 +124,14 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
     const readonly = control.readonly;
     CStudioForms.communication.sendAndAwait(key, (message) => {
       const contentType = CStudioForms.communication.parseDOM(message.payload).querySelector('content-type').innerHTML;
-      const auxParams = [];
+      // If current component is embedded too, it'll have a parentPath url param (the path of the shared component
+      // containing it), so we use that one.
+      const parentPathParam = CStudioAuthoring.Utils.getQueryParameterByName('parentPath');
+      const parentPath = parentPathParam !== '' ? parentPathParam : _self.form.path;
+      const auxParams = [
+        { name: 'childForm', value: 'true' },
+        { name: 'parentPath', value: parentPath }
+      ];
 
       if (readonly) {
         auxParams.push({ name: 'readonly' });
