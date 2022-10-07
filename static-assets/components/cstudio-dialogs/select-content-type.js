@@ -192,34 +192,21 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
   setDefaultTemplate(contentTypes) {
     var contentTypesSelect = YDom.get('wcm-content-types-dropdown');
     if (!contentTypesSelect) return;
-    var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
-    var defaultImg = 'default-contentType.jpg';
     var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
 
     for (var k = 0; k < contentTypes.length; k++) {
       if (contentTypesSelect.value == contentTypes[k].form) {
-        if (
-          (contentTypes[k].image && contentTypes[k].image != '') ||
-          (contentTypes[k].imageThumbnail &&
-            contentTypes[k].imageThumbnail != '' &&
-            contentTypes[k].imageThumbnail != 'undefined')
-        ) {
-          var imageName =
-            contentTypes[k].image && contentTypes[k].image != ''
-              ? contentTypes[k].image
-              : contentTypes[k].imageThumbnail;
+        var imageName =
+          contentTypes[k].image && contentTypes[k].image != '' ? contentTypes[k].image : contentTypes[k].imageThumbnail;
 
-          const extensionRegex = /(?:\.([^.]+))?$/;
-          const extension = extensionRegex.exec(imageName)[1];
+        const extensionRegex = /(?:\.([^.]+))?$/;
+        const extension = extensionRegex.exec(imageName)[1];
 
-          this.getImage(contentTypesSelect.value).subscribe((response) => {
-            contentTypePreviewImg.src = URL.createObjectURL(
-              new Blob([response.response], { type: `image/${extension}` })
-            );
-          });
-        } else {
-          contentTypePreviewImg.src = defaultSrc + defaultImg;
-        }
+        this.getImage(contentTypesSelect.value).subscribe((response) => {
+          contentTypePreviewImg.src = URL.createObjectURL(
+            new Blob([response.response], { type: `image/${extension}` })
+          );
+        });
       }
     }
   },
@@ -261,34 +248,23 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
     }
 
     YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function () {
-      var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
-      var defaultImg = 'default-contentType.jpg';
       var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
 
       for (var k = 0; k < contentTypes.length; k++) {
         if (this.value == contentTypes[k].form) {
-          if (
-            (contentTypes[k].image && contentTypes[k].image != '') ||
-            (contentTypes[k].imageThumbnail &&
-              contentTypes[k].imageThumbnail != '' &&
-              contentTypes[k].imageThumbnail != 'undefined')
-          ) {
-            var imageName =
-              contentTypes[k].image && contentTypes[k].image != ''
-                ? contentTypes[k].image
-                : contentTypes[k].imageThumbnail;
+          var imageName =
+            contentTypes[k].image && contentTypes[k].image != ''
+              ? contentTypes[k].image
+              : contentTypes[k].imageThumbnail;
 
-            const extensionRegex = /(?:\.([^.]+))?$/;
-            const extension = extensionRegex.exec(imageName)[1];
+          const extensionRegex = /(?:\.([^.]+))?$/;
+          const extension = extensionRegex.exec(imageName)[1];
 
-            me.getImage(contentTypesSelect.value).subscribe((response) => {
-              contentTypePreviewImg.src = URL.createObjectURL(
-                new Blob([response.response], { type: `image/${extension}` })
-              );
-            });
-          } else {
-            contentTypePreviewImg.src = defaultSrc + defaultImg;
-          }
+          me.getImage(contentTypesSelect.value).subscribe((response) => {
+            contentTypePreviewImg.src = URL.createObjectURL(
+              new Blob([response.response], { type: `image/${extension}` })
+            );
+          });
         }
       }
     });

@@ -22,7 +22,8 @@ import CardMedia from '@mui/material/CardMedia';
 import Divider from '@mui/material/Divider';
 import Skeleton from '@mui/material/Skeleton';
 import palette from '../../styles/palette';
-import { getBinary } from '../../utils/ajax';
+import { fetchPreviewImage } from '../../services/contentTypes';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 const useStyles = makeStyles()(() => ({
   defaultCard: {
@@ -48,44 +49,41 @@ interface NewContentCardProps {
   headerTitle: string;
   subheader: string;
   imgTitle?: string;
-  img: string;
+  contentTypeName: string;
   onClick: any;
   isCompact: boolean;
   isSelected: boolean;
 }
 
-function useContentTypePreviewImage(img: string) {
-  const [src, setSrc] = useState('/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg');
+function useContentTypePreviewImage(contentTypeName: string) {
+  const [src, setSrc] = useState(null);
+  const site = useActiveSiteId();
   useEffect(() => {
-    if (img.includes('/studio/api/2/configuration/content-type/preview_image')) {
-      getBinary(img).subscribe((response) => {
-        setSrc(
-          URL.createObjectURL(new Blob([response.response], { type: `image/${/(?:\\.([^.]+))?$/.exec(img)[1]}` }))
-        );
-      });
-    }
-  }, [img]);
+    fetchPreviewImage(site, contentTypeName).subscribe((response) => {
+      setSrc(URL.createObjectURL(new Blob([response.response])));
+    });
+  }, [contentTypeName, site]);
   return src;
 }
 
 const DefaultCardContent = (props) => {
-  const { headerTitle, subheader, classes, img, imgTitle } = props;
-  const src = useContentTypePreviewImage(img);
+  const { headerTitle, subheader, classes, imgTitle, contentTypeName } = props;
+  const src = useContentTypePreviewImage(contentTypeName);
   return (
     <>
       <CardHeader title={headerTitle} subheader={subheader} titleTypographyProps={{ variant: 'body1' }} />
       <Divider />
-      <CardMedia className={classes.media} image={src} title={imgTitle} />
+      {src && <CardMedia className={classes.media} image={src} title={imgTitle} />}
     </>
   );
 };
 
 const CompactCardContent = (props) => {
-  const { headerTitle, subheader, classes, img, imgTitle } = props;
-  const src = useContentTypePreviewImage(img);
+  const { headerTitle, subheader, classes, imgTitle, contentTypeName } = props;
+  const src = useContentTypePreviewImage(contentTypeName);
   return (
     <>
-      <CardMedia className={classes.compactMedia} image={src} title={imgTitle} />
+      {src && <CardMedia className={classes.compactMedia} image={src} title={imgTitle} />}
       <CardHeader
         title={headerTitle}
         subheader={subheader}
