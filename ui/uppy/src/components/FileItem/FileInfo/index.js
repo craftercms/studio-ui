@@ -83,7 +83,8 @@ const renderFileType = (props) =>
 const renderFileSize = (props) =>
   props.file.data.size && <div class="uppy-Dashboard-Item-statusSize">{prettierBytes(props.file.data.size)}</div>;
 
-const renderPolicyWarning = (file, allowed) => {
+const renderPolicyWarning = (props) => {
+  const { file, allowed } = props;
   return allowed ? (
     <div class="uppy-dashboard-site-policy-warning">
       {' '}
@@ -100,7 +101,7 @@ const renderPolicyWarning = (file, allowed) => {
       >
         <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM12 14c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1s1 .45 1 1v2c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z"></path>
       </svg>
-      {`File name “${file.name}” requires changes to comply with project policies.`}
+      {props.externalMessages.projectPoliciesChangeRequired(file.name)}
     </div>
   ) : (
     <div class="uppy-dashboard-site-policy-warning">
@@ -117,7 +118,7 @@ const renderPolicyWarning = (file, allowed) => {
       >
         <path d="M4.47 21h15.06c1.54 0 2.5-1.67 1.73-3L13.73 4.99c-.77-1.33-2.69-1.33-3.46 0L2.74 18c-.77 1.33.19 3 1.73 3zM12 14c-.55 0-1-.45-1-1v-2c0-.55.45-1 1-1s1 .45 1 1v2c0 .55-.45 1-1 1zm1 4h-2v-2h2v2z"></path>
       </svg>
-      {`File name “${file.name}” doesn’t comply with project policies and can’t be uploaded.`}
+      {props.externalMessages.projectPoliciesNoComply(file.name)}
     </div>
   );
 };
@@ -143,8 +144,7 @@ const ErrorButton = ({ file, onClick }) => {
 module.exports = function FileInfo(props) {
   return (
     <div class="uppy-Dashboard-Item-fileInfo" data-uppy-file-source={props.file.source}>
-      {(props.file.meta.suggestedName || props.file.meta.allowed === false) &&
-        renderPolicyWarning(props.file, props.file.meta.allowed)}
+      {(props.file.meta.suggestedName || props.file.meta.allowed === false) && renderPolicyWarning(props)}
       {renderFileName(props)}
       <div class="uppy-Dashboard-Item-status">
         {renderFileType(props)} @ {renderFileSize(props)}
