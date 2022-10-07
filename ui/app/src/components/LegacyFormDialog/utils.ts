@@ -41,7 +41,7 @@ export interface LegacyFormDialogBaseProps {
     datasource: string;
     fieldId: string;
   };
-  fieldsIndexes?: LookupTable<string | number>;
+  index?: string | number;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<

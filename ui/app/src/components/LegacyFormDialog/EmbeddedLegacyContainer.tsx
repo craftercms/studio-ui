@@ -72,7 +72,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
     onClosed,
     iceGroupId,
     newEmbedded,
-    fieldsIndexes
+    index
   } = props;
 
   const { formatMessage } = useIntl();
@@ -85,6 +85,13 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   // changes (useDetailedItemNoState).
   const item = useFetchItem(path);
   const availableActions = item?.availableActions;
+  let fieldsIndexes;
+  if (selectedFields && index) {
+    fieldsIndexes = {};
+    selectedFields.forEach((id) => {
+      fieldsIndexes[id] = index;
+    });
+  }
 
   const src = useMemo(
     () =>
