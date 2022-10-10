@@ -16,29 +16,19 @@
 
 import React, { useMemo, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { ApiResponse } from '../../models/ApiResponse';
-import { deleteMember, fetchMembers } from '../../services/clusters';
+import { fetchMembers } from '../../services/clusters';
 import { ClusterMember } from '../../models/Clusters';
 import ClusterGridUI from '../ClusterGrid';
-import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useDispatch } from 'react-redux';
-import { showSystemNotification } from '../../state/actions/system';
 import { ClustersGridSkeletonTable } from '../ClusterGrid/ClustersGridSkeletonTable';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
-
-const translations = defineMessages({
-  clusterDeleted: {
-    id: 'clusterManagement.clusterDeleted',
-    defaultMessage: 'Cluster deleted successfully'
-  }
-});
 
 export function ClusterManagement() {
   const [clusters, setClusters] = useState<ClusterMember[]>();

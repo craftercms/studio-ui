@@ -14,15 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { del, get } from '../utils/ajax';
+import { get } from '../utils/ajax';
 import { ClusterMember } from '../models/Clusters';
-import { map, pluck } from 'rxjs/operators';
+import { pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function fetchMembers(): Observable<ClusterMember[]> {
   return get<{ clusterMembers: ClusterMember[] }>(`/studio/api/2/cluster`).pipe(pluck('response', 'clusterMembers'));
-}
-
-export function deleteMember(id: number): Observable<true> {
-  return del(`/studio/api/2/cluster?id=${id}`).pipe(map(() => true));
 }
