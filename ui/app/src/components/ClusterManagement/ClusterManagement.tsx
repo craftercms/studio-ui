@@ -44,8 +44,6 @@ export function ClusterManagement() {
   const [clusters, setClusters] = useState<ClusterMember[]>();
   const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<ApiResponse>();
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
 
   const refresh = () => {
     setFetching(true);
@@ -79,22 +77,6 @@ export function ClusterManagement() {
     }
   );
 
-  const onDeleteCluster = (cluster: ClusterMember) => {
-    deleteMember(cluster.id).subscribe(
-      () => {
-        refresh();
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.clusterDeleted)
-          })
-        );
-      },
-      ({ response: { response } }) => {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    );
-  };
-
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
@@ -118,7 +100,7 @@ export function ClusterManagement() {
           }
         }}
       >
-        <ClusterGridUI resource={resource} onDeleteCluster={onDeleteCluster} />
+        <ClusterGridUI resource={resource} />
       </SuspenseWithEmptyState>
     </Paper>
   );
