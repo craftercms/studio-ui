@@ -335,6 +335,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     controlWidgetContainerEl.appendChild(pathEl);
 
     var inputEl = document.createElement('input');
+    inputEl.setAttribute('autocomplete', 'off');
+    inputEl.setAttribute('spellcheck', 'false');
+    inputEl.setAttribute('autocapitalize', 'none');
     this.inputEl = inputEl;
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
