@@ -48,8 +48,7 @@ export function getSystemLink({
 }
 
 export function copyToClipboard(textToCopy: string): Promise<void> {
-  // Clipboard is only available on user-initiated callbacks so this may fail when
-  // attempting to auto-copy over non-secure contexts (e.g. not https).
+  // Clipboard is only available on user-initiated callbacks over non-secure contexts (e.g. not https).
   return (
     navigator.clipboard?.writeText(textToCopy) ??
     new Promise((resolve, reject) =>
