@@ -14,21 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { ApiResponse } from '../../models/ApiResponse';
 import { fetchMembers } from '../../services/clusters';
 import { ClusterMember } from '../../models/Clusters';
 import ClusterGridUI from '../ClusterGrid';
-import { ClustersGridSkeletonTable } from '../ClusterGrid/ClustersGridSkeletonTable';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import LoadingState from '../LoadingState';
+import EmptyState from '../EmptyState';
 
 export function ClusterManagement() {
   const [clusters, setClusters] = useState<ClusterMember[]>();
@@ -53,20 +53,6 @@ export function ClusterManagement() {
     refresh();
   });
 
-  const resource = useLogicResource<
-    ClusterMember[],
-    { clusters: ClusterMember[]; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(() => ({ clusters, error, fetching }), [clusters, error, fetching]),
-    {
-      shouldResolve: (source) => Boolean(source.clusters) && !fetching,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetching && resource.complete,
-      resultSelector: (source) => source.clusters,
-      errorSelector: () => error
-    }
-  );
-
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
@@ -79,19 +65,17 @@ export function ClusterManagement() {
           </Tooltip>
         }
       />
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <ClustersGridSkeletonTable />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: <FormattedMessage id="clusterGrid.emptyStateMessage" defaultMessage="No Clusters Found" />
-          }
-        }}
-      >
-        <ClusterGridUI resource={resource} />
-      </SuspenseWithEmptyState>
+      {error ? (
+        <ApiResponseErrorState error={error} />
+      ) : fetching ? (
+        <LoadingState />
+      ) : clusters?.length ? (
+        <ClusterGridUI clusters={clusters} />
+      ) : (
+        <EmptyState
+          title={<FormattedMessage id="clusterGrid.emptyStateMessage" defaultMessage="No Clusters Found" />}
+        />
+      )}
     </Paper>
   );
 }

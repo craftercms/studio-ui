@@ -15,7 +15,6 @@
  */
 
 import { ClusterMember } from '../../models/Clusters';
-import { Resource } from '../../models/Resource';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
@@ -29,13 +28,12 @@ import useStyles from './styles';
 import FiberManualRecordRoundedIcon from '@mui/icons-material/FiberManualRecordRounded';
 
 export interface ClusterGridProps {
-  resource: Resource<ClusterMember[]>;
+  clusters: ClusterMember[];
 }
 
 export function ClusterGridUI(props: ClusterGridProps) {
-  const { resource } = props;
+  const { clusters } = props;
   const { classes } = useStyles();
-  const clusters = resource.read();
 
   return (
     <TableContainer>
