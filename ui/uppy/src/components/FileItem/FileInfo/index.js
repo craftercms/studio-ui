@@ -84,7 +84,9 @@ const renderFileSize = (props) =>
   props.file.data.size && <div class="uppy-Dashboard-Item-statusSize">{prettierBytes(props.file.data.size)}</div>;
 
 const renderPolicyWarning = (props) => {
-  const { file, allowed } = props;
+  const file = props.file;
+  const allowed = file.meta.allowed;
+
   return allowed ? (
     <div class="uppy-dashboard-site-policy-warning">
       {' '}
