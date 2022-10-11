@@ -667,7 +667,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               hostToHost$.next(sortItemOperationFailed());
               // If write operation fails the items remains locked, so we need to dispatch unlockItem
               dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed));
+              enqueueSnackbar(formatMessage(guestMessages.sortOperationFailed), { variant: 'error' });
             }
           });
           break;
@@ -717,7 +717,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               hostToGuest$.next(insertOperationFailed());
               // If write operation fails the items remains locked, so we need to dispatch unlockItem
               dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed), { variant: 'error' });
             }
           });
           break;
@@ -764,7 +764,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               hostToGuest$.next(insertOperationFailed());
               // If write operation fails the items remains locked, so we need to dispatch unlockItem
               dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed));
+              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed), { variant: 'error' });
             }
           });
           break;
@@ -779,11 +779,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               hostToGuest$.next(insertItemOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.insertItemOperationComplete));
             },
-            error() {
+            error(error) {
+              console.error(`${type} failed`, error);
               hostToGuest$.next(insertItemOperationFailed());
               // If write operation fails the items remains locked, so we need to dispatch unlockItem
               dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.insertItemOperationFailed));
+              enqueueSnackbar(formatMessage(guestMessages.insertItemOperationFailed), { variant: 'error' });
             }
           });
           break;
@@ -804,11 +805,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               hostToGuest$.next(duplicateItemOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
             },
-            error() {
+            error(error) {
+              console.error(`${type} failed`, error);
               hostToGuest$.next(duplicateItemOperationFailed());
               // If write operation fails the items remains locked, so we need to dispatch unlockItem
               dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed));
+              enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationFailed), { variant: 'error' });
             }
           });
           break;
@@ -859,7 +861,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               hostToGuest$.next(moveItemOperationFailed());
               // If write operation fails the items remains locked, so we need to dispatch unlockItem
               dispatch(batchActions([unlockItem({ path: originPath }), unlockItem({ path: targetPath })]));
-              enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed));
+              enqueueSnackbar(formatMessage(guestMessages.moveOperationFailed), { variant: 'error' });
             }
           });
           break;
@@ -900,7 +902,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               hostToHost$.next(deleteItemOperationFailed());
               // If write operation fails the items remains locked, so we need to dispatch unlockItem
               dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed));
+              enqueueSnackbar(formatMessage(guestMessages.deleteOperationFailed), { variant: 'error' });
             }
           });
           break;
@@ -931,9 +933,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 updatedModifiedItem(path);
                 enqueueSnackbar(formatMessage(guestMessages.updateOperationComplete));
               },
-              error() {
+              error(error) {
+                console.error(`${type} failed`, error);
                 hostToGuest$.next(updateFieldValueOperationFailed());
-                enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed));
+                enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed), { variant: 'error' });
               }
             });
           break;
@@ -991,8 +994,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 });
               },
               error(error) {
-                console.log(error);
-                enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed));
+                console.error(`${type} failed`, error);
+                enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed), { variant: 'error' });
               },
               complete() {
                 hostToGuest$.next({

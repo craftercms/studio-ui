@@ -48,7 +48,14 @@ export function getSystemLink({
 }
 
 export function copyToClipboard(textToCopy: string): Promise<void> {
-  return navigator.clipboard.writeText(textToCopy);
+  // Clipboard is only available on user-initiated callbacks so this may fail when
+  // attempting to auto-copy over non-secure contexts (e.g. not https).
+  return (
+    navigator.clipboard?.writeText(textToCopy) ??
+    new Promise((resolve, reject) =>
+      reject('Copying to clipboard is only available in secure contexts or user-initiated callbacks.')
+    )
+  );
 }
 
 let monaco$: ReplaySubject<Monaco>;
