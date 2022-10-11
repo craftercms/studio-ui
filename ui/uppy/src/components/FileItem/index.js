@@ -62,6 +62,7 @@ module.exports = class FileItem extends Component {
             acquirers={this.props.acquirers}
             containerWidth={this.props.containerWidth}
             i18n={this.props.i18n}
+            externalMessages={this.props.externalMessages}
           />
           <Buttons
             file={file}

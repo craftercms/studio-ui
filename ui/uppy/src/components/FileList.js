@@ -71,6 +71,7 @@ module.exports = (props) => {
             openFileEditor={props.openFileEditor}
             canEditFile={props.canEditFile}
             file={props.files[fileID]}
+            externalMessages={props.externalMessages}
           />
         ))}
       </div>
