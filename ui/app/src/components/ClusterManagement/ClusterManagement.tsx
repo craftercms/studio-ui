@@ -32,19 +32,15 @@ import EmptyState from '../EmptyState';
 
 export function ClusterManagement() {
   const [clusters, setClusters] = useState<ClusterMember[]>();
-  const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<ApiResponse>();
 
   const refresh = () => {
-    setFetching(true);
     fetchMembers().subscribe(
       (clusters) => {
         setClusters(clusters);
-        setFetching(false);
       },
       ({ response }) => {
         setError(response);
-        setFetching(false);
       }
     );
   };
@@ -67,14 +63,16 @@ export function ClusterManagement() {
       />
       {error ? (
         <ApiResponseErrorState error={error} />
-      ) : fetching ? (
-        <LoadingState />
-      ) : clusters?.length ? (
-        <ClusterGridUI clusters={clusters} />
+      ) : clusters ? (
+        clusters.length ? (
+          <ClusterGridUI clusters={clusters} />
+        ) : (
+          <EmptyState
+            title={<FormattedMessage id="clusterGrid.emptyStateMessage" defaultMessage="No Clusters Found" />}
+          />
+        )
       ) : (
-        <EmptyState
-          title={<FormattedMessage id="clusterGrid.emptyStateMessage" defaultMessage="No Clusters Found" />}
-        />
+        <LoadingState />
       )}
     </Paper>
   );
