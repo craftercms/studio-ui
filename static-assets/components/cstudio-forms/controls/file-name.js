@@ -352,6 +352,8 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
 
     var inputEl = document.createElement('input');
     inputEl.setAttribute('autocomplete', 'off');
+    inputEl.setAttribute('spellcheck', 'false');
+    inputEl.setAttribute('autocapitalize', 'none');
     this.inputEl = inputEl;
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
@@ -393,17 +395,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       },
       this
     );
-    Event.on(inputEl, 'keyup', this.processKey, inputEl);
-    Event.on(
-      inputEl,
-      'paste',
-      function (evt, el) {
-        setTimeout(function () {
-          me.processKey(evt, el);
-        }, 100);
-      },
-      inputEl
-    );
+    Event.on(inputEl, 'input', this.processKey, inputEl);
 
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
