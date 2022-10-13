@@ -26,7 +26,6 @@ export interface ContentTypesGridProps {
   isCompact: boolean;
   selectedContentType?: string;
   onTypeOpen(data: LegacyContentType): void;
-  getPrevImg(data: LegacyContentType): string;
 }
 
 export interface NewContentDialogBaseProps {

@@ -63,7 +63,7 @@ export function ContentTypesLoader(props: { numOfItems?: number; isCompact: bool
 }
 
 export function ContentTypesGrid(props: ContentTypesGridProps) {
-  const { resource, isCompact, onTypeOpen, getPrevImg, selectedContentType } = props;
+  const { resource, isCompact, onTypeOpen, selectedContentType } = props;
   const { classes } = useStyles();
   const filterContentTypes = resource.read();
   return (
@@ -74,7 +74,7 @@ export function ContentTypesGrid(props: ContentTypesGridProps) {
             isCompact={isCompact}
             headerTitle={content.label}
             subheader={content.form}
-            img={getPrevImg(content)}
+            contentTypeName={content.name}
             onClick={() => onTypeOpen(content)}
             isSelected={content.name === selectedContentType}
           />

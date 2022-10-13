@@ -190,40 +190,23 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
   },
 
   setDefaultTemplate(contentTypes) {
-    var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
     var contentTypesSelect = YDom.get('wcm-content-types-dropdown');
     if (!contentTypesSelect) return;
-    var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
-    var defaultImg = 'default-contentType.jpg';
     var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
 
     for (var k = 0; k < contentTypes.length; k++) {
       if (contentTypesSelect.value == contentTypes[k].form) {
-        if (
-          (contentTypes[k].image && contentTypes[k].image != '') ||
-          (contentTypes[k].imageThumbnail &&
-            contentTypes[k].imageThumbnail != '' &&
-            contentTypes[k].imageThumbnail != 'undefined')
-        ) {
-          var imageName =
-            contentTypes[k].image && contentTypes[k].image != ''
-              ? contentTypes[k].image
-              : contentTypes[k].imageThumbnail;
+        var imageName =
+          contentTypes[k].image && contentTypes[k].image != '' ? contentTypes[k].image : contentTypes[k].imageThumbnail;
 
-          const extensionRegex = /(?:\.([^.]+))?$/;
-          const extension = extensionRegex.exec(imageName)[1];
+        const extensionRegex = /(?:\.([^.]+))?$/;
+        const extension = extensionRegex.exec(imageName)[1];
 
-          this.getImage(
-            `${configFilesPath}/content-types${contentTypesSelect.value}/${imageName}`,
-            imageName
-          ).subscribe((response) => {
-            contentTypePreviewImg.src = URL.createObjectURL(
-              new Blob([response.response], { type: `image/${extension}` })
-            );
-          });
-        } else {
-          contentTypePreviewImg.src = defaultSrc + defaultImg;
-        }
+        this.getImage(contentTypesSelect.value).subscribe((response) => {
+          contentTypePreviewImg.src = URL.createObjectURL(
+            new Blob([response.response], { type: `image/${extension}` })
+          );
+        });
       }
     }
   },
@@ -265,38 +248,23 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
     }
 
     YAHOO.util.Event.addListener('wcm-content-types-dropdown', 'change', function () {
-      var defaultSrc = CStudioAuthoringContext.baseUri + '/static-assets/themes/cstudioTheme/images/';
-      var defaultImg = 'default-contentType.jpg';
       var contentTypePreviewImg = YDom.get('contentTypePreviewImg');
-      var configFilesPath = CStudioAuthoring.Constants.CONFIG_FILES_PATH;
 
       for (var k = 0; k < contentTypes.length; k++) {
         if (this.value == contentTypes[k].form) {
-          if (
-            (contentTypes[k].image && contentTypes[k].image != '') ||
-            (contentTypes[k].imageThumbnail &&
-              contentTypes[k].imageThumbnail != '' &&
-              contentTypes[k].imageThumbnail != 'undefined')
-          ) {
-            var imageName =
-              contentTypes[k].image && contentTypes[k].image != ''
-                ? contentTypes[k].image
-                : contentTypes[k].imageThumbnail;
+          var imageName =
+            contentTypes[k].image && contentTypes[k].image != ''
+              ? contentTypes[k].image
+              : contentTypes[k].imageThumbnail;
 
-            const extensionRegex = /(?:\.([^.]+))?$/;
-            const extension = extensionRegex.exec(imageName)[1];
+          const extensionRegex = /(?:\.([^.]+))?$/;
+          const extension = extensionRegex.exec(imageName)[1];
 
-            me.getImage(
-              `${configFilesPath}/content-types${contentTypesSelect.value}/${imageName}`,
-              imageName
-            ).subscribe((response) => {
-              contentTypePreviewImg.src = URL.createObjectURL(
-                new Blob([response.response], { type: `image/${extension}` })
-              );
-            });
-          } else {
-            contentTypePreviewImg.src = defaultSrc + defaultImg;
-          }
+          me.getImage(contentTypesSelect.value).subscribe((response) => {
+            contentTypePreviewImg.src = URL.createObjectURL(
+              new Blob([response.response], { type: `image/${extension}` })
+            );
+          });
         }
       }
     });
@@ -304,13 +272,8 @@ CStudioAuthoring.Dialogs.DialogSelectContentType = {
     $('#wcm-content-types-dropdown').fadeIn('fast');
   },
 
-  getImage(path) {
-    const qs = CrafterCMSNext.util.object.toQueryString({
-      site: CStudioAuthoringContext.site,
-      path
-    });
-
-    return CrafterCMSNext.util.ajax.getBinary(`/studio/api/1/services/api/1/content/get-content-at-path.bin${qs}`);
+  getImage(contentTypeId) {
+    return CrafterCMSNext.services.contentTypes.fetchPreviewImage(CStudioAuthoringContext.site, contentTypeId);
   },
 
   closeDialog() {

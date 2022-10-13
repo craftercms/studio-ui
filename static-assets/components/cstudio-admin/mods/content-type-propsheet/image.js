@@ -117,67 +117,111 @@ YAHOO.extend(
               }
 
               if (valid) {
-                var image = new Image();
+                const defPath = `/content-types/${CStudioAdminConsole.contentTypeSelected}/form-definition.xml`;
+                CrafterCMSNext.services.configuration
+                  .fetchConfigurationDOM(CStudioAuthoringContext.site, defPath, 'studio')
+                  .subscribe({
+                    next(doc) {
+                      let imageThumbnail = doc.querySelector('imageThumbnail');
 
-                function imageLoaded() {
-                  var originalWidth = this.width,
-                    originalHeight = this.height,
-                    widthConstrains = _self.WIDTHCONSTRAINS,
-                    heightConstrains = _self.HEIGHTCONSTRAINS;
-                  message = CMgs.format(langBundle, 'constraintsError');
-
-                  if (
-                    widthConstrains &&
-                    originalWidth <= widthConstrains &&
-                    heightConstrains &&
-                    originalHeight <= heightConstrains
-                  ) {
-                    var itemURL = to.fileName;
-                    _self.valueEl.value = itemURL;
-                    _self.value = itemURL;
-                    _self.updateFn(null, _self.valueEl);
-                  } else {
-                    var callback = {
-                      success: function (content) {
-                        var itemURL = content.message.internalName;
-                        _self.valueEl.value = itemURL;
-                        _self.value = itemURL;
-                        _self.updateFn(null, _self.valueEl);
+                      if (!imageThumbnail) {
+                        imageThumbnail = document.createElement('imageThumbnail');
+                        doc.appendChild(imageThumbnail);
                       }
-                    };
+                      imageThumbnail.innerHTML = to.fileName;
 
-                    CStudioAuthoring.Operations.cropperImage(
-                      CStudioAuthoringContext.site,
-                      message,
-                      imageData,
-                      widthConstrains,
-                      heightConstrains,
-                      widthConstrains / heightConstrains,
-                      null,
-                      callback
-                    );
-                  }
-                }
-                image.addEventListener('load', imageLoaded, false);
-                image.addEventListener('error', function (e) {
-                  message = CMgs.format(langBundle, 'loadImageError');
-                  CStudioAuthoring.Operations.showSimpleDialog(
-                    'error-dialog',
-                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                    CMgs.format(langBundle, 'notification'),
-                    message,
-                    null, // use default button
-                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                    'studioDialog'
-                  );
-                });
+                      const xmlFormDef = new XMLSerializer().serializeToString(doc);
+                      CrafterCMSNext.services.configuration
+                        .writeConfiguration(CStudioAuthoringContext.site, defPath, 'studio', xmlFormDef)
+                        .subscribe({
+                          next() {
+                            const image = new Image();
 
-                _self.getImage(url).subscribe((response) => {
-                  imageData.previewUrl = URL.createObjectURL(
-                    new Blob([response.response], { type: `image/${to.fileExtension}` })
-                  );
-                  image.src = imageData.previewUrl;
-                });
+                            function imageLoaded() {
+                              const originalWidth = this.width,
+                                originalHeight = this.height,
+                                widthConstrains = _self.WIDTHCONSTRAINS,
+                                heightConstrains = _self.HEIGHTCONSTRAINS;
+                              message = CMgs.format(langBundle, 'constraintsError');
+
+                              if (
+                                widthConstrains &&
+                                originalWidth <= widthConstrains &&
+                                heightConstrains &&
+                                originalHeight <= heightConstrains
+                              ) {
+                                const itemURL = to.fileName;
+                                _self.valueEl.value = itemURL;
+                                _self.value = itemURL;
+                                _self.updateFn(null, _self.valueEl);
+                              } else {
+                                var callback = {
+                                  success: function (content) {
+                                    const itemURL = content.message.internalName;
+                                    _self.valueEl.value = itemURL;
+                                    _self.value = itemURL;
+                                    _self.updateFn(null, _self.valueEl);
+                                  }
+                                };
+
+                                CStudioAuthoring.Operations.cropperImage(
+                                  CStudioAuthoringContext.site,
+                                  message,
+                                  imageData,
+                                  widthConstrains,
+                                  heightConstrains,
+                                  widthConstrains / heightConstrains,
+                                  null,
+                                  callback
+                                );
+                              }
+                            }
+                            image.addEventListener('load', imageLoaded, false);
+                            image.addEventListener('error', function (e) {
+                              message = CMgs.format(langBundle, 'loadImageError');
+                              CStudioAuthoring.Operations.showSimpleDialog(
+                                'error-dialog',
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(langBundle, 'notification'),
+                                message,
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                'studioDialog'
+                              );
+                            });
+
+                            _self.getImage(CStudioAdminConsole.contentTypeSelected).subscribe((response) => {
+                              imageData.previewUrl = URL.createObjectURL(
+                                new Blob([response.response], { type: `image/${to.fileExtension}` })
+                              );
+                              image.src = imageData.previewUrl;
+                            });
+                          },
+                          error() {
+                            CStudioAuthoring.Operations.showSimpleDialog(
+                              'errorDialog-dialog',
+                              CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                              CMgs.format(langBundle, 'notification'),
+                              CMgs.format(langBundle, 'saveFailed'),
+                              null, // use default button
+                              YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                              'studioDialog'
+                            );
+                          }
+                        });
+                    },
+                    error() {
+                      CStudioAuthoring.Operations.showSimpleDialog(
+                        'errorDialog-dialog',
+                        CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CMgs.format(langBundle, 'notification'),
+                        CMgs.format(langBundle, 'failConfig'),
+                        null, // use default button
+                        YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                        'studioDialog'
+                      );
+                    }
+                  });
               } else {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'error-dialog',
@@ -220,24 +264,8 @@ YAHOO.extend(
       return CStudioAuthoringContext.previewAppBaseUri + imagePath + '';
     },
 
-    createImageData: function (imageData, path) {
-      var url = this.createPreviewUrl(
-        '/studio/api/1/services/api/1/content/get-content-at-path.bin?site=' +
-          CStudioAuthoringContext.site +
-          '&path=' +
-          path
-      );
-      imageData.previewUrl = url;
-      imageData.relativeUrl = path;
-    },
-
-    getImage(path) {
-      const qs = CrafterCMSNext.util.object.toQueryString({
-        site: CStudioAuthoringContext.site,
-        path
-      });
-
-      return CrafterCMSNext.util.ajax.getBinary(`/studio/api/1/services/api/1/content/get-content-at-path.bin${qs}`);
+    getImage(contentTypeId) {
+      return CrafterCMSNext.services.contentTypes.fetchPreviewImage(CStudioAuthoringContext.site, contentTypeId);
     },
 
     isImageValid: function (width, originalWidth, height, originalHeight) {

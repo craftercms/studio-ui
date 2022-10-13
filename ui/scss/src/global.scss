@@ -304,20 +304,6 @@ sup {
   color: #0176b1;
 }
 
-#logo {
-  background: url(../../../api/1/services/api/1/content/get-content-at-path.bin?path=/configuration/app-logo.png)
-    no-repeat left;
-  float: left;
-  margin: 0 0 0 010px;
-  padding: 0 0 0 0;
-}
-
-#logo a {
-  display: block;
-  text-indent: -9999px;
-  width: 94px;
-}
-
 #dropdownWrapper {
   background: url(../images/bg/bar_vertical_divider.gif) repeat-y left;
   height: 30px;

@@ -211,6 +211,7 @@
           success: function (formDef) {
             // render content type container in canvas
             this.context.renderContentTypeVisualContainer(formDef);
+            CStudioAdminConsole.selectedFormDef = formDef;
 
             // render tools on right
             this.context.renderContentTypeTools(this.context.config);

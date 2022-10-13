@@ -71,12 +71,6 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
     }
   ];
 
-  const getPrevImg = (content: LegacyContentType) => {
-    return content?.imageThumbnail
-      ? `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types${content.form}/${content.imageThumbnail}`
-      : '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-  };
-
   const onSelectedContentType = useCallback(
     (contentType: LegacyContentType) => {
       const path = withoutIndex(selectedItem.path);
@@ -184,12 +178,7 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
             }
           }}
         >
-          <ContentTypesGrid
-            resource={resource}
-            isCompact={isCompact}
-            onTypeOpen={onSelectedContentType}
-            getPrevImg={getPrevImg}
-          />
+          <ContentTypesGrid resource={resource} isCompact={isCompact} onTypeOpen={onSelectedContentType} />
         </SuspenseWithEmptyState>
       </DialogBody>
       <DialogFooter>

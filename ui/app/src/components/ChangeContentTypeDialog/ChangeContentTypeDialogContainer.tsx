@@ -64,11 +64,6 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
   const [keyword, setKeyword] = useState('');
   const [debounceKeyword, setDebounceKeyword] = useState('');
 
-  const getPrevImg = (content: LegacyContentType) =>
-    content?.imageThumbnail
-      ? `/studio/api/1/services/api/1/content/get-content-at-path.bin?site=${site}&path=/config/studio/content-types${content.form}/${content.imageThumbnail}`
-      : '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
-
   const onSelectedContentType = (contentType: LegacyContentType) => {
     onContentTypeSelected?.({
       newContentTypeId: contentType.form
@@ -166,7 +161,6 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
             resource={resource}
             isCompact={isCompact}
             onTypeOpen={onSelectedContentType}
-            getPrevImg={getPrevImg}
             selectedContentType={selectedContentType}
           />
         </SuspenseWithEmptyState>
