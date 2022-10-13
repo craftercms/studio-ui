@@ -1824,7 +1824,16 @@ var nodeOpen = false,
         );
       },
 
-      performSimpleIceEdit: function (item, field, isEdit, callback, aux, isFlattenedInclude, openHidden) {
+      performSimpleIceEdit: function (
+        item,
+        field,
+        isEdit,
+        callback,
+        aux,
+        isFlattenedInclude,
+        openHidden,
+        fieldsIndexes
+      ) {
         let topWindow = getTopLegacyWindow();
         var editorId = CStudioAuthoring.Utils.generateUUID();
 
@@ -1904,7 +1913,8 @@ var nodeOpen = false,
             $modal.find('.studio-ice-container-' + editorId),
             aux,
             editorId,
-            isFlattenedInclude
+            isFlattenedInclude,
+            fieldsIndexes
           );
 
           view.on('end', function () {

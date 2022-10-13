@@ -16,6 +16,7 @@
 
 import { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
+import { LookupTable } from '../../models';
 
 export interface LegacyFormDialogBaseProps {
   open?: boolean;
@@ -40,6 +41,7 @@ export interface LegacyFormDialogBaseProps {
     datasource: string;
     fieldId: string;
   };
+  index?: string | number;
 }
 
 export type LegacyFormDialogProps = PropsWithChildren<

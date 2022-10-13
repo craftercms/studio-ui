@@ -420,6 +420,7 @@ export const requestEdit = /*#__PURE__*/ createAction<{
   modelId: string;
   fields?: string[];
   parentModelId?: string;
+  index?: string | number;
 }>('REQUEST_EDIT');
 
 // endregion

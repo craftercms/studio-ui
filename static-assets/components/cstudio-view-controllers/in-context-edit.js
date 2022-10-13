@@ -49,7 +49,18 @@
      *
      * on error, display the issue and then close the dialog
      */
-    initializeContent: function (item, field, site, isEdit, callback, $modal, aux, editorId, isFlattenedInclude) {
+    initializeContent: function (
+      item,
+      field,
+      site,
+      isEdit,
+      callback,
+      $modal,
+      aux,
+      editorId,
+      isFlattenedInclude,
+      fieldsIndexes
+    ) {
       var iframeEl = getTopLegacyWindow().document.getElementById('in-context-edit-editor-' + editorId);
       var dialogEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0_c');
       var dialogBodyEl = document.getElementById('viewcontroller-in-context-edit-' + editorId + '_0');
@@ -70,7 +81,8 @@
             isEdit,
             aux,
             editorId,
-            isFlattenedInclude
+            isFlattenedInclude,
+            fieldsIndexes
           );
 
           this.iframeEl.src = windowUrl;
@@ -136,7 +148,8 @@
       isEdit,
       auxParams,
       editorId,
-      isFlattenedInclude
+      isFlattenedInclude,
+      fieldsIndexes
     ) {
       var windowUrl = '';
       var formId = contentType.form;
@@ -188,6 +201,10 @@
         }
       } else {
         windowUrl += '&iceComponent=true';
+      }
+
+      if (fieldsIndexes) {
+        windowUrl += '&fieldsIndexes=' + encodeURIComponent(JSON.stringify(fieldsIndexes));
       }
 
       if (isEdit === true || isEdit === 'true') {

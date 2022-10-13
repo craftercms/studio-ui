@@ -1254,6 +1254,7 @@ var CStudioForms =
           var iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
           var iceComponent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceComponent');
           const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
+          const fieldsIndexes = CStudioAuthoring.Utils.getQueryVariable(location.search, 'fieldsIndexes');
 
           if (iceId && iceId != '') {
             var html = me._renderIceLayout(form);
@@ -1267,7 +1268,13 @@ var CStudioForms =
             var html = me._renderIceLayout(form);
             form.containerEl.innerHTML = html;
             const fields = JSON.parse(decodeURIComponent(selectedFields));
-            me._renderFields(form, fields);
+
+            if (fieldsIndexes) {
+              const fieldsIndexesObj = JSON.parse(decodeURIComponent(fieldsIndexes));
+              me._renderFields(form, fields, fieldsIndexesObj);
+            } else {
+              me._renderFields(form, fields);
+            }
           } else {
             var html = me._renderFormLayout(form);
             form.containerEl.innerHTML = html;
@@ -2235,7 +2242,7 @@ var CStudioForms =
       /**
        * render a repeat
        */
-      _renderRepeat: function (formDef, repeat, form, formSection, sectionEl) {
+      _renderRepeat: function (formDef, repeat, form, formSection, sectionEl, fieldIndex) {
         if (form.customController && form.customController.isFieldRelevant(repeat) == false) {
           return;
         }
@@ -2246,6 +2253,7 @@ var CStudioForms =
         repeatContainerEl.minOccurs = repeat.minOccurs;
         repeatContainerEl.formDef = formDef;
         repeatContainerEl.repeat = repeat;
+        repeatContainerEl.index = fieldIndex;
         repeatContainerEl.form = form;
         repeatContainerEl.formSection = formSection;
         repeatContainerEl.sectionEl = sectionEl;
@@ -2325,7 +2333,7 @@ var CStudioForms =
         var currentCount = form.model[repeat.id] ? form.model[repeat.id].length : 0;
         var repeatCount = currentCount > minOccurs ? currentCount : minOccurs;
 
-        //handle case where there are no ites
+        //handle case where there are no items
         if ((minOccurs == 0 && !form.model[repeat.id]) || repeatCount == 0) {
           var repeatInstanceContainerEl = document.createElement('div');
           repeatContainerEl.appendChild(repeatInstanceContainerEl);
@@ -2367,123 +2375,129 @@ var CStudioForms =
           }
         }
 
+        const repeatIndex = repeatContainerEl.index;
+        const repeatIndexNOU = repeatIndex === null || repeatIndex === undefined;
         for (var i = 0; i < repeatCount; i++) {
-          var repeatInstanceContainerEl = document.createElement('div');
-          YAHOO.util.Dom.addClass(repeatInstanceContainerEl, 'cstudio-form-repeat-container');
-          repeatInstanceContainerEl._repeatIndex = i;
+          if (repeatIndexNOU || repeatIndex === i) {
+            var repeatInstanceContainerEl = document.createElement('div');
+            YAHOO.util.Dom.addClass(repeatInstanceContainerEl, 'cstudio-form-repeat-container');
+            repeatInstanceContainerEl._repeatIndex = i;
 
-          var titleEl = document.createElement('span');
-          repeatInstanceContainerEl.appendChild(titleEl);
-          YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
-          titleEl.textContent = repeat.title;
+            var titleEl = document.createElement('span');
+            repeatInstanceContainerEl.appendChild(titleEl);
+            YAHOO.util.Dom.addClass(titleEl, 'cstudio-form-repeat-title');
+            titleEl.textContent = repeat.title;
 
-          var addEl = document.createElement('a');
-          repeatInstanceContainerEl.appendChild(addEl);
-          YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
-          addEl.innerHTML = CMgs.format(formsLangBundle, 'repeatAddAnother');
-          if (form.readOnly || (maxOccurs != '*' && currentCount >= maxOccurs)) {
-            YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control-disabled');
-          } else {
-            addEl.onclick = function () {
-              form.onBeforeUiRefresh();
-              repeatContainerEl.form.setFocusedField(repeatContainerEl);
-              var itemArray = form.model[repeat.id];
-              var repeatArrayIndex = this.parentNode._repeatIndex;
-              itemArray.splice(repeatArrayIndex + 1, 0, []);
-              containerEl.reRender(containerEl);
+            if (repeatIndexNOU) {
+              var addEl = document.createElement('a');
+              repeatInstanceContainerEl.appendChild(addEl);
+              YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
+              addEl.innerHTML = CMgs.format(formsLangBundle, 'repeatAddAnother');
+              if (form.readOnly || (maxOccurs != '*' && currentCount >= maxOccurs)) {
+                YAHOO.util.Dom.addClass(addEl, 'cstudio-form-repeat-control-disabled');
+              } else {
+                addEl.onclick = function () {
+                  form.onBeforeUiRefresh();
+                  repeatContainerEl.form.setFocusedField(repeatContainerEl);
+                  var itemArray = form.model[repeat.id];
+                  var repeatArrayIndex = this.parentNode._repeatIndex;
+                  itemArray.splice(repeatArrayIndex + 1, 0, []);
+                  containerEl.reRender(containerEl);
 
-              var containerElNodes = $(containerEl.childNodes);
-              containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
-              $('html').scrollTop(containerElLastChildTop);
+                  var containerElNodes = $(containerEl.childNodes);
+                  containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
+                  $('html').scrollTop(containerElLastChildTop);
 
-              repeatEdited = true;
-            };
-          }
-
-          var upEl = document.createElement('a');
-          repeatInstanceContainerEl.appendChild(upEl);
-          YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
-          upEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveUp');
-          if (form.readOnly || i == 0) {
-            YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control-disabled');
-          } else {
-            upEl.onclick = function () {
-              //form.setFocusedField(null);
-              repeatContainerEl.form.setFocusedField(repeatContainerEl);
-              form.onBeforeUiRefresh();
-              var itemArray = form.model[repeat.id];
-              var repeatArrayIndex = this.parentNode._repeatIndex;
-              var itemToMove = itemArray[repeatArrayIndex];
-              itemArray.splice(repeatArrayIndex, 1);
-              itemArray.splice(repeatArrayIndex - 1, 0, itemToMove);
-              containerEl.reRender(containerEl);
-
-              var containerElNodes = $(containerEl.childNodes);
-              containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
-              $('html').scrollTop(containerElLastChildTop);
-
-              repeatEdited = true;
-            };
-          }
-
-          var downEl = document.createElement('a');
-          repeatInstanceContainerEl.appendChild(downEl);
-          YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
-          downEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveDown');
-          if (form.readOnly || i == repeatCount - 1) {
-            YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control-disabled');
-          } else {
-            downEl.onclick = function () {
-              //form.setFocusedField(null);
-              repeatContainerEl.form.setFocusedField(repeatContainerEl);
-              form.onBeforeUiRefresh();
-              var itemArray = form.model[repeat.id];
-              var repeatArrayIndex = this.parentNode._repeatIndex;
-              var itemToMove = itemArray[repeatArrayIndex];
-              itemArray.splice(repeatArrayIndex, 1);
-              itemArray.splice(repeatArrayIndex + 1, 0, itemToMove);
-              containerEl.reRender(containerEl);
-
-              var containerElNodes = $(containerEl.childNodes);
-              containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
-              $('html').scrollTop(containerElLastChildTop);
-
-              repeatEdited = true;
-            };
-          }
-
-          var deleteEl = document.createElement('a');
-          repeatInstanceContainerEl.appendChild(deleteEl);
-          YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
-          deleteEl.innerHTML = CMgs.format(formsLangBundle, 'repeatDelete');
-          if (form.readOnly || currentCount <= minOccurs) {
-            YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control-disabled');
-          } else {
-            deleteEl.onclick = function () {
-              repeatContainerEl.form.setFocusedField(repeatContainerEl);
-              form.onBeforeUiRefresh();
-              var itemArray = form.model[repeat.id];
-              var repeatArrayIndex = this.parentNode._repeatIndex;
-              itemArray.splice(repeatArrayIndex, 1);
-              containerEl.reRender(containerEl);
-
-              if (repeatArrayIndex) {
-                var containerElNodes = $(containerEl.childNodes);
-                containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
-                $('html').scrollTop(containerElLastChildTop);
+                  repeatEdited = true;
+                };
               }
 
-              repeatEdited = true;
-            };
-          }
+              var upEl = document.createElement('a');
+              repeatInstanceContainerEl.appendChild(upEl);
+              YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
+              upEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveUp');
+              if (form.readOnly || i == 0) {
+                YAHOO.util.Dom.addClass(upEl, 'cstudio-form-repeat-control-disabled');
+              } else {
+                upEl.onclick = function () {
+                  //form.setFocusedField(null);
+                  repeatContainerEl.form.setFocusedField(repeatContainerEl);
+                  form.onBeforeUiRefresh();
+                  var itemArray = form.model[repeat.id];
+                  var repeatArrayIndex = this.parentNode._repeatIndex;
+                  var itemToMove = itemArray[repeatArrayIndex];
+                  itemArray.splice(repeatArrayIndex, 1);
+                  itemArray.splice(repeatArrayIndex - 1, 0, itemToMove);
+                  containerEl.reRender(containerEl);
 
-          // Insert the repeat group instance to the DOM as late in the process as possible
-          repeatContainerEl.appendChild(repeatInstanceContainerEl);
+                  var containerElNodes = $(containerEl.childNodes);
+                  containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
+                  $('html').scrollTop(containerElLastChildTop);
 
-          for (var j = 0; j < repeat.fields.length; j++) {
-            var field = repeat.fields[j];
+                  repeatEdited = true;
+                };
+              }
 
-            this._renderField(formDef, field, form, formSection, repeatInstanceContainerEl, repeat, i);
+              var downEl = document.createElement('a');
+              repeatInstanceContainerEl.appendChild(downEl);
+              YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
+              downEl.innerHTML = CMgs.format(formsLangBundle, 'repeatMoveDown');
+              if (form.readOnly || i == repeatCount - 1) {
+                YAHOO.util.Dom.addClass(downEl, 'cstudio-form-repeat-control-disabled');
+              } else {
+                downEl.onclick = function () {
+                  //form.setFocusedField(null);
+                  repeatContainerEl.form.setFocusedField(repeatContainerEl);
+                  form.onBeforeUiRefresh();
+                  var itemArray = form.model[repeat.id];
+                  var repeatArrayIndex = this.parentNode._repeatIndex;
+                  var itemToMove = itemArray[repeatArrayIndex];
+                  itemArray.splice(repeatArrayIndex, 1);
+                  itemArray.splice(repeatArrayIndex + 1, 0, itemToMove);
+                  containerEl.reRender(containerEl);
+
+                  var containerElNodes = $(containerEl.childNodes);
+                  containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex + 1)).offset().top;
+                  $('html').scrollTop(containerElLastChildTop);
+
+                  repeatEdited = true;
+                };
+              }
+
+              var deleteEl = document.createElement('a');
+              repeatInstanceContainerEl.appendChild(deleteEl);
+              YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control btn btn-default btn-sm');
+              deleteEl.innerHTML = CMgs.format(formsLangBundle, 'repeatDelete');
+              if (form.readOnly || currentCount <= minOccurs) {
+                YAHOO.util.Dom.addClass(deleteEl, 'cstudio-form-repeat-control-disabled');
+              } else {
+                deleteEl.onclick = function () {
+                  repeatContainerEl.form.setFocusedField(repeatContainerEl);
+                  form.onBeforeUiRefresh();
+                  var itemArray = form.model[repeat.id];
+                  var repeatArrayIndex = this.parentNode._repeatIndex;
+                  itemArray.splice(repeatArrayIndex, 1);
+                  containerEl.reRender(containerEl);
+
+                  if (repeatArrayIndex) {
+                    var containerElNodes = $(containerEl.childNodes);
+                    containerElLastChildTop = $(containerElNodes.get(repeatArrayIndex - 1)).offset().top;
+                    $('html').scrollTop(containerElLastChildTop);
+                  }
+
+                  repeatEdited = true;
+                };
+              }
+            }
+
+            // Insert the repeat group instance to the DOM as late in the process as possible
+            repeatContainerEl.appendChild(repeatInstanceContainerEl);
+
+            for (var j = 0; j < repeat.fields.length; j++) {
+              var field = repeat.fields[j];
+
+              this._renderField(formDef, field, form, formSection, repeatInstanceContainerEl, repeat, i);
+            }
           }
         }
 
@@ -2664,21 +2678,32 @@ var CStudioForms =
 
       /* Render a list of fields from the form */
       /* fields: string[] - fields ids */
-      _renderFields: function (form, fields) {
+      _renderFields: function (form, fields, fieldsIndexes) {
         const formDef = form.definition;
         const sectionContainerEl = document.getElementById('ice-container');
         const sectionBodyEl = YDom.getElementsByClassName('cstudio-form-section-body', null, sectionContainerEl)[0];
         const formSection = new CStudioFormSection(form, sectionContainerEl);
+        // Only base fields (no subfields dot-separated).
+        // baseFields will be an array of objects with the baseField, full field and the index from fieldsIndexes
+        const fieldsData = fields.map((fieldId) => {
+          return {
+            id: fieldId,
+            baseField: fieldId.replace(/(\.).+$/, ''),
+            index: fieldsIndexes?.[fieldId]
+          };
+        });
 
         formDef.sections.forEach((section) => {
           section.fields
-            .filter((field) => fields.includes(field.id))
+            .filter((field) => fieldsData.find((fieldData) => fieldData.baseField === field.id))
             .forEach((field) => {
               if (field.type !== 'repeat') {
                 this._renderField(formDef, field, form, formSection, sectionBodyEl, null, null, true);
                 CStudioAuthoring.InContextEdit.autoSizeIceDialog();
               } else {
-                this._renderRepeat(formDef, field, form, formSection, sectionBodyEl);
+                const fieldData = fieldsData.find((fieldData) => fieldData.baseField === field.id);
+                const fieldIndex = fieldData.index;
+                this._renderRepeat(formDef, field, form, formSection, sectionBodyEl, fieldIndex);
                 CStudioAuthoring.InContextEdit.autoSizeIceDialog();
               }
             });

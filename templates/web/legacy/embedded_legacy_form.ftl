@@ -85,6 +85,7 @@
   const readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') === 'true';
   const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
   const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
+  const fieldsIndexes = CStudioAuthoring.Utils.getQueryVariable(location.search, 'fieldsIndexes');
   const newEmbedded = CStudioAuthoring.Utils.getQueryVariable(location.search, 'newEmbedded');
   const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
   const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
@@ -190,7 +191,9 @@
               },
               aux,
               null,
-              !!isHidden);
+              !!isHidden,
+              fieldsIndexes ? JSON.parse(decodeURIComponent(fieldsIndexes)) : null
+            );
           },
           failure: error => {
             error && console.error(error);

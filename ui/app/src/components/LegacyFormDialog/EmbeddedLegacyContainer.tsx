@@ -71,7 +71,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
     onClose,
     onClosed,
     iceGroupId,
-    newEmbedded
+    newEmbedded,
+    index
   } = props;
 
   const { formatMessage } = useIntl();
@@ -84,6 +85,13 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   // changes (useDetailedItemNoState).
   const item = useFetchItem(path);
   const availableActions = item?.availableActions;
+  let fieldsIndexes;
+  if (selectedFields && index) {
+    fieldsIndexes = {};
+    selectedFields.forEach((id) => {
+      fieldsIndexes[id] = index;
+    });
+  }
 
   const src = useMemo(
     () =>
@@ -100,7 +108,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         iceGroupId,
         ...(nnou(availableActions) && !isNewContent ? { canEdit: hasEditAction(availableActions) } : {}),
         ...(selectedFields && selectedFields.length ? { selectedFields: JSON.stringify(selectedFields) } : {}),
-        ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {})
+        ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {}),
+        ...(fieldsIndexes ? { fieldsIndexes: JSON.stringify(fieldsIndexes) } : {})
       }),
     [
       path,
@@ -115,7 +124,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       iceGroupId,
       selectedFields,
       newEmbedded,
-      availableActions
+      availableActions,
+      fieldsIndexes
     ]
   );
 

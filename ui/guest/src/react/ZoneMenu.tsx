@@ -194,7 +194,15 @@ export function ZoneMenu(props: ZoneMenuProps) {
       post(requestEdit({ typeOfEdit, modelId: componentId, parentModelId }));
     } else {
       const parentModelId = getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
-      post(requestEdit({ typeOfEdit, modelId, parentModelId, fields: record.fieldId }));
+      post(
+        requestEdit({
+          typeOfEdit,
+          modelId,
+          parentModelId,
+          fields: record.fieldId,
+          index
+        })
+      );
     }
     onCancel();
   };
