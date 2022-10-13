@@ -130,7 +130,7 @@ YAHOO.extend(
                       }
                       imageThumbnail.innerHTML = to.fileName;
 
-                      const xmlFormDef = CrafterCMSNext.util.xml.beautify(CrafterCMSNext.util.xml.serialize(doc));
+                      const xmlFormDef = new XMLSerializer().serializeToString(doc);
                       CrafterCMSNext.services.configuration
                         .writeConfiguration(CStudioAuthoringContext.site, defPath, 'studio', xmlFormDef)
                         .subscribe({
