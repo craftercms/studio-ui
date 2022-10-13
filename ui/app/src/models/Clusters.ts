@@ -15,15 +15,9 @@
  */
 
 export interface ClusterMember {
-  id: number;
+  primary: boolean;
   localAddress: string;
   state: 'ACTIVE' | 'INACTIVE';
-  heartbeat: string;
   gitUrl: string;
   gitRemoteName: string;
-  gitAuthType: string;
-  gitUsername?: string;
-  gitPassword?: string;
-  gitToken?: string;
-  gitPrivateKey?: string;
 }

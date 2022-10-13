@@ -15,7 +15,6 @@
  */
 
 import { ClusterMember } from '../../models/Clusters';
-import { Resource } from '../../models/Resource';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../GlobalAppGridRow';
@@ -26,38 +25,34 @@ import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
 import useStyles from './styles';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import ConfirmDropdown from '../ConfirmDropdown';
 import FiberManualRecordRoundedIcon from '@mui/icons-material/FiberManualRecordRounded';
 
 export interface ClusterGridProps {
-  resource: Resource<ClusterMember[]>;
-  onDeleteCluster(cluster: ClusterMember): void;
+  clusters: ClusterMember[];
 }
 
 export function ClusterGridUI(props: ClusterGridProps) {
-  const { resource, onDeleteCluster } = props;
+  const { clusters } = props;
   const { classes } = useStyles();
-  const clusters = resource.read();
 
   return (
     <TableContainer>
       <Table>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
-            <GlobalAppGridCell align="left" className="width10 minWidth100">
-              <Typography variant="subtitle2">
-                <FormattedMessage id="clusterGrid.localAddress" defaultMessage="Local Address" />
-              </Typography>
-            </GlobalAppGridCell>
             <GlobalAppGridCell align="center">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.state" defaultMessage="State" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width50">
+            <GlobalAppGridCell align="left">
               <Typography variant="subtitle2">
-                <FormattedMessage id="words.url" defaultMessage="Url" />
+                <FormattedMessage id="words.role" defaultMessage="Role" />
+              </Typography>
+            </GlobalAppGridCell>
+            <GlobalAppGridCell align="left" className="width10 minWidth100">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="clusterGrid.localAddress" defaultMessage="Local Address" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell align="left" className="width20">
@@ -65,49 +60,36 @@ export function ClusterGridUI(props: ClusterGridProps) {
                 <FormattedMessage id="clusterGrid.remoteName" defaultMessage="Remote Name" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width10 minWidth100">
+            <GlobalAppGridCell align="left" className="width50">
               <Typography variant="subtitle2">
-                <FormattedMessage id="clusterGrid.authType" defaultMessage="Auth Type" />
+                <FormattedMessage id="words.url" defaultMessage="Url" />
               </Typography>
             </GlobalAppGridCell>
-            <GlobalAppGridCell align="left" className="width10" />
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
           {clusters.map((cluster, i) => (
-            <GlobalAppGridRow key={cluster.id} className="hoverDisabled">
-              <GlobalAppGridCell align="left" className="width10">
-                {cluster.localAddress}
-              </GlobalAppGridCell>
+            <GlobalAppGridRow key={i} className="hoverDisabled">
               <GlobalAppGridCell align="center">
                 <FiberManualRecordRoundedIcon
                   className={cluster.state === 'ACTIVE' ? classes.active : classes.inactive}
                 />
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width50">
-                {cluster.gitUrl}
+              <GlobalAppGridCell align="left" className="width10">
+                {cluster.primary ? (
+                  <FormattedMessage id="words.primary" defaultMessage="Primary" />
+                ) : (
+                  <FormattedMessage id="words.replica" defaultMessage="Replica" />
+                )}
+              </GlobalAppGridCell>
+              <GlobalAppGridCell align="left" className="width10">
+                {cluster.localAddress}
               </GlobalAppGridCell>
               <GlobalAppGridCell align="left" className="width20">
                 {cluster.gitRemoteName}
               </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width10">
-                {cluster.gitAuthType}
-              </GlobalAppGridCell>
-              <GlobalAppGridCell align="left" className="width10">
-                {cluster.state === 'INACTIVE' && (
-                  <ConfirmDropdown
-                    cancelText={<FormattedMessage id="words.no" defaultMessage="No" />}
-                    confirmText={<FormattedMessage id="words.yes" defaultMessage="Yes" />}
-                    confirmHelperText={
-                      <FormattedMessage id="clusterGrid.confirmDeleteCluster" defaultMessage="Delete this cluster?" />
-                    }
-                    iconTooltip={<FormattedMessage id="clusterGrid.deleteCluster" defaultMessage="Delete cluster" />}
-                    icon={DeleteRoundedIcon}
-                    onConfirm={() => {
-                      onDeleteCluster(cluster);
-                    }}
-                  />
-                )}
+              <GlobalAppGridCell align="left" className="width50">
+                {cluster.gitUrl}
               </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}
