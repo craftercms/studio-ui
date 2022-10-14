@@ -317,6 +317,15 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         site = CStudioAuthoringContext.site,
         self = self;
 
+      const canvas = $image.cropper('getCroppedCanvas');
+      var dataUrl = canvas.toDataURL();
+
+      const file = {
+        dataUrl,
+        name: imageData.name,
+        type: imageData.type
+      };
+
       var cropImageCallBack = {
         success: function (content) {
           self.callback.success(content);
@@ -366,17 +375,16 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
               );
               YDom.getElementsByClassName('imgExists')[0].parentNode.classList.add('inc-zindex');
             } else {
-              try {
-                CStudioAuthoring.Service.cropImage(
-                  site,
-                  path,
-                  imageInformation.x,
-                  imageInformation.y,
-                  imageInformation.height,
-                  imageInformation.width,
-                  cropImageCallBack
-                );
-              } catch (err) {}
+              CrafterCMSNext.services.content.uploadDataUrl(site, file, imageData.meta.path, '_csrf').subscribe({
+                next: (response) => {
+                  if (response.type === 'complete') {
+                    cropImageCallBack.success(response.payload.body);
+                  }
+                },
+                error: (error) => {
+                  cropImageCallBack.failure(error);
+                }
+              });
             }
           },
           failure: function () {}
@@ -384,17 +392,16 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 
         CStudioAuthoring.Service.contentExists(imageData.renameRelativeUrl, contextExistsCallBack);
       } else {
-        try {
-          CStudioAuthoring.Service.cropImage(
-            site,
-            path,
-            imageInformation.x,
-            imageInformation.y,
-            imageInformation.height,
-            imageInformation.width,
-            cropImageCallBack
-          );
-        } catch (err) {}
+        CrafterCMSNext.services.content.uploadDataUrl(site, file, imageData.meta.path, '_csrf').subscribe({
+          next: (response) => {
+            if (response.type === 'complete') {
+              cropImageCallBack.success(response.payload.body);
+            }
+          },
+          error: (error) => {
+            cropImageCallBack.failure(error);
+          }
+        });
       }
     }
 
