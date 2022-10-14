@@ -555,7 +555,7 @@ export const simpleTaxonomyDSMessages = defineMessages({
   },
   simpleTaxonomy: {
     id: 'simpleTaxonomyDS.simpleTaxonomy',
-    defaultMessage: 'Site Taxonomy'
+    defaultMessage: 'Simple Taxonomy'
   }
 });
 
