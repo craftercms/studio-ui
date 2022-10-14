@@ -302,6 +302,22 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         $('#zoomMessage').addClass('hidden');
         $dataHeight.removeClass('error');
         $dataWidth.removeClass('error');
+      },
+      zoom: function (e) {
+        const isZoomIn = e.ratio > 0;
+        const croppedCanvas = $image.cropper('getCroppedCanvas');
+        const width = parseInt(croppedCanvas.getAttribute('width'));
+        const height = parseInt(croppedCanvas.getAttribute('height'));
+        // If you're zooming in (increasing the image size) you may end up having an image (canvas) with smaller
+        // dimensions than the ones set up for minWidth and minHeight
+        if (isZoomIn) {
+          if (Boolean(minWidthCropBox) && width < parseInt(minWidthCropBox)) {
+            e.preventDefault();
+          }
+          if (Boolean(minHeightCropBox) && height < parseInt(minHeightCropBox)) {
+            e.preventDefault();
+          }
+        }
       }
     });
 
