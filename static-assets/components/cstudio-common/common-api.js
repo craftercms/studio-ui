@@ -2658,7 +2658,6 @@ var nodeOpen = false,
           openCropperDialogCb
         );
         CStudioAuthoring.Module.requireModule('jquery-cropper', '/static-assets/libs/cropper/dist/cropper.js');
-        CStudioAuthoring.Module.requireModule('cropperjs', '/static-assets/libs/cropperjs/cropper.js');
       },
 
       uploadWebDAVAsset: function (site, path, profileId, uploadCb, fileTypes) {
