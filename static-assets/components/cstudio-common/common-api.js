@@ -237,7 +237,8 @@ var nodeOpen = false,
         'TIFF',
         'TIF',
         'BMP',
-        'SVG'
+        'SVG',
+        'webp'
       ],
       MAX_INT_VALUE: 2147483647,
       CACHE_TIME_CONFIGURATION: 900000,
@@ -2657,6 +2658,7 @@ var nodeOpen = false,
           openCropperDialogCb
         );
         CStudioAuthoring.Module.requireModule('jquery-cropper', '/static-assets/libs/cropper/dist/cropper.js');
+        CStudioAuthoring.Module.requireModule('cropperjs', '/static-assets/libs/cropperjs/cropper.js');
       },
 
       uploadWebDAVAsset: function (site, path, profileId, uploadCb, fileTypes) {
