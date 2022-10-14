@@ -163,7 +163,6 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
     // Instantiate the Dialog
     crop_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
       width: '830px',
-      height: '492px',
       effect: {
         effect: YAHOO.widget.ContainerEffect.FADE,
         duration: 0.25
