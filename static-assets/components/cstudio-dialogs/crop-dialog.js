@@ -261,8 +261,35 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
             $dataHeight.removeClass('error');
           }
         } else {
-          inputValidation(parseInt(minHeightCropBox), parseInt(maxHeightCropBox), $dataHeight, $dataWidth);
-          inputValidation(parseInt(minWidthCropBox), parseInt(maxWidthCropBox), $dataWidth, $dataHeight);
+          const width = e.width;
+          const height = e.height;
+
+          // When there are min/max restrictions, crop values need to be validated and if not valid,
+          // set the proper values.
+          // If cropped width is lower than minWidth
+          if (Boolean(minWidthCropBox) && width < parseInt(minWidthCropBox)) {
+            $image.cropper('setData', {
+              width: parseInt(minWidthCropBox)
+            });
+          }
+          // If cropped width is higher than minWidth
+          if (Boolean(maxWidthCropBox) && width > parseInt(maxWidthCropBox)) {
+            $image.cropper('setData', {
+              width: parseInt(maxWidthCropBox)
+            });
+          }
+          // If cropped height is lower than minWidth
+          if (Boolean(minHeightCropBox) && height < parseInt(minHeightCropBox)) {
+            $image.cropper('setData', {
+              height: parseInt(minHeightCropBox)
+            });
+          }
+          // If cropped width is higher than minWidth
+          if (Boolean(maxHeightCropBox) && height > parseInt(maxHeightCropBox)) {
+            $image.cropper('setData', {
+              height: parseInt(maxHeightCropBox)
+            });
+          }
         }
       },
       built: function () {
