@@ -106,6 +106,7 @@ function AuthFields(props: AuthFieldsProps) {
           className={cx(classes.margin, classes.textField)}
           label={formatMessage(messages.userName)}
           required
+          autoFocus
           value={inputs.repoUsername}
           onKeyPress={onKeyPress}
           onChange={handleInputChange}
