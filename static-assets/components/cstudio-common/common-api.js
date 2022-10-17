@@ -237,7 +237,8 @@ var nodeOpen = false,
         'TIFF',
         'TIF',
         'BMP',
-        'SVG'
+        'SVG',
+        'webp'
       ],
       MAX_INT_VALUE: 2147483647,
       CACHE_TIME_CONFIGURATION: 900000,

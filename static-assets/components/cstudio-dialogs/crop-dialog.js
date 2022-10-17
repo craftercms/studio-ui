@@ -163,7 +163,6 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
     // Instantiate the Dialog
     crop_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
       width: '830px',
-      height: '492px',
       effect: {
         effect: YAHOO.widget.ContainerEffect.FADE,
         duration: 0.25
@@ -262,8 +261,35 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
             $dataHeight.removeClass('error');
           }
         } else {
-          inputValidation(parseInt(minHeightCropBox), parseInt(maxHeightCropBox), $dataHeight, $dataWidth);
-          inputValidation(parseInt(minWidthCropBox), parseInt(maxWidthCropBox), $dataWidth, $dataHeight);
+          const width = e.width;
+          const height = e.height;
+
+          // When there are min/max restrictions, crop values need to be validated and if not valid,
+          // set the proper values.
+          // If cropped width is lower than minWidth
+          if (Boolean(minWidthCropBox) && width < parseInt(minWidthCropBox)) {
+            $image.cropper('setData', {
+              width: parseInt(minWidthCropBox)
+            });
+          }
+          // If cropped width is higher than minWidth
+          if (Boolean(maxWidthCropBox) && width > parseInt(maxWidthCropBox)) {
+            $image.cropper('setData', {
+              width: parseInt(maxWidthCropBox)
+            });
+          }
+          // If cropped height is lower than minWidth
+          if (Boolean(minHeightCropBox) && height < parseInt(minHeightCropBox)) {
+            $image.cropper('setData', {
+              height: parseInt(minHeightCropBox)
+            });
+          }
+          // If cropped width is higher than minWidth
+          if (Boolean(maxHeightCropBox) && height > parseInt(maxHeightCropBox)) {
+            $image.cropper('setData', {
+              height: parseInt(maxHeightCropBox)
+            });
+          }
         }
       },
       built: function () {
@@ -276,6 +302,22 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         $('#zoomMessage').addClass('hidden');
         $dataHeight.removeClass('error');
         $dataWidth.removeClass('error');
+      },
+      zoom: function (e) {
+        const isZoomIn = e.ratio > 0;
+        const croppedCanvas = $image.cropper('getCroppedCanvas');
+        const width = parseInt(croppedCanvas.getAttribute('width'));
+        const height = parseInt(croppedCanvas.getAttribute('height'));
+        // If you're zooming in (increasing the image size) you may end up having an image (canvas) with smaller
+        // dimensions than the ones set up for minWidth and minHeight
+        if (isZoomIn) {
+          if (Boolean(minWidthCropBox) && width < parseInt(minWidthCropBox)) {
+            e.preventDefault();
+          }
+          if (Boolean(minHeightCropBox) && height < parseInt(minHeightCropBox)) {
+            e.preventDefault();
+          }
+        }
       }
     });
 
@@ -316,6 +358,15 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         path = imageData.relativeUrl,
         site = CStudioAuthoringContext.site,
         self = self;
+
+      const canvas = $image.cropper('getCroppedCanvas');
+      var dataUrl = canvas.toDataURL();
+
+      const file = {
+        dataUrl,
+        name: imageData.name,
+        type: imageData.type
+      };
 
       var cropImageCallBack = {
         success: function (content) {
@@ -366,17 +417,16 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
               );
               YDom.getElementsByClassName('imgExists')[0].parentNode.classList.add('inc-zindex');
             } else {
-              try {
-                CStudioAuthoring.Service.cropImage(
-                  site,
-                  path,
-                  imageInformation.x,
-                  imageInformation.y,
-                  imageInformation.height,
-                  imageInformation.width,
-                  cropImageCallBack
-                );
-              } catch (err) {}
+              CrafterCMSNext.services.content.uploadDataUrl(site, file, imageData.meta.path, '_csrf').subscribe({
+                next: (response) => {
+                  if (response.type === 'complete') {
+                    cropImageCallBack.success(response.payload.body);
+                  }
+                },
+                error: (error) => {
+                  cropImageCallBack.failure(error);
+                }
+              });
             }
           },
           failure: function () {}
@@ -384,17 +434,16 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 
         CStudioAuthoring.Service.contentExists(imageData.renameRelativeUrl, contextExistsCallBack);
       } else {
-        try {
-          CStudioAuthoring.Service.cropImage(
-            site,
-            path,
-            imageInformation.x,
-            imageInformation.y,
-            imageInformation.height,
-            imageInformation.width,
-            cropImageCallBack
-          );
-        } catch (err) {}
+        CrafterCMSNext.services.content.uploadDataUrl(site, file, imageData.meta.path, '_csrf').subscribe({
+          next: (response) => {
+            if (response.type === 'complete') {
+              cropImageCallBack.success(response.payload.body);
+            }
+          },
+          error: (error) => {
+            cropImageCallBack.failure(error);
+          }
+        });
       }
     }
 
