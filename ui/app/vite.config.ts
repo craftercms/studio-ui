@@ -18,7 +18,8 @@ export default defineConfig({
     proxy: {
       '/studio/api': 'http://localhost:8080',
       '/studio/refresh': 'http://localhost:8080',
-      '/studio/static-assets/': 'http://localhost:8080'
+      '/studio/static-assets/': 'http://localhost:8080',
+      '/studio/authType': 'http://localhost:8080'
     }
   }
 });
