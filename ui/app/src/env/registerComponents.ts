@@ -15,8 +15,8 @@
  */
 
 import { components, icons } from './studioUI';
-// import registerRoundedIcons from './registerRoundedIcons';
-// import registerOutlinedIcons from './registerOutlinedIcons';
+import registerRoundedIcons from './registerRoundedIcons';
+import registerOutlinedIcons from './registerOutlinedIcons';
 import { components as registry } from '../utils/constants';
 
 // To prevent running registration more than once.
@@ -26,8 +26,8 @@ export const registerComponents = () => {
   if (registered) {
     return false;
   }
-  // registerRoundedIcons();
-  // registerOutlinedIcons();
+  registerRoundedIcons();
+  registerOutlinedIcons();
   Object.entries(components).forEach(([name, component]) => {
     if (name === 'LegacySiteDashboard') {
       registry.set('craftercms.components.Dashboard', component);
