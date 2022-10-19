@@ -19,7 +19,6 @@ import RecentlyPublishedWidgetUI from './LegacyRecentlyPublishedDashletUI';
 import ApiResponse from '../../../models/ApiResponse';
 import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { fetchLegacyDeploymentHistory } from '../../../services/dashboard';
-import { SuspenseWithEmptyState } from '../../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
@@ -37,17 +36,17 @@ import TextField from '@mui/material/TextField';
 import { deleteContentEvent, publishEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useSpreadState } from '../../../hooks/useSpreadState';
 import { useLocale } from '../../../hooks/useLocale';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { showItemMegaMenu } from '../../../state/actions/dialogs';
-import { getEmptyStateStyleSet } from '../../EmptyState';
+import { EmptyState, getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import { reversePluckProps } from '../../../utils/object';
+import { ApiResponseErrorState } from '../../ApiResponseErrorState';
 
 export interface RecentlyPublishedDashletDashboardItem {
   label: string;
@@ -115,68 +114,77 @@ export function LegacyRecentlyPublishedDashlet() {
     toggleCollapseAllItems(parentItems, allCollapsed);
   };
 
-  const fetchHistory = useCallback(() => {
-    setFetchingHistory(true);
-    fetchLegacyDeploymentHistory(siteId, 30, preferences.numItems, preferences.filterBy).subscribe({
-      next(history) {
-        const parentItems = [];
-        const childrenLookup = {};
-        history.documents.forEach((document) => {
-          if (document.children.length) {
-            // TODO: The backend is sending an improper date format.
-            let label = document.internalName.replace(/Z$/, '');
-            try {
-              label = asLocalizedDateTime(
-                label,
-                localeBranch.localeCode,
-                reversePluckProps(localeBranch.dateTimeFormatOptions, 'hour', 'minute', 'second')
-              );
-            } catch {}
-            parentItems.push({
-              label,
-              children: document.children.map((item) => {
-                const key = `${item.uri}:${item.eventDate}`;
-                childrenLookup[key] = parseLegacyItemToDetailedItem(item);
-
-                // For this dashlet we display the environment where the item was published at the moment, and the API
-                // returns the environment at the current time in the props isLive/isStaging. The prop used for the
-                // environment at the moment of publishing is `endpoint`. So we update `childrenLookup` with the endpoint value.
-                if (item.endpoint === 'live') {
-                  childrenLookup[key].stateMap.live = true;
-                  childrenLookup[key].stateMap.staging = true;
-                } else {
-                  childrenLookup[key].stateMap.live = false;
-                  childrenLookup[key].stateMap.staging = true;
-                }
-
-                // For this dashlet, the property needed is eventDate, since we display the published date at the moment
-                // of the publishing, not the current.
-                childrenLookup[key].live.datePublished = item.eventDate;
-                childrenLookup[key].staging.datePublished = item.eventDate;
-                return key;
-              })
-            });
-          }
-          setItemsLookup(childrenLookup);
-        });
-        setParentItems(parentItems);
-        toggleCollapseAllItems(parentItems, true);
-        setFetchingHistory(false);
-      },
-      error(e) {
-        setErrorHistory(e);
-        setFetchingHistory(false);
+  const fetchHistory = useCallback(
+    (backgroundRefresh?: boolean) => {
+      if (!backgroundRefresh) {
+        setFetchingHistory(true);
       }
-    });
-  }, [
-    siteId,
-    preferences.numItems,
-    preferences.filterBy,
-    toggleCollapseAllItems,
-    setItemsLookup,
-    localeBranch.localeCode,
-    localeBranch.dateTimeFormatOptions
-  ]);
+      fetchLegacyDeploymentHistory(siteId, 30, preferences.numItems, preferences.filterBy).subscribe({
+        next(history) {
+          const parentItems = [];
+          const childrenLookup = {};
+          history.documents.forEach((document) => {
+            if (document.children.length) {
+              // TODO: The backend is sending an improper date format.
+              let label = document.internalName.replace(/Z$/, '');
+              try {
+                label = asLocalizedDateTime(
+                  label,
+                  localeBranch.localeCode,
+                  reversePluckProps(localeBranch.dateTimeFormatOptions, 'hour', 'minute', 'second')
+                );
+              } catch {}
+              parentItems.push({
+                label,
+                children: document.children.map((item) => {
+                  const key = `${item.uri}:${item.eventDate}`;
+                  childrenLookup[key] = parseLegacyItemToDetailedItem(item);
+
+                  // For this dashlet we display the environment where the item was published at the moment, and the API
+                  // returns the environment at the current time in the props isLive/isStaging. The prop used for the
+                  // environment at the moment of publishing is `endpoint`. So we update `childrenLookup` with the endpoint value.
+                  if (item.endpoint === 'live') {
+                    childrenLookup[key].stateMap.live = true;
+                    childrenLookup[key].stateMap.staging = true;
+                  } else {
+                    childrenLookup[key].stateMap.live = false;
+                    childrenLookup[key].stateMap.staging = true;
+                  }
+
+                  // For this dashlet, the property needed is eventDate, since we display the published date at the moment
+                  // of the publishing, not the current.
+                  childrenLookup[key].live.datePublished = item.eventDate;
+                  childrenLookup[key].staging.datePublished = item.eventDate;
+                  return key;
+                })
+              });
+            }
+            setItemsLookup(childrenLookup);
+          });
+          setParentItems(parentItems);
+          toggleCollapseAllItems(parentItems, true);
+          if (!backgroundRefresh) {
+            setFetchingHistory(false);
+          }
+        },
+        error(e) {
+          setErrorHistory(e);
+          if (!backgroundRefresh) {
+            setFetchingHistory(false);
+          }
+        }
+      });
+    },
+    [
+      siteId,
+      preferences.numItems,
+      preferences.filterBy,
+      toggleCollapseAllItems,
+      setItemsLookup,
+      localeBranch.localeCode,
+      localeBranch.dateTimeFormatOptions
+    ]
+  );
 
   useEffect(() => {
     fetchHistory();
@@ -187,30 +195,13 @@ export function LegacyRecentlyPublishedDashlet() {
     const events = [deleteContentEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      fetchHistory();
+      fetchHistory(true);
     });
     return () => {
       subscription.unsubscribe();
     };
   }, [fetchHistory, itemsLookup]);
   // endregion
-
-  const resource = useLogicResource<
-    RecentlyPublishedDashletDashboardItem[],
-    { items: RecentlyPublishedDashletDashboardItem[]; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(
-      () => ({ items: parentItems, error: errorHistory, fetching: fetchingHistory }),
-      [parentItems, errorHistory, fetchingHistory]
-    ),
-    {
-      shouldResolve: (source) => Boolean(source.items) && !fetchingHistory,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetchingHistory && resource.complete,
-      resultSelector: (source) => source.items,
-      errorSelector: () => errorHistory
-    }
-  );
 
   const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
     const path = item.path;
@@ -302,35 +293,37 @@ export function LegacyRecentlyPublishedDashlet() {
         </>
       }
     >
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <LegacyRecentlyPublishedDashletUISkeletonTable items={parentItems} expandedLookup={expandedItems} />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: (
+      {errorHistory ? (
+        <ApiResponseErrorState error={errorHistory} />
+      ) : fetchingHistory ? (
+        <LegacyRecentlyPublishedDashletUISkeletonTable items={parentItems} expandedLookup={expandedItems} />
+      ) : parentItems ? (
+        parentItems.length ? (
+          <RecentlyPublishedWidgetUI
+            parentItems={parentItems}
+            itemsLookup={itemsLookup}
+            localeBranch={localeBranch}
+            expandedItems={expandedItems}
+            setExpandedItems={setExpandedItems}
+            onItemMenuClick={onItemMenuClick}
+          />
+        ) : (
+          <EmptyState
+            title={
               <FormattedMessage
                 id="recentlyPublishedDashlet.emptyMessage"
                 defaultMessage="No items published recently"
               />
-            ),
-            styles: {
+            }
+            styles={{
               ...getEmptyStateStyleSet('horizontal'),
               ...getEmptyStateStyleSet('image-sm')
-            }
-          }
-        }}
-      >
-        <RecentlyPublishedWidgetUI
-          resource={resource}
-          itemsLookup={itemsLookup}
-          localeBranch={localeBranch}
-          expandedItems={expandedItems}
-          setExpandedItems={setExpandedItems}
-          onItemMenuClick={onItemMenuClick}
-        />
-      </SuspenseWithEmptyState>
+            }}
+          />
+        )
+      ) : (
+        <></>
+      )}
     </LegacyDashletCard>
   );
 }

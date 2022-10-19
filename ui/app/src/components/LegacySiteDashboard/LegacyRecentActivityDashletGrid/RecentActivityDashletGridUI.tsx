@@ -16,7 +16,6 @@
 
 import React, { useCallback, useMemo } from 'react';
 import { DetailedItem } from '../../../models/Item';
-import { Resource } from '../../../models/Resource';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import GlobalAppGridRow from '../../GlobalAppGridRow';
@@ -38,7 +37,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { getDatePublished, getDateScheduled } from '../../../utils/content';
 
 export interface RecentActivityDashletGridUIProps {
-  resource: Resource<DetailedItem[]>;
+  items: DetailedItem[];
   selectedLookup: LookupTable<boolean>;
   isAllChecked: boolean;
   isIndeterminate: boolean;
@@ -54,7 +53,7 @@ export interface RecentActivityDashletGridUIProps {
 
 export function RecentActivityDashletGridUI(props: RecentActivityDashletGridUIProps) {
   const {
-    resource,
+    items,
     onOptionsButtonClick,
     selectedLookup,
     onItemChecked,
@@ -67,7 +66,6 @@ export function RecentActivityDashletGridUI(props: RecentActivityDashletGridUIPr
     toggleSortType,
     onClickSelectAll
   } = props;
-  const items = resource.read();
   const { classes, cx: clsx } = useStyles();
 
   const comparator = useCallback(

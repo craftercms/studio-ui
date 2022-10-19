@@ -23,7 +23,6 @@ import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import { Resource } from '../../../models/Resource';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -41,7 +40,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { getDatePublished } from '../../../utils/content';
 
 export interface RecentlyPublishedWidgetUIProps {
-  resource: Resource<RecentlyPublishedDashletDashboardItem[]>;
+  parentItems: RecentlyPublishedDashletDashboardItem[];
   itemsLookup: LookupTable<DetailedItem>;
   localeBranch: GlobalState['uiConfig']['locale'];
   expandedItems: LookupTable<boolean>;
@@ -50,8 +49,7 @@ export interface RecentlyPublishedWidgetUIProps {
 }
 
 export function LegacyRecentlyPublishedDashletUI(props: RecentlyPublishedWidgetUIProps) {
-  const { resource, expandedItems, setExpandedItems, itemsLookup, onItemMenuClick, localeBranch } = props;
-  const parentItems = resource.read();
+  const { parentItems, expandedItems, setExpandedItems, itemsLookup, onItemMenuClick, localeBranch } = props;
   const { classes, cx: clsx } = useStyles();
 
   const toggleExpand = (name) => {
