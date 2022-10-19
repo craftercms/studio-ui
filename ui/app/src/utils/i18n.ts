@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import en from '../translations/locales/en.json';
-import es from '../translations/locales/es.json';
-import de from '../translations/locales/de.json';
-import ko from '../translations/locales/ko.json';
+import es from '../translations/es.json';
+import de from '../translations/de.json';
+import ko from '../translations/ko.json';
 import { createIntl, createIntlCache, IntlShape } from 'react-intl';
 import { Subject } from 'rxjs';
 import TranslationOrText from '../models/TranslationOrText';
@@ -31,7 +30,7 @@ export type BundledTranslations = { [T in BundledTranslationsLocaleCodes | 'kr']
 
 /* private */
 const bundledTranslations: BundledTranslations = {
-  en,
+  en: {},
   es,
   de,
   ko,
@@ -56,7 +55,7 @@ function createIntlInstance(locale: string): IntlShape {
   return createIntl(
     {
       locale: locale,
-      messages: currentTranslations[locale] || en
+      messages: currentTranslations[locale] || bundledTranslations.en
     },
     createIntlCache()
   );

@@ -26,7 +26,7 @@ export function CreateFolderDialog(props: CreateFolderProps) {
     <EnhancedDialog
       title={
         rename ? (
-          <FormattedMessage id="newFolder.title.rename" defaultMessage="Rename Folder" />
+          <FormattedMessage id="newFolder.renameFolder" defaultMessage="Rename Folder" />
         ) : (
           <FormattedMessage id="newFolder.title" defaultMessage="Create a New Folder" />
         )
