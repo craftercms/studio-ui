@@ -12,8 +12,10 @@ export default defineConfig({
       include: [/uppy/, /node_modules/]
     },
     emptyOutDir: true,
-    chunkSizeWarningLimit: 2000
+    chunkSizeWarningLimit: 2000,
+    reportCompressedSize: false
   },
+  base: '/studio/static-assets/next/',
   server: {
     open: true,
     port: 3000,

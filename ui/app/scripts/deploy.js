@@ -21,7 +21,7 @@ const //
   ncp = require('ncp').ncp,
   rimraf = require('rimraf'),
   APP_DIR = __dirname.replace('/scripts', ''),
-  PATH_BUILD = `${APP_DIR}/build`,
+  PATH_BUILD = `${APP_DIR}/build_vite`,
   TEMPLATES = `../../templates`,
   DEST = `../../static-assets/next`,
   indexContents = fs.readFileSync(`${PATH_BUILD}/index.html`).toString();
@@ -31,7 +31,9 @@ let jsNextScriptsFileContent = '<#include "/templates/web/common/js-global-conte
 const parser = new htmlparser.Parser({
   onopentag(name, attributes) {
     if (name === 'script') {
-      jsNextScriptsFileContent += `<script src="${attributes.src}"></script>\n`;
+      jsNextScriptsFileContent += `<script type="module" src="${attributes.src}"></script>\n`;
+    } else if (name === 'link' && attributes.rel.includes('modulepreload')) {
+      jsNextScriptsFileContent += `<link href="${attributes.href}" rel="modulepreload"/>\n`;
     } else if (name === 'link' && attributes.rel.includes('stylesheet')) {
       jsNextScriptsFileContent += `<link href="${attributes.href}" rel="stylesheet"/>\n`;
     }
@@ -45,7 +47,7 @@ console.log(`Updating script imports`);
 fs.writeFileSync(`${TEMPLATES}/web/common/js-next-scripts.ftl`, `${jsNextScriptsFileContent}`);
 
 console.log(`Deleting previous build (rm -rf ${DEST}/static)`);
-rimraf.sync(`${DEST}/static`);
+rimraf.sync(`${DEST}/assets`);
 
 console.log(`Copying worker into to ${DEST}`);
 ncp(`${PATH_BUILD}/shared-worker.js`, `${DEST}/shared-worker.js`, (err) => {
@@ -56,8 +58,8 @@ ncp(`${PATH_BUILD}/shared-worker.js`, `${DEST}/shared-worker.js`, (err) => {
   }
 });
 
-console.log(`Copying build files to ${DEST}/static`);
-ncp(`${PATH_BUILD}/static`, `${DEST}/static`, (err) => {
+console.log(`Copying build files to ${DEST}/assets`);
+ncp(`${PATH_BUILD}/assets`, `${DEST}/assets`, (err) => {
   if (err) {
     console.error(err);
   } else {
