@@ -373,7 +373,7 @@ export function RecentActivityDashlet() {
     >
       {errorActivity ? (
         <ApiResponseErrorState error={errorActivity} />
-      ) : isFetching ? (
+      ) : fetchingActivity ? (
         <RecentActivityDashletUiSkeleton numOfItems={items.length} />
       ) : items ? (
         items.length ? (
