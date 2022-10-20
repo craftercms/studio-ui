@@ -21,7 +21,7 @@ import { publishCrafterGlobal } from './env/craftercms';
 import { registerComponents } from './env/registerComponents';
 import { createCodebaseBridge } from './env/codebase-bridge';
 
-if (import.meta.env.NODE_ENV === 'production') {
+if (import.meta.env.MODE === 'production') {
   publishCrafterGlobal();
   registerComponents();
   createCodebaseBridge();
