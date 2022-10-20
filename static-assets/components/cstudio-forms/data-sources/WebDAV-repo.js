@@ -39,6 +39,7 @@ CStudioForms.Datasources.WebDAVRepo =
   };
 
 YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDatasource, {
+  itemsAreContentReferences: true,
   add: function (control, multiple) {
     var _self = this;
 
@@ -75,7 +76,7 @@ YAHOO.extend(CStudioForms.Datasources.WebDAVRepo, CStudioForms.CStudioFormDataso
               var fileName = item.internalName;
               var fileExtension = fileName.split('.').pop();
 
-              control.insertItem(uri, uri, fileExtension, null, _self.id);
+              control.insertItem(uri, fileName, fileExtension, null, _self.id);
               if (control._renderItems) {
                 control._renderItems();
               }

@@ -569,6 +569,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         } else if (this.form.datasourceMap[datasource].flattened) {
           item.key = key;
           item.inline = 'true';
+        } else {
+          item.include = key;
         }
       }
 
