@@ -15,7 +15,6 @@
  */
 
 import React, { Fragment } from 'react';
-import { Resource } from '../../../models/Resource';
 import TableContainer from '@mui/material/TableContainer';
 import useStyles from './styles';
 import Table from '@mui/material/Table';
@@ -40,7 +39,7 @@ import { asLocalizedDateTime } from '../../../utils/datetime';
 import { useLocale } from '../../../hooks/useLocale';
 
 interface ApprovedScheduledDashletGridUIProps {
-  resource: Resource<AwaitingApprovalDashletDashboardItem[]>;
+  items: AwaitingApprovalDashletDashboardItem[];
   itemsLookup: LookupTable<DetailedItem>;
   expandedLookup: LookupTable<boolean>;
   selectedLookup: LookupTable<boolean>;
@@ -55,7 +54,7 @@ interface ApprovedScheduledDashletGridUIProps {
 
 export function ApprovedScheduledDashletGridUI(props: ApprovedScheduledDashletGridUIProps) {
   const {
-    resource,
+    items,
     onExpandedRow,
     expandedLookup,
     targetLookup,
@@ -67,7 +66,6 @@ export function ApprovedScheduledDashletGridUI(props: ApprovedScheduledDashletGr
     isIndeterminate,
     onToggleCheckedAll
   } = props;
-  const items = resource.read();
   const { classes, cx: clsx } = useStyles();
   const locale = useLocale();
 

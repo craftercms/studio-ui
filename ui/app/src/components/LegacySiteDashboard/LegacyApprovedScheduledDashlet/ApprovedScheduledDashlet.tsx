@@ -27,7 +27,6 @@ import {
 import ApiResponse from '../../../models/ApiResponse';
 import { AwaitingApprovalDashletDashboardItem } from '../LegacyAwaitingApprovalDashlet';
 import { AllItemActions, DetailedItem } from '../../../models/Item';
-import { SuspenseWithEmptyState } from '../../Suspencified/Suspencified';
 import ApprovedScheduledDashletGridUI from '../LegacyApprovedScheduledDashletGrid';
 import useStyles from './styles';
 import ApprovedScheduledDashletSkeletonTable from '../LegacyApprovedScheduledDashletGrid/ApprovedScheduledDashletSkeletonTable';
@@ -37,7 +36,6 @@ import Button from '@mui/material/Button';
 import { deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useSpreadState } from '../../../hooks/useSpreadState';
 import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
@@ -49,13 +47,14 @@ import { itemActionDispatcher } from '../../../utils/itemActions';
 import { useEnv } from '../../../hooks/useEnv';
 import ActionsBar from '../../ActionsBar';
 import translations from './translations';
-import { getEmptyStateStyleSet } from '../../EmptyState';
+import { EmptyState, getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import { reversePluckProps } from '../../../utils/object';
 import { useLocale } from '../../../hooks/useLocale';
 import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';
 import useItemsByPath from '../../../hooks/useItemsByPath';
+import { ApiResponseErrorState } from '../../ApiResponseErrorState';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   filterBy: 'all',
@@ -107,85 +106,74 @@ export function ApprovedScheduledDashlet() {
   const itemsByPath = useItemsByPath();
   useFetchSandboxItems(Object.keys(selectedLookup));
 
-  const refresh = useCallback(() => {
-    setIsFetching(true);
-    fetchLegacyScheduledItems(siteId, 'eventDate', false, preferences.filterBy).subscribe({
-      next(response) {
-        const parentItems: AwaitingApprovalDashletDashboardItem[] = [];
-        const itemsLookup: LookupTable<DetailedItem> = {};
-        const targetLookup: LookupTable<{ target: string; packageId: string }> = {};
-        const expandedLookup: LookupTable<boolean> = {};
-        response.documents.forEach((item) => {
-          if (item.children.length) {
-            expandedLookup[item.uri ?? item.name] = true;
-            parentItems.push({
-              label: asLocalizedDateTime(
-                item.name,
-                locale.localeCode,
-                reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
-              ),
-              path: item.uri ?? item.name,
-              children: item.children.map((item) => {
-                targetLookup[item.uri] = { target: item.environment, packageId: item.packageId };
-                itemsLookup[item.uri] = parseLegacyItemToDetailedItem(item);
-                // TODO: remove this when legacy item submittedToEnvironment is not null
-                itemsLookup[item.uri].stateMap.submittedToLive = item.environment === 'live';
-                itemsLookup[item.uri].stateMap.submittedToStaging = item.environment === 'staging';
-                // endTODO
-                return item.uri;
-              })
-            });
-          }
-        });
-        setExpandedLookup(expandedLookup);
-        setState({
-          targetLookup,
-          itemsLookup,
-          parentItems,
-          total: response.total
-        });
-        setIsFetching(false);
-
-        // Update selected lookup
-        const selectedKeys = Object.keys(selectedLookupRef.current).filter((selected) =>
-          Boolean(itemsLookup[selected])
-        );
-        setSelectedLookup(createPresenceTable(selectedKeys, true));
-      },
-      error({ response }) {
-        setError(response);
+  const refresh = useCallback(
+    (backgroundRefresh?: boolean) => {
+      if (!backgroundRefresh) {
+        setIsFetching(true);
       }
-    });
-  }, [siteId, preferences.filterBy, setExpandedLookup, locale.localeCode, locale.dateTimeFormatOptions]);
+      fetchLegacyScheduledItems(siteId, 'eventDate', false, preferences.filterBy).subscribe({
+        next(response) {
+          const parentItems: AwaitingApprovalDashletDashboardItem[] = [];
+          const itemsLookup: LookupTable<DetailedItem> = {};
+          const targetLookup: LookupTable<{ target: string; packageId: string }> = {};
+          const expandedLookup: LookupTable<boolean> = {};
+          response.documents.forEach((item) => {
+            if (item.children.length) {
+              expandedLookup[item.uri ?? item.name] = true;
+              parentItems.push({
+                label: asLocalizedDateTime(
+                  item.name,
+                  locale.localeCode,
+                  reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+                ),
+                path: item.uri ?? item.name,
+                children: item.children.map((item) => {
+                  targetLookup[item.uri] = { target: item.environment, packageId: item.packageId };
+                  itemsLookup[item.uri] = parseLegacyItemToDetailedItem(item);
+                  // TODO: remove this when legacy item submittedToEnvironment is not null
+                  itemsLookup[item.uri].stateMap.submittedToLive = item.environment === 'live';
+                  itemsLookup[item.uri].stateMap.submittedToStaging = item.environment === 'staging';
+                  // endTODO
+                  return item.uri;
+                })
+              });
+            }
+          });
+          setExpandedLookup(expandedLookup);
+          setState({
+            targetLookup,
+            itemsLookup,
+            parentItems,
+            total: response.total
+          });
+          if (!backgroundRefresh) {
+            setIsFetching(false);
+          }
+
+          // Update selected lookup
+          const selectedKeys = Object.keys(selectedLookupRef.current).filter((selected) =>
+            Boolean(itemsLookup[selected])
+          );
+          setSelectedLookup(createPresenceTable(selectedKeys, true));
+        },
+        error({ response }) {
+          setError(response);
+        }
+      });
+    },
+    [siteId, preferences.filterBy, setExpandedLookup, locale.localeCode, locale.dateTimeFormatOptions]
+  );
 
   useEffect(() => {
     refresh();
   }, [refresh]);
-
-  const resource = useLogicResource<
-    AwaitingApprovalDashletDashboardItem[],
-    {
-      items: AwaitingApprovalDashletDashboardItem[];
-      error: ApiResponse;
-      isFetching: boolean;
-    }
-  >(
-    useMemo(() => ({ items: state.parentItems, error, isFetching }), [state.parentItems, error, isFetching]),
-    {
-      shouldResolve: (source) => Boolean(source.items) && !isFetching,
-      shouldReject: (source) => Boolean(source.error),
-      shouldRenew: (source, resource) => source.isFetching && resource.complete,
-      resultSelector: (source) => source.items,
-      errorSelector: (source) => source.error
-    }
-  );
 
   // region Item Updates Propagation
   useEffect(() => {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      refresh();
+      refresh(true);
     });
     return () => {
       subscription.unsubscribe();
@@ -310,58 +298,62 @@ export function ApprovedScheduledDashlet() {
         </>
       }
     >
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <ApprovedScheduledDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: (
+      {error ? (
+        <ApiResponseErrorState error={error} />
+      ) : isFetching ? (
+        <ApprovedScheduledDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
+      ) : state.parentItems ? (
+        state.parentItems.length ? (
+          <>
+            {(isIndeterminate || isAllChecked) && (
+              <ActionsBar
+                classes={{
+                  root: classes.actionsBarRoot,
+                  checkbox: classes.actionsBarCheckbox
+                }}
+                options={[
+                  { id: 'rejectPublish', label: formatMessage(translations.reject) },
+                  { id: 'schedulePublish', label: formatMessage(translations.schedule) },
+                  { id: 'publish', label: formatMessage(translations.publish) },
+                  { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
+                ]}
+                isIndeterminate={isIndeterminate}
+                isChecked={isAllChecked}
+                onOptionClicked={onActionBarOptionClicked}
+                onCheckboxChange={onToggleCheckedAll}
+              />
+            )}
+            <ApprovedScheduledDashletGridUI
+              items={state.parentItems}
+              expandedLookup={expandedLookup}
+              targetLookup={state.targetLookup}
+              itemsLookup={state.itemsLookup}
+              selectedLookup={selectedLookup}
+              onToggleCheckedAll={onToggleCheckedAll}
+              isAllChecked={isAllChecked}
+              isIndeterminate={isIndeterminate}
+              onExpandedRow={onExpandedRow}
+              onItemMenuClick={onItemMenuClick}
+              onItemChecked={handleItemChecked}
+            />
+          </>
+        ) : (
+          <EmptyState
+            title={
               <FormattedMessage
                 id="approvedScheduledItemsDashlet.emptyMessage"
                 defaultMessage="No items are scheduled"
               />
-            ),
-            styles: {
+            }
+            styles={{
               ...getEmptyStateStyleSet('horizontal'),
               ...getEmptyStateStyleSet('image-sm')
-            }
-          }
-        }}
-      >
-        {(isIndeterminate || isAllChecked) && (
-          <ActionsBar
-            classes={{
-              root: classes.actionsBarRoot,
-              checkbox: classes.actionsBarCheckbox
             }}
-            options={[
-              { id: 'rejectPublish', label: formatMessage(translations.reject) },
-              { id: 'schedulePublish', label: formatMessage(translations.schedule) },
-              { id: 'publish', label: formatMessage(translations.publish) },
-              { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
-            ]}
-            isIndeterminate={isIndeterminate}
-            isChecked={isAllChecked}
-            onOptionClicked={onActionBarOptionClicked}
-            onCheckboxChange={onToggleCheckedAll}
           />
-        )}
-        <ApprovedScheduledDashletGridUI
-          resource={resource}
-          expandedLookup={expandedLookup}
-          targetLookup={state.targetLookup}
-          itemsLookup={state.itemsLookup}
-          selectedLookup={selectedLookup}
-          onToggleCheckedAll={onToggleCheckedAll}
-          isAllChecked={isAllChecked}
-          isIndeterminate={isIndeterminate}
-          onExpandedRow={onExpandedRow}
-          onItemMenuClick={onItemMenuClick}
-          onItemChecked={handleItemChecked}
-        />
-      </SuspenseWithEmptyState>
+        )
+      ) : (
+        <></>
+      )}
     </LegacyDashletCard>
   );
 }

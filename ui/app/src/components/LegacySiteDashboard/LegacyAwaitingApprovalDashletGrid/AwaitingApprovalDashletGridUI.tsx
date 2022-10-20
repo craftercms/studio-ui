@@ -15,7 +15,6 @@
  */
 
 import React, { Fragment } from 'react';
-import { Resource } from '../../../models/Resource';
 import TableContainer from '@mui/material/TableContainer';
 import useStyles from './styles';
 import Table from '@mui/material/Table';
@@ -42,7 +41,7 @@ import { useLocale } from '../../../hooks/useLocale';
 import { getDateScheduled } from '../../../utils/content';
 
 interface AwaitingApprovalDashletGridUIProps {
-  resource: Resource<AwaitingApprovalDashletDashboardItem[]>;
+  items: AwaitingApprovalDashletDashboardItem[];
   itemsLookup: LookupTable<DetailedItem>;
   expandedLookup: LookupTable<boolean>;
   selectedLookup: LookupTable<boolean>;
@@ -57,7 +56,7 @@ interface AwaitingApprovalDashletGridUIProps {
 
 export function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDashletGridUIProps) {
   const {
-    resource,
+    items,
     onExpandedRow,
     expandedLookup,
     publishingTargetLookup,
@@ -69,7 +68,6 @@ export function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDashletGrid
     isIndeterminate,
     onToggleCheckedAll
   } = props;
-  const items = resource.read();
   const { classes, cx: clsx } = useStyles();
   const locale = useLocale();
 

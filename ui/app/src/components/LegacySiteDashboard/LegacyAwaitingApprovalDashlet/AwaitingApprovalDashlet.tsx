@@ -20,7 +20,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLegacyGetGoLiveItems } from '../../../services/dashboard';
 import { AllItemActions, DetailedItem, LegacyItem } from '../../../models/Item';
 import AwaitingApprovalDashletGridUI from '../LegacyAwaitingApprovalDashletGrid';
-import { SuspenseWithEmptyState } from '../../Suspencified';
 import LookupTable from '../../../models/LookupTable';
 import {
   getNumOfMenuOptionsForItem,
@@ -34,7 +33,6 @@ import Button from '@mui/material/Button';
 import { deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useSpreadState } from '../../../hooks/useSpreadState';
 import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { useDispatch, useSelector } from 'react-redux';
@@ -46,10 +44,11 @@ import translations from './translations';
 import { createPresenceTable } from '../../../utils/array';
 import { itemActionDispatcher } from '../../../utils/itemActions';
 import { useEnv } from '../../../hooks/useEnv';
-import { getEmptyStateStyleSet } from '../../EmptyState';
+import EmptyState, { getEmptyStateStyleSet } from '../../EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';
+import { ApiResponseErrorState } from '../../ApiResponseErrorState';
 
 export interface AwaitingApprovalDashletDashboardItem {
   label: string;
@@ -106,61 +105,68 @@ export function AwaitingApprovalDashlet() {
   const itemsByPath = useItemsByPath();
   useFetchSandboxItems(Object.keys(selectedLookup));
 
-  const refresh = useCallback(() => {
-    setIsFetching(true);
-    fetchLegacyGetGoLiveItems(siteId, 'eventDate', null, preferences.showUnpublished, null).subscribe(
-      (response) => {
-        const parentItems: AwaitingApprovalDashletDashboardItem[] = [];
-        const itemsLookup = {};
-        const publishingTargetLookup = {};
-        const expandedLookup = {};
+  const refresh = useCallback(
+    (backgroundRefresh?: boolean) => {
+      if (!backgroundRefresh) {
+        setIsFetching(true);
+      }
+      fetchLegacyGetGoLiveItems(siteId, 'eventDate', null, preferences.showUnpublished, null).subscribe(
+        (response) => {
+          const parentItems: AwaitingApprovalDashletDashboardItem[] = [];
+          const itemsLookup = {};
+          const publishingTargetLookup = {};
+          const expandedLookup = {};
 
-        function getSubmittedItems(items: LegacyItem[], children: LegacyItem[]) {
-          items.forEach((item) => {
-            if (item.contentType === 'folder') {
-              getSubmittedItems(item.children, children);
-            } else {
-              children.push(item);
-            }
-          });
-        }
-
-        response.documents.forEach((item) => {
-          if (item.children.length) {
-            expandedLookup[item.uri] = true;
-            const children = [];
-            getSubmittedItems(item.children, children);
-            parentItems.push({
-              label: item.name,
-              path: item.uri,
-              children: children.map((item) => {
-                publishingTargetLookup[item.uri] = item.submittedToEnvironment;
-                itemsLookup[item.uri] = parseLegacyItemToDetailedItem(item);
-                return item.uri;
-              })
+          function getSubmittedItems(items: LegacyItem[], children: LegacyItem[]) {
+            items.forEach((item) => {
+              if (item.contentType === 'folder') {
+                getSubmittedItems(item.children, children);
+              } else {
+                children.push(item);
+              }
             });
           }
-        });
-        setExpandedLookup(expandedLookup);
-        setState({
-          publishingTargetLookup,
-          itemsLookup,
-          parentItems,
-          total: response.total
-        });
-        setIsFetching(false);
 
-        // Update selected lookup
-        const selectedKeys = Object.keys(selectedLookupRef.current).filter((selected) =>
-          Boolean(itemsLookup[selected])
-        );
-        setSelectedLookup(createPresenceTable(selectedKeys, true));
-      },
-      ({ response }) => {
-        setError(response);
-      }
-    );
-  }, [setExpandedLookup, siteId, preferences.showUnpublished]);
+          response.documents.forEach((item) => {
+            if (item.children.length) {
+              expandedLookup[item.uri] = true;
+              const children = [];
+              getSubmittedItems(item.children, children);
+              parentItems.push({
+                label: item.name,
+                path: item.uri,
+                children: children.map((item) => {
+                  publishingTargetLookup[item.uri] = item.submittedToEnvironment;
+                  itemsLookup[item.uri] = parseLegacyItemToDetailedItem(item);
+                  return item.uri;
+                })
+              });
+            }
+          });
+          setExpandedLookup(expandedLookup);
+          setState({
+            publishingTargetLookup,
+            itemsLookup,
+            parentItems,
+            total: response.total
+          });
+          if (!backgroundRefresh) {
+            setIsFetching(false);
+          }
+
+          // Update selected lookup
+          const selectedKeys = Object.keys(selectedLookupRef.current).filter((selected) =>
+            Boolean(itemsLookup[selected])
+          );
+          setSelectedLookup(createPresenceTable(selectedKeys, true));
+        },
+        ({ response }) => {
+          setError(response);
+        }
+      );
+    },
+    [setExpandedLookup, siteId, preferences.showUnpublished]
+  );
 
   useEffect(() => {
     refresh();
@@ -175,7 +181,7 @@ export function AwaitingApprovalDashlet() {
         case deleteContentEvent.type:
         case workflowEvent.type:
         case publishEvent.type: {
-          refresh();
+          refresh(true);
           break;
         }
       }
@@ -189,24 +195,6 @@ export function AwaitingApprovalDashlet() {
   useEffect(() => {
     setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
   }, [preferences, currentUser, uuid]);
-
-  const resource = useLogicResource<
-    AwaitingApprovalDashletDashboardItem[],
-    {
-      items: AwaitingApprovalDashletDashboardItem[];
-      error: ApiResponse;
-      isFetching: boolean;
-    }
-  >(
-    useMemo(() => ({ items: state.parentItems, error, isFetching }), [state.parentItems, error, isFetching]),
-    {
-      shouldResolve: (source) => Boolean(source.items) && !isFetching,
-      shouldReject: (source) => Boolean(source.error),
-      shouldRenew: (source, resource) => source.isFetching && resource.complete,
-      resultSelector: (source) => source.items,
-      errorSelector: (source) => source.error
-    }
-  );
 
   const onToggleCollapse = (e) => {
     e.stopPropagation();
@@ -304,57 +292,61 @@ export function AwaitingApprovalDashlet() {
         </>
       }
     >
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <AwaitingApprovalDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: (
+      {error ? (
+        <ApiResponseErrorState error={error} />
+      ) : isFetching ? (
+        <AwaitingApprovalDashletSkeletonTable items={state.parentItems} expandedLookup={expandedLookup} />
+      ) : state.parentItems ? (
+        state.parentItems.length ? (
+          <>
+            {(isIndeterminate || isAllChecked) && (
+              <ActionsBar
+                classes={{
+                  root: classes.actionsBarRoot,
+                  checkbox: classes.actionsBarCheckbox
+                }}
+                options={[
+                  { id: 'approvePublish', label: formatMessage(translations.publish) },
+                  { id: 'rejectPublish', label: formatMessage(translations.reject) },
+                  { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
+                ]}
+                isIndeterminate={isIndeterminate}
+                isChecked={isAllChecked}
+                onOptionClicked={onActionBarOptionClicked}
+                onCheckboxChange={onToggleCheckedAll}
+              />
+            )}
+            <AwaitingApprovalDashletGridUI
+              items={state.parentItems}
+              expandedLookup={expandedLookup}
+              publishingTargetLookup={state.publishingTargetLookup}
+              itemsLookup={state.itemsLookup}
+              selectedLookup={selectedLookup}
+              onToggleCheckedAll={onToggleCheckedAll}
+              isAllChecked={isAllChecked}
+              isIndeterminate={isIndeterminate}
+              onExpandedRow={onExpandedRow}
+              onItemMenuClick={onItemMenuClick}
+              onItemChecked={handleItemChecked}
+            />
+          </>
+        ) : (
+          <EmptyState
+            title={
               <FormattedMessage
                 id="awaitingApprovalDashlet.emptyMessage"
                 defaultMessage="No items are awaiting approval"
               />
-            ),
-            styles: {
+            }
+            styles={{
               ...getEmptyStateStyleSet('horizontal'),
               ...getEmptyStateStyleSet('image-sm')
-            }
-          }
-        }}
-      >
-        {(isIndeterminate || isAllChecked) && (
-          <ActionsBar
-            classes={{
-              root: classes.actionsBarRoot,
-              checkbox: classes.actionsBarCheckbox
             }}
-            options={[
-              { id: 'approvePublish', label: formatMessage(translations.publish) },
-              { id: 'rejectPublish', label: formatMessage(translations.reject) },
-              { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
-            ]}
-            isIndeterminate={isIndeterminate}
-            isChecked={isAllChecked}
-            onOptionClicked={onActionBarOptionClicked}
-            onCheckboxChange={onToggleCheckedAll}
           />
-        )}
-        <AwaitingApprovalDashletGridUI
-          resource={resource}
-          expandedLookup={expandedLookup}
-          publishingTargetLookup={state.publishingTargetLookup}
-          itemsLookup={state.itemsLookup}
-          selectedLookup={selectedLookup}
-          onToggleCheckedAll={onToggleCheckedAll}
-          isAllChecked={isAllChecked}
-          isIndeterminate={isIndeterminate}
-          onExpandedRow={onExpandedRow}
-          onItemMenuClick={onItemMenuClick}
-          onItemChecked={handleItemChecked}
-        />
-      </SuspenseWithEmptyState>
+        )
+      ) : (
+        <></>
+      )}
     </LegacyDashletCard>
   );
 }

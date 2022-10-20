@@ -27,7 +27,6 @@ import {
 } from '../../../utils/content';
 import LegacyDashletCard from '../LegacyDashletCard';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { SuspenseWithEmptyState } from '../../Suspencified/Suspencified';
 import RecentActivityDashletGridUI from '../LegacyRecentActivityDashletGrid/RecentActivityDashletGridUI';
 import { useDispatch, useSelector } from 'react-redux';
 import MenuItem from '@mui/material/MenuItem';
@@ -38,7 +37,6 @@ import { deleteContentEvent, publishEvent, workflowEvent } from '../../../state/
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter, map, switchMap } from 'rxjs/operators';
 import TextField from '@mui/material/TextField';
-import { useLogicResource } from '../../../hooks/useLogicResource';
 import { useLocale } from '../../../hooks/useLocale';
 import { LegacyDashboardPreferences } from '../../../models/Dashboard';
 import { useSpreadState } from '../../../hooks/useSpreadState';
@@ -53,12 +51,13 @@ import {
 import { useEnv } from '../../../hooks/useEnv';
 import ActionsBar, { ActionsBarAction } from '../../ActionsBar';
 import translations from './translations';
-import { getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
+import { EmptyState, getEmptyStateStyleSet } from '../../EmptyState/EmptyState';
 import { useActiveSite } from '../../../hooks/useActiveSite';
 import { fetchItemsByPath } from '../../../services/content';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import useFetchSandboxItems from '../../../hooks/useFetchSandboxItems';
 import useSelection from '../../../hooks/useSelection';
+import { ApiResponseErrorState } from '../../ApiResponseErrorState';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   filterBy: 'page',
@@ -146,65 +145,74 @@ export function RecentActivityDashlet() {
     setSortType(sortType === 'asc' ? 'desc' : 'asc');
   };
 
-  const fetchActivity = useCallback(() => {
-    setFetchingActivity(true);
-    fetchLegacyUserActivities(
-      siteId,
-      currentUser,
-      'eventDate',
-      true,
-      preferences.numItems,
-      preferences.filterBy,
-      preferences.excludeLiveItems
-    )
-      .pipe(
-        switchMap((activities) => {
-          const paths = [];
-          const pathsToFetch = [];
-          const deleted = {};
-          const legacyItems = {};
-          activities.documents.forEach((item) => {
-            let legacyToDetailedParsedItem = parseLegacyItemToDetailedItem(item);
-            let path = legacyToDetailedParsedItem.path;
-            legacyItems[path] = legacyToDetailedParsedItem;
-            paths.push(path);
-            if (item.isDeleted) {
-              deleted[path] = legacyToDetailedParsedItem;
-            } else {
-              pathsToFetch.push(path);
-            }
-          });
-          return fetchItemsByPath(siteId, pathsToFetch, { castAsDetailedItem: true }).pipe(
-            map((items) => {
-              // The idea is to present the items in the same order that the original call returned.
-              const itemLookup = items.reduce((lookup, item) => {
-                lookup[item.path] = item;
-                return lookup;
-              }, {});
-              return {
-                total: activities.total,
-                items: paths.map((path) => ({
-                  ...(itemLookup[path] ?? deleted[path] ?? legacyItems[path]),
-                  live: itemLookup[path]?.stateMap.live ? legacyItems[path].live : null,
-                  staging: itemLookup[path]?.stateMap.staged ? legacyItems[path].staging : null
-                }))
-              };
-            })
-          );
-        })
+  const fetchActivity = useCallback(
+    (backgroundRefresh?: boolean) => {
+      if (!backgroundRefresh) {
+        setFetchingActivity(true);
+      }
+      fetchLegacyUserActivities(
+        siteId,
+        currentUser,
+        'eventDate',
+        true,
+        preferences.numItems,
+        preferences.filterBy,
+        preferences.excludeLiveItems
       )
-      .subscribe({
-        next(response) {
-          setTotalItems(response.total);
-          setItems(response.items);
-          setFetchingActivity(false);
-        },
-        error(e) {
-          setErrorActivity(e);
-          setFetchingActivity(false);
-        }
-      });
-  }, [siteId, currentUser, preferences.numItems, preferences.filterBy, preferences.excludeLiveItems]);
+        .pipe(
+          switchMap((activities) => {
+            const paths = [];
+            const pathsToFetch = [];
+            const deleted = {};
+            const legacyItems = {};
+            activities.documents.forEach((item) => {
+              let legacyToDetailedParsedItem = parseLegacyItemToDetailedItem(item);
+              let path = legacyToDetailedParsedItem.path;
+              legacyItems[path] = legacyToDetailedParsedItem;
+              paths.push(path);
+              if (item.isDeleted) {
+                deleted[path] = legacyToDetailedParsedItem;
+              } else {
+                pathsToFetch.push(path);
+              }
+            });
+            return fetchItemsByPath(siteId, pathsToFetch, { castAsDetailedItem: true }).pipe(
+              map((items) => {
+                // The idea is to present the items in the same order that the original call returned.
+                const itemLookup = items.reduce((lookup, item) => {
+                  lookup[item.path] = item;
+                  return lookup;
+                }, {});
+                return {
+                  total: activities.total,
+                  items: paths.map((path) => ({
+                    ...(itemLookup[path] ?? deleted[path] ?? legacyItems[path]),
+                    live: itemLookup[path]?.stateMap.live ? legacyItems[path].live : null,
+                    staging: itemLookup[path]?.stateMap.staged ? legacyItems[path].staging : null
+                  }))
+                };
+              })
+            );
+          })
+        )
+        .subscribe({
+          next(response) {
+            setTotalItems(response.total);
+            setItems(response.items);
+            if (!backgroundRefresh) {
+              setFetchingActivity(false);
+            }
+          },
+          error(e) {
+            setErrorActivity(e);
+            if (!backgroundRefresh) {
+              setFetchingActivity(false);
+            }
+          }
+        });
+    },
+    [siteId, currentUser, preferences.numItems, preferences.filterBy, preferences.excludeLiveItems]
+  );
 
   useEffect(() => {
     fetchActivity();
@@ -225,20 +233,6 @@ export function RecentActivityDashlet() {
     };
   }, [fetchActivity, selectedLookup]);
   // endregion
-
-  const resource = useLogicResource<DetailedItem[], { items: DetailedItem[]; error: ApiResponse; fetching: boolean }>(
-    useMemo(
-      () => ({ items, error: errorActivity, fetching: fetchingActivity }),
-      [items, errorActivity, fetchingActivity]
-    ),
-    {
-      shouldResolve: (source) => Boolean(source.items) && !fetchingActivity,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetchingActivity && resource.complete,
-      resultSelector: (source) => source.items,
-      errorSelector: () => errorActivity
-    }
-  );
 
   const onToggleCheckedAll = () => {
     if (isAllChecked) {
@@ -377,55 +371,59 @@ export function RecentActivityDashlet() {
         </>
       }
     >
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <RecentActivityDashletUiSkeleton numOfItems={items.length} />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: <FormattedMessage id="recentActivityDashlet.emptyMessage" defaultMessage="No recent activity" />,
-            styles: {
+      {errorActivity ? (
+        <ApiResponseErrorState error={errorActivity} />
+      ) : fetchingActivity ? (
+        <RecentActivityDashletUiSkeleton numOfItems={items.length} />
+      ) : items ? (
+        items.length ? (
+          <>
+            {(isIndeterminate || isAllChecked) && (
+              <ActionsBar
+                classes={{
+                  root: classes.actionsBarRoot,
+                  checkbox: classes.actionsBarCheckbox
+                }}
+                options={
+                  selectionOptions?.concat([
+                    { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
+                  ]) as ActionsBarAction[]
+                }
+                isIndeterminate={isIndeterminate}
+                isChecked={isAllChecked}
+                isLoading={isFetching}
+                numOfSkeletonItems={selectedItemsLength > 1 ? 3 : 7}
+                onOptionClicked={onActionBarOptionClicked}
+                onCheckboxChange={onToggleCheckedAll}
+              />
+            )}
+            <RecentActivityDashletGridUI
+              items={items}
+              onOptionsButtonClick={onItemMenuClick}
+              selectedLookup={selectedLookup}
+              isAllChecked={isAllChecked}
+              isIndeterminate={isIndeterminate}
+              locale={locale}
+              sortType={sortType}
+              toggleSortType={toggleSortType}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              onItemChecked={handleItemChecked}
+              onClickSelectAll={onToggleCheckedAll}
+            />
+          </>
+        ) : (
+          <EmptyState
+            title={<FormattedMessage id="recentActivityDashlet.emptyMessage" defaultMessage="No recent activity" />}
+            styles={{
               ...getEmptyStateStyleSet('horizontal'),
               ...getEmptyStateStyleSet('image-sm')
-            }
-          }
-        }}
-      >
-        {(isIndeterminate || isAllChecked) && (
-          <ActionsBar
-            classes={{
-              root: classes.actionsBarRoot,
-              checkbox: classes.actionsBarCheckbox
             }}
-            options={
-              selectionOptions?.concat([
-                { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
-              ]) as ActionsBarAction[]
-            }
-            isIndeterminate={isIndeterminate}
-            isChecked={isAllChecked}
-            isLoading={isFetching}
-            numOfSkeletonItems={selectedItemsLength > 1 ? 3 : 7}
-            onOptionClicked={onActionBarOptionClicked}
-            onCheckboxChange={onToggleCheckedAll}
           />
-        )}
-        <RecentActivityDashletGridUI
-          resource={resource}
-          onOptionsButtonClick={onItemMenuClick}
-          selectedLookup={selectedLookup}
-          isAllChecked={isAllChecked}
-          isIndeterminate={isIndeterminate}
-          locale={locale}
-          sortType={sortType}
-          toggleSortType={toggleSortType}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          onItemChecked={handleItemChecked}
-          onClickSelectAll={onToggleCheckedAll}
-        />
-      </SuspenseWithEmptyState>
+        )
+      ) : (
+        <></>
+      )}
     </LegacyDashletCard>
   );
 }
