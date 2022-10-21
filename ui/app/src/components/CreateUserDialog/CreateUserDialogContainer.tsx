@@ -113,7 +113,7 @@ const useStyles = makeStyles()((theme) => ({
     }
   },
   textField: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(1)
   },
   form: {
     display: 'contents'
@@ -306,6 +306,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
             <Grid container spacing={2}>
               <Grid item sm={6}>
                 <PasswordTextField
+                  className={classes.textField}
                   label={<FormattedMessage id="words.password" defaultMessage="Password" />}
                   required
                   fullWidth
@@ -326,6 +327,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
               </Grid>
               <Grid item sm={6}>
                 <PasswordTextField
+                  className={classes.textField}
                   label={
                     <FormattedMessage
                       id="createUserDialog.passwordVerification"
