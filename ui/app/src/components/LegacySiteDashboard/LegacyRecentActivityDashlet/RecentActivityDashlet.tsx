@@ -226,7 +226,7 @@ export function RecentActivityDashlet() {
       if (type === deleteContentEvent.type) {
         setSelectedLookup({});
       }
-      fetchActivity();
+      fetchActivity(true);
     });
     return () => {
       subscription.unsubscribe();
