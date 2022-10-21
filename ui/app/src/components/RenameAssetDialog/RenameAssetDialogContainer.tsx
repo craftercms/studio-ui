@@ -46,9 +46,20 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import useSelection from '../../hooks/useSelection';
 import Alert from '@mui/material/Alert';
+import { LoadingState } from '../LoadingState';
+import { EmptyState, getEmptyStateStyleSet } from '../EmptyState';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
-  const { onClose, onRenamed, path, value = '', allowBraces = false, type, dependantItems } = props;
+  const {
+    onClose,
+    onRenamed,
+    path,
+    value = '',
+    allowBraces = false,
+    type,
+    dependantItems,
+    fetchingDependantItems
+  } = props;
   const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
   const [name, setName] = useState(value);
   const dispatch = useDispatch();
@@ -61,7 +72,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const [confirm, setConfirm] = useState(null);
   const [confirmBrokenReferences, setConfirmBrokenReferences] = useState(false);
   const { formatMessage } = useIntl();
-  const renameDisabled = isSubmitting || !isValid || (dependantItems.length > 0 && !confirmBrokenReferences);
+  const renameDisabled =
+    isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const [contextMenu, setContextMenu] = useSpreadState({
     el: null,
@@ -86,8 +98,9 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
         onRenamed?.({ path, name });
         dispatch(updateRenameAssetDialog({ isSubmitting: false, hasPendingChanges: false }));
       },
-      error(response) {
-        dispatch(showErrorDialog({ error: response }));
+      error({ response }) {
+        dispatch(showErrorDialog({ error: response.response }));
+        dispatch(updateRenameAssetDialog({ isSubmitting: false }));
       }
     });
   };
@@ -178,42 +191,61 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
             onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
           />
         </form>
-        {dependantItems.length > 0 && (
-          <>
-            <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
-              <FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />
-            </Typography>
-            <DependenciesList
-              dependencies={dependantItems}
-              compactView={false}
-              showTypes="all-deps"
-              handleContextMenuClick={handleContextMenuClick}
-            />
-            <Menu open={Boolean(contextMenu.el)} anchorEl={contextMenu.el} keepMounted onClose={handleContextMenuClose}>
-              {contextMenu.dependency && isEditableAsset(contextMenu.dependency.path) && (
-                <MenuItem onClick={() => handleEditorDisplay(contextMenu.dependency)}>
-                  <FormattedMessage id="words.edit" defaultMessage="Edit" />
-                </MenuItem>
-              )}
-            </Menu>
-            <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={confirmBrokenReferences}
-                    onChange={() => setConfirmBrokenReferences(!confirmBrokenReferences)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                  />
-                }
-                label={
-                  <FormattedMessage
-                    id="renameAsset.confirmBrokenReferences"
-                    defaultMessage="I understand that there will be broken references"
-                  />
-                }
+        <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
+          <FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />
+        </Typography>
+        {fetchingDependantItems ? (
+          <LoadingState />
+        ) : dependantItems ? (
+          dependantItems.length > 0 ? (
+            <>
+              <DependenciesList
+                dependencies={dependantItems}
+                compactView={false}
+                showTypes="all-deps"
+                handleContextMenuClick={handleContextMenuClick}
               />
-            </Alert>
-          </>
+              <Menu
+                open={Boolean(contextMenu.el)}
+                anchorEl={contextMenu.el}
+                keepMounted
+                onClose={handleContextMenuClose}
+              >
+                {contextMenu.dependency && isEditableAsset(contextMenu.dependency.path) && (
+                  <MenuItem onClick={() => handleEditorDisplay(contextMenu.dependency)}>
+                    <FormattedMessage id="words.edit" defaultMessage="Edit" />
+                  </MenuItem>
+                )}
+              </Menu>
+              <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={confirmBrokenReferences}
+                      onChange={() => setConfirmBrokenReferences(!confirmBrokenReferences)}
+                      inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                  }
+                  label={
+                    <FormattedMessage
+                      id="renameAsset.confirmBrokenReferences"
+                      defaultMessage="I understand that there will be broken references"
+                    />
+                  }
+                />
+              </Alert>
+            </>
+          ) : (
+            <EmptyState
+              title={<FormattedMessage id="renameAsset.noDependentItems" defaultMessage="No dependent items" />}
+              styles={{
+                ...getEmptyStateStyleSet('horizontal'),
+                ...getEmptyStateStyleSet('image-sm')
+              }}
+            />
+          )
+        ) : (
+          <></>
         )}
       </DialogBody>
       <DialogFooter>
