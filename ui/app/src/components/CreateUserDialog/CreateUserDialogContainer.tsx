@@ -37,6 +37,13 @@ import { addUserToGroup } from '../../services/groups';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import {
+  USER_EMAIL_MAX_LENGTH,
+  USER_FIRST_NAME_MAX_LENGTH,
+  USER_LAST_NAME_MAX_LENGTH,
+  USER_PASSWORD_MAX_LENGTH,
+  USER_USERNAME_MAX_LENGTH
+} from '../EditUserDialog/utils';
 
 const useStyles = makeStyles()((theme) => ({
   popper: {
@@ -106,7 +113,7 @@ const useStyles = makeStyles()((theme) => ({
     }
   },
   textField: {
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(2)
   },
   form: {
     display: 'contents'
@@ -239,6 +246,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                     )
                   }
                   onChange={(e) => setNewUser({ firstName: e.target.value })}
+                  inputProps={{ maxLength: USER_FIRST_NAME_MAX_LENGTH }}
                 />
               </Grid>
               <Grid item sm={6}>
@@ -259,6 +267,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                     )
                   }
                   onChange={(e) => setNewUser({ lastName: e.target.value })}
+                  inputProps={{ maxLength: USER_LAST_NAME_MAX_LENGTH }}
                 />
               </Grid>
             </Grid>
@@ -277,6 +286,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                 ) : null
               }
               onChange={(e) => setNewUser({ email: e.target.value })}
+              inputProps={{ maxLength: USER_EMAIL_MAX_LENGTH }}
             />
             <TextField
               className={classes.textField}
@@ -291,11 +301,11 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                 )
               }
               onChange={(e) => setNewUser({ username: e.target.value })}
+              inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
             />
             <Grid container spacing={2}>
               <Grid item sm={6}>
                 <PasswordTextField
-                  className={classes.textField}
                   label={<FormattedMessage id="words.password" defaultMessage="Password" />}
                   required
                   fullWidth
@@ -311,11 +321,11 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                   onChange={(e) => setNewUser({ password: e.target.value })}
                   onFocus={(e) => setAnchorEl(e.target)}
                   onBlur={() => setAnchorEl(null)}
+                  inputProps={{ maxLength: USER_PASSWORD_MAX_LENGTH }}
                 />
               </Grid>
               <Grid item sm={6}>
                 <PasswordTextField
-                  className={classes.textField}
                   label={
                     <FormattedMessage
                       id="createUserDialog.passwordVerification"

@@ -55,3 +55,9 @@ export interface EditUserDialogUIProps {
   onDelete(username: string): void;
   onResetPassword(value: boolean): void;
 }
+
+export const USER_USERNAME_MAX_LENGTH = 255;
+export const USER_PASSWORD_MAX_LENGTH = 128;
+export const USER_FIRST_NAME_MAX_LENGTH = 32;
+export const USER_LAST_NAME_MAX_LENGTH = 32;
+export const USER_EMAIL_MAX_LENGTH = 255;
