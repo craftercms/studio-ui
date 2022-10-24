@@ -47,7 +47,8 @@ import MenuItem from '@mui/material/MenuItem';
 import useSelection from '../../hooks/useSelection';
 import Alert from '@mui/material/Alert';
 import { LoadingState } from '../LoadingState';
-import { EmptyState, getEmptyStateStyleSet } from '../EmptyState';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import getStyles from './styles';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const {
@@ -79,6 +80,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
     el: null,
     dependency: null
   });
+  const sx = getStyles();
 
   useEffect(() => {
     dispatch(fetchRenameAssetDependants());
@@ -191,14 +193,14 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
             onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
           />
         </form>
-        <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
-          <FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />
-        </Typography>
         {fetchingDependantItems ? (
           <LoadingState />
         ) : dependantItems ? (
           dependantItems.length > 0 ? (
             <>
+              <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
+                <FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />
+              </Typography>
               <DependenciesList
                 dependencies={dependantItems}
                 compactView={false}
@@ -236,13 +238,10 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
               </Alert>
             </>
           ) : (
-            <EmptyState
-              title={<FormattedMessage id="renameAsset.noDependentItems" defaultMessage="No dependent items" />}
-              styles={{
-                ...getEmptyStateStyleSet('horizontal'),
-                ...getEmptyStateStyleSet('image-sm')
-              }}
-            />
+            <Typography variant="body1" sx={sx.emptyMessage}>
+              <InfoOutlinedIcon sx={sx.emptyMessageIcon} />
+              <FormattedMessage id="renameAsset.noDependentItems" defaultMessage="No dependent items" />
+            </Typography>
           )
         ) : (
           <></>
