@@ -33,7 +33,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import RecentActivityDashletUiSkeleton from '../LegacyRecentActivityDashletGrid/RecentActivityDashletUISkeleton';
 import GlobalState from '../../../models/GlobalState';
-import { deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
+import { deleteContentEvent, publishEvent, workflowEvent, contentEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter, map, switchMap } from 'rxjs/operators';
 import TextField from '@mui/material/TextField';
@@ -220,13 +220,13 @@ export function RecentActivityDashlet() {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type];
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       if (type === deleteContentEvent.type) {
         setSelectedLookup({});
       }
-      fetchActivity();
+      fetchActivity(true);
     });
     return () => {
       subscription.unsubscribe();
