@@ -256,6 +256,24 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     { keyup: true, keydown: true }
   );
 
+  useEffect(() => {
+    const bypassHandler = () => {
+      // check if 'z' key is pressed, if so, 'uncheck' it.
+      if (refs.current.keysPressed['z']) {
+        refs.current.keysPressed['z'] = false;
+        $('html').removeClass(iceBypassKeyClass);
+        document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: false }));
+      }
+    };
+
+    // If you're pressing 'z' key and leave current tab, the system stays as if it was still pressed (bypassed).
+    window.addEventListener('blur', bypassHandler, false);
+
+    return () => {
+      window.removeEventListener('blur', bypassHandler);
+    };
+  }, []);
+
   // endregion
 
   useEffect(() => {
