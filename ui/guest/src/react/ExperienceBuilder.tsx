@@ -257,12 +257,10 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   );
 
   useEffect(() => {
-    const bypassHandler = () => {
+    const bypassHandler = (e) => {
       // check if 'z' key is pressed, if so, 'uncheck' it.
       if (refs.current.keysPressed['z']) {
-        refs.current.keysPressed['z'] = false;
-        $('html').removeClass(iceBypassKeyClass);
-        document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: false }));
+        bypassKeyStroke(e, refs);
       }
     };
 
