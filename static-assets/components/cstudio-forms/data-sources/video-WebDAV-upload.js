@@ -57,8 +57,9 @@ YAHOO.extend(CStudioForms.Datasources.VideoWebDAVUpload, CStudioForms.CStudioFor
 
     var callback = {
       success: function (fileData) {
-        var uri = fileData;
-        var fileExtension = fileData.split('.').pop();
+        const fileName = fileData.name;
+        var uri = fileData.url;
+        var fileExtension = fileName.split('.').pop();
 
         var videoData = {
           previewUrl: uri,
