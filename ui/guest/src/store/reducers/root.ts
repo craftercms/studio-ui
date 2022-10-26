@@ -46,6 +46,7 @@ import {
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
+  desktopAssetUploadFailed,
   highlightModeChanged,
   hostCheckIn,
   setEditModePadding,
@@ -474,6 +475,15 @@ const reducer = createReducer(initialState, {
     ...state,
     uploading: reversePluckProps(state.uploading, `${record.id}`)
   }),
+  // region desktopAssetUploadFailed
+  [desktopAssetUploadFailed.type]: (
+    state,
+    { payload: { record } }: GuestStandardAction<{ record: ElementRecord }>
+  ) => ({
+    ...state,
+    uploading: reversePluckProps(state.uploading, `${record.id}`)
+  }),
+  // endregion
   // endregion
   // region desktopAssetUploadProgress
   [desktopAssetUploadProgress.type]: (state, { payload: { percentage, record } }) => ({

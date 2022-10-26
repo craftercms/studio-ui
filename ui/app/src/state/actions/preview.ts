@@ -147,8 +147,11 @@ export const desktopAssetDrop = /*#__PURE__*/ createAction('DESKTOP_ASSET_DROP')
 export const desktopAssetUploadComplete = /*#__PURE__*/ createAction<{ record; path: string }>(
   'DESKTOP_ASSET_UPLOAD_COMPLETE'
 );
-export const desktopAssetUploadProgress = /*#__PURE__*/ createAction('DESKTOP_ASSET_UPLOAD_PROGRESS');
-export const desktopAssetUploadStarted = /*#__PURE__*/ createAction('DESKTOP_ASSET_UPLOAD_STARTED');
+export const desktopAssetUploadProgress = /*#__PURE__*/ createAction<{ record; percentage: number }>(
+  'DESKTOP_ASSET_UPLOAD_PROGRESS'
+);
+export const desktopAssetUploadStarted = /*#__PURE__*/ createAction<{ record }>('DESKTOP_ASSET_UPLOAD_STARTED');
+export const desktopAssetUploadFailed = /*#__PURE__*/ createAction<{ record }>('DESKTOP_ASSET_UPLOAD_FAILED');
 export const componentInstanceDragStarted = /*#__PURE__*/ createAction<{
   instance: ContentInstance;
   contentType: ContentType;
@@ -167,7 +170,7 @@ export const contentTreeFieldSelected = /*#__PURE__*/ createAction<{ iceProps; s
   'CONTENT_TREE_FIELD_SELECTED'
 );
 export const clearContentTreeFieldSelected = /*#__PURE__*/ createAction('CLEAR_CONTENT_TREE_FIELD_SELECTED');
-export const validationMessage = /*#__PURE__*/ createAction<ValidationResult>('VALIDATION_MESSAGE');
+export const snackGuestMessage = /*#__PURE__*/ createAction<ValidationResult>('SNACK_GUEST_MESSAGE');
 export const editModeToggleHotkey = /*#__PURE__*/ createAction<{ mode: string }>('EDIT_MODE_TOGGLE_HOTKEY');
 export const hotKey = /*#__PURE__*/ createAction<{ key: string; type: 'keyup' | 'keydown' }>('HOT_KEY');
 export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');

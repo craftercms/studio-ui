@@ -24,10 +24,6 @@ import {
   deleteItemOperation,
   deleteItemOperationComplete,
   deleteItemOperationFailed,
-  desktopAssetDrop,
-  desktopAssetUploadComplete,
-  desktopAssetUploadProgress,
-  desktopAssetUploadStarted,
   duplicateItemOperation,
   duplicateItemOperationComplete,
   duplicateItemOperationFailed,
@@ -75,7 +71,7 @@ import {
   updateFieldValueOperationComplete,
   updateFieldValueOperationFailed,
   updateRteConfig,
-  validationMessage
+  snackGuestMessage
 } from '../../state/actions/preview';
 import {
   deleteItem,
@@ -90,15 +86,14 @@ import {
   insertItem,
   moveItem,
   sortItem,
-  updateField,
-  uploadDataUrl
+  updateField
 } from '../../services/content';
-import { filter, map, pluck, switchMap, takeUntil } from 'rxjs/operators';
+import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
 import { forkJoin, Observable, of } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
-import { nnou, pluckProps } from '../../utils/object';
+import { nnou } from '../../utils/object';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import RubbishBin from '../RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
@@ -954,77 +949,21 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           dispatch(setItemBeingDragged(type === instanceDragBegun.type ? payload : null));
           break;
         }
-        case desktopAssetDrop.type: {
-          enqueueSnackbar(formatMessage(guestMessages.assetUploadStarted));
-          // @ts-ignore - TODO: type action accordingly
-          hostToHost$.next(desktopAssetUploadStarted(payload));
-          const {
-            validations: { allowImageUpload }
-          } = payload.field;
-
-          const path =
-            allowImageUpload && allowImageUpload.value
-              ? processPathMacros({
-                  path: allowImageUpload.value,
-                  objectId: payload.record.modelId
-                })
-              : `/static-assets/images/${payload.record.modelId}`;
-
-          const uppySubscription = uploadDataUrl(
-            siteId,
-            pluckProps(payload, 'name', 'type', 'dataUrl'),
-            path,
-            upToDateRefs.current.xsrfArgument
-          )
-            .pipe(
-              filter(({ type }) => type === 'progress'),
-              pluck('payload')
-            )
-            .subscribe({
-              next({ progress }) {
-                const percentage = Math.floor(
-                  parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
-                );
-                hostToGuest$.next({
-                  type: desktopAssetUploadProgress.type,
-                  payload: {
-                    record: payload.record,
-                    percentage
-                  }
-                });
-              },
-              error(error) {
-                console.error(`${type} failed`, error);
-                enqueueSnackbar(formatMessage(guestMessages.assetUploadFailed), { variant: 'error' });
-              },
-              complete() {
-                hostToGuest$.next({
-                  type: desktopAssetUploadComplete.type,
-                  payload: {
-                    record: payload.record,
-                    path: `${path}${path.endsWith('/') ? '' : '/'}${payload.name}`
-                  }
-                });
-              }
-            });
-          const sub = hostToHost$.subscribe((action) => {
-            const { type, payload: uploadFile } = action;
-            if (type === desktopAssetUploadStarted.type && uploadFile.record.id === payload.record.id) {
-              sub.unsubscribe();
-              uppySubscription.unsubscribe();
-            }
-          });
-          break;
-        }
         case contentTypeDropTargetsResponse.type: {
           dispatch(setContentTypeDropTargets(payload));
           break;
         }
-        case validationMessage.type: {
+        case snackGuestMessage.type: {
           enqueueSnackbar(
             payload.id in guestMessages ? formatMessage(guestMessages[payload.id], payload.values ?? {}) : payload.id,
             {
-              variant: payload.level === 'required' ? 'error' : payload.level === 'suggestion' ? 'warning' : 'info'
+              variant: payload.level
+                ? payload.level === 'required'
+                  ? 'error'
+                  : payload.level === 'suggestion'
+                  ? 'warning'
+                  : 'info'
+                : null
             }
           );
           break;
