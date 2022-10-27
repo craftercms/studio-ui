@@ -76,13 +76,8 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
       CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, {
         success: function (fileData) {
           if (control) {
-            control.insertItem(
-              path + '/' + fileData.fileName,
-              path + '/' + fileData.fileName,
-              fileData.fileExtension,
-              fileData.size,
-              me.id
-            );
+            const fileUrl = `${path}${path.endsWith('/') ? '' : '/'}${fileData.fileName}`;
+            control.insertItem(fileUrl, fileUrl, fileData.fileExtension, fileData.size, me.id);
             if (control._renderItems) {
               control._renderItems();
             }
