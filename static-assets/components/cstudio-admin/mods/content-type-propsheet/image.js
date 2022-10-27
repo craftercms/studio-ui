@@ -242,7 +242,8 @@ YAHOO.extend(
             CStudioAuthoringContext.site,
             configFilesPath + '/content-types' + CStudioAdminConsole.contentTypeSelected,
             'upload',
-            uploadCb
+            uploadCb,
+            ['image/*']
           );
         };
 
