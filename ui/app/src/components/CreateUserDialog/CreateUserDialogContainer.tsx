@@ -38,11 +38,11 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
 import {
   minLengthMap,
-  usernameRegex,
-  emailRegex,
   USER_FIRST_NAME_MIN_LENGTH,
   USER_USERNAME_MIN_LENGTH,
-  USER_LAST_NAME_MIN_LENGTH
+  USER_LAST_NAME_MIN_LENGTH,
+  isInvalidEmail,
+  isInvalidUsername
 } from '../UserManagement/utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
@@ -196,14 +196,6 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
         setSubmitted(false);
       }
     }
-  };
-
-  const isInvalidEmail = (email: string) => {
-    return Boolean(email) && !emailRegex.test(email);
-  };
-
-  const isInvalidUsername = (username: string) => {
-    return Boolean(username) && !usernameRegex.test(username);
   };
 
   const isInvalidPassword = (password) => {

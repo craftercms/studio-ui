@@ -15,7 +15,6 @@
  */
 
 export const usernameRegex = /^[a-zA-Z0-9_.@]+$/g;
-export const emailRegex = /^([\w\d._\-#])+@([\w\d._\-#]+[.][\w\d._\-#]+)+$/g;
 export const USER_FIRST_NAME_MIN_LENGTH = 2;
 export const USER_LAST_NAME_MIN_LENGTH = 2;
 export const USER_USERNAME_MIN_LENGTH = 3;
@@ -24,4 +23,13 @@ export const minLengthMap = {
   username: USER_USERNAME_MIN_LENGTH,
   firstName: USER_FIRST_NAME_MIN_LENGTH,
   lastName: USER_LAST_NAME_MIN_LENGTH
+};
+
+export const isInvalidEmail = (email: string) => {
+  const emailRegex = /^([\w\d._\-#])+@([\w\d._\-#]+[.][\w\d._\-#]+)+$/g;
+  return Boolean(email) && !emailRegex.test(email);
+};
+
+export const isInvalidUsername = (username: string) => {
+  return Boolean(username) && !usernameRegex.test(username);
 };

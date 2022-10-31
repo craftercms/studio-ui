@@ -27,7 +27,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import { EditUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { emailRegex, minLengthMap } from '../UserManagement/utils';
+import { minLengthMap, isInvalidEmail } from '../UserManagement/utils';
 
 const translations = defineMessages({
   userDeleted: {
@@ -178,11 +178,6 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     return field.trim() === '';
   };
 
-  // TODO: pending to figure out the incorrect value returned when using this
-  const isInvalidEmail = (email: string) => {
-    return !emailRegex.test(email);
-  };
-
   const validateFieldMinLength = (key: string, value: string) => {
     return value.trim() !== '' && value.trim().length < minLengthMap[key];
   };
@@ -202,8 +197,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
   }, [mySites, props.user?.username]);
 
   const refs = useUpdateRefs({
-    validateFieldMinLength,
-    isInvalidEmail
+    validateFieldMinLength
   });
 
   useEffect(() => {
@@ -213,7 +207,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
           !refs.current.validateFieldMinLength('firstName', user.firstName) &&
           user.lastName.trim() &&
           !refs.current.validateFieldMinLength('lastName', user.lastName) &&
-          !refs.current.isInvalidEmail(user.email)
+          !isInvalidEmail(user.email)
       )
     );
   }, [user, refs]);
