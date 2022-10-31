@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const usernameRegex = /^[a-zA-Z0-9_.@]+$/g;
 export const USER_FIRST_NAME_MIN_LENGTH = 2;
 export const USER_LAST_NAME_MIN_LENGTH = 2;
 export const USER_USERNAME_MIN_LENGTH = 3;
@@ -31,5 +30,6 @@ export const isInvalidEmail = (email: string) => {
 };
 
 export const isInvalidUsername = (username: string) => {
+  const usernameRegex = /^[a-zA-Z0-9_.@]+$/g;
   return Boolean(username) && !usernameRegex.test(username);
 };

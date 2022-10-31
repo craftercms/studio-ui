@@ -228,16 +228,19 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
     });
   };
 
+  const refs = useUpdateRefs({
+    validateFieldMinLength
+  });
   useEffect(() => {
     setSubmitOk(
       Boolean(
         newUser.firstName.trim() &&
-          !validateFieldMinLength('firstName', newUser.firstName) &&
+          !refs.current.validateFieldMinLength('firstName', newUser.firstName) &&
           newUser.lastName.trim() &&
-          !validateFieldMinLength('lastName', newUser.lastName) &&
+          !refs.current.validateFieldMinLength('lastName', newUser.lastName) &&
           !isInvalidEmail(newUser.email) &&
           newUser.username.trim() &&
-          !validateFieldMinLength('username', newUser.username) &&
+          !refs.current.validateFieldMinLength('username', newUser.username) &&
           !isInvalidUsername(newUser.username) &&
           newUser.password &&
           validPassword &&
@@ -250,7 +253,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
         newUser.firstName || newUser.email || newUser.password || validPassword || passwordConfirm
       )
     });
-  }, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword]);
+  }, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword, refs]);
 
   return (
     <form className={classes.form}>
