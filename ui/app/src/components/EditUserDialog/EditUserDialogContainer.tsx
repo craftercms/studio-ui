@@ -177,6 +177,8 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
   const validateRequiredField = (field: string) => {
     return field.trim() === '';
   };
+
+  // TODO: pending to figure out the incorrect value returned when using this
   const isInvalidEmail = (email: string) => {
     return !emailRegex.test(email);
   };

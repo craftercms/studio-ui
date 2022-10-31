@@ -127,7 +127,7 @@ const useStyles = makeStyles()((theme) => ({
 const translations = defineMessages({
   invalidMinLength: {
     id: 'createUserDialog.invalidMinLength',
-    defaultMessage: 'Min {minLength} characters.'
+    defaultMessage: 'Min {length} characters.'
   }
 });
 
