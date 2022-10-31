@@ -27,6 +27,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import { EditUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { emailRegex, minLengthMap } from '../UserManagement/utils';
 
 const translations = defineMessages({
   userDeleted: {
@@ -61,6 +62,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     enabled: false,
     externallyManaged: false
   });
+  const [submitOk, setSubmitOk] = useState(false);
   const sites = useSitesBranch();
   const sitesById = sites.byId;
   const mySites = useMemo(() => Object.values(sitesById), [sitesById]);
@@ -71,20 +73,6 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, onUserEdited });
 
   const editMode = !props.user?.externallyManaged;
-
-  useEffect(() => {
-    if (open) {
-      setUser(props.user);
-    }
-  }, [props.user, open, setUser]);
-
-  useEffect(() => {
-    if (mySites.length && props.user?.username) {
-      fetchRolesBySite(props.user.username, mySites).subscribe((response) => {
-        setRolesBySite(response);
-      });
-    }
-  }, [mySites, props.user?.username]);
 
   const onInputChange = (value: object) => {
     setDirty(true);
@@ -186,6 +174,47 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     setOpenResetPassword(value);
   };
 
+  const validateRequiredField = (field: string) => {
+    return field.trim() === '';
+  };
+  const isInvalidEmail = (email: string) => {
+    return !emailRegex.test(email);
+  };
+
+  const validateFieldMinLength = (key: string, value: string) => {
+    return value.trim() !== '' && value.trim().length < minLengthMap[key];
+  };
+
+  useEffect(() => {
+    if (open) {
+      setUser(props.user);
+    }
+  }, [props.user, open, setUser]);
+
+  useEffect(() => {
+    if (mySites.length && props.user?.username) {
+      fetchRolesBySite(props.user.username, mySites).subscribe((response) => {
+        setRolesBySite(response);
+      });
+    }
+  }, [mySites, props.user?.username]);
+
+  const refs = useUpdateRefs({
+    validateFieldMinLength,
+    isInvalidEmail
+  });
+
+  useEffect(() => {
+    setSubmitOk(
+      Boolean(
+        user.firstName.trim() &&
+          !refs.current.validateFieldMinLength('firstName', user.firstName) &&
+          user.lastName.trim() &&
+          !refs.current.validateFieldMinLength('lastName', user.lastName) &&
+          !refs.current.isInvalidEmail(user.email)
+      )
+    );
+  }, [user, refs]);
   useEffect(() => {
     onSubmittingAndOrPendingChange({
       hasPendingChanges: dirty
@@ -197,6 +226,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
       user={user}
       openResetPassword={openResetPassword}
       inProgress={isSubmitting}
+      submitOk={submitOk}
       dirty={dirty}
       sites={mySites}
       rolesBySite={rolesBySite}
@@ -209,6 +239,9 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
       onEnableChange={onEnableChange}
       onCancelForm={onCancelForm}
       onResetPassword={onResetPassword}
+      isInvalidEmail={isInvalidEmail}
+      validateRequiredField={validateRequiredField}
+      validateFieldMinLength={validateFieldMinLength}
     />
   );
 }

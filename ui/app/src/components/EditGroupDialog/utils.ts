@@ -43,8 +43,11 @@ export interface GroupEditDialogUIProps {
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onDeleteGroup?(group: Group): void;
   onSave(): void;
+  submitOk: boolean;
   onCancel(): void;
   onChangeValue(value: { key: string; value: string }): void;
+  validateRequiredField(value: string): boolean;
+  validateGroupNameMinLength(value: string): boolean;
   onAddMembers?(members: (string | number)[]): void;
   onRemoveMembers?(members: (string | number)[]): void;
   users?: User[];
@@ -54,3 +57,4 @@ export interface GroupEditDialogUIProps {
 
 export const GROUP_NAME_MAX_LENGTH = 512;
 export const GROUP_DESCRIPTION_MAX_LENGTH = 1024;
+export const GROUP_NAME_MIN_LENGTH = 3;

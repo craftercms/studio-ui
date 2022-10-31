@@ -34,7 +34,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { EditGroupDialogContainerProps } from './utils';
+import { EditGroupDialogContainerProps, GROUP_NAME_MIN_LENGTH } from './utils';
 
 const translations = defineMessages({
   groupCreated: {
@@ -66,6 +66,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 
   const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '' });
   const [isDirty, setIsDirty] = useState(false);
+  const [submitOk, setSubmitOk] = useState(false);
   const isEdit = Boolean(props.group);
 
   const [users, setUsers] = useState<User[]>();
@@ -91,6 +92,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       setGroup(props.group);
     }
   }, [group?.id, props.group, setGroup]);
+
+  useEffect(() => {
+    setSubmitOk(Boolean(group.name.trim() && !validateGroupNameMinLength(group.name)));
+  }, [group.name]);
 
   const onDeleteGroup = (group: Group) => {
     trash(group.id).subscribe(
@@ -147,6 +152,14 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     setGroup({ [property.key]: property.value });
   };
 
+  const validateRequiredField = (value: string) => {
+    return isDirty && value.trim() === '';
+  };
+
+  const validateGroupNameMinLength = (value: string) => {
+    return value.trim() !== '' && value.trim().length < GROUP_NAME_MIN_LENGTH;
+  };
+
   const onSave = () => {
     if (props.group) {
       update(group).subscribe(
@@ -164,8 +177,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
         }
       );
     } else {
-      create({ name: group.name, desc: group.desc }).subscribe(
-        (group) => {
+      create({ name: group.name.trim(), desc: group.desc }).subscribe({
+        next(group) {
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.groupCreated)
@@ -174,10 +187,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           setIsDirty(false);
           onGroupSaved(group);
         },
-        ({ response: { response } }) => {
+        error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
         }
-      );
+      });
     }
   };
 
@@ -212,12 +225,15 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       members={members}
       onDeleteGroup={onDeleteGroup}
       onChangeValue={onChangeValue}
+      submitOk={submitOk}
       onSave={onSave}
       onCancel={onCancel}
       onAddMembers={onAddMembers}
       onRemoveMembers={onRemoveMembers}
       inProgressIds={inProgressIds}
       isDirty={isDirty}
+      validateRequiredField={validateRequiredField}
+      validateGroupNameMinLength={validateGroupNameMinLength}
     />
   );
 }

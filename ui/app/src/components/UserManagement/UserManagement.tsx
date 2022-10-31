@@ -107,8 +107,8 @@ export function UserManagement(props: UserManagementProps) {
   };
 
   const onRowClicked = (user: User) => {
+    setViewUser({ ...user });
     editUserDialogState.onOpen();
-    setViewUser(user);
   };
 
   const onPageChange = (page: number) => {
