@@ -22,7 +22,7 @@ import { useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { PopoverProps } from '@mui/material/Popover';
-import { getRootPath, isValidCutPastePath } from '../../utils/path';
+import { getRootPath, isValidCopyPastePath, isValidCutPastePath } from '../../utils/path';
 import { AllItemActions } from '../../models/Item';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -78,7 +78,8 @@ export function ItemActionsMenu(props: ItemMenuProps) {
     clipboard &&
     clipboard.paths.length &&
     getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
-    isValidCutPastePath(item.path, clipboard.sourcePath);
+    isValidCopyPastePath(item.path, clipboard.sourcePath) &&
+    (clipboard.type === 'CUT' ? isValidCutPastePath(item.path, clipboard.sourcePath) : true);
   const options = generateSingleItemOptions(item, formatMessage, { hasClipboard });
   return (
     <ContextMenu
