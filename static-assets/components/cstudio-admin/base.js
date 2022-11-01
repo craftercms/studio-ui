@@ -211,14 +211,13 @@
       }
 
       function selectedItem() {
-        if (params.toolbar.selectedEl) {
+        if (params.toolbar?.selectedEl) {
           YDom.removeClass(params.toolbar.selectedEl, 'cstudio-admin-console-item-selected');
           CStudioAdminConsole.CommandBar.hide();
+          params.toolbar.selectedEl = params.tool.containerEl;
         }
 
         amplify.publish('TOOL_SELECTED');
-
-        params.toolbar.selectedEl = params.tool.containerEl;
         YDom.addClass(params.tool.containerEl, 'cstudio-admin-console-item-selected');
         params.tool.renderWorkarea();
       }
