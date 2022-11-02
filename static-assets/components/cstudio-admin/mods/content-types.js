@@ -2832,7 +2832,12 @@
       },
 
       handleDependencyPopover: function (element, dependency, show) {
+        const hidePopover = () => {
+          $(element).parent().popover('hide');
+        }
+
         if (show) {
+          console.log('element', element);
           $(element)
             .parent()
             .popover({
@@ -2841,7 +2846,10 @@
               placement: 'left',
               trigger: 'hover'
             });
+
+          $('#content-type-tools').on('scroll', hidePopover);
         } else {
+          $('#content-type-tools').off('scroll', hidePopover);
           $(element).parent().popover('destroy');
         }
       },
