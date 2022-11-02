@@ -35,6 +35,7 @@ import NavLoader from './NavLoader';
 import { ErrorState } from '../ErrorState';
 import { renderErrorState } from '../ErrorState/util';
 import { Pagination } from '../Pagination';
+import Box from '@mui/material/Box';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -233,7 +234,9 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             ) : state.error ? (
               renderErrorState(state.error, { imageUrl: null })
             ) : state.itemsInPath.length === 0 && !Boolean(levelDescriptor) ? (
-              <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
+              <Box display="flex" justifyContent="center" m={1}>
+                <FormattedMessage id="pathNavigator.noItemsAtLocation" defaultMessage="No items at this location" />
+              </Box>
             ) : (
               <>
                 {levelDescriptor && (
