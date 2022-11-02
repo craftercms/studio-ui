@@ -34,7 +34,8 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { EditGroupDialogContainerProps, GROUP_NAME_MIN_LENGTH } from './utils';
+import { EditGroupDialogContainerProps } from './utils';
+import { validateGroupNameMinLength } from '../GroupManagement/utils';
 
 const translations = defineMessages({
   groupCreated: {
@@ -152,14 +153,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     setGroup({ [property.key]: property.value });
   };
 
-  const validateRequiredField = (value: string) => {
-    return isDirty && value.trim() === '';
-  };
-
-  const validateGroupNameMinLength = (value: string) => {
-    return value.trim() !== '' && value.trim().length < GROUP_NAME_MIN_LENGTH;
-  };
-
   const onSave = () => {
     if (props.group) {
       update(group).subscribe(
@@ -232,8 +225,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onRemoveMembers={onRemoveMembers}
       inProgressIds={inProgressIds}
       isDirty={isDirty}
-      validateRequiredField={validateRequiredField}
-      validateGroupNameMinLength={validateGroupNameMinLength}
     />
   );
 }

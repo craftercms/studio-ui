@@ -27,7 +27,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import { EditUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { minLengthMap, isInvalidEmail } from '../UserManagement/utils';
+import { isInvalidEmail, validateFieldMinLength } from '../UserManagement/utils';
 
 const translations = defineMessages({
   userDeleted: {
@@ -174,14 +174,6 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     setOpenResetPassword(value);
   };
 
-  const validateRequiredField = (field: string) => {
-    return field.trim() === '';
-  };
-
-  const validateFieldMinLength = (key: string, value: string) => {
-    return value.trim() !== '' && value.trim().length < minLengthMap[key];
-  };
-
   useEffect(() => {
     if (open) {
       setUser(props.user);
@@ -204,9 +196,9 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     setSubmitOk(
       Boolean(
         user.firstName.trim() &&
-          !refs.current.validateFieldMinLength('firstName', user.firstName) &&
+          !validateFieldMinLength('firstName', user.firstName) &&
           user.lastName.trim() &&
-          !refs.current.validateFieldMinLength('lastName', user.lastName) &&
+          !validateFieldMinLength('lastName', user.lastName) &&
           !isInvalidEmail(user.email)
       )
     );
@@ -235,9 +227,6 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
       onEnableChange={onEnableChange}
       onCancelForm={onCancelForm}
       onResetPassword={onResetPassword}
-      isInvalidEmail={isInvalidEmail}
-      validateRequiredField={validateRequiredField}
-      validateFieldMinLength={validateFieldMinLength}
     />
   );
 }

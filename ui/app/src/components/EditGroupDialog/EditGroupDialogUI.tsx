@@ -32,12 +32,14 @@ import TransferList from '../TransferList';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import FormHelperText from '@mui/material/FormHelperText';
+import { GroupEditDialogUIProps } from './utils';
 import {
   GROUP_DESCRIPTION_MAX_LENGTH,
   GROUP_NAME_MAX_LENGTH,
   GROUP_NAME_MIN_LENGTH,
-  GroupEditDialogUIProps
-} from './utils';
+  validateGroupNameMinLength,
+  validateRequiredField
+} from '../GroupManagement/utils';
 
 const translations = defineMessages({
   confirmHelperText: {
@@ -73,9 +75,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     members,
     inProgressIds,
     isDirty,
-    isEdit,
-    validateRequiredField,
-    validateGroupNameMinLength
+    isEdit
   } = props;
 
   return (
@@ -134,7 +134,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   id="groupName"
                   onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
                   value={group.name}
-                  error={validateRequiredField(group.name) || validateGroupNameMinLength(group.name)}
+                  error={validateRequiredField(group.name, isDirty) || validateGroupNameMinLength(group.name)}
                   fullWidth
                   autoFocus
                   inputProps={{ maxLength: GROUP_NAME_MAX_LENGTH }}
@@ -146,7 +146,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               <FormHelperText
                 error
                 children={
-                  validateRequiredField(group.name) ? (
+                  validateRequiredField(group.name, isDirty) ? (
                     <FormattedMessage id="editGroupDialog.requiredGroupName" defaultMessage="Group name is required." />
                   ) : validateGroupNameMinLength(group.name) ? (
                     <FormattedMessage

@@ -37,12 +37,12 @@ import { addUserToGroup } from '../../services/groups';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
 import {
-  minLengthMap,
   USER_FIRST_NAME_MIN_LENGTH,
   USER_USERNAME_MIN_LENGTH,
   USER_LAST_NAME_MIN_LENGTH,
   isInvalidEmail,
-  isInvalidUsername
+  isInvalidUsername,
+  validateFieldMinLength
 } from '../UserManagement/utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
@@ -204,10 +204,6 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 
   const validateRequiredField = (field: string) => {
     return submitted && field.trim() === '';
-  };
-
-  const validateFieldMinLength = (key: string, value: string) => {
-    return value.trim() !== '' && value.trim().length < minLengthMap[key];
   };
 
   const validatePasswordMatch = (password, match) => {

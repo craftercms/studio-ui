@@ -39,7 +39,13 @@ import InputLabel from '@mui/material/InputLabel';
 import { UserGroupMembershipEditor } from '../UserGroupMembershipEditor';
 import { EditUserDialogUIProps } from './utils';
 import TextField from '@mui/material/TextField';
-import { USER_FIRST_NAME_MIN_LENGTH, USER_LAST_NAME_MIN_LENGTH } from '../UserManagement/utils';
+import {
+  USER_FIRST_NAME_MIN_LENGTH,
+  USER_LAST_NAME_MIN_LENGTH,
+  validateFieldMinLength,
+  isInvalidEmail,
+  validateRequiredField
+} from '../UserManagement/utils';
 
 const translations = defineMessages({
   externallyManaged: {
@@ -85,9 +91,6 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
     sites,
     rolesBySite,
     passwordRequirementsRegex,
-    isInvalidEmail,
-    validateRequiredField,
-    validateFieldMinLength,
     onSave,
     onCloseButtonClick,
     onDelete,

@@ -55,7 +55,4 @@ export interface EditUserDialogUIProps {
   onCloseResetPasswordDialog(): void;
   onDelete(username: string): void;
   onResetPassword(value: boolean): void;
-  isInvalidEmail(email: string): boolean;
-  validateRequiredField(field: string): boolean;
-  validateFieldMinLength(key: string, value: string): boolean;
 }

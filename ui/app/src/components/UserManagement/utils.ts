@@ -33,3 +33,11 @@ export const isInvalidUsername = (username: string) => {
   const usernameRegex = /^[a-zA-Z0-9_.@]+$/g;
   return Boolean(username) && !usernameRegex.test(username);
 };
+
+export const validateFieldMinLength = (key: string, value: string) => {
+  return value.trim() !== '' && value.trim().length < minLengthMap[key];
+};
+
+export const validateRequiredField = (field: string) => {
+  return field.trim() === '';
+};
