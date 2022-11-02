@@ -38,6 +38,7 @@ import {
   fetchDeleteDependenciesFailed,
   fetchRenameAssetDependants,
   fetchRenameAssetDependantsComplete,
+  fetchRenameAssetDependantsFailed,
   newContentCreationComplete,
   showCodeEditorDialog,
   showConfirmDialog,
@@ -259,7 +260,8 @@ const dialogEpics: CrafterCMSEpic[] = [
           map((response: LegacyItem[]) => {
             const dependants = parseLegacyItemToDetailedItem(response);
             return fetchRenameAssetDependantsComplete({ dependants });
-          })
+          }),
+          catchAjaxError(fetchRenameAssetDependantsFailed)
         )
       )
     )
