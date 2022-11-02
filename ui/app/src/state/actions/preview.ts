@@ -38,19 +38,6 @@ interface CommonOperationProps {
   fieldId: string;
 }
 
-interface ElementRecord {
-  id: number;
-  path?: string;
-  modelId: string;
-  index: string | number;
-  label: string;
-  iceIds: number[];
-  element: HTMLElement;
-  complete: boolean;
-  fieldId: string[];
-  inherited: boolean;
-}
-
 // region Accommodation Action Creators
 
 export const hostCheckIn = /*#__PURE__*/ createAction<{
@@ -157,18 +144,6 @@ export const instanceDragEnded = /*#__PURE__*/ createAction('INSTANCE_DRAG_ENDED
 export const navigationRequest = /*#__PURE__*/ createAction('NAVIGATION_REQUEST');
 export const reloadRequest = /*#__PURE__*/ createAction('RELOAD_REQUEST');
 export const desktopAssetDrop = /*#__PURE__*/ createAction('DESKTOP_ASSET_DROP');
-export const desktopAssetUploadComplete = /*#__PURE__*/ createAction<{ record: ElementRecord; path: string }>(
-  'DESKTOP_ASSET_UPLOAD_COMPLETE'
-);
-export const desktopAssetUploadProgress = /*#__PURE__*/ createAction<{ record: ElementRecord; percentage: number }>(
-  'DESKTOP_ASSET_UPLOAD_PROGRESS'
-);
-export const desktopAssetUploadStarted = /*#__PURE__*/ createAction<{ record: ElementRecord }>(
-  'DESKTOP_ASSET_UPLOAD_STARTED'
-);
-export const desktopAssetUploadFailed = /*#__PURE__*/ createAction<{ record: ElementRecord }>(
-  'DESKTOP_ASSET_UPLOAD_FAILED'
-);
 export const componentInstanceDragStarted = /*#__PURE__*/ createAction<{
   instance: ContentInstance;
   contentType: ContentType;

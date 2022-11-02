@@ -54,8 +54,6 @@ import {
   contentTreeFieldSelected,
   contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
-  desktopAssetUploadComplete,
-  desktopAssetUploadProgress,
   guestCheckIn,
   guestCheckOut,
   highlightModeChanged,
@@ -94,7 +92,9 @@ import {
   dropzoneEnter,
   dropzoneLeave,
   setDropPosition,
-  startListening
+  startListening,
+  desktopAssetUploadComplete,
+  desktopAssetUploadProgress
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
 import GuestGlobalStyles from './GuestGlobalStyles';

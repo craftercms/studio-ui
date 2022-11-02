@@ -41,10 +41,6 @@ import {
   contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
   contentTypeDropTargetsResponse,
-  desktopAssetUploadComplete,
-  desktopAssetUploadFailed,
-  desktopAssetUploadProgress,
-  desktopAssetUploadStarted,
   instanceDragBegun,
   instanceDragEnded,
   trashed,
@@ -69,7 +65,11 @@ import {
   dropzoneLeave,
   exitComponentInlineEdit,
   setEditingStatus,
-  startListening
+  startListening,
+  desktopAssetUploadComplete,
+  desktopAssetUploadFailed,
+  desktopAssetUploadProgress,
+  desktopAssetUploadStarted
 } from '../actions';
 import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
@@ -190,6 +190,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const {
           payload: { event, record }
         } = action;
+
+        console.log('record', record);
+
         event.preventDefault();
         event.stopPropagation();
         const status = state.status;
@@ -278,13 +281,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       validations: { allowImageUpload }
                     } = field;
 
-                    const path =
-                      allowImageUpload && allowImageUpload.value
-                        ? processPathMacros({
-                            path: allowImageUpload.value,
-                            objectId: record.modelId
-                          })
-                        : `/static-assets/images/${record.modelId}`;
+                    const path = allowImageUpload?.value
+                      ? processPathMacros({
+                          path: allowImageUpload.value,
+                          objectId: record.modelId
+                        })
+                      : // TODO: Support path coming from content type definition
+                        `/static-assets/images/${record.modelId}`;
 
                     return merge(
                       of(desktopAssetUploadStarted({ record })),
@@ -340,7 +343,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                                       }
                                       return of(
                                         desktopAssetUploadComplete({
-                                          record: record,
+                                          record,
                                           path: `${path}${path.endsWith('/') ? '' : '/'}${fileName}`
                                         })
                                       );

@@ -43,10 +43,6 @@ import {
   contentTreeFieldSelected,
   contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
-  desktopAssetUploadComplete,
-  desktopAssetUploadProgress,
-  desktopAssetUploadStarted,
-  desktopAssetUploadFailed,
   highlightModeChanged,
   hostCheckIn,
   setEditModePadding,
@@ -67,7 +63,11 @@ import {
   setDropPosition,
   setEditingStatus,
   setEditMode,
-  startListening
+  startListening,
+  desktopAssetUploadComplete,
+  desktopAssetUploadProgress,
+  desktopAssetUploadStarted,
+  desktopAssetUploadFailed
 } from '../actions';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 
@@ -481,7 +481,7 @@ const reducer = createReducer(initialState, {
     { payload: { record } }: GuestStandardAction<{ record: ElementRecord }>
   ) => ({
     ...state,
-    uploading: reversePluckProps(state.uploading, `${record.id}`)
+    uploading: reversePluckProps(state.uploading, String(record.id))
   }),
   // endregion
   // endregion
