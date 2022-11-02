@@ -76,7 +76,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
       CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, {
         success: function (fileData) {
           if (control) {
-            const fileUrl = `${path}${path.endsWith('/') ? '' : '/'}${fileData.fileName}`;
+            const fileUrl = CrafterCMSNext.util.string.ensureSingleSlash(`${path}/${fileData.fileName}`);
             control.insertItem(fileUrl, fileUrl, fileData.fileExtension, fileData.size, me.id);
             if (control._renderItems) {
               control._renderItems();
