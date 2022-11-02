@@ -190,9 +190,6 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const {
           payload: { event, record }
         } = action;
-
-        console.log('record', record);
-
         event.preventDefault();
         event.stopPropagation();
         const status = state.status;
