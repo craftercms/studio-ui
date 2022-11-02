@@ -127,7 +127,7 @@ const useStyles = makeStyles()((theme) => ({
 const translations = defineMessages({
   invalidMinLength: {
     id: 'createUserDialog.invalidMinLength',
-    defaultMessage: 'Min {length} characters.'
+    defaultMessage: 'Min {length} characters'
   }
 });
 
@@ -165,7 +165,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
       if (Object.values(newUser).every(Boolean)) {
         const trimmedNewUser = {};
         Object.entries(newUser).forEach(([key, value]) => {
-          trimmedNewUser[key] = typeof value === 'boolean' ? value : value.trim();
+          trimmedNewUser[key] = typeof value === 'string' ? value.trim() : value;
         });
 
         create(trimmedNewUser)

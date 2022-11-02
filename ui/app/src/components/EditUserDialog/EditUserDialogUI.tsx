@@ -68,7 +68,7 @@ const translations = defineMessages({
   },
   invalidMinLength: {
     id: 'userInfoDialog.invalidMinLength',
-    defaultMessage: 'Min {length} characters.'
+    defaultMessage: 'Min {length} characters'
   }
 });
 
@@ -194,7 +194,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                         validateRequiredField(user.firstName) ? (
                           <FormattedMessage
                             id="editUserDialog.firstNameRequired"
-                            defaultMessage="First Name is required."
+                            defaultMessage="First Name is required"
                           />
                         ) : validateFieldMinLength('firstName', user.firstName) ? (
                           formatMessage(translations.invalidMinLength, { length: USER_FIRST_NAME_MIN_LENGTH })
@@ -222,7 +222,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                         validateRequiredField(user.lastName) ? (
                           <FormattedMessage
                             id="editUserDialog.lastNameRequired"
-                            defaultMessage="Last Name is required."
+                            defaultMessage="Last Name is required"
                           />
                         ) : validateFieldMinLength('lastName', user.lastName) ? (
                           formatMessage(translations.invalidMinLength, { length: USER_LAST_NAME_MIN_LENGTH })
@@ -248,9 +248,9 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                       fullWidth
                       helperText={
                         validateRequiredField(user.email) ? (
-                          <FormattedMessage id="editUserDialog.emailRequired" defaultMessage="Email is required." />
+                          <FormattedMessage id="editUserDialog.emailRequired" defaultMessage="Email is required" />
                         ) : isInvalidEmail(user.email) ? (
-                          <FormattedMessage id="editUserDialog.invalidEmail" defaultMessage="Email is invalid." />
+                          <FormattedMessage id="editUserDialog.invalidEmail" defaultMessage="Email is invalid" />
                         ) : null
                       }
                     />
