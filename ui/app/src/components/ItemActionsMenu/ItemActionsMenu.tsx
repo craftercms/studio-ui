@@ -78,8 +78,9 @@ export function ItemActionsMenu(props: ItemMenuProps) {
     clipboard &&
     clipboard.paths.length &&
     getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
-    isValidCopyPastePath(item.path, clipboard.sourcePath) &&
-    (clipboard.type === 'CUT' ? isValidCutPastePath(item.path, clipboard.sourcePath) : true);
+    (clipboard.type === 'CUT'
+      ? isValidCutPastePath(item.path, clipboard.sourcePath)
+      : isValidCopyPastePath(item.path, clipboard.sourcePath));
   const options = generateSingleItemOptions(item, formatMessage, { hasClipboard });
   return (
     <ContextMenu

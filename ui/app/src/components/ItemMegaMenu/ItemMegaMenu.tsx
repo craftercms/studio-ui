@@ -79,8 +79,9 @@ export function ItemMegaMenu(props: ItemMegaMenuProps) {
     clipboard &&
     clipboard.paths.length &&
     getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
-    isValidCopyPastePath(item.path, clipboard.sourcePath) &&
-    (clipboard.type === 'CUT' ? isValidCutPastePath(item.path, clipboard.sourcePath) : true);
+    (clipboard.type === 'CUT'
+      ? isValidCutPastePath(item.path, clipboard.sourcePath)
+      : isValidCopyPastePath(item.path, clipboard.sourcePath));
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
   const options = generateSingleItemOptions(item, formatMessage, { hasClipboard });
   const editorialOptions = options[0];
