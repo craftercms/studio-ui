@@ -40,18 +40,16 @@ import {
   USER_FIRST_NAME_MIN_LENGTH,
   USER_USERNAME_MIN_LENGTH,
   USER_LAST_NAME_MIN_LENGTH,
+  USER_EMAIL_MAX_LENGTH,
+  USER_FIRST_NAME_MAX_LENGTH,
+  USER_LAST_NAME_MAX_LENGTH,
+  USER_PASSWORD_MAX_LENGTH,
+  USER_USERNAME_MAX_LENGTH,
   isInvalidEmail,
   isInvalidUsername,
   validateFieldMinLength
 } from '../UserManagement/utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import {
-  USER_EMAIL_MAX_LENGTH,
-  USER_FIRST_NAME_MAX_LENGTH,
-  USER_LAST_NAME_MAX_LENGTH,
-  USER_PASSWORD_MAX_LENGTH,
-  USER_USERNAME_MAX_LENGTH
-} from '../EditUserDialog/utils';
 
 const useStyles = makeStyles()((theme) => ({
   popper: {
