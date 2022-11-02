@@ -2837,7 +2837,6 @@
         }
 
         if (show) {
-          console.log('element', element);
           $(element)
             .parent()
             .popover({
