@@ -176,8 +176,12 @@ function addToPasteItem(pasteItem: PasteItem, path: string): void {
   }
 }
 
-export function isValidCutPastePath(targetPath, sourcePath): boolean {
+export function isValidCopyPastePath(targetPath: string, sourcePath: string): boolean {
   return !getIndividualPaths(targetPath).includes(sourcePath);
+}
+
+export function isValidCutPastePath(targetPath: string, sourcePath: string): boolean {
+  return isValidCopyPastePath(targetPath, sourcePath) && withoutIndex(targetPath) !== getParentPath(sourcePath);
 }
 
 export function getEditFormSrc({

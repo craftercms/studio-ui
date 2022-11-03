@@ -21,7 +21,7 @@ import { useIntl } from 'react-intl';
 import StandardAction from '../../models/StandardAction';
 import { generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import { PopoverProps } from '@mui/material/Popover';
-import { getRootPath, isValidCutPastePath } from '../../utils/path';
+import { getRootPath, isValidCopyPastePath, isValidCutPastePath } from '../../utils/path';
 import GlobalState from '../../models/GlobalState';
 import ItemMegaMenuUI from './ItemMegaMenuUI';
 import { AllItemActions } from '../../models/Item';
@@ -79,7 +79,9 @@ export function ItemMegaMenu(props: ItemMegaMenuProps) {
     clipboard &&
     clipboard.paths.length &&
     getRootPath(clipboard.sourcePath) === getRootPath(item.path) &&
-    isValidCutPastePath(item.path, clipboard.sourcePath);
+    (clipboard.type === 'CUT'
+      ? isValidCutPastePath(item.path, clipboard.sourcePath)
+      : isValidCopyPastePath(item.path, clipboard.sourcePath));
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
   const options = generateSingleItemOptions(item, formatMessage, { hasClipboard });
   const editorialOptions = options[0];
