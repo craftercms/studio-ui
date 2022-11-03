@@ -30,9 +30,6 @@ import {
   contentTreeFieldSelected,
   contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
-  desktopAssetUploadComplete,
-  desktopAssetUploadProgress,
-  desktopAssetUploadStarted,
   highlightModeChanged,
   hostCheckIn,
   setPreviewEditMode,
@@ -63,7 +60,10 @@ import {
   scrollingStopped,
   setDropPosition,
   setEditMode,
-  startListening
+  startListening,
+  desktopAssetUploadComplete,
+  desktopAssetUploadProgress,
+  desktopAssetUploadStarted,
 } from '../actions';
 
 export type GuestActionTypes =

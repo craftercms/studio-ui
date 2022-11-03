@@ -46,3 +46,15 @@ export const desktopAssetDragStarted = /*#__PURE__*/ createAction<{ asset: DataT
 );
 export const desktopAssetDragEnded = /*#__PURE__*/ createAction('desktop_asset_drag_ended');
 export const setEditingStatus = /*#__PURE__*/ createAction<{ status: EditingStatus }>('set_editing_status');
+export const desktopAssetUploadComplete = /*#__PURE__*/ createAction<{ record: ElementRecord; path: string }>(
+  'DESKTOP_ASSET_UPLOAD_COMPLETE'
+);
+export const desktopAssetUploadProgress = /*#__PURE__*/ createAction<{ record: ElementRecord; percentage: number }>(
+  'DESKTOP_ASSET_UPLOAD_PROGRESS'
+);
+export const desktopAssetUploadStarted = /*#__PURE__*/ createAction<{ record: ElementRecord }>(
+  'DESKTOP_ASSET_UPLOAD_STARTED'
+);
+export const desktopAssetUploadFailed = /*#__PURE__*/ createAction<{ record: ElementRecord }>(
+  'DESKTOP_ASSET_UPLOAD_FAILED'
+);
