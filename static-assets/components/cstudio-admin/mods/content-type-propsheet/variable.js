@@ -39,13 +39,21 @@ YAHOO.extend(
         };
 
         var updateFieldFn = function (event, el) {
-          if (fName === 'id' && this.value) {
-            var input = YDom.getElementsByClassName('property-input-id')[0];
+          if (fName === 'id') {
+            const titleEl = YDom.getElementsByClassName('property-input-title');
+            if (el.value) {
+              const input = YDom.getElementsByClassName('property-input-id')[0];
+              if (
+                CStudioAdminConsole.ignorePostfixFields.filter((field) => field.startsWith(input.value)).length === 0
+              ) {
+                input.value = cleanVariable(el.value);
+              } else {
+                input.value = el.value;
+              }
 
-            if (CStudioAdminConsole.ignorePostfixFields.filter((field) => field.startsWith(input.value)).length === 0) {
-              input.value = cleanVariable(this.value);
+              YAHOO.util.Dom.addClass(titleEl, 'no-update');
             } else {
-              input.value = this.value;
+              YAHOO.util.Dom.removeClass(titleEl, 'no-update');
             }
           }
           updateFn(event, el);
@@ -83,12 +91,12 @@ YAHOO.extend(
               addPostfixes = '_b';
               break;
           }
-          if (YDom.hasClass(this, 'property-input-title') && !YDom.hasClass(this, 'no-update')) {
+          if (YDom.hasClass(el, 'property-input-title') && !YDom.hasClass(el, 'no-update')) {
             var idDatasource = YDom.getElementsByClassName('property-input-name')[0]
               ? YDom.getElementsByClassName('property-input-name')[0]
               : YDom.getElementsByClassName('property-input-id')[0];
             if (idDatasource) {
-              idDatasource.value = cleanVariable(this.value);
+              idDatasource.value = cleanVariable(el.value);
               idDatasource.value =
                 idDatasource.value.substr(0, 1).toLowerCase() + idDatasource.value.substr(1) + addPostfixes;
 
@@ -98,23 +106,16 @@ YAHOO.extend(
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         };
 
-        var checkVarState = function (event, el) {
-          var titleEl = YDom.getElementsByClassName('property-input-title');
-          YAHOO.util.Dom.addClass(titleEl, 'no-update');
-
-          if (this.value == '') {
-            YAHOO.util.Dom.removeClass(titleEl, 'no-update');
-          }
-        };
-
-        YAHOO.util.Event.on(valueEl, 'input', updateFieldFn, valueEl);
+        YAHOO.util.Event.on(
+          valueEl,
+          'input',
+          CStudioAuthoring.Utils.debounce((e) => updateFieldFn(e, valueEl)),
+          valueEl
+        );
 
         if ((fName == 'id' || fName == 'name') && value !== '') {
           var titleEl = YDom.getElementsByClassName('property-input-title');
           YAHOO.util.Dom.addClass(titleEl, 'no-update');
-          YAHOO.util.Event.on(valueEl, 'keyup', checkVarState);
-        } else if (fName == 'id' && value == '') {
-          YAHOO.util.Event.on(valueEl, 'keyup', checkVarState);
         }
       }
 
