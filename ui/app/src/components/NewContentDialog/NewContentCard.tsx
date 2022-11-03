@@ -39,7 +39,8 @@ const useStyles = makeStyles()(() => ({
   },
   cardHeaderContentTypography: {
     overflow: 'hidden',
-    textOverflow: 'ellipsis'
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
   },
   media: {
     paddingTop: '75%'
