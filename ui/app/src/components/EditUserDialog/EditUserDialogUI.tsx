@@ -36,9 +36,18 @@ import { rand } from '../PathNavigator/utils';
 import ResetPasswordDialog from '../ResetPasswordDialog';
 import * as React from 'react';
 import InputLabel from '@mui/material/InputLabel';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import { UserGroupMembershipEditor } from '../UserGroupMembershipEditor';
 import { EditUserDialogUIProps } from './utils';
+import TextField from '@mui/material/TextField';
+import {
+  USER_FIRST_NAME_MIN_LENGTH,
+  USER_LAST_NAME_MIN_LENGTH,
+  USER_FIRST_NAME_MAX_LENGTH,
+  USER_LAST_NAME_MAX_LENGTH,
+  validateFieldMinLength,
+  isInvalidEmail,
+  validateRequiredField
+} from '../UserManagement/utils';
 
 const translations = defineMessages({
   externallyManaged: {
@@ -64,6 +73,10 @@ const translations = defineMessages({
   confirmCancel: {
     id: 'words.no',
     defaultMessage: 'No'
+  },
+  invalidMinLength: {
+    id: 'userInfoDialog.invalidMinLength',
+    defaultMessage: 'Min {length} characters'
   }
 });
 
@@ -74,6 +87,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
   const {
     user,
     inProgress,
+    submitOk,
     dirty,
     openResetPassword,
     sites,
@@ -173,11 +187,25 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                     </Typography>
                   </InputLabel>
                   {managedInStudio ? (
-                    <OutlinedInput
+                    <TextField
                       id="firstName"
                       onChange={(e) => onInputChange({ firstName: e.currentTarget.value })}
+                      inputProps={{ maxLength: USER_FIRST_NAME_MAX_LENGTH }}
                       value={user.firstName}
                       fullWidth
+                      error={
+                        validateRequiredField(user.firstName) || validateFieldMinLength('firstName', user.firstName)
+                      }
+                      helperText={
+                        validateRequiredField(user.firstName) ? (
+                          <FormattedMessage
+                            id="editUserDialog.firstNameRequired"
+                            defaultMessage="First Name is required"
+                          />
+                        ) : validateFieldMinLength('firstName', user.firstName) ? (
+                          formatMessage(translations.invalidMinLength, { length: USER_FIRST_NAME_MIN_LENGTH })
+                        ) : null
+                      }
                     />
                   ) : (
                     <Typography className={classes.userNameWrapper} children={user.firstName} />
@@ -190,11 +218,23 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                     </Typography>
                   </InputLabel>
                   {managedInStudio ? (
-                    <OutlinedInput
+                    <TextField
                       id="lastName"
                       onChange={(e) => onInputChange({ lastName: e.currentTarget.value })}
+                      inputProps={{ maxLength: USER_LAST_NAME_MAX_LENGTH }}
                       value={user.lastName}
                       fullWidth
+                      error={validateRequiredField(user.lastName) || validateFieldMinLength('lastName', user.lastName)}
+                      helperText={
+                        validateRequiredField(user.lastName) ? (
+                          <FormattedMessage
+                            id="editUserDialog.lastNameRequired"
+                            defaultMessage="Last Name is required"
+                          />
+                        ) : validateFieldMinLength('lastName', user.lastName) ? (
+                          formatMessage(translations.invalidMinLength, { length: USER_LAST_NAME_MIN_LENGTH })
+                        ) : null
+                      }
                     />
                   ) : (
                     <Typography className={classes.userNameWrapper} children={user.lastName} />
@@ -207,11 +247,19 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                     </Typography>
                   </InputLabel>
                   {managedInStudio ? (
-                    <OutlinedInput
+                    <TextField
                       id="email"
                       onChange={(e) => onInputChange({ email: e.currentTarget.value })}
                       value={user.email}
+                      error={validateRequiredField(user.email) || isInvalidEmail(user.email)}
                       fullWidth
+                      helperText={
+                        validateRequiredField(user.email) ? (
+                          <FormattedMessage id="editUserDialog.emailRequired" defaultMessage="Email is required" />
+                        ) : isInvalidEmail(user.email) ? (
+                          <FormattedMessage id="editUserDialog.invalidEmail" defaultMessage="Email is invalid" />
+                        ) : null
+                      }
                     />
                   ) : (
                     <Typography className={classes.userNameWrapper} children={user.email} />
@@ -222,7 +270,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                     <SecondaryButton disabled={!dirty || inProgress} onClick={onCancelForm}>
                       <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                     </SecondaryButton>
-                    <PrimaryButton disabled={!dirty || inProgress} onClick={onSave} loading={inProgress}>
+                    <PrimaryButton disabled={!dirty || !submitOk || inProgress} onClick={onSave} loading={inProgress}>
                       <FormattedMessage id="words.save" defaultMessage="Save" />
                     </PrimaryButton>
                   </div>

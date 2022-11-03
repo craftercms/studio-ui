@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { create } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -36,14 +36,20 @@ import { forkJoin, of } from 'rxjs';
 import { addUserToGroup } from '../../services/groups';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { CreateUserDialogContainerProps } from './utils';
-import useUpdateRefs from '../../hooks/useUpdateRefs';
 import {
+  USER_FIRST_NAME_MIN_LENGTH,
+  USER_USERNAME_MIN_LENGTH,
+  USER_LAST_NAME_MIN_LENGTH,
   USER_EMAIL_MAX_LENGTH,
   USER_FIRST_NAME_MAX_LENGTH,
   USER_LAST_NAME_MAX_LENGTH,
   USER_PASSWORD_MAX_LENGTH,
-  USER_USERNAME_MAX_LENGTH
-} from '../EditUserDialog/utils';
+  USER_USERNAME_MAX_LENGTH,
+  isInvalidEmail,
+  isInvalidUsername,
+  validateFieldMinLength
+} from '../UserManagement/utils';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const useStyles = makeStyles()((theme) => ({
   popper: {
@@ -123,6 +129,13 @@ const useStyles = makeStyles()((theme) => ({
   }
 }));
 
+const translations = defineMessages({
+  invalidMinLength: {
+    id: 'createUserDialog.invalidMinLength',
+    defaultMessage: 'Min {length} characters'
+  }
+});
+
 export function CreateUserDialogContainer(props: CreateUserDialogContainerProps) {
   const { onClose, passwordRequirementsRegex, onCreateSuccess, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const [newUser, setNewUser] = useSpreadState({
@@ -155,7 +168,12 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
       });
       setSubmitted(true);
       if (Object.values(newUser).every(Boolean)) {
-        create(newUser)
+        const trimmedNewUser = {};
+        Object.entries(newUser).forEach(([key, value]) => {
+          trimmedNewUser[key] = typeof value === 'string' ? value.trim() : value;
+        });
+
+        create(trimmedNewUser)
           .pipe(
             switchMap((user) =>
               selectedGroupsRef.current.length
@@ -165,27 +183,24 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                 : of(user)
             )
           )
-          .subscribe(
-            () => {
+          .subscribe({
+            next() {
               onCreateSuccess?.();
               functionRefs.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false
               });
             },
-            ({ response: { response } }) => {
+            error({ response: { response } }) {
               functionRefs.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false
               });
               dispatch(showErrorDialog({ error: response }));
             }
-          );
+          });
+      } else {
+        setSubmitted(false);
       }
     }
-  };
-
-  const isInvalidEmail = (email: string) => {
-    const emailRegex = /^([\w\d._\-#])+@([\w\d._\-#]+[.][\w\d._\-#]+)+$/g;
-    return Boolean(email) && !emailRegex.test(email);
   };
 
   const isInvalidPassword = (password) => {
@@ -193,7 +208,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   };
 
   const validateRequiredField = (field: string) => {
-    return submitted && field === '';
+    return submitted && field.trim() === '';
   };
 
   const validatePasswordMatch = (password, match) => {
@@ -202,12 +217,32 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 
   const onSelectedGroupsChanged = (groupIds) => (selectedGroupsRef.current = groupIds);
 
+  const onChangeValue = (key: string, value: string) => {
+    let cleanValue = value;
+
+    if (key === 'username') {
+      cleanValue = value.trim();
+    }
+
+    setNewUser({
+      [key]: cleanValue
+    });
+  };
+
+  const refs = useUpdateRefs({
+    validateFieldMinLength
+  });
   useEffect(() => {
     setSubmitOk(
       Boolean(
-        newUser.firstName &&
-          newUser.lastName &&
+        newUser.firstName.trim() &&
+          !refs.current.validateFieldMinLength('firstName', newUser.firstName) &&
+          newUser.lastName.trim() &&
+          !refs.current.validateFieldMinLength('lastName', newUser.lastName) &&
           !isInvalidEmail(newUser.email) &&
+          newUser.username.trim() &&
+          !refs.current.validateFieldMinLength('username', newUser.username) &&
+          !isInvalidUsername(newUser.username) &&
           newUser.password &&
           validPassword &&
           passwordConfirm &&
@@ -219,7 +254,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
         newUser.firstName || newUser.email || newUser.password || validPassword || passwordConfirm
       )
     });
-  }, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword]);
+  }, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword, refs]);
 
   return (
     <form className={classes.form}>
@@ -236,14 +271,18 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                   fullWidth
                   margin="normal"
                   value={newUser.firstName}
-                  error={validateRequiredField(newUser.firstName)}
+                  error={
+                    validateRequiredField(newUser.firstName) || validateFieldMinLength('firstName', newUser.firstName)
+                  }
                   helperText={
-                    validateRequiredField(newUser.firstName) && (
+                    validateRequiredField(newUser.firstName) ? (
                       <FormattedMessage
                         id="createUserDialog.firstNameRequired"
                         defaultMessage="First Name is required."
                       />
-                    )
+                    ) : validateFieldMinLength('firstName', newUser.firstName) ? (
+                      formatMessage(translations.invalidMinLength, { length: USER_FIRST_NAME_MIN_LENGTH })
+                    ) : null
                   }
                   onChange={(e) => setNewUser({ firstName: e.target.value })}
                   inputProps={{ maxLength: USER_FIRST_NAME_MAX_LENGTH }}
@@ -257,14 +296,18 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                   fullWidth
                   margin="normal"
                   value={newUser.lastName}
-                  error={validateRequiredField(newUser.lastName)}
+                  error={
+                    validateRequiredField(newUser.lastName) || validateFieldMinLength('lastName', newUser.lastName)
+                  }
                   helperText={
-                    validateRequiredField(newUser.lastName) && (
+                    validateRequiredField(newUser.lastName) ? (
                       <FormattedMessage
                         id="createUserDialog.lastNameRequired"
                         defaultMessage="Last Name is required."
                       />
-                    )
+                    ) : validateFieldMinLength('lastName', newUser.lastName) ? (
+                      formatMessage(translations.invalidMinLength, { length: USER_LAST_NAME_MIN_LENGTH })
+                    ) : null
                   }
                   onChange={(e) => setNewUser({ lastName: e.target.value })}
                   inputProps={{ maxLength: USER_LAST_NAME_MAX_LENGTH }}
@@ -294,11 +337,17 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
               required
               fullWidth
               value={newUser.username}
-              error={validateRequiredField(newUser.username)}
+              error={
+                validateRequiredField(newUser.username) ||
+                isInvalidUsername(newUser.username) ||
+                validateFieldMinLength('username', newUser.username)
+              }
               helperText={
-                validateRequiredField(newUser.username) && (
+                validateRequiredField(newUser.username) ? (
                   <FormattedMessage id="createUserDialog.usernameRequired" defaultMessage="Username is required." />
-                )
+                ) : validateFieldMinLength('username', newUser.username) ? (
+                  formatMessage(translations.invalidMinLength, { length: USER_USERNAME_MIN_LENGTH })
+                ) : null
               }
               onChange={(e) => setNewUser({ username: e.target.value })}
               inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
@@ -319,7 +368,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                       <FormattedMessage id="createUserDialog.passwordInvalid" defaultMessage="Password is invalid." />
                     ) : null
                   }
-                  onChange={(e) => setNewUser({ password: e.target.value })}
+                  onChange={(e) => onChangeValue('password', e.target.value)}
                   onFocus={(e) => setAnchorEl(e.target)}
                   onBlur={() => setAnchorEl(null)}
                   inputProps={{ maxLength: USER_PASSWORD_MAX_LENGTH }}
