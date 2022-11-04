@@ -30,7 +30,15 @@ import {
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
-import { getEditorMode, isEditableViaFormEditor, isImage, isNavigable, isPreviewable } from '../PathNavigator/utils';
+import {
+  getEditorMode,
+  isEditableViaFormEditor,
+  isImage,
+  isNavigable,
+  isPreviewable,
+  isVideo,
+  isDocumentContent
+} from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import { previewItem } from '../../state/actions/preview';
@@ -291,10 +299,10 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const onPreview = (item: DetailedItem) => {
     if (isEditableViaFormEditor(item)) {
       dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
-    } else if (isImage(item)) {
+    } else if (isImage(item) || isVideo(item) || isDocumentContent(item.mimeType)) {
       dispatch(
         showPreviewDialog({
-          type: 'image',
+          type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'document',
           title: item.label,
           url: item.path
         })

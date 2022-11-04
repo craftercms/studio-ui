@@ -861,7 +861,6 @@ export const itemActionDispatcher = ({
       }
       case 'viewMedia': {
         dispatch(
-          // TODO: add type document to all other usages
           showPreviewDialog({
             type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'document',
             title: item.label,
