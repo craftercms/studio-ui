@@ -21,11 +21,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
-import {
-  closeSingleFileUploadDialog,
-  showPreviewDialog,
-  showSingleFileUploadDialog
-} from '../../state/actions/dialogs';
+import { closeSingleFileUploadDialog, showSingleFileUploadDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import { BrowseFilesDialogUI } from '.';
@@ -128,16 +124,6 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
     setSelectedLookup({ [path]: selected ? items.find((item) => item.path === path) : null });
   };
 
-  const onPreviewImage = (item: MediaItem) => {
-    dispatch(
-      showPreviewDialog({
-        type: 'image',
-        title: item.name,
-        url: item.path
-      })
-    );
-  };
-
   const onPathSelected = (path: string) => {
     setCurrentPath(path);
   };
@@ -188,7 +174,6 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       handleSearchKeyword={handleSearchKeyword}
       onCloseButtonClick={onCloseButtonClick}
       onPathSelected={onPathSelected}
-      onPreviewImage={onPreviewImage}
       onSelectButtonClick={onSelectButtonClick}
       numOfLoaderItems={numOfLoaderItems}
       onRefresh={onRefresh}
