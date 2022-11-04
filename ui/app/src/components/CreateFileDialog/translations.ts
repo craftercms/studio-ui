@@ -29,5 +29,9 @@ export const translations = defineMessages({
   policyError: {
     id: 'createFileDialog.policyError',
     defaultMessage: 'The supplied name goes against project policies.'
+  },
+  fetchingDependentItems: {
+    id: 'createFileDialog.fetchingDependentItems',
+    defaultMessage: 'Fetching dependent items'
   }
 });
