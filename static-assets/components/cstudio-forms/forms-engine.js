@@ -3377,7 +3377,12 @@ var CStudioForms =
               const attributes = [];
 
               // Validating to add `no-default` in repeating group items
-              if (defaultValuesLookup[fieldId] && repeatValue.replace(/\s+/g, '') === '') {
+              // this is only for string values that can be blanked, for them not to be repopulated with default values.
+              if (
+                defaultValuesLookup[fieldId] &&
+                typeof repeatValue === 'string' &&
+                repeatValue.replace(/\s+/g, '') === ''
+              ) {
                 attributes.push('no-default="true"');
               }
 
