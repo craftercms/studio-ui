@@ -31,7 +31,7 @@ export const translations = defineMessages({
     defaultMessage: 'The supplied name goes against project policies.'
   },
   fetchingDependentItems: {
-    id: 'createFileDialog.fetchingDependentItems',
+    id: 'renameAssetDialog.fetchingDependentItems',
     defaultMessage: 'Fetching dependent items'
   }
 });
