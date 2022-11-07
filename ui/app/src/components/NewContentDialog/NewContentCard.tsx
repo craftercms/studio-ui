@@ -34,11 +34,20 @@ const useStyles = makeStyles()(() => ({
     display: 'flex',
     cursor: 'pointer'
   },
+  cardHeader: {
+    overflow: 'hidden'
+  },
+  cardHeaderContentTypography: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
   media: {
     paddingTop: '75%'
   },
   compactMedia: {
-    width: 151
+    width: 151,
+    minWidth: 151
   },
   selected: {
     border: `1px solid ${palette.blue.tint}`
@@ -71,7 +80,23 @@ const DefaultCardContent = (props) => {
   const src = useContentTypePreviewImage(contentTypeName);
   return (
     <>
-      <CardHeader title={headerTitle} subheader={subheader} titleTypographyProps={{ variant: 'body1' }} />
+      <CardHeader
+        title={headerTitle}
+        subheader={subheader}
+        classes={{
+          content: classes.cardHeader
+        }}
+        titleTypographyProps={{
+          variant: 'body1',
+          title: headerTitle,
+          classes: { root: classes.cardHeaderContentTypography }
+        }}
+        subheaderTypographyProps={{
+          noWrap: true,
+          title: subheader,
+          classes: { root: classes.cardHeaderContentTypography }
+        }}
+      />
       <Divider />
       {src && <CardMedia className={classes.media} image={src} title={imgTitle} />}
     </>
@@ -87,8 +112,20 @@ const CompactCardContent = (props) => {
       <CardHeader
         title={headerTitle}
         subheader={subheader}
-        titleTypographyProps={{ variant: 'body1' }}
-        subheaderTypographyProps={{ noWrap: true }}
+        classes={{
+          root: classes.cardHeader,
+          content: classes.cardHeader
+        }}
+        titleTypographyProps={{
+          variant: 'body1',
+          title: headerTitle,
+          classes: { root: classes.cardHeaderContentTypography }
+        }}
+        subheaderTypographyProps={{
+          noWrap: true,
+          title: subheader,
+          classes: { root: classes.cardHeaderContentTypography }
+        }}
       />
     </>
   );
