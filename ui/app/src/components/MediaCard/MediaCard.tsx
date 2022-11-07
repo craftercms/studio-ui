@@ -91,13 +91,13 @@ function MediaCard(props: MediaCardProps) {
   const { classes, cx } = useStyles();
   // region const { ... } = props
   const {
-    onPreview,
     onSelect,
     selected,
     item,
     previewAppBaseUri,
     showPath = true,
     onClick,
+    onPreview = onClick,
     action,
     avatar,
     onDragStart,
