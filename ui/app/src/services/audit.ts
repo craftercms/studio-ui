@@ -59,8 +59,9 @@ export function fetchAuditLog(options: AuditOptions): Observable<PagedArray<Audi
   );
 }
 
-export function fetchAuditLogEntry(id: number): Observable<AuditLogEntry> {
-  return get<Api2ResponseFormat<{ auditLog: AuditLogEntry }>>(`/studio/api/2/audit/${id}`).pipe(
+export function fetchAuditLogEntry(id: number, siteId?: string): Observable<AuditLogEntry> {
+  const qs = toQueryString({ siteId }, { skipNull: true });
+  return get<Api2ResponseFormat<{ auditLog: AuditLogEntry }>>(`/studio/api/2/audit/${id}${qs}`).pipe(
     pluck('response', 'auditLog')
   );
 }

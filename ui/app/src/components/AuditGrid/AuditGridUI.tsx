@@ -371,7 +371,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         sortingMode="server"
-        autoHeight
+        autoHeight={Boolean(auditLogs.length)}
         disableColumnFilter
         className={classes.gridRoot}
         components={{
