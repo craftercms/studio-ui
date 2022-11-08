@@ -111,7 +111,8 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           expanded = [],
           keywordByPath = {},
           excludes = null,
-          systemTypes = null
+          systemTypes = null,
+          offsetByPath = {}
         }
       } = action;
       state[id] = {
@@ -121,7 +122,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         limit,
         expanded,
         childrenByParentPath: {},
-        offsetByPath: {},
+        offsetByPath,
         keywordByPath,
         totalByPath: {},
         excludes,
@@ -134,6 +135,14 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
     [pathNavigatorTreeExpandPath.type]: expandPath,
     [pathNavigatorTreeCollapsePath.type]: (state, { payload: { id, path } }) => {
       state[id].expanded = state[id].expanded.filter((expanded) => !expanded.startsWith(path));
+      state[id].offsetByPath = {
+        ...state[id].offsetByPath,
+        [path]: 0
+      };
+      state[id].childrenByParentPath = {
+        ...state[id].childrenByParentPath,
+        [path]: state[id].childrenByParentPath[path].splice(0, state[id].limit)
+      };
     },
     [pathNavigatorTreeToggleCollapsed.type]: (state, { payload: { id, collapsed } }) => {
       state[id].collapsed = collapsed;
@@ -201,7 +210,6 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       const chunk = state[id];
       chunk.childrenByParentPath = {};
       chunk.totalByPath = {};
-      chunk.offsetByPath = {};
       const childrenByParentPath = chunk.childrenByParentPath;
       const totalByPath = chunk.totalByPath;
       const offsetByPath = chunk.offsetByPath;
@@ -223,7 +231,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         }
         // Should we account here for the level descriptor (LD)? if there's a LD, add 1 to the total?
         totalByPath[parentPath] = childrenOfPath.total;
-        offsetByPath[parentPath] = 0;
+        offsetByPath[parentPath] = offsetByPath[parentPath] ?? 0;
         // If the expanded node is filtered or has children it means, it's not a leaf,
         // and we should keep it in 'expanded'.
         // if (chunk.keywordByPath[parentPath] || childrenByParentPath[parentPath].length) {

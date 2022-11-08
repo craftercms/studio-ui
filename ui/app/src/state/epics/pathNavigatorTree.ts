@@ -107,7 +107,9 @@ export default [
           path = chunk.rootPath,
           expanded = chunk.expanded,
           collapsed = chunk.collapsed,
-          keywordByPath = chunk.keywordByPath
+          keywordByPath = chunk.keywordByPath,
+          offsetByPath = chunk.offsetByPath,
+          limit = chunk.limit
         } = payload;
         let paths = [];
         expanded.forEach((expandedPath) => {
@@ -126,10 +128,22 @@ export default [
           fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
           fetchChildrenByPaths(
             state.sites.active,
-            createPresenceTable(expanded, (value) => (keywordByPath[value] ? { keyword: keywordByPath[value] } : {})),
+            createPresenceTable(expanded, (value) => ({
+              ...(keywordByPath[value] ? { keyword: keywordByPath[value] } : {}),
+              ...(offsetByPath[value] ? { limit: limit + offsetByPath[value] } : {})
+            })),
             createGetChildrenOptions(chunk, pluckProps(payload, true, 'limit', 'excludes'))
           )
         ]).pipe(
+          tap(() => {
+            const uuid = state.sites.byId[state.sites.active].uuid;
+            setStoredPathNavigatorTree(uuid, state.user.username, id, {
+              expanded: state.pathNavigatorTree[id].expanded,
+              collapsed: state.pathNavigatorTree[id].collapsed,
+              keywordByPath: state.pathNavigatorTree[id].keywordByPath,
+              offsetByPath
+            });
+          }),
           map(([items, children]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, children })),
           catchAjaxError((error) => {
             if (error.status === 404) {
@@ -137,7 +151,8 @@ export default [
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
                 expanded: state.pathNavigatorTree[id].expanded,
                 collapsed: state.pathNavigatorTree[id].collapsed,
-                keywordByPath: state.pathNavigatorTree[id].keywordByPath
+                keywordByPath: state.pathNavigatorTree[id].keywordByPath,
+                offsetByPath: state.pathNavigatorTree[id].offsetByPath
               });
               return batchActions([pathNavigatorTreeUpdate({ id, expanded: [] }), pathNavigatorTreeRefresh({ id })]);
             } else {
@@ -231,12 +246,13 @@ export default [
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         const { id } = payload;
-        const { expanded, collapsed, keywordByPath } = state.pathNavigatorTree[id];
+        const { expanded, collapsed, keywordByPath, offsetByPath } = state.pathNavigatorTree[id];
         const uuid = state.sites.byId[state.sites.active].uuid;
         setStoredPathNavigatorTree(uuid, state.user.username, id, {
           expanded,
           collapsed,
-          keywordByPath
+          keywordByPath,
+          offsetByPath
         });
       }),
       ignoreElements()

@@ -112,6 +112,7 @@ export interface StoredPathNavTree {
   expanded: string[];
   collapsed: boolean;
   keywordByPath: LookupTable<string>;
+  offsetByPath: LookupTable<number>;
 }
 
 export function setStoredPathNavigator(
