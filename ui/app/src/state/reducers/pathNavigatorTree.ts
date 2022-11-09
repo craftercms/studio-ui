@@ -111,8 +111,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
           expanded = [],
           keywordByPath = {},
           excludes = null,
-          systemTypes = null,
-          offsetByPath = {}
+          systemTypes = null
         }
       } = action;
       state[id] = {
@@ -122,7 +121,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         limit,
         expanded,
         childrenByParentPath: {},
-        offsetByPath,
+        offsetByPath: {},
         keywordByPath,
         totalByPath: {},
         excludes,
@@ -171,7 +170,6 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
       if (children.length === 0 && !options?.keyword) {
         chunk.expanded = chunk.expanded.filter((path) => path !== parentPath);
       }
-      chunk.offsetByPath[parentPath] = 0;
     },
     [pathNavigatorTreeFetchPathPage.type]: (state, { payload: { id, path } }) => {
       state[id].offsetByPath[path] = state[id].offsetByPath[path]

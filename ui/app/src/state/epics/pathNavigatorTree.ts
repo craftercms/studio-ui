@@ -135,15 +135,6 @@ export default [
             createGetChildrenOptions(chunk, pluckProps(payload, true, 'limit', 'excludes'))
           )
         ]).pipe(
-          tap(() => {
-            const uuid = state.sites.byId[state.sites.active].uuid;
-            setStoredPathNavigatorTree(uuid, state.user.username, id, {
-              expanded: state.pathNavigatorTree[id].expanded,
-              collapsed: state.pathNavigatorTree[id].collapsed,
-              keywordByPath: state.pathNavigatorTree[id].keywordByPath,
-              offsetByPath
-            });
-          }),
           map(([items, children]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, children })),
           catchAjaxError((error) => {
             if (error.status === 404) {
@@ -151,8 +142,7 @@ export default [
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
                 expanded: state.pathNavigatorTree[id].expanded,
                 collapsed: state.pathNavigatorTree[id].collapsed,
-                keywordByPath: state.pathNavigatorTree[id].keywordByPath,
-                offsetByPath: state.pathNavigatorTree[id].offsetByPath
+                keywordByPath: state.pathNavigatorTree[id].keywordByPath
               });
               return batchActions([pathNavigatorTreeUpdate({ id, expanded: [] }), pathNavigatorTreeRefresh({ id })]);
             } else {
@@ -172,7 +162,14 @@ export default [
         const { id, path, options } = payload;
         const chunk = state.pathNavigatorTree[id];
         const finalOptions = createGetChildrenOptions(chunk, options);
-        return fetchChildrenByPath(state.sites.active, path, finalOptions).pipe(
+        return fetchChildrenByPath(state.sites.active, path, {
+          ...finalOptions,
+          ...(chunk.offsetByPath[path]
+            ? {
+                limit: chunk.limit + chunk.offsetByPath[path]
+              }
+            : {})
+        }).pipe(
           map((children) =>
             pathNavigatorTreeFetchPathChildrenComplete({
               id,
@@ -246,13 +243,12 @@ export default [
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         const { id } = payload;
-        const { expanded, collapsed, keywordByPath, offsetByPath } = state.pathNavigatorTree[id];
+        const { expanded, collapsed, keywordByPath } = state.pathNavigatorTree[id];
         const uuid = state.sites.byId[state.sites.active].uuid;
         setStoredPathNavigatorTree(uuid, state.user.username, id, {
           expanded,
           collapsed,
-          keywordByPath,
-          offsetByPath
+          keywordByPath
         });
       }),
       ignoreElements()
