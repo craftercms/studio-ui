@@ -32,8 +32,6 @@ export * from './BasePathSelector';
 export * from './BrowseFilesDialog';
 export * from './ChangeContentTypeDialog';
 export * from './CharCountStatus';
-export * from './ClusterGrid';
-export * from './ClusterManagement';
 export * from './CodeEditorDialog';
 export * from './CommitResolutionDialog';
 export * from './CompareVersionsDialog';
