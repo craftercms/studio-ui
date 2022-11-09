@@ -23,8 +23,12 @@
   <meta name="theme-color" content="#000000" />
   <title>Replica node reached</title>
   <style>
+    body {
+      margin: 0;
+    }
     #root {
       display: flex;
+      height: 100vh;
     }
 
     * {
@@ -32,37 +36,57 @@
     }
 
     .craftercms-error-state {
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 8px 0;
       max-width: 420px;
-      margin: 40px auto;
+      margin: 0 auto;
     }
 
     .craftercms-error-state-image {
       width: 300px;
+      margin-bottom: 8px;
     }
 
     .craftercms-error-state-message {
       margin-top: 20px;
       word-break: break-word !important;
+      text-align: center;
+      font-family: "Source Sans Pro", "Open Sans", sans-serif;
+      font-weight: 400;
+      font-size: 0.875rem;
+      line-height: 1.43;
     }
   </style>
 
 </head>
 <body>
-<div id="root"></div>
-<#include "/templates/web/common/js-next-scripts.ftl" />
+
+  <section class="craftercms-error-state">
+    <img class="craftercms-error-state-image" src="/studio/static-assets/images/warning_state.svg">
+    <p class="craftercms-error-state-message">
+      Oops! You've reached a Replica node instead of the Primary node.Try refreshing your browser and contact your system administrator if the problem persists.
+    </p>
+  </section>
+
+<#--  <div id="root"></div>-->
+  <#include "/templates/web/common/js-next-scripts.ftl" />
 <script>
-  (function(ui) {
-    const elem = document.querySelector('#root');
-    ui.render(elem, 'ErrorState', {
-      imageUrl: '/studio/static-assets/images/warning_state.svg',
-      classes: {
-        root: 'craftercms-error-state',
-        image: 'craftercms-error-state-image',
-        message: 'craftercms-error-state-message'
-      },
-      message: 'Oops! You\'ve reached a Replica node instead of the Primary node.Try refreshing your browser and contact your system administrator if the problem persists.'
-    });
-  })(CrafterCMSNext);
+  // (function(ui) {
+  //   const elem = document.querySelector('#root');
+  //   ui.render(elem, 'ErrorState', {
+  //     imageUrl: '/studio/static-assets/images/warning_state.svg',
+  //     classes: {
+  //       root: 'craftercms-error-state',
+  //       image: 'craftercms-error-state-image',
+  //       message: 'craftercms-error-state-message'
+  //     },
+  //     message: 'Oops! You\'ve reached a Replica node instead of the Primary node.Try refreshing your browser and contact your system administrator if the problem persists.'
+  //   });
+  // })(CrafterCMSNext);
 </script>
 </body>
 </html>
