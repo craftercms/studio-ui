@@ -68,25 +68,8 @@
   <section class="craftercms-error-state">
     <img class="craftercms-error-state-image" src="/studio/static-assets/images/warning_state.svg">
     <p class="craftercms-error-state-message">
-      Oops! You've reached a Replica node instead of the Primary node.Try refreshing your browser and contact your system administrator if the problem persists.
+      Oops! You've reached a Replica node instead of the Primary node. Try refreshing your browser and contact your system administrator if the problem persists.
     </p>
   </section>
-
-<#--  <div id="root"></div>-->
-  <#include "/templates/web/common/js-next-scripts.ftl" />
-<script>
-  // (function(ui) {
-  //   const elem = document.querySelector('#root');
-  //   ui.render(elem, 'ErrorState', {
-  //     imageUrl: '/studio/static-assets/images/warning_state.svg',
-  //     classes: {
-  //       root: 'craftercms-error-state',
-  //       image: 'craftercms-error-state-image',
-  //       message: 'craftercms-error-state-message'
-  //     },
-  //     message: 'Oops! You\'ve reached a Replica node instead of the Primary node.Try refreshing your browser and contact your system administrator if the problem persists.'
-  //   });
-  // })(CrafterCMSNext);
-</script>
 </body>
 </html>
