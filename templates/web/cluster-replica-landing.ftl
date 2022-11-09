@@ -52,8 +52,6 @@
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script>
   (function(ui) {
-    const { formatMessage } = ui.i18n.intl;
-    const { clusterReplicaLandingMessages } = ui.i18n.messages;
     const elem = document.querySelector('#root');
     ui.render(elem, 'ErrorState', {
       imageUrl: '/studio/static-assets/images/warning_state.svg',
@@ -62,7 +60,7 @@
         image: 'craftercms-error-state-image',
         message: 'craftercms-error-state-message'
       },
-      message: formatMessage(clusterReplicaLandingMessages.replicaReached)
+      message: 'Oops! You\'ve reached a Replica node instead of the Primary node.Try refreshing your browser and contact your system administrator if the problem persists.'
     });
   })(CrafterCMSNext);
 </script>

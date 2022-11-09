@@ -1435,11 +1435,3 @@ export const siteSuccessMessages = defineMessages({
     defaultMessage: 'Project deleted successfully'
   }
 });
-
-export const clusterReplicaLandingMessages = defineMessages({
-  replicaReached: {
-    id: 'clusterReplicaLandingMessages.replicaReached',
-    defaultMessage:
-      "Oops! You've reached a Replica node instead of the Primary node.Try refreshing your browser and contact your system administrator if the problem persists."
-  }
-});
