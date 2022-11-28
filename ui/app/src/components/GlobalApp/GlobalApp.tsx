@@ -38,7 +38,6 @@ import { globalMenuMessages } from '../../env/i18n-legacy';
 // Site management loaded normally above as it is usually where people first land.
 const UserManagement = lazy(() => import('../UserManagement'));
 const GroupManagement = lazy(() => import('../GroupManagement'));
-const ClusterManagement = lazy(() => import('../ClusterManagement'));
 const AuditManagement = lazy(() => import('../AuditManagement'));
 const LogLevelManagement = lazy(() => import('../LogLevelManagement'));
 const LogConsole = lazy(() => import('../LogConsole'));
@@ -142,7 +141,6 @@ export function GlobalApp(props: GlobalAppProps) {
               render={() => <UserManagement passwordRequirementsRegex={passwordRequirementsRegex} />}
             />
             <Route path="/groups" component={GroupManagement} />
-            <Route path="/cluster" component={ClusterManagement} />
             <Route path="/audit" component={AuditManagement} />
             <Route path="/logging" component={LogLevelManagement} />
             <Route path="/log" component={LogConsole} />

@@ -24,7 +24,7 @@ import AuditGridFilterPopoverBody from './AuditGridFilterPopoverBody';
 
 export interface AuditGridFilterPopoverProps {
   open: boolean;
-  filterId: 'operationTimestamp' | 'siteId' | 'user' | 'origin' | 'operations' | 'target' | 'clusterNodeId';
+  filterId: 'operationTimestamp' | 'siteId' | 'user' | 'origin' | 'operations' | 'target';
   anchorPosition: {
     top: number;
     left: number;
