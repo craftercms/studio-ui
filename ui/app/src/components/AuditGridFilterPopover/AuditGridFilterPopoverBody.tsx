@@ -53,10 +53,6 @@ const translations = defineMessages({
     id: 'auditGridFilterPopover.filterByTarget',
     defaultMessage: 'Filter by Target Value'
   },
-  clusterNodeId: {
-    id: 'auditGridFilterPopover.filterByCluster',
-    defaultMessage: 'Filter by Cluster Node'
-  },
   allOperations: {
     id: 'auditGridFilterPopover.allOperations',
     defaultMessage: 'All Operations'
@@ -271,7 +267,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
           </Button>
         </Box>
       )}
-      {['target', 'clusterNodeId'].includes(filterId) && (
+      {'target' === filterId && (
         <TextField
           value={keyword}
           label={formatMessage(translations[filterId])}

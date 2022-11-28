@@ -109,10 +109,6 @@ export const OperationsMessages = defineMessages({
     id: 'operations.startPublisher',
     defaultMessage: 'Start Publisher'
   },
-  Remove_cluster_node: {
-    id: 'operations.removeClusterNode',
-    defaultMessage: 'Remove Cluster Node'
-  },
   Cancel_publishing_package: {
     id: 'operations.cancelPublishingPackage',
     defaultMessage: 'Cancel Publishing Package'
@@ -143,6 +139,5 @@ export const Operations = [
   'Published',
   'Stop_publisher',
   'Start_publisher',
-  'Remove_cluster_node',
   'Cancel_publishing_package'
 ];

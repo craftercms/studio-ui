@@ -34,7 +34,6 @@ export type AuditOptions = Partial<
     dateTo: string;
     target: string;
     origin: 'API' | 'GIT';
-    clusterNodeId: string;
     sort: 'date';
     order: 'ASC' | 'DESC';
   }

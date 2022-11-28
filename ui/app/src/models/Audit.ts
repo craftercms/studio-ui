@@ -35,6 +35,5 @@ export interface AuditLogEntry {
   primaryTargetValue: string;
   actorId: string;
   actorDetails: string;
-  clusterNodeId: string;
   parameters: AuditLogEntryParameter[];
 }
