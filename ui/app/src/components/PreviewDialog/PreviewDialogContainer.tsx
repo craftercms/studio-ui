@@ -31,7 +31,7 @@ import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
 import { closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { hasEditAction } from '../../utils/content';
+import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
@@ -80,7 +80,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
         );
       }
       case 'document': {
-        return <IFrame url={`${guestBase}${url}`} title={title} width="100%" height="100vh" />;
+        return <IFrame url={`${!isBlobUrl(url) ? guestBase : ''}${url}`} title={title} width="100%" height="100vh" />;
       }
       default:
         break;

@@ -167,16 +167,17 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           })
         ])
       );
-    } else if (isItemPreviewable && !isDocumentContent(item.mimeType)) {
+    } else if (isItemPreviewable) {
       fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
         const image = isImage(item);
         const video = isVideo(item);
+        const document = isDocumentContent(item.mimeType);
         dispatch(
           showPreviewDialog({
-            type: image ? 'image' : video ? 'video' : 'editor',
+            type: image ? 'image' : video ? 'video' : document ? 'document' : 'editor',
             title: item.label,
-            [image || video ? 'url' : 'content']: content,
-            mode: image || video ? UNDEFINED : getEditorMode(item),
+            [image || video || document ? 'url' : 'content']: content,
+            mode: image || video || document ? UNDEFINED : getEditorMode(item),
             subtitle: `v.${version.versionNumber}`,
             ...(video ? { mimeType: item.mimeType } : {})
           })
