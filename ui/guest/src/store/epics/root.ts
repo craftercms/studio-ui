@@ -24,7 +24,7 @@ import { getById } from '../../iceRegistry';
 import { beforeWrite$, dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
 import { getCachedModel, getCachedModels, getCachedSandboxItem, modelHierarchyMap } from '../../contentController';
-import { interval, merge, NEVER, Observable, of, Subject } from 'rxjs';
+import { interval, merge, NEVER, Observable, of, Subscriber } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
 import { dragAndDropActiveClass, EditingStatus, HighlightMode } from '../../constants';
@@ -41,17 +41,14 @@ import {
   contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
   contentTypeDropTargetsResponse,
-  desktopAssetDrop,
-  desktopAssetUploadComplete,
-  desktopAssetUploadStarted,
   instanceDragBegun,
   instanceDragEnded,
   trashed,
-  validationMessage
+  snackGuestMessage
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { notNullOrUndefined, nullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../elementRegistry';
 import { get, getElementFromICEProps } from '../../elementRegistry';
@@ -68,13 +65,39 @@ import {
   dropzoneLeave,
   exitComponentInlineEdit,
   setEditingStatus,
-  startListening
+  startListening,
+  desktopAssetUploadComplete,
+  desktopAssetUploadFailed,
+  desktopAssetUploadProgress,
+  desktopAssetUploadStarted
 } from '../actions';
 import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 import { getParentModelId } from '../../utils/ice';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
+import { validateActionPolicy } from '@craftercms/studio-ui/services/sites';
+import { processPathMacros } from '@craftercms/studio-ui/utils/path';
+import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
+import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
+import { catchError } from 'rxjs/operators';
+
+const createReader$ = (file: File) =>
+  new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
+    const reader = new FileReader();
+    let closed = false;
+    reader.onload = (event) => {
+      if (!closed) {
+        subscriber.next(event);
+        subscriber.complete();
+      }
+    };
+    reader.readAsDataURL(file);
+    return () => {
+      closed = true;
+      subscriber.complete();
+    };
+  });
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
@@ -250,29 +273,108 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 }
                 case EditingStatus.UPLOAD_ASSET_FROM_DESKTOP: {
                   if (dragContext.inZone) {
-                    const stream$ = new Subject<StandardAction>();
-                    const reader = new FileReader();
-                    reader.onload = ((aImg: HTMLImageElement) => (event) => {
-                      const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
-                      post(desktopAssetDrop.type, {
-                        dataUrl: event.target.result,
-                        name: file.name,
-                        type: file.type,
-                        record: reversePluckProps(record, 'element'),
-                        field
-                      });
-                      aImg.src = event.target.result;
-                      // Timeout gives the browser a chance to render the image so later rect
-                      // calculations are working with the updated paint.
-                      setTimeout(() => {
-                        stream$.next({ type: desktopAssetUploadStarted.type, payload: { record } });
-                        stream$.next({ type: desktopAssetDragEnded.type });
-                        stream$.complete();
-                        stream$.unsubscribe();
-                      });
-                    })(record.element as HTMLImageElement);
-                    reader.readAsDataURL(file);
-                    return stream$;
+                    const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+                    const {
+                      validations: { allowImageUpload }
+                    } = field;
+
+                    const path = allowImageUpload?.value
+                      ? processPathMacros({
+                          path: allowImageUpload.value,
+                          objectId: record.modelId
+                        })
+                      : // TODO: Support path coming from content type definition
+                        `/static-assets/images/${record.modelId}`;
+
+                    return merge(
+                      of(desktopAssetUploadStarted({ record })),
+                      of(desktopAssetDragEnded()),
+                      validateActionPolicy(state.activeSite, {
+                        type: 'CREATE',
+                        target: path + file.name
+                      }).pipe(
+                        switchMap(({ allowed, modifiedValue }) => {
+                          const aImg = record.element;
+                          const originalSrc = aImg.src;
+                          if (allowed) {
+                            const readerObs = createReader$(file);
+                            const fileName = modifiedValue ? modifiedValue.replace(path, '') : file.name;
+                            return readerObs.pipe(
+                              switchMap((event) => {
+                                aImg.src = event.target.result;
+
+                                post(snackGuestMessage({ id: 'assetUploadStarted' }));
+                                return uploadDataUrl(
+                                  state.activeSite,
+                                  {
+                                    name: fileName,
+                                    type: file.type,
+                                    dataUrl: event.target.result
+                                  },
+                                  path,
+                                  getRequestForgeryToken()
+                                ).pipe(
+                                  switchMap((action) => {
+                                    if (action.type === 'progress') {
+                                      const { progress } = action.payload;
+                                      const percentage = Math.floor(
+                                        parseInt(((progress.bytesUploaded / progress.bytesTotal) * 100).toFixed(2))
+                                      );
+                                      return of(
+                                        desktopAssetUploadProgress({
+                                          record,
+                                          percentage
+                                        })
+                                      );
+                                    } else {
+                                      if (modifiedValue) {
+                                        post(
+                                          snackGuestMessage({
+                                            id: 'fileNameChangedPolicy',
+                                            values: {
+                                              fileName: file.name,
+                                              modifiedFileName: fileName
+                                            }
+                                          })
+                                        );
+                                      }
+                                      return of(
+                                        desktopAssetUploadComplete({
+                                          record,
+                                          path: `${path}${path.endsWith('/') ? '' : '/'}${fileName}`
+                                        })
+                                      );
+                                    }
+                                  }),
+                                  catchError(() => {
+                                    aImg.src = originalSrc;
+                                    post(
+                                      snackGuestMessage({
+                                        id: 'uploadError',
+                                        level: 'required'
+                                      })
+                                    );
+                                    return of(desktopAssetUploadFailed({ record }));
+                                  })
+                                );
+                              })
+                            );
+                          } else {
+                            aImg.src = originalSrc;
+                            post(
+                              snackGuestMessage({
+                                id: 'noPolicyComply',
+                                level: 'required',
+                                values: {
+                                  fileName: file.name
+                                }
+                              })
+                            );
+                            return of(desktopAssetUploadFailed({ record }));
+                          }
+                        })
+                      )
+                    );
                   } else {
                     return of(desktopAssetDragEnded());
                   }
@@ -546,7 +648,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           (dropZone) => dropZone.elementRecordId === elementRecordId
         );
         Object.values(validations).forEach((validation) => {
-          post(validationMessage(validation));
+          post(snackGuestMessage(validation));
         });
       }),
       ignoreElements()
@@ -574,7 +676,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           if (validations.maxCount) {
             return;
           }
-          post(validationMessage(validation));
+          post(snackGuestMessage(validation));
         });
       }),
       ignoreElements()
@@ -593,7 +695,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         } else {
           if (state.dragContext.dropZones.length === 0) {
             post(
-              validationMessage({
+              snackGuestMessage({
                 id: 'dropTargetsNotFound',
                 level: 'info',
                 values: { contentType: state.dragContext.contentType.name }
@@ -619,7 +721,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         } else {
           if (state.dragContext.dropZones.length === 0) {
             post(
-              validationMessage({
+              snackGuestMessage({
                 id: 'dropTargetsNotFound',
                 level: 'info',
                 values: { contentType: state.dragContext.contentType.name }
@@ -682,7 +784,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           );
         } else {
           post(
-            validationMessage({
+            snackGuestMessage({
               id: 'registerNotFound',
               level: 'suggestion',
               values: { name }

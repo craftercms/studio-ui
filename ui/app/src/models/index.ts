@@ -19,7 +19,6 @@ export * from './ApiResponse';
 export * from './Audit';
 export * from './Aws';
 export * from './CMIS';
-export * from './Clusters';
 export * from './ContentInstance';
 export * from './ContentType';
 export * from './ContentTypeDropTarget';

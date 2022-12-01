@@ -99,10 +99,6 @@ export const translations = defineMessages({
   parameters: {
     id: 'auditGrid.parameters',
     defaultMessage: 'Parameters'
-  },
-  clusterNode: {
-    id: 'auditGrid.clusterNode',
-    defaultMessage: 'Cluster Node'
   }
 });
 
@@ -112,8 +108,7 @@ export const fieldIdMapping = {
   actorId: 'user',
   origin: 'origin',
   operation: 'operations',
-  primaryTargetValue: 'target',
-  clusterNodeId: 'clusterNodeId'
+  primaryTargetValue: 'target'
 };
 
 export function AuditGridUI(props: AuditGridUIProps) {
@@ -333,21 +328,6 @@ export function AuditGridUI(props: AuditGridUIProps) {
         },
         sortable: false,
         cellClassName: classes.cellRoot
-      },
-      {
-        field: 'clusterNodeId',
-        headerName: formatMessage(translations.clusterNode),
-        width: 200,
-        sortable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['clusterNodeId']] && classes.activeFilter,
-        renderCell: (params: GridCellParams) => {
-          return (
-            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
-              {params.value}
-            </Typography>
-          );
-        }
       }
     ],
     [
@@ -371,7 +351,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         sortingMode="server"
-        autoHeight
+        autoHeight={Boolean(auditLogs.length)}
         disableColumnFilter
         className={classes.gridRoot}
         components={{

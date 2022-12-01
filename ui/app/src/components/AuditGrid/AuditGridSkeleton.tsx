@@ -47,8 +47,7 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
       primaryTargetType: `${rand(60, 80)}%`,
       actorDetails: `${rand(60, 80)}%`,
       origin: `${rand(40, 60)}%`,
-      parameters: null,
-      clusterNode: `${rand(60, 90)}%`
+      parameters: null
     }));
   }, [numOfItems]);
 
@@ -158,18 +157,6 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         cellClassName: classes.cellRoot,
         renderCell: () => {
           return <Skeleton variant="circular" width={40} height={40} />;
-        }
-      },
-      {
-        field: 'clusterNode',
-        headerName: formatMessage(translations.clusterNode),
-        width: 200,
-        sortable: false,
-        filterable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['clusterNode']] && classes.activeFilter,
-        renderCell: (params: GridCellParams) => {
-          return <Skeleton height={20} variant="text" width={params.value.toString()} />;
         }
       }
     ],

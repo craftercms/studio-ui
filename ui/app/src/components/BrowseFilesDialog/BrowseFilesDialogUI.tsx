@@ -98,7 +98,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                       item={item}
                       selected={multiSelect ? selectedArray : null}
                       onSelect={multiSelect ? onCheckboxChecked : null}
-                      onPreview={() => onPreviewImage(item)}
+                      onPreview={onPreviewImage ? () => onPreviewImage(item) : null}
                       previewAppBaseUri={guestBase}
                       onClick={() => onCardSelected(item)}
                       showPath={false}

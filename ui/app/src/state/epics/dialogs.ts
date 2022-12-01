@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, ignoreElements, map, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { NEVER, of } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { camelize, dasherize } from '../../utils/string';
@@ -38,6 +38,7 @@ import {
   fetchDeleteDependenciesFailed,
   fetchRenameAssetDependants,
   fetchRenameAssetDependantsComplete,
+  fetchRenameAssetDependantsFailed,
   newContentCreationComplete,
   showCodeEditorDialog,
   showConfirmDialog,
@@ -46,7 +47,8 @@ import {
   showPublishDialog,
   updateCodeEditorDialog,
   updateEditConfig,
-  updatePreviewDialog
+  updatePreviewDialog,
+  closeRenameAssetDialog
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
@@ -256,10 +258,12 @@ const dialogEpics: CrafterCMSEpic[] = [
       withLatestFrom(state$),
       switchMap(([, state]) =>
         fetchDependant(state.sites.active, state.dialogs.renameAsset.path).pipe(
+          takeUntil(action$.pipe(ofType(closeRenameAssetDialog.type))),
           map((response: LegacyItem[]) => {
             const dependants = parseLegacyItemToDetailedItem(response);
             return fetchRenameAssetDependantsComplete({ dependants });
-          })
+          }),
+          catchAjaxError(fetchRenameAssetDependantsFailed)
         )
       )
     )

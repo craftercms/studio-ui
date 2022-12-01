@@ -849,10 +849,6 @@ export const globalMenuMessages = defineMessages({
     id: 'words.groups',
     defaultMessage: 'Groups'
   },
-  'home.globalMenu.cluster': {
-    id: 'words.cluster',
-    defaultMessage: 'Cluster'
-  },
   'home.globalMenu.audit': {
     id: 'words.audit',
     defaultMessage: 'Audit'
@@ -1067,10 +1063,6 @@ export const localeSelectorControlMessages = defineMessages({
 });
 
 export const adminDashboardMessages = defineMessages({
-  clusterDeleted: {
-    id: 'clusterAdmin.clusterDeleted',
-    defaultMessage: '{cluster} deleted.'
-  },
   siteUpdated: {
     id: 'sitesAdmin.siteUpdated',
     defaultMessage: 'Project Updated.'

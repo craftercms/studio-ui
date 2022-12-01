@@ -92,7 +92,7 @@ import {
   getItemGroovyPath,
   getItemTemplatePath,
   getParentPath,
-  isValidCutPastePath,
+  isValidCopyPastePath,
   withIndex,
   withoutIndex
 } from '../../utils/path';
@@ -429,7 +429,7 @@ const content: CrafterCMSEpic[] = [
       ofType(pasteItem.type),
       withLatestFrom(state$),
       filter(([{ payload }, state]) => {
-        if (isValidCutPastePath(payload.path, state.content.clipboard.sourcePath)) {
+        if (isValidCopyPastePath(payload.path, state.content.clipboard.sourcePath)) {
           return true;
         } else {
           getHostToHostBus().next(

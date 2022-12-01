@@ -132,7 +132,7 @@ export function AuditManagement(props: AuditManagementProps) {
       setDialogParams(parametersLookup[id]);
       auditLogEntryParametersDialogState.onOpen();
     } else {
-      fetchAuditLogEntry(id).subscribe({
+      fetchAuditLogEntry(id, site).subscribe({
         next(response) {
           setParametersLookup({ [id]: response.parameters });
           if (response.parameters.length) {

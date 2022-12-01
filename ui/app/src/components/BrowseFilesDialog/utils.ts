@@ -55,7 +55,7 @@ export interface BrowseFilesDialogUIProps {
   total: number;
   numOfLoaderItems?: number;
   onCardSelected(item: MediaItem): void;
-  onPreviewImage(item: MediaItem): void;
+  onPreviewImage?(item: MediaItem): void;
   onCheckboxChecked(path: string, selected: boolean): void;
   handleSearchKeyword(keyword: string): void;
   onPathSelected(path: string): void;

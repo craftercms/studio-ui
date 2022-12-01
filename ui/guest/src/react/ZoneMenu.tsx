@@ -48,7 +48,7 @@ import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
 import { exists, findContainerRecord, getById, getReferentialEntries, runValidation } from '../iceRegistry';
 import { post } from '../utils/communicator';
-import { requestEdit, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
+import { requestEdit, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
@@ -268,7 +268,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
       numOfItemsInContainerCollection - 1
     ]);
     if (minCount) {
-      post(validationMessage(minCount));
+      post(snackGuestMessage(minCount));
     } else {
       execOperation(() => {
         if (recordType === 'component' && nodeSelectorItemRecord) {

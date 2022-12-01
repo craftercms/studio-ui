@@ -107,7 +107,9 @@ export default [
           path = chunk.rootPath,
           expanded = chunk.expanded,
           collapsed = chunk.collapsed,
-          keywordByPath = chunk.keywordByPath
+          keywordByPath = chunk.keywordByPath,
+          offsetByPath = chunk.offsetByPath,
+          limit = chunk.limit
         } = payload;
         let paths = [];
         expanded.forEach((expandedPath) => {
@@ -126,7 +128,10 @@ export default [
           fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
           fetchChildrenByPaths(
             state.sites.active,
-            createPresenceTable(expanded, (value) => (keywordByPath[value] ? { keyword: keywordByPath[value] } : {})),
+            createPresenceTable(expanded, (value) => ({
+              ...(keywordByPath[value] ? { keyword: keywordByPath[value] } : {}),
+              ...(offsetByPath[value] ? { limit: limit + offsetByPath[value] } : {})
+            })),
             createGetChildrenOptions(chunk, pluckProps(payload, true, 'limit', 'excludes'))
           )
         ]).pipe(
@@ -157,7 +162,14 @@ export default [
         const { id, path, options } = payload;
         const chunk = state.pathNavigatorTree[id];
         const finalOptions = createGetChildrenOptions(chunk, options);
-        return fetchChildrenByPath(state.sites.active, path, finalOptions).pipe(
+        return fetchChildrenByPath(state.sites.active, path, {
+          ...finalOptions,
+          ...(chunk.offsetByPath[path]
+            ? {
+                limit: chunk.limit + chunk.offsetByPath[path]
+              }
+            : {})
+        }).pipe(
           map((children) =>
             pathNavigatorTreeFetchPathChildrenComplete({
               id,

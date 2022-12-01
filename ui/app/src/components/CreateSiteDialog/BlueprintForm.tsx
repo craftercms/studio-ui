@@ -70,8 +70,8 @@ const messages = defineMessages({
     id: 'createSiteDialog.nameExist',
     defaultMessage: 'The name already exists.'
   },
-  descriptionMaxLength: {
-    id: 'createSiteDialog.descriptionMaxLength',
+  fieldMaxLength: {
+    id: 'createSiteDialog.fieldMaxLength',
     defaultMessage: 'Max length: {maxLength} characters.'
   },
   required: {
@@ -239,7 +239,7 @@ function BlueprintForm(props: BlueprintFormProps) {
                 ? formatMessage(messages.required, { name: formatMessage(messages.siteName) })
                 : inputs.siteNameExist
                 ? formatMessage(messages.nameExist)
-                : ''
+                : formatMessage(messages.fieldMaxLength, { maxLength: siteNameMaxLength })
             }
           />
         </Grid>
@@ -278,7 +278,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             onChange={(event) => handleInputChange(event)}
             value={inputs.description}
             inputProps={{ maxLength: maxLength }}
-            helperText={formatMessage(messages.descriptionMaxLength, { maxLength: maxLength })}
+            helperText={formatMessage(messages.fieldMaxLength, { maxLength: maxLength })}
           />
         </Grid>
         <Grid item xs={12}>

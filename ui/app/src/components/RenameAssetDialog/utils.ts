@@ -23,6 +23,7 @@ export interface RenameAssetBaseProps {
   path: string;
   type: 'controller' | 'template' | 'asset';
   dependantItems: DetailedItem[];
+  fetchingDependantItems: boolean;
   value?: string;
   allowBraces?: boolean;
 }
@@ -38,6 +39,9 @@ export interface RenameAssetStateProps extends RenameAssetBaseProps, EnhancedDia
 }
 
 export interface RenameAssetContainerProps
-  extends Pick<RenameAssetProps, 'path' | 'value' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type'> {
+  extends Pick<
+    RenameAssetProps,
+    'path' | 'value' | 'allowBraces' | 'onRenamed' | 'onClose' | 'type' | 'fetchingDependantItems'
+  > {
   dependantItems: DetailedItem[];
 }

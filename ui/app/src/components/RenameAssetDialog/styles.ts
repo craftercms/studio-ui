@@ -14,10 +14,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface ClusterMember {
-  primary: boolean;
-  localAddress: string;
-  state: 'ACTIVE' | 'INACTIVE';
-  gitUrl: string;
-  gitRemoteName: string;
+import { FullSxRecord, PartialSxRecord } from '../../models';
+
+export type RenameAssetDialogClassKey = 'emptyMessage' | 'emptyMessageIcon';
+
+export type RenameAssetDialogFullSx = FullSxRecord<RenameAssetDialogClassKey>;
+
+export type RenameAssetDialogPartialSx = PartialSxRecord<RenameAssetDialogClassKey>;
+
+function getStyles(sx?: RenameAssetDialogPartialSx): RenameAssetDialogFullSx {
+  return {
+    emptyMessage: {
+      verticalAlign: 'middle',
+      display: 'inline-flex',
+      mt: 2,
+      ...sx?.emptyMessage
+    },
+    emptyMessageIcon: (theme) => ({
+      color: theme.palette.text.secondary,
+      mr: 1
+    })
+  };
 }
+
+export default getStyles;

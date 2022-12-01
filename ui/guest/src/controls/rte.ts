@@ -25,7 +25,7 @@ import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
 import $ from 'jquery';
 import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
-import { showEditDialog, validationMessage } from '@craftercms/studio-ui/state/actions/preview';
+import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
@@ -222,7 +222,7 @@ export function initTinyMCE(
           ) {
             if (validations?.required && !getContent().trim()) {
               post(
-                validationMessage({
+                snackGuestMessage({
                   id: 'required',
                   level: 'required',
                   values: { field: record.label }
@@ -289,7 +289,7 @@ export function initTinyMCE(
           getContent() !== getSelectionContent()
         ) {
           post(
-            validationMessage({
+            snackGuestMessage({
               id: 'maxLength',
               level: 'required',
               values: { maxLength: validations.maxLength.value }

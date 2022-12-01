@@ -25,7 +25,6 @@ export const urlMapping = {
   'home.globalMenu.audit': '#/audit',
   'home.globalMenu.groups': '#/groups',
   'home.globalMenu.globalConfig': '#/global-config',
-  'home.globalMenu.cluster': '#/cluster',
   'home.globalMenu.encryptionTool': '#/encryption-tool',
   'home.globalMenu.tokenManagement': '#/token-management',
   'home.globalMenu.about-us': '#/about-us',

@@ -14,6 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './ClusterGridUI';
+export const GROUP_NAME_MAX_LENGTH = 512;
+export const GROUP_DESCRIPTION_MAX_LENGTH = 1024;
+export const GROUP_NAME_MIN_LENGTH = 3;
 
-export * from './ClusterGridUI';
+export const validateGroupNameMinLength = (value: string) => {
+  return value.trim() !== '' && value.trim().length < GROUP_NAME_MIN_LENGTH;
+};
+
+export const validateRequiredField = (value: string, isDirty: boolean) => {
+  return isDirty && value.trim() === '';
+};

@@ -18,7 +18,6 @@ import * as auditService from '../services/audit';
 import * as authService from '../services/auth';
 import * as awsService from '../services/aws';
 import * as boxService from '../services/box';
-import * as clustersService from '../services/clusters';
 import * as cmisService from '../services/cmis';
 import * as configurationService from '../services/configuration';
 import * as contentService from '../services/content';
@@ -78,8 +77,6 @@ export const components = {
   BrowseFilesDialog: lazy(() => import('../components/BrowseFilesDialog')),
   ChangeContentTypeDialog: lazy(() => import('../components/ChangeContentTypeDialog')),
   CharCountStatus: lazy(() => import('../components/CharCountStatus')),
-  ClusterGrid: lazy(() => import('../components/ClusterGrid')),
-  ClusterManagement: lazy(() => import('../components/ClusterManagement')),
   CodeEditorDialog: lazy(() => import('../components/CodeEditorDialog')),
   CommitResolutionDialog: lazy(() => import('../components/CommitResolutionDialog')),
   CompareVersionsDialog: lazy(() => import('../components/CompareVersionsDialog')),
@@ -270,6 +267,7 @@ export const components = {
   QuickCreate: lazy(() => import('../components/QuickCreate')),
   RecentlyPublishedDashlet: lazy(() => import('../components/RecentlyPublishedDashlet')),
   RejectDialog: lazy(() => import('../components/RejectDialog')),
+  RenameAssetDialog: lazy(() => import('../components/RenameAssetDialog')),
   ResetPasswordDialog: lazy(() => import('../components/ResetPasswordDialog')),
   ResizeBar: lazy(() => import('../components/ResizeBar')),
   ResizeableDrawer: lazy(() => import('../components/ResizeableDrawer')),
@@ -382,7 +380,6 @@ export const services = {
   auth: authService,
   aws: awsService,
   box: boxService,
-  clusters: clustersService,
   cmis: cmisService,
   configuration: configurationService,
   content: contentService,

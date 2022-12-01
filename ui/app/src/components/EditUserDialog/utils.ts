@@ -41,6 +41,7 @@ export interface EditUserDialogContainerProps
 export interface EditUserDialogUIProps {
   user: User;
   inProgress: boolean;
+  submitOk: boolean;
   dirty: boolean;
   openResetPassword: boolean;
   sites: Site[];

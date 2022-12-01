@@ -22,7 +22,7 @@ import { message$, post } from '../utils/communicator';
 import {
   requestWorkflowCancellationDialog,
   requestWorkflowCancellationDialogOnResult,
-  validationMessage
+  snackGuestMessage
 } from '@craftercms/studio-ui/state/actions/preview';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { NEVER, Observable, of } from 'rxjs';
@@ -73,7 +73,7 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
           switchMap(({ payload }) => (payload.type === 'continue' ? continue$ : stop$))
         );
       } else if (item.commitId !== localItem.commitId && item.lockOwner !== username) {
-        post(validationMessage({ id: 'outOfSyncContent', level: 'suggestion' }));
+        post(snackGuestMessage({ id: 'outOfSyncContent', level: 'suggestion' }));
         post(unlockItem({ path }));
         setTimeout(() => window.location.reload());
         return stop$;
@@ -83,7 +83,7 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
     }),
     catchError(({ response, status }) => {
       if (status === 409) {
-        post(validationMessage({ id: 'itemLocked', level: 'suggestion', values: { lockOwner: response.person } }));
+        post(snackGuestMessage({ id: 'itemLocked', level: 'suggestion', values: { lockOwner: response.person } }));
       }
       return stop$;
     })
