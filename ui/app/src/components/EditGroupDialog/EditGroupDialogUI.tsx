@@ -126,7 +126,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 </Typography>
               </InputLabel>
               {isEdit ? (
-                <Typography className={classes.fullWidth} color="textSecondary">
+                <Typography className={clsx(classes.fullWidth, classes.ellipsis)} color="textSecondary">
                   {group.name}
                 </Typography>
               ) : (

@@ -23,7 +23,7 @@ export function EditGroupDialog(props: EditGroupDialogProps) {
   const { group, onGroupDeleted, onGroupSaved, onSubmittingAndOrPendingChange, ...rest } = props;
 
   return (
-    <EnhancedDialog omitHeader {...rest}>
+    <EnhancedDialog omitHeader maxWidth="lg" {...rest}>
       <EditGroupDialogContainer
         group={group}
         onGroupSaved={onGroupSaved}

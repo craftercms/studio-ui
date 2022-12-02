@@ -39,7 +39,7 @@ export interface GroupsGridUIProps {
 
 export function GroupsGridUI(props: GroupsGridUIProps) {
   const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
-  const { classes } = useStyles();
+  const { classes, cx } = useStyles();
   const groups = resource.read();
 
   return (
@@ -63,7 +63,7 @@ export function GroupsGridUI(props: GroupsGridUIProps) {
           <TableBody>
             {groups.map((group, i) => (
               <GlobalAppGridRow key={group.id} onClick={() => onRowClicked(group)}>
-                <GlobalAppGridCell align="left" className="width25">
+                <GlobalAppGridCell align="left" className={cx('width25', classes.ellipsis)} title={group.name}>
                   {group.name}
                 </GlobalAppGridCell>
                 <GlobalAppGridCell align="left">{group.desc}</GlobalAppGridCell>

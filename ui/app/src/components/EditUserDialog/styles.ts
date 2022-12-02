@@ -35,7 +35,9 @@ const useStyles = makeStyles()((theme) => ({
   actions: {
     marginLeft: 'auto'
   },
-  userInfo: {},
+  userInfo: {
+    maxWidth: '70%'
+  },
   body: {
     padding: 0
   },
@@ -76,6 +78,11 @@ const useStyles = makeStyles()((theme) => ({
   },
   siteItem: {
     margin: '10px 0'
+  },
+  ellipsis: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
   }
 }));
 
