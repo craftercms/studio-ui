@@ -25,6 +25,7 @@ export interface BrowseFilesDialogBaseProps {
   contentTypes?: string[];
   mimeTypes?: string[];
   numOfLoaderItems?: number;
+  allowUpload?: boolean;
 }
 
 export interface BrowseFilesDialogProps extends BrowseFilesDialogBaseProps, EnhancedDialogProps {
@@ -54,6 +55,7 @@ export interface BrowseFilesDialogUIProps {
   keyword: string;
   total: number;
   numOfLoaderItems?: number;
+  allowUpload?: boolean;
   onCardSelected(item: MediaItem): void;
   onPreviewImage?(item: MediaItem): void;
   onCheckboxChecked(path: string, selected: boolean): void;

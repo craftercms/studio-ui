@@ -58,7 +58,8 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onChangeRowsPerPage,
     onCloseButtonClick,
     onRefresh,
-    onUpload
+    onUpload,
+    allowUpload = true
   } = props;
   // endregion
   const { classes, cx: clsx } = useStyles();
@@ -73,9 +74,11 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             <InputUnstyled value={currentPath} className={classes.currentPath} disabled title={currentPath} />
             <Divider />
             <Box display="flex" alignItems="center" marginTop="16px" marginBottom="16px" gap="8px">
-              <SecondaryButton onClick={onUpload}>
-                <FormattedMessage id="word.upload" defaultMessage="Upload" />
-              </SecondaryButton>
+              {allowUpload && (
+                <SecondaryButton onClick={onUpload}>
+                  <FormattedMessage id="word.upload" defaultMessage="Upload" />
+                </SecondaryButton>
+              )}
               <SecondaryButton onClick={onRefresh}>
                 <FormattedMessage id="word.refresh" defaultMessage="Refresh" />
               </SecondaryButton>
@@ -109,7 +112,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             {items && items.length === 0 && (
               <EmptyState
                 styles={{ root: { flexGrow: 1 } }}
-                title={<FormattedMessage id="browseFilesDialog.noResults" defaultMessage="No files found." />}
+                title={<FormattedMessage id="browseFilesDialog.noResults" defaultMessage="No items found." />}
               />
             )}
           </section>

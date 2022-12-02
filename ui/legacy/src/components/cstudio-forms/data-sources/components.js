@@ -163,6 +163,7 @@
         path,
         contentTypes: [contentType],
         multiSelect,
+        allowUpload: false,
         onSuccess: (result) => {
           (Array.isArray(result) ? result : [result]).forEach(({ name, path }) => {
             const value = name && name !== '' ? name : path;

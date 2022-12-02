@@ -89,7 +89,7 @@
   "browseCMIS.cloningCMIS": "CMIS-Asset klonen",
   "browseCMIS.cmis": "CMIS",
   "browseFilesDialog.emptyStateMessage": "Pfad `{path}` existiert nicht.",
-  "browseFilesDialog.noResults": "Keine Dateien gefunden.",
+  "browseFilesDialog.noResults": "Keine Elemente gefunden.",
   "browseFilesDialog.uploadImage": "Wählen Sie eine Datei aus",
   "browseSearchMessages.lookUpChildError": "Untergeordneter Formularrückruf für Suche kann nicht gesucht werden: {searchId}",
   "browseSearchMessages.lookUpParentError": "Übergeordneter Kontext für Suche kann nicht gesucht werden: {searchId}",

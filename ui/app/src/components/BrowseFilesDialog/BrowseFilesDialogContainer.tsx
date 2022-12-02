@@ -34,7 +34,16 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
-  const { path, onClose, onSuccess, multiSelect = false, mimeTypes, contentTypes, numOfLoaderItems } = props;
+  const {
+    path,
+    onClose,
+    onSuccess,
+    multiSelect = false,
+    mimeTypes,
+    contentTypes,
+    numOfLoaderItems,
+    allowUpload
+  } = props;
   const [items, setItems] = useState<SearchItem[]>();
   const site = useActiveSiteId();
   const { guestBase } = useEnv();
@@ -178,6 +187,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       numOfLoaderItems={numOfLoaderItems}
       onRefresh={onRefresh}
       onUpload={onUpload}
+      allowUpload={allowUpload}
     />
   ) : (
     <EmptyState
