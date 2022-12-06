@@ -42,7 +42,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
     mimeTypes,
     contentTypes,
     numOfLoaderItems,
-    allowUpload
+    allowUpload = true
   } = props;
   const [items, setItems] = useState<SearchItem[]>();
   const site = useActiveSiteId();
