@@ -27,7 +27,8 @@ import {
   fetchComponentsByContentTypeFailed,
   fetchContentTypes,
   fetchContentTypesComplete,
-  fetchContentTypesFailed
+  fetchContentTypesFailed,
+  setContentTypeFilter
 } from '../actions/preview';
 import { exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { fetchItemsByContentType } from '../../services/content';
@@ -62,7 +63,7 @@ export default [
   // region fetchComponentsByContentType
   (action$, state$: Observable<GlobalState>) =>
     action$.pipe(
-      ofType(fetchComponentsByContentType.type),
+      ofType(fetchComponentsByContentType.type, setContentTypeFilter.type),
       withLatestFrom(state$),
       switchMap(([, state]) =>
         fetchItemsByContentType(
