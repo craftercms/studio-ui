@@ -58,10 +58,5 @@ export const useStyles = makeStyles()(() => ({
   },
   fullWidth: {
     width: '100%'
-  },
-  ellipsis: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
   }
 }));

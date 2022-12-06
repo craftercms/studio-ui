@@ -22,11 +22,6 @@ const useStyles = makeStyles()(() => ({
   },
   tableRoot: {
     tableLayout: 'fixed'
-  },
-  ellipsis: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
   }
 }));
 

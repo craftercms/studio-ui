@@ -40,7 +40,7 @@ export interface UsersGridUIProps {
 
 export function UsersGridUI(props: UsersGridUIProps) {
   const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
-  const { classes, cx } = useStyles();
+  const { classes } = useStyles();
   const users = resource.read();
   return (
     <Box display="flex" flexDirection="column">
@@ -80,8 +80,10 @@ export function UsersGridUI(props: UsersGridUIProps) {
                 <GlobalAppGridCell align="left" className="pl20 width20">
                   {user.firstName} {user.lastName}
                 </GlobalAppGridCell>
-                <GlobalAppGridCell align="left" className={cx('width20', classes.ellipsis)} title={user.username}>
-                  {user.username}
+                <GlobalAppGridCell align="left" className="width20">
+                  <Typography variant="body2" noWrap title={user.username}>
+                    {user.username}
+                  </Typography>
                 </GlobalAppGridCell>
                 <GlobalAppGridCell align="left" className="width60">
                   {user.email}

@@ -52,7 +52,8 @@ const useStyles = makeStyles()((theme) => ({
   userNameWrapper: {
     width: '100%',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    overflow: 'hidden'
   },
   switchWrapper: {
     width: '100%',
@@ -78,11 +79,6 @@ const useStyles = makeStyles()((theme) => ({
   },
   siteItem: {
     margin: '10px 0'
-  },
-  ellipsis: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
   }
 }));
 

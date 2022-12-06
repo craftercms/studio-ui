@@ -81,7 +81,7 @@ const translations = defineMessages({
 });
 
 export function EditUserDialogUI(props: EditUserDialogUIProps) {
-  const { classes, cx } = useStyles();
+  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const managedInStudio = !props.user.externallyManaged;
   const {
@@ -114,7 +114,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
           <Typography variant="h6" component="h2">
             {user.firstName} {user.lastName}
           </Typography>
-          <Typography variant="subtitle1" className={classes.ellipsis} title={user.username}>
+          <Typography variant="subtitle1" noWrap title={user.username}>
             {user.username}
           </Typography>
         </section>
@@ -178,8 +178,8 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                   <Typography color="textSecondary" className={classes.label}>
                     <FormattedMessage id="words.username" defaultMessage="Username" />
                   </Typography>
-                  <section className={cx(classes.userNameWrapper, classes.ellipsis)}>
-                    <Typography className={classes.ellipsis} title={user.username}>
+                  <section className={classes.userNameWrapper}>
+                    <Typography noWrap title={user.username}>
                       {user.username}
                     </Typography>
                   </section>
