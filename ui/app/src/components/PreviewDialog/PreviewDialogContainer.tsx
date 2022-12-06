@@ -79,8 +79,8 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
           </ConditionalLoadingState>
         );
       }
-      case 'document': {
-        return <IFrame url={`${!isBlobUrl(url) ? guestBase : ''}${url}`} title={title} width="100%" height="100vh" />;
+      case 'pdf': {
+        return <IFrame url={isBlobUrl(url) ? url : `${guestBase}${url}`} title={title} width="100%" height="100vh" />;
       }
       default:
         break;

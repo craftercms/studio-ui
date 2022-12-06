@@ -45,7 +45,7 @@ import {
   isNavigable,
   isPreviewable,
   isVideo,
-  isDocumentContent
+  isPdfDocument
 } from './utils';
 import { StateStylingProps } from '../../models/UiConfig';
 import { debounceTime } from 'rxjs/operators';
@@ -241,10 +241,10 @@ export function PathNavigator(props: PathNavigatorProps) {
   const onPreview = (item: DetailedItem) => {
     if (isEditableViaFormEditor(item)) {
       dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
-    } else if (isImage(item) || isVideo(item) || isDocumentContent(item.mimeType)) {
+    } else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
       dispatch(
         showPreviewDialog({
-          type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'document',
+          type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
           title: item.label,
           url: item.path
         })

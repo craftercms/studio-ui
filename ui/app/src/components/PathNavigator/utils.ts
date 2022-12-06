@@ -48,13 +48,13 @@ export function isMediaContent(mimeType: string) {
   return /^image\//.test(mimeType) || /^video\//.test(mimeType);
 }
 
-export function isDocumentContent(mimeType: string) {
+export function isPdfDocument(mimeType: string) {
   return 'application/pdf' === mimeType;
 }
 
 export function isPreviewable(item: DetailedItem | SandboxItem): boolean {
   if (item?.systemType === 'asset') {
-    return isMediaContent(item.mimeType) || isTextContent(item.mimeType) || isDocumentContent(item.mimeType);
+    return isMediaContent(item.mimeType) || isTextContent(item.mimeType) || isPdfDocument(item.mimeType);
   } else {
     return ['page', 'component', 'renderingTemplate', 'script', 'taxonomy'].includes(item?.systemType);
   }

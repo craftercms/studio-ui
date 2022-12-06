@@ -107,7 +107,7 @@ import {
 } from './content';
 import {
   getEditorMode,
-  isDocumentContent,
+  isPdfDocument,
   isImage,
   isNavigable,
   isPreviewable,
@@ -366,7 +366,7 @@ export function generateSingleItemOptions(
     if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
       sectionA.push(menuOptions.view);
     } else if (isPreviewable(item)) {
-      if (isImage(item) || isVideo(item) || isDocumentContent(item.mimeType)) {
+      if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
         sectionA.push(menuOptions.viewMedia);
       } else {
         sectionA.push(menuOptions.viewCode);
@@ -862,7 +862,7 @@ export const itemActionDispatcher = ({
       case 'viewMedia': {
         dispatch(
           showPreviewDialog({
-            type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'document',
+            type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
             title: item.label,
             url: item.path
           })
