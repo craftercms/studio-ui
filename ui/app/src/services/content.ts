@@ -44,7 +44,7 @@ import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenRespon
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
 import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
-import { isMediaContent, isTextContent } from '../components/PathNavigator/utils';
+import { isPdfDocument, isMediaContent, isTextContent } from '../components/PathNavigator/utils';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html${toQueryString({ path })}`).pipe(pluck('response'));
@@ -1391,7 +1391,7 @@ export function fetchContentByCommitId(site: string, path: string, commitId: str
     switchMap((ajax) => {
       const blob = ajax.response;
       const type = ajax.xhr.getResponseHeader('content-type');
-      if (isMediaContent(type)) {
+      if (isMediaContent(type) || isPdfDocument(type)) {
         return of(URL.createObjectURL(blob));
       } else if (isTextContent(type)) {
         return blob.text() as Promise<string>;
