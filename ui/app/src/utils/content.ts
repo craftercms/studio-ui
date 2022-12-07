@@ -88,7 +88,10 @@ export function isEditableAsset(path: string) {
     path.endsWith('.hbs') ||
     (path.endsWith('.xml') && !path.startsWith('/config/studio/content-types')) ||
     path.endsWith('.tmpl') ||
-    path.endsWith('.htm')
+    path.endsWith('.htm') ||
+    path.endsWith('.sass') ||
+    path.endsWith('.scss') ||
+    path.endsWith('.less')
   );
 }
 
@@ -547,7 +550,7 @@ export function createModelHierarchyDescriptorMap(
   const contentTypeMissingWarning = (model: ContentInstance) => {
     if (!contentTypes[model.craftercms.contentTypeId]) {
       console.error(
-        `[createModelMap] Content type with id ${model.craftercms.contentTypeId} was not found. ` +
+        `[createModelHierarchyDescriptorMap] Content type with id ${model.craftercms.contentTypeId} was not found. ` +
           `Unable to fully process model at '${model.craftercms.path}' with id ${model.craftercms.id}`
       );
     }
