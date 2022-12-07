@@ -89,7 +89,7 @@
   "browseCMIS.cloningCMIS": "Clonación de activos CMIS",
   "browseCMIS.cmis": "CMIS",
   "browseFilesDialog.emptyStateMessage": "La ruta `{path}` no existe.",
-  "browseFilesDialog.noResults": "No se encontraron archivos.",
+  "browseFilesDialog.noResults": "No se encontraron elementos.",
   "browseFilesDialog.uploadImage": "Seleccione Un Archivo",
   "browseSearchMessages.lookUpChildError": "No se puede buscar la devolución de llamada del formulario secundario para la búsqueda: {searchId}",
   "browseSearchMessages.lookUpParentError": "No se puede buscar el contexto principal para la búsqueda: {searchId}",
