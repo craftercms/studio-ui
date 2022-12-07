@@ -26,13 +26,23 @@
     </script>
   </@layout>
 <#elseif pSite?? && pType?? && pName?? && pFile?ends_with('.html')>
-  <#assign html = applicationContext.configurationService.getConfigurationAsString(
-      pSite,
-      "studio",
-      "/plugins/${pType}/${pName}/${pFile}",
-      ""
-    )!"CONTENT_NOT_FOUND"
-  />
+  <#if pPluginId == ''>
+    <#assign html = applicationContext.configurationService.getConfigurationAsString(
+        pSite,
+        "studio",
+        "/plugins/${pType}/${pName}/${pFile}",
+        ""
+      )!"CONTENT_NOT_FOUND"
+    />
+  <#else>
+    <#assign html = applicationContext.configurationService.getConfigurationAsString(
+        pSite,
+        "studio",
+        "/static-assets/plugins/${pPluginId?replace('.', '/')}/${pType}/${pName}/${pFile}",
+        ""
+      )!"CONTENT_NOT_FOUND"
+    />
+  </#if>
   <#if html = "CONTENT_NOT_FOUND">
     <@layout title="Not Found - ${contentModel['common-title']!''}">
       <script>

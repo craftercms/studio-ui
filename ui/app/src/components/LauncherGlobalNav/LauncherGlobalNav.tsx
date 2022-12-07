@@ -75,7 +75,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
         <LauncherTile
           key={item.id}
           active={activeItemId === item.id}
-          title={formatMessage(globalMenuMessages[item.id])}
+          title={globalMenuMessages[item.id] ? formatMessage(globalMenuMessages[item.id]) : item.id}
           icon={item.icon}
           link={getLauncherSectionLink(item.id, authoringBase)}
           onClick={(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>) => onTileClicked(e, item.id, item.label)}
