@@ -1497,7 +1497,7 @@
   "userInfoDialog.close": "닫기",
   "userInfoDialog.deleteUser": "사용자 삭제",
   "userInfoDialog.externallyManaged": "외부에서 관리",
-  "userInfoDialog.helperText": "\"{username}\" 사용자를 삭제하시겠습니까?",
+  "userInfoDialog.helperText": "사용자 \"{username}\" 를 삭제하시겠습니까?",
   "userInfoDialog.noRoles": "역할 없음",
   "userInfoDialog.resetPassword": "암호를 재설정",
   "userInfoDialog.siteName": "프로젝트 이름",

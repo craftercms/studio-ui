@@ -1499,7 +1499,7 @@
   "userInfoDialog.close": "Schließen",
   "userInfoDialog.deleteUser": "Benutzer löschen",
   "userInfoDialog.externallyManaged": "Extern verwaltet",
-  "userInfoDialog.helperText": "Benutzer \"{username}\" löschen?",
+  "userInfoDialog.helperText": "Benutzer löschen \"{username}\"?",
   "userInfoDialog.noRoles": "Keine Rollen",
   "userInfoDialog.resetPassword": "Passwort zurücksetzen",
   "userInfoDialog.siteName": "Projektname",
