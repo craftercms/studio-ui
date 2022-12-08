@@ -155,8 +155,10 @@ export function PreviewBrowseComponentsPanel() {
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
           />
-        ) : (
+        ) : componentsState.isFetching ? (
           <LoadingState title={formatMessage(translations.loading)} />
+        ) : (
+          <></>
         )}
       </ErrorBoundary>
     </>
