@@ -473,6 +473,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       ...state.components,
       isFetching: null,
       contentTypeFilter: payload,
+      pageNumber: 0,
       query: {
         ...state.components.query,
         offset: 0

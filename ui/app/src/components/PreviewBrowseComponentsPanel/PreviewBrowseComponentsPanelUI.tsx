@@ -21,7 +21,6 @@ import List from '@mui/material/List';
 import ContentInstance from '../../models/ContentInstance';
 import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
 import EmptyState from '../EmptyState/EmptyState';
-import { Resource } from '../../models/Resource';
 import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@mui/material/FormHelperText';
 import Pagination from '../Pagination';
@@ -35,7 +34,10 @@ export interface ComponentResource {
 }
 
 export interface PreviewBrowseComponentsPanelUIProps {
-  componentsResource: Resource<ComponentResource>;
+  items: Array<ContentInstance>;
+  count: number;
+  pageNumber: number;
+  limit: number;
   classes?: Partial<
     Record<'browsePanelWrapper' | 'pagination' | 'toolbar' | 'list' | 'noResultsImage' | 'noResultsTitle', string>
   >;
@@ -46,11 +48,9 @@ export interface PreviewBrowseComponentsPanelUIProps {
 }
 
 export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPanelUIProps) {
-  const { componentsResource, onPageChanged, onDragStart, onDragEnd, onRowsPerPageChange } = props;
+  const { items, onPageChanged, onDragStart, onDragEnd, onRowsPerPageChange, count, pageNumber, limit } = props;
   const { formatMessage } = useIntl();
   const { classes } = useComponentsPanelUI();
-  const components = componentsResource.read();
-  const { count, pageNumber, items, limit } = components;
   return (
     <>
       <Pagination

@@ -14,10 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { PagedEntityState } from '../../models/GlobalState';
-import { nnou, pluckProps } from '../../utils/object';
+import { nnou } from '../../utils/object';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import LoadingState from '../LoadingState/LoadingState';
 import ContentInstance from '../../models/ContentInstance';
@@ -35,28 +34,18 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ContentType from '../../models/ContentType';
 import { useSelection } from '../../hooks/useSelection';
-import { useSelectorResource } from '../../hooks/useSelectorResource';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import translations from './translations';
 import useStyles from './styles';
 import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 
-interface ComponentResource {
-  count: number;
-  limit: number;
-  pageNumber: number;
-  contentTypeFilter: string;
-  items: Array<ContentInstance>;
-}
-
 export function PreviewBrowseComponentsPanel() {
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
-  const initialKeyword = useSelection((state) => state.preview.components.query.keywords);
-  const contentTypeFilter = useSelection((state) => state.preview.components.contentTypeFilter);
-  const [keyword, setKeyword] = useState(initialKeyword);
+  const componentsState = useSelection((state) => state.preview.components);
+  const [keyword, setKeyword] = useState(componentsState.query.keywords);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const editMode = useSelection((state) => state.preview.editMode);
   const contentTypes = contentTypesBranch.byId
@@ -64,6 +53,15 @@ export function PreviewBrowseComponentsPanel() {
         (contentType) => contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
       )
     : null;
+  const items = useMemo(() => {
+    let items = componentsState.page[componentsState.pageNumber]?.map((id: string) => componentsState.byId[id]) ?? [];
+    if (componentsState.contentTypeFilter !== 'all') {
+      items = items.filter(
+        (item: ContentInstance) => item.craftercms.contentTypeId === componentsState.contentTypeFilter
+      );
+    }
+    return items;
+  }, [componentsState]);
 
   useEffect(() => {
     if (siteId && contentTypesBranch.isFetching === false) {
@@ -71,27 +69,6 @@ export function PreviewBrowseComponentsPanel() {
     }
   }, [siteId, contentTypesBranch, dispatch]);
 
-  const resource = useSelectorResource<ComponentResource, PagedEntityState<ContentInstance>>(
-    (state) => state.preview.components,
-    {
-      shouldRenew: (source, resource) => resource.complete,
-      shouldResolve: (source) =>
-        (!source.isFetching && nnou(source.pageNumber) && nnou(source.page[source.pageNumber])) ||
-        !source.contentTypeFilter,
-      shouldReject: (source) => nnou(source.error),
-      errorSelector: (source) => source.error,
-      resultSelector: (source) => {
-        let items = source.page[source.pageNumber]?.map((id: string) => source.byId[id]) ?? [];
-        if (source.contentTypeFilter !== 'all') {
-          items = items.filter((item: ContentInstance) => item.craftercms.contentTypeId === source.contentTypeFilter);
-        }
-        return {
-          ...pluckProps(source, 'count', 'query.limit' as 'limit', 'pageNumber', 'contentTypeFilter'),
-          items
-        } as ComponentResource;
-      }
-    }
-  );
   const { formatMessage } = useIntl();
   const hostToGuest$ = getHostToGuestBus();
 
@@ -148,7 +125,7 @@ export function PreviewBrowseComponentsPanel() {
           {contentTypes && (
             <Select
               size="small"
-              value={contentTypeFilter}
+              value={componentsState.contentTypeFilter}
               displayEmpty
               className={classes.select}
               onChange={(event: any) => handleSelectChange(event.target.value)}
@@ -164,15 +141,23 @@ export function PreviewBrowseComponentsPanel() {
             </Select>
           )}
         </div>
-        <React.Suspense fallback={<LoadingState title={formatMessage(translations.loading)} />}>
-          <PreviewBrowseComponentsPanelUI
-            componentsResource={resource}
-            onPageChanged={onPageChanged}
-            onRowsPerPageChange={onRowsPerPageChange}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-          />
-        </React.Suspense>
+        {componentsState.isFetching ? (
+          <LoadingState title={formatMessage(translations.loading)} />
+        ) : (
+          ((nnou(componentsState.pageNumber) && nnou(componentsState.page[componentsState.pageNumber])) ||
+            !componentsState.contentTypeFilter) && (
+            <PreviewBrowseComponentsPanelUI
+              items={items}
+              count={componentsState.count}
+              pageNumber={componentsState.pageNumber}
+              limit={componentsState.query.limit}
+              onPageChanged={onPageChanged}
+              onRowsPerPageChange={onRowsPerPageChange}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+            />
+          )
+        )}
       </ErrorBoundary>
     </>
   );
