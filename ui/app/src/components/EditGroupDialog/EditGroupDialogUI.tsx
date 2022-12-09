@@ -44,7 +44,7 @@ import {
 const translations = defineMessages({
   confirmHelperText: {
     id: 'editGroupDialog.helperText',
-    defaultMessage: 'Delete "{name}" group?'
+    defaultMessage: 'Delete group "{name}"?'
   },
   confirmOk: {
     id: 'words.yes',

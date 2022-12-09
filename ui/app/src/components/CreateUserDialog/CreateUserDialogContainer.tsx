@@ -50,6 +50,7 @@ import {
   validateFieldMinLength
 } from '../UserManagement/utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { showSystemNotification } from '../../state/actions/system';
 
 const useStyles = makeStyles()((theme) => ({
   popper: {
@@ -133,6 +134,10 @@ const translations = defineMessages({
   invalidMinLength: {
     id: 'createUserDialog.invalidMinLength',
     defaultMessage: 'Min {length} characters'
+  },
+  userCreated: {
+    id: 'createUserDialog.userCreated',
+    defaultMessage: 'User created successfully'
   }
 });
 
@@ -185,6 +190,11 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           )
           .subscribe({
             next() {
+              dispatch(
+                showSystemNotification({
+                  message: formatMessage(translations.userCreated)
+                })
+              );
               onCreateSuccess?.();
               functionRefs.current.onSubmittingAndOrPendingChange({
                 isSubmitting: false

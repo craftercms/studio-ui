@@ -64,7 +64,7 @@ const translations = defineMessages({
   },
   confirmHelperText: {
     id: 'userInfoDialog.helperText',
-    defaultMessage: 'Delete "{username}" user?'
+    defaultMessage: 'Delete user "{username}"?'
   },
   confirmOk: {
     id: 'words.yes',
