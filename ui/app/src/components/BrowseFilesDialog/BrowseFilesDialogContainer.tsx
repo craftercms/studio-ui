@@ -173,6 +173,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       selectedCard={selectedCard}
       selectedArray={selectedArray}
       multiSelect={multiSelect}
+      searchParameters={searchParameters}
+      setSearchParameters={setSearchParameters}
       limit={searchParameters.limit}
       offset={searchParameters.offset}
       total={total}

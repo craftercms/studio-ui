@@ -50,6 +50,8 @@ export interface BrowseFilesDialogUIProps {
   multiSelect?: boolean;
   path: string;
   currentPath: string;
+  searchParameters: ElasticParams;
+  setSearchParameters(params: Partial<ElasticParams>): void;
   limit: number;
   offset: number;
   keyword: string;

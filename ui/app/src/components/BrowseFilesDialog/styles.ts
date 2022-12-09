@@ -54,5 +54,23 @@ export const useStyles = makeStyles()((theme) => ({
       fontSize: '1.25rem',
       lineHeight: '1.6'
     }
+  },
+  drawer: {
+    flexShrink: 0
+  },
+  drawerPaper: {
+    top: 65,
+    bottom: 0,
+    right: 0,
+    width: 300,
+    zIndex: theme.zIndex.appBar - 1,
+    height: 'auto',
+    position: 'absolute'
+  },
+  drawerModal: {
+    position: 'absolute',
+    '& .MuiBackdrop-root': {
+      background: 'transparent'
+    }
   }
 }));

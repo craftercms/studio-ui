@@ -32,6 +32,9 @@ import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
 import Divider from '@mui/material/Divider';
 import InputUnstyled from '@mui/base/InputUnstyled';
+import Drawer from '@mui/material/Drawer';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -43,6 +46,8 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     multiSelect = false,
     path,
     currentPath,
+    searchParameters,
+    setSearchParameters,
     limit,
     offset,
     keyword,
@@ -67,6 +72,50 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     <>
       <DialogBody className={classes.dialogBody}>
         <Box display="flex">
+          <Drawer
+            variant="persistent"
+            anchor="right"
+            open={true}
+            className={classes.drawer}
+            classes={{
+              paper: classes.drawerPaper,
+              modal: classes.drawerModal
+            }}
+          >
+            <Select
+              value={searchParameters.sortBy}
+              onChange={({ target }) => {
+                setSearchParameters({
+                  sortBy: target.value
+                });
+              }}
+            >
+              <MenuItem value={'_score'}>
+                <FormattedMessage id="words.relevance" defaultMessage="Relevance" />
+              </MenuItem>
+              <MenuItem value={'internalName'}>
+                <FormattedMessage id="words.name" defaultMessage="Name" />
+              </MenuItem>
+              <MenuItem value={'last-edit-date'}>
+                <FormattedMessage id="browseFilesDialog.recentlyUploaded" defaultMessage="Recently Uploaded" />
+              </MenuItem>
+            </Select>
+            <Select
+              value={searchParameters.sortOrder}
+              onChange={({ target }) => {
+                setSearchParameters({
+                  sortOrder: target.value
+                });
+              }}
+            >
+              <MenuItem value={'asc'}>
+                <FormattedMessage id="words.ascending" defaultMessage="Ascending" />
+              </MenuItem>
+              <MenuItem value={'desc'}>
+                <FormattedMessage id="words.descending" defaultMessage="Descending" />
+              </MenuItem>
+            </Select>
+          </Drawer>
           <section className={classes.leftWrapper}>
             <FolderBrowserTreeView rootPath={path} onPathSelected={onPathSelected} selectedPath={currentPath} />
           </section>
