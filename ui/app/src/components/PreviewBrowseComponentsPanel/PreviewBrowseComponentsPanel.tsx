@@ -141,24 +141,22 @@ export function PreviewBrowseComponentsPanel() {
             </Select>
           )}
         </div>
-        {(!componentsState.isFetching &&
-          nnou(componentsState.pageNumber) &&
-          nnou(componentsState.page[componentsState.pageNumber])) ||
-        !componentsState.contentTypeFilter ? (
-          <PreviewBrowseComponentsPanelUI
-            items={items}
-            count={componentsState.count}
-            pageNumber={componentsState.pageNumber}
-            limit={componentsState.query.limit}
-            onPageChanged={onPageChanged}
-            onRowsPerPageChange={onRowsPerPageChange}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-          />
-        ) : componentsState.isFetching ? (
+        {componentsState.isFetching ? (
           <LoadingState title={formatMessage(translations.loading)} />
         ) : (
-          <></>
+          ((nnou(componentsState.pageNumber) && nnou(componentsState.page[componentsState.pageNumber])) ||
+            !componentsState.contentTypeFilter) && (
+            <PreviewBrowseComponentsPanelUI
+              items={items}
+              count={componentsState.count}
+              pageNumber={componentsState.pageNumber}
+              limit={componentsState.query.limit}
+              onPageChanged={onPageChanged}
+              onRowsPerPageChange={onRowsPerPageChange}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+            />
+          )
         )}
       </ErrorBoundary>
     </>
