@@ -28,7 +28,8 @@ const useStyles = makeStyles()((theme) => ({
     borderBottom: `1px solid ${theme.palette.divider}`
   },
   listPaper: {
-    flexBasis: '50%'
+    flexBasis: '50%',
+    overflow: 'hidden'
   },
   list: {
     height: '310px',

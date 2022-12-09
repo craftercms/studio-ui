@@ -81,7 +81,9 @@ export function UsersGridUI(props: UsersGridUIProps) {
                   {user.firstName} {user.lastName}
                 </GlobalAppGridCell>
                 <GlobalAppGridCell align="left" className="width20">
-                  {user.username}
+                  <Typography variant="body2" noWrap title={user.username}>
+                    {user.username}
+                  </Typography>
                 </GlobalAppGridCell>
                 <GlobalAppGridCell align="left" className="width60">
                   {user.email}

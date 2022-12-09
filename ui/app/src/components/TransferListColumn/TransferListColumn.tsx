@@ -99,7 +99,11 @@ export function TransferListColumn(props: TransferListColumnProps) {
                     <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
                   )}
                 </ListItemIcon>
-                <ListItemText primary={item.title} secondary={item.subtitle} />
+                <ListItemText
+                  primary={item.title}
+                  secondary={item.subtitle}
+                  primaryTypographyProps={{ noWrap: true, title: item.title }}
+                />
               </ListItem>
             ))
           )

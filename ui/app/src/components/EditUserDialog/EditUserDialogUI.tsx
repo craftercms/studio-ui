@@ -114,7 +114,9 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
           <Typography variant="h6" component="h2">
             {user.firstName} {user.lastName}
           </Typography>
-          <Typography variant="subtitle1">{user.username}</Typography>
+          <Typography variant="subtitle1" noWrap title={user.username}>
+            {user.username}
+          </Typography>
         </section>
         <section className={classes.actions}>
           {managedInStudio ? (
@@ -177,7 +179,9 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                     <FormattedMessage id="words.username" defaultMessage="Username" />
                   </Typography>
                   <section className={classes.userNameWrapper}>
-                    <Typography>{user.username}</Typography>
+                    <Typography noWrap title={user.username}>
+                      {user.username}
+                    </Typography>
                   </section>
                 </div>
                 <div className={classes.row}>

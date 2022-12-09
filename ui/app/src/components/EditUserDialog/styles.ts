@@ -35,7 +35,9 @@ const useStyles = makeStyles()((theme) => ({
   actions: {
     marginLeft: 'auto'
   },
-  userInfo: {},
+  userInfo: {
+    maxWidth: '70%'
+  },
   body: {
     padding: 0
   },
@@ -50,7 +52,8 @@ const useStyles = makeStyles()((theme) => ({
   userNameWrapper: {
     width: '100%',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    overflow: 'hidden'
   },
   switchWrapper: {
     width: '100%',
