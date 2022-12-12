@@ -19,7 +19,7 @@ import DialogBody from '../DialogBody/DialogBody';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { SearchItem } from '../../models';
 import MediaCard from '../MediaCard/MediaCard';
 import { useStyles } from './styles';
@@ -32,9 +32,11 @@ import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
 import Divider from '@mui/material/Divider';
 import InputUnstyled from '@mui/base/InputUnstyled';
-import Drawer from '@mui/material/Drawer';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { Typography } from '@mui/material';
+import { filtersMessages } from '../SiteSearchSortBy';
+import { camelize } from '../../utils/string';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -53,6 +55,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     keyword,
     total,
     numOfLoaderItems = 12,
+    sortKeys,
     onCardSelected,
     onPreviewImage,
     onCheckboxChecked,
@@ -68,57 +71,65 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   } = props;
   // endregion
   const { classes, cx: clsx } = useStyles();
+  const { formatMessage } = useIntl();
   return (
     <>
       <DialogBody className={classes.dialogBody}>
-        <Box display="flex">
-          <Drawer
-            variant="persistent"
-            anchor="right"
-            open={true}
-            className={classes.drawer}
-            classes={{
-              paper: classes.drawerPaper,
-              modal: classes.drawerModal
-            }}
-          >
-            <Select
-              value={searchParameters.sortBy}
-              onChange={({ target }) => {
-                setSearchParameters({
-                  sortBy: target.value
-                });
-              }}
-            >
-              <MenuItem value={'_score'}>
-                <FormattedMessage id="words.relevance" defaultMessage="Relevance" />
-              </MenuItem>
-              <MenuItem value={'internalName'}>
-                <FormattedMessage id="words.name" defaultMessage="Name" />
-              </MenuItem>
-              <MenuItem value={'last-edit-date'}>
-                <FormattedMessage id="browseFilesDialog.recentlyUploaded" defaultMessage="Recently Uploaded" />
-              </MenuItem>
-            </Select>
-            <Select
-              value={searchParameters.sortOrder}
-              onChange={({ target }) => {
-                setSearchParameters({
-                  sortOrder: target.value
-                });
-              }}
-            >
-              <MenuItem value={'asc'}>
-                <FormattedMessage id="words.ascending" defaultMessage="Ascending" />
-              </MenuItem>
-              <MenuItem value={'desc'}>
-                <FormattedMessage id="words.descending" defaultMessage="Descending" />
-              </MenuItem>
-            </Select>
-          </Drawer>
-          <section className={classes.leftWrapper}>
+        <Box display="flex" className={classes.dialogContent}>
+          <Box className={classes.leftWrapper} display="flex" flexDirection="column" rowGap="20px">
+            <Box display="flex" flexDirection="column" rowGap="10px">
+              <Typography variant="body1" className={classes.semiBold}>
+                <FormattedMessage id="browseFilesDialog.sortBy" defaultMessage="Sort By" />
+              </Typography>
+              <Select
+                value={searchParameters.sortBy}
+                onChange={({ target }) => {
+                  setSearchParameters({
+                    sortBy: target.value
+                  });
+                }}
+                size="small"
+              >
+                <MenuItem value={'_score'}>
+                  <FormattedMessage id="words.relevance" defaultMessage="Relevance" />
+                </MenuItem>
+                <MenuItem value={'internalName'}>
+                  <FormattedMessage id="words.name" defaultMessage="Name" />
+                </MenuItem>
+                {sortKeys.map((name, i) => (
+                  <MenuItem value={name} key={i}>
+                    {formatMessage(filtersMessages[camelize(name)])}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Select
+                value={searchParameters.sortOrder}
+                onChange={({ target }) => {
+                  setSearchParameters({
+                    sortOrder: target.value
+                  });
+                }}
+                size="small"
+              >
+                <MenuItem value={'asc'}>
+                  {searchParameters.sortBy === '_score' ? (
+                    <FormattedMessage id="browseFilesDialog.lessRelevantFirst" defaultMessage="Less relevant first" />
+                  ) : (
+                    <FormattedMessage id="words.ascending" defaultMessage="Ascending" />
+                  )}
+                </MenuItem>
+                <MenuItem value={'desc'}>
+                  {searchParameters.sortBy === '_score' ? (
+                    <FormattedMessage id="browseFilesDialog.mostRelevantFirst" defaultMessage="Most relevant first" />
+                  ) : (
+                    <FormattedMessage id="words.descending" defaultMessage="Descending" />
+                  )}
+                </MenuItem>
+              </Select>
+            </Box>
+            <Divider />
             <FolderBrowserTreeView rootPath={path} onPathSelected={onPathSelected} selectedPath={currentPath} />
-          </section>
+          </Box>
           <section className={classes.rightWrapper}>
             <InputUnstyled value={currentPath} className={classes.currentPath} disabled title={currentPath} />
             <Divider />

@@ -58,6 +58,7 @@ export interface BrowseFilesDialogUIProps {
   total: number;
   numOfLoaderItems?: number;
   allowUpload?: boolean;
+  sortKeys: Array<string>;
   onCardSelected(item: MediaItem): void;
   onPreviewImage?(item: MediaItem): void;
   onCheckboxChecked(path: string, selected: boolean): void;

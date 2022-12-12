@@ -18,7 +18,11 @@ import { makeStyles } from 'tss-react/mui';
 
 export const useStyles = makeStyles()((theme) => ({
   dialogBody: {
-    minHeight: '60vh'
+    minHeight: '60vh',
+    padding: 0
+  },
+  dialogContent: {
+    overflow: 'hidden'
   },
   searchRoot: {
     marginLeft: 'auto',
@@ -38,10 +42,13 @@ export const useStyles = makeStyles()((theme) => ({
   },
   leftWrapper: {
     width: '270px',
-    paddingRight: '16px'
+    padding: '16px',
+    overflow: 'auto'
   },
   rightWrapper: {
-    flexGrow: 1
+    flexGrow: 1,
+    padding: '16px',
+    overflow: 'auto'
   },
   currentPath: {
     '& input': {
@@ -55,22 +62,7 @@ export const useStyles = makeStyles()((theme) => ({
       lineHeight: '1.6'
     }
   },
-  drawer: {
-    flexShrink: 0
-  },
-  drawerPaper: {
-    top: 65,
-    bottom: 0,
-    right: 0,
-    width: 300,
-    zIndex: theme.zIndex.appBar - 1,
-    height: 'auto',
-    position: 'absolute'
-  },
-  drawerModal: {
-    position: 'absolute',
-    '& .MuiBackdrop-root': {
-      background: 'transparent'
-    }
+  semiBold: {
+    fontWeight: 600
   }
 }));

@@ -31,7 +31,7 @@ const useStyles = makeStyles()(() => ({
   }
 }));
 
-const messages = defineMessages({
+export const filtersMessages = defineMessages({
   relevance: {
     id: 'words.relevance',
     defaultMessage: 'Relevance'
@@ -83,12 +83,12 @@ export function SiteSearchSortBy(props: SortByProps) {
       className={classes.select}
       onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >
-      <MenuItem value="_score">{formatMessage(messages.relevance)}</MenuItem>
-      <MenuItem value="internalName">{formatMessage(messages.internalName)}</MenuItem>
+      <MenuItem value="_score">{formatMessage(filtersMessages.relevance)}</MenuItem>
+      <MenuItem value="internalName">{formatMessage(filtersMessages.internalName)}</MenuItem>
       {filterKeys.map((name: string, i: number) => {
         return (
           <MenuItem value={name} key={i}>
-            {formatMessage(messages[camelize(name)])}
+            {formatMessage(filtersMessages[camelize(name)])}
           </MenuItem>
         );
       })}

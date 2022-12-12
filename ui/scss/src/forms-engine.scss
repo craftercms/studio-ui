@@ -210,3 +210,8 @@ h6,
   color: #333 !important;
   border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
+
+// This style is to fix an issue caused by a bootstrap style when using material components with legend elements on it
+legend[class^="mui-"] {
+  width: auto;
+}
