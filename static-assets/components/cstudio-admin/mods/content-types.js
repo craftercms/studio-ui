@@ -1076,6 +1076,7 @@
               },
               '*'
             );
+            CStudioAdminConsole.CommandBar.hide();
             CStudioAdminConsole.renderWorkArea(null, {
               tool: CStudioAdminConsole.toolsModules['content-types']
             });
@@ -2834,7 +2835,7 @@
       handleDependencyPopover: function (element, dependency, show) {
         const hidePopover = () => {
           $(element).parent().popover('hide');
-        }
+        };
 
         if (show) {
           $(element)
