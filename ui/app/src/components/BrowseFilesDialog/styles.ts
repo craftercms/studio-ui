@@ -25,8 +25,9 @@ export const useStyles = makeStyles()((theme) => ({
     overflow: 'hidden'
   },
   searchRoot: {
-    marginLeft: 'auto',
-    maxWidth: '250px'
+    maxWidth: '200px',
+    background: 'none',
+    border: 'none'
   },
   cardsContainer: {
     display: 'grid',
@@ -64,5 +65,17 @@ export const useStyles = makeStyles()((theme) => ({
   },
   semiBold: {
     fontWeight: 600
+  },
+  actionsBar: {
+    paddingLeft: theme.spacing(1),
+    marginBottom: theme.spacing(3),
+    borderRadius: 4
+  },
+  actionsBarDivider: {
+    marginTop: '-11px',
+    marginBottom: '-11px'
+  },
+  sortingSelect: {
+    minWidth: '180px'
   }
 }));

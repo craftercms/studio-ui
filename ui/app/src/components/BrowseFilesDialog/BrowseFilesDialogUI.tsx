@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import DialogBody from '../DialogBody/DialogBody';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
@@ -31,12 +31,21 @@ import FolderBrowserTreeView from '../FolderBrowserTreeView';
 import Box from '@mui/material/Box';
 import { BrowseFilesDialogUIProps } from './utils';
 import Divider from '@mui/material/Divider';
-import InputUnstyled from '@mui/base/InputUnstyled';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { Typography } from '@mui/material';
 import { filtersMessages } from '../SiteSearchSortBy';
 import { camelize } from '../../utils/string';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import Paper from '@mui/material/Paper';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -72,84 +81,150 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // endregion
   const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const buttonRef = useRef();
+
   return (
     <>
       <DialogBody className={classes.dialogBody}>
         <Box display="flex" className={classes.dialogContent}>
           <Box className={classes.leftWrapper} display="flex" flexDirection="column" rowGap="20px">
-            <Box display="flex" flexDirection="column" rowGap="10px">
-              <Typography variant="body1" className={classes.semiBold}>
-                <FormattedMessage id="browseFilesDialog.sortBy" defaultMessage="Sort By" />
-              </Typography>
-              <Select
-                value={searchParameters.sortBy}
-                onChange={({ target }) => {
-                  setSearchParameters({
-                    sortBy: target.value
-                  });
-                }}
-                size="small"
-              >
-                <MenuItem value={'_score'}>
-                  <FormattedMessage id="words.relevance" defaultMessage="Relevance" />
-                </MenuItem>
-                <MenuItem value={'internalName'}>
-                  <FormattedMessage id="words.name" defaultMessage="Name" />
-                </MenuItem>
-                {sortKeys.map((name, i) => (
-                  <MenuItem value={name} key={i}>
-                    {formatMessage(filtersMessages[camelize(name)])}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Select
-                value={searchParameters.sortOrder}
-                onChange={({ target }) => {
-                  setSearchParameters({
-                    sortOrder: target.value
-                  });
-                }}
-                size="small"
-              >
-                <MenuItem value={'asc'}>
-                  {searchParameters.sortBy === '_score' ? (
-                    <FormattedMessage id="browseFilesDialog.lessRelevantFirst" defaultMessage="Less relevant first" />
-                  ) : (
-                    <FormattedMessage id="words.ascending" defaultMessage="Ascending" />
-                  )}
-                </MenuItem>
-                <MenuItem value={'desc'}>
-                  {searchParameters.sortBy === '_score' ? (
-                    <FormattedMessage id="browseFilesDialog.mostRelevantFirst" defaultMessage="Most relevant first" />
-                  ) : (
-                    <FormattedMessage id="words.descending" defaultMessage="Descending" />
-                  )}
-                </MenuItem>
-              </Select>
-            </Box>
-            <Divider />
             <FolderBrowserTreeView rootPath={path} onPathSelected={onPathSelected} selectedPath={currentPath} />
           </Box>
           <section className={classes.rightWrapper}>
-            <InputUnstyled value={currentPath} className={classes.currentPath} disabled title={currentPath} />
-            <Divider />
-            <Box display="flex" alignItems="center" marginTop="16px" marginBottom="16px" gap="8px">
-              {allowUpload && (
-                <SecondaryButton onClick={onUpload}>
-                  <FormattedMessage id="word.upload" defaultMessage="Upload" />
-                </SecondaryButton>
-              )}
-              <SecondaryButton onClick={onRefresh}>
-                <FormattedMessage id="word.refresh" defaultMessage="Refresh" />
-              </SecondaryButton>
-              <SearchBar
-                keyword={keyword}
-                onChange={handleSearchKeyword}
-                showDecoratorIcon
-                showActionButton={Boolean(keyword)}
-                classes={{ root: classes.searchRoot }}
-              />
-            </Box>
+            <Paper className={classes.actionsBar}>
+              <Toolbar disableGutters>
+                <Box sx={{ flexGrow: 1, display: 'flex' }}>
+                  <Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
+                    <IconButton onClick={onRefresh}>
+                      <RefreshIcon />
+                    </IconButton>
+                  </Tooltip>
+                  {allowUpload && (
+                    <Tooltip title={<FormattedMessage id="word.upload" defaultMessage="Upload" />}>
+                      <IconButton onClick={onUpload} sx={{ mr: 1 }}>
+                        <UploadFileIcon />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
+                  <SearchBar
+                    keyword={keyword}
+                    onChange={handleSearchKeyword}
+                    showDecoratorIcon
+                    showActionButton={Boolean(keyword)}
+                    classes={{ root: classes.searchRoot }}
+                  />
+                  <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
+                  <Button
+                    id="sort-button"
+                    aria-haspopup="true"
+                    aria-expanded={sortMenuOpen ? 'true' : undefined}
+                    onClick={() => setSortMenuOpen(!sortMenuOpen)}
+                    ref={buttonRef}
+                    sx={{ ml: 1, mr: 2 }}
+                  >
+                    <FilterListIcon sx={{ mr: 1 }} />
+                    <FormattedMessage id="words.sorting" defaultMessage="Sorting" />
+                  </Button>
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={buttonRef.current}
+                    open={sortMenuOpen}
+                    onClose={() => setSortMenuOpen(false)}
+                    MenuListProps={{
+                      'aria-labelledby': 'sort-button'
+                    }}
+                  >
+                    <MenuItem>
+                      <FormControl fullWidth>
+                        <InputLabel>
+                          <FormattedMessage id="BrowseFilesDialog.sortBy" defaultMessage="Sort By" />
+                        </InputLabel>
+                        <Select
+                          fullWidth
+                          value={searchParameters.sortBy}
+                          onChange={({ target }) => {
+                            setSearchParameters({
+                              sortBy: target.value
+                            });
+                          }}
+                          size="small"
+                          className={classes.sortingSelect}
+                          label={<FormattedMessage id="BrowseFilesDialog.sortBy" defaultMessage="Sort By" />}
+                        >
+                          <MenuItem value={'_score'}>
+                            <FormattedMessage id="words.relevance" defaultMessage="Relevance" />
+                          </MenuItem>
+                          <MenuItem value={'internalName'}>
+                            <FormattedMessage id="words.name" defaultMessage="Name" />
+                          </MenuItem>
+                          {sortKeys.map((name, i) => (
+                            <MenuItem value={name} key={i}>
+                              {formatMessage(filtersMessages[camelize(name)])}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </MenuItem>
+                    <MenuItem>
+                      <FormControl fullWidth>
+                        <InputLabel>
+                          <FormattedMessage id="words.order" defaultMessage="Order" />
+                        </InputLabel>
+                        <Select
+                          fullWidth
+                          value={searchParameters.sortOrder}
+                          onChange={({ target }) => {
+                            setSearchParameters({
+                              sortOrder: target.value
+                            });
+                          }}
+                          size="small"
+                          className={classes.sortingSelect}
+                          label={<FormattedMessage id="words.order" defaultMessage="Order" />}
+                        >
+                          <MenuItem value={'asc'}>
+                            {searchParameters.sortBy === '_score' ? (
+                              <FormattedMessage
+                                id="browseFilesDialog.lessRelevantFirst"
+                                defaultMessage="Less relevant first"
+                              />
+                            ) : (
+                              <FormattedMessage id="words.ascending" defaultMessage="Ascending" />
+                            )}
+                          </MenuItem>
+                          <MenuItem value={'desc'}>
+                            {searchParameters.sortBy === '_score' ? (
+                              <FormattedMessage
+                                id="browseFilesDialog.mostRelevantFirst"
+                                defaultMessage="Most relevant first"
+                              />
+                            ) : (
+                              <FormattedMessage id="words.descending" defaultMessage="Descending" />
+                            )}
+                          </MenuItem>
+                        </Select>
+                      </FormControl>
+                    </MenuItem>
+                  </Menu>
+                  <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
+                </Box>
+
+                <Box sx={{ flexGrow: 0 }}>
+                  {items && (
+                    <Pagination
+                      sxs={{ root: { marginRight: 'auto' } }}
+                      count={total}
+                      rowsPerPage={limit}
+                      page={Math.ceil(offset / limit)}
+                      onPageChange={(e, page: number) => onChangePage(page)}
+                      onRowsPerPageChange={onChangeRowsPerPage}
+                    />
+                  )}
+                </Box>
+              </Toolbar>
+            </Paper>
             <div className={classes.cardsContainer}>
               {items
                 ? items.map((item: SearchItem) => (
@@ -179,16 +254,6 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
         </Box>
       </DialogBody>
       <DialogFooter>
-        {items && (
-          <Pagination
-            sxs={{ root: { marginRight: 'auto' } }}
-            count={total}
-            rowsPerPage={limit}
-            page={Math.ceil(offset / limit)}
-            onPageChange={(e, page: number) => onChangePage(page)}
-            onRowsPerPageChange={onChangeRowsPerPage}
-          />
-        )}
         <SecondaryButton onClick={onCloseButtonClick}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>

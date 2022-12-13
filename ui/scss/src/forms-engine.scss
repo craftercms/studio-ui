@@ -211,7 +211,11 @@ h6,
   border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
 
-// This style is to fix an issue caused by a bootstrap style when using material components with legend elements on it
-legend[class^="mui-"] {
+// Styles to fix style conflicts between material-ui and bootstrap
+legend[class^="mui-"], hr.MuiDivider-root {
   width: auto;
+}
+
+.MuiTooltip-popper {
+  z-index: 1500 !important;
 }
