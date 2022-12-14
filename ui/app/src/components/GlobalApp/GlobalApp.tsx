@@ -49,12 +49,13 @@ const AccountManagement = lazy(() => import('../AccountManagement'));
 
 interface GlobalAppProps {
   passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
   footerHtml: string;
 }
 
 export function GlobalApp(props: GlobalAppProps) {
   const { classes } = useStyles();
-  const { passwordRequirementsRegex, footerHtml } = props;
+  const { passwordRequirementsRegex, passwordRequirementsMinComplexity, footerHtml } = props;
   const [width, setWidth] = useState(240);
   const globalNavigation = useGlobalNavigation();
   const [{ openSidebar }] = useGlobalAppState();
@@ -138,7 +139,12 @@ export function GlobalApp(props: GlobalAppProps) {
             <Route path="/sites" component={SiteManagement} />
             <Route
               path="/users"
-              render={() => <UserManagement passwordRequirementsRegex={passwordRequirementsRegex} />}
+              render={() => (
+                <UserManagement
+                  passwordRequirementsRegex={passwordRequirementsRegex}
+                  passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+                />
+              )}
             />
             <Route path="/groups" component={GroupManagement} />
             <Route path="/audit" component={AuditManagement} />
@@ -150,7 +156,12 @@ export function GlobalApp(props: GlobalAppProps) {
             <Route path="/about-us" component={AboutCrafterCMSView} />
             <Route
               path="/settings"
-              render={() => <AccountManagement passwordRequirementsRegex={passwordRequirementsRegex} />}
+              render={() => (
+                <AccountManagement
+                  passwordRequirementsRegex={passwordRequirementsRegex}
+                  passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+                />
+              )}
             />
             <Route path="/globalMenu/:id" render={(props) => <Redirect to={`/${props.match.params.id}`} />} />
             <Route exact path="/">

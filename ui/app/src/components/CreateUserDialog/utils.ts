@@ -19,6 +19,7 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 
 interface CreateUserDialogBase {
   passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
 }
 
 export interface CreateUserDialogProps extends CreateUserDialogBase, EnhancedDialogProps {

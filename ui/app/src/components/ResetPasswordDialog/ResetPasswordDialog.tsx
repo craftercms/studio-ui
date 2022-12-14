@@ -36,6 +36,7 @@ interface ResetPasswordDialogProps {
   onClose(): void;
   user: User;
   passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
 }
 
 const translations = defineMessages({
@@ -55,7 +56,7 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
 }
 
 function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
-  const { onClose, user, passwordRequirementsRegex } = props;
+  const { onClose, user, passwordRequirementsRegex, passwordRequirementsMinComplexity } = props;
   const [newPassword, setNewPassword] = useState('');
   const [isValid, setValid] = useState<boolean>(null);
   const [updating, setUpdating] = useState(false);

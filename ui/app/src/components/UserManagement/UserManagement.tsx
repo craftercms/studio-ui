@@ -37,11 +37,13 @@ import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingCha
 
 export interface UserManagementProps {
   passwordRequirementsRegex?: string;
+  passwordRequirementsMinComplexity?: number;
 }
 
 export function UserManagement(props: UserManagementProps) {
   const {
-    passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
+    passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$',
+    passwordRequirementsMinComplexity = 4
   } = props;
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
@@ -185,6 +187,7 @@ export function UserManagement(props: UserManagementProps) {
         onCreateSuccess={onUserCreated}
         onClose={createUserDialogState.onClose}
         passwordRequirementsRegex={passwordRequirementsRegex}
+        passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         isSubmitting={createUserDialogState.isSubmitting}
         isMinimized={createUserDialogState.isMinimized}
         hasPendingChanges={createUserDialogState.hasPendingChanges}
@@ -201,6 +204,7 @@ export function UserManagement(props: UserManagementProps) {
         isMinimized={editUserDialogState.isMinimized}
         hasPendingChanges={editUserDialogState.hasPendingChanges}
         passwordRequirementsRegex={passwordRequirementsRegex}
+        passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         onWithPendingChangesCloseRequest={editUserDialogPendingChangesCloseRequest}
         onSubmittingAndOrPendingChange={editUserDialogState.onSubmittingAndOrPendingChange}
       />

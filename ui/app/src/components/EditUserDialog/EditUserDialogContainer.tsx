@@ -49,8 +49,15 @@ const translations = defineMessages({
 });
 
 export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
-  const { open, onClose, onUserEdited, passwordRequirementsRegex, isSubmitting, onSubmittingAndOrPendingChange } =
-    props;
+  const {
+    open,
+    onClose,
+    onUserEdited,
+    passwordRequirementsRegex,
+    passwordRequirementsMinComplexity,
+    isSubmitting,
+    onSubmittingAndOrPendingChange
+  } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [user, setUser] = useSpreadState<User>({
@@ -219,6 +226,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
       sites={mySites}
       rolesBySite={rolesBySite}
       passwordRequirementsRegex={passwordRequirementsRegex}
+      passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
       onSave={onSave}
       onCloseButtonClick={(e) => onClose(e, null)}
       onDelete={onDelete}

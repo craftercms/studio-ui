@@ -46,7 +46,7 @@
     graphQLBaseURI: `${'$'}{origin}/api/1/site/graphql`,
     xsrfHeaderName: "${_csrf.headerName}",
     xsrfParameterName: "${_csrf.parameterName}",
-    passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}"
+    passwordRequirementsMinComplexity: ${envConfig.passwordRequirementsMinComplexity}
   };
 
   window.addEventListener(

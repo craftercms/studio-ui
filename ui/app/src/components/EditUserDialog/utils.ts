@@ -24,6 +24,7 @@ import React from 'react';
 export interface EditUserBaseProps {
   user: User;
   passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
 }
 
 export interface EditUserDialogProps extends EditUserBaseProps, EnhancedDialogProps {
@@ -46,6 +47,7 @@ export interface EditUserDialogUIProps {
   openResetPassword: boolean;
   sites: Site[];
   passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
   rolesBySite: LookupTable<string[]>;
   onInputChange(value: object): void;
   onEnableChange(value: object): void;

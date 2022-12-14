@@ -41,6 +41,7 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 
 interface AccountManagementProps {
   passwordRequirementsRegex?: string;
+  passwordRequirementsMinComplexity?: number;
 }
 
 const translations = defineMessages({
@@ -56,7 +57,8 @@ const translations = defineMessages({
 
 export function AccountManagement(props: AccountManagementProps) {
   const {
-    passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
+    passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$',
+    passwordRequirementsMinComplexity = 4
   } = props;
 
   const { classes, cx: clsx } = useStyles();

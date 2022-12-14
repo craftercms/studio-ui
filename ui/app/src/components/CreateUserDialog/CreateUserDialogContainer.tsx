@@ -51,6 +51,7 @@ import {
 } from '../UserManagement/utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../state/actions/system';
+import zxcvbn from 'zxcvbn';
 
 const useStyles = makeStyles()((theme) => ({
   popper: {
@@ -142,7 +143,14 @@ const translations = defineMessages({
 });
 
 export function CreateUserDialogContainer(props: CreateUserDialogContainerProps) {
-  const { onClose, passwordRequirementsRegex, onCreateSuccess, isSubmitting, onSubmittingAndOrPendingChange } = props;
+  const {
+    onClose,
+    passwordRequirementsRegex,
+    passwordRequirementsMinComplexity,
+    onCreateSuccess,
+    isSubmitting,
+    onSubmittingAndOrPendingChange
+  } = props;
   const [newUser, setNewUser] = useSpreadState({
     firstName: '',
     lastName: '',
@@ -214,7 +222,8 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   };
 
   const isInvalidPassword = (password) => {
-    return !validPassword && password !== '';
+    const pw = zxcvbn(password);
+    return pw.score < passwordRequirementsMinComplexity && password !== '';
   };
 
   const validateRequiredField = (field: string) => {

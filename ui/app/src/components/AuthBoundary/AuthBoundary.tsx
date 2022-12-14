@@ -41,6 +41,7 @@ export function AuthBoundary(props) {
         <CrafterThemeProvider>
           <Login
             passwordRequirementsRegex="'^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;\/@#$%^&+=]))(?<minLength>.{8,})$'"
+            passwordRequirementsMinComplexity={4}
             xsrfToken={getRequestForgeryToken()}
             xsrfParamName="_csrf"
           />

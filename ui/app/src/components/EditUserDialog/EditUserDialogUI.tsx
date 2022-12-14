@@ -93,6 +93,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
     sites,
     rolesBySite,
     passwordRequirementsRegex,
+    passwordRequirementsMinComplexity,
     onSave,
     onCloseButtonClick,
     onDelete,
@@ -325,6 +326,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
         <ResetPasswordDialog
           open={openResetPassword}
           passwordRequirementsRegex={passwordRequirementsRegex}
+          passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
           user={user}
           onClose={onCloseResetPasswordDialog}
         />

@@ -63,6 +63,7 @@ export interface LoginViewProps {
   xsrfToken: string;
   xsrfParamName: string;
   passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
 }
 
 type Modes = 'login' | 'recover' | 'reset';
@@ -72,6 +73,7 @@ type SubViewProps = React.PropsWithChildren<{
   language?: string;
   setMode?: React.Dispatch<React.SetStateAction<Modes>>;
   passwordRequirementsRegex?: string;
+  passwordRequirementsMinComplexity?: number;
   children: React.ReactNode;
   isFetching: boolean;
   onSubmit: React.Dispatch<React.SetStateAction<boolean>>;
@@ -329,8 +331,18 @@ function RecoverView(props: SubViewProps) {
 }
 
 function ResetView(props: SubViewProps) {
-  const { children, isFetching, onSubmit, classes, formatMessage, onSnack, setMode, token, passwordRequirementsRegex } =
-    props;
+  const {
+    children,
+    isFetching,
+    onSubmit,
+    classes,
+    formatMessage,
+    onSnack,
+    setMode,
+    token,
+    passwordRequirementsRegex,
+    passwordRequirementsMinComplexity
+  } = props;
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [isValid, setValid] = useState<boolean>(null);
@@ -490,7 +502,7 @@ export function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
   const { classes, cx } = useStyles();
   const token = parse(window.location.search).token as string;
-  const { passwordRequirementsRegex, xsrfToken, xsrfParamName } = props;
+  const { passwordRequirementsRegex, xsrfToken, xsrfParamName, passwordRequirementsMinComplexity } = props;
 
   const [mode, setMode] = useState<Modes>(token ? 'reset' : 'login');
   const [language, setLanguage] = useState(() => getCurrentLocale());
