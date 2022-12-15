@@ -38,6 +38,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { useActiveUser } from '../../hooks/useActiveUser';
+import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
 
 interface AccountManagementProps {
   passwordRequirementsRegex?: string;
@@ -205,11 +206,16 @@ export function AccountManagement(props: AccountManagementProps) {
                 )
               }
             />
+            <PasswordStrengthDisplay
+              value={newPassword}
+              passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+            />
             <PasswordRequirementsDisplay
               value={newPassword}
               onValidStateChanged={setValidPassword}
               formatMessage={formatMessage}
               passwordRequirementsRegex={passwordRequirementsRegex}
+              passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
             />
             <PrimaryButton
               disabled={!validPassword || newPassword !== verifiedPassword || currentPassword === ''}

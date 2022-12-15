@@ -112,6 +112,7 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
           onValidStateChanged={setValid}
           formatMessage={formatMessage}
           passwordRequirementsRegex={passwordRequirementsRegex}
+          passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         />
       </DialogBody>
       <DialogFooter>

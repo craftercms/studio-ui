@@ -23,6 +23,7 @@ import { passwordRequirementMessages } from '../../env/i18n-legacy';
 import palette from '../../styles/palette';
 import { makeStyles } from 'tss-react/mui';
 import { CSSObject as CSSProperties } from 'tss-react';
+import zxcvbn from 'zxcvbn';
 
 type PasswordRequirementsDisplayClassKey =
   | 'listOfConditions'
@@ -38,6 +39,7 @@ export interface PasswordRequirementsDisplayProps {
   formatMessage: Function;
   onValidStateChanged: (isValid: boolean) => void;
   passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
   classes?: Partial<Record<PasswordRequirementsDisplayClassKey, string>>;
   styles?: PasswordRequirementsDisplayStyles;
 }
@@ -81,14 +83,16 @@ const useStyles = makeStyles<PasswordRequirementsDisplayStyles, PasswordRequirem
 
 export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
   const { classes, cx } = useStyles(props.styles);
-  const { passwordRequirementsRegex, formatMessage, value, onValidStateChanged } = props;
+  const { passwordRequirementsRegex, passwordRequirementsMinComplexity, formatMessage, value, onValidStateChanged } =
+    props;
   const { regEx, conditions } = useMemo(
     () => getPrimeMatter({ passwordRequirementsRegex, formatMessage }),
     [passwordRequirementsRegex, formatMessage]
   );
   useEffect(() => {
-    onValidStateChanged(isBlank(value) ? null : regEx.test(value));
-  }, [onValidStateChanged, regEx, value]);
+    const pw = zxcvbn(value);
+    onValidStateChanged(isBlank(value) ? null : pw.score >= passwordRequirementsMinComplexity);
+  }, [onValidStateChanged, regEx, value, passwordRequirementsMinComplexity]);
   return (
     <ul className={classes.listOfConditions}>
       {conditions.map(({ description, regEx: condition }, key) => {

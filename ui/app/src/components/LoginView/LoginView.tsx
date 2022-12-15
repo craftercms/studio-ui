@@ -403,6 +403,7 @@ function ResetView(props: SubViewProps) {
           onValidStateChanged={setValid}
           formatMessage={formatMessage}
           passwordRequirementsRegex={passwordRequirementsRegex}
+          passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         />
         <PasswordTextField
           id="resetFormPasswordField"

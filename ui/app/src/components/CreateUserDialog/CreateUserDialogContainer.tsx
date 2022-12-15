@@ -52,6 +52,7 @@ import {
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../state/actions/system';
 import zxcvbn from 'zxcvbn';
+import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
 
 const useStyles = makeStyles()((theme) => ({
   popper: {
@@ -444,6 +445,11 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
               onValidStateChanged={setValidPassword}
               formatMessage={formatMessage}
               passwordRequirementsRegex={passwordRequirementsRegex}
+              passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+            />
+            <PasswordStrengthDisplay
+              value={newUser.password}
+              passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
             />
           </Paper>
           <div className={classes.arrow} ref={arrowRef} />
