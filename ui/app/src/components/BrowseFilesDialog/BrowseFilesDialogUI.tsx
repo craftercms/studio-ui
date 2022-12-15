@@ -46,6 +46,7 @@ import Menu from '@mui/material/Menu';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
+import Typography from '@mui/material/Typography';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -89,6 +90,9 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
       <DialogBody className={classes.dialogBody}>
         <Box display="flex" className={classes.dialogContent}>
           <Box className={classes.leftWrapper} display="flex" flexDirection="column" rowGap="20px">
+            <Typography variant="subtitle2">
+              <FormattedMessage id="words.path" defaultMessage="Path" />
+            </Typography>
             <FolderBrowserTreeView rootPath={path} onPathSelected={onPathSelected} selectedPath={currentPath} />
           </Box>
           <section className={classes.rightWrapper}>
@@ -119,16 +123,17 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                   <Button
                     id="sort-button"
                     aria-haspopup="true"
+                    aria-controls={sortMenuOpen ? 'sort-menu' : undefined}
                     aria-expanded={sortMenuOpen ? 'true' : undefined}
                     onClick={() => setSortMenuOpen(!sortMenuOpen)}
                     ref={buttonRef}
                     sx={{ ml: 1, mr: 2 }}
+                    startIcon={<FilterListIcon />}
                   >
-                    <FilterListIcon sx={{ mr: 1 }} />
                     <FormattedMessage id="words.sorting" defaultMessage="Sorting" />
                   </Button>
                   <Menu
-                    id="basic-menu"
+                    id="sort-menu"
                     anchorEl={buttonRef.current}
                     open={sortMenuOpen}
                     onClose={() => setSortMenuOpen(false)}
