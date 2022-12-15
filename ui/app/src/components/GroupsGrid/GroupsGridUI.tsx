@@ -68,7 +68,11 @@ export function GroupsGridUI(props: GroupsGridUIProps) {
                     {group.name}
                   </Typography>
                 </GlobalAppGridCell>
-                <GlobalAppGridCell align="left">{group.desc}</GlobalAppGridCell>
+                <GlobalAppGridCell align="left">
+                  <Typography variant="body2" className={classes.groupDescription}>
+                    {group.desc}
+                  </Typography>
+                </GlobalAppGridCell>
               </GlobalAppGridRow>
             ))}
           </TableBody>
