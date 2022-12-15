@@ -175,7 +175,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
 
   const isInvalidPassword = (password) => {
     const pw = zxcvbn(password);
-    return pw.score < passwordRequirementsMinComplexity && password !== '';
+    return password !== '' && pw.score < passwordRequirementsMinComplexity;
   };
 
   const validateRequiredField = (field: string) => {
