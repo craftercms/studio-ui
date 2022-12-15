@@ -23,7 +23,6 @@ import React from 'react';
 
 export interface EditUserBaseProps {
   user: User;
-  passwordRequirementsRegex: string;
   passwordRequirementsMinComplexity: number;
 }
 
@@ -46,7 +45,6 @@ export interface EditUserDialogUIProps {
   dirty: boolean;
   openResetPassword: boolean;
   sites: Site[];
-  passwordRequirementsRegex: string;
   passwordRequirementsMinComplexity: number;
   rolesBySite: LookupTable<string[]>;
   onInputChange(value: object): void;

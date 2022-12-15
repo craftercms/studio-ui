@@ -41,7 +41,6 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
 
 interface AccountManagementProps {
-  passwordRequirementsRegex?: string;
   passwordRequirementsMinComplexity?: number;
 }
 
@@ -57,10 +56,7 @@ const translations = defineMessages({
 });
 
 export function AccountManagement(props: AccountManagementProps) {
-  const {
-    passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$',
-    passwordRequirementsMinComplexity = 4
-  } = props;
+  const { passwordRequirementsMinComplexity = 4 } = props;
 
   const { classes, cx: clsx } = useStyles();
   const user = useActiveUser();
@@ -214,7 +210,6 @@ export function AccountManagement(props: AccountManagementProps) {
               value={newPassword}
               onValidStateChanged={setValidPassword}
               formatMessage={formatMessage}
-              passwordRequirementsRegex={passwordRequirementsRegex}
               passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
             />
             <PrimaryButton

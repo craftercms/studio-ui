@@ -24,7 +24,6 @@ export function EditUserDialog(props: EditUserDialogProps) {
     open,
     user,
     onUserEdited,
-    passwordRequirementsRegex,
     passwordRequirementsMinComplexity,
     onSubmittingAndOrPendingChange,
     isSubmitting,
@@ -38,7 +37,6 @@ export function EditUserDialog(props: EditUserDialogProps) {
         user={user}
         onUserEdited={onUserEdited}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-        passwordRequirementsRegex={passwordRequirementsRegex}
         passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         isSubmitting={isSubmitting}
       />

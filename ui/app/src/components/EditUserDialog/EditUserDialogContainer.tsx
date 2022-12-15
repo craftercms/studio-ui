@@ -53,7 +53,6 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     open,
     onClose,
     onUserEdited,
-    passwordRequirementsRegex,
     passwordRequirementsMinComplexity,
     isSubmitting,
     onSubmittingAndOrPendingChange
@@ -225,7 +224,6 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
       dirty={dirty}
       sites={mySites}
       rolesBySite={rolesBySite}
-      passwordRequirementsRegex={passwordRequirementsRegex}
       passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
       onSave={onSave}
       onCloseButtonClick={(e) => onClose(e, null)}

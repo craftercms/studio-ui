@@ -144,14 +144,8 @@ const translations = defineMessages({
 });
 
 export function CreateUserDialogContainer(props: CreateUserDialogContainerProps) {
-  const {
-    onClose,
-    passwordRequirementsRegex,
-    passwordRequirementsMinComplexity,
-    onCreateSuccess,
-    isSubmitting,
-    onSubmittingAndOrPendingChange
-  } = props;
+  const { onClose, passwordRequirementsMinComplexity, onCreateSuccess, isSubmitting, onSubmittingAndOrPendingChange } =
+    props;
   const [newUser, setNewUser] = useSpreadState({
     firstName: '',
     lastName: '',
@@ -440,13 +434,6 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           ]}
         >
           <Paper className={classes.paper}>
-            <PasswordRequirementsDisplay
-              value={newUser.password}
-              onValidStateChanged={setValidPassword}
-              formatMessage={formatMessage}
-              passwordRequirementsRegex={passwordRequirementsRegex}
-              passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-            />
             <PasswordStrengthDisplay
               value={newUser.password}
               passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
