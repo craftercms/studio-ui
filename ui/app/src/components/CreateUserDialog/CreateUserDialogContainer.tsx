@@ -24,7 +24,6 @@ import TextField from '@mui/material/TextField';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import Popper from '@mui/material/Popper';
 import Paper from '@mui/material/Paper';
-import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
@@ -56,52 +55,11 @@ import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
 
 const useStyles = makeStyles()((theme) => ({
   popper: {
-    zIndex: theme.zIndex.modal,
-    [`&[data-popper-placement*="bottom"] [class*="-arrow"]`]: {
-      top: 0,
-      left: 0,
-      marginTop: '-0.71em',
-      marginLeft: 4,
-      marginRight: 4,
-      '&::before': {
-        transformOrigin: '0 100%'
-      }
-    },
-    [`&[data-popper-placement*="top"] [class*="-arrow"]`]: {
-      bottom: 0,
-      left: 0,
-      marginBottom: '-0.71em',
-      marginLeft: 4,
-      marginRight: 4,
-      '&::before': {
-        transformOrigin: '100% 0'
-      }
-    },
-    [`&[data-popper-placement*="right"] [class*="-arrow"]`]: {
-      left: 0,
-      marginLeft: '-0.71em',
-      height: '1em',
-      width: '0.71em',
-      marginTop: 4,
-      marginBottom: 4,
-      '&::before': {
-        transformOrigin: '100% 100%'
-      }
-    },
-    [`&[data-popper-placement*="left"] [class*="-arrow"]`]: {
-      right: 0,
-      marginRight: '-0.71em',
-      height: '1em',
-      width: '0.71em',
-      marginTop: 4,
-      marginBottom: 4,
-      '&::before': {
-        transformOrigin: '0 0'
-      }
-    }
+    zIndex: theme.zIndex.modal
   },
   paper: {
-    padding: '10px'
+    padding: '10px',
+    marginBottom: '10px'
   },
   arrow: {
     overflow: 'hidden',
@@ -162,7 +120,6 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const arrowRef = useRef();
   const selectedGroupsRef = useRef([]);
   const functionRefs = useUpdateRefs({
     onSubmittingAndOrPendingChange
@@ -423,23 +380,15 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           open={Boolean(anchorEl)}
           className={classes.popper}
           anchorEl={anchorEl}
-          modifiers={[
-            {
-              name: 'arrow',
-              enabled: true,
-              options: {
-                element: arrowRef.current
-              }
-            }
-          ]}
+          placement="top-start"
         >
-          <Paper className={classes.paper}>
+          <Paper className={classes.paper} elevation={3}>
             <PasswordStrengthDisplay
               value={newUser.password}
               passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+              onValidStateChanged={setValidPassword}
             />
           </Paper>
-          <div className={classes.arrow} ref={arrowRef} />
         </Popper>
       </DialogBody>
       <DialogFooter>

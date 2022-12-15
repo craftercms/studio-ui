@@ -28,8 +28,8 @@ import { setPassword } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
+import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
 
 interface ResetPasswordDialogProps {
   open: boolean;
@@ -106,11 +106,10 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
             setNewPassword(e.target.value);
           }}
         />
-        <PasswordRequirementsDisplay
+        <PasswordStrengthDisplay
           value={newPassword}
-          onValidStateChanged={setValid}
-          formatMessage={formatMessage}
           passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+          onValidStateChanged={setValid}
         />
       </DialogBody>
       <DialogFooter>

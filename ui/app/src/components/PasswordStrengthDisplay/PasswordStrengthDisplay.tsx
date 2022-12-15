@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Typography from '@mui/material/Typography';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import { ListItem } from '@mui/material';
@@ -27,8 +27,11 @@ import Divider from '@mui/material/Divider';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
+import Collapse from '@mui/material/Collapse';
+import { isBlank } from '../../utils/string';
 
 export type PasswordStrengthDisplayClassKey =
+  | 'container'
   | 'scoreList'
   | 'scoreListItem'
   | 'scoreListItemDisplay'
@@ -41,7 +44,9 @@ export type PasswordStrengthDisplayClassKey =
   | 'yourScoreText'
   | 'yourScoreIcon'
   | 'yourScoreTextInvalid'
-  | 'yourScoreTextValid';
+  | 'yourScoreTextValid'
+  | 'feedbackContainer'
+  | 'divider';
 
 export type PasswordStrengthDisplayFullSx = FullSxRecord<PasswordStrengthDisplayClassKey>;
 
@@ -50,85 +55,135 @@ export type PasswordStrengthDisplayPartialSx = PartialSxRecord<PasswordStrengthD
 export interface PasswordStrengthDisplayProps {
   value: string;
   passwordRequirementsMinComplexity: number;
+  onValidStateChanged: (isValid: boolean) => void;
+  sxs?: PasswordStrengthDisplayPartialSx;
 }
 
-// TODO: create styles file
 function getStyles(sx?: PasswordStrengthDisplayPartialSx): PasswordStrengthDisplayFullSx {
   return {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      width: '330px'
+    },
     scoreList: {
       display: 'flex',
       flexDirection: 'row',
       padding: 0,
       columnGap: '5px',
       marginTop: (theme) => theme.spacing(1),
-      marginBottom: '5px'
+      marginBottom: '5px',
+      ...sx?.scoreList
     },
     scoreListItem: {
       width: 'auto',
-      padding: 0
+      padding: 0,
+      ...sx?.scoreListItem
     },
     scoreListItemDisplay: {
       width: '40px',
       textAlign: 'center',
       borderTop: '4px solid',
-      borderColor: (theme) => theme.palette.grey.A400
+      borderColor: (theme) => theme.palette.grey.A400,
+      ...sx?.scoreListItemDisplay
     },
     scoreListItemText: {
-      margin: 0
+      margin: 0,
+      ...sx?.scoreListItemText
     },
     scoreActive20: {
-      borderColor: (theme) => theme.palette.error.light
+      borderColor: (theme) => theme.palette.error.light,
+      ...sx?.scoreActive20
     },
     scoreActive40: {
-      borderColor: '#FB8C00'
+      borderColor: '#FB8C00',
+      ...sx?.scoreActive40
     },
     scoreActive60: {
-      borderColor: '#FFB400'
+      borderColor: '#FFB400',
+      ...sx?.scoreActive60
     },
     scoreActive80: {
-      borderColor: (theme) => theme.palette.info.light
+      borderColor: (theme) => theme.palette.info.light,
+      ...sx?.scoreActive80
     },
     scoreActive100: {
-      borderColor: (theme) => theme.palette.success.light
+      borderColor: (theme) => theme.palette.success.light,
+      ...sx?.scoreActive100
     },
     yourScoreText: {
       display: 'flex',
-      alignItems: 'center'
+      alignItems: 'center',
+      ...sx?.yourScoreText
     },
     yourScoreTextInvalid: {
-      color: (theme) => theme.palette.error.main
+      color: (theme) => theme.palette.error.main,
+      ...sx?.yourScoreTextInvalid
     },
     yourScoreTextValid: {
-      color: (theme) => theme.palette.success.main
+      color: (theme) => theme.palette.success.main,
+      ...sx?.yourScoreTextValid
     },
     yourScoreIcon: {
       fontSize: '15px',
-      marginRight: (theme) => theme.spacing(1)
+      marginRight: (theme) => theme.spacing(1),
+      ...sx?.yourScoreIcon
+    },
+    feedbackContainer: {
+      width: '100%',
+      alignItems: 'center',
+      ...sx?.feedbackContainer
+    },
+    divider: {
+      width: '40%',
+      margin: (theme) => `${theme.spacing(1)} auto`,
+      ...sx?.divider
     }
   };
 }
+
+const messages = defineMessages({
+  '0': {
+    id: 'passwordStrengthDisplay.tooGuessable',
+    defaultMessage: 'Too guessable'
+  },
+  '1': {
+    id: 'passwordStrengthDisplay.veryGuessable',
+    defaultMessage: 'Very guessable'
+  },
+  '2': {
+    id: 'passwordStrengthDisplay.somewhatGuessable',
+    defaultMessage: 'Somewhat guessable'
+  },
+  '3': {
+    id: 'passwordStrengthDisplay.safelyUnguessable',
+    defaultMessage: 'Safely unguessable'
+  },
+  '4': {
+    id: 'passwordStrengthDisplay.veryUnguessable',
+    defaultMessage: 'Very unguessable'
+  }
+});
 
 function getDisplayScore(score) {
   return (score + 1) * 20;
 }
 
 export function PasswordStrengthDisplay(props: PasswordStrengthDisplayProps) {
-  const { value, passwordRequirementsMinComplexity } = props;
-  const sx = getStyles();
+  const { value, passwordRequirementsMinComplexity, onValidStateChanged, sxs } = props;
+  const sx = getStyles(sxs);
   const minScore = getDisplayScore(passwordRequirementsMinComplexity);
   const password = zxcvbn(value);
   const passwordScore = value === '' ? 0 : getDisplayScore(password.score);
+  const { formatMessage } = useIntl();
 
-  console.log('password', password);
+  useEffect(() => {
+    onValidStateChanged(isBlank(value) ? null : password.score >= passwordRequirementsMinComplexity);
+  }, [onValidStateChanged, value, password, passwordRequirementsMinComplexity]);
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-      }}
-    >
+    <Box sx={sx.container}>
       <Typography variant="subtitle2">
         <FormattedMessage id="passwordStrengthDisplay.passwordStrengthTitle" defaultMessage="Password Strength Score" />
       </Typography>
@@ -183,7 +238,20 @@ export function PasswordStrengthDisplay(props: PasswordStrengthDisplayProps) {
           values={{ score: passwordScore }}
         />
       </Typography>
-      <Divider />
+      <Collapse in={passwordScore > 0 && passwordScore < minScore} sx={sx.feedbackContainer}>
+        <Divider sx={sx.divider} />
+        <Box style={{ textAlign: 'left' }}>
+          <Typography variant="body2">
+            {formatMessage(messages[password.score])}.{' '}
+            {password.feedback.warning ? `${password.feedback.warning}.` : ''}
+          </Typography>
+          {password?.feedback.suggestions.map((suggestion, i) => (
+            <Typography variant="body2" key={i}>
+              - {suggestion}
+            </Typography>
+          ))}
+        </Box>
+      </Collapse>
     </Box>
   );
 }

@@ -31,7 +31,6 @@ import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import Skeleton from '@mui/material/Skeleton';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
-import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import PrimaryButton from '../PrimaryButton';
 import { setMyPassword } from '../../services/users';
 import { useDispatch } from 'react-redux';
@@ -39,6 +38,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
+import Popper from '@mui/material/Popper';
 
 interface AccountManagementProps {
   passwordRequirementsMinComplexity?: number;
@@ -68,6 +68,7 @@ export function AccountManagement(props: AccountManagementProps) {
   const [validPassword, setValidPassword] = useState(false);
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+  const [anchorEl, setAnchorEl] = useState(null);
 
   // Retrieve Platform Languages.
   useEffect(() => {
@@ -182,6 +183,8 @@ export function AccountManagement(props: AccountManagementProps) {
                   <FormattedMessage id="accountManagement.passwordInvalid" defaultMessage="Password is invalid." />
                 )
               }
+              onFocus={(e) => setAnchorEl(e.target)}
+              onBlur={() => setAnchorEl(null)}
             />
             <PasswordTextField
               margin="normal"
@@ -202,16 +205,6 @@ export function AccountManagement(props: AccountManagementProps) {
                 )
               }
             />
-            <PasswordStrengthDisplay
-              value={newPassword}
-              passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-            />
-            <PasswordRequirementsDisplay
-              value={newPassword}
-              onValidStateChanged={setValidPassword}
-              formatMessage={formatMessage}
-              passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-            />
             <PrimaryButton
               disabled={!validPassword || newPassword !== verifiedPassword || currentPassword === ''}
               className={classes.save}
@@ -222,6 +215,22 @@ export function AccountManagement(props: AccountManagementProps) {
           </Box>
         </Paper>
       </Container>
+
+      <Popper
+        disablePortal
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        placement="bottom"
+        className={classes.passwordStrengthPopper}
+      >
+        <Paper className={classes.passwordStrengthPaper} elevation={3}>
+          <PasswordStrengthDisplay
+            value={newPassword}
+            passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+            onValidStateChanged={setValidPassword}
+          />
+        </Paper>
+      </Popper>
     </Paper>
   );
 }

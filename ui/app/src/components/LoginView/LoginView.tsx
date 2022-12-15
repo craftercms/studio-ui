@@ -44,9 +44,9 @@ import { buildStoredLanguageKey, dispatchLanguageChange, getCurrentLocale, setSt
 import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
 import LanguageRounded from '@mui/icons-material/LanguageRounded';
 import Menu from '@mui/material/Menu';
-import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
+import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
 
 export interface SystemLang {
   id: string;
@@ -395,11 +395,10 @@ function ResetView(props: SubViewProps) {
             />
           }
         />
-        <PasswordRequirementsDisplay
+        <PasswordStrengthDisplay
           value={newPassword}
-          onValidStateChanged={setValid}
-          formatMessage={formatMessage}
           passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+          onValidStateChanged={setValid}
         />
         <PasswordTextField
           id="resetFormPasswordField"
