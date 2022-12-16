@@ -29,7 +29,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
-import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
+import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 
 interface ResetPasswordDialogProps {
   open: boolean;
@@ -59,6 +59,7 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
   const [newPassword, setNewPassword] = useState('');
   const [isValid, setValid] = useState<boolean>(null);
   const [updating, setUpdating] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -105,8 +106,14 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
           onChange={(e) => {
             setNewPassword(e.target.value);
           }}
+          onFocus={(e) => setAnchorEl(e.target)}
+          onBlur={() => setAnchorEl(null)}
+          inputProps={{ autoComplete: 'new-password' }}
         />
-        <PasswordStrengthDisplay
+        <PasswordStrengthDisplayPopper
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          placement="bottom-start"
           value={newPassword}
           passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
           onValidStateChanged={setValid}

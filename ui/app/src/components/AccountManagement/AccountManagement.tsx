@@ -37,8 +37,7 @@ import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { useActiveUser } from '../../hooks/useActiveUser';
-import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
-import Popper from '@mui/material/Popper';
+import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 
 interface AccountManagementProps {
   passwordRequirementsMinComplexity?: number;
@@ -185,6 +184,7 @@ export function AccountManagement(props: AccountManagementProps) {
               }
               onFocus={(e) => setAnchorEl(e.target)}
               onBlur={() => setAnchorEl(null)}
+              inputProps={{ autoComplete: 'new-password' }}
             />
             <PasswordTextField
               margin="normal"
@@ -216,21 +216,14 @@ export function AccountManagement(props: AccountManagementProps) {
         </Paper>
       </Container>
 
-      <Popper
-        disablePortal
+      <PasswordStrengthDisplayPopper
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         placement="bottom"
-        className={classes.passwordStrengthPopper}
-      >
-        <Paper className={classes.passwordStrengthPaper} elevation={3}>
-          <PasswordStrengthDisplay
-            value={newPassword}
-            passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-            onValidStateChanged={setValidPassword}
-          />
-        </Paper>
-      </Popper>
+        value={newPassword}
+        passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+        onValidStateChanged={setValidPassword}
+      />
     </Paper>
   );
 }

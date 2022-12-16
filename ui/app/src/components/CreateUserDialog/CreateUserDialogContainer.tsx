@@ -22,8 +22,6 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import DialogBody from '../DialogBody/DialogBody';
 import TextField from '@mui/material/TextField';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
-import Popper from '@mui/material/Popper';
-import Paper from '@mui/material/Paper';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
@@ -50,17 +48,9 @@ import {
 } from '../UserManagement/utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../state/actions/system';
-import zxcvbn from 'zxcvbn';
-import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
+import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 
 const useStyles = makeStyles()((theme) => ({
-  popper: {
-    zIndex: theme.zIndex.modal
-  },
-  paper: {
-    padding: '10px',
-    marginBottom: '10px'
-  },
   arrow: {
     overflow: 'hidden',
     position: 'absolute',
@@ -171,11 +161,6 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
         setSubmitted(false);
       }
     }
-  };
-
-  const isInvalidPassword = (password) => {
-    const pw = zxcvbn(password);
-    return password !== '' && pw.score < passwordRequirementsMinComplexity;
   };
 
   const validateRequiredField = (field: string) => {
@@ -331,18 +316,18 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                   required
                   fullWidth
                   value={newUser.password}
-                  error={validateRequiredField(newUser.password) || isInvalidPassword(newUser.password)}
+                  error={validateRequiredField(newUser.password) || (newUser.password !== '' && !validPassword)}
                   helperText={
                     validateRequiredField(newUser.password) ? (
                       <FormattedMessage id="createUserDialog.passwordRequired" defaultMessage="Password is required." />
-                    ) : isInvalidPassword(newUser.password) ? (
+                    ) : newUser.password !== '' && !validPassword ? (
                       <FormattedMessage id="createUserDialog.passwordInvalid" defaultMessage="Password is invalid." />
                     ) : null
                   }
                   onChange={(e) => onChangeValue('password', e.target.value)}
-                  onFocus={(e) => setAnchorEl(e.target)}
+                  onFocus={(e) => setAnchorEl(e.target.parentElement)}
                   onBlur={() => setAnchorEl(null)}
-                  inputProps={{ maxLength: USER_PASSWORD_MAX_LENGTH }}
+                  inputProps={{ maxLength: USER_PASSWORD_MAX_LENGTH, autoComplete: 'new-password' }}
                 />
               </Grid>
               <Grid item sm={6}>
@@ -375,21 +360,13 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
             <UserGroupMembershipEditor onChange={onSelectedGroupsChanged} />
           </Grid>
         </Grid>
-        <Popper
-          disablePortal
+        <PasswordStrengthDisplayPopper
           open={Boolean(anchorEl)}
-          className={classes.popper}
           anchorEl={anchorEl}
-          placement="top-start"
-        >
-          <Paper className={classes.paper} elevation={3}>
-            <PasswordStrengthDisplay
-              value={newUser.password}
-              passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
-              onValidStateChanged={setValidPassword}
-            />
-          </Paper>
-        </Popper>
+          value={newUser.password}
+          passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+          onValidStateChanged={setValidPassword}
+        />
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={(e) => onClose(e, null)}>

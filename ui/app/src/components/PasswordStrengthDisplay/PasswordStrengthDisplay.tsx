@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Box from '@mui/material/Box';
@@ -22,13 +22,13 @@ import List from '@mui/material/List';
 import { ListItem } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
 import { FullSxRecord, PartialSxRecord } from '../../models';
-import zxcvbn from 'zxcvbn';
 import Divider from '@mui/material/Divider';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded';
 import StarOutlineRoundedIcon from '@mui/icons-material/StarOutlineRounded';
 import Collapse from '@mui/material/Collapse';
 import { isBlank } from '../../utils/string';
+import { nou } from '../../utils/object';
 
 export type PasswordStrengthDisplayClassKey =
   | 'container'
@@ -174,12 +174,18 @@ export function PasswordStrengthDisplay(props: PasswordStrengthDisplayProps) {
   const { value, passwordRequirementsMinComplexity, onValidStateChanged, sxs } = props;
   const sx = getStyles(sxs);
   const minScore = getDisplayScore(passwordRequirementsMinComplexity);
-  const password = zxcvbn(value);
-  const passwordScore = value === '' ? 0 : getDisplayScore(password.score);
+  const [password, setPassword] = useState(null);
+  const passwordScore = value === '' || nou(password) ? 0 : getDisplayScore(password.score);
   const { formatMessage } = useIntl();
 
   useEffect(() => {
-    onValidStateChanged(isBlank(value) ? null : password.score >= passwordRequirementsMinComplexity);
+    import('zxcvbn').then(({ default: zxcvbn }) => {
+      setPassword(zxcvbn(value));
+    });
+  }, [value]);
+
+  useEffect(() => {
+    onValidStateChanged(isBlank(value) ? null : password?.score >= passwordRequirementsMinComplexity);
   }, [onValidStateChanged, value, password, passwordRequirementsMinComplexity]);
 
   return (
@@ -241,15 +247,19 @@ export function PasswordStrengthDisplay(props: PasswordStrengthDisplayProps) {
       <Collapse in={passwordScore > 0 && passwordScore < minScore} sx={sx.feedbackContainer}>
         <Divider sx={sx.divider} />
         <Box style={{ textAlign: 'left' }}>
-          <Typography variant="body2">
-            {formatMessage(messages[password.score])}.{' '}
-            {password.feedback.warning ? `${password.feedback.warning}.` : ''}
-          </Typography>
-          {password?.feedback.suggestions.map((suggestion, i) => (
-            <Typography variant="body2" key={i}>
-              - {suggestion}
-            </Typography>
-          ))}
+          {password && (
+            <>
+              <Typography variant="body2">
+                {formatMessage(messages[password.score])}.{' '}
+                {password.feedback.warning ? `${password.feedback.warning}.` : ''}
+              </Typography>
+              {password?.feedback.suggestions.map((suggestion, i) => (
+                <Typography variant="body2" key={i}>
+                  - {suggestion}
+                </Typography>
+              ))}
+            </>
+          )}
         </Box>
       </Collapse>
     </Box>

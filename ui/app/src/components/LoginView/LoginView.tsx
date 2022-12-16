@@ -46,7 +46,7 @@ import LanguageRounded from '@mui/icons-material/LanguageRounded';
 import Menu from '@mui/material/Menu';
 import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
-import { PasswordStrengthDisplay } from '../PasswordStrengthDisplay';
+import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 
 export interface SystemLang {
   id: string;
@@ -345,6 +345,7 @@ function ResetView(props: SubViewProps) {
   const [isValid, setValid] = useState<boolean>(null);
   const [passwordsMismatch, setPasswordMismatch] = useState(false);
   const [error, setError] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
   useEffect(() => {
     if (isBlank(newPasswordConfirm) || newPasswordConfirm === newPassword) {
       setPasswordMismatch(false);
@@ -395,7 +396,10 @@ function ResetView(props: SubViewProps) {
             />
           }
         />
-        <PasswordStrengthDisplay
+        <PasswordStrengthDisplayPopper
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          placement="bottom"
           value={newPassword}
           passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
           onValidStateChanged={setValid}
@@ -408,6 +412,9 @@ function ResetView(props: SubViewProps) {
           onChange={(e) => setNewPassword(e.target.value)}
           className={classes.resetPassword}
           placeholder={formatMessage(translations.resetPasswordFieldPlaceholderLabel)}
+          onFocus={(e) => setAnchorEl(e.target)}
+          onBlur={() => setAnchorEl(null)}
+          inputProps={{ autoComplete: 'new-password' }}
         />
         <PasswordTextField
           id="resetFormPasswordConfirmField"
