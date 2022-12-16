@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Box from '@mui/material/Box';
@@ -177,11 +177,15 @@ export function PasswordStrengthDisplay(props: PasswordStrengthDisplayProps) {
   const [password, setPassword] = useState(null);
   const passwordScore = value === '' || nou(password) ? 0 : getDisplayScore(password.score);
   const { formatMessage } = useIntl();
+  const onChangeTimeoutRef = useRef<any>(null);
 
   useEffect(() => {
-    import('zxcvbn').then(({ default: zxcvbn }) => {
-      setPassword(zxcvbn(value));
-    });
+    clearTimeout(onChangeTimeoutRef.current);
+    onChangeTimeoutRef.current = setTimeout(() => {
+      import('zxcvbn').then(({ default: zxcvbn }) => {
+        setPassword(zxcvbn(value));
+      });
+    }, 200);
   }, [value]);
 
   useEffect(() => {
