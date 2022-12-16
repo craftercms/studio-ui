@@ -417,16 +417,27 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
               );
               YDom.getElementsByClassName('imgExists')[0].parentNode.classList.add('inc-zindex');
             } else {
-              CrafterCMSNext.services.content.uploadDataUrl(site, file, imageData.meta.path, '_csrf').subscribe({
-                next: (response) => {
-                  if (response.type === 'complete') {
-                    cropImageCallBack.success(response.payload.body);
+              const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl);
+              CrafterCMSNext.services.content
+                .uploadDataUrl(
+                  site,
+                  {
+                    dataUrl,
+                    name: `${newName}.${ext}`
+                  },
+                  imageData.relativeUrl.replace(fileName, ''),
+                  '_csrf'
+                )
+                .subscribe({
+                  next: (response) => {
+                    if (response.type === 'complete') {
+                      cropImageCallBack.success(response.payload.body);
+                    }
+                  },
+                  error: (error) => {
+                    cropImageCallBack.failure(error);
                   }
-                },
-                error: (error) => {
-                  cropImageCallBack.failure(error);
-                }
-              });
+                });
             }
           },
           failure: function () {}
@@ -434,16 +445,19 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 
         CStudioAuthoring.Service.contentExists(imageData.renameRelativeUrl, contextExistsCallBack);
       } else {
-        CrafterCMSNext.services.content.uploadDataUrl(site, file, imageData.meta.path, '_csrf').subscribe({
-          next: (response) => {
-            if (response.type === 'complete') {
-              cropImageCallBack.success(response.payload.body);
+        const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl);
+        CrafterCMSNext.services.content
+          .uploadDataUrl(site, { dataUrl, name: fileName }, imageData.relativeUrl.replace(fileName, ''), '_csrf')
+          .subscribe({
+            next: (response) => {
+              if (response.type === 'complete') {
+                cropImageCallBack.success(response.payload.body);
+              }
+            },
+            error: (error) => {
+              cropImageCallBack.failure(error);
             }
-          },
-          error: (error) => {
-            cropImageCallBack.failure(error);
-          }
-        });
+          });
       }
     }
 
