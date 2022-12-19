@@ -19,6 +19,9 @@ var YDom = YAHOO.util.Dom;
 //                YConnect.initHeader("Content-Type", "application/xml; charset=utf-8");
 //                YConnect.
 var YEvent = YAHOO.util.Event;
+const i18n = CrafterCMSNext.i18n;
+const formatMessage = i18n.intl.formatMessage;
+const formEngineMessages = i18n.messages.formEngineMessages;
 
 CStudioAuthoring.Dialogs = CStudioAuthoring.Dialogs || {};
 
@@ -387,63 +390,93 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         }
       };
 
+      const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl),
+        re = /(?:\.([^.]+))?$/,
+        ext = re.exec(imageData.relativeUrl)[1]; // get original image extension
+
       if (newName) {
-        var re = /(?:\.([^.]+))?$/,
-          ext = re.exec(imageData.relativeUrl)[1], // get original image extension
-          relativeUrlLastSlashIndex = imageData.relativeUrl.lastIndexOf('/'),
-          previewUrlLastSlashIndex = imageData.previewUrl.lastIndexOf('/'),
-          relativeFolder = imageData.relativeUrl.substring(0, relativeUrlLastSlashIndex + 1),
-          previewFolder = imageData.previewUrl.substring(0, previewUrlLastSlashIndex + 1);
+        const createNewNameFile = () => {
+          var relativeUrlLastSlashIndex = imageData.relativeUrl.lastIndexOf('/'),
+            previewUrlLastSlashIndex = imageData.previewUrl.lastIndexOf('/'),
+            relativeFolder = imageData.relativeUrl.substring(0, relativeUrlLastSlashIndex + 1),
+            previewFolder = imageData.previewUrl.substring(0, previewUrlLastSlashIndex + 1);
 
-        path = imageData.relativeUrl + '&newname=' + newName + '.' + ext;
-        imageData.renameRelativeUrl = relativeFolder + newName + '.' + ext;
-        imageData.renamePreviewUrl = previewFolder + newName + '.' + ext;
+          path = imageData.relativeUrl + '&newname=' + newName + '.' + ext;
+          imageData.renameRelativeUrl = relativeFolder + newName + '.' + ext;
+          imageData.renamePreviewUrl = previewFolder + newName + '.' + ext;
 
-        var contextExistsCallBack = {
-          site: site,
-          path: path,
-          imageInformation: imageInformation,
-          cropImageCallBack: cropImageCallBack,
-          exists: function (exists) {
-            if (exists) {
-              CStudioAuthoring.Operations.showSimpleDialog(
-                'error-dialog',
-                CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                'Notification',
-                'Image filename already exists',
-                null, // use default button
-                YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                'studioDialog imgExists'
-              );
-              YDom.getElementsByClassName('imgExists')[0].parentNode.classList.add('inc-zindex');
-            } else {
-              const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl);
-              CrafterCMSNext.services.content
-                .uploadDataUrl(
-                  site,
-                  {
-                    dataUrl,
-                    name: `${newName}.${ext}`
-                  },
-                  imageData.relativeUrl.replace(fileName, ''),
-                  '_csrf'
-                )
-                .subscribe({
-                  next: (response) => {
-                    if (response.type === 'complete') {
-                      cropImageCallBack.success(response.payload.body);
+          var contextExistsCallBack = {
+            site: site,
+            path: path,
+            imageInformation: imageInformation,
+            cropImageCallBack: cropImageCallBack,
+            exists: function (exists) {
+              if (exists) {
+                CStudioAuthoring.Operations.showSimpleDialog(
+                  'error-dialog',
+                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                  'Notification',
+                  'Image filename already exists',
+                  null, // use default button
+                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                  'studioDialog imgExists'
+                );
+                YDom.getElementsByClassName('imgExists')[0].parentNode.classList.add('inc-zindex');
+              } else {
+                const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl);
+                CrafterCMSNext.services.content
+                  .uploadDataUrl(
+                    site,
+                    {
+                      dataUrl,
+                      name: `${newName}.${ext}`
+                    },
+                    imageData.relativeUrl.replace(fileName, ''),
+                    '_csrf'
+                  )
+                  .subscribe({
+                    next: (response) => {
+                      if (response.type === 'complete') {
+                        cropImageCallBack.success(response.payload.body);
+                      }
+                    },
+                    error: (error) => {
+                      cropImageCallBack.failure(error);
                     }
-                  },
-                  error: (error) => {
-                    cropImageCallBack.failure(error);
-                  }
-                });
-            }
-          },
-          failure: function () {}
+                  });
+              }
+            },
+            failure: function () {}
+          };
+
+          CStudioAuthoring.Service.contentExists(imageData.renameRelativeUrl, contextExistsCallBack);
         };
 
-        CStudioAuthoring.Service.contentExists(imageData.renameRelativeUrl, contextExistsCallBack);
+        CrafterCMSNext.services.sites
+          .validateActionPolicy(CStudioAuthoringContext.site, {
+            type: 'CREATE',
+            target: `${imageData.relativeUrl.replace(fileName, '')}${newName}.${ext}`
+          })
+          .subscribe(({ allowed, modifiedValue, target }) => {
+            if (allowed) {
+              if (modifiedValue) {
+                CStudioAuthoring.Utils.showConfirmDialog(
+                  null,
+                  formatMessage(formEngineMessages.createPolicy, { originalPath: fileName, path: modifiedValue }),
+                  () => {
+                    createNewNameFile();
+                  }
+                );
+              } else {
+                createNewNameFile();
+              }
+            } else {
+              CStudioAuthoring.Utils.showConfirmDialog(
+                null,
+                formatMessage(formEngineMessages.policyError, { path: target })
+              );
+            }
+          });
       } else {
         const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl);
         CrafterCMSNext.services.content
