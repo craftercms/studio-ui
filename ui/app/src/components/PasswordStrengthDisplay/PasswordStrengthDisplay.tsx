@@ -183,14 +183,12 @@ export function PasswordStrengthDisplay(props: PasswordStrengthDisplayProps) {
     clearTimeout(onChangeTimeoutRef.current);
     onChangeTimeoutRef.current = setTimeout(() => {
       import('zxcvbn').then(({ default: zxcvbn }) => {
-        setPassword(zxcvbn(value));
+        const pass = zxcvbn(value);
+        setPassword(pass);
+        onValidStateChanged(isBlank(value) ? null : pass.score >= passwordRequirementsMinComplexity);
       });
     }, 200);
-  }, [value]);
-
-  useEffect(() => {
-    onValidStateChanged(isBlank(value) ? null : password?.score >= passwordRequirementsMinComplexity);
-  }, [onValidStateChanged, value, password, passwordRequirementsMinComplexity]);
+  }, [value, onValidStateChanged, passwordRequirementsMinComplexity]);
 
   return (
     <Box sx={sx.container}>
