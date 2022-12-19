@@ -213,7 +213,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   }, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword, refs]);
 
   return (
-    <form className={classes.form}>
+    <section className={classes.form}>
       <DialogBody className={classes.dialogBody}>
         <Grid container spacing={2}>
           <Grid item sm={6}>
@@ -327,7 +327,10 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                   onChange={(e) => onChangeValue('password', e.target.value)}
                   onFocus={(e) => setAnchorEl(e.target.parentElement)}
                   onBlur={() => setAnchorEl(null)}
-                  inputProps={{ maxLength: USER_PASSWORD_MAX_LENGTH, autoComplete: 'new-password' }}
+                  inputProps={{
+                    maxLength: USER_PASSWORD_MAX_LENGTH,
+                    autoComplete: 'new-password'
+                  }}
                 />
               </Grid>
               <Grid item sm={6}>
@@ -363,6 +366,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
         <PasswordStrengthDisplayPopper
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
+          placement="top"
           value={newUser.password}
           passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
           onValidStateChanged={setValidPassword}
@@ -376,7 +380,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>
-    </form>
+    </section>
   );
 }
 

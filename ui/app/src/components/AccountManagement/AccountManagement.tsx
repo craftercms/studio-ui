@@ -219,7 +219,7 @@ export function AccountManagement(props: AccountManagementProps) {
       <PasswordStrengthDisplayPopper
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
-        placement="bottom"
+        placement="top"
         value={newPassword}
         passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         onValidStateChanged={setValidPassword}

@@ -113,7 +113,7 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
         <PasswordStrengthDisplayPopper
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
-          placement="bottom-start"
+          placement="top"
           value={newPassword}
           passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
           onValidStateChanged={setValid}

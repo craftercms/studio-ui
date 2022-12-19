@@ -399,7 +399,7 @@ function ResetView(props: SubViewProps) {
         <PasswordStrengthDisplayPopper
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
-          placement="bottom"
+          placement="top"
           value={newPassword}
           passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
           onValidStateChanged={setValid}
