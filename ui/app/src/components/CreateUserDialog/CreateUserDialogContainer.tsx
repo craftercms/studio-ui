@@ -213,7 +213,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   }, [newUser, passwordConfirm, onSubmittingAndOrPendingChange, validPassword, refs]);
 
   return (
-    <section className={classes.form}>
+    <form className={classes.form}>
       <DialogBody className={classes.dialogBody}>
         <Grid container spacing={2}>
           <Grid item sm={6}>
@@ -380,7 +380,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </PrimaryButton>
       </DialogFooter>
-    </section>
+    </form>
   );
 }
 
