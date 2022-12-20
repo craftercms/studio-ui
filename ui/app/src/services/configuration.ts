@@ -62,7 +62,7 @@ export function fetchConfigurationJSON(
   return fetchConfigurationXML(site, configPath, module, environment).pipe(
     map((conf) => {
       return deserialize(conf, {
-        parseNodeValue: false,
+        parseTagValue: false,
         tagValueProcessor: (value) =>
           value
             .replace(/&lt;/g, '<')

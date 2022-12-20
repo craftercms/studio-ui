@@ -135,7 +135,7 @@
     "autosuggest-highlight": "^3.2.1",
     "clsx": "^1.1.1",
     "date-fns": "^2.25.0",
-    "fast-xml-parser": "3.21.1",
+    "fast-xml-parser": "^4.0.12",
     "graphiql": "^1.9.9",
     "graphiql-explorer": "^0.9.0",
     "graphql": "^16.5.0",
