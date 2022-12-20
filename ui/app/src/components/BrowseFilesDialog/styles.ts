@@ -18,11 +18,16 @@ import { makeStyles } from 'tss-react/mui';
 
 export const useStyles = makeStyles()((theme) => ({
   dialogBody: {
-    minHeight: '60vh'
+    minHeight: '60vh',
+    padding: 0
+  },
+  dialogContent: {
+    overflow: 'hidden'
   },
   searchRoot: {
-    marginLeft: 'auto',
-    maxWidth: '250px'
+    maxWidth: '200px',
+    background: 'none',
+    border: 'none'
   },
   cardsContainer: {
     display: 'grid',
@@ -38,10 +43,14 @@ export const useStyles = makeStyles()((theme) => ({
   },
   leftWrapper: {
     width: '270px',
-    paddingRight: '16px'
+    padding: '16px',
+    overflow: 'auto',
+    rowGap: theme.spacing(1)
   },
   rightWrapper: {
-    flexGrow: 1
+    flexGrow: 1,
+    padding: '16px',
+    overflow: 'auto'
   },
   currentPath: {
     '& input': {
@@ -54,5 +63,20 @@ export const useStyles = makeStyles()((theme) => ({
       fontSize: '1.25rem',
       lineHeight: '1.6'
     }
+  },
+  semiBold: {
+    fontWeight: 600
+  },
+  actionsBar: {
+    paddingLeft: theme.spacing(1),
+    marginBottom: theme.spacing(3),
+    borderRadius: 4
+  },
+  actionsBarDivider: {
+    marginTop: '-11px',
+    marginBottom: '-11px'
+  },
+  sortingSelect: {
+    minWidth: '180px'
   }
 }));

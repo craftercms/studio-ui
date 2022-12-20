@@ -65,12 +65,14 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [currentPath, setCurrentPath] = useState(browsePath);
   const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
   const [browsePathExists, setBrowsePathExists] = useState(false);
+  const [sortKeys, setSortKeys] = useState([]);
 
   const fetchItems = useCallback(
     () =>
       search(site, { ...searchParameters, path: `${currentPath}/[^/]+` }).subscribe((response) => {
         setTotal(response.total);
         setItems(response.items);
+        setSortKeys(response.facets.map((facet) => facet.name));
       }),
     [searchParameters, currentPath, site]
   );
@@ -173,9 +175,12 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       selectedCard={selectedCard}
       selectedArray={selectedArray}
       multiSelect={multiSelect}
+      searchParameters={searchParameters}
+      setSearchParameters={setSearchParameters}
       limit={searchParameters.limit}
       offset={searchParameters.offset}
       total={total}
+      sortKeys={sortKeys}
       onCardSelected={onCardSelected}
       onChangePage={onChangePage}
       onChangeRowsPerPage={onChangeRowsPerPage}

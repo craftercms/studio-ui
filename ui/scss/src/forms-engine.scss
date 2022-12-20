@@ -210,3 +210,12 @@ h6,
   color: #333 !important;
   border: 1px solid rgba(0, 0, 0, 0.23) !important;
 }
+
+// Styles to fix style conflicts between material-ui and bootstrap
+legend[class^="mui-"], hr.MuiDivider-root {
+  width: auto;
+}
+
+.MuiTooltip-popper {
+  z-index: 1500 !important;
+}
