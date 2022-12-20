@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
@@ -105,6 +105,7 @@ function DateTimePicker(props: DateTimePickerProps) {
     localeCode = 'en-US',
     dateTimeFormatOptions
   } = props;
+  const tz = useRef(timeZone);
   // Time picker control seems to always display in function of the time of the
   // browser's time zone but we display things in function of the selected time zone.
   // This causes some discrepancies between the time displayed on the field and the time
@@ -113,7 +114,15 @@ function DateTimePicker(props: DateTimePickerProps) {
   const internalDate = useMemo(() => {
     const date = value ? new Date(value) : new Date();
     const localOffset = moment().format().substr(-6);
-    const dateWithoutOffset = moment(date).tz(timeZone).format().substr(0, 19);
+    let dateWithoutOffset;
+    if (tz.current !== timeZone) {
+      tz.current = timeZone;
+      dateWithoutOffset = moment(date).tz(timeZone).format().substr(0, 19);
+    } else {
+      // If a time zone has been set, and date or time changes, it shouldn't update the date/time according to the
+      // timezone
+      dateWithoutOffset = (value as string).substr(0, 19);
+    }
     return new Date(`${dateWithoutOffset}${localOffset}`);
   }, [value, timeZone]);
   const timeZones = getTimezones();
