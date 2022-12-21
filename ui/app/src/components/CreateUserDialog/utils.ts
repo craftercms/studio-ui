@@ -18,7 +18,7 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 interface CreateUserDialogBase {
-  passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
 }
 
 export interface CreateUserDialogProps extends CreateUserDialogBase, EnhancedDialogProps {

@@ -49,7 +49,7 @@
           xsrfToken: '${_csrf.token}',
           xsrfParamName: '${_csrf.parameterName}',
           xsrfHeaderName: '${_csrf.headerName}',
-          passwordRequirementsRegex: '${passwordRequirementsRegex}'
+          passwordRequirementsMinComplexity: ${passwordRequirementsMinComplexity}
         })
       ),
       document.querySelector('#root')

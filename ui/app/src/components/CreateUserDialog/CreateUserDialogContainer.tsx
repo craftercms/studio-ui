@@ -22,9 +22,6 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import DialogBody from '../DialogBody/DialogBody';
 import TextField from '@mui/material/TextField';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
-import Popper from '@mui/material/Popper';
-import Paper from '@mui/material/Paper';
-import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
@@ -51,56 +48,9 @@ import {
 } from '../UserManagement/utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { showSystemNotification } from '../../state/actions/system';
+import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 
 const useStyles = makeStyles()((theme) => ({
-  popper: {
-    zIndex: theme.zIndex.modal,
-    [`&[data-popper-placement*="bottom"] [class*="-arrow"]`]: {
-      top: 0,
-      left: 0,
-      marginTop: '-0.71em',
-      marginLeft: 4,
-      marginRight: 4,
-      '&::before': {
-        transformOrigin: '0 100%'
-      }
-    },
-    [`&[data-popper-placement*="top"] [class*="-arrow"]`]: {
-      bottom: 0,
-      left: 0,
-      marginBottom: '-0.71em',
-      marginLeft: 4,
-      marginRight: 4,
-      '&::before': {
-        transformOrigin: '100% 0'
-      }
-    },
-    [`&[data-popper-placement*="right"] [class*="-arrow"]`]: {
-      left: 0,
-      marginLeft: '-0.71em',
-      height: '1em',
-      width: '0.71em',
-      marginTop: 4,
-      marginBottom: 4,
-      '&::before': {
-        transformOrigin: '100% 100%'
-      }
-    },
-    [`&[data-popper-placement*="left"] [class*="-arrow"]`]: {
-      right: 0,
-      marginRight: '-0.71em',
-      height: '1em',
-      width: '0.71em',
-      marginTop: 4,
-      marginBottom: 4,
-      '&::before': {
-        transformOrigin: '0 0'
-      }
-    }
-  },
-  paper: {
-    padding: '10px'
-  },
   arrow: {
     overflow: 'hidden',
     position: 'absolute',
@@ -142,7 +92,8 @@ const translations = defineMessages({
 });
 
 export function CreateUserDialogContainer(props: CreateUserDialogContainerProps) {
-  const { onClose, passwordRequirementsRegex, onCreateSuccess, isSubmitting, onSubmittingAndOrPendingChange } = props;
+  const { onClose, passwordRequirementsMinComplexity, onCreateSuccess, isSubmitting, onSubmittingAndOrPendingChange } =
+    props;
   const [newUser, setNewUser] = useSpreadState({
     firstName: '',
     lastName: '',
@@ -159,7 +110,6 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
   const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const arrowRef = useRef();
   const selectedGroupsRef = useRef([]);
   const functionRefs = useUpdateRefs({
     onSubmittingAndOrPendingChange
@@ -211,10 +161,6 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
         setSubmitted(false);
       }
     }
-  };
-
-  const isInvalidPassword = (password) => {
-    return !validPassword && password !== '';
   };
 
   const validateRequiredField = (field: string) => {
@@ -370,18 +316,21 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                   required
                   fullWidth
                   value={newUser.password}
-                  error={validateRequiredField(newUser.password) || isInvalidPassword(newUser.password)}
+                  error={validateRequiredField(newUser.password) || (newUser.password !== '' && !validPassword)}
                   helperText={
                     validateRequiredField(newUser.password) ? (
                       <FormattedMessage id="createUserDialog.passwordRequired" defaultMessage="Password is required." />
-                    ) : isInvalidPassword(newUser.password) ? (
+                    ) : newUser.password !== '' && !validPassword ? (
                       <FormattedMessage id="createUserDialog.passwordInvalid" defaultMessage="Password is invalid." />
                     ) : null
                   }
                   onChange={(e) => onChangeValue('password', e.target.value)}
-                  onFocus={(e) => setAnchorEl(e.target)}
+                  onFocus={(e) => setAnchorEl(e.target.parentElement)}
                   onBlur={() => setAnchorEl(null)}
-                  inputProps={{ maxLength: USER_PASSWORD_MAX_LENGTH }}
+                  inputProps={{
+                    maxLength: USER_PASSWORD_MAX_LENGTH,
+                    autoComplete: 'new-password'
+                  }}
                 />
               </Grid>
               <Grid item sm={6}>
@@ -414,31 +363,14 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
             <UserGroupMembershipEditor onChange={onSelectedGroupsChanged} />
           </Grid>
         </Grid>
-        <Popper
-          disablePortal
+        <PasswordStrengthDisplayPopper
           open={Boolean(anchorEl)}
-          className={classes.popper}
           anchorEl={anchorEl}
-          modifiers={[
-            {
-              name: 'arrow',
-              enabled: true,
-              options: {
-                element: arrowRef.current
-              }
-            }
-          ]}
-        >
-          <Paper className={classes.paper}>
-            <PasswordRequirementsDisplay
-              value={newUser.password}
-              onValidStateChanged={setValidPassword}
-              formatMessage={formatMessage}
-              passwordRequirementsRegex={passwordRequirementsRegex}
-            />
-          </Paper>
-          <div className={classes.arrow} ref={arrowRef} />
-        </Popper>
+          placement="top"
+          value={newUser.password}
+          passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
+          onValidStateChanged={setValidPassword}
+        />
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={(e) => onClose(e, null)}>

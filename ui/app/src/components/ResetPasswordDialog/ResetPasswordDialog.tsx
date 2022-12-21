@@ -28,14 +28,14 @@ import { setPassword } from '../../services/users';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import PasswordRequirementsDisplay from '../PasswordRequirementsDisplay';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
+import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 
 interface ResetPasswordDialogProps {
   open: boolean;
   onClose(): void;
   user: User;
-  passwordRequirementsRegex: string;
+  passwordRequirementsMinComplexity: number;
 }
 
 const translations = defineMessages({
@@ -55,10 +55,11 @@ export function ResetPasswordDialog(props: ResetPasswordDialogProps) {
 }
 
 function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
-  const { onClose, user, passwordRequirementsRegex } = props;
+  const { onClose, user, passwordRequirementsMinComplexity } = props;
   const [newPassword, setNewPassword] = useState('');
   const [isValid, setValid] = useState<boolean>(null);
   const [updating, setUpdating] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
@@ -105,12 +106,17 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
           onChange={(e) => {
             setNewPassword(e.target.value);
           }}
+          onFocus={(e) => setAnchorEl(e.target)}
+          onBlur={() => setAnchorEl(null)}
+          inputProps={{ autoComplete: 'new-password' }}
         />
-        <PasswordRequirementsDisplay
+        <PasswordStrengthDisplayPopper
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          placement="top"
           value={newPassword}
+          passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
           onValidStateChanged={setValid}
-          formatMessage={formatMessage}
-          passwordRequirementsRegex={passwordRequirementsRegex}
         />
       </DialogBody>
       <DialogFooter>
