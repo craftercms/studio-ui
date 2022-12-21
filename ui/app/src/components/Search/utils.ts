@@ -72,9 +72,14 @@ export interface URLDrivenSearchProps {
   onAcceptSelection?(items: DetailedItem[]): any;
 }
 
+export interface SearchParameters extends Partial<ElasticParams> {
+  path?: string;
+}
+
 export interface SearchProps {
   mode?: 'default' | 'select';
   embedded?: boolean;
+  parameters?: SearchParameters;
   onClose?(): void;
   onSelect?(path: string, selected: boolean): any;
   onAcceptSelection?(items: DetailedItem[]): any;
@@ -416,4 +421,9 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
     onHeaderButtonClick,
     onSelectedPathChanges
   };
+};
+
+export const getCheckedFilter = (filter) => {
+  // if (Array.isArray(filter))
+  // return {};
 };

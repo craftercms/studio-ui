@@ -22,7 +22,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ElasticParams, Filter } from '../../models/Search';
 import { initialSearchParameters, setCheckedParameterFromURL, URLDrivenSearchProps, useSearchState } from './utils';
-import SearchUI from './SearchUI';
+import SearchUI from '../SearchUI';
 import { UNDEFINED } from '../../utils/constants';
 
 export function URLDrivenSearch(props: URLDrivenSearchProps) {

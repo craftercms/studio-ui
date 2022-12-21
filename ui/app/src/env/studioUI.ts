@@ -275,6 +275,7 @@ export const components = {
   ScheduledDashlet: lazy(() => import('../components/ScheduledDashlet')),
   Search: lazy(() => import('../components/Search')),
   SearchBar: lazy(() => import('../components/SearchBar')),
+  SearchUI: lazy(() => import('../components/SearchUI')),
   SecondaryButton: lazy(() => import('../components/SecondaryButton')),
   SetWorkflowStateDialog: lazy(() => import('../components/SetWorkflowStateDialog')),
   SingleFileUpload: lazy(() => import('../components/SingleFileUpload')),

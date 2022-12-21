@@ -220,6 +220,7 @@ export * from './RubbishBin';
 export * from './ScheduledDashlet';
 export * from './Search';
 export * from './SearchBar';
+export * from './SearchUI';
 export * from './SecondaryButton';
 export * from './SetWorkflowStateDialog';
 export * from './SingleFileUpload';

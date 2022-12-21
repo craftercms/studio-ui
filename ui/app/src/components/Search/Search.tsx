@@ -15,7 +15,7 @@
  */
 
 import { CheckedFilter, initialSearchParameters, SearchProps, useSearchState } from './utils';
-import SearchUI from './SearchUI';
+import SearchUI from '../SearchUI';
 import React, { useEffect, useMemo, useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -26,18 +26,22 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { reversePluckProps } from '../../utils/object';
 import LookupTable from '../../models/LookupTable';
 import { UNDEFINED } from '../../utils/constants';
+import useMount from '../../hooks/useMount';
 
 export function Search(props: SearchProps) {
-  const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
+  const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose, parameters } = props;
 
   // region State
   const [filters, setFilters] = useSpreadState({
-    sortBy: undefined,
-    sortOrder: undefined
+    sortBy: parameters?.sortBy ?? undefined,
+    sortOrder: parameters?.sortOrder ?? undefined
   });
   const [keyword, setKeyword] = useState('');
   const [checkedFilters, setCheckedFilters] = useState<LookupTable<CheckedFilter>>({});
-  const [searchParameters, setSearchParameters] = useSpreadState({ ...initialSearchParameters });
+  const [searchParameters, setSearchParameters] = useSpreadState({
+    ...initialSearchParameters,
+    ...parameters
+  });
   // endregion
 
   // region Hooks
@@ -69,6 +73,23 @@ export function Search(props: SearchProps) {
   } = useSearchState({
     searchParameters,
     onSelect
+  });
+
+  useMount(() => {
+    // Set initial filters coming from props to checkedFilters
+    if (parameters?.filters) {
+      const newCheckedFilters = {};
+      Object.entries(parameters.filters).forEach(([key, filter]: [string, any]) => {
+        if (Array.isArray(filter)) {
+          newCheckedFilters[key] = filter.reduce((checked, key) => ({ ...checked, [key]: true }), {});
+        } else if (filter.date) {
+          newCheckedFilters[key] = `${filter.min ?? ''}TODATE${filter.max ?? ''}ID${filter.id}`;
+        } else {
+          newCheckedFilters[key] = `${filter.min ?? ''}TO${filter.max ?? ''}`;
+        }
+      });
+      setCheckedFilters(newCheckedFilters);
+    }
   });
   // endregion
 
