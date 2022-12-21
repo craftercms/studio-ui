@@ -35,7 +35,7 @@
 
     <#assign path="/studio/static-assets/libs/" />
     <script src="${path}momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="${path}momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="${path}momentjs/moment-timezone-with-data-2000-2030.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
     <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 

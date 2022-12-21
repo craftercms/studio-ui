@@ -72,7 +72,7 @@
     <script src="/studio/static-assets/libs/ng-pattern-restrict/ng-pattern-restrict.min.js"></script>
     <script src="/studio/static-assets/scripts/dirPagination.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/momentjs/moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
-    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
+    <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2000-2030.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/libs/angular-moment/angular-moment.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/components/cstudio-common/ace/ace.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
     <script src="/studio/static-assets/scripts/main.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
