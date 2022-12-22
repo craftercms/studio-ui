@@ -63,7 +63,7 @@ export function fetchConfigurationJSON(
     map((conf) => {
       return deserialize(conf, {
         parseTagValue: false,
-        tagValueProcessor: (value) =>
+        tagValueProcessor: (tag, value) =>
           value
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
