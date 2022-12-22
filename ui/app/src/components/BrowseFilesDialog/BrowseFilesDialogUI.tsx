@@ -101,7 +101,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
               <Toolbar disableGutters variant="dense">
                 <Box sx={{ flexGrow: 1, display: 'flex' }}>
                   <Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
-                    <IconButton onClick={onRefresh} sx={{ height: 40 }}>
+                    <IconButton onClick={onRefresh}>
                       <RefreshIcon />
                     </IconButton>
                   </Tooltip>
