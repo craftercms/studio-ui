@@ -26,8 +26,13 @@ export const useStyles = makeStyles()((theme) => ({
   },
   searchRoot: {
     maxWidth: '200px',
-    background: 'none',
-    border: 'none'
+    background: 'none !important',
+    border: 'none !important',
+    borderRadius: 0,
+    boxShadow: 'none'
+  },
+  searchInput: {
+    padding: '8px 5px'
   },
   cardsContainer: {
     display: 'grid',
@@ -73,8 +78,8 @@ export const useStyles = makeStyles()((theme) => ({
     borderRadius: 4
   },
   actionsBarDivider: {
-    marginTop: '-11px',
-    marginBottom: '-11px'
+    marginTop: '-3px',
+    marginBottom: '-3px'
   },
   sortingSelect: {
     minWidth: '180px'
