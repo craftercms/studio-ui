@@ -202,7 +202,7 @@ export function renderActivityTimestamp(timestamp: string, locale: GlobalState['
   const date = new Date(timestamp).getTime();
   return now - date < 3.6e7
     ? moment(date).fromNow()
-    : asLocalizedDateTime(date, locale.localeCode, locale.dateTimeFormatOptions);
+    : asLocalizedDateTime(timestamp, locale.localeCode, locale.dateTimeFormatOptions);
 }
 
 export const activityNameLookup: Record<Activities | 'ALL', any> = {
