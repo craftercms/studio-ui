@@ -997,6 +997,15 @@ export const openItemEditor = (
   if (type === 'form') {
     dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, onSaveSuccess }));
   } else {
-    dispatch(showCodeEditorDialog({ site: siteId, authoringBase, path: item.path, type, onSuccess: onSaveSuccess }));
+    dispatch(
+      showCodeEditorDialog({
+        site: siteId,
+        authoringBase,
+        path: item.path,
+        type,
+        mode: getEditorMode(item.mimeType),
+        onSuccess: onSaveSuccess
+      })
+    );
   }
 };
