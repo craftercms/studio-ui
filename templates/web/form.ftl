@@ -52,7 +52,7 @@
   <script src="/studio/static-assets/components/cstudio-components/loader.js"></script>
 
   <script src="/studio/static-assets/libs/momentjs/moment.min.js"></script>
-  <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2012-2022.min.js"></script>
+  <script src="/studio/static-assets/libs/momentjs/moment-timezone-with-data-2000-2030.min.js"></script>
 
   <script>document.domain = "${Request.serverName}";</script>
 
