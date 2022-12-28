@@ -55,7 +55,7 @@ const renderExpiredItems = (items: ExpiredItem[], locale: GlobalState['uiConfig'
               id="expiringDashlet.expiredOn"
               defaultMessage="Expiration on {date}"
               values={{
-                date: asLocalizedDateTime(item.expireDateTime, locale.localeCode, locale.dateTimeFormatOptions)
+                date: asLocalizedDateTime(item.expiredDateTime, locale.localeCode, locale.dateTimeFormatOptions)
               }}
             />
           </Typography>

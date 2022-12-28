@@ -217,7 +217,7 @@ export function fetchPublishingHistoryPackageItems(siteId: string, packageId: st
 export interface ExpiredItem {
   itemName: string;
   itemPath: string;
-  expireDateTime: string;
+  expiredDateTime: string;
 }
 
 export function fetchExpired(siteId: string, options?: PaginationOptions): Observable<ExpiredItem[]> {
