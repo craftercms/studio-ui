@@ -422,8 +422,3 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
     onSelectedPathChanges
   };
 };
-
-export const getCheckedFilter = (filter) => {
-  // if (Array.isArray(filter))
-  // return {};
-};
