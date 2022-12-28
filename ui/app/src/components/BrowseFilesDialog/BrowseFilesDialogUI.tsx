@@ -47,6 +47,7 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Typography from '@mui/material/Typography';
+import { inputBaseClasses } from '@mui/material/InputBase';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -97,7 +98,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
           </Box>
           <section className={classes.rightWrapper}>
             <Paper className={classes.actionsBar}>
-              <Toolbar disableGutters>
+              <Toolbar disableGutters variant="dense">
                 <Box sx={{ flexGrow: 1, display: 'flex' }}>
                   <Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
                     <IconButton onClick={onRefresh}>
@@ -117,7 +118,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                     onChange={handleSearchKeyword}
                     showDecoratorIcon
                     showActionButton={Boolean(keyword)}
-                    classes={{ root: classes.searchRoot }}
+                    classes={{ root: classes.searchRoot, inputInput: classes.searchInput }}
                   />
                   <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
                   <Button
@@ -127,7 +128,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                     aria-expanded={sortMenuOpen ? 'true' : undefined}
                     onClick={() => setSortMenuOpen(!sortMenuOpen)}
                     ref={buttonRef}
-                    sx={{ ml: 1, mr: 2 }}
+                    sx={{ ml: 1, mr: 1 }}
                     startIcon={<FilterListIcon />}
                   >
                     <FormattedMessage id="words.sorting" defaultMessage="Sorting" />
@@ -219,7 +220,15 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                 <Box sx={{ flexGrow: 0 }}>
                   {items && (
                     <Pagination
-                      sxs={{ root: { marginRight: 'auto' } }}
+                      sxs={{
+                        root: {
+                          [`.${inputBaseClasses.root}`]: {
+                            marginRight: (theme) => theme.spacing(1),
+                            backgroundColor: (theme) =>
+                              theme.palette.background[theme.palette.mode === 'dark' ? 'default' : 'paper']
+                          }
+                        }
+                      }}
                       count={total}
                       rowsPerPage={limit}
                       page={Math.ceil(offset / limit)}
