@@ -72,15 +72,18 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     },
     [setState, site]
   );
-  const onOptionClicked = (option) =>
-    itemActionDispatcher({
+  const onOptionClicked = (option) => {
+    const clickedItems = items.filter((item) => selected[item.id]).map((item) => parseSandBoxItemToDetailedItem(item));
+    return itemActionDispatcher({
       site,
       authoringBase,
       dispatch,
       formatMessage,
       option,
-      item: items.filter((item) => selected[item.id]).map((item) => parseSandBoxItemToDetailedItem(item))
+      item: clickedItems.length > 1 ? clickedItems : clickedItems[0]
     });
+  };
+
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
