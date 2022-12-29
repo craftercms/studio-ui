@@ -114,15 +114,7 @@ function DateTimePicker(props: DateTimePickerProps) {
   const internalDate = useMemo(() => {
     const date = value ? new Date(value) : new Date();
     const localOffset = moment().format().substr(-6);
-    let dateWithoutOffset;
-    if (tz.current !== timeZone) {
-      tz.current = timeZone;
-      dateWithoutOffset = moment(date).tz(timeZone).format().substr(0, 19);
-    } else {
-      // If a time zone has been set, and date or time changes, it shouldn't update the date/time according to the
-      // timezone
-      dateWithoutOffset = (value as string).substr(0, 19);
-    }
+    const dateWithoutOffset = moment(date).tz(timeZone).format().substr(0, 19);
     return new Date(`${dateWithoutOffset}${localOffset}`);
   }, [value, timeZone]);
   const timeZones = getTimezones();
