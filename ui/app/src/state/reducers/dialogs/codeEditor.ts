@@ -28,7 +28,6 @@ import { changeSite } from '../../actions/sites';
 
 const initialState: CodeEditorDialogStateProps = commonDialogProps({
   path: null,
-  mode: null,
   contentType: null,
   readonly: false,
   isFullScreen: false,

@@ -22,7 +22,7 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface CodeEditorDialogBaseProps {
   path: string;
-  mode: string;
+  mode?: string;
   contentType?: string;
   readonly?: boolean;
 }
