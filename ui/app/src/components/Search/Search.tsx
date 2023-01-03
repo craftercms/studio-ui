@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CheckedFilter, initialSearchParameters, SearchProps, useSearchState } from './utils';
-import SearchUI from './SearchUI';
+import { CheckedFilter, initialSearchParameters, SearchProps, serializeSearchFilters, useSearchState } from './utils';
+import SearchUI from '../SearchUI';
 import React, { useEffect, useMemo, useState } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -26,18 +26,29 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { reversePluckProps } from '../../utils/object';
 import LookupTable from '../../models/LookupTable';
 import { UNDEFINED } from '../../utils/constants';
+import useMount from '../../hooks/useMount';
 
 export function Search(props: SearchProps) {
-  const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
+  const {
+    mode = 'default',
+    onSelect,
+    embedded = false,
+    onAcceptSelection,
+    onClose,
+    initialParameters: initialParametersProp
+  } = props;
 
   // region State
   const [filters, setFilters] = useSpreadState({
-    sortBy: undefined,
-    sortOrder: undefined
+    sortBy: initialParametersProp?.sortBy,
+    sortOrder: initialParametersProp?.sortOrder
   });
   const [keyword, setKeyword] = useState('');
   const [checkedFilters, setCheckedFilters] = useState<LookupTable<CheckedFilter>>({});
-  const [searchParameters, setSearchParameters] = useSpreadState({ ...initialSearchParameters });
+  const [searchParameters, setSearchParameters] = useSpreadState({
+    ...initialSearchParameters,
+    ...initialParametersProp
+  });
   // endregion
 
   // region Hooks
@@ -69,6 +80,11 @@ export function Search(props: SearchProps) {
   } = useSearchState({
     searchParameters,
     onSelect
+  });
+
+  useMount(() => {
+    // Set initial filters coming from props to checkedFilters
+    setCheckedFilters(serializeSearchFilters(initialParametersProp?.filters));
   });
   // endregion
 

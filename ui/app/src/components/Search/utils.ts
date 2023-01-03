@@ -72,9 +72,14 @@ export interface URLDrivenSearchProps {
   onAcceptSelection?(items: DetailedItem[]): any;
 }
 
+export interface SearchParameters extends Partial<ElasticParams> {
+  path?: string;
+}
+
 export interface SearchProps {
   mode?: 'default' | 'select';
   embedded?: boolean;
+  initialParameters?: SearchParameters;
   onClose?(): void;
   onSelect?(path: string, selected: boolean): any;
   onAcceptSelection?(items: DetailedItem[]): any;
@@ -103,6 +108,51 @@ export const setCheckedParameterFromURL = (queryParams: Partial<ElasticParams>) 
   } else {
     return {};
   }
+};
+
+export const serializeSearchFilters = (filters: SearchParameters['filters']) => {
+  const serializedFilters = {};
+  if (filters) {
+    Object.entries(filters).forEach(([key, filter]: [string, any]) => {
+      if (Array.isArray(filter)) {
+        serializedFilters[key] = filter.reduce((checked, key) => ({ ...checked, [key]: true }), {});
+      } else if (filter.date) {
+        serializedFilters[key] = `${filter.min ?? ''}TODATE${filter.max ?? ''}ID${filter.id}`;
+      } else {
+        serializedFilters[key] = `${filter.min ?? ''}TO${filter.max ?? ''}`;
+      }
+    });
+  }
+  return serializedFilters;
+};
+
+export const deserializeSearchFilters = (filters) => {
+  const deserializedFilters = {};
+  if (filters) {
+    Object.keys(filters).forEach((key) => {
+      if (filters[key].includes('TODATE')) {
+        let id = filters[key].split('ID');
+        let range = id[0].split('TODATE');
+        deserializedFilters[key] = {
+          date: true,
+          id: id[1],
+          min: range[0] !== 'null' ? range[0] : null,
+          max: range[1] !== 'null' ? range[1] : null
+        };
+      } else if (filters[key].includes('TO')) {
+        let range = filters[key].split('TO');
+        deserializedFilters[key] = {
+          min: range[0] !== null && range[0] !== '' ? range[0] : null,
+          max: range[1] !== null && range[1] !== '' ? range[1] : null
+        };
+      } else if (typeof filters[key] === 'object' && !Array.isArray(filters[key])) {
+        deserializedFilters[key] = Object.keys(filters[key]);
+      } else {
+        deserializedFilters[key] = filters[key];
+      }
+    });
+  }
+  return deserializedFilters;
 };
 
 interface useSearchStateProps {

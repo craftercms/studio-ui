@@ -21,8 +21,14 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ElasticParams, Filter } from '../../models/Search';
-import { initialSearchParameters, setCheckedParameterFromURL, URLDrivenSearchProps, useSearchState } from './utils';
-import SearchUI from './SearchUI';
+import {
+  deserializeSearchFilters,
+  initialSearchParameters,
+  setCheckedParameterFromURL,
+  URLDrivenSearchProps,
+  useSearchState
+} from './utils';
+import SearchUI from '../SearchUI';
 import { UNDEFINED } from '../../utils/constants';
 
 export function URLDrivenSearch(props: URLDrivenSearchProps) {
@@ -172,24 +178,7 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
     };
     if (formatParameters.filters) {
       formatParameters.filters = JSON.parse(formatParameters.filters);
-      Object.keys(formatParameters.filters).forEach((key) => {
-        if (formatParameters.filters[key].includes('TODATE')) {
-          let id = formatParameters.filters[key].split('ID');
-          let range = id[0].split('TODATE');
-          formatParameters.filters[key] = {
-            date: true,
-            id: id[1],
-            min: range[0] !== 'null' ? range[0] : null,
-            max: range[1] !== 'null' ? range[1] : null
-          };
-        } else if (formatParameters.filters[key].includes('TO')) {
-          let range = formatParameters.filters[key].split('TO');
-          formatParameters.filters[key] = {
-            min: range[0] !== null && range[0] !== '' ? range[0] : null,
-            max: range[1] !== null && range[1] !== '' ? range[1] : null
-          };
-        }
-      });
+      formatParameters.filters = deserializeSearchFilters(formatParameters.filters);
     }
     return { ...initialSearchParameters, ...formatParameters };
   }
