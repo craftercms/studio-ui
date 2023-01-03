@@ -187,6 +187,7 @@ export function deserialize(xml: string | Node, options?: X2jOptionsOptional): a
     attributeNamePrefix: '',
     ignoreAttributes: false,
     htmlEntities: true,
+    ignoreDeclaration: true,
     ...options
   });
 
