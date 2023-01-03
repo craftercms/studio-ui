@@ -36,13 +36,11 @@ import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 
 export interface UserManagementProps {
-  passwordRequirementsRegex?: string;
+  passwordRequirementsMinComplexity?: number;
 }
 
 export function UserManagement(props: UserManagementProps) {
-  const {
-    passwordRequirementsRegex = '^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;/@#$%^&+=]))(?<minLength>.{8,})$'
-  } = props;
+  const { passwordRequirementsMinComplexity = 4 } = props;
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [fetching, setFetching] = useState(false);
@@ -184,7 +182,7 @@ export function UserManagement(props: UserManagementProps) {
         open={createUserDialogState.open}
         onCreateSuccess={onUserCreated}
         onClose={createUserDialogState.onClose}
-        passwordRequirementsRegex={passwordRequirementsRegex}
+        passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         isSubmitting={createUserDialogState.isSubmitting}
         isMinimized={createUserDialogState.isMinimized}
         hasPendingChanges={createUserDialogState.hasPendingChanges}
@@ -200,7 +198,7 @@ export function UserManagement(props: UserManagementProps) {
         isSubmitting={editUserDialogState.isSubmitting}
         isMinimized={editUserDialogState.isMinimized}
         hasPendingChanges={editUserDialogState.hasPendingChanges}
-        passwordRequirementsRegex={passwordRequirementsRegex}
+        passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         onWithPendingChangesCloseRequest={editUserDialogPendingChangesCloseRequest}
         onSubmittingAndOrPendingChange={editUserDialogState.onSubmittingAndOrPendingChange}
       />

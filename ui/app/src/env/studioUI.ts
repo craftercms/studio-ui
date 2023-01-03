@@ -220,6 +220,7 @@ export const components = {
   PagesSearchAhead: lazy(() => import('../components/PagesSearchAhead')),
   Pagination: lazy(() => import('../components/Pagination')),
   PasswordRequirementsDisplay: lazy(() => import('../components/PasswordRequirementsDisplay')),
+  PasswordStrengthDisplay: lazy(() => import('../components/PasswordStrengthDisplay')),
   PasswordTextField: lazy(() => import('../components/PasswordTextField')),
   PathNavigator: lazy(() => import('../components/PathNavigator')),
   PathNavigatorTree: lazy(() => import('../components/PathNavigatorTree')),

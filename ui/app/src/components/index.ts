@@ -165,6 +165,7 @@ export * from './PaddingModeSwitchListItem';
 export * from './PagesSearchAhead';
 export * from './Pagination';
 export * from './PasswordRequirementsDisplay';
+export * from './PasswordStrengthDisplay';
 export * from './PasswordTextField';
 export * from './PathNavigator';
 export * from './PathNavigatorTree';

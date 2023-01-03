@@ -28,7 +28,7 @@
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script>
   CrafterCMSNext.render('#root', 'Global', {
-    passwordRequirementsRegex: '${passwordRequirementsRegex?js_string}',
+    passwordRequirementsMinComplexity: ${passwordRequirementsMinComplexity},
     footerHtml: '${applicationContext.get("crafter.entitlementValidator").getDescription()}'
   }, false);
 </script>

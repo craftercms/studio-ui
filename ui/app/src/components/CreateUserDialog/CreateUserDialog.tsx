@@ -21,7 +21,8 @@ import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 
 export function CreateUserDialog(props: CreateUserDialogProps) {
-  const { passwordRequirementsRegex, onSubmittingAndOrPendingChange, isSubmitting, onCreateSuccess, ...rest } = props;
+  const { passwordRequirementsMinComplexity, onSubmittingAndOrPendingChange, isSubmitting, onCreateSuccess, ...rest } =
+    props;
   return (
     <EnhancedDialog
       title={<FormattedMessage id="CreateUserDialog.title" defaultMessage="Create User" />}
@@ -29,7 +30,7 @@ export function CreateUserDialog(props: CreateUserDialogProps) {
       {...rest}
     >
       <CreateUserDialogContainer
-        passwordRequirementsRegex={passwordRequirementsRegex}
+        passwordRequirementsMinComplexity={passwordRequirementsMinComplexity}
         onCreateSuccess={onCreateSuccess}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
         isSubmitting={isSubmitting}
