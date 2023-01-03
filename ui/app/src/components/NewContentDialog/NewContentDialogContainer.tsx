@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LegacyContentType } from '../../models/ContentType';
 import translations from './translations';
 import { withoutIndex } from '../../utils/path';
@@ -28,17 +28,16 @@ import { batchActions } from '../../state/actions/misc';
 import { closeNewContentDialog, newContentCreationComplete } from '../../state/actions/dialogs';
 import { fetchLegacyContentTypes } from '../../services/contentTypes';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useSubject } from '../../hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
 import DialogBody from '../DialogBody/DialogBody';
 import { Box, Checkbox, FormControlLabel } from '@mui/material';
 import SingleItemSelector from '../SingleItemSelector';
 import SearchBar from '../SearchBar/SearchBar';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import ContentTypesFilter from '../ContentTypeFilter';
 import { ContentTypesGrid, ContentTypesLoader } from './NewContentDialog';
+import { EmptyState } from '../EmptyState';
 
 export function NewContentDialogContainer(props: NewContentDialogContainerProps) {
   const { item, onContentTypeSelected, compact = false, rootPath } = props;
@@ -52,6 +51,8 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
   const [openSelector, setOpenSelector] = useState(false);
   const [selectedItem, setSelectedItem] = useState(item);
   const [contentTypes, setContentTypes] = useState<LegacyContentType[]>();
+  const [filteredContentTypes, setFilteredContentTypes] = useState<LegacyContentType[]>();
+  const [loadingContentTypes, setLoadingContentTypes] = useState<boolean>(false);
   const [keyword, setKeyword] = useState('');
   const [debounceKeyword, setDebounceKeyword] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -93,8 +94,10 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
           ? `${selectedItem.path}/`
           : selectedItem.path;
 
+      setLoadingContentTypes(true);
       fetchLegacyContentTypes(site, path).subscribe({
         next(response) {
+          setLoadingContentTypes(false);
           if (response.length === 1) {
             dispatch(closeNewContentDialog());
             onSelectedContentType(response[0]);
@@ -103,28 +106,24 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
           }
         },
         error(response) {
+          setLoadingContentTypes(false);
           dispatch(showErrorDialog({ error: response }));
         }
       });
     }
   }, [dispatch, selectedItem, site, onSelectedContentType]);
 
-  const resource = useLogicResource(
-    useMemo(() => ({ contentTypes, selectedFilter, debounceKeyword }), [contentTypes, selectedFilter, debounceKeyword]),
-    {
-      shouldResolve: ({ contentTypes }) => Boolean(contentTypes),
-      shouldReject: () => null,
-      shouldRenew: (source, resource) => resource.complete,
-      resultSelector: ({ contentTypes, debounceKeyword, selectedFilter }) => {
-        return contentTypes.filter(
+  useEffect(() => {
+    if (contentTypes) {
+      setFilteredContentTypes(
+        contentTypes.filter(
           (contentType) =>
             contentType.label.toLowerCase().includes(debounceKeyword.toLowerCase()) &&
             (selectedFilter === 'all' || contentType.type === selectedFilter)
-        );
-      },
-      errorSelector: () => null
+        )
+      );
     }
-  );
+  }, [contentTypes, debounceKeyword, selectedFilter]);
 
   const onSearch$ = useSubject<string>();
 
@@ -162,24 +161,23 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
             <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
           </Box>
         </Box>
-        <SuspenseWithEmptyState
-          resource={resource}
-          suspenseProps={{
-            fallback: <ContentTypesLoader isCompact={isCompact} />
-          }}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              classes: {
-                image: classes.emptyStateImg
-              },
-              title: (
-                <FormattedMessage id="newContentDialog.emptyStateMessage" defaultMessage="No Content Types Found" />
-              )
-            }
-          }}
-        >
-          <ContentTypesGrid resource={resource} isCompact={isCompact} onTypeOpen={onSelectedContentType} />
-        </SuspenseWithEmptyState>
+
+        {loadingContentTypes && <ContentTypesLoader isCompact={isCompact} />}
+        {filteredContentTypes?.length === 0 && (
+          <EmptyState
+            title={<FormattedMessage id="newContentDialog.emptyStateMessage" defaultMessage="No Content Types Found" />}
+            classes={{
+              image: classes.emptyStateImg
+            }}
+          />
+        )}
+        {filteredContentTypes?.length > 0 && (
+          <ContentTypesGrid
+            filterContentTypes={filteredContentTypes}
+            isCompact={isCompact}
+            onTypeOpen={onSelectedContentType}
+          />
+        )}
       </DialogBody>
       <DialogFooter>
         <FormControlLabel

@@ -22,7 +22,7 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface ContentTypesGridProps {
-  resource: Resource<LegacyContentType[] | any>;
+  filterContentTypes: LegacyContentType[] | any;
   isCompact: boolean;
   selectedContentType?: string;
   onTypeOpen(data: LegacyContentType): void;
