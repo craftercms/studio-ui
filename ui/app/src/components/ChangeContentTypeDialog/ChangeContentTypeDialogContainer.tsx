@@ -28,10 +28,11 @@ import { Box, Checkbox, FormControlLabel } from '@mui/material';
 import SingleItemSelector from '../SingleItemSelector';
 import { FormattedMessage } from 'react-intl';
 import SearchBar from '../SearchBar/SearchBar';
-import { ContentTypesGrid, ContentTypesLoader } from '../NewContentDialog';
+import { ContentTypesLoader } from '../NewContentDialog';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { makeStyles } from 'tss-react/mui';
 import { EmptyState } from '../EmptyState';
+import { ContentTypesGrid } from '../ContentTypesGrid';
 
 const useStyles = makeStyles()(() => ({
   compact: {

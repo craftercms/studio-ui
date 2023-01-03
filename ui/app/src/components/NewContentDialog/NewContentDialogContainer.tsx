@@ -36,8 +36,9 @@ import SingleItemSelector from '../SingleItemSelector';
 import SearchBar from '../SearchBar/SearchBar';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import ContentTypesFilter from '../ContentTypeFilter';
-import { ContentTypesGrid, ContentTypesLoader } from './NewContentDialog';
+import { ContentTypesLoader } from './NewContentDialog';
 import { EmptyState } from '../EmptyState';
+import { ContentTypesGrid } from '../ContentTypesGrid';
 
 export function NewContentDialogContainer(props: NewContentDialogContainerProps) {
   const { item, onContentTypeSelected, compact = false, rootPath } = props;

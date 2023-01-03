@@ -15,10 +15,9 @@
  */
 
 import React from 'react';
-import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
+import { ContentSkeletonCard } from './NewContentCard';
 import { Grid } from '@mui/material';
-import useStyles from './styles';
-import { ContentTypesGridProps, NewContentDialogProps } from './utils';
+import { NewContentDialogProps } from './utils';
 import { NewContentDialogContainer } from './NewContentDialogContainer';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
@@ -56,27 +55,6 @@ export function ContentTypesLoader(props: { numOfItems?: number; isCompact: bool
       {items.map((value, i) => (
         <Grid item key={i} xs={12} sm={!isCompact ? 4 : 6}>
           <ContentSkeletonCard isCompact={isCompact} />
-        </Grid>
-      ))}
-    </Grid>
-  );
-}
-
-export function ContentTypesGrid(props: ContentTypesGridProps) {
-  const { isCompact, onTypeOpen, selectedContentType, filterContentTypes } = props;
-  const { classes } = useStyles();
-  return (
-    <Grid container spacing={3} className={classes.cardsContainer}>
-      {filterContentTypes.map((content) => (
-        <Grid item key={content.label} xs={12} sm={!isCompact ? 4 : 6}>
-          <NewContentCard
-            isCompact={isCompact}
-            headerTitle={content.label}
-            subheader={content.form}
-            contentTypeName={content.name}
-            onClick={() => onTypeOpen(content)}
-            isSelected={content.name === selectedContentType}
-          />
         </Grid>
       ))}
     </Grid>
