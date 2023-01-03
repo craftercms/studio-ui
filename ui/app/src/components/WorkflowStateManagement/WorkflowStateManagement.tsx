@@ -55,6 +55,8 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { defineMessages } from 'react-intl';
+import useMount from '../../hooks/useMount';
+import { fetchPublishingTargets } from '../../services/publishing';
 
 const workflowStateManagementMessages = defineMessages({
   statesUpdatedMessage: {
@@ -100,6 +102,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
   const [selectedItem, setSelectedItem] = useState<SandboxItem>(null);
   const [isSelectedItemsOnAllPages, setIsSelectedItemsOnAllPages] = useState(false);
+  const [publishingTargets, setPublishingTargets] = useState([]);
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
@@ -143,6 +146,17 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
       hasPendingChanges: hasSelectedItems
     });
   }, [hasSelectedItems, fnRefs]);
+
+  useMount(() => {
+    const sub = fetchPublishingTargets(siteId).subscribe({
+      next({ publishingTargets: targets }) {
+        setPublishingTargets(targets.map((target) => (target.name === 'staging' ? 'staged' : target.name)));
+      }
+    });
+    return () => {
+      sub.unsubscribe();
+    };
+  });
 
   const resource = useLogicResource<
     PagedArray<SandboxItem>,
@@ -453,34 +467,40 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
                   label={<FormattedMessage id="itemStates.anyState" defaultMessage="Any state" />}
                 />
                 <Divider />
-                {states.map((id) => (
-                  <FormControlLabel
-                    key={id}
-                    classes={{ label: classes.iconLabel }}
-                    control={
-                      <Checkbox
-                        checked={filtersLookup[id]}
-                        name={id}
-                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                          onFilterChecked(event.target.name, event.target.checked);
-                        }}
-                      />
-                    }
-                    label={
-                      ['staged', 'live'].includes(id) ? (
-                        <>
-                          <ItemPublishingTargetIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
-                          {getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
-                        </>
-                      ) : (
-                        <>
-                          <ItemStateIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
-                          {getItemStateText({ [id]: true } as ItemStateMap)}
-                        </>
-                      )
-                    }
-                  />
-                ))}
+                {states.map((id) => {
+                  if (['staged', 'live'].includes(id) && !publishingTargets.includes(id)) {
+                    return null;
+                  }
+
+                  return (
+                    <FormControlLabel
+                      key={id}
+                      classes={{ label: classes.iconLabel }}
+                      control={
+                        <Checkbox
+                          checked={filtersLookup[id]}
+                          name={id}
+                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            onFilterChecked(event.target.name, event.target.checked);
+                          }}
+                        />
+                      }
+                      label={
+                        ['staged', 'live'].includes(id) ? (
+                          <>
+                            <ItemPublishingTargetIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
+                            {getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
+                          </>
+                        ) : (
+                          <>
+                            <ItemStateIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
+                            {getItemStateText({ [id]: true } as ItemStateMap)}
+                          </>
+                        )
+                      }
+                    />
+                  );
+                })}
               </FormGroup>
             </FormControl>
           </form>
