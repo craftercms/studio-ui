@@ -19,7 +19,6 @@ import ApiResponse from '../../models/ApiResponse';
 import { fetchItemStates, setItemStates, setItemStatesByQuery, StatesToUpdate } from '../../services/workflow';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { SuspenseWithEmptyState } from '../Suspencified';
 import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../ItemStatesGrid';
 import SetItemStateDialog from '../SetWorkflowStateDialog';
 import Button from '@mui/material/Button';
@@ -45,7 +44,6 @@ import ItemStateIcon from '../ItemStateIcon';
 import translations from './translations';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
@@ -57,6 +55,8 @@ import { showSystemNotification } from '../../state/actions/system';
 import { defineMessages } from 'react-intl';
 import useMount from '../../hooks/useMount';
 import { fetchPublishingTargets } from '../../services/publishing';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { EmptyState } from '../EmptyState';
 
 const workflowStateManagementMessages = defineMessages({
   statesUpdatedMessage: {
@@ -131,6 +131,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
     let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
 
     setFetching(true);
+    setItems(null);
     fetchItemStates(siteId, debouncePathRegex, stateBitmap ? stateBitmap : null, { limit, offset }).subscribe(
       (states) => {
         setItems(states);
@@ -163,20 +164,6 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
       sub.unsubscribe();
     };
   });
-
-  const resource = useLogicResource<
-    PagedArray<SandboxItem>,
-    { states: PagedArray<SandboxItem>; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(() => ({ states: items, error, fetching }), [items, error, fetching]),
-    {
-      shouldResolve: (source) => Boolean(source.states) && !fetching,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetching && resource.complete,
-      resultSelector: (source) => source.states,
-      errorSelector: () => error
-    }
-  );
 
   const onPathRegex$ = useDebouncedInput(
     useCallback(
@@ -369,25 +356,17 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
             onActionClicked={onOptionClicked}
           />
         )}
-        <SuspenseWithEmptyState
-          resource={resource}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: <FormattedMessage id="itemStates.emptyStateMessage" defaultMessage="No results found" />,
-              styles: {
-                root: {
-                  height: '100%',
-                  margin: 0
-                }
-              }
-            }
-          }}
-          suspenseProps={{
-            fallback: <ItemStatesGridSkeletonTable />
-          }}
-        >
+
+        {fetching && <ItemStatesGridSkeletonTable />}
+        {error && <ApiResponseErrorState error={error} />}
+        {items?.length === 0 && (
+          <EmptyState
+            title={<FormattedMessage id="itemStates.emptyStateMessage" defaultMessage="No results found" />}
+          />
+        )}
+        {items?.length && (
           <ItemStatesGridUI
-            resource={resource}
+            itemStates={items}
             selectedItems={selectedItems}
             allItemsSelected={isSelectedItemsOnAllPages}
             hasThisPageItemsChecked={hasThisPageItemsChecked}
@@ -398,7 +377,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
             onRowsPerPageChange={onRowsPerPageChange}
             onRowSelected={onRowSelected}
           />
-        </SuspenseWithEmptyState>
+        )}
         <ResizeableDrawer
           open={openFiltersDrawer}
           width={drawerWidth}

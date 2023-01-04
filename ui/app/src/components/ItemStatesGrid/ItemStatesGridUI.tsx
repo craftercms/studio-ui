@@ -23,7 +23,6 @@ import { FormattedMessage } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
-import { Resource } from '../../models/Resource';
 import Checkbox from '@mui/material/Checkbox';
 import ItemDisplay from '../ItemDisplay';
 import useStyles from './styles';
@@ -33,7 +32,7 @@ import Pagination from '../Pagination';
 import LookupTable from '../../models/LookupTable';
 
 export interface WorkflowStatesGridUIProps {
-  resource: Resource<PagedArray<SandboxItem>>;
+  itemStates: PagedArray<SandboxItem>;
   selectedItems: LookupTable<SandboxItem>;
   allItemsSelected: boolean;
   hasThisPageItemsChecked: boolean;
@@ -47,7 +46,7 @@ export interface WorkflowStatesGridUIProps {
 
 export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
   const {
-    resource,
+    itemStates,
     onPageChange,
     onRowsPerPageChange,
     selectedItems,
@@ -58,7 +57,6 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
     hasThisPageItemsChecked,
     isThisPageIndeterminate
   } = props;
-  const itemStates = resource.read();
   const { classes, cx: clsx } = useStyles();
 
   return (
