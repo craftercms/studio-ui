@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchLegacyContentTypes } from '../../services/contentTypes';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -28,6 +28,10 @@ import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import Box from '@mui/material/Box';
+import useSubject from '../../hooks/useSubject';
+import { debounceTime } from 'rxjs/operators';
+import { SearchBar } from '../SearchBar';
+import { ApiResponse, LegacyContentType } from '../../models';
 
 export interface ContentTypesManagementProps {
   embedded?: boolean;
@@ -37,12 +41,19 @@ export interface ContentTypesManagementProps {
 export function ContentTypesManagement(props: ContentTypesManagementProps) {
   const { embedded, showAppsButton } = props;
   const siteId = useActiveSiteId();
-  const [state, setState] = useSpreadState({
+  const [state, setState] = useSpreadState<{
+    contentTypes: LegacyContentType[];
+    filteredContentTypes: LegacyContentType[];
+    loadingContentTypes: boolean;
+    error: ApiResponse;
+  }>({
     contentTypes: null,
     filteredContentTypes: null,
     loadingContentTypes: false,
     error: null
   });
+  const [keyword, setKeyword] = useState('');
+  const [debounceKeyword, setDebounceKeyword] = useState('');
 
   useEffect(() => {
     setState({ loadingContentTypes: true });
@@ -55,6 +66,29 @@ export function ContentTypesManagement(props: ContentTypesManagementProps) {
       }
     });
   }, [siteId, setState]);
+
+  useEffect(() => {
+    if (state.contentTypes) {
+      setState({
+        filteredContentTypes: state.contentTypes.filter((contentType) =>
+          contentType.label.toLowerCase().includes(debounceKeyword.toLowerCase())
+        )
+      });
+    }
+  }, [debounceKeyword, setState, state.contentTypes]);
+
+  const onSearch$ = useSubject<string>();
+
+  useEffect(() => {
+    onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
+      setDebounceKeyword(keywords);
+    });
+  });
+
+  const onSearch = (keyword: string) => {
+    onSearch$.next(keyword);
+    setKeyword(keyword);
+  };
 
   return (
     <Paper elevation={0}>
@@ -71,19 +105,22 @@ export function ContentTypesManagement(props: ContentTypesManagementProps) {
 
       <Box display="flex" justifyContent="space-between" alignItems="flex-end">
         {/* TODO: searchBox here */}
+        <Box>
+          <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
+        </Box>
       </Box>
 
       {state.loadingContentTypes && <ContentTypesLoader isCompact={false} />}
       {state.error && <ApiResponseErrorState error={state.error} />}
-      {state.contentTypes?.length === 0 && (
+      {state.filteredContentTypes?.length === 0 && (
         <EmptyState
           title={
             <FormattedMessage id="contentTypesManagement.emptyStateMessage" defaultMessage="No Content Types Found" />
           }
         />
       )}
-      {state.contentTypes?.length > 0 && (
-        <ContentTypesGrid filterContentTypes={state.contentTypes} isCompact={false} onTypeOpen={() => null} />
+      {state.filteredContentTypes?.length > 0 && (
+        <ContentTypesGrid filterContentTypes={state.filteredContentTypes} isCompact={false} onTypeOpen={() => null} />
       )}
     </Paper>
   );
