@@ -73,7 +73,7 @@ export interface WorkflowStateManagementProps {
 
 const drawerWidth = 260;
 
-const states: ItemStates[] = [
+const initialStates: ItemStates[] = [
   'new',
   'modified',
   'deleted',
@@ -93,7 +93,9 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   const siteId = useActiveSiteId();
   const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
   const [openFiltersDrawer, setOpenFiltersDrawer] = useState(false);
-  const [filtersLookup, setFiltersLookup] = useSpreadState<LookupTable<boolean>>(createPresenceTable(states, false));
+  const [filtersLookup, setFiltersLookup] = useSpreadState<LookupTable<boolean>>(
+    createPresenceTable(initialStates, false)
+  );
   const [pathRegex, setPathRegex] = useState('');
   const [debouncePathRegex, setDebouncePathRegex] = useState('');
   const [invalidPathRegex, setInvalidPathRegex] = useState(false);
@@ -102,7 +104,11 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   const [selectedItems, setSelectedItems] = useState<LookupTable<SandboxItem>>({});
   const [selectedItem, setSelectedItem] = useState<SandboxItem>(null);
   const [isSelectedItemsOnAllPages, setIsSelectedItemsOnAllPages] = useState(false);
-  const [publishingTargets, setPublishingTargets] = useState([]);
+  const [hasStaging, setHasStaging] = useState(false);
+  const states = useMemo(
+    () => (hasStaging ? initialStates : initialStates.filter((state) => state !== 'staged')),
+    [hasStaging]
+  );
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
@@ -150,7 +156,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   useMount(() => {
     const sub = fetchPublishingTargets(siteId).subscribe({
       next({ publishingTargets: targets }) {
-        setPublishingTargets(targets.map((target) => (target.name === 'staging' ? 'staged' : target.name)));
+        setHasStaging(targets.some((target) => target.name === 'staging'));
       }
     });
     return () => {
@@ -467,40 +473,34 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
                   label={<FormattedMessage id="itemStates.anyState" defaultMessage="Any state" />}
                 />
                 <Divider />
-                {states.map((id) => {
-                  if (['staged', 'live'].includes(id) && !publishingTargets.includes(id)) {
-                    return null;
-                  }
-
-                  return (
-                    <FormControlLabel
-                      key={id}
-                      classes={{ label: classes.iconLabel }}
-                      control={
-                        <Checkbox
-                          checked={filtersLookup[id]}
-                          name={id}
-                          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                            onFilterChecked(event.target.name, event.target.checked);
-                          }}
-                        />
-                      }
-                      label={
-                        ['staged', 'live'].includes(id) ? (
-                          <>
-                            <ItemPublishingTargetIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
-                            {getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
-                          </>
-                        ) : (
-                          <>
-                            <ItemStateIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
-                            {getItemStateText({ [id]: true } as ItemStateMap)}
-                          </>
-                        )
-                      }
-                    />
-                  );
-                })}
+                {states.map((id) => (
+                  <FormControlLabel
+                    key={id}
+                    classes={{ label: classes.iconLabel }}
+                    control={
+                      <Checkbox
+                        checked={filtersLookup[id]}
+                        name={id}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                          onFilterChecked(event.target.name, event.target.checked);
+                        }}
+                      />
+                    }
+                    label={
+                      ['staged', 'live'].includes(id) ? (
+                        <>
+                          <ItemPublishingTargetIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
+                          {getItemPublishingTargetText({ [id]: true } as ItemStateMap)}
+                        </>
+                      ) : (
+                        <>
+                          <ItemStateIcon item={{ stateMap: { [id]: true } } as SandboxItem} />
+                          {getItemStateText({ [id]: true } as ItemStateMap)}
+                        </>
+                      )
+                    }
+                  />
+                ))}
               </FormGroup>
             </FormControl>
           </form>
