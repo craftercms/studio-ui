@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { fetchLegacyContentTypes } from '../../services/contentTypes';
+import { fetchContentType, fetchLegacyContentTypes } from '../../services/contentTypes';
 import useSpreadState from '../../hooks/useSpreadState';
 import { ContentTypesLoader } from '../NewContentDialog';
 import { EmptyState } from '../EmptyState';
@@ -31,7 +31,8 @@ import Box from '@mui/material/Box';
 import useSubject from '../../hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
 import { SearchBar } from '../SearchBar';
-import { ApiResponse, LegacyContentType } from '../../models';
+import { ApiResponse, ContentType, LegacyContentType } from '../../models';
+import { ContentTypeEditor } from '../ContentTypeEditor';
 
 export interface ContentTypesManagementProps {
   embedded?: boolean;
@@ -52,8 +53,24 @@ export function ContentTypesManagement(props: ContentTypesManagementProps) {
     loadingContentTypes: false,
     error: null
   });
+  const [view, setView] = useState<'list' | 'editor'>('list');
+  const [selectedContentType, setSelectedContentType] = useState<{
+    contentType: LegacyContentType;
+    definition: ContentType;
+  }>(null);
   const [keyword, setKeyword] = useState('');
   const [debounceKeyword, setDebounceKeyword] = useState('');
+
+  const selectContentType = (selected: LegacyContentType) => {
+    setSelectedContentType(null);
+    fetchContentType(siteId, selected.name).subscribe((contentType) => {
+      setView('editor');
+      setSelectedContentType({
+        contentType: selected,
+        definition: contentType
+      });
+    });
+  };
 
   useEffect(() => {
     setState({ loadingContentTypes: true });
@@ -92,35 +109,49 @@ export function ContentTypesManagement(props: ContentTypesManagementProps) {
 
   return (
     <Paper elevation={0}>
-      <GlobalAppToolbar
-        title={!embedded && <FormattedMessage id="GlobalMenu.ContentTypes" defaultMessage="Content Types" />}
-        leftContent={
-          <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={() => null}>
-            <FormattedMessage id="ContentTypesManagement.createNewType" defaultMessage="Create New Type" />
-          </Button>
-        }
-        showHamburgerMenuButton={!embedded}
-        showAppsButton={showAppsButton}
-      />
+      {view === 'list' ? (
+        <>
+          <GlobalAppToolbar
+            title={!embedded && <FormattedMessage id="GlobalMenu.ContentTypes" defaultMessage="Content Types" />}
+            leftContent={
+              <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={() => null}>
+                <FormattedMessage id="ContentTypesManagement.createNewType" defaultMessage="Create New Type" />
+              </Button>
+            }
+            showHamburgerMenuButton={!embedded}
+            showAppsButton={showAppsButton}
+          />
 
-      <Box display="flex" justifyContent="space-between" alignItems="flex-end">
-        {/* TODO: searchBox here */}
-        <Box>
-          <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
-        </Box>
-      </Box>
+          <Box sx={{ p: 2 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="flex-end">
+              <Box>
+                <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
+              </Box>
+            </Box>
 
-      {state.loadingContentTypes && <ContentTypesLoader isCompact={false} />}
-      {state.error && <ApiResponseErrorState error={state.error} />}
-      {state.filteredContentTypes?.length === 0 && (
-        <EmptyState
-          title={
-            <FormattedMessage id="contentTypesManagement.emptyStateMessage" defaultMessage="No Content Types Found" />
-          }
-        />
-      )}
-      {state.filteredContentTypes?.length > 0 && (
-        <ContentTypesGrid filterContentTypes={state.filteredContentTypes} isCompact={false} onTypeOpen={() => null} />
+            {state.loadingContentTypes && <ContentTypesLoader isCompact={false} />}
+            {state.error && <ApiResponseErrorState error={state.error} />}
+            {state.filteredContentTypes?.length === 0 && (
+              <EmptyState
+                title={
+                  <FormattedMessage
+                    id="contentTypesManagement.emptyStateMessage"
+                    defaultMessage="No Content Types Found"
+                  />
+                }
+              />
+            )}
+            {state.filteredContentTypes?.length > 0 && (
+              <ContentTypesGrid
+                filterContentTypes={state.filteredContentTypes}
+                isCompact={true}
+                onTypeOpen={selectContentType}
+              />
+            )}
+          </Box>
+        </>
+      ) : (
+        <ContentTypeEditor contentType={selectedContentType.contentType} definition={selectedContentType.definition} />
       )}
     </Paper>
   );

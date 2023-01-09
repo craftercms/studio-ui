@@ -64,7 +64,7 @@ interface NewContentCardProps {
   isSelected: boolean;
 }
 
-function useContentTypePreviewImage(contentTypeName: string) {
+export function useContentTypePreviewImage(contentTypeName: string) {
   const [src, setSrc] = useState(null);
   const site = useActiveSiteId();
   useEffect(() => {
