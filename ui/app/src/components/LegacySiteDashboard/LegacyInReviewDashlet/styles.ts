@@ -14,7 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RecentActivityDashletGridUI';
+import { makeStyles } from 'tss-react/mui';
 
-export * from './RecentActivityDashletGridUI';
+const useStyles = makeStyles()((theme) => ({
+  tableRoot: {
+    tableLayout: 'fixed'
+  },
+  itemPath: {
+    color: theme.palette.text.secondary
+  },
+  ellipsis: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  showSelectRoot: {
+    paddingTop: '8.5px',
+    paddingBottom: '8.5px'
+  },
+  showLabel: {
+    marginRight: theme.spacing(1)
+  },
+  skeletonCheckbox: {
+    margin: '6px 10px'
+  }
+}));
 
+export default useStyles;

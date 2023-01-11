@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,7 +14,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './RecentActivityDashletGridUI';
+import { makeStyles } from 'tss-react/mui';
 
-export * from './RecentActivityDashletGridUI';
+const useStyles = makeStyles()((theme) => ({
+  tableRoot: {
+    tableLayout: 'fixed'
+  },
+  itemPath: {
+    color: theme.palette.text.secondary
+  },
+  ellipsis: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  showSelectRoot: {
+    paddingTop: '8.5px',
+    paddingBottom: '8.5px'
+  },
+  showLabel: {
+    marginRight: theme.spacing(1)
+  },
+  skeletonCheckbox: {
+    margin: '6px 10px'
+  }
+}));
 
+export default useStyles;
