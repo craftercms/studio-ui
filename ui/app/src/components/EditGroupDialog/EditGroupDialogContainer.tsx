@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import EditGroupDialogUI from './EditGroupDialogUI';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/users';
@@ -27,7 +27,6 @@ import {
   trash,
   update
 } from '../../services/groups';
-import { forkJoin } from 'rxjs';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
@@ -36,6 +35,9 @@ import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
 import { validateGroupNameMinLength } from '../GroupManagement/utils';
+import { LookupTable, PaginationOptions } from '../../models';
+import { createPresenceTable } from '../../utils/array';
+import useMount from '../../hooks/useMount';
 
 const translations = defineMessages({
   groupCreated: {
@@ -69,22 +71,52 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const [submitOk, setSubmitOk] = useState(false);
   const isEdit = Boolean(props.group);
   const [users, setUsers] = useState<User[]>();
+  const [usersHaveNextPage, setUsersHaveNextPage] = useState(false);
+  const usersRef = useRef([]);
+  usersRef.current = users;
   const [members, setMembers] = useState<User[]>();
+  const [membersLookup, setMembersLookup] = useState<LookupTable<boolean>>(null);
   const [inProgressIds, setInProgressIds] = useState<string[]>([]);
+  const fetchSize = 5;
+  const [usersOffset, setUsersOffset] = useState(0);
 
-  useEffect(() => {
+  const fetchUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
+    fetchAll({
+      limit: fetchSize,
+      ...options
+    }).subscribe((_users) => {
+      setUsersHaveNextPage(_users.total >= usersOffset + fetchSize);
+      setUsers(_users);
+      setUsersOffset(fetchSize);
+    });
+  };
+
+  const loadMoreUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
+    fetchAll({
+      limit: fetchSize,
+      offset: usersOffset,
+      ...options
+    }).subscribe((_users) => {
+      setUsersHaveNextPage(_users.total >= usersOffset + fetchSize);
+      setUsers([...usersRef.current, ..._users]);
+      setUsersOffset(usersOffset + fetchSize);
+    });
+  };
+
+  const fetchMembers = (groupId: number, options?: Partial<PaginationOptions & { keyword?: string }>) => {
+    fetchUsersFromGroup(groupId, options).subscribe((members) => {
+      setMembers(members);
+      setMembersLookup(createPresenceTable(members, true, (member) => member.username));
+    });
+  };
+
+  useMount(() => {
+    fetchUsers({ limit: fetchSize });
     if (props.group) {
-      forkJoin([fetchAll(), fetchUsersFromGroup(props.group.id)]).subscribe(([users, members]) => {
-        setMembers([...members]);
-        const _users = users.filter(function (user) {
-          return !members.find(function (member) {
-            return member.id === user.id;
-          });
-        });
-        setUsers(_users);
-      });
+      // TODO: decide on what do to with members (client side or server side)
+      fetchMembers(props.group.id, { limit: 100 });
     }
-  }, [props.group]);
+  });
 
   useEffect(() => {
     if (props.group?.id !== group?.id) {
@@ -216,7 +248,9 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       group={group}
       isEdit={isEdit}
       users={users}
+      usersHaveNextPage={usersHaveNextPage}
       members={members}
+      membersLookup={membersLookup}
       onDeleteGroup={onDeleteGroup}
       onChangeValue={onChangeValue}
       submitOk={submitOk}
@@ -224,6 +258,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onCancel={onCancel}
       onAddMembers={onAddMembers}
       onRemoveMembers={onRemoveMembers}
+      onFilterUsers={fetchUsers}
+      onLoadMoreUsers={loadMoreUsers}
       inProgressIds={inProgressIds}
       isDirty={isDirty}
     />

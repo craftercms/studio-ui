@@ -15,7 +15,7 @@
  */
 
 import Box from '@mui/material/Box';
-import React, { ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
@@ -24,12 +24,12 @@ import { createLookupTable } from '../../utils/object';
 import TransferListColumn, { TransferListItem } from '../TransferListColumn';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
+import { LookupTable, PaginationOptions } from '../../models';
 
 export interface TransferListProps {
   source: TransferListObject;
   target: TransferListObject;
   inProgressIds: (string | number)[];
-  disabled?: boolean;
   onTargetListItemsAdded(items: TransferListItem[]): void;
   onTargetListItemsRemoved(items: TransferListItem[]): void;
 }
@@ -38,6 +38,10 @@ export interface TransferListObject {
   title?: ReactNode;
   emptyMessage?: ReactNode;
   items: TransferListItem[];
+  hasMore?: boolean;
+  onFilter?(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+  onLoadMore?(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+  disabledItems?: LookupTable<boolean>;
 }
 
 function not(a: any, b: any) {
@@ -49,16 +53,25 @@ function intersection(a: any, b: any) {
 }
 
 export function TransferList(props: TransferListProps) {
-  const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved, disabled = false } = props;
+  const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved } = props;
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>(source.items);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>(target.items);
-  const [checkedList, setCheckedList] = useState({});
-  const { classes } = useStyles();
 
   const itemsLookup = {
     ...createLookupTable(sourceItems),
     ...createLookupTable(targetItems)
   };
+
+  const [checkedList, setCheckedList] = useState({});
+  const { classes } = useStyles();
+
+  useEffect(() => {
+    setSourceItems(source.items);
+  }, [source.items]);
+
+  useEffect(() => {
+    setTargetItems(target.items);
+  }, [target.items]);
 
   const onItemClicked = (item: TransferListItem) => {
     if (checkedList[item.id]) {
@@ -139,55 +152,54 @@ export function TransferList(props: TransferListProps) {
       <TransferListColumn
         title={props.source.title}
         items={sourceItems}
+        hasMore={source.hasMore}
+        disabledItems={source.disabledItems}
         checkedList={checkedList}
         onCheckAllClicked={onCheckAllClicked}
         onItemClick={onItemClicked}
+        onFilter={source.onFilter}
+        onLoadMore={source.onLoadMore}
         isAllChecked={sourceItemsAllChecked}
         inProgressIds={inProgressIds}
         emptyStateMessage={source.emptyMessage}
-        disabled={disabled}
       />
       <section className={classes.buttonsWrapper}>
-        {!disabled && (
-          <>
-            <Tooltip
-              title={
-                disableAdd ? (
-                  <FormattedMessage
-                    id="transferList.addDisabledTooltip"
-                    defaultMessage="Select items to add from the left"
-                  />
-                ) : (
-                  <FormattedMessage id="transferList.addToTarget" defaultMessage="Add selected" />
-                )
-              }
-            >
-              <span>
-                <IconButton onClick={addToTarget} disabled={disableAdd} size="large">
-                  <NavigateNextIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-            <Tooltip
-              title={
-                disableRemove ? (
-                  <FormattedMessage
-                    id="transferList.removeDisabledTooltip"
-                    defaultMessage="Select items to remove from the right"
-                  />
-                ) : (
-                  <FormattedMessage id="transferList.removeFromTarget" defaultMessage="Remove selected" />
-                )
-              }
-            >
-              <span>
-                <IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
-                  <NavigateBeforeIcon />
-                </IconButton>
-              </span>
-            </Tooltip>
-          </>
-        )}
+        <Tooltip
+          title={
+            disableAdd ? (
+              <FormattedMessage
+                id="transferList.addDisabledTooltip"
+                defaultMessage="Select items to add from the left"
+              />
+            ) : (
+              <FormattedMessage id="transferList.addToTarget" defaultMessage="Add selected" />
+            )
+          }
+        >
+          <span>
+            <IconButton onClick={addToTarget} disabled={disableAdd} size="large">
+              <NavigateNextIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
+        <Tooltip
+          title={
+            disableRemove ? (
+              <FormattedMessage
+                id="transferList.removeDisabledTooltip"
+                defaultMessage="Select items to remove from the right"
+              />
+            ) : (
+              <FormattedMessage id="transferList.removeFromTarget" defaultMessage="Remove selected" />
+            )
+          }
+        >
+          <span>
+            <IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
+              <NavigateBeforeIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
       </section>
       <TransferListColumn
         title={props.target.title}
@@ -198,7 +210,6 @@ export function TransferList(props: TransferListProps) {
         isAllChecked={targetItemsAllChecked}
         inProgressIds={inProgressIds}
         emptyStateMessage={target.emptyMessage}
-        disabled={disabled}
       />
     </Box>
   );

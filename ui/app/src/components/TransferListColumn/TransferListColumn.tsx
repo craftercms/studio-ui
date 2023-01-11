@@ -22,51 +22,70 @@ import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import SearchBar from '../SearchBar/SearchBar';
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import TransferListItem from './TransferListItem';
-import ListItemButton from '@mui/material/ListItemButton';
+import { PaginationOptions } from '../../models';
 
 export interface TransferListColumnProps {
   title: ReactNode;
   emptyStateMessage?: ReactNode;
   items: TransferListItem[];
+  disabledItems?: LookupTable<boolean>;
   onItemClick(item: TransferListItem, e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   checkedList: LookupTable<boolean>;
   inProgressIds: (string | number)[];
   isAllChecked?: boolean;
   onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
-  disabled?: boolean;
+  hasMore?: boolean;
+  onFilter?(options?: Partial<PaginationOptions & { keyword?: string }>);
+  onLoadMore?(options?: Partial<PaginationOptions & { keyword?: string }>);
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
   const {
     title,
     items,
+    disabledItems,
     onItemClick,
+    hasMore,
+    onFilter,
+    onLoadMore,
     checkedList,
     isAllChecked,
     onCheckAllClicked,
     inProgressIds,
-    emptyStateMessage,
-    disabled = false
+    emptyStateMessage
   } = props;
   const { classes } = useStyles();
   const [keyword, setKeyword] = useState('');
 
   const onSearch = (value) => {
+    onFilter?.({ keyword: value });
     setKeyword(value);
   };
 
-  const filteredList = items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
+  const onScroll = (e) => {
+    if (onLoadMore) {
+      const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+      if (bottom && hasMore) {
+        onLoadMore({
+          ...(keyword && { keyword })
+        });
+      }
+    }
+  };
 
+  // If there is an external filter, do not filter in this component.
+  let list = onFilter ? items : items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
   return (
     <Paper className={classes.listPaper}>
       <header className={classes.listHeader}>
-        {!disabled && onCheckAllClicked && (
+        {onCheckAllClicked && (
           <Checkbox
             disabled={items.length === 0}
             checked={isAllChecked}
@@ -75,16 +94,15 @@ export function TransferListColumn(props: TransferListColumnProps) {
         )}
         {title && <Typography color="textSecondary">{title}</Typography>}
         <SearchBar
-          disabled={items.length === 0}
           keyword={keyword}
           onChange={onSearch}
           classes={{ root: classes.searchBar }}
           showActionButton={Boolean(keyword)}
         />
       </header>
-      <List dense component="div" role="list" className={classes.list}>
+      <List dense component="div" role="list" className={classes.list} onScroll={onScroll}>
         {items.length ? (
-          filteredList.length === 0 ? (
+          list.length === 0 ? (
             <EmptyState
               title={
                 <FormattedMessage
@@ -94,28 +112,27 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
-            filteredList.map((item, i) => (
-              <ListItemButton
-                disabled={disabled || inProgressIds.includes(item.id)}
+            list.map((item, i) => (
+              <ListItem
+                disabled={inProgressIds.includes(item.id) || disabledItems?.[item.id]}
                 key={item.id}
                 role="listitem"
+                button
                 onClick={(e) => onItemClick(item, e)}
               >
-                {!disabled && (
-                  <ListItemIcon>
-                    {inProgressIds.includes(item.id) ? (
-                      <CircularProgress size={42} />
-                    ) : (
-                      <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
-                    )}
-                  </ListItemIcon>
-                )}
+                <ListItemIcon>
+                  {inProgressIds.includes(item.id) ? (
+                    <CircularProgress size={42} />
+                  ) : (
+                    <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
+                  )}
+                </ListItemIcon>
                 <ListItemText
                   primary={item.title}
                   secondary={item.subtitle}
                   primaryTypographyProps={{ noWrap: true, title: item.title }}
                 />
-              </ListItemButton>
+              </ListItem>
             ))
           )
         ) : (
