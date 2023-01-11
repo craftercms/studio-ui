@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import moment from 'moment-timezone';
@@ -105,7 +105,6 @@ function DateTimePicker(props: DateTimePickerProps) {
     localeCode = 'en-US',
     dateTimeFormatOptions
   } = props;
-  const tz = useRef(timeZone);
   // Time picker control seems to always display in function of the time of the
   // browser's time zone but we display things in function of the selected time zone.
   // This causes some discrepancies between the time displayed on the field and the time

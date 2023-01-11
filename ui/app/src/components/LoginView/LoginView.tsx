@@ -265,8 +265,8 @@ function RecoverView(props: SubViewProps) {
     setError('');
     onSubmit(true);
     !isBlank(username) &&
-      sendPasswordRecovery(username).subscribe(
-        () => {
+      sendPasswordRecovery(username).subscribe({
+        next() {
           onSubmit(false);
           setMode('login');
           onSnack({
@@ -274,11 +274,11 @@ function RecoverView(props: SubViewProps) {
             message: formatMessage(translations.recoverYourPasswordSuccessMessage, { username })
           });
         },
-        (error) => {
+        error(error) {
           onSubmit(false);
           setError(error.message);
         }
-      );
+      });
   };
   return (
     <form onSubmit={onSubmitRecover}>
@@ -346,6 +346,7 @@ function ResetView(props: SubViewProps) {
   const [passwordsMismatch, setPasswordMismatch] = useState(false);
   const [error, setError] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
+  const submitDisabled = newPassword === '' || isFetching || !isValid;
   useEffect(() => {
     if (isBlank(newPasswordConfirm) || newPasswordConfirm === newPassword) {
       setPasswordMismatch(false);
@@ -431,7 +432,7 @@ function ResetView(props: SubViewProps) {
         {children}
       </DialogContent>
       <DialogActions>
-        <Button type="submit" color="primary" disabled={isFetching} variant="contained" fullWidth>
+        <Button type="submit" color="primary" disabled={submitDisabled} variant="contained" fullWidth>
           <FormattedMessage id="words.submit" defaultMessage="Submit" />
         </Button>
       </DialogActions>
