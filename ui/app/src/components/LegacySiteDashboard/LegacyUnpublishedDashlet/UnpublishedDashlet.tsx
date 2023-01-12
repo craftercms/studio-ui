@@ -230,8 +230,12 @@ export function UnpublishedDashlet() {
 
     dispatch(
       showWidgetDialog({
-        id: 'craftercms.components.PublishOnDemandWidget',
+        widget: {
+          id: 'craftercms.components.PublishOnDemandWidget'
+        },
+        fullHeight: false,
         extraProps: {
+          siteId,
           onlyMode: 'all'
         }
       })
