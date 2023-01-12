@@ -38,14 +38,14 @@ import ItemActionsSnackbar from '../ItemActionsSnackbar';
 import Button from '@mui/material/Button';
 import ListItemText from '@mui/material/ListItemText';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { AllItemActions, DetailedItem } from '../../models/Item';
+import { AllItemActions } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu';
 import ApiResponse from '../../models/ApiResponse';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { UNDEFINED } from '../../utils/constants';
 
-interface SearchUIProps {
+export interface SearchUIProps {
   selectedPath: string;
   selected: string[];
   selectionOptions: ContextMenuOption[];
@@ -64,7 +64,6 @@ interface SearchUIProps {
   searchParameters: ElasticParams;
   error: ApiResponse;
   isFetching: boolean;
-  itemsByPath: LookupTable<DetailedItem>;
   onActionClicked(option: AllItemActions, event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   handleSelectAll(checked: any): void;
   onSelectedPathChanges(path: string): void;
@@ -82,7 +81,7 @@ interface SearchUIProps {
   onHeaderButtonClick(event: any, item: MediaItem): void;
   handleClearSelected(): void;
   onClose(): void;
-  onAcceptSelection?(items: DetailedItem[]): void;
+  onAcceptSelection?(items: string[]): void;
 }
 
 const useStyles = makeStyles()((theme) => ({
@@ -274,7 +273,6 @@ export function SearchUI(props: SearchUIProps) {
   // region const { ... } = props
   const {
     areAllSelected,
-    itemsByPath,
     error,
     isFetching,
     sortBy,
@@ -519,7 +517,7 @@ export function SearchUI(props: SearchUIProps) {
             variant="contained"
             color="primary"
             disabled={selected.length === 0}
-            onClick={() => onAcceptSelection?.(selected.map((path) => itemsByPath?.[path]))}
+            onClick={() => onAcceptSelection?.(selected)}
           >
             {formatMessage(translations.acceptSelection)}
           </Button>
