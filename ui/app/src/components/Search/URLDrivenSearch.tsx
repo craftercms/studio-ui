@@ -58,7 +58,6 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
     onActionClicked,
     selectionOptions,
     onHeaderButtonClick,
-    itemsByPath,
     handleClearSelected,
     handleSelect,
     handleSelectAll,
@@ -234,7 +233,6 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
       handleClearSelected={handleClearSelected}
       handleSelect={handleSelect}
       handleSelectAll={handleSelectAll}
-      itemsByPath={itemsByPath}
       onAcceptSelection={onAcceptSelection}
       onActionClicked={onActionClicked}
       onClose={onClose}

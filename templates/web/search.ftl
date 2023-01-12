@@ -69,8 +69,14 @@
       <#if mode == 'select'>
       onClose: closeSearch,
       onAcceptSelection: (selectedItems) => {
-        callback.success('', selectedItems);
-        closeSearch();
+        const store = craftercms.getStore();
+        const siteId = store.getState().sites.active;
+        store.dispatch({ type: 'BLOCK_UI' });
+        craftercms.services.content.fetchItemsByPath(siteId, selectedItems, { castAsDetailedItem: true }).subscribe((items) => {
+          store.dispatch({ type: 'UNBLOCK_UI' });
+          callback.success('', items);
+          closeSearch();
+        });
       }
       </#if>
     }, false);

@@ -69,7 +69,7 @@ export interface URLDrivenSearchProps {
   embedded?: boolean;
   onClose?(): void;
   onSelect?(path: string, selected: boolean): any;
-  onAcceptSelection?(items: DetailedItem[]): any;
+  onAcceptSelection?(items: string[]): any;
 }
 
 export interface SearchParameters extends Partial<ElasticParams> {
@@ -82,7 +82,7 @@ export interface SearchProps {
   initialParameters?: SearchParameters;
   onClose?(): void;
   onSelect?(path: string, selected: boolean): any;
-  onAcceptSelection?(items: DetailedItem[]): any;
+  onAcceptSelection?(items: string[]): any;
 }
 
 export interface CheckedFilter {

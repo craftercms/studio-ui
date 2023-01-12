@@ -63,7 +63,6 @@ export function Search(props: SearchProps) {
     onActionClicked,
     selectionOptions,
     onHeaderButtonClick,
-    itemsByPath,
     handleClearSelected,
     handleSelect,
     handleSelectAll,
@@ -202,7 +201,6 @@ export function Search(props: SearchProps) {
       handleClearSelected={handleClearSelected}
       handleSelect={handleSelect}
       handleSelectAll={handleSelectAll}
-      itemsByPath={itemsByPath}
       onAcceptSelection={onAcceptSelection}
       onActionClicked={onActionClicked}
       onClose={onClose}
