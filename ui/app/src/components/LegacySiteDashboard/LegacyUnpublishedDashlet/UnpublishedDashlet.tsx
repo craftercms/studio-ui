@@ -31,7 +31,7 @@ import { EmptyState, getEmptyStateStyleSet } from '../../EmptyState';
 import UnpublishedDashletGridUISkeleton from './UnpublishedDashletGridUISkeleton';
 import UnpublishedDashletGridUI from './UnpublishedDashletGridUI';
 import useLocale from '../../../hooks/useLocale';
-import { showItemMegaMenu } from '../../../state/actions/dialogs';
+import { showItemMegaMenu, showWidgetDialog } from '../../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../../utils/content';
 import LookupTable from '../../../models/LookupTable';
 import { createPresenceTable } from '../../../utils/array';
@@ -49,6 +49,7 @@ import useSelection from '../../../hooks/useSelection';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import Button from '@mui/material/Button';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   numItems: 10,
@@ -105,12 +106,10 @@ export function UnpublishedDashlet() {
       return false;
     }
   }, [state.items, selectedLookup]);
-
   const isIndeterminate = useMemo(
     () => state.items?.some((item) => selectedLookup[item.path] && !isAllChecked) ?? false,
     [state.items, selectedLookup, isAllChecked]
   );
-
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
 
   const onToggleCheckedAll = () => {
@@ -131,10 +130,6 @@ export function UnpublishedDashlet() {
   const handleItemChecked = (path: string) => {
     setSelectedLookup({ ...selectedLookup, [path]: !selectedLookup[path] });
   };
-
-  useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
-  }, [preferences, currentUser, uuid]);
 
   const fetchUnpublished = useCallback(
     (backgroundRefresh?: boolean) => {
@@ -208,26 +203,6 @@ export function UnpublishedDashlet() {
     }
   };
 
-  useEffect(() => {
-    fetchUnpublished();
-  }, [fetchUnpublished]);
-
-  // region Item Updates Propagation
-  useEffect(() => {
-    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      if (type === deleteContentEvent.type) {
-        setSelectedLookup({});
-      }
-      fetchUnpublished(true);
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [fetchUnpublished, selectedLookup]);
-  // endregion
-
   const selectionOptions = useMemo(() => {
     const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
     if (selected.length === 0) {
@@ -250,6 +225,45 @@ export function UnpublishedDashlet() {
     }
   }, [formatMessage, itemsByPath, selectedLookup]);
 
+  const onClickPublishEverything = (e) => {
+    e.stopPropagation();
+
+    dispatch(
+      showWidgetDialog({
+        id: 'craftercms.components.PublishOnDemandWidget',
+        extraProps: {
+          onlyMode: 'all'
+        }
+      })
+    );
+  };
+
+  // region Effects
+  useEffect(() => {
+    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
+  }, [preferences, currentUser, uuid]);
+
+  useEffect(() => {
+    fetchUnpublished();
+  }, [fetchUnpublished]);
+  // endregion
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      if (type === deleteContentEvent.type) {
+        setSelectedLookup({});
+      }
+      fetchUnpublished(true);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [fetchUnpublished, selectedLookup]);
+  // endregion
+
   return (
     <LegacyDashletCard
       title={
@@ -263,6 +277,9 @@ export function UnpublishedDashlet() {
       onRefresh={fetchUnpublished}
       headerRightSection={
         <>
+          <Button onClick={onClickPublishEverything}>
+            <FormattedMessage id="unpublishedDashlet.publishEverything" defaultMessage="Publish Everything" />
+          </Button>
           <TextField
             label={<FormattedMessage id="words.show" defaultMessage="Show" />}
             select
