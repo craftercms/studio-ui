@@ -43,9 +43,6 @@ import {
 } from '../../../utils/itemActions';
 import translations from '../LegacyRecentActivityDashlet/translations';
 import useEnv from '../../../hooks/useEnv';
-import useItemsByPath from '../../../hooks/useItemsByPath';
-import useDetailedItems from '../../../hooks/useDetailedItems';
-import useSelection from '../../../hooks/useSelection';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter } from 'rxjs/operators';
@@ -90,12 +87,6 @@ export function UnpublishedDashlet() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
-  const itemsByPath = useItemsByPath();
-  useDetailedItems(Object.keys(selectedLookup));
-  const itemsBeingFetchedByPath = useSelection((state) => state.content.itemsBeingFetchedByPath);
-  const isFetchingDetailedItems = useMemo(() => {
-    return Object.keys(selectedLookup).some((path) => itemsBeingFetchedByPath[path]);
-  }, [itemsBeingFetchedByPath, selectedLookup]);
 
   const isAllChecked = useMemo(() => {
     const nonDeletedItems = state.items?.filter((item) => !item.stateMap.deleted) ?? [];
@@ -187,7 +178,7 @@ export function UnpublishedDashlet() {
       const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
       let selectedItems = [];
       selected.forEach((itemPath) => {
-        const item = itemsByPath[itemPath];
+        const item = state.items.find((item) => itemPath === item.path);
         if (item) {
           selectedItems.push(item);
         }
@@ -210,12 +201,12 @@ export function UnpublishedDashlet() {
     } else if (selected.length) {
       if (selected.length === 1) {
         const path = selected[0];
-        const item = itemsByPath[path];
+        const item = state.items.find((item) => path === item.path);
         return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
       } else {
         let items = [];
         selected.forEach((itemPath) => {
-          const item = itemsByPath[itemPath];
+          const item = state.items.find((item) => itemPath === item.path);
           if (item) {
             items.push(item);
           }
@@ -223,7 +214,7 @@ export function UnpublishedDashlet() {
         return generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown });
       }
     }
-  }, [formatMessage, itemsByPath, selectedLookup]);
+  }, [formatMessage, state.items, selectedLookup]);
 
   const onClickPublishEverything = (e) => {
     e.stopPropagation();
@@ -281,7 +272,7 @@ export function UnpublishedDashlet() {
       onRefresh={fetchUnpublished}
       headerRightSection={
         <>
-          <Button onClick={onClickPublishEverything}>
+          <Button onClick={onClickPublishEverything} sx={{ mr: 1 }}>
             <FormattedMessage id="unpublishedDashlet.publishEverything" defaultMessage="Publish Everything" />
           </Button>
           <TextField
@@ -321,7 +312,7 @@ export function UnpublishedDashlet() {
                 }
                 isIndeterminate={isIndeterminate}
                 isChecked={isAllChecked}
-                isLoading={isFetchingDetailedItems}
+                isLoading={state.fetching}
                 onOptionClicked={onActionBarOptionClicked}
                 onCheckboxChange={onToggleCheckedAll}
               />

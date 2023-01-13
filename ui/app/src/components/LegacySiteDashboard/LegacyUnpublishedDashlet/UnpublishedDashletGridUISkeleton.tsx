@@ -25,7 +25,7 @@ import GlobalAppGridCell from '../../GlobalAppGridCell';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../../PathNavigator/utils';
 import Typography from '@mui/material/Typography';
-import useStyles from './styles';
+import useStyles from '../styles';
 
 export interface UnpublishedDashletGridUISkeletonProps {
   numOfItems?: number;
