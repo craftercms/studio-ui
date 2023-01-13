@@ -47,6 +47,7 @@ import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '.
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import Button from '@mui/material/Button';
+import useStyles from '../styles';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   numItems: 10,
@@ -77,6 +78,7 @@ export function UnpublishedDashlet() {
     error: null
   });
   const { id: siteId, uuid } = useActiveSite();
+  const { classes } = useStyles();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const dashletPreferencesId = 'unpublishedDashlet';
   const [preferences, setPreferences] = useSpreadState(
@@ -305,6 +307,10 @@ export function UnpublishedDashlet() {
           <>
             {(isIndeterminate || isAllChecked) && (
               <ActionsBar
+                classes={{
+                  root: classes.actionsBarRoot,
+                  checkbox: classes.actionsBarCheckbox
+                }}
                 options={
                   selectionOptions?.concat([
                     { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }

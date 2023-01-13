@@ -42,6 +42,7 @@ import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../../util
 import { ActionsBar } from '../../ActionsBar';
 import { itemActionDispatcher } from '../../../utils/itemActions';
 import translations from '../LegacyAwaitingApprovalDashlet/translations';
+import useStyles from '../styles';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   numItems: 10,
@@ -61,6 +62,7 @@ export function InReviewDashlet() {
     error: null
   });
   const { id: siteId, uuid } = useActiveSite();
+  const { classes } = useStyles();
   const currentUser = useSelector<GlobalState, string>((state) => state.user.username);
   const dashletPreferencesId = 'inReviewDashlet';
   const [preferences, setPreferences] = useSpreadState(
@@ -248,6 +250,10 @@ export function InReviewDashlet() {
           <>
             {(isIndeterminate || isAllChecked) && (
               <ActionsBar
+                classes={{
+                  root: classes.actionsBarRoot,
+                  checkbox: classes.actionsBarCheckbox
+                }}
                 options={[
                   { id: 'approvePublish', label: formatMessage(translations.publish) },
                   { id: 'rejectPublish', label: formatMessage(translations.reject) },
