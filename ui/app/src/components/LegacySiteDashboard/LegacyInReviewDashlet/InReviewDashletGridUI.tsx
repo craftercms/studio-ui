@@ -25,15 +25,39 @@ import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
+import ItemDisplay from '../../ItemDisplay';
+import { asLocalizedDateTime } from '../../../utils/datetime';
+import GlobalState from '../../../models/GlobalState';
+import LookupTable from '../../../models/LookupTable';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
+import Tooltip from '@mui/material/Tooltip';
+import { getDateScheduled } from '../../../utils/content';
+import { DetailedItem } from '../../../models';
 
 export interface InReviewDashletGridUIProps {
-  // items: SandboxItem[]; TODO: update when API returns sandbox Items
-  items: any[];
+  items: DetailedItem[];
+  locale: GlobalState['uiConfig']['locale'];
+  selectedLookup: LookupTable<boolean>;
+  isAllChecked: boolean;
+  isIndeterminate: boolean;
+  onItemChecked(path: string): void;
+  onOptionsButtonClick?: any;
+  onClickSelectAll(): void;
 }
 
 export function InReviewDashletGridUI(props: InReviewDashletGridUIProps) {
-  const { items } = props;
-  const { classes } = useStyles();
+  const {
+    items,
+    locale,
+    onOptionsButtonClick,
+    selectedLookup,
+    onItemChecked,
+    isAllChecked,
+    isIndeterminate,
+    onClickSelectAll
+  } = props;
+  const { classes, cx } = useStyles();
 
   return (
     <TableContainer>
@@ -41,8 +65,12 @@ export function InReviewDashletGridUI(props: InReviewDashletGridUIProps) {
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell className="checkbox">
-              {/* TODO: add actions/disabled state/indeterminate/checked */}
-              <Checkbox />
+              <Checkbox
+                disabled={items?.length === 1 && items[0].stateMap.deleted}
+                indeterminate={isIndeterminate}
+                checked={isAllChecked}
+                onChange={() => onClickSelectAll()}
+              />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width40 pl0">
               <Typography variant="subtitle2">
@@ -73,31 +101,88 @@ export function InReviewDashletGridUI(props: InReviewDashletGridUIProps) {
           </GlobalAppGridRow>
         </TableHead>
         <TableBody>
-          {items.map((item, index) => (
-            // TODO: onClick - item checked
-            <GlobalAppGridRow key={index}>
+          {items.map((item) => (
+            <GlobalAppGridRow
+              key={item.id}
+              onClick={
+                item.stateMap.deleted
+                  ? null
+                  : () => {
+                      onItemChecked(item.path);
+                    }
+              }
+            >
               <GlobalAppGridCell className="checkbox">
                 <Checkbox
-                // disabled={item.stateMap.deleted}
-                // checked={item.stateMap.deleted ? false : Boolean(selectedLookup[item.path])}
-                // onClick={(e) => {
-                //   e.stopPropagation();
-                // }}
-                // onChange={() => {
-                //   onItemChecked(item.path);
-                // }}
+                  disabled={item.stateMap.deleted}
+                  checked={item.stateMap.deleted ? false : Boolean(selectedLookup[item.path])}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onChange={() => {
+                    onItemChecked(item.path);
+                  }}
                 />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="ellipsis width40 pl0">
-                {/* TODO: itemDisplay when API returns correct value */}
+                <ItemDisplay item={item} showNavigableAsLinks={false} showPublishingTarget={false} />
+                <Typography
+                  title={item.path}
+                  variant="caption"
+                  component="p"
+                  className={cx(classes.itemPath, classes.ellipsis)}
+                >
+                  {item.path}
+                </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width15">{item.publishingTarget}</GlobalAppGridCell>
-              <GlobalAppGridCell className="width15"></GlobalAppGridCell>
-              <GlobalAppGridCell className="width15 ellipsis" title={item.submitter?.username}>
-                {item.submitter?.username}
+              <GlobalAppGridCell className="width15">
+                {item.stateMap.submittedToLive ? (
+                  <FormattedMessage id="words.live" defaultMessage="Live" />
+                ) : (
+                  <FormattedMessage id="words.staging" defaultMessage="Staging" />
+                )}
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width15 ellipsis"></GlobalAppGridCell>
-              <GlobalAppGridCell className="checkbox"></GlobalAppGridCell>
+              <GlobalAppGridCell
+                className="width15"
+                title={
+                  getDateScheduled(item) &&
+                  asLocalizedDateTime(getDateScheduled(item), locale.localeCode, locale.dateTimeFormatOptions)
+                }
+              >
+                {getDateScheduled(item) ? (
+                  asLocalizedDateTime(getDateScheduled(item), locale.localeCode, locale.dateTimeFormatOptions)
+                ) : (
+                  <Typography variant="caption" color="textSecondary">
+                    <FormattedMessage id="words.now" defaultMessage="Now" />
+                  </Typography>
+                )}
+              </GlobalAppGridCell>
+              <GlobalAppGridCell className="width15 ellipsis" title={item.sandbox.modifier}>
+                {item.sandbox.modifier}
+              </GlobalAppGridCell>
+              <GlobalAppGridCell className="width15 ellipsis">
+                {item.sandbox.dateModified &&
+                  asLocalizedDateTime(item.sandbox.dateModified, locale.localeCode, locale.dateTimeFormatOptions)}
+              </GlobalAppGridCell>
+              <GlobalAppGridCell className="checkbox">
+                {item.stateMap.deleted ? (
+                  <IconButton disabled={true} size="large">
+                    <MoreVertRounded />
+                  </IconButton>
+                ) : (
+                  <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOptionsButtonClick(e, item);
+                      }}
+                      size="large"
+                    >
+                      <MoreVertRounded />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </GlobalAppGridCell>
             </GlobalAppGridRow>
           ))}
         </TableBody>

@@ -14,22 +14,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from 'react';
-import { LegacyDashboardPreferences } from '../../../models';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { AllItemActions, ApiResponse, DetailedItem, LegacyDashboardPreferences } from '../../../models';
 import useSpreadState from '../../../hooks/useSpreadState';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../../models/GlobalState';
 import { getStoredDashboardPreferences, setStoredDashboardPreferences } from '../../../utils/state';
 import useActiveSite from '../../../hooks/useActiveSite';
 import { fetchPendingApproval as fetchPendingApprovalService } from '../../../services/dashboard';
 import { LegacyDashletCard } from '../LegacyDashletCard';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { ApiResponseErrorState } from '../../ApiResponseErrorState';
 import { EmptyState, getEmptyStateStyleSet } from '../../EmptyState';
 import InReviewDashletGridUISkeleton from './InReviewDashletGridUISkeleton';
 import InReviewDashletGridUI from './InReviewDashletGridUI';
+import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
+import { getHostToHostBus } from '../../../utils/subjects';
+import { filter } from 'rxjs/operators';
+import useLocale from '../../../hooks/useLocale';
+import LookupTable from '../../../models/LookupTable';
+import { createPresenceTable } from '../../../utils/array';
+import useEnv from '../../../hooks/useEnv';
+import { showItemMegaMenu } from '../../../state/actions/dialogs';
+import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../../utils/content';
+import { ActionsBar } from '../../ActionsBar';
+import { itemActionDispatcher } from '../../../utils/itemActions';
+import translations from '../LegacyAwaitingApprovalDashlet/translations';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   numItems: 10,
@@ -37,7 +49,12 @@ const dashletInitialPreferences: LegacyDashboardPreferences = {
 };
 
 export function InReviewDashlet() {
-  const [state, setState] = useSpreadState({
+  const [state, setState] = useSpreadState<{
+    items: DetailedItem[];
+    total: number;
+    fetching: boolean;
+    error: ApiResponse;
+  }>({
     items: null,
     total: 0,
     fetching: false,
@@ -49,10 +66,46 @@ export function InReviewDashlet() {
   const [preferences, setPreferences] = useSpreadState(
     getStoredDashboardPreferences(currentUser, uuid, dashletPreferencesId) ?? dashletInitialPreferences
   );
+  const [selectedLookup, setSelectedLookup] = useState<LookupTable<boolean>>({});
+  const locale = useLocale();
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
 
-  useEffect(() => {
-    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
-  }, [preferences, currentUser, uuid]);
+  const isAllChecked = useMemo(() => {
+    const nonDeletedItems = state.items?.filter((item) => !item.stateMap.deleted) ?? [];
+    if (nonDeletedItems.length) {
+      // Is there at least one (non deleted item) that's not checked? If so, they're NOT all checked.
+      return !nonDeletedItems.some((item) => !selectedLookup[item.path]);
+    } else {
+      return false;
+    }
+  }, [state.items, selectedLookup]);
+  const isIndeterminate = useMemo(
+    () => state.items?.some((item) => selectedLookup[item.path] && !isAllChecked) ?? false,
+    [state.items, selectedLookup, isAllChecked]
+  );
+
+  const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
+
+  const onToggleCheckedAll = () => {
+    if (isAllChecked) {
+      setSelectedLookup({});
+    } else {
+      setSelectedLookup({
+        ...selectedLookup,
+        ...createPresenceTable(
+          state.items.filter((item) => !item.stateMap.deleted),
+          true,
+          (item) => item.path
+        )
+      });
+    }
+  };
+
+  const handleItemChecked = (path: string) => {
+    setSelectedLookup({ ...selectedLookup, [path]: !selectedLookup[path] });
+  };
 
   const fetchPendingApproval = useCallback(
     (backgroundRefresh?: boolean) => {
@@ -64,7 +117,6 @@ export function InReviewDashlet() {
         offset: 0
       }).subscribe({
         next(items) {
-          console.log('items', items);
           setState({
             items,
             total: items.total,
@@ -89,12 +141,68 @@ export function InReviewDashlet() {
     });
   };
 
+  const onItemMenuClick = (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, item: DetailedItem) => {
+    const path = item.path;
+    dispatch(
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top: event.clientY, left: event.clientX },
+        numOfLoaderItems: getNumOfMenuOptionsForItem({
+          path: item.path,
+          systemType: getSystemTypeFromPath(item.path)
+        } as DetailedItem)
+      })
+    );
+  };
+
+  const onActionBarOptionClicked = (option: string) => {
+    if (option === 'clear') {
+      setSelectedLookup({});
+    } else {
+      const selected = Object.keys(selectedLookup).filter((path) => selectedLookup[path]);
+      let selectedItems = [];
+      selected.forEach((itemPath) => {
+        const item = state.items.find((item) => itemPath === item.path);
+        if (item) {
+          selectedItems.push(item);
+        }
+      });
+      itemActionDispatcher({
+        site: siteId,
+        item: selected.length > 1 ? selectedItems : selectedItems[0],
+        option: option as AllItemActions,
+        authoringBase,
+        dispatch,
+        formatMessage
+      });
+    }
+  };
+
+  // region Effects
+  useEffect(() => {
+    setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
+  }, [preferences, currentUser, uuid]);
+
   useEffect(() => {
     fetchPendingApproval();
   }, [fetchPendingApproval]);
+  // endregion
 
   // region Item Updates Propagation
-
+  useEffect(() => {
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      if (type === deleteContentEvent.type) {
+        setSelectedLookup({});
+      }
+      fetchPendingApproval(true);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [fetchPendingApproval, selectedLookup]);
   // endregion
 
   return (
@@ -137,7 +245,31 @@ export function InReviewDashlet() {
         <InReviewDashletGridUISkeleton numOfItems={state.items?.length} />
       ) : state.items ? (
         state.items.length ? (
-          <InReviewDashletGridUI items={state.items} />
+          <>
+            {(isIndeterminate || isAllChecked) && (
+              <ActionsBar
+                options={[
+                  { id: 'approvePublish', label: formatMessage(translations.publish) },
+                  { id: 'rejectPublish', label: formatMessage(translations.reject) },
+                  { id: 'clear', label: formatMessage(translations.clear, { count: selectedItemsLength }) }
+                ]}
+                isIndeterminate={isIndeterminate}
+                isChecked={isAllChecked}
+                onOptionClicked={onActionBarOptionClicked}
+                onCheckboxChange={onToggleCheckedAll}
+              />
+            )}
+            <InReviewDashletGridUI
+              items={state.items}
+              locale={locale}
+              onOptionsButtonClick={onItemMenuClick}
+              selectedLookup={selectedLookup}
+              isAllChecked={isAllChecked}
+              isIndeterminate={isIndeterminate}
+              onItemChecked={handleItemChecked}
+              onClickSelectAll={onToggleCheckedAll}
+            />
+          </>
         ) : (
           <EmptyState
             title={<FormattedMessage id="inReviewDashlet.emptyMessage" defaultMessage="No items in review" />}
