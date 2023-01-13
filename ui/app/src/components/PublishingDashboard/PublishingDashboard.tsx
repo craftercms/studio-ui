@@ -29,11 +29,12 @@ import { useTheme } from '@mui/material/styles';
 interface PublishingDashboardProps {
   embedded?: boolean;
   showAppsButton?: boolean;
+  publishEverything?: true;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function PublishingDashboard(props: PublishingDashboardProps) {
-  const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
+  const { embedded, showAppsButton, onSubmittingAndOrPendingChange, publishEverything } = props;
   const site = useActiveSiteId();
   const {
     spacing,
@@ -64,11 +65,17 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
           <PublishingStatusWidget siteId={site} />
         </Grid>
         <Grid item xs={12}>
-          <PublishOnDemandWidget siteId={site} onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange} />
+          <PublishOnDemandWidget
+            siteId={site}
+            onlyMode={publishEverything ? 'all' : null}
+            onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+          />
         </Grid>
-        <Grid item xs={12}>
-          <PublishingQueueWidget siteId={site} />
-        </Grid>
+        {!Boolean(publishEverything) && (
+          <Grid item xs={12}>
+            <PublishingQueueWidget siteId={site} />
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

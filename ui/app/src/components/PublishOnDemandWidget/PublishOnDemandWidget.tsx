@@ -29,7 +29,7 @@ import Collapse from '@mui/material/Collapse';
 import ListItemText from '@mui/material/ListItemText';
 import PublishOnDemandForm from '../PublishOnDemandForm';
 import { PublishFormData, PublishOnDemandMode } from '../../models/Publishing';
-import { nnou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import Typography from '@mui/material/Typography';
 import { bulkGoLive, fetchPublishingTargets, publishAll, publishByCommits } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
@@ -150,15 +150,16 @@ const initialPublishEverythingFormData = {
 
 interface PublishOnDemandWidgetProps {
   siteId: string;
+  onlyMode?: 'all' | 'studio' | 'git';
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
-  const { siteId, onSubmittingAndOrPendingChange } = props;
+  const { siteId, onSubmittingAndOrPendingChange, onlyMode } = props;
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const [mode, setMode] = useState<PublishOnDemandMode>(null);
+  const [mode, setMode] = useState<PublishOnDemandMode>(onlyMode ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const permissionsBySite = usePermissionsBySite();
   const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
@@ -273,7 +274,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishGitFormData({ ...initialPublishGitFormData, publishingTarget });
-        setMode(null);
+        nou(onlyMode) && setMode(null);
       },
       error({ response }) {
         setIsSubmitting(false);
@@ -305,7 +306,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           next() {
             setIsSubmitting(false);
             setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
-            setMode(null);
+            nou(onlyMode) && setMode(null);
             dispatch(
               showSystemNotification({
                 message: formatMessage(messages.bulkPublishStarted)
@@ -336,7 +337,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishEverythingFormData({ ...initialPublishEverythingFormData, publishingTarget });
-        setMode(null);
+        nou(onlyMode) && setMode(null);
       },
       error({ response }) {
         setIsSubmitting(false);
@@ -410,55 +411,61 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
             <Paper elevation={0} className={classes.modeSelector}>
               <form>
                 <RadioGroup value={mode} onChange={handleChange}>
-                  <FormControlLabel
-                    disabled={isSubmitting}
-                    value="studio"
-                    control={<Radio />}
-                    label={
-                      <ListItemText
-                        primary={
-                          <FormattedMessage
-                            id="publishOnDemand.pathModeDescription"
-                            defaultMessage="Publish changes made in Studio via the UI"
-                          />
-                        }
-                        secondary="By path"
-                      />
-                    }
-                    className={classes.byPathModeSelector}
-                  />
-                  <FormControlLabel
-                    disabled={isSubmitting}
-                    value="git"
-                    control={<Radio />}
-                    label={
-                      <ListItemText
-                        primary={
-                          <FormattedMessage
-                            id="publishOnDemand.tagsModeDescription"
-                            defaultMessage="Publish changes made via direct git actions against the repository or pulled from a remote repository"
-                          />
-                        }
-                        secondary="By tags or commit ids"
-                      />
-                    }
-                  />
-                  <FormControlLabel
-                    disabled={isSubmitting}
-                    value="all"
-                    control={<Radio />}
-                    label={
-                      <ListItemText
-                        primary={
-                          <FormattedMessage
-                            id="publishOnDemand.publishAllDescription"
-                            defaultMessage="Publish everything"
-                          />
-                        }
-                        secondary="Publish all changes on the repo to the publishing target you choose"
-                      />
-                    }
-                  />
+                  {(nou(onlyMode) || onlyMode === 'studio') && (
+                    <FormControlLabel
+                      disabled={isSubmitting}
+                      value="studio"
+                      control={<Radio />}
+                      label={
+                        <ListItemText
+                          primary={
+                            <FormattedMessage
+                              id="publishOnDemand.pathModeDescription"
+                              defaultMessage="Publish changes made in Studio via the UI"
+                            />
+                          }
+                          secondary="By path"
+                        />
+                      }
+                      className={classes.byPathModeSelector}
+                    />
+                  )}
+                  {(nou(onlyMode) || onlyMode === 'git') && (
+                    <FormControlLabel
+                      disabled={isSubmitting}
+                      value="git"
+                      control={<Radio />}
+                      label={
+                        <ListItemText
+                          primary={
+                            <FormattedMessage
+                              id="publishOnDemand.tagsModeDescription"
+                              defaultMessage="Publish changes made via direct git actions against the repository or pulled from a remote repository"
+                            />
+                          }
+                          secondary="By tags or commit ids"
+                        />
+                      }
+                    />
+                  )}
+                  {(nou(onlyMode) || onlyMode === 'all') && (
+                    <FormControlLabel
+                      disabled={isSubmitting}
+                      value="all"
+                      control={<Radio />}
+                      label={
+                        <ListItemText
+                          primary={
+                            <FormattedMessage
+                              id="publishOnDemand.publishAllDescription"
+                              defaultMessage="Publish everything"
+                            />
+                          }
+                          secondary="Publish all changes on the repo to the publishing target you choose"
+                        />
+                      }
+                    />
+                  )}
                 </RadioGroup>
               </form>
             </Paper>

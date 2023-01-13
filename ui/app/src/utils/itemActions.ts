@@ -15,7 +15,7 @@
  */
 
 import { translations } from '../components/ItemActionsMenu/translations';
-import { AllItemActions, DetailedItem, LegacyItem } from '../models/Item';
+import { AllItemActions, DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { ContextMenuOption } from '../components/ContextMenu';
 import { getControllerPath, getRootPath, withoutIndex } from './path';
 import {
@@ -287,7 +287,7 @@ export function toContextMenuOptionsLookup<Keys extends string = AllItemActions>
 }
 
 export function generateSingleItemOptions(
-  item: DetailedItem,
+  item: SandboxItem | DetailedItem,
   formatMessage: IntlFormatters['formatMessage'],
   options?: Partial<{
     hasClipboard: boolean;
@@ -454,7 +454,7 @@ export function generateSingleItemOptions(
 }
 
 export function generateMultipleItemOptions(
-  items: DetailedItem[],
+  items: SandboxItem[] | DetailedItem[],
   formatMessage: IntlFormatters['formatMessage'],
   options?: {
     includeOnly: AllItemActions[];
