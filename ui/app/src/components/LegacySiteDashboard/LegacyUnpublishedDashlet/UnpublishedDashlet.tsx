@@ -31,7 +31,7 @@ import { EmptyState, getEmptyStateStyleSet } from '../../EmptyState';
 import UnpublishedDashletGridUISkeleton from './UnpublishedDashletGridUISkeleton';
 import UnpublishedDashletGridUI from './UnpublishedDashletGridUI';
 import useLocale from '../../../hooks/useLocale';
-import { showItemMegaMenu, showWidgetDialog } from '../../../state/actions/dialogs';
+import { closeWidgetDialog, showItemMegaMenu, showWidgetDialog } from '../../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../../utils/content';
 import LookupTable from '../../../models/LookupTable';
 import { createPresenceTable } from '../../../utils/array';
@@ -41,7 +41,7 @@ import {
   generateSingleItemOptions,
   itemActionDispatcher
 } from '../../../utils/itemActions';
-import translations from '../LegacyRecentActivityDashlet/translations';
+import translations from '../translations';
 import useEnv from '../../../hooks/useEnv';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
@@ -223,13 +223,18 @@ export function UnpublishedDashlet() {
 
     dispatch(
       showWidgetDialog({
+        title: formatMessage(translations.publishEverything),
+        maxWidth: 'md',
         widget: {
           id: 'craftercms.components.PublishOnDemandWidget'
         },
         fullHeight: false,
         extraProps: {
           siteId,
-          onlyMode: 'all'
+          mode: 'all',
+          showHeader: false,
+          onCancel: closeWidgetDialog(),
+          onSuccess: closeWidgetDialog()
         }
       })
     );

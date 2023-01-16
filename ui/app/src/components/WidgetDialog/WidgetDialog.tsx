@@ -23,6 +23,8 @@ import { Widget } from '../Widget/Widget';
 import useRef from '../../hooks/useUpdateRefs';
 import { DialogProps } from '@mui/material/Dialog';
 import { UNDEFINED } from '../../utils/constants';
+import { createCallback } from '../GlobalDialogManager';
+import { useDispatch } from 'react-redux';
 
 interface WidgetDialogContextType {
   onClose: DialogProps['onClose'];
@@ -37,6 +39,7 @@ export function useWidgetDialogContext(): WidgetDialogContextType {
 export function WidgetDialog(props: WidgetDialogProps) {
   const { title, fullHeight = true, widget, onSubmittingAndOrPendingChange, isSubmitting, extraProps, ...rest } = props;
   const { classes } = useStyles();
+  const dispatch = useDispatch();
   const fnRefs = useRef({ onClose: rest.onClose });
   const context = useMemo<WidgetDialogContextType>(
     () => ({
@@ -59,7 +62,16 @@ export function WidgetDialog(props: WidgetDialogProps) {
           <Suspencified>
             <Widget
               {...widget}
-              overrideProps={{ onSubmittingAndOrPendingChange, isSubmitting, mountMode: 'dialog', ...extraProps }}
+              overrideProps={{
+                onSubmittingAndOrPendingChange,
+                isSubmitting,
+                mountMode: 'dialog',
+                ...{
+                  ...extraProps,
+                  ...(extraProps?.onCancel && { onCancel: createCallback(extraProps.onCancel, dispatch) }),
+                  ...(extraProps?.onSuccess && { onCancel: createCallback(extraProps.onSuccess, dispatch) })
+                }
+              }}
             />
           </Suspencified>
         </section>

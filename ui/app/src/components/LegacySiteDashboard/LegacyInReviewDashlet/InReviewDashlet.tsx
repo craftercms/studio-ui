@@ -41,7 +41,7 @@ import { showItemMegaMenu } from '../../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../../utils/content';
 import { ActionsBar } from '../../ActionsBar';
 import { itemActionDispatcher } from '../../../utils/itemActions';
-import translations from '../LegacyAwaitingApprovalDashlet/translations';
+import translations from '../translations';
 import useStyles from '../styles';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {

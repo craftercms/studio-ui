@@ -60,7 +60,7 @@ const WidgetDialog = lazy(() => import('../WidgetDialog'));
 const CodeEditorDialog = lazy(() => import('../CodeEditorDialog'));
 
 // @formatter:off
-function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
+export function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
   // prettier-ignore
   return action ? (output: any) => {
     const hasPayload = Boolean(action.payload);
