@@ -150,16 +150,26 @@ const initialPublishEverythingFormData = {
 
 interface PublishOnDemandWidgetProps {
   siteId: string;
-  onlyMode?: 'all' | 'studio' | 'git';
+  mode?: 'all' | 'studio' | 'git';
+  showHeader?: boolean;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+  onCancel?(): void;
+  onSuccess?(): void;
 }
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
-  const { siteId, onSubmittingAndOrPendingChange, onlyMode } = props;
+  const {
+    siteId,
+    onSubmittingAndOrPendingChange,
+    mode: initialMode,
+    showHeader = true,
+    onCancel: onCancelProp,
+    onSuccess: onSuccessProp
+  } = props;
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const [mode, setMode] = useState<PublishOnDemandMode>(onlyMode ?? null);
+  const [mode, setMode] = useState<PublishOnDemandMode>(initialMode ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const permissionsBySite = usePermissionsBySite();
   const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
@@ -274,7 +284,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishGitFormData({ ...initialPublishGitFormData, publishingTarget });
-        nou(onlyMode) && setMode(null);
+        nou(initialMode) && setMode(null);
+        onSuccessProp?.();
       },
       error({ response }) {
         setIsSubmitting(false);
@@ -306,12 +317,13 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           next() {
             setIsSubmitting(false);
             setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
-            nou(onlyMode) && setMode(null);
+            nou(initialMode) && setMode(null);
             dispatch(
               showSystemNotification({
                 message: formatMessage(messages.bulkPublishStarted)
               })
             );
+            onSuccessProp?.();
           },
           error({ response }) {
             setIsSubmitting(false);
@@ -337,7 +349,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishEverythingFormData({ ...initialPublishEverythingFormData, publishingTarget });
-        nou(onlyMode) && setMode(null);
+        nou(initialMode) && setMode(null);
+        onSuccessProp?.();
       },
       error({ response }) {
         setIsSubmitting(false);
@@ -352,8 +365,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const onCancel = () => {
-    setMode(null);
+    !initialMode && setMode(null);
     setDefaultPublishingTarget(publishingTargets, true);
+    onCancelProp?.();
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -404,14 +418,16 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 
   return (
     <Paper elevation={2}>
-      <DialogHeader title={<FormattedMessage id="publishOnDemand.title" defaultMessage="Publish on Demand" />} />
+      {showHeader && (
+        <DialogHeader title={<FormattedMessage id="publishOnDemand.title" defaultMessage="Publish on Demand" />} />
+      )}
       <div className={classes.content}>
         {hasInitialPublish ? (
           <>
             <Paper elevation={0} className={classes.modeSelector}>
               <form>
                 <RadioGroup value={mode} onChange={handleChange}>
-                  {(nou(onlyMode) || onlyMode === 'studio') && (
+                  {(nou(initialMode) || initialMode === 'studio') && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="studio"
@@ -430,7 +446,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                       className={classes.byPathModeSelector}
                     />
                   )}
-                  {(nou(onlyMode) || onlyMode === 'git') && (
+                  {(nou(initialMode) || initialMode === 'git') && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="git"
@@ -448,7 +464,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                       }
                     />
                   )}
-                  {(nou(onlyMode) || onlyMode === 'all') && (
+                  {(nou(initialMode) || initialMode === 'all') && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="all"
