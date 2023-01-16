@@ -131,7 +131,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
                 labelId="publishingTargetLabel"
                 label={<FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />}
                 value={formData.publishingTarget}
-                onChange={handleFormChange('environment')}
+                onChange={handleFormChange('publishingTarget')}
               >
                 {publishingTargets.map((target) => (
                   <MenuItem key={target.name} value={target.name}>
