@@ -17,4 +17,3 @@
 export { default } from './RecentActivityDashletGridUI';
 
 export * from './RecentActivityDashletGridUI';
-
