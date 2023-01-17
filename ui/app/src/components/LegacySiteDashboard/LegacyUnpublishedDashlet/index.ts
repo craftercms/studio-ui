@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './UnpublishedDashlet';
+export { default } from './LegacyUnpublishedDashlet';
 
-export * from './UnpublishedDashlet';
+export * from './LegacyUnpublishedDashlet';
 
-export * from './UnpublishedDashletGridUI';
+export * from './LegacyUnpublishedDashletGridUI';
 
-export * from './UnpublishedDashletGridUISkeleton';
+export * from './LegacyUnpublishedDashletGridUISkeleton';

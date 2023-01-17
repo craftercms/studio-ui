@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './InReviewDashlet';
+export { default } from './LegacyInReviewDashlet';
 
-export * from './InReviewDashlet';
+export * from './LegacyInReviewDashlet';
 
-export * from './InReviewDashletGridUI';
+export * from './LegacyInReviewDashletGridUI';
 
-export * from './InReviewDashletGridUISkeleton';
+export * from './LegacyInReviewDashletGridUISkeleton';

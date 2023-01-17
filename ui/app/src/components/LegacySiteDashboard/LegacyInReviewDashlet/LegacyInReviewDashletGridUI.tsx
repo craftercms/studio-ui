@@ -35,7 +35,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { getDateScheduled } from '../../../utils/content';
 import { DetailedItem } from '../../../models';
 
-export interface InReviewDashletGridUIProps {
+export interface LegacyInReviewDashletGridUIProps {
   items: DetailedItem[];
   locale: GlobalState['uiConfig']['locale'];
   selectedLookup: LookupTable<boolean>;
@@ -46,7 +46,7 @@ export interface InReviewDashletGridUIProps {
   onClickSelectAll(): void;
 }
 
-export function InReviewDashletGridUI(props: InReviewDashletGridUIProps) {
+export function LegacyInReviewDashletGridUI(props: LegacyInReviewDashletGridUIProps) {
   const {
     items,
     locale,
@@ -191,4 +191,4 @@ export function InReviewDashletGridUI(props: InReviewDashletGridUIProps) {
   );
 }
 
-export default InReviewDashletGridUI;
+export default LegacyInReviewDashletGridUI;

@@ -28,8 +28,8 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { ApiResponseErrorState } from '../../ApiResponseErrorState';
 import { EmptyState, getEmptyStateStyleSet } from '../../EmptyState';
-import InReviewDashletGridUISkeleton from './InReviewDashletGridUISkeleton';
-import InReviewDashletGridUI from './InReviewDashletGridUI';
+import InReviewDashletGridUISkeleton from './LegacyInReviewDashletGridUISkeleton';
+import LegacyInReviewDashletGridUI from './LegacyInReviewDashletGridUI';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../../state/actions/system';
 import { getHostToHostBus } from '../../../utils/subjects';
 import { filter } from 'rxjs/operators';
@@ -49,7 +49,7 @@ const dashletInitialPreferences: LegacyDashboardPreferences = {
   expanded: true
 };
 
-export function InReviewDashlet() {
+export function LegacyInReviewDashlet() {
   const [state, setState] = useSpreadState<{
     items: DetailedItem[];
     total: number;
@@ -265,7 +265,7 @@ export function InReviewDashlet() {
                 onCheckboxChange={onToggleCheckedAll}
               />
             )}
-            <InReviewDashletGridUI
+            <LegacyInReviewDashletGridUI
               items={state.items}
               locale={locale}
               onOptionsButtonClick={onItemMenuClick}
@@ -292,4 +292,4 @@ export function InReviewDashlet() {
   );
 }
 
-export default InReviewDashlet;
+export default LegacyInReviewDashlet;

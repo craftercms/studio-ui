@@ -34,7 +34,7 @@ import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
 import LookupTable from '../../../models/LookupTable';
 
-export interface UnpublishedDashletGridUIProps {
+export interface LegacyUnpublishedDashletGridUIProps {
   items: SandboxItem[];
   locale: GlobalState['uiConfig']['locale'];
   selectedLookup: LookupTable<boolean>;
@@ -45,7 +45,7 @@ export interface UnpublishedDashletGridUIProps {
   onClickSelectAll(): void;
 }
 
-export function UnpublishedDashletGridUI(props: UnpublishedDashletGridUIProps) {
+export function LegacyUnpublishedDashletGridUI(props: LegacyUnpublishedDashletGridUIProps) {
   const {
     items,
     locale,
@@ -156,4 +156,4 @@ export function UnpublishedDashletGridUI(props: UnpublishedDashletGridUIProps) {
   );
 }
 
-export default UnpublishedDashletGridUI;
+export default LegacyUnpublishedDashletGridUI;

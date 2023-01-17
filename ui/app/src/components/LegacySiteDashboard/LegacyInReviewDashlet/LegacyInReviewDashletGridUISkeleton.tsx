@@ -27,11 +27,11 @@ import { rand } from '../../PathNavigator/utils';
 import Typography from '@mui/material/Typography';
 import useStyles from '../styles';
 
-export interface UnpublishedDashletGridUISkeletonProps {
+export interface LegacyRecentActivityDashletUiSkeletonProps {
   numOfItems?: number;
 }
 
-export function UnpublishedDashletGridUISkeleton(props: UnpublishedDashletGridUISkeletonProps) {
+export function LegacyRecentActivityDashletUiSkeleton(props: LegacyRecentActivityDashletUiSkeletonProps) {
   const { classes } = useStyles();
   const { numOfItems = 2 } = props;
   const items = new Array(numOfItems).fill(null);
@@ -47,6 +47,16 @@ export function UnpublishedDashletGridUISkeleton(props: UnpublishedDashletGridUI
             <GlobalAppGridCell className="width40 pl0">
               <Typography variant="subtitle2">
                 <FormattedMessage id="words.item" defaultMessage="Item" />
+              </Typography>
+            </GlobalAppGridCell>
+            <GlobalAppGridCell className="width20 ellipsis">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="recentActivity.publishDate" defaultMessage="Publishing Target" />
+              </Typography>
+            </GlobalAppGridCell>
+            <GlobalAppGridCell className="width15 ellipsis">
+              <Typography variant="subtitle2">
+                <FormattedMessage id="recentActivity.lastEditedBy" defaultMessage="Publishing Date" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width20 ellipsis">
@@ -73,6 +83,12 @@ export function UnpublishedDashletGridUISkeleton(props: UnpublishedDashletGridUI
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
+                <Skeleton variant="text" width="50px" />
+              </GlobalAppGridCell>
+              <GlobalAppGridCell className="width15">
+                <Skeleton variant="text" width={`${rand(50, 60)}%`} />
+              </GlobalAppGridCell>
+              <GlobalAppGridCell className="width20">
                 <Skeleton variant="text" width={`${rand(60, 90)}%`} />
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
@@ -89,4 +105,4 @@ export function UnpublishedDashletGridUISkeleton(props: UnpublishedDashletGridUI
   );
 }
 
-export default UnpublishedDashletGridUISkeleton;
+export default LegacyRecentActivityDashletUiSkeleton;

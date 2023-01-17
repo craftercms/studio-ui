@@ -28,8 +28,8 @@ import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { ApiResponseErrorState } from '../../ApiResponseErrorState';
 import { EmptyState, getEmptyStateStyleSet } from '../../EmptyState';
-import UnpublishedDashletGridUISkeleton from './UnpublishedDashletGridUISkeleton';
-import UnpublishedDashletGridUI from './UnpublishedDashletGridUI';
+import LegacyUnpublishedDashletGridUISkeleton from './LegacyUnpublishedDashletGridUISkeleton';
+import LegacyUnpublishedDashletGridUI from './LegacyUnpublishedDashletGridUI';
 import useLocale from '../../../hooks/useLocale';
 import { closeWidgetDialog, showItemMegaMenu, showWidgetDialog } from '../../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../../utils/content';
@@ -65,7 +65,7 @@ const actionsToBeShown: AllItemActions[] = [
   'history'
 ];
 
-export function UnpublishedDashlet() {
+export function LegacyUnpublishedDashlet() {
   const [state, setState] = useSpreadState<{
     items: SandboxItem[];
     total: number;
@@ -306,7 +306,7 @@ export function UnpublishedDashlet() {
       {state.error ? (
         <ApiResponseErrorState error={state.error} />
       ) : state.fetching ? (
-        <UnpublishedDashletGridUISkeleton numOfItems={state.items?.length} />
+        <LegacyUnpublishedDashletGridUISkeleton numOfItems={state.items?.length} />
       ) : state.items ? (
         state.items.length ? (
           <>
@@ -328,7 +328,7 @@ export function UnpublishedDashlet() {
                 onCheckboxChange={onToggleCheckedAll}
               />
             )}
-            <UnpublishedDashletGridUI
+            <LegacyUnpublishedDashletGridUI
               items={state.items}
               locale={locale}
               onOptionsButtonClick={onItemMenuClick}
@@ -355,4 +355,4 @@ export function UnpublishedDashlet() {
   );
 }
 
-export default UnpublishedDashlet;
+export default LegacyUnpublishedDashlet;
