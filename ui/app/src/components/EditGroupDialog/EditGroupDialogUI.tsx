@@ -72,6 +72,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     onRemoveMembers,
     onCloseButtonClick,
     onFilterUsers,
+    onFilterMembers,
     onLoadMoreUsers,
     users,
     usersHaveNextPage,
@@ -199,6 +200,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 <FormattedMessage id="editGroupDialog.editGroupMembers" defaultMessage="Edit Group Members" />
               </Typography>
               <TransferList
+                externallyManaged={true}
                 onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
                 onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
                 inProgressIds={inProgressIds}
@@ -219,6 +221,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 target={{
                   title: <FormattedMessage id="words.members" defaultMessage="Members" />,
                   items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
+                  onFilter: onFilterMembers,
                   emptyMessage: (
                     <FormattedMessage
                       id="transferList.targetEmptyStateMessage"

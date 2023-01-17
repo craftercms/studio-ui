@@ -47,7 +47,9 @@ export interface GroupEditDialogUIProps {
   submitOk: boolean;
   onCancel(): void;
   onFilterUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+  onFilterMembers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
   onLoadMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+  onLoadMoreMembers?(options?: Partial<PaginationOptions & { keyword?: string }>): void;
   onChangeValue(value: { key: string; value: string }): void;
   onAddMembers?(members: (string | number)[]): void;
   onRemoveMembers?(members: (string | number)[]): void;

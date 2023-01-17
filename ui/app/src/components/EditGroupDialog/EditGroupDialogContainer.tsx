@@ -75,46 +75,50 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const usersRef = useRef([]);
   usersRef.current = users;
   const [members, setMembers] = useState<User[]>();
+  const [membersHaveNextPage, setMembersHaveNextPage] = useState(false);
   const [membersLookup, setMembersLookup] = useState<LookupTable<boolean>>(null);
   const [inProgressIds, setInProgressIds] = useState<string[]>([]);
-  const fetchSize = 5;
+  const usersFetchSize = 5;
   const [usersOffset, setUsersOffset] = useState(0);
+  const membersFetchSize = 100;
+  const [membersOffset, setMembersOffset] = useState(0);
 
   const fetchUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
     fetchAll({
-      limit: fetchSize,
+      limit: usersFetchSize,
       ...options
     }).subscribe((_users) => {
-      setUsersHaveNextPage(_users.total >= usersOffset + fetchSize);
+      setUsersHaveNextPage(_users.total >= usersOffset + usersFetchSize);
       setUsers(_users);
-      setUsersOffset(fetchSize);
+      setUsersOffset(usersFetchSize);
     });
   };
 
   const loadMoreUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
     fetchAll({
-      limit: fetchSize,
+      limit: usersFetchSize,
       offset: usersOffset,
       ...options
     }).subscribe((_users) => {
-      setUsersHaveNextPage(_users.total >= usersOffset + fetchSize);
+      setUsersHaveNextPage(_users.total >= usersOffset + usersFetchSize);
       setUsers([...usersRef.current, ..._users]);
-      setUsersOffset(usersOffset + fetchSize);
+      setUsersOffset(usersOffset + usersFetchSize);
     });
   };
 
-  const fetchMembers = (groupId: number, options?: Partial<PaginationOptions & { keyword?: string }>) => {
-    fetchUsersFromGroup(groupId, options).subscribe((members) => {
+  const fetchMembers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
+    fetchUsersFromGroup(props.group.id, options).subscribe((members) => {
+      setMembersHaveNextPage(members.total >= membersOffset + membersFetchSize);
       setMembers(members);
       setMembersLookup(createPresenceTable(members, true, (member) => member.username));
+      setMembersOffset(membersFetchSize);
     });
   };
 
   useMount(() => {
-    fetchUsers({ limit: fetchSize });
+    fetchUsers({ limit: usersFetchSize });
     if (props.group) {
-      // TODO: decide on what do to with members (client side or server side)
-      fetchMembers(props.group.id, { limit: 100 });
+      fetchMembers({ limit: membersFetchSize });
     }
   });
 
@@ -154,6 +158,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           })
         );
         setInProgressIds([]);
+        fetchUsers({
+          limit: usersOffset + usersFetchSize
+        });
+        fetchMembers({ limit: 100 });
       },
       error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
@@ -171,6 +179,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           })
         );
         setInProgressIds([]);
+        fetchUsers({
+          limit: usersOffset + usersFetchSize
+        });
+        fetchMembers({ limit: membersFetchSize });
       },
       error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
@@ -259,6 +271,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onAddMembers={onAddMembers}
       onRemoveMembers={onRemoveMembers}
       onFilterUsers={fetchUsers}
+      onFilterMembers={fetchMembers}
       onLoadMoreUsers={loadMoreUsers}
       inProgressIds={inProgressIds}
       isDirty={isDirty}

@@ -14,22 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Box from '@mui/material/Box';
-import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import IconButton from '@mui/material/IconButton';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import useStyles from './styles';
+import React, { ReactNode, useCallback, useMemo, useState } from 'react';
 import { createLookupTable } from '../../utils/object';
-import TransferListColumn, { TransferListItem } from '../TransferListColumn';
-import { FormattedMessage } from 'react-intl';
-import Tooltip from '@mui/material/Tooltip';
+import { TransferListItem } from '../TransferListColumn';
 import { LookupTable, PaginationOptions } from '../../models';
+import TransferListInternallyManaged from './TransferListInternallyManaged';
+import TransferListExternallyManaged from './TransferListExternallyManaged';
 
 export interface TransferListProps {
   source: TransferListObject;
   target: TransferListObject;
   inProgressIds: (string | number)[];
+  externallyManaged: boolean;
   onTargetListItemsAdded(items: TransferListItem[]): void;
   onTargetListItemsRemoved(items: TransferListItem[]): void;
 }
@@ -53,7 +49,7 @@ function intersection(a: any, b: any) {
 }
 
 export function TransferList(props: TransferListProps) {
-  const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved } = props;
+  const { externallyManaged, source, target, onTargetListItemsAdded, onTargetListItemsRemoved } = props;
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>(source.items);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>(target.items);
 
@@ -63,15 +59,6 @@ export function TransferList(props: TransferListProps) {
   };
 
   const [checkedList, setCheckedList] = useState({});
-  const { classes } = useStyles();
-
-  useEffect(() => {
-    setSourceItems(source.items);
-  }, [source.items]);
-
-  useEffect(() => {
-    setTargetItems(target.items);
-  }, [target.items]);
 
   const onItemClicked = (item: TransferListItem) => {
     if (checkedList[item.id]) {
@@ -104,8 +91,11 @@ export function TransferList(props: TransferListProps) {
     if (leftCheckedItems.length) {
       leftCheckedItems.forEach((item) => (nextCheckedList[item.id] = false));
       setCheckedList({ ...checkedList, ...nextCheckedList });
-      setSourceItems(not(sourceItems, leftCheckedItems));
-      setTargetItems([...targetItems, ...leftCheckedItems]);
+
+      if (!externallyManaged) {
+        setSourceItems(not(sourceItems, leftCheckedItems));
+        setTargetItems([...targetItems, ...leftCheckedItems]);
+      }
       onTargetListItemsAdded(leftCheckedItems);
     }
   };
@@ -116,8 +106,10 @@ export function TransferList(props: TransferListProps) {
     if (rightCheckedItems.length) {
       rightCheckedItems.forEach((item) => (nextCheckedList[item.id] = false));
       setCheckedList({ ...checkedList, ...nextCheckedList });
-      setTargetItems(not(targetItems, rightCheckedItems));
-      setSourceItems([...sourceItems, ...rightCheckedItems]);
+      if (!externallyManaged) {
+        setTargetItems(not(targetItems, rightCheckedItems));
+        setSourceItems([...sourceItems, ...rightCheckedItems]);
+      }
       onTargetListItemsRemoved(rightCheckedItems);
     }
   };
@@ -148,70 +140,41 @@ export function TransferList(props: TransferListProps) {
   }, [isAllChecked, targetItems]);
 
   return (
-    <Box display="flex">
-      <TransferListColumn
-        title={props.source.title}
-        items={sourceItems}
-        hasMore={source.hasMore}
-        disabledItems={source.disabledItems}
-        checkedList={checkedList}
-        onCheckAllClicked={onCheckAllClicked}
-        onItemClick={onItemClicked}
-        onFilter={source.onFilter}
-        onLoadMore={source.onLoadMore}
-        isAllChecked={sourceItemsAllChecked}
-        inProgressIds={inProgressIds}
-        emptyStateMessage={source.emptyMessage}
-      />
-      <section className={classes.buttonsWrapper}>
-        <Tooltip
-          title={
-            disableAdd ? (
-              <FormattedMessage
-                id="transferList.addDisabledTooltip"
-                defaultMessage="Select items to add from the left"
-              />
-            ) : (
-              <FormattedMessage id="transferList.addToTarget" defaultMessage="Add selected" />
-            )
-          }
-        >
-          <span>
-            <IconButton onClick={addToTarget} disabled={disableAdd} size="large">
-              <NavigateNextIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip
-          title={
-            disableRemove ? (
-              <FormattedMessage
-                id="transferList.removeDisabledTooltip"
-                defaultMessage="Select items to remove from the right"
-              />
-            ) : (
-              <FormattedMessage id="transferList.removeFromTarget" defaultMessage="Remove selected" />
-            )
-          }
-        >
-          <span>
-            <IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
-              <NavigateBeforeIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-      </section>
-      <TransferListColumn
-        title={props.target.title}
-        items={targetItems}
-        checkedList={checkedList}
-        onCheckAllClicked={onCheckAllClicked}
-        onItemClick={onItemClicked}
-        isAllChecked={targetItemsAllChecked}
-        inProgressIds={inProgressIds}
-        emptyStateMessage={target.emptyMessage}
-      />
-    </Box>
+    <>
+      {externallyManaged ? (
+        <TransferListExternallyManaged
+          {...props}
+          sourceItems={sourceItems}
+          setSourceItems={setSourceItems}
+          targetItems={targetItems}
+          setTargetItems={setTargetItems}
+          checkedList={checkedList}
+          onItemClicked={onItemClicked}
+          onCheckAllClicked={onCheckAllClicked}
+          addToTarget={addToTarget}
+          removeFromTarget={removeFromTarget}
+          disableAdd={disableAdd}
+          disableRemove={disableRemove}
+          sourceItemsAllChecked={sourceItemsAllChecked}
+          targetItemsAllChecked={targetItemsAllChecked}
+        />
+      ) : (
+        <TransferListInternallyManaged
+          {...props}
+          sourceItems={sourceItems}
+          targetItems={targetItems}
+          checkedList={checkedList}
+          onItemClicked={onItemClicked}
+          onCheckAllClicked={onCheckAllClicked}
+          addToTarget={addToTarget}
+          removeFromTarget={removeFromTarget}
+          disableAdd={disableAdd}
+          disableRemove={disableRemove}
+          sourceItemsAllChecked={sourceItemsAllChecked}
+          targetItemsAllChecked={targetItemsAllChecked}
+        />
+      )}
+    </>
   );
 }
 
