@@ -20,7 +20,14 @@ import { useDispatch } from 'react-redux';
 import PublishingStatusButtonUI, { PublishingStatusButtonUIProps } from './PublishingStatusButtonUI';
 import { showWidgetDialog } from '../../state/actions/dialogs';
 import { useSelection } from '../../hooks/useSelection';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, useIntl } from 'react-intl';
+
+const translations = defineMessages({
+  publishing: {
+    id: 'words.publishing',
+    defaultMessage: 'Publishing'
+  }
+});
 
 export interface PublishingStatusButtonProps extends IconButtonProps {
   variant?: PublishingStatusButtonUIProps['variant'];
@@ -30,17 +37,17 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
   const { enabled, status, isFetching, totalItems, numberOfItems } = useSelection(
     (state) => state.dialogs.publishingStatus
   );
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
   const onShowPublishing = () => {
     dispatch(
       showWidgetDialog({
-        title: <FormattedMessage id="words.Publishing" defaultMessage="Publishing" />,
+        title: formatMessage(translations.publishing),
         widget: {
           id: 'craftercms.components.PublishingDashboard',
           configuration: {
-            embedded: true,
-            publishEverything: true
+            embedded: true
           }
         },
         fullHeight: false

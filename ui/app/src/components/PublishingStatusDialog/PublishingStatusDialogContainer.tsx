@@ -62,8 +62,6 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
   const userRoles = user?.rolesBySite[siteId];
   const allowedUser = permittedRoles?.some((role) => userRoles.includes(role)) ?? false;
 
-  console.log('userROles', userRoles);
-
   const handleClose = () => {
     setUnlockAnchorEl(null);
   };

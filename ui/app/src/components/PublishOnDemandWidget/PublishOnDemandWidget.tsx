@@ -161,7 +161,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const {
     siteId,
     onSubmittingAndOrPendingChange,
-    mode: initialMode,
+    mode,
     showHeader = true,
     onCancel: onCancelProp,
     onSuccess: onSuccessProp
@@ -169,7 +169,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const [mode, setMode] = useState<PublishOnDemandMode>(initialMode ?? null);
+  const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(mode ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const permissionsBySite = usePermissionsBySite();
   const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
@@ -200,21 +200,29 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     (!publishEverythingCommentRequired || !isBlank(publishEverythingFormData.comment));
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
   const currentFormData =
-    mode === 'studio' ? publishStudioFormData : mode === 'git' ? publishGitFormData : publishEverythingFormData;
+    selectedMode === 'studio'
+      ? publishStudioFormData
+      : selectedMode === 'git'
+      ? publishGitFormData
+      : publishEverythingFormData;
   const currentSetFormData =
-    mode === 'studio'
+    selectedMode === 'studio'
       ? setPublishStudioFormData
-      : mode === 'git'
+      : selectedMode === 'git'
       ? setPublishGitFormData
       : setPublishEverythingFormData;
   const currentFormValid =
-    mode === 'studio' ? publishStudioFormValid : mode === 'git' ? publishGitFormValid : publishEverythingFormValid;
+    selectedMode === 'studio'
+      ? publishStudioFormValid
+      : selectedMode === 'git'
+      ? publishGitFormValid
+      : publishEverythingFormValid;
   const hasChanges =
-    mode === 'studio'
+    selectedMode === 'studio'
       ? publishStudioFormData.path !== initialPublishStudioFormData.path ||
         publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
         publishStudioFormData.publishingTarget !== initialPublishingTarget
-      : mode === 'git'
+      : selectedMode === 'git'
       ? publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
         publishGitFormData.comment !== initialPublishGitFormData.comment ||
         publishGitFormData.publishingTarget !== initialPublishingTarget
@@ -284,7 +292,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishGitFormData({ ...initialPublishGitFormData, publishingTarget });
-        nou(initialMode) && setMode(null);
+        nou(mode) && setSelectedMode(null);
         onSuccessProp?.();
       },
       error({ response }) {
@@ -317,7 +325,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           next() {
             setIsSubmitting(false);
             setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
-            nou(initialMode) && setMode(null);
+            nou(mode) && setSelectedMode(null);
             dispatch(
               showSystemNotification({
                 message: formatMessage(messages.bulkPublishStarted)
@@ -349,7 +357,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishEverythingFormData({ ...initialPublishEverythingFormData, publishingTarget });
-        nou(initialMode) && setMode(null);
+        nou(mode) && setSelectedMode(null);
         onSuccessProp?.();
       },
       error({ response }) {
@@ -365,23 +373,23 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const onCancel = () => {
-    !initialMode && setMode(null);
+    !mode && setSelectedMode(null);
     setDefaultPublishingTarget(publishingTargets, true);
     onCancelProp?.();
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
+    setSelectedMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
   };
 
   const toggleMode = (e) => {
     e.preventDefault();
-    setMode(mode === 'studio' ? 'git' : 'studio');
+    setSelectedMode(selectedMode === 'studio' ? 'git' : 'studio');
   };
 
   const onSubmitForm = () => {
     if (currentFormValid) {
-      switch (mode) {
+      switch (selectedMode) {
         case 'studio':
           onSubmitBulkPublish();
           break;
@@ -426,8 +434,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           <>
             <Paper elevation={0} className={classes.modeSelector}>
               <form>
-                <RadioGroup value={mode} onChange={handleChange}>
-                  {(nou(initialMode) || initialMode === 'studio') && (
+                <RadioGroup value={selectedMode} onChange={handleChange}>
+                  {(nou(mode) || mode === 'studio') && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="studio"
@@ -446,7 +454,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                       className={classes.byPathModeSelector}
                     />
                   )}
-                  {(nou(initialMode) || initialMode === 'git') && (
+                  {(nou(mode) || mode === 'git') && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="git"
@@ -464,7 +472,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                       }
                     />
                   )}
-                  {(nou(initialMode) || initialMode === 'all') && (
+                  {(nou(mode) || mode === 'all') && (
                     <FormControlLabel
                       disabled={isSubmitting}
                       value="all"
@@ -485,21 +493,21 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                 </RadioGroup>
               </form>
             </Paper>
-            <Collapse in={nnou(mode)} timeout={300} unmountOnExit className={classes.formContainer}>
+            <Collapse in={nnou(selectedMode)} timeout={300} unmountOnExit className={classes.formContainer}>
               <PublishOnDemandForm
                 disabled={isSubmitting}
                 formData={currentFormData}
                 setFormData={currentSetFormData}
-                mode={mode}
+                mode={selectedMode}
                 publishingTargets={publishingTargets}
                 publishingTargetsError={publishingTargetsError}
                 bulkPublishCommentRequired={bulkPublishCommentRequired}
                 publishByCommitCommentRequired={publishByCommitCommentRequired}
               />
-              {mode !== 'all' && (
+              {selectedMode !== 'all' && (
                 <div className={classes.noteContainer}>
                   <Typography variant="caption" className={classes.note}>
-                    {mode === 'studio' ? (
+                    {selectedMode === 'studio' ? (
                       <FormattedMessage
                         id="publishingDashboard.studioNote"
                         defaultMessage="Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>."
@@ -548,7 +556,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           </Box>
         )}
       </div>
-      {mode && (
+      {selectedMode && (
         <DialogFooter>
           <SecondaryButton onClick={onCancel} disabled={isSubmitting}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />

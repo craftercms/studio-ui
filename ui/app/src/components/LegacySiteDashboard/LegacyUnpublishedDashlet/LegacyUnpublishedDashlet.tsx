@@ -32,7 +32,11 @@ import LegacyUnpublishedDashletGridUISkeleton from './LegacyUnpublishedDashletGr
 import LegacyUnpublishedDashletGridUI from './LegacyUnpublishedDashletGridUI';
 import useLocale from '../../../hooks/useLocale';
 import { closeWidgetDialog, showItemMegaMenu, showWidgetDialog } from '../../../state/actions/dialogs';
-import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../../utils/content';
+import {
+  getNumOfMenuOptionsForItem,
+  getSystemTypeFromPath,
+  parseSandBoxItemToDetailedItem
+} from '../../../utils/content';
 import LookupTable from '../../../models/LookupTable';
 import { createPresenceTable } from '../../../utils/array';
 import { ActionsBar, ActionsBarAction } from '../../ActionsBar';
@@ -204,7 +208,9 @@ export function LegacyUnpublishedDashlet() {
       if (selected.length === 1) {
         const path = selected[0];
         const item = state.items.find((item) => path === item.path);
-        return generateSingleItemOptions(item, formatMessage, { includeOnly: actionsToBeShown }).flat();
+        return generateSingleItemOptions(parseSandBoxItemToDetailedItem(item), formatMessage, {
+          includeOnly: actionsToBeShown
+        }).flat();
       } else {
         let items = [];
         selected.forEach((itemPath) => {

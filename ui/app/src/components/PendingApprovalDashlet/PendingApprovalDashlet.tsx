@@ -23,9 +23,7 @@ import {
   getItemSkeleton,
   List,
   ListItem,
-  ListItemAvatar,
   ListItemIcon
-  // PersonAvatar
 } from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
@@ -68,7 +66,6 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     () => () => {
       setState({ items: null, loading: true });
       fetchPendingApproval(site, { limit: 10, offset: 0 }).subscribe((items) => {
-        console.log('items', items);
         setState({ items: items, total: items.total, loading: false });
       });
     },
@@ -113,15 +110,13 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
-              <ListItemAvatar>{/* <PersonAvatar person={item.submitter} /> */}</ListItemAvatar>
               <ListItemText
                 primary={
                   <FormattedMessage
                     id="pendingApprovalDashlet.entryPrimaryText"
                     defaultMessage="{name} submitted to <render_target>{publishingTarget}</render_target>"
                     values={{
-                      // name: item.submitter.firstName,
-                      name: '',
+                      name: item.sandbox.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (

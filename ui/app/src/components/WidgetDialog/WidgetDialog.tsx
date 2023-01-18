@@ -23,8 +23,8 @@ import { Widget } from '../Widget/Widget';
 import useRef from '../../hooks/useUpdateRefs';
 import { DialogProps } from '@mui/material/Dialog';
 import { UNDEFINED } from '../../utils/constants';
-import { createCallback } from '../GlobalDialogManager';
 import { useDispatch } from 'react-redux';
+import { createCallback } from '../../utils/state';
 
 interface WidgetDialogContextType {
   onClose: DialogProps['onClose'];
