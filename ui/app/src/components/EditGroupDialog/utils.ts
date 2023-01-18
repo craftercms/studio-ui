@@ -56,6 +56,7 @@ export interface GroupEditDialogUIProps {
   users?: User[];
   usersHaveNextPage?: boolean;
   members?: User[];
+  membersHaveNextPage?: boolean;
   membersLookup?: LookupTable<boolean>;
   inProgressIds?: (string | number)[];
 }

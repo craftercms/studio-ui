@@ -76,6 +76,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   usersRef.current = users;
   const [members, setMembers] = useState<User[]>();
   const [membersHaveNextPage, setMembersHaveNextPage] = useState(false);
+  const membersRef = useRef([]);
+  membersRef.current = members;
   const [membersLookup, setMembersLookup] = useState<LookupTable<boolean>>(null);
   const [inProgressIds, setInProgressIds] = useState<string[]>([]);
   const usersFetchSize = 5;
@@ -88,9 +90,9 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       limit: usersFetchSize,
       ...options
     }).subscribe((_users) => {
-      setUsersHaveNextPage(_users.total >= usersOffset + usersFetchSize);
+      setUsersHaveNextPage(_users.total >= (options?.offset ?? usersOffset) + usersFetchSize);
       setUsers(_users);
-      setUsersOffset(usersFetchSize);
+      setUsersOffset(options?.limit ?? usersFetchSize);
     });
   };
 
@@ -108,10 +110,22 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 
   const fetchMembers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
     fetchUsersFromGroup(props.group.id, options).subscribe((members) => {
-      setMembersHaveNextPage(members.total >= membersOffset + membersFetchSize);
+      setMembersHaveNextPage(members.total >= (options?.offset ?? membersOffset) + membersFetchSize);
       setMembers(members);
       setMembersLookup(createPresenceTable(members, true, (member) => member.username));
-      setMembersOffset(membersFetchSize);
+      setMembersOffset(options?.limit ?? membersFetchSize);
+    });
+  };
+
+  const loadMoreMembers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
+    fetchUsersFromGroup(props.group.id, {
+      limit: membersFetchSize,
+      offset: membersOffset,
+      ...options
+    }).subscribe((_members) => {
+      setMembersHaveNextPage(_members.total >= membersOffset + membersFetchSize);
+      setMembers([...membersRef.current, ..._members]);
+      setMembersOffset(membersOffset + membersFetchSize);
     });
   };
 
@@ -159,7 +173,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
         );
         setInProgressIds([]);
         fetchUsers({
-          limit: usersOffset + usersFetchSize
+          offset: 0,
+          limit: usersOffset
         });
         fetchMembers({ limit: 100 });
       },
@@ -180,7 +195,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
         );
         setInProgressIds([]);
         fetchUsers({
-          limit: usersOffset + usersFetchSize
+          limit: usersOffset,
+          offset: 0
         });
         fetchMembers({ limit: membersFetchSize });
       },
@@ -262,6 +278,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       users={users}
       usersHaveNextPage={usersHaveNextPage}
       members={members}
+      membersHaveNextPage={membersHaveNextPage}
       membersLookup={membersLookup}
       onDeleteGroup={onDeleteGroup}
       onChangeValue={onChangeValue}
@@ -273,6 +290,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onFilterUsers={fetchUsers}
       onFilterMembers={fetchMembers}
       onLoadMoreUsers={loadMoreUsers}
+      onLoadMoreMembers={loadMoreMembers}
       inProgressIds={inProgressIds}
       isDirty={isDirty}
     />

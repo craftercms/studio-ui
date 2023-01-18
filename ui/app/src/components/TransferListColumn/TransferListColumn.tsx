@@ -112,28 +112,34 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
-            list.map((item, i) => (
-              <ListItem
-                disabled={inProgressIds.includes(item.id) || disabledItems?.[item.id]}
-                key={item.id}
-                role="listitem"
-                button
-                onClick={(e) => onItemClick(item, e)}
-              >
-                <ListItemIcon>
-                  {inProgressIds.includes(item.id) ? (
-                    <CircularProgress size={42} />
-                  ) : (
-                    <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
-                  )}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.title}
-                  secondary={item.subtitle}
-                  primaryTypographyProps={{ noWrap: true, title: item.title }}
-                />
-              </ListItem>
-            ))
+            <>
+              {list.map((item, i) => (
+                <ListItem
+                  disabled={inProgressIds.includes(item.id) || disabledItems?.[item.id]}
+                  key={item.id}
+                  role="listitem"
+                  button
+                  onClick={(e) => onItemClick(item, e)}
+                >
+                  <ListItemIcon>
+                    {inProgressIds.includes(item.id) ? (
+                      <CircularProgress size={42} />
+                    ) : (
+                      <Checkbox
+                        checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
+                        tabIndex={-1}
+                        disableRipple
+                      />
+                    )}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.title}
+                    secondary={item.subtitle}
+                    primaryTypographyProps={{ noWrap: true, title: item.title }}
+                  />
+                </ListItem>
+              ))}
+            </>
           )
         ) : (
           emptyStateMessage && <EmptyState title={emptyStateMessage} />

@@ -74,9 +74,11 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     onFilterUsers,
     onFilterMembers,
     onLoadMoreUsers,
+    onLoadMoreMembers,
     users,
     usersHaveNextPage,
     members,
+    membersHaveNextPage,
     membersLookup,
     inProgressIds,
     isDirty,
@@ -221,7 +223,9 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 target={{
                   title: <FormattedMessage id="words.members" defaultMessage="Members" />,
                   items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
+                  hasMore: membersHaveNextPage,
                   onFilter: onFilterMembers,
+                  onLoadMore: onLoadMoreMembers,
                   emptyMessage: (
                     <FormattedMessage
                       id="transferList.targetEmptyStateMessage"
