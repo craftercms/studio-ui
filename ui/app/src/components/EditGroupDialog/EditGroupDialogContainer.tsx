@@ -35,7 +35,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
-import { validateGroupNameMinLength } from '../GroupManagement/utils';
+import { isInvalidGroupName, validateGroupNameMinLength } from '../GroupManagement/utils';
 
 const translations = defineMessages({
   groupCreated: {
@@ -95,7 +95,9 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   }, [group?.id, props.group, setGroup]);
 
   useEffect(() => {
-    setSubmitOk(Boolean(group.name.trim() && !validateGroupNameMinLength(group.name)));
+    setSubmitOk(
+      Boolean(group.name.trim() && !validateGroupNameMinLength(group.name) && !isInvalidGroupName(group.name))
+    );
   }, [group.name]);
 
   const onDeleteGroup = (group: Group) => {

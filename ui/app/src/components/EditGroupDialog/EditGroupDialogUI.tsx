@@ -37,6 +37,7 @@ import {
   GROUP_DESCRIPTION_MAX_LENGTH,
   GROUP_NAME_MAX_LENGTH,
   GROUP_NAME_MIN_LENGTH,
+  isInvalidGroupName,
   validateGroupNameMinLength,
   validateRequiredField
 } from '../GroupManagement/utils';
@@ -134,7 +135,11 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   id="groupName"
                   onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
                   value={group.name}
-                  error={validateRequiredField(group.name, isDirty) || validateGroupNameMinLength(group.name)}
+                  error={
+                    validateRequiredField(group.name, isDirty) ||
+                    isInvalidGroupName(group.name) ||
+                    validateGroupNameMinLength(group.name)
+                  }
                   fullWidth
                   autoFocus
                   inputProps={{ maxLength: GROUP_NAME_MAX_LENGTH }}
@@ -154,6 +159,14 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                       defaultMessage="Min {length} characters."
                       values={{
                         length: GROUP_NAME_MIN_LENGTH
+                      }}
+                    />
+                  ) : isInvalidGroupName(group.name) ? (
+                    <FormattedMessage
+                      id="editGroupDialog.invalidMinLength"
+                      defaultMessage="Max {length} characters, consisting of: letters, numbers, dash (-), underscore (_) and dot (.)."
+                      values={{
+                        length: GROUP_NAME_MAX_LENGTH
                       }}
                     />
                   ) : null
