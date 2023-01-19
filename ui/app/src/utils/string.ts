@@ -201,3 +201,7 @@ export const isSimple = (str: string | number, separator = '.') => String(str).s
 
 export const isSymmetricCombination = (string1: string | number, string2: string | number, separator = '.') =>
   String(string1).split(separator).length === String(string2).split(separator).length;
+
+export function stripCData(str: string): string {
+  return str.replace(/<!\[CDATA\[|\]\]>/gi, '');
+}

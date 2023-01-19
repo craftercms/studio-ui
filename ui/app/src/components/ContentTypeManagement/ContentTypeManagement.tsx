@@ -31,7 +31,7 @@ import {
   emitSystemEvent
 } from '../../state/actions/system';
 
-interface ContentTypeManagementProps {
+export interface ContentTypeManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
   mountMode?: 'dialog' | 'page';
@@ -89,7 +89,6 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
       messagesSubscription.unsubscribe();
     };
   }, [dispatch, onSubmittingAndOrPendingChange, embedded, onClose, onMinimize]);
-
   return (
     <Box height="100%" display="flex" flexDirection="column">
       {!embedded && (

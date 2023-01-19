@@ -35,6 +35,7 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import Paper from '@mui/material/Paper';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { copyToClipboard } from '../../utils/system';
 
 export interface EncryptToolProps {
   site?: string;
@@ -70,9 +71,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
   form: {
     padding: '20px'
   },
-  formGroup: {
-    marginBottom: '15px'
-  },
   title: {
     color: '#555555'
   },
@@ -100,20 +98,10 @@ const notificationInitialState = {
   variant: 'success'
 };
 
-function copyToClipboard(input: HTMLInputElement) {
-  /* Select the text field */
-  input.select();
-  /* For mobile devices */
-  input.setSelectionRange(0, 99999);
-
-  /* Copy the text inside the text field */
-  document.execCommand('copy');
-}
-
 export const EncryptTool = (props: EncryptToolProps) => {
   const { site, embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const { classes } = useStyles();
-  const inputRef = useRef();
+  const inputRef = useRef<HTMLInputElement>();
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
   const [fetching, setFetching] = useState(null);
@@ -133,23 +121,25 @@ export const EncryptTool = (props: EncryptToolProps) => {
       setRequestForgeryToken();
       setFetching(true);
       setResult(null);
-      encryptService(text, site).subscribe(
-        (encryptedText) => {
+      encryptService(text, site).subscribe({
+        next(encryptedText) {
+          const resultingText = `\${enc:${encryptedText}}`;
           setFetching(false);
           setText('');
-          setResult(encryptedText);
-          setTimeout(() => {
-            copyToClipboard(inputRef.current);
-            setNotificationSettings({ open: true, variant: 'success' });
-          }, 10);
+          setResult(resultingText);
+          copyToClipboard(resultingText)
+            .then(() => {
+              setNotificationSettings({ open: true, variant: 'success' });
+            })
+            .catch(() => {
+              inputRef.current.focus();
+              inputRef.current.select();
+            });
         },
-        () => {
-          setNotificationSettings({
-            open: true,
-            variant: 'error'
-          });
+        error() {
+          setNotificationSettings({ open: true, variant: 'error' });
         }
-      );
+      });
     } else {
       focus();
     }
@@ -175,41 +165,48 @@ export const EncryptTool = (props: EncryptToolProps) => {
       )}
       <Box p="20px">
         <form onSubmit={encrypt}>
-          <div className={classes.formGroup}>
-            <TextField
-              label={formatMessage(messages.inputLabel)}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              fullWidth
-              id="encryptionToolRawText"
-              name="encryptionToolRawText"
-              autoFocus
-              disabled={fetching}
-            />
-          </div>
+          <TextField
+            sx={{ mb: 2 }}
+            label={formatMessage(messages.inputLabel)}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter' && e.ctrlKey) {
+                encrypt(e);
+              }
+            }}
+            fullWidth
+            id="encryptionToolRawText"
+            name="encryptionToolRawText"
+            autoFocus
+            disabled={fetching}
+            multiline
+          />
+
           {result && (
-            <div className={classes.formGroup}>
-              <input
-                readOnly
-                type="text"
-                ref={inputRef}
-                className="well"
-                value={`\${enc:${result}}`}
-                onClick={(e: any) => {
-                  copyToClipboard(e.target);
+            <TextField
+              fullWidth
+              type="text"
+              color="success"
+              sx={{ mb: 2 }}
+              ref={inputRef}
+              label={<FormattedMessage id="words.result" defaultMessage="Result" />}
+              InputProps={{ readOnly: true }}
+              value={result}
+              onClick={(e: any) => {
+                const input = e.target;
+                const value = input.value;
+                input.select();
+                copyToClipboard(value).then(() => {
                   setNotificationSettings({ open: true, variant: 'success' });
-                }}
-                style={{
-                  display: 'block',
-                  width: '100%'
-                }}
-              />
-            </div>
+                });
+              }}
+            />
           )}
-          <div className={classes.formGroup}>
-            <Button type="button" onClick={clear} disabled={fetching} variant="outlined">
+          <div>
+            <Button type="button" onClick={clear} disabled={fetching} variant="outlined" sx={{ mr: 1 }}>
               {formatMessage(messages.clearResultButtonText)}
-            </Button>{' '}
+            </Button>
             <Button type="submit" onClick={encrypt} disabled={fetching} color="primary" variant="contained">
               {formatMessage(messages.buttonText)}
             </Button>
