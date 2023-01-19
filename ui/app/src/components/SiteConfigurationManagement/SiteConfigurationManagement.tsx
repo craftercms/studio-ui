@@ -53,7 +53,7 @@ import SearchBar from '../SearchBar/SearchBar';
 import Alert from '@mui/material/Alert';
 import { showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
-import { capitalize } from '../../utils/string';
+import { capitalize, stripCData } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter, map } from 'rxjs/operators';
@@ -210,8 +210,10 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
     const items = findPendingEncryption(tags);
     if (items.length) {
       setEncrypting(true);
-      forkJoin(items.map(({ tag, text }) => encrypt(text, site).pipe(map((text) => ({ tag, text }))))).subscribe(
-        (encrypted) => {
+      forkJoin(
+        items.map(({ tag, text }) => encrypt(stripCData(text), site).pipe(map((text) => ({ tag, text }))))
+      ).subscribe({
+        next(encrypted) {
           encrypted.forEach(({ text, tag }) => {
             tag.innerHTML = `\${enc:${text}}`;
             tag.setAttribute('encrypted', 'true');
@@ -219,10 +221,10 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
           editorRef.current.setValue(serialize(doc), -1);
           setEncrypting(false);
         },
-        ({ response: { response } }) => {
+        error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
         }
-      );
+      });
     } else {
       setConfirmDialogProps({
         open: true,
