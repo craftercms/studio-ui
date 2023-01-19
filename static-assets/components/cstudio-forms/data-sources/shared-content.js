@@ -122,6 +122,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     CStudioAuthoring.Operations.openBrowseFilesDialog({
       path: _self.processPathsForMacros(browsePath),
       multiSelect,
+      allowUpload: false,
       onSuccess: (result) => {
         const items = Array.isArray(result) ? result : [result];
         items.forEach(({ name, path }) => {
