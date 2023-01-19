@@ -75,7 +75,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
           <Grid item xs={12}>
             <PublishOnDemandWidget
               siteId={site}
-              mode={allowedRole ? null : 'all'}
+              mode={allowedRole ? null : 'everything'}
               onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
             />
           </Grid>

@@ -56,6 +56,7 @@ import Box from '@mui/material/Box';
 import useDetailedItem from '../../hooks/useDetailedItem';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import usePermissionsBySite from '../../hooks/usePermissionsBySite';
+import { StandardAction } from '../../models';
 
 const useStyles = makeStyles()((theme) => ({
   content: {
@@ -150,11 +151,11 @@ const initialPublishEverythingFormData = {
 
 interface PublishOnDemandWidgetProps {
   siteId: string;
-  mode?: 'all' | 'studio' | 'git';
+  mode?: 'everything' | 'studio' | 'git';
   showHeader?: boolean;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
-  onCancel?(): void;
-  onSuccess?(): void;
+  onCancel?: StandardAction;
+  onSuccess?: StandardAction;
 }
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
@@ -293,7 +294,10 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
         );
         setPublishGitFormData({ ...initialPublishGitFormData, publishingTarget });
         nou(mode) && setSelectedMode(null);
-        onSuccessProp?.();
+
+        if (onSuccessProp) {
+          dispatch(onSuccessProp);
+        }
       },
       error({ response }) {
         setIsSubmitting(false);
@@ -331,7 +335,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                 message: formatMessage(messages.bulkPublishStarted)
               })
             );
-            onSuccessProp?.();
+            if (onSuccessProp) {
+              dispatch(onSuccessProp);
+            }
           },
           error({ response }) {
             setIsSubmitting(false);
@@ -358,7 +364,9 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
         );
         setPublishEverythingFormData({ ...initialPublishEverythingFormData, publishingTarget });
         nou(mode) && setSelectedMode(null);
-        onSuccessProp?.();
+        if (onSuccessProp) {
+          dispatch(onSuccessProp);
+        }
       },
       error({ response }) {
         setIsSubmitting(false);
@@ -373,9 +381,11 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const onCancel = () => {
-    !mode && setSelectedMode(null);
+    nou(mode) && setSelectedMode(null);
     setDefaultPublishingTarget(publishingTargets, true);
-    onCancelProp?.();
+    if (onCancelProp) {
+      dispatch(onCancelProp);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -396,7 +406,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
         case 'git':
           onSubmitPublishBy();
           break;
-        case 'all':
+        case 'everything':
           onSubmitPublishEverything();
           break;
       }
@@ -472,10 +482,10 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                       }
                     />
                   )}
-                  {(nou(mode) || mode === 'all') && (
+                  {(nou(mode) || mode === 'everything') && (
                     <FormControlLabel
                       disabled={isSubmitting}
-                      value="all"
+                      value="everything"
                       control={<Radio />}
                       label={
                         <ListItemText
@@ -504,7 +514,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                 bulkPublishCommentRequired={bulkPublishCommentRequired}
                 publishByCommitCommentRequired={publishByCommitCommentRequired}
               />
-              {selectedMode !== 'all' && (
+              {selectedMode !== 'everything' && (
                 <div className={classes.noteContainer}>
                   <Typography variant="caption" className={classes.note}>
                     {selectedMode === 'studio' ? (

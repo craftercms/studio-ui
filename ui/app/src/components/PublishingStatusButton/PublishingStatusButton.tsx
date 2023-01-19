@@ -40,7 +40,7 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
 
-  const onShowPublishing = () => {
+  const onShowDialog = () => {
     dispatch(
       showWidgetDialog({
         title: formatMessage(translations.publishing),
@@ -64,7 +64,7 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
       isFetching={isFetching}
       totalItems={totalItems}
       numberOfItems={numberOfItems}
-      onClick={onShowPublishing}
+      onClick={onShowDialog}
     />
   );
 });

@@ -23,9 +23,6 @@ import ToolsPanelTarget from '../models/ToolsPanelTarget';
 import { EnhancedDialogState } from '../hooks/useEnhancedDialogState';
 import { HighlightMode } from '../models/GlobalState';
 import { PathNavInitPayload } from '../state/actions/pathNavigator';
-import StandardAction from '../models/StandardAction';
-import { Dispatch } from 'redux';
-import { isPlainObject } from './object';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
   window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
@@ -316,40 +313,4 @@ export function setStoredPreviewBackgroundMode(username: string, mode: number): 
 
 export function getStoredPreviewBackgroundMode(username: string): number {
   return JSON.parse(localStorage.getItem(`craftercms.${username}.previewDialog.backgroundMode`));
-}
-
-// @formatter:off
-export function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
-  // prettier-ignore
-  return action ? (output: any) => {
-    const hasPayload = Boolean(action.payload);
-    const hasOutput = Boolean(output) && isPlainObject(output);
-    const payload = (hasPayload && !hasOutput)
-      // If there's a payload in the original action and there
-      // is no output from the resulting callback, simply use the
-      // original payload
-      ? action.payload
-      // Otherwise, if there's no payload but there is an output sent
-      // to the resulting callback, use the output as the payload
-      : (!hasPayload && hasOutput)
-        ? output
-        : (
-          (hasPayload && hasOutput)
-            // If there's an output and a payload, merge them both into a single object.
-            // We're supposed to be using objects for all our payloads, otherwise this
-            // could fail with literal native values such as strings or numbers.
-            ? Array.isArray(action.payload)
-              // If it's an array, assume is a BATCH_ACTIONS action payload; each item
-              // of the array should be an action, so merge each item with output.
-              ? action.payload.map((a) => ({ ...a, payload: { ...a.payload, ...output } }))
-              // If it's not an array, it's a single action. Merge with output.
-              : { ...action.payload, ...output }
-            // Later, we check if there's a payload to add it
-            : false
-        );
-    dispatch({
-      type: action.type,
-      ...(payload ? { payload } : {})
-    });
-  } : null;
 }

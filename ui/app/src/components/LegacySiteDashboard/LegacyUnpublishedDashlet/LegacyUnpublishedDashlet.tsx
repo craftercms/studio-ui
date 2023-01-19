@@ -237,7 +237,7 @@ export function LegacyUnpublishedDashlet() {
         fullHeight: false,
         extraProps: {
           siteId,
-          mode: 'all',
+          mode: 'everything',
           showHeader: false,
           onCancel: closeWidgetDialog(),
           onSuccess: closeWidgetDialog()

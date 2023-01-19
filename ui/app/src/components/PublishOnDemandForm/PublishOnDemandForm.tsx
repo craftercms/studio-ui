@@ -79,7 +79,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
   return (
     <form>
       <Grid container spacing={3}>
-        {mode !== 'all' && (
+        {mode !== 'everything' && (
           <Grid item xs={12} md={8}>
             <FormControl fullWidth>
               <TextField
@@ -120,7 +120,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
             </FormControl>
           </Grid>
         )}
-        <Grid item xs={12} md={mode !== 'all' ? 4 : 12}>
+        <Grid item xs={12} md={mode !== 'everything' ? 4 : 12}>
           {publishingTargets ? (
             <FormControl fullWidth variant="outlined" required disabled={disabled}>
               <InputLabel id="publishingTargetLabel">
