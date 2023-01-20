@@ -113,9 +113,11 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
     setShowSearchBar(!showSearchBar);
   };
 
-  const onSearch = (keyword) => {
-    onSearch$.next(keyword);
-    setKeyword(keyword);
+  const onSearch = (keyword, event) => {
+    if (/^[\w\s-]*$/.test(event.target.value)) {
+      onSearch$.next(keyword);
+      setKeyword(keyword);
+    }
   };
 
   const onPluginDetails = (plugin: MarketplacePlugin) => {
