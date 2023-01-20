@@ -29,6 +29,7 @@ export interface TransferListProps {
   source: TransferListObject;
   target: TransferListObject;
   inProgressIds: (string | number)[];
+  disabled?: boolean;
   onTargetListItemsAdded(items: TransferListItem[]): void;
   onTargetListItemsRemoved(items: TransferListItem[]): void;
 }
@@ -48,17 +49,16 @@ function intersection(a: any, b: any) {
 }
 
 export function TransferList(props: TransferListProps) {
-  const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved } = props;
+  const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved, disabled = false } = props;
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>(source.items);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>(target.items);
+  const [checkedList, setCheckedList] = useState({});
+  const { classes } = useStyles();
 
   const itemsLookup = {
     ...createLookupTable(sourceItems),
     ...createLookupTable(targetItems)
   };
-
-  const [checkedList, setCheckedList] = useState({});
-  const { classes } = useStyles();
 
   const onItemClicked = (item: TransferListItem) => {
     if (checkedList[item.id]) {
@@ -145,44 +145,49 @@ export function TransferList(props: TransferListProps) {
         isAllChecked={sourceItemsAllChecked}
         inProgressIds={inProgressIds}
         emptyStateMessage={source.emptyMessage}
+        disabled={disabled}
       />
       <section className={classes.buttonsWrapper}>
-        <Tooltip
-          title={
-            disableAdd ? (
-              <FormattedMessage
-                id="transferList.addDisabledTooltip"
-                defaultMessage="Select items to add from the left"
-              />
-            ) : (
-              <FormattedMessage id="transferList.addToTarget" defaultMessage="Add selected" />
-            )
-          }
-        >
-          <span>
-            <IconButton onClick={addToTarget} disabled={disableAdd} size="large">
-              <NavigateNextIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-        <Tooltip
-          title={
-            disableRemove ? (
-              <FormattedMessage
-                id="transferList.removeDisabledTooltip"
-                defaultMessage="Select items to remove from the right"
-              />
-            ) : (
-              <FormattedMessage id="transferList.removeFromTarget" defaultMessage="Remove selected" />
-            )
-          }
-        >
-          <span>
-            <IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
-              <NavigateBeforeIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
+        {!disabled && (
+          <>
+            <Tooltip
+              title={
+                disableAdd ? (
+                  <FormattedMessage
+                    id="transferList.addDisabledTooltip"
+                    defaultMessage="Select items to add from the left"
+                  />
+                ) : (
+                  <FormattedMessage id="transferList.addToTarget" defaultMessage="Add selected" />
+                )
+              }
+            >
+              <span>
+                <IconButton onClick={addToTarget} disabled={disableAdd} size="large">
+                  <NavigateNextIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip
+              title={
+                disableRemove ? (
+                  <FormattedMessage
+                    id="transferList.removeDisabledTooltip"
+                    defaultMessage="Select items to remove from the right"
+                  />
+                ) : (
+                  <FormattedMessage id="transferList.removeFromTarget" defaultMessage="Remove selected" />
+                )
+              }
+            >
+              <span>
+                <IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
+                  <NavigateBeforeIcon />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </>
+        )}
       </section>
       <TransferListColumn
         title={props.target.title}
@@ -193,6 +198,7 @@ export function TransferList(props: TransferListProps) {
         isAllChecked={targetItemsAllChecked}
         inProgressIds={inProgressIds}
         emptyStateMessage={target.emptyMessage}
+        disabled={disabled}
       />
     </Box>
   );

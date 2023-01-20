@@ -64,12 +64,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const { onClose, onGroupSaved, onGroupDeleted, onSubmittingAndOrPendingChange } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-
-  const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '' });
+  const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '', externallyManaged: false });
   const [isDirty, setIsDirty] = useState(false);
   const [submitOk, setSubmitOk] = useState(false);
   const isEdit = Boolean(props.group);
-
   const [users, setUsers] = useState<User[]>();
   const [members, setMembers] = useState<User[]>();
   const [inProgressIds, setInProgressIds] = useState<string[]>([]);
@@ -116,8 +114,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 
   const onAddMembers = (usernames: string[]) => {
     setInProgressIds(usernames);
-    addUsersToGroup(group.id, usernames).subscribe(
-      () => {
+    addUsersToGroup(group.id, usernames).subscribe({
+      next() {
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.membersAdded, { count: usernames.length })
@@ -125,16 +123,16 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
         );
         setInProgressIds([]);
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onRemoveMembers = (usernames: string[]) => {
     setInProgressIds(usernames);
-    deleteUsersFromGroup(group.id, usernames).subscribe(
-      () => {
+    deleteUsersFromGroup(group.id, usernames).subscribe({
+      next() {
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.membersRemoved, { count: usernames.length })
@@ -142,10 +140,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
         );
         setInProgressIds([]);
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onChangeValue = (property: { key: string; value: string }) => {
@@ -155,8 +153,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 
   const onSave = () => {
     if (props.group) {
-      update(group).subscribe(
-        (group) => {
+      update(group).subscribe({
+        next(group) {
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.groupEdited)
@@ -165,10 +163,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           setIsDirty(false);
           onGroupSaved(group);
         },
-        ({ response: { response } }) => {
+        error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
         }
-      );
+      });
     } else {
       create({ name: group.name.trim(), desc: group.desc }).subscribe({
         next(group) {
@@ -193,23 +191,26 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   };
 
   useEffect(() => {
-    onSubmittingAndOrPendingChange({
-      hasPendingChanges: isDirty
-    });
+    onSubmittingAndOrPendingChange({ hasPendingChanges: isDirty });
   }, [isDirty, onSubmittingAndOrPendingChange]);
 
   return (
     <EditGroupDialogUI
       title={
-        isEdit ? (
-          <Typography variant="h6" component="h2">
-            <FormattedMessage id="groupEditDialog.editGroup" defaultMessage="Edit Group" />
-          </Typography>
-        ) : (
-          <Typography variant="h6" component="h2">
+        <Typography variant="h6" component="h2">
+          {isEdit ? (
+            group.externallyManaged ? (
+              <FormattedMessage
+                id="groupEditDialog.viewExternallyManagedGroup"
+                defaultMessage="View Group (managed externally)"
+              />
+            ) : (
+              <FormattedMessage id="groupEditDialog.editGroup" defaultMessage="Edit Group" />
+            )
+          ) : (
             <FormattedMessage id="groupEditDialog.createGroup" defaultMessage="Create Group" />
-          </Typography>
-        )
+          )}
+        </Typography>
       }
       onCloseButtonClick={(e) => onClose(e, null)}
       group={group}

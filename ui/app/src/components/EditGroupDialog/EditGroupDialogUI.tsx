@@ -173,53 +173,60 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 fullWidth
                 autoFocus={isEdit}
                 inputProps={{ maxLength: GROUP_DESCRIPTION_MAX_LENGTH }}
+                disabled={group.externallyManaged}
               />
             </Box>
-            <div className={classes.formActions}>
-              {isEdit && (
-                <SecondaryButton disabled={!isDirty} onClick={onCancel}>
-                  <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-                </SecondaryButton>
-              )}
-              <PrimaryButton disabled={!submitOk} type="submit">
-                <FormattedMessage id="words.save" defaultMessage="Save" />
-              </PrimaryButton>
-            </div>
+            {!group.externallyManaged && (
+              <div className={classes.formActions}>
+                {isEdit && (
+                  <SecondaryButton disabled={!isDirty} onClick={onCancel}>
+                    <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
+                  </SecondaryButton>
+                )}
+                <PrimaryButton disabled={!submitOk} type="submit">
+                  <FormattedMessage id="words.save" defaultMessage="Save" />
+                </PrimaryButton>
+              </div>
+            )}
           </form>
         </section>
         <Divider />
         <section className={classes.section}>
-          {isEdit && users && members ? (
-            <>
-              <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
-                <FormattedMessage id="editGroupDialog.editGroupMembers" defaultMessage="Edit Group Members" />
-              </Typography>
-              <TransferList
-                onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
-                onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
-                inProgressIds={inProgressIds}
-                source={{
-                  title: <FormattedMessage id="words.users" defaultMessage="Users" />,
-                  items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
-                  emptyMessage: (
-                    <FormattedMessage
-                      id="transferList.emptyListMessage"
-                      defaultMessage="All users are members of this group"
-                    />
-                  )
-                }}
-                target={{
-                  title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                  items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
-                  emptyMessage: (
-                    <FormattedMessage
-                      id="transferList.targetEmptyStateMessage"
-                      defaultMessage="No members on this group"
-                    />
-                  )
-                }}
-              />
-            </>
+          {isEdit ? (
+            users &&
+            members && (
+              <>
+                <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
+                  <FormattedMessage id="editGroupDialog.groupMembers" defaultMessage="Group Members" />
+                </Typography>
+                <TransferList
+                  disabled={group.externallyManaged}
+                  onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
+                  onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
+                  inProgressIds={inProgressIds}
+                  source={{
+                    title: <FormattedMessage id="words.users" defaultMessage="Users" />,
+                    items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
+                    emptyMessage: (
+                      <FormattedMessage
+                        id="transferList.emptyListMessage"
+                        defaultMessage="All users are members of this group"
+                      />
+                    )
+                  }}
+                  target={{
+                    title: <FormattedMessage id="words.members" defaultMessage="Members" />,
+                    items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
+                    emptyMessage: (
+                      <FormattedMessage
+                        id="transferList.targetEmptyStateMessage"
+                        defaultMessage="No members on this group"
+                      />
+                    )
+                  }}
+                />
+              </>
+            )
           ) : (
             <Box display="flex" justifyContent="center">
               <Typography variant="subtitle2" color="textSecondary">

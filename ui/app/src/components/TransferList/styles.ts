@@ -19,6 +19,7 @@ import { makeStyles } from 'tss-react/mui';
 const useStyles = makeStyles()(() => ({
   buttonsWrapper: {
     display: 'flex',
+    minWidth: 50,
     flexDirection: 'column',
     justifyContent: 'center',
     margin: '40px 20px',
