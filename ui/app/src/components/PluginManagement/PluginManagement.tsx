@@ -110,7 +110,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const { formatMessage } = useIntl();
   const [plugins, setPlugins] = useState<PluginRecord[]>(null);
   const [permissions, setPermissions] = useState<string[]>(null);
-  const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState(null);
+  const [openMarketPlaceDialog, setOpenMarketPlaceDialog] = useState<{ installPermission: boolean }>(null);
   const listPluginsPermission = permissions?.includes('list_plugins');
   const installPluginsPermission = permissions?.includes('install_plugins');
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -159,9 +159,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   }, [dispatch, listPluginsPermission, refresh, siteId]);
 
   const onSearchPlugin = () => {
-    setOpenMarketPlaceDialog({
-      installPermission: installPluginsPermission
-    });
+    setOpenMarketPlaceDialog({ installPermission: installPluginsPermission });
   };
 
   const onInstallMarketplacePlugin = (plugin: MarketplacePlugin) => {

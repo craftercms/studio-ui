@@ -16,7 +16,6 @@
 
 import { PropsWithChildren } from 'react';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
-import { Resource } from '../../models/Resource';
 import { PagedArray } from '../../models/PagedArray';
 import LookupTable from '../../models/LookupTable';
 
@@ -35,7 +34,7 @@ export type InstallPluginDialogProps = PropsWithChildren<
 >;
 
 export interface PluginListProps {
-  resource: Resource<PagedArray<MarketplacePlugin>>;
+  plugins: PagedArray<MarketplacePlugin>;
   installPermission: boolean;
   installedPlugins: LookupTable<boolean>;
   installingLookup: LookupTable<boolean>;

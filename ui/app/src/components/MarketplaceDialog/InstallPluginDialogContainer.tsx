@@ -17,10 +17,9 @@
 import { makeStyles } from 'tss-react/mui';
 import { InstallPluginDialogProps } from './utils';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import useLogicResource from '../../hooks/useLogicResource';
 import useSpreadState from '../../hooks/useSpreadState';
 import useSubject from '../../hooks/useSubject';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { MarketplacePlugin, PagedArray } from '../../models';
 import { useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -35,21 +34,21 @@ import DialogHeader from '../DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
 import PluginDetailsView from '../PluginDetailsView';
 import SearchBar from '../SearchBar/SearchBar';
-import { SuspenseWithEmptyState } from '../Suspencified';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import Pagination from '../Pagination';
-import { PluginList } from './PluginList';
-import { PluginParametersForm } from '../PluginParametersForm';
+import PluginList from './PluginList';
+import PluginParametersForm from '../PluginParametersForm/PluginParametersForm';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import { UNDEFINED } from '../../utils/constants';
+import LoadingState from '../LoadingState/LoadingState';
+import { AjaxError } from 'rxjs/ajax';
+import ApiResponseErrorState from '../ApiResponseErrorState/ApiResponseErrorState';
+import ApiResponse from '../../models/ApiResponse';
 
 const useStyles = makeStyles()(() => ({
   searchWrapper: {
     marginBottom: '16px'
-  },
-  loadingWrapper: {
-    flexGrow: 1,
-    justifyContent: 'center'
   }
 }));
 
@@ -57,10 +56,11 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
   const { installPermission = false, onInstall, installedPlugins = {} } = props;
   const [keyword, setKeyword] = useState('');
-  const [debounceKeyword, setDebounceKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState(keyword);
   const [plugins, setPlugins] = useState<PagedArray<MarketplacePlugin>>(null);
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [isFetching, setIsFetching] = useState<boolean>(null);
+  const [error, setError] = useState<ApiResponse>(null);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(9);
   const [selectedDetailsPlugin, setSelectedDetailsPlugin] = useState<MarketplacePlugin>(null);
@@ -82,12 +82,19 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const [installingLookup, setInstallingLookup] = useSpreadState<LookupTable<boolean>>({});
 
   const fetchPlugins = useCallback(() => {
+    setError(null);
     setIsFetching(true);
-    fetchMarketplacePlugins({ type: 'site', keywords: debounceKeyword, limit, offset }).subscribe((plugins) => {
-      setPlugins(plugins);
-      setIsFetching(false);
+    fetchMarketplacePlugins({ type: 'site', keywords: debouncedKeyword, limit, offset }).subscribe({
+      next(plugins) {
+        setPlugins(plugins);
+        setIsFetching(false);
+      },
+      error(error: AjaxError) {
+        setError(error.response.response);
+        setIsFetching(false);
+      }
     });
-  }, [debounceKeyword, limit, offset]);
+  }, [debouncedKeyword, limit, offset]);
 
   useEffect(() => {
     fetchPlugins();
@@ -95,26 +102,12 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe((keywords) => {
-      setDebounceKeyword(keywords);
+      setDebouncedKeyword(keywords);
     });
     return () => {
       subscription.unsubscribe();
     };
   }, [onSearch$]);
-
-  const resource = useLogicResource<
-    PagedArray<MarketplacePlugin>,
-    { plugins: PagedArray<MarketplacePlugin>; isFetching: boolean }
-  >(
-    useMemo(() => ({ plugins, isFetching }), [plugins, isFetching]),
-    {
-      shouldResolve: (source) => Boolean(source.plugins) && source.isFetching === false,
-      shouldReject: (source) => false,
-      shouldRenew: (source, resource) => resource.complete,
-      resultSelector: (source) => source.plugins,
-      errorSelector: (source) => null
-    }
-  );
 
   const onToggleSearchBar = () => {
     setShowSearchBar(!showSearchBar);
@@ -211,8 +204,19 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
           }
         ]}
       />
-      {selectedDetailsPlugin ? (
-        <DialogBody style={{ minHeight: '60vh', padding: 0 }}>
+      <DialogBody
+        style={{ minHeight: '60vh', padding: selectedDetailsPlugin || formPluginState.plugin ? 0 : UNDEFINED }}
+      >
+        {isFetching ? (
+          <LoadingState
+            styles={{
+              root: {
+                flexGrow: 1,
+                justifyContent: 'center'
+              }
+            }}
+          />
+        ) : selectedDetailsPlugin ? (
           <PluginDetailsView
             plugin={selectedDetailsPlugin}
             usePermission={installPermission}
@@ -228,9 +232,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
             onCloseDetails={onPluginDetailsClose}
             onBlueprintSelected={onPluginDetailsSelected}
           />
-        </DialogBody>
-      ) : formPluginState.plugin ? (
-        <DialogBody style={{ minHeight: '60vh', padding: 0 }}>
+        ) : formPluginState.plugin ? (
           <PluginParametersForm
             plugin={formPluginState.plugin}
             submitted={formPluginState.submitted}
@@ -238,56 +240,37 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
             onPluginFieldChange={onPluginFieldChange}
             onCancel={onPluginFormClose}
           />
-        </DialogBody>
-      ) : (
-        <DialogBody style={{ minHeight: '60vh' }}>
-          {showSearchBar && (
-            <SearchBar
-              showActionButton={Boolean(keyword)}
-              keyword={keyword}
-              onChange={onSearch}
-              autoFocus={true}
-              classes={{ root: classes.searchWrapper }}
-            />
-          )}
-          <SuspenseWithEmptyState
-            resource={resource}
-            withEmptyStateProps={{
-              emptyStateProps: {
-                title: <FormattedMessage id="InstallPluginDialog.empty" defaultMessage="No plugins found." />,
-                classes: { root: classes.loadingWrapper }
-              }
-            }}
-            loadingStateProps={{ classes: { root: classes.loadingWrapper } }}
-          >
-            <PluginList
-              resource={resource}
-              installPermission={installPermission}
-              installedPlugins={installedPlugins}
-              installingLookup={installingLookup}
-              onPluginDetails={onPluginDetails}
-              onPluginSelected={onPluginDetailsSelected}
-            />
-          </SuspenseWithEmptyState>
-        </DialogBody>
-      )}
-      {!selectedDetailsPlugin && (
-        <DialogFooter>
-          {!formPluginState.plugin ? (
-            plugins ? (
-              <Pagination
-                rowsPerPageOptions={[6, 9, 15]}
-                mode="table"
-                count={plugins.total}
-                rowsPerPage={plugins.limit}
-                page={plugins && Math.ceil(plugins.offset / plugins.limit)}
-                onPageChange={(e, page: number) => onPageChange(page)}
-                onRowsPerPageChange={onRowsPerPageChange}
+        ) : (
+          <>
+            {showSearchBar && (
+              <SearchBar
+                showActionButton={Boolean(keyword)}
+                keyword={keyword}
+                onChange={onSearch}
+                autoFocus
+                classes={{ root: classes.searchWrapper }}
               />
+            )}
+            {error ? (
+              <ApiResponseErrorState error={error} />
             ) : (
-              <></>
-            )
-          ) : (
+              plugins && (
+                <PluginList
+                  plugins={plugins}
+                  installPermission={installPermission}
+                  installedPlugins={installedPlugins}
+                  installingLookup={installingLookup}
+                  onPluginDetails={onPluginDetails}
+                  onPluginSelected={onPluginDetailsSelected}
+                />
+              )
+            )}
+          </>
+        )}
+      </DialogBody>
+      {!selectedDetailsPlugin && !error && !isFetching && (
+        <DialogFooter>
+          {formPluginState.plugin ? (
             <>
               <SecondaryButton onClick={onPluginFormClose} sx={{ mr: 1 }}>
                 <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
@@ -302,6 +285,18 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
                 <FormattedMessage id="words.install" defaultMessage="Install" />
               </PrimaryButton>
             </>
+          ) : (
+            plugins && (
+              <Pagination
+                rowsPerPageOptions={[6, 9, 15]}
+                mode="table"
+                count={plugins.total}
+                rowsPerPage={plugins.limit}
+                page={plugins && Math.ceil(plugins.offset / plugins.limit)}
+                onPageChange={(e, page: number) => onPageChange(page)}
+                onRowsPerPageChange={onRowsPerPageChange}
+              />
+            )
           )}
         </DialogFooter>
       )}
