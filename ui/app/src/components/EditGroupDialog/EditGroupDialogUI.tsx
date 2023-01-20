@@ -149,7 +149,11 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             <Box display="flex" p="0 0 15px">
               <div className={classes.label} />
               <FormHelperText
-                error
+                error={
+                  validateRequiredField(group.name, isDirty) ||
+                  isInvalidGroupName(group.name) ||
+                  validateGroupNameMinLength(group.name)
+                }
                 children={
                   validateRequiredField(group.name, isDirty) ? (
                     <FormattedMessage id="editGroupDialog.requiredGroupName" defaultMessage="Group name is required." />
@@ -161,7 +165,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                         length: GROUP_NAME_MIN_LENGTH
                       }}
                     />
-                  ) : isInvalidGroupName(group.name) ? (
+                  ) : (
                     <FormattedMessage
                       id="editGroupDialog.invalidMinLength"
                       defaultMessage="Max {length} characters, consisting of: letters, numbers, dash (-), underscore (_) and dot (.)."
@@ -169,7 +173,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                         length: GROUP_NAME_MAX_LENGTH
                       }}
                     />
-                  ) : null
+                  )
                 }
               />
             </Box>
