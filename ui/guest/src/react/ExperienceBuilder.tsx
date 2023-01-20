@@ -108,6 +108,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/auth';
 import { setJwt } from '@craftercms/studio-ui/utils/auth';
 import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
+import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -206,6 +207,11 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     }),
     [dispatch, hasHost, draggable, editMode, highlightMode]
   );
+
+  useUnmount(() => {
+    clearAndListen$.next();
+    dispatch(clearContentTreeFieldSelected());
+  });
 
   useEffect(() => {
     if (hasHost && authoringBase) {
