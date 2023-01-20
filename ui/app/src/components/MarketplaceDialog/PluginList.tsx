@@ -19,40 +19,52 @@ import Grid from '@mui/material/Grid';
 import PluginCard from '../PluginCard';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
+import EmptyState from '../EmptyState/EmptyState';
 
 export function PluginList(props: PluginListProps) {
   const {
-    resource,
+    plugins,
     onPluginDetails,
     onPluginSelected,
     installedPlugins = {},
     installPermission,
     installingLookup = {}
   } = props;
-  const plugins = resource.read();
 
   return (
     <Grid container spacing={3}>
-      {plugins.map((plugin) => (
-        <Grid item xs={12} sm={6} md={4} key={plugin.id}>
-          <PluginCard
-            plugin={plugin}
-            inUse={Boolean(installedPlugins[plugin.id])}
-            usePermission={installPermission}
-            disableCardActionClick
-            useLabel={
-              Boolean(installedPlugins[plugin.id]) ? (
-                <FormattedMessage id="words.installed" defaultMessage="Installed" />
-              ) : (
-                <FormattedMessage id="words.install" defaultMessage="Install" />
-              )
+      {plugins.length === 0 ? (
+        <EmptyState
+          styles={{
+            root: {
+              flexGrow: 1,
+              justifyContent: 'center'
             }
-            beingInstalled={installingLookup[plugin.id]}
-            onDetails={onPluginDetails}
-            onPluginSelected={onPluginSelected}
-          />
-        </Grid>
-      ))}
+          }}
+          title={<FormattedMessage id="InstallPluginDialog.empty" defaultMessage="No plugins found." />}
+        />
+      ) : (
+        plugins.map((plugin) => (
+          <Grid item xs={12} sm={6} md={4} key={plugin.id}>
+            <PluginCard
+              plugin={plugin}
+              inUse={Boolean(installedPlugins[plugin.id])}
+              usePermission={installPermission}
+              disableCardActionClick
+              useLabel={
+                Boolean(installedPlugins[plugin.id]) ? (
+                  <FormattedMessage id="words.installed" defaultMessage="Installed" />
+                ) : (
+                  <FormattedMessage id="words.install" defaultMessage="Install" />
+                )
+              }
+              beingInstalled={installingLookup[plugin.id]}
+              onDetails={onPluginDetails}
+              onPluginSelected={onPluginSelected}
+            />
+          </Grid>
+        ))
+      )}
     </Grid>
   );
 }

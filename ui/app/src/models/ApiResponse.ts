@@ -23,6 +23,7 @@ export interface ApiResponse {
 
 export type Api2ResponseFormat<T> = {
   response: ApiResponse;
+  validationErrors?: Array<{ field: string; message: string }>;
 } & T;
 
 export type Api2BulkResponseFormat<T> = {
