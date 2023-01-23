@@ -35,7 +35,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
-import { isInvalidGroupName, validateGroupNameMinLength } from '../GroupManagement/utils';
+import { isInvalidGroupName, validateGroupNameMinLength, validateRequiredField } from '../GroupManagement/utils';
 
 const translations = defineMessages({
   groupCreated: {
@@ -67,6 +67,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 
   const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '' });
   const [isDirty, setIsDirty] = useState(false);
+  const groupNameError =
+    validateRequiredField(group.name, isDirty) ||
+    isInvalidGroupName(group.name) ||
+    validateGroupNameMinLength(group.name);
   const [submitOk, setSubmitOk] = useState(false);
   const isEdit = Boolean(props.group);
 
@@ -95,6 +99,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   }, [group?.id, props.group, setGroup]);
 
   useEffect(() => {
+    // This validation is different than groupName error, because for groupNameError it will return true only when form
+    // is dirty. For submit, it will be true even though form is not dirty (to avoid submitting a clean form).
     setSubmitOk(
       Boolean(group.name.trim() && !validateGroupNameMinLength(group.name) && !isInvalidGroupName(group.name))
     );
@@ -215,6 +221,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       }
       onCloseButtonClick={(e) => onClose(e, null)}
       group={group}
+      groupNameError={groupNameError}
       isEdit={isEdit}
       users={users}
       members={members}

@@ -36,6 +36,7 @@ export interface EditGroupDialogContainerProps
 
 export interface GroupEditDialogUIProps {
   group?: Group;
+  groupNameError: boolean;
   title: React.ReactNode;
   subtitle?: React.ReactNode;
   isEdit: boolean;
