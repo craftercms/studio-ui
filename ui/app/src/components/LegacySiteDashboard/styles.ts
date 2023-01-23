@@ -26,6 +26,39 @@ const useStyles = makeStyles()((theme) => ({
         marginTop: 0
       }
     }
+  },
+  tableRoot: {
+    tableLayout: 'fixed'
+  },
+  itemPath: {
+    color: theme.palette.text.secondary
+  },
+  ellipsis: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  showSelectRoot: {
+    paddingTop: '8.5px',
+    paddingBottom: '8.5px'
+  },
+  showLabel: {
+    marginRight: theme.spacing(1)
+  },
+  skeletonCheckbox: {
+    margin: '6px 10px'
+  },
+  collapseAll: {
+    marginRight: '10px'
+  },
+  actionsBarRoot: {
+    left: '0',
+    right: '0',
+    zIndex: 2,
+    position: 'absolute'
+  },
+  actionsBarCheckbox: {
+    margin: '2px'
   }
 }));
 

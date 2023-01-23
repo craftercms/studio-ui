@@ -23,9 +23,7 @@ import {
   getItemSkeleton,
   List,
   ListItem,
-  ListItemAvatar,
-  ListItemIcon,
-  PersonAvatar
+  ListItemIcon
 } from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
@@ -34,14 +32,14 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import { fetchPendingApproval } from '../../services/dashboard';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { DashboardPublishingPackage } from '../../models';
+import { DetailedItem } from '../../models';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
-interface PendingApprovalDashletState extends WithSelectedState<DashboardPublishingPackage> {
+interface PendingApprovalDashletState extends WithSelectedState<DetailedItem> {
   loading: boolean;
   total: number;
 }
@@ -67,8 +65,8 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const onRefresh = useMemo(
     () => () => {
       setState({ items: null, loading: true });
-      fetchPendingApproval(site, { limit: 10, offset: 0 }).subscribe((packages) => {
-        setState({ items: packages, total: packages.total, loading: false });
+      fetchPendingApproval(site, { limit: 10, offset: 0 }).subscribe((items) => {
+        setState({ items: items, total: items.total, loading: false });
       });
     },
     [setState, site]
@@ -112,17 +110,14 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
-              <ListItemAvatar>
-                <PersonAvatar person={item.submitter} />
-              </ListItemAvatar>
               <ListItemText
                 primary={
                   <FormattedMessage
                     id="pendingApprovalDashlet.entryPrimaryText"
                     defaultMessage="{name} submitted to <render_target>{publishingTarget}</render_target>"
                     values={{
-                      name: item.submitter.firstName,
-                      publishingTarget: item.publishingTarget,
+                      name: item.sandbox.modifier,
+                      publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (
                           <Typography

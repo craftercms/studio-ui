@@ -25,6 +25,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
+import useActiveUser from '../../hooks/useActiveUser';
 
 interface PublishingDashboardProps {
   embedded?: boolean;
@@ -32,9 +33,16 @@ interface PublishingDashboardProps {
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
+const permittedRoles = ['developer', 'admin'];
+
 export function PublishingDashboard(props: PublishingDashboardProps) {
   const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
+  const user = useActiveUser();
   const site = useActiveSiteId();
+  const userRoles = user?.rolesBySite[site];
+  const userPermissions = user?.permissionsBySite[site] ?? [];
+  const allowedRole = permittedRoles?.some((role) => userRoles.includes(role)) ?? false;
+
   const {
     spacing,
     palette: { mode }
@@ -63,12 +71,20 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
         <Grid item xs={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>
-        <Grid item xs={12}>
-          <PublishOnDemandWidget siteId={site} onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange} />
-        </Grid>
-        <Grid item xs={12}>
-          <PublishingQueueWidget siteId={site} />
-        </Grid>
+        {userPermissions.includes('publish') && (
+          <Grid item xs={12}>
+            <PublishOnDemandWidget
+              siteId={site}
+              mode={allowedRole ? null : 'everything'}
+              onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+            />
+          </Grid>
+        )}
+        {userPermissions.includes('get_publishing_queue') && (
+          <Grid item xs={12}>
+            <PublishingQueueWidget siteId={site} />
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

@@ -19,7 +19,7 @@ import { toQueryString } from '../utils/object';
 import { map, pluck } from 'rxjs/operators';
 import { DashboardPublishingPackage, LegacyDashboardItem, LegacyDeploymentHistoryResponse } from '../models/Dashboard';
 import { Observable } from 'rxjs';
-import { PagedArray, PublishingStats, PublishingTargets, SandboxItem } from '../models';
+import { DetailedItem, PagedArray, PublishingStats, PublishingTargets, SandboxItem } from '../models';
 import { Activity } from '../models/Activity';
 import PaginationOptions from '../models/PaginationOptions';
 import { createPagedArray } from '../utils/array';
@@ -139,14 +139,12 @@ export function fetchMyActivity(siteId: string, options?: FetchMyActivityOptions
 export function fetchPendingApproval(
   siteId: string,
   options?: PaginationOptions
-): Observable<PagedArray<DashboardPublishingPackage>> {
+): Observable<PagedArray<DetailedItem>> {
   const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/content/pending_approval${qs}`).pipe(
     map(({ response }) =>
       createPagedArray(
-        response.publishingPackages
-          // TODO: Remove when backend fixes id = null
-          .map((i, index) => ({ ...i, id: i.id ?? index })),
+        response.publishingItems.map((item) => prepareVirtualItemProps(item)),
         response
       )
     )

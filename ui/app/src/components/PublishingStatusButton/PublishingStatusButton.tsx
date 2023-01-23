@@ -18,8 +18,16 @@ import React, { forwardRef } from 'react';
 import { IconButtonProps } from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
 import PublishingStatusButtonUI, { PublishingStatusButtonUIProps } from './PublishingStatusButtonUI';
-import { showPublishingStatusDialog } from '../../state/actions/dialogs';
+import { showWidgetDialog } from '../../state/actions/dialogs';
 import { useSelection } from '../../hooks/useSelection';
+import { defineMessages, useIntl } from 'react-intl';
+
+const translations = defineMessages({
+  publishing: {
+    id: 'words.publishing',
+    defaultMessage: 'Publishing'
+  }
+});
 
 export interface PublishingStatusButtonProps extends IconButtonProps {
   variant?: PublishingStatusButtonUIProps['variant'];
@@ -29,7 +37,24 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
   const { enabled, status, isFetching, totalItems, numberOfItems } = useSelection(
     (state) => state.dialogs.publishingStatus
   );
+  const { formatMessage } = useIntl();
   const dispatch = useDispatch();
+
+  const onShowDialog = () => {
+    dispatch(
+      showWidgetDialog({
+        title: formatMessage(translations.publishing),
+        widget: {
+          id: 'craftercms.components.PublishingDashboard',
+          configuration: {
+            embedded: true
+          }
+        },
+        fullHeight: false
+      })
+    );
+  };
+
   return (
     <PublishingStatusButtonUI
       {...props}
@@ -39,9 +64,7 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
       isFetching={isFetching}
       totalItems={totalItems}
       numberOfItems={numberOfItems}
-      onClick={() => {
-        dispatch(showPublishingStatusDialog({}));
-      }}
+      onClick={onShowDialog}
     />
   );
 });

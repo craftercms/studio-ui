@@ -188,6 +188,7 @@ export const components = {
     () => import('../components/LegacySiteDashboard/LegacyAwaitingApprovalDashletGrid')
   ),
   LegacyDashletCard: lazy(() => import('../components/LegacySiteDashboard/LegacyDashletCard')),
+  LegacyInReviewDashlet: lazy(() => import('../components/LegacySiteDashboard/LegacyInReviewDashlet')),
   LegacyRecentActivityDashlet: lazy(() => import('../components/LegacySiteDashboard/LegacyRecentActivityDashlet')),
   LegacyRecentActivityDashletGrid: lazy(
     () => import('../components/LegacySiteDashboard/LegacyRecentActivityDashletGrid')
@@ -195,6 +196,7 @@ export const components = {
   LegacyRecentlyPublishedDashlet: lazy(
     () => import('../components/LegacySiteDashboard/LegacyRecentlyPublishedDashlet')
   ),
+  LegacyUnpublishedDashlet: lazy(() => import('../components/LegacySiteDashboard/LegacyUnpublishedDashlet')),
   LegacySiteToolsFrame: lazy(() => import('../components/LegacySiteToolsFrame')),
   LoadingState: lazy(() => import('../components/LoadingState')),
   LogConsole: lazy(() => import('../components/LogConsole')),
@@ -221,6 +223,7 @@ export const components = {
   Pagination: lazy(() => import('../components/Pagination')),
   PasswordRequirementsDisplay: lazy(() => import('../components/PasswordRequirementsDisplay')),
   PasswordStrengthDisplay: lazy(() => import('../components/PasswordStrengthDisplay')),
+  PasswordStrengthDisplayPopper: lazy(() => import('../components/PasswordStrengthDisplayPopper')),
   PasswordTextField: lazy(() => import('../components/PasswordTextField')),
   PathNavigator: lazy(() => import('../components/PathNavigator')),
   PathNavigatorTree: lazy(() => import('../components/PathNavigatorTree')),

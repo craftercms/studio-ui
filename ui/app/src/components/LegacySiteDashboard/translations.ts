@@ -20,6 +20,22 @@ export const translations = defineMessages({
   selectionCount: {
     id: 'search.selectionCount',
     defaultMessage: '{count} selected'
+  },
+  publish: {
+    id: 'words.publish',
+    defaultMessage: 'Publish'
+  },
+  reject: {
+    id: 'words.reject',
+    defaultMessage: 'Reject'
+  },
+  clear: {
+    id: 'common.clearSelectedWithCount',
+    defaultMessage: 'Clear {count} selected'
+  },
+  publishEverything: {
+    id: 'common.publishEverything',
+    defaultMessage: 'Publish Everything'
   }
 });
 

@@ -29,7 +29,7 @@ import Collapse from '@mui/material/Collapse';
 import ListItemText from '@mui/material/ListItemText';
 import PublishOnDemandForm from '../PublishOnDemandForm';
 import { PublishFormData, PublishOnDemandMode } from '../../models/Publishing';
-import { nnou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import Typography from '@mui/material/Typography';
 import { bulkGoLive, fetchPublishingTargets, publishAll, publishByCommits } from '../../services/publishing';
 import { showSystemNotification } from '../../state/actions/system';
@@ -56,6 +56,7 @@ import Box from '@mui/material/Box';
 import useDetailedItem from '../../hooks/useDetailedItem';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import usePermissionsBySite from '../../hooks/usePermissionsBySite';
+import { StandardAction } from '../../models';
 
 const useStyles = makeStyles()((theme) => ({
   content: {
@@ -150,15 +151,26 @@ const initialPublishEverythingFormData = {
 
 interface PublishOnDemandWidgetProps {
   siteId: string;
+  mode?: 'everything' | 'studio' | 'git';
+  showHeader?: boolean;
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
+  onCancel?: StandardAction;
+  onSuccess?: StandardAction;
 }
 
 export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
-  const { siteId, onSubmittingAndOrPendingChange } = props;
+  const {
+    siteId,
+    onSubmittingAndOrPendingChange,
+    mode,
+    showHeader = true,
+    onCancel: onCancelProp,
+    onSuccess: onSuccessProp
+  } = props;
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const [mode, setMode] = useState<PublishOnDemandMode>(null);
+  const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(mode ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const permissionsBySite = usePermissionsBySite();
   const hasPublishPermission = permissionsBySite[siteId]?.includes('publish');
@@ -189,21 +201,29 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     (!publishEverythingCommentRequired || !isBlank(publishEverythingFormData.comment));
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
   const currentFormData =
-    mode === 'studio' ? publishStudioFormData : mode === 'git' ? publishGitFormData : publishEverythingFormData;
+    selectedMode === 'studio'
+      ? publishStudioFormData
+      : selectedMode === 'git'
+      ? publishGitFormData
+      : publishEverythingFormData;
   const currentSetFormData =
-    mode === 'studio'
+    selectedMode === 'studio'
       ? setPublishStudioFormData
-      : mode === 'git'
+      : selectedMode === 'git'
       ? setPublishGitFormData
       : setPublishEverythingFormData;
   const currentFormValid =
-    mode === 'studio' ? publishStudioFormValid : mode === 'git' ? publishGitFormValid : publishEverythingFormValid;
+    selectedMode === 'studio'
+      ? publishStudioFormValid
+      : selectedMode === 'git'
+      ? publishGitFormValid
+      : publishEverythingFormValid;
   const hasChanges =
-    mode === 'studio'
+    selectedMode === 'studio'
       ? publishStudioFormData.path !== initialPublishStudioFormData.path ||
         publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
         publishStudioFormData.publishingTarget !== initialPublishingTarget
-      : mode === 'git'
+      : selectedMode === 'git'
       ? publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
         publishGitFormData.comment !== initialPublishGitFormData.comment ||
         publishGitFormData.publishingTarget !== initialPublishingTarget
@@ -273,7 +293,11 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishGitFormData({ ...initialPublishGitFormData, publishingTarget });
-        setMode(null);
+        nou(mode) && setSelectedMode(null);
+
+        if (onSuccessProp) {
+          dispatch(onSuccessProp);
+        }
       },
       error({ response }) {
         setIsSubmitting(false);
@@ -305,12 +329,15 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           next() {
             setIsSubmitting(false);
             setPublishStudioFormData({ ...initialPublishStudioFormData, publishingTarget });
-            setMode(null);
+            nou(mode) && setSelectedMode(null);
             dispatch(
               showSystemNotification({
                 message: formatMessage(messages.bulkPublishStarted)
               })
             );
+            if (onSuccessProp) {
+              dispatch(onSuccessProp);
+            }
           },
           error({ response }) {
             setIsSubmitting(false);
@@ -336,7 +363,10 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           })
         );
         setPublishEverythingFormData({ ...initialPublishEverythingFormData, publishingTarget });
-        setMode(null);
+        nou(mode) && setSelectedMode(null);
+        if (onSuccessProp) {
+          dispatch(onSuccessProp);
+        }
       },
       error({ response }) {
         setIsSubmitting(false);
@@ -351,29 +381,32 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
   };
 
   const onCancel = () => {
-    setMode(null);
+    nou(mode) && setSelectedMode(null);
     setDefaultPublishingTarget(publishingTargets, true);
+    if (onCancelProp) {
+      dispatch(onCancelProp);
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
+    setSelectedMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
   };
 
   const toggleMode = (e) => {
     e.preventDefault();
-    setMode(mode === 'studio' ? 'git' : 'studio');
+    setSelectedMode(selectedMode === 'studio' ? 'git' : 'studio');
   };
 
   const onSubmitForm = () => {
     if (currentFormValid) {
-      switch (mode) {
+      switch (selectedMode) {
         case 'studio':
           onSubmitBulkPublish();
           break;
         case 'git':
           onSubmitPublishBy();
           break;
-        case 'all':
+        case 'everything':
           onSubmitPublishEverything();
           break;
       }
@@ -403,80 +436,88 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 
   return (
     <Paper elevation={2}>
-      <DialogHeader title={<FormattedMessage id="publishOnDemand.title" defaultMessage="Publish on Demand" />} />
+      {showHeader && (
+        <DialogHeader title={<FormattedMessage id="publishOnDemand.title" defaultMessage="Publish on Demand" />} />
+      )}
       <div className={classes.content}>
         {hasInitialPublish ? (
           <>
             <Paper elevation={0} className={classes.modeSelector}>
               <form>
-                <RadioGroup value={mode} onChange={handleChange}>
-                  <FormControlLabel
-                    disabled={isSubmitting}
-                    value="studio"
-                    control={<Radio />}
-                    label={
-                      <ListItemText
-                        primary={
-                          <FormattedMessage
-                            id="publishOnDemand.pathModeDescription"
-                            defaultMessage="Publish changes made in Studio via the UI"
-                          />
-                        }
-                        secondary="By path"
-                      />
-                    }
-                    className={classes.byPathModeSelector}
-                  />
-                  <FormControlLabel
-                    disabled={isSubmitting}
-                    value="git"
-                    control={<Radio />}
-                    label={
-                      <ListItemText
-                        primary={
-                          <FormattedMessage
-                            id="publishOnDemand.tagsModeDescription"
-                            defaultMessage="Publish changes made via direct git actions against the repository or pulled from a remote repository"
-                          />
-                        }
-                        secondary="By tags or commit ids"
-                      />
-                    }
-                  />
-                  <FormControlLabel
-                    disabled={isSubmitting}
-                    value="all"
-                    control={<Radio />}
-                    label={
-                      <ListItemText
-                        primary={
-                          <FormattedMessage
-                            id="publishOnDemand.publishAllDescription"
-                            defaultMessage="Publish everything"
-                          />
-                        }
-                        secondary="Publish all changes on the repo to the publishing target you choose"
-                      />
-                    }
-                  />
+                <RadioGroup value={selectedMode} onChange={handleChange}>
+                  {(nou(mode) || mode === 'studio') && (
+                    <FormControlLabel
+                      disabled={isSubmitting}
+                      value="studio"
+                      control={<Radio />}
+                      label={
+                        <ListItemText
+                          primary={
+                            <FormattedMessage
+                              id="publishOnDemand.pathModeDescription"
+                              defaultMessage="Publish changes made in Studio via the UI"
+                            />
+                          }
+                          secondary="By path"
+                        />
+                      }
+                      className={classes.byPathModeSelector}
+                    />
+                  )}
+                  {(nou(mode) || mode === 'git') && (
+                    <FormControlLabel
+                      disabled={isSubmitting}
+                      value="git"
+                      control={<Radio />}
+                      label={
+                        <ListItemText
+                          primary={
+                            <FormattedMessage
+                              id="publishOnDemand.tagsModeDescription"
+                              defaultMessage="Publish changes made via direct git actions against the repository or pulled from a remote repository"
+                            />
+                          }
+                          secondary="By tags or commit ids"
+                        />
+                      }
+                    />
+                  )}
+                  {(nou(mode) || mode === 'everything') && (
+                    <FormControlLabel
+                      disabled={isSubmitting}
+                      value="everything"
+                      control={<Radio />}
+                      label={
+                        <ListItemText
+                          primary={
+                            <FormattedMessage
+                              id="publishOnDemand.publishAllDescription"
+                              defaultMessage="Publish everything"
+                            />
+                          }
+                          secondary="Publish all changes on the repo to the publishing target you choose"
+                        />
+                      }
+                    />
+                  )}
                 </RadioGroup>
               </form>
             </Paper>
-            <Collapse in={nnou(mode)} timeout={300} unmountOnExit className={classes.formContainer}>
+            <Collapse in={nnou(selectedMode)} timeout={300} unmountOnExit className={classes.formContainer}>
               <PublishOnDemandForm
                 disabled={isSubmitting}
                 formData={currentFormData}
                 setFormData={currentSetFormData}
-                mode={mode}
+                mode={selectedMode}
                 publishingTargets={publishingTargets}
                 publishingTargetsError={publishingTargetsError}
                 bulkPublishCommentRequired={bulkPublishCommentRequired}
                 publishByCommitCommentRequired={publishByCommitCommentRequired}
               />
-              {mode !== 'all' && (
+              {selectedMode !== 'everything' && (
                 <div className={classes.noteContainer}>
                   <Typography variant="caption" className={classes.note}>
-                    {mode === 'studio' ? (
+                    {selectedMode === 'studio' ? (
                       <FormattedMessage
                         id="publishingDashboard.studioNote"
                         defaultMessage="Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>."
@@ -525,7 +566,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           </Box>
         )}
       </div>
-      {mode && (
+      {selectedMode && (
         <DialogFooter>
           <SecondaryButton onClick={onCancel} disabled={isSubmitting}>
             <FormattedMessage id="words.cancel" defaultMessage="Cancel" />

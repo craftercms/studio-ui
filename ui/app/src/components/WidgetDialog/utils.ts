@@ -22,6 +22,7 @@ import { EnhancedDialogState, onSubmittingAndOrPendingChangeProps } from '../../
 interface WidgetDialogBaseProps {
   title: string;
   widget: WidgetDescriptor;
+  fullHeight?: boolean;
   extraProps?: any;
 }
 

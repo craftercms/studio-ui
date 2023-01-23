@@ -25,6 +25,8 @@ import { useState } from 'react';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
+import useActiveUser from '../../hooks/useActiveUser';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 const useStyles = makeStyles()(() => ({
   body: {
@@ -32,6 +34,8 @@ const useStyles = makeStyles()(() => ({
     placeContent: 'center'
   }
 }));
+
+const permittedRoles = ['developer', 'admin'];
 
 export function PublishingStatusDialogContainer(props: PublishingStatusDialogContainerProps) {
   const {
@@ -53,6 +57,10 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const [unlockAnchorEl, setUnlockAnchorEl] = useState(null);
+  const user = useActiveUser();
+  const siteId = useActiveSiteId();
+  const userRoles = user?.rolesBySite[siteId];
+  const allowedUser = permittedRoles?.some((role) => userRoles.includes(role)) ?? false;
 
   const handleClose = () => {
     setUnlockAnchorEl(null);
@@ -69,20 +77,22 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
         title={formatMessage(publishingStatusMessages.publishingStatus)}
         onCloseButtonClick={onClose}
         rightActions={[
-          onUnlock && {
-            icon: { id: '@mui/icons-material/LockOpenRounded' },
-            onClick: (e) => {
-              setUnlockAnchorEl(e.currentTarget);
+          onUnlock &&
+            allowedUser && {
+              icon: { id: '@mui/icons-material/LockOpenRounded' },
+              onClick: (e) => {
+                setUnlockAnchorEl(e.currentTarget);
+              },
+              tooltip: formatMessage(publishingStatusMessages.unlock)
             },
-            tooltip: formatMessage(publishingStatusMessages.unlock)
-          },
-          onStartStop && {
-            icon: enabled
-              ? { id: '@mui/icons-material/PauseCircleOutlineOutlined' }
-              : { id: '@mui/icons-material/PlayCircleOutlineOutlined' },
-            onClick: onStartStop,
-            tooltip: formatMessage(enabled ? publishingStatusMessages.stop : publishingStatusMessages.start)
-          },
+          onStartStop &&
+            allowedUser && {
+              icon: enabled
+                ? { id: '@mui/icons-material/PauseCircleOutlineOutlined' }
+                : { id: '@mui/icons-material/PlayCircleOutlineOutlined' },
+              onClick: onStartStop,
+              tooltip: formatMessage(enabled ? publishingStatusMessages.stop : publishingStatusMessages.start)
+            },
           onRefresh && {
             icon: { id: '@mui/icons-material/RefreshRounded' },
             onClick: onRefresh,
