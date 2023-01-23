@@ -25,6 +25,7 @@ export interface TransferListProps {
   source: TransferListObject;
   target: TransferListObject;
   inProgressIds: (string | number)[];
+  disabled?: boolean;
   externallyManaged: boolean;
   onTargetListItemsAdded(items: TransferListItem[]): void;
   onTargetListItemsRemoved(items: TransferListItem[]): void;
@@ -49,16 +50,22 @@ function intersection(a: any, b: any) {
 }
 
 export function TransferList(props: TransferListProps) {
-  const { externallyManaged, source, target, onTargetListItemsAdded, onTargetListItemsRemoved } = props;
+  const {
+    externallyManaged,
+    source,
+    target,
+    onTargetListItemsAdded,
+    onTargetListItemsRemoved,
+    disabled = false
+  } = props;
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>(source.items);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>(target.items);
+  const [checkedList, setCheckedList] = useState({});
 
   const itemsLookup = {
     ...createLookupTable(sourceItems),
     ...createLookupTable(targetItems)
   };
-
-  const [checkedList, setCheckedList] = useState({});
 
   const onItemClicked = (item: TransferListItem) => {
     if (checkedList[item.id]) {
@@ -157,6 +164,7 @@ export function TransferList(props: TransferListProps) {
           disableRemove={disableRemove}
           sourceItemsAllChecked={sourceItemsAllChecked}
           targetItemsAllChecked={targetItemsAllChecked}
+          disabled={disabled}
         />
       ) : (
         <TransferListInternallyManaged
@@ -172,6 +180,7 @@ export function TransferList(props: TransferListProps) {
           disableRemove={disableRemove}
           sourceItemsAllChecked={sourceItemsAllChecked}
           targetItemsAllChecked={targetItemsAllChecked}
+          disabled={disabled}
         />
       )}
     </>

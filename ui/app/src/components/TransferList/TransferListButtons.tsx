@@ -25,49 +25,57 @@ import useStyles from './styles';
 export interface TransferListButtonsProps {
   disableAdd: boolean;
   disableRemove: boolean;
+  disabled?: boolean;
   addToTarget(): void;
   removeFromTarget(): void;
 }
 
 export function TransferListButtons(props: TransferListButtonsProps) {
-  const { disableAdd, disableRemove, addToTarget, removeFromTarget } = props;
+  const { disableAdd, disableRemove, addToTarget, removeFromTarget, disabled = false } = props;
   const { classes } = useStyles();
 
   return (
     <section className={classes.buttonsWrapper}>
-      <Tooltip
-        title={
-          disableAdd ? (
-            <FormattedMessage id="transferList.addDisabledTooltip" defaultMessage="Select items to add from the left" />
-          ) : (
-            <FormattedMessage id="transferList.addToTarget" defaultMessage="Add selected" />
-          )
-        }
-      >
-        <span>
-          <IconButton onClick={addToTarget} disabled={disableAdd} size="large">
-            <NavigateNextIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
-      <Tooltip
-        title={
-          disableRemove ? (
-            <FormattedMessage
-              id="transferList.removeDisabledTooltip"
-              defaultMessage="Select items to remove from the right"
-            />
-          ) : (
-            <FormattedMessage id="transferList.removeFromTarget" defaultMessage="Remove selected" />
-          )
-        }
-      >
-        <span>
-          <IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
-            <NavigateBeforeIcon />
-          </IconButton>
-        </span>
-      </Tooltip>
+      {!disabled && (
+        <>
+          <Tooltip
+            title={
+              disableAdd ? (
+                <FormattedMessage
+                  id="transferList.addDisabledTooltip"
+                  defaultMessage="Select items to add from the left"
+                />
+              ) : (
+                <FormattedMessage id="transferList.addToTarget" defaultMessage="Add selected" />
+              )
+            }
+          >
+            <span>
+              <IconButton onClick={addToTarget} disabled={disableAdd} size="large">
+                <NavigateNextIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+          <Tooltip
+            title={
+              disableRemove ? (
+                <FormattedMessage
+                  id="transferList.removeDisabledTooltip"
+                  defaultMessage="Select items to remove from the right"
+                />
+              ) : (
+                <FormattedMessage id="transferList.removeFromTarget" defaultMessage="Remove selected" />
+              )
+            }
+          >
+            <span>
+              <IconButton onClick={removeFromTarget} disabled={disableRemove} size="large">
+                <NavigateBeforeIcon />
+              </IconButton>
+            </span>
+          </Tooltip>
+        </>
+      )}
     </section>
   );
 }

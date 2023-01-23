@@ -66,10 +66,12 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const { onClose, onGroupSaved, onGroupDeleted, onSubmittingAndOrPendingChange } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
+
   const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '', externallyManaged: false });
   const [isDirty, setIsDirty] = useState(false);
   const [submitOk, setSubmitOk] = useState(false);
   const isEdit = Boolean(props.group);
+
   const [users, setUsers] = useState<User[]>();
   const [usersHaveNextPage, setUsersHaveNextPage] = useState(false);
   const usersRef = useRef([]);
@@ -109,7 +111,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   };
 
   const fetchMembers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
-    fetchUsersFromGroup(props.group.id, options).subscribe((members) => {
+    fetchUsersFromGroup(props.group.id, { limit: membersFetchSize, ...options }).subscribe((members) => {
       setMembersHaveNextPage(members.total >= (options?.offset ?? membersOffset) + membersFetchSize);
       setMembers(members);
       setMembersLookup(createPresenceTable(members, true, (member) => member.username));

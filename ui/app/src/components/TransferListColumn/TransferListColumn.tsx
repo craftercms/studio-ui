@@ -22,7 +22,6 @@ import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import SearchBar from '../SearchBar/SearchBar';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -30,6 +29,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import TransferListItem from './TransferListItem';
 import { PaginationOptions } from '../../models';
+import ListItemButton from '@mui/material/ListItemButton';
 
 export interface TransferListColumnProps {
   title: ReactNode;
@@ -44,6 +44,7 @@ export interface TransferListColumnProps {
   hasMore?: boolean;
   onFilter?(options?: Partial<PaginationOptions & { keyword?: string }>);
   onLoadMore?(options?: Partial<PaginationOptions & { keyword?: string }>);
+  disabled?: boolean;
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
@@ -59,7 +60,8 @@ export function TransferListColumn(props: TransferListColumnProps) {
     isAllChecked,
     onCheckAllClicked,
     inProgressIds,
-    emptyStateMessage
+    emptyStateMessage,
+    disabled = false
   } = props;
   const { classes } = useStyles();
   const [keyword, setKeyword] = useState('');
@@ -85,7 +87,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
   return (
     <Paper className={classes.listPaper}>
       <header className={classes.listHeader}>
-        {onCheckAllClicked && (
+        {!disabled && onCheckAllClicked && (
           <Checkbox
             disabled={items.length === 0}
             checked={isAllChecked}
@@ -114,30 +116,31 @@ export function TransferListColumn(props: TransferListColumnProps) {
           ) : (
             <>
               {list.map((item, i) => (
-                <ListItem
-                  disabled={inProgressIds.includes(item.id) || disabledItems?.[item.id]}
+                <ListItemButton
+                  disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
                   key={item.id}
                   role="listitem"
-                  button
                   onClick={(e) => onItemClick(item, e)}
                 >
-                  <ListItemIcon>
-                    {inProgressIds.includes(item.id) ? (
-                      <CircularProgress size={42} />
-                    ) : (
-                      <Checkbox
-                        checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
-                        tabIndex={-1}
-                        disableRipple
-                      />
-                    )}
-                  </ListItemIcon>
+                  {!disabled && (
+                    <ListItemIcon>
+                      {inProgressIds.includes(item.id) ? (
+                        <CircularProgress size={42} />
+                      ) : (
+                        <Checkbox
+                          checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
+                          tabIndex={-1}
+                          disableRipple
+                        />
+                      )}
+                    </ListItemIcon>
+                  )}
                   <ListItemText
                     primary={item.title}
                     secondary={item.subtitle}
                     primaryTypographyProps={{ noWrap: true, title: item.title }}
                   />
-                </ListItem>
+                </ListItemButton>
               ))}
             </>
           )

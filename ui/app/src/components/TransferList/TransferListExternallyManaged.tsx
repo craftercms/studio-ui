@@ -33,6 +33,7 @@ export interface TransferListExternallyManagedProps extends TransferListProps {
   removeFromTarget(): void;
   disableAdd: boolean;
   disableRemove: boolean;
+  disabled?: boolean;
   sourceItemsAllChecked: boolean;
   targetItemsAllChecked: boolean;
 }
@@ -53,6 +54,7 @@ export function TransferListExternallyManaged(props: TransferListExternallyManag
     removeFromTarget,
     disableAdd,
     disableRemove,
+    disabled,
     sourceItemsAllChecked,
     targetItemsAllChecked
   } = props;
@@ -80,12 +82,14 @@ export function TransferListExternallyManaged(props: TransferListExternallyManag
         isAllChecked={sourceItemsAllChecked}
         inProgressIds={inProgressIds}
         emptyStateMessage={source.emptyMessage}
+        disabled={disabled}
       />
       <TransferListButtons
         disableAdd={disableAdd}
         disableRemove={disableRemove}
         addToTarget={addToTarget}
         removeFromTarget={removeFromTarget}
+        disabled={disabled}
       />
       <TransferListColumn
         title={target.title}
@@ -100,6 +104,7 @@ export function TransferListExternallyManaged(props: TransferListExternallyManag
         isAllChecked={targetItemsAllChecked}
         inProgressIds={inProgressIds}
         emptyStateMessage={target.emptyMessage}
+        disabled={disabled}
       />
     </Box>
   );

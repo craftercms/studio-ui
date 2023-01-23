@@ -50,7 +50,8 @@ export function TransferListInternallyManaged(props: TransferListInternallyManag
     disableAdd,
     disableRemove,
     sourceItemsAllChecked,
-    targetItemsAllChecked
+    targetItemsAllChecked,
+    disabled
   } = props;
 
   return (
@@ -64,12 +65,14 @@ export function TransferListInternallyManaged(props: TransferListInternallyManag
         isAllChecked={sourceItemsAllChecked}
         inProgressIds={inProgressIds}
         emptyStateMessage={source.emptyMessage}
+        disabled={disabled}
       />
       <TransferListButtons
         disableAdd={disableAdd}
         disableRemove={disableRemove}
         addToTarget={addToTarget}
         removeFromTarget={removeFromTarget}
+        disabled={disabled}
       />
       <TransferListColumn
         title={props.target.title}
@@ -80,6 +83,7 @@ export function TransferListInternallyManaged(props: TransferListInternallyManag
         isAllChecked={targetItemsAllChecked}
         inProgressIds={inProgressIds}
         emptyStateMessage={target.emptyMessage}
+        disabled={disabled}
       />
     </Box>
   );
