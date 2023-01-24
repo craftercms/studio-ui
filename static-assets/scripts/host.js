@@ -551,14 +551,14 @@
 
       const onChangeGuestRequestReply = () => {
         clearTimeout(timeout);
-        communicator.unsubscribe(Topics.CHANGE_GUEST_REQUEST_REPLY, onChangeGuestRequestReply);
+        communicator.unsubscribe(Topics.CHANGE_GUEST_REQUEST_CONFIRM, onChangeGuestRequestReply);
       };
 
-      communicator.on(Topics.CHANGE_GUEST_REQUEST_REPLY, onChangeGuestRequestReply);
+      communicator.on(Topics.CHANGE_GUEST_REQUEST_CONFIRM, onChangeGuestRequestReply);
 
       timeout = setTimeout(() => {
         win.src = previewAppBaseUri + hash.page;
-        communicator.unsubscribe(Topics.CHANGE_GUEST_REQUEST_REPLY, onChangeGuestRequestReply);
+        communicator.unsubscribe(Topics.CHANGE_GUEST_REQUEST_CONFIRM, onChangeGuestRequestReply);
       }, 150);
 
       communicator.publish(Topics.CHANGE_GUEST_REQUEST, {
