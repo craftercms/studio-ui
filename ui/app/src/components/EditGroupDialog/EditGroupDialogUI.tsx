@@ -204,7 +204,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             members && (
               <>
                 <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
-                  <FormattedMessage id="editGroupDialog.editGroupMembers" defaultMessage="Edit Group Members" />
+                  <FormattedMessage id="editGroupDialog.groupMembers" defaultMessage="Group Members" />
                 </Typography>
                 <TransferList
                   disabled={group.externallyManaged}
