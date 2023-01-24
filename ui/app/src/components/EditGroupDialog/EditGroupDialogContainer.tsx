@@ -279,6 +279,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       inProgressIds={inProgressIds}
       isDirty={isDirty}
       transferListState={transferListState}
+      onFetchUsers={fetchUsers}
     />
   );
 }

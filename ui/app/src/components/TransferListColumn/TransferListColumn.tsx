@@ -29,6 +29,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import TransferListItem from './TransferListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import { PaginationOptions } from '../../models';
 
 export interface TransferListColumnProps {
   title: ReactNode;
@@ -41,6 +42,7 @@ export interface TransferListColumnProps {
   onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
   disabled?: boolean;
   disabledItems?: LookupTable<boolean>;
+  onFilter?(options?: Partial<PaginationOptions & { keyword?: string }>);
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
@@ -54,16 +56,20 @@ export function TransferListColumn(props: TransferListColumnProps) {
     inProgressIds,
     emptyStateMessage,
     disabled = false,
-    disabledItems
+    disabledItems,
+    onFilter
   } = props;
   const { classes } = useStyles();
   const [keyword, setKeyword] = useState('');
 
   const onSearch = (value) => {
+    onFilter?.({ keyword: value });
     setKeyword(value);
   };
 
-  const filteredList = items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
+  const list = onFilter
+    ? items
+    : items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
 
   return (
     <Paper className={classes.listPaper}>
@@ -86,7 +92,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
       </header>
       <List dense component="div" role="list" className={classes.list}>
         {items.length ? (
-          filteredList.length === 0 ? (
+          list.length === 0 ? (
             <EmptyState
               title={
                 <FormattedMessage
@@ -96,7 +102,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
-            filteredList.map((item, i) => (
+            list.map((item, i) => (
               <ListItemButton
                 disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
                 key={item.id}

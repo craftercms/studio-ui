@@ -36,15 +36,6 @@ export const useTransferListState = () => {
     ...createLookupTable(targetItems)
   };
 
-  const getChecked = (items: TransferListItem[]) => {
-    return intersection(
-      Object.keys(checkedList)
-        .filter((key) => checkedList[key])
-        .map((id) => itemsLookup[id]),
-      items
-    );
-  };
-
   const isAllChecked = useCallback(
     (items: TransferListItem[]) => {
       return items.length
@@ -58,6 +49,18 @@ export const useTransferListState = () => {
     },
     [checkedList]
   );
+
+  const getChecked = (items: TransferListItem[]) => {
+    return intersection(
+      Object.keys(checkedList)
+        .filter((key) => checkedList[key])
+        .map((id) => itemsLookup[id]),
+      items
+    );
+  };
+
+  const disableAdd = getChecked(sourceItems).length === 0;
+  const disableRemove = getChecked(targetItems).length === 0;
 
   const onItemClicked = (item: TransferListItem) => {
     if (checkedList[item.id]) {
@@ -74,9 +77,6 @@ export const useTransferListState = () => {
     });
     setCheckedList({ ...checkedList, ...nextCheckedList });
   };
-
-  const disableAdd = getChecked(sourceItems).length === 0;
-  const disableRemove = getChecked(targetItems).length === 0;
 
   const addToTarget = () => {
     const nextCheckedList = {};

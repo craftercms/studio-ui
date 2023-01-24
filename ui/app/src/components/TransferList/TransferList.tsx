@@ -67,6 +67,7 @@ export function TransferList(props: TransferListProps) {
         inProgressIds={inProgressIds}
         emptyStateMessage={source.emptyStateMessage}
         disabled={disabled}
+        onFilter={source.onFilter}
       />
       <section className={classes.buttonsWrapper}>
         {!disabled && (
@@ -121,6 +122,7 @@ export function TransferList(props: TransferListProps) {
         inProgressIds={inProgressIds}
         emptyStateMessage={target.emptyStateMessage}
         disabled={disabled}
+        onFilter={target.onFilter}
       />
     </Box>
   );

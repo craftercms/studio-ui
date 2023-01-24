@@ -78,7 +78,8 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     inProgressIds,
     isDirty,
     isEdit,
-    transferListState
+    transferListState,
+    onFetchUsers
   } = props;
 
   const {
@@ -239,7 +240,8 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                     checkedList,
                     inProgressIds,
                     isAllChecked: sourceItemsAllChecked,
-                    onCheckAllClicked
+                    onCheckAllClicked,
+                    onFilter: onFetchUsers
                   }}
                   target={{
                     title: <FormattedMessage id="words.members" defaultMessage="Members" />,
