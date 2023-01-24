@@ -161,6 +161,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
 
     communicator.on(Topics.CHANGE_GUEST_REQUEST, (params) => {
       const locationOrigin = window.location.origin;
+      communicator.publish(Topics.CHANGE_GUEST_REQUEST_CONFIRM);
       if (window.location.href.replace(locationOrigin, '') !== params.url) {
         window.location.href = `${locationOrigin}${params.url}`;
       }
