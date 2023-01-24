@@ -164,6 +164,7 @@ crafterDefine('guest', ['crafter', 'jquery', 'communicator', 'ice-overlay'], fun
       if (window.location.href.replace(locationOrigin, '') !== params.url) {
         window.location.href = `${locationOrigin}${params.url}`;
       }
+      communicator.publish(Topics.CHANGE_GUEST_REQUEST_REPLY);
     });
 
     // When the page has successfully loaded, notify the host window of it's readiness

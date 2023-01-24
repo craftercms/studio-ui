@@ -547,6 +547,20 @@
     if (siteChanged || !hasCheckIn) {
       win.src = previewAppBaseUri + hash.page;
     } else {
+      let timeout;
+
+      const onChangeGuestRequestReply = () => {
+        clearTimeout(timeout);
+        communicator.unsubscribe(Topics.CHANGE_GUEST_REQUEST_REPLY, onChangeGuestRequestReply);
+      };
+
+      communicator.on(Topics.CHANGE_GUEST_REQUEST_REPLY, onChangeGuestRequestReply);
+
+      timeout = setTimeout(() => {
+        win.src = previewAppBaseUri + hash.page;
+        communicator.unsubscribe(Topics.CHANGE_GUEST_REQUEST_REPLY, onChangeGuestRequestReply);
+      }, 150);
+
       communicator.publish(Topics.CHANGE_GUEST_REQUEST, {
         base: previewAppBaseUri,
         url: hash.page
