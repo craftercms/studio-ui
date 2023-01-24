@@ -43,6 +43,7 @@ export interface TransferListColumnProps {
   disabled?: boolean;
   disabledItems?: LookupTable<boolean>;
   onFilter?(options?: Partial<PaginationOptions & { keyword?: string }>);
+  onScroll?(event: React.UIEvent<HTMLElement>): void;
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
@@ -57,7 +58,8 @@ export function TransferListColumn(props: TransferListColumnProps) {
     emptyStateMessage,
     disabled = false,
     disabledItems,
-    onFilter
+    onFilter,
+    onScroll
   } = props;
   const { classes } = useStyles();
   const [keyword, setKeyword] = useState('');
@@ -67,9 +69,11 @@ export function TransferListColumn(props: TransferListColumnProps) {
     setKeyword(value);
   };
 
-  const list = onFilter
-    ? items
-    : items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
+  const initFilter = () => {
+    return items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
+  };
+
+  const list = onFilter ? items : initFilter();
 
   return (
     <Paper className={classes.listPaper}>
@@ -90,7 +94,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
           showActionButton={Boolean(keyword)}
         />
       </header>
-      <List dense component="div" role="list" className={classes.list}>
+      <List dense component="div" role="list" className={classes.list} onScroll={onScroll}>
         {items.length ? (
           list.length === 0 ? (
             <EmptyState

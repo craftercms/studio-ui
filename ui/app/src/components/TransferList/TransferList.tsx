@@ -68,6 +68,7 @@ export function TransferList(props: TransferListProps) {
         emptyStateMessage={source.emptyStateMessage}
         disabled={disabled}
         onFilter={source.onFilter}
+        onScroll={source.onScroll}
       />
       <section className={classes.buttonsWrapper}>
         {!disabled && (
@@ -123,6 +124,7 @@ export function TransferList(props: TransferListProps) {
         emptyStateMessage={target.emptyStateMessage}
         disabled={disabled}
         onFilter={target.onFilter}
+        onScroll={target.onScroll}
       />
     </Box>
   );

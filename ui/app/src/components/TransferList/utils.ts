@@ -17,13 +17,33 @@
 import { useCallback, useMemo, useState } from 'react';
 import { TransferListItem } from '../TransferListColumn';
 import { createLookupTable } from '../../utils/object';
+import { LookupTable } from '../../models';
 
 function intersection(a: any, b: any) {
   return a.filter((value) => b.find((next) => value.id === next.id));
 }
 
-function not(a: any, b: any) {
+export function not(a: any, b: any) {
   return a.filter((value) => !b.find((next) => value.id === next.id));
+}
+
+export interface useTransferListStateReturn {
+  sourceItems: TransferListItem[];
+  setSourceItems(items: TransferListItem[]): void;
+  targetItems: TransferListItem[];
+  setTargetItems(items: TransferListItem[]): void;
+  checkedList: LookupTable<boolean>;
+  setCheckedList(list: LookupTable<boolean>): void;
+  onItemClicked(item: TransferListItem): void;
+  isAllChecked(items: TransferListItem[]): void;
+  onCheckAllClicked(items: TransferListItem[], checked: boolean): void;
+  getChecked(items: TransferListItem[]): void;
+  disableAdd: boolean;
+  disableRemove: boolean;
+  sourceItemsAllChecked: boolean;
+  targetItemsAllChecked: boolean;
+  addToTarget(): void;
+  removeFromTarget(): void;
 }
 
 export const useTransferListState = () => {
@@ -114,6 +134,7 @@ export const useTransferListState = () => {
     targetItems,
     setTargetItems,
     checkedList,
+    setCheckedList,
     onItemClicked,
     isAllChecked,
     onCheckAllClicked,

@@ -20,6 +20,7 @@ import User from '../../models/User';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { LookupTable, PaginationOptions } from '../../models';
+import { useTransferListStateReturn } from '../TransferList/utils';
 
 export interface EditGroupBaseProps {
   group?: Group;
@@ -54,6 +55,7 @@ export interface GroupEditDialogUIProps {
   members?: User[];
   membersLookup?: LookupTable<boolean>;
   inProgressIds?: (string | number)[];
-  transferListState: any; // TODO: define state
+  transferListState: useTransferListStateReturn;
+  onTransferListUsersScroll(event: React.UIEvent<HTMLElement>): void;
   onFetchUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
 }
