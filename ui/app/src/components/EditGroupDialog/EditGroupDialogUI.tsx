@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useStyles } from './styles';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import DialogBody from '../DialogBody/DialogBody';
@@ -40,6 +40,7 @@ import {
   validateGroupNameMinLength,
   validateRequiredField
 } from '../GroupManagement/utils';
+import { useTransferListState } from '../TransferList/utils';
 
 const translations = defineMessages({
   confirmHelperText: {
@@ -76,8 +77,21 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     members,
     inProgressIds,
     isDirty,
-    isEdit
+    isEdit,
+    transferListState
   } = props;
+
+  const {
+    sourceItems,
+    targetItems,
+    checkedList,
+    onItemClicked,
+    onCheckAllClicked,
+    disableAdd,
+    disableRemove,
+    sourceItemsAllChecked,
+    targetItemsAllChecked
+  } = transferListState;
 
   return (
     <>
@@ -210,29 +224,41 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 </Typography>
                 <TransferList
                   disabled={group.externallyManaged}
-                  onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
-                  onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
                   inProgressIds={inProgressIds}
                   source={{
                     title: <FormattedMessage id="words.users" defaultMessage="Users" />,
-                    items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
-                    emptyMessage: (
+                    items: sourceItems,
+                    emptyStateMessage: (
                       <FormattedMessage
                         id="transferList.emptyListMessage"
                         defaultMessage="All users are members of this group"
                       />
-                    )
+                    ),
+                    onItemClick: onItemClicked,
+                    checkedList,
+                    inProgressIds,
+                    isAllChecked: sourceItemsAllChecked,
+                    onCheckAllClicked
                   }}
                   target={{
                     title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                    items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
-                    emptyMessage: (
+                    items: targetItems,
+                    emptyStateMessage: (
                       <FormattedMessage
                         id="transferList.targetEmptyStateMessage"
                         defaultMessage="No members on this group"
                       />
-                    )
+                    ),
+                    onItemClick: onItemClicked,
+                    checkedList,
+                    inProgressIds,
+                    isAllChecked: targetItemsAllChecked,
+                    onCheckAllClicked
                   }}
+                  disableAdd={disableAdd}
+                  disableRemove={disableRemove}
+                  addToTarget={onAddMembers}
+                  removeFromTarget={onRemoveMembers}
                 />
               </>
             )

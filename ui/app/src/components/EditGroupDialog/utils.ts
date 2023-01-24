@@ -47,9 +47,10 @@ export interface GroupEditDialogUIProps {
   submitOk: boolean;
   onCancel(): void;
   onChangeValue(value: { key: string; value: string }): void;
-  onAddMembers?(members: (string | number)[]): void;
-  onRemoveMembers?(members: (string | number)[]): void;
+  onAddMembers?(): void;
+  onRemoveMembers?(): void;
   users?: User[];
   members?: User[];
   inProgressIds?: (string | number)[];
+  transferListState: any; // TODO: define state
 }

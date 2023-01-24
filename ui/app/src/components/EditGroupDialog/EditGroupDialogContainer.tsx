@@ -36,6 +36,8 @@ import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
 import { isInvalidGroupName, validateGroupNameMinLength, validateRequiredField } from '../GroupManagement/utils';
+import { validateGroupNameMinLength } from '../GroupManagement/utils';
+import { useTransferListState } from '../TransferList/utils';
 
 const translations = defineMessages({
   groupCreated: {
@@ -79,6 +81,23 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const [users, setUsers] = useState<User[]>();
   const [members, setMembers] = useState<User[]>();
   const [inProgressIds, setInProgressIds] = useState<string[]>([]);
+  const transferListState = useTransferListState();
+  const { setSourceItems, setTargetItems } = transferListState;
+
+  useEffect(() => {
+    users && setSourceItems(users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })));
+  }, [users, setSourceItems]);
+
+  useEffect(() => {
+    members &&
+      setTargetItems(
+        members.map((user) => ({
+          id: user.username,
+          title: user.username,
+          subtitle: user.email
+        }))
+      );
+  }, [members, setTargetItems]);
 
   useEffect(() => {
     if (props.group) {
@@ -116,38 +135,50 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     );
   };
 
-  const onAddMembers = (usernames: string[]) => {
-    setInProgressIds(usernames);
-    addUsersToGroup(group.id, usernames).subscribe({
-      next() {
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.membersAdded, { count: usernames.length })
-          })
-        );
-        setInProgressIds([]);
-      },
-      error({ response: { response } }) {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    });
+  const onAddMembers = () => {
+    const { sourceItems, getChecked, addToTarget } = transferListState;
+    const usernames = getChecked(sourceItems).map((item) => item.id);
+
+    if (usernames.length) {
+      addToTarget();
+      setInProgressIds(usernames);
+      addUsersToGroup(group.id, usernames).subscribe({
+        next() {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.membersAdded, { count: usernames.length })
+            })
+          );
+          setInProgressIds([]);
+        },
+        error({ response: { response } }) {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      });
+    }
   };
 
-  const onRemoveMembers = (usernames: string[]) => {
-    setInProgressIds(usernames);
-    deleteUsersFromGroup(group.id, usernames).subscribe({
-      next() {
-        dispatch(
-          showSystemNotification({
-            message: formatMessage(translations.membersRemoved, { count: usernames.length })
-          })
-        );
-        setInProgressIds([]);
-      },
-      error({ response: { response } }) {
-        dispatch(showErrorDialog({ error: response }));
-      }
-    });
+  const onRemoveMembers = () => {
+    const { targetItems, getChecked, removeFromTarget } = transferListState;
+    const usernames = getChecked(targetItems).map((item) => item.id);
+
+    if (usernames.length) {
+      removeFromTarget();
+      setInProgressIds(usernames);
+      deleteUsersFromGroup(group.id, usernames).subscribe({
+        next() {
+          dispatch(
+            showSystemNotification({
+              message: formatMessage(translations.membersRemoved, { count: usernames.length })
+            })
+          );
+          setInProgressIds([]);
+        },
+        error({ response: { response } }) {
+          dispatch(showErrorDialog({ error: response }));
+        }
+      });
+    }
   };
 
   const onChangeValue = (property: { key: string; value: string }) => {
@@ -231,6 +262,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onRemoveMembers={onRemoveMembers}
       inProgressIds={inProgressIds}
       isDirty={isDirty}
+      transferListState={transferListState}
     />
   );
 }
