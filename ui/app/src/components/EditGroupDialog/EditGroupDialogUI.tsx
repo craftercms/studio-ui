@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useStyles } from './styles';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import DialogBody from '../DialogBody/DialogBody';
@@ -40,7 +40,6 @@ import {
   validateGroupNameMinLength,
   validateRequiredField
 } from '../GroupManagement/utils';
-import { useTransferListState } from '../TransferList/utils';
 
 const translations = defineMessages({
   confirmHelperText: {
@@ -75,6 +74,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     onCloseButtonClick,
     users,
     members,
+    membersLookup,
     inProgressIds,
     isDirty,
     isEdit,
@@ -228,6 +228,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   source={{
                     title: <FormattedMessage id="words.users" defaultMessage="Users" />,
                     items: sourceItems,
+                    disabledItems: membersLookup,
                     emptyStateMessage: (
                       <FormattedMessage
                         id="transferList.emptyListMessage"

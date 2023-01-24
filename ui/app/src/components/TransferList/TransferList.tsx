@@ -59,6 +59,7 @@ export function TransferList(props: TransferListProps) {
       <TransferListColumn
         title={source.title}
         items={source.items}
+        disabledItems={source.disabledItems}
         checkedList={source.checkedList}
         onCheckAllClicked={source.onCheckAllClicked}
         onItemClick={source.onItemClick}
@@ -112,6 +113,7 @@ export function TransferList(props: TransferListProps) {
       <TransferListColumn
         title={target.title}
         items={target.items}
+        disabledItems={target.disabledItems}
         checkedList={target.checkedList}
         onCheckAllClicked={target.onCheckAllClicked}
         onItemClick={target.onItemClick}

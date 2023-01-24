@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import EditGroupDialogUI from './EditGroupDialogUI';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/users';
@@ -27,7 +27,6 @@ import {
   trash,
   update
 } from '../../services/groups';
-import { forkJoin } from 'rxjs';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
@@ -38,6 +37,9 @@ import { EditGroupDialogContainerProps } from './utils';
 import { isInvalidGroupName, validateGroupNameMinLength, validateRequiredField } from '../GroupManagement/utils';
 import { validateGroupNameMinLength } from '../GroupManagement/utils';
 import { useTransferListState } from '../TransferList/utils';
+import { LookupTable, PaginationOptions } from '../../models';
+import useMount from '../../hooks/useMount';
+import { createPresenceTable } from '../../utils/array';
 
 const translations = defineMessages({
   groupCreated: {
@@ -79,49 +81,20 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   );
   const isEdit = Boolean(props.group);
   const [users, setUsers] = useState<User[]>();
+  const [usersHaveNextPage, setUsersHaveNextPage] = useState(false);
+  const usersRef = useRef([]);
+  usersRef.current = users;
   const [members, setMembers] = useState<User[]>();
+  const [membersLookup, setMembersLookup] = useState<LookupTable<boolean>>(null);
   const [inProgressIds, setInProgressIds] = useState<string[]>([]);
   const transferListState = useTransferListState();
   const { setSourceItems, setTargetItems } = transferListState;
-
-  useEffect(() => {
-    users && setSourceItems(users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })));
-  }, [users, setSourceItems]);
-
-  useEffect(() => {
-    members &&
-      setTargetItems(
-        members.map((user) => ({
-          id: user.username,
-          title: user.username,
-          subtitle: user.email
-        }))
-      );
-  }, [members, setTargetItems]);
-
-  useEffect(() => {
-    if (props.group) {
-      forkJoin([fetchAll(), fetchUsersFromGroup(props.group.id)]).subscribe(([users, members]) => {
-        setMembers([...members]);
-        const _users = users.filter(function (user) {
-          return !members.find(function (member) {
-            return member.id === user.id;
-          });
-        });
-        setUsers(_users);
-      });
-    }
-  }, [props.group]);
-
-  useEffect(() => {
-    if (props.group?.id !== group?.id) {
-      setGroup(props.group);
-    }
-  }, [group?.id, props.group, setGroup]);
+  const usersFetchSize = 5;
+  const [usersOffset, setUsersOffset] = useState(0);
 
   const onDeleteGroup = (group: Group) => {
-    trash(group.id).subscribe(
-      () => {
+    trash(group.id).subscribe({
+      next() {
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.groupDeleted)
@@ -129,10 +102,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
         );
         onGroupDeleted(group);
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onAddMembers = () => {
@@ -225,9 +198,51 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     setIsDirty(false);
   };
 
+  const fetchUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
+    fetchAll({
+      limit: usersFetchSize,
+      ...options
+    }).subscribe((_users) => {
+      setUsersHaveNextPage(_users.total >= (options?.offset ?? usersOffset) + usersFetchSize);
+      setUsers(_users);
+      setUsersOffset(options?.limit ?? usersFetchSize);
+    });
+  };
+
+  // region effects
+  useMount(() => {
+    fetchUsers();
+    fetchUsersFromGroup(props.group.id).subscribe((members) => {
+      setMembers(members);
+      setMembersLookup(createPresenceTable(members, true, (member) => member.username));
+    });
+  });
+
+  useEffect(() => {
+    users && setSourceItems(users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })));
+  }, [users, setSourceItems]);
+
+  useEffect(() => {
+    members &&
+      setTargetItems(
+        members.map((user) => ({
+          id: user.username,
+          title: user.username,
+          subtitle: user.email
+        }))
+      );
+  }, [members, setTargetItems]);
+
+  useEffect(() => {
+    if (props.group?.id !== group?.id) {
+      setGroup(props.group);
+    }
+  }, [group?.id, props.group, setGroup]);
+
   useEffect(() => {
     onSubmittingAndOrPendingChange({ hasPendingChanges: isDirty });
   }, [isDirty, onSubmittingAndOrPendingChange]);
+  // endregion
 
   return (
     <EditGroupDialogUI
@@ -253,6 +268,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       isEdit={isEdit}
       users={users}
       members={members}
+      membersLookup={membersLookup}
       onDeleteGroup={onDeleteGroup}
       onChangeValue={onChangeValue}
       submitOk={submitOk}

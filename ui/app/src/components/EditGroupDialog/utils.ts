@@ -19,6 +19,7 @@ import React from 'react';
 import User from '../../models/User';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
+import { LookupTable } from '../../models';
 
 export interface EditGroupBaseProps {
   group?: Group;
@@ -51,6 +52,7 @@ export interface GroupEditDialogUIProps {
   onRemoveMembers?(): void;
   users?: User[];
   members?: User[];
+  membersLookup?: LookupTable<boolean>;
   inProgressIds?: (string | number)[];
   transferListState: any; // TODO: define state
 }

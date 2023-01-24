@@ -40,6 +40,7 @@ export interface TransferListColumnProps {
   isAllChecked?: boolean;
   onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
   disabled?: boolean;
+  disabledItems?: LookupTable<boolean>;
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
@@ -52,7 +53,8 @@ export function TransferListColumn(props: TransferListColumnProps) {
     onCheckAllClicked,
     inProgressIds,
     emptyStateMessage,
-    disabled = false
+    disabled = false,
+    disabledItems
   } = props;
   const { classes } = useStyles();
   const [keyword, setKeyword] = useState('');
@@ -96,7 +98,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
           ) : (
             filteredList.map((item, i) => (
               <ListItemButton
-                disabled={disabled || inProgressIds.includes(item.id)}
+                disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
                 key={item.id}
                 role="listitem"
                 onClick={(e) => onItemClick(item, e)}
@@ -106,7 +108,11 @@ export function TransferListColumn(props: TransferListColumnProps) {
                     {inProgressIds.includes(item.id) ? (
                       <CircularProgress size={42} />
                     ) : (
-                      <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
+                      <Checkbox
+                        checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
+                        tabIndex={-1}
+                        disableRipple
+                      />
                     )}
                   </ListItemIcon>
                 )}
