@@ -33,6 +33,7 @@ import { debounceTime } from 'rxjs/operators';
 import { SearchBar } from '../SearchBar';
 import { ApiResponse, ContentType, LegacyContentType } from '../../models';
 import { ContentTypeEditor } from '../ContentTypeEditor';
+import useContentTypeList from '../../hooks/useContentTypeList';
 
 export interface ContentTypesManagementProps {
   embedded?: boolean;
@@ -53,6 +54,7 @@ export function ContentTypesManagement(props: ContentTypesManagementProps) {
     loadingContentTypes: false,
     error: null
   });
+  useContentTypeList();
   const [view, setView] = useState<'list' | 'editor'>('list');
   const [selectedContentType, setSelectedContentType] = useState<{
     contentType: LegacyContentType;
