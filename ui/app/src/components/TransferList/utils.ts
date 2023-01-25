@@ -30,8 +30,12 @@ export function not(a: any, b: any) {
 export interface useTransferListStateReturn {
   sourceItems: TransferListItem[];
   setSourceItems(items: TransferListItem[]): void;
+  sourceFilterKeyword: string;
+  setSourceFilterKeyword(keyword: string): void;
   targetItems: TransferListItem[];
   setTargetItems(items: TransferListItem[]): void;
+  targetFilterKeyword: string;
+  setTargetFilterKeyword(keyword: string): void;
   checkedList: LookupTable<boolean>;
   setCheckedList(list: LookupTable<boolean>): void;
   onItemClicked(item: TransferListItem): void;
@@ -50,6 +54,8 @@ export const useTransferListState = () => {
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>([]);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>([]);
   const [checkedList, setCheckedList] = useState({});
+  const [sourceFilterKeyword, setSourceFilterKeyword] = useState('');
+  const [targetFilterKeyword, setTargetFilterKeyword] = useState('');
 
   const itemsLookup = {
     ...createLookupTable(sourceItems),
@@ -131,8 +137,12 @@ export const useTransferListState = () => {
   return {
     sourceItems,
     setSourceItems,
+    sourceFilterKeyword,
+    setSourceFilterKeyword,
     targetItems,
     setTargetItems,
+    targetFilterKeyword,
+    setTargetFilterKeyword,
     checkedList,
     setCheckedList,
     onItemClicked,

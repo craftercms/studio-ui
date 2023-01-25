@@ -56,6 +56,7 @@ export interface GroupEditDialogUIProps {
   membersLookup?: LookupTable<boolean>;
   inProgressIds?: (string | number)[];
   transferListState: useTransferListStateReturn;
+  sourceItemsAllChecked: boolean;
   onTransferListUsersScroll(event: React.UIEvent<HTMLElement>): void;
-  onFetchUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+  onFilterUsers(keyword: string): void;
 }

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import LookupTable from '../../models/LookupTable';
 import useStyles from './styles';
 import Paper from '@mui/material/Paper';
@@ -29,7 +29,6 @@ import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import TransferListItem from './TransferListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import { PaginationOptions } from '../../models';
 
 export interface TransferListColumnProps {
   title: ReactNode;
@@ -42,7 +41,9 @@ export interface TransferListColumnProps {
   onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
   disabled?: boolean;
   disabledItems?: LookupTable<boolean>;
-  onFilter?(options?: Partial<PaginationOptions & { keyword?: string }>);
+  filterKeyword: string;
+  setFilterKeyword(keyword: string): void;
+  onFilter?(keyword: string);
   onScroll?(event: React.UIEvent<HTMLElement>): void;
 }
 
@@ -58,14 +59,15 @@ export function TransferListColumn(props: TransferListColumnProps) {
     emptyStateMessage,
     disabled = false,
     disabledItems,
+    filterKeyword: keyword,
+    setFilterKeyword: setKeyword,
     onFilter,
     onScroll
   } = props;
   const { classes } = useStyles();
-  const [keyword, setKeyword] = useState('');
 
   const onSearch = (value) => {
-    onFilter?.({ keyword: value });
+    onFilter?.(value);
     setKeyword(value);
   };
 
@@ -87,7 +89,6 @@ export function TransferListColumn(props: TransferListColumnProps) {
         )}
         {title && <Typography color="textSecondary">{title}</Typography>}
         <SearchBar
-          disabled={items.length === 0}
           keyword={keyword}
           onChange={onSearch}
           classes={{ root: classes.searchBar }}

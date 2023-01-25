@@ -67,6 +67,8 @@ export function TransferList(props: TransferListProps) {
         inProgressIds={inProgressIds}
         emptyStateMessage={source.emptyStateMessage}
         disabled={disabled}
+        filterKeyword={source.filterKeyword}
+        setFilterKeyword={source.setFilterKeyword}
         onFilter={source.onFilter}
         onScroll={source.onScroll}
       />
@@ -123,6 +125,8 @@ export function TransferList(props: TransferListProps) {
         inProgressIds={inProgressIds}
         emptyStateMessage={target.emptyStateMessage}
         disabled={disabled}
+        filterKeyword={target.filterKeyword}
+        setFilterKeyword={target.setFilterKeyword}
         onFilter={target.onFilter}
         onScroll={target.onScroll}
       />

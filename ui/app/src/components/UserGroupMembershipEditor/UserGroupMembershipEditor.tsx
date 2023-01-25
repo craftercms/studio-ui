@@ -54,6 +54,7 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
   const { formatMessage } = useIntl();
   const [groups, setGroups] = useState<Group[]>([]);
   const [selectedGroups, setSelectedGroups] = useState<LookupTable<boolean>>({});
+  const [groupsFilterKeyword, setGroupsFilterKeyword] = useState('');
   const [inProgressIds, setInProgressIds] = useState<Array<string | number>>([]);
   const refs = useRef({ inProgressIds });
   const transferListItems = useMemo(
@@ -175,6 +176,8 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
       inProgressIds={inProgressIds}
       isAllChecked={username ? null : !groups.some((group) => selectedGroups[group.id] !== true)}
       onCheckAllClicked={username ? null : onCheckAllClicked}
+      filterKeyword={groupsFilterKeyword}
+      setFilterKeyword={setGroupsFilterKeyword}
     />
   );
 }

@@ -40,6 +40,7 @@ import {
   validateGroupNameMinLength,
   validateRequiredField
 } from '../GroupManagement/utils';
+import { not } from '../TransferList/utils';
 
 const translations = defineMessages({
   confirmHelperText: {
@@ -79,19 +80,23 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     isDirty,
     isEdit,
     transferListState,
+    sourceItemsAllChecked,
     onTransferListUsersScroll,
-    onFetchUsers
+    onFilterUsers
   } = props;
 
   const {
     sourceItems,
+    sourceFilterKeyword,
+    setSourceFilterKeyword,
     targetItems,
+    targetFilterKeyword,
+    setTargetFilterKeyword,
     checkedList,
     onItemClicked,
     onCheckAllClicked,
     disableAdd,
     disableRemove,
-    sourceItemsAllChecked,
     targetItemsAllChecked
   } = transferListState;
 
@@ -230,6 +235,8 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   source={{
                     title: <FormattedMessage id="words.users" defaultMessage="Users" />,
                     items: sourceItems,
+                    filterKeyword: sourceFilterKeyword,
+                    setFilterKeyword: setSourceFilterKeyword,
                     disabledItems: membersLookup,
                     emptyStateMessage: (
                       <FormattedMessage
@@ -241,13 +248,17 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                     checkedList,
                     inProgressIds,
                     isAllChecked: sourceItemsAllChecked,
-                    onCheckAllClicked,
-                    onFilter: onFetchUsers,
+                    onCheckAllClicked: (items, checked) => {
+                      onCheckAllClicked(not(items, targetItems), checked);
+                    },
+                    onFilter: onFilterUsers,
                     onScroll: onTransferListUsersScroll
                   }}
                   target={{
                     title: <FormattedMessage id="words.members" defaultMessage="Members" />,
                     items: targetItems,
+                    filterKeyword: targetFilterKeyword,
+                    setFilterKeyword: setTargetFilterKeyword,
                     emptyStateMessage: (
                       <FormattedMessage
                         id="transferList.targetEmptyStateMessage"

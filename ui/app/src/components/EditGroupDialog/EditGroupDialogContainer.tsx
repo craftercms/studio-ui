@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import EditGroupDialogUI from './EditGroupDialogUI';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/users';
@@ -89,9 +89,13 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const [membersLookup, setMembersLookup] = useState<LookupTable<boolean>>(null);
   const [inProgressIds, setInProgressIds] = useState<string[]>([]);
   const transferListState = useTransferListState();
-  const { setSourceItems, setTargetItems } = transferListState;
+  const { sourceItems, targetItems, setSourceItems, setTargetItems, sourceFilterKeyword, isAllChecked } =
+    transferListState;
   const usersFetchSize = 5;
   const [usersOffset, setUsersOffset] = useState(0);
+  const sourceItemsAllChecked = useMemo(() => {
+    return isAllChecked(not(sourceItems, targetItems));
+  }, [isAllChecked, sourceItems, targetItems]);
 
   const onDeleteGroup = (group: Group) => {
     trash(group.id).subscribe({
@@ -133,7 +137,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           setInProgressIds([]);
           fetchUsers({
             offset: 0,
-            limit: usersOffset
+            limit: usersOffset,
+            ...(sourceFilterKeyword && { keyword: sourceFilterKeyword })
           });
         },
         error({ response: { response } }) {
@@ -163,7 +168,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           setInProgressIds([]);
           fetchUsers({
             limit: usersOffset,
-            offset: 0
+            offset: 0,
+            ...(sourceFilterKeyword && { keyword: sourceFilterKeyword })
           });
         },
         error({ response: { response } }) {
@@ -240,27 +246,34 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     });
   };
 
-  // TODO: solve keyword missing
+  const onFilterUsers = (keyword: string) => {
+    fetchUsers({
+      keyword,
+      offset: 0
+    });
+  };
+
   const onTransferListUsersScroll = (e) => {
     const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
     if (bottom && usersHaveNextPage) {
       fetchMoreUsers({
-        // ...(keyword && { keyword })
+        ...(sourceFilterKeyword && { keyword: sourceFilterKeyword })
       });
     }
   };
 
   // region effects
   useMount(() => {
-    fetchUsers();
-    fetchUsersFromGroup(props.group.id).subscribe((members) => {
-      setMembers(members);
-      setMembersLookup(createPresenceTable(members, true, (member) => member.username));
-    });
+    if (props.group) {
+      fetchUsers();
+      fetchUsersFromGroup(props.group.id).subscribe((members) => {
+        setMembers(members);
+        setMembersLookup(createPresenceTable(members, true, (member) => member.username));
+      });
+    }
   });
 
   useEffect(() => {
-    console.log('setting users', users);
     users && setSourceItems(users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })));
   }, [users, setSourceItems]);
 
@@ -321,8 +334,9 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       inProgressIds={inProgressIds}
       isDirty={isDirty}
       transferListState={transferListState}
+      sourceItemsAllChecked={sourceItemsAllChecked}
       onTransferListUsersScroll={onTransferListUsersScroll}
-      onFetchUsers={fetchUsers}
+      onFilterUsers={onFilterUsers}
     />
   );
 }
