@@ -25,3 +25,8 @@ export const validateGroupNameMinLength = (value: string) => {
 export const validateRequiredField = (value: string, isDirty: boolean) => {
   return isDirty && value.trim() === '';
 };
+
+export const isInvalidGroupName = (groupName: string): boolean => {
+  const groupNameRegex = /^[a-zA-Z0-9_\\.\\-]{3,512}$/g;
+  return Boolean(groupName) && !groupNameRegex.test(groupName);
+};

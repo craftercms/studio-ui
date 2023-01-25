@@ -35,7 +35,7 @@ import { showSystemNotification } from '../../state/actions/system';
 import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
-import { validateGroupNameMinLength } from '../GroupManagement/utils';
+import { isInvalidGroupName, validateGroupNameMinLength, validateRequiredField } from '../GroupManagement/utils';
 
 const translations = defineMessages({
   groupCreated: {
@@ -66,7 +66,15 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const { formatMessage } = useIntl();
   const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '', externallyManaged: false });
   const [isDirty, setIsDirty] = useState(false);
-  const [submitOk, setSubmitOk] = useState(false);
+  const groupNameError =
+    validateRequiredField(group.name, isDirty) ||
+    isInvalidGroupName(group.name) ||
+    validateGroupNameMinLength(group.name);
+  // This validation is different than groupName error, because for groupNameError it will return true only when form
+  // is dirty. For submit, it will be true even though form is not dirty (to avoid submitting a clean form).
+  const submitOk = Boolean(
+    group.name.trim() && !validateGroupNameMinLength(group.name) && !isInvalidGroupName(group.name)
+  );
   const isEdit = Boolean(props.group);
   const [users, setUsers] = useState<User[]>();
   const [members, setMembers] = useState<User[]>();
@@ -91,10 +99,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       setGroup(props.group);
     }
   }, [group?.id, props.group, setGroup]);
-
-  useEffect(() => {
-    setSubmitOk(Boolean(group.name.trim() && !validateGroupNameMinLength(group.name)));
-  }, [group.name]);
 
   const onDeleteGroup = (group: Group) => {
     trash(group.id).subscribe(
@@ -214,6 +218,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       }
       onCloseButtonClick={(e) => onClose(e, null)}
       group={group}
+      groupNameError={groupNameError}
       isEdit={isEdit}
       users={users}
       members={members}

@@ -63,6 +63,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     title,
     subtitle,
     group,
+    groupNameError,
     onDeleteGroup,
     onSave,
     submitOk,
@@ -134,7 +135,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   id="groupName"
                   onChange={(e) => onChangeValue({ key: 'name', value: e.currentTarget.value })}
                   value={group.name}
-                  error={validateRequiredField(group.name, isDirty) || validateGroupNameMinLength(group.name)}
+                  error={groupNameError}
                   fullWidth
                   autoFocus
                   inputProps={{ maxLength: GROUP_NAME_MAX_LENGTH }}
@@ -144,7 +145,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             <Box display="flex" p="0 0 15px">
               <div className={classes.label} />
               <FormHelperText
-                error
+                error={groupNameError}
                 children={
                   validateRequiredField(group.name, isDirty) ? (
                     <FormattedMessage id="editGroupDialog.requiredGroupName" defaultMessage="Group name is required." />
@@ -156,7 +157,15 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                         length: GROUP_NAME_MIN_LENGTH
                       }}
                     />
-                  ) : null
+                  ) : (
+                    <FormattedMessage
+                      id="editGroupDialog.invalidMinLength"
+                      defaultMessage="Max {length} characters, consisting of letters, numbers, dash (-), underscore (_) and dot (.)."
+                      values={{
+                        length: GROUP_NAME_MAX_LENGTH
+                      }}
+                    />
+                  )
                 }
               />
             </Box>
