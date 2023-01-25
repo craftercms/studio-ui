@@ -39,9 +39,9 @@ export interface useTransferListStateReturn {
   checkedList: LookupTable<boolean>;
   setCheckedList(list: LookupTable<boolean>): void;
   onItemClicked(item: TransferListItem): void;
-  isAllChecked(items: TransferListItem[]): void;
+  isAllChecked(items: TransferListItem[]): boolean;
   onCheckAllClicked(items: TransferListItem[], checked: boolean): void;
-  getChecked(items: TransferListItem[]): void;
+  getChecked(items: TransferListItem[]): TransferListItem[];
   disableAdd: boolean;
   disableRemove: boolean;
   sourceItemsAllChecked: boolean;
@@ -50,7 +50,7 @@ export interface useTransferListStateReturn {
   removeFromTarget(): void;
 }
 
-export const useTransferListState = () => {
+export const useTransferListState = (): useTransferListStateReturn => {
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>([]);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>([]);
   const [checkedList, setCheckedList] = useState({});

@@ -116,10 +116,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const onAddMembers = () => {
     const { sourceItems, targetItems, getChecked, setCheckedList } = transferListState;
     const users = getChecked(sourceItems);
-    const usernames = users.map((item) => item.id);
+    const usernames = users.map((item) => item.id as string);
 
     if (usernames.length) {
-      setInProgressIds(users);
+      setInProgressIds(usernames);
       addUsersToGroup(group.id, usernames).subscribe({
         next() {
           setCheckedList({});
@@ -151,10 +151,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const onRemoveMembers = () => {
     const { targetItems, getChecked, setCheckedList } = transferListState;
     const users = getChecked(targetItems);
-    const usernames = users.map((item) => item.id);
+    const usernames = users.map((item) => item.id as string);
 
     if (users.length) {
-      setInProgressIds(users);
+      setInProgressIds(usernames);
       deleteUsersFromGroup(group.id, usernames).subscribe({
         next() {
           setCheckedList({});
