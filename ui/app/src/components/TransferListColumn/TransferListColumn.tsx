@@ -71,11 +71,9 @@ export function TransferListColumn(props: TransferListColumnProps) {
     setKeyword(value);
   };
 
-  const initFilter = () => {
-    return items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
-  };
-
-  const list = onFilter ? items : initFilter();
+  const list = onFilter
+    ? items
+    : items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
 
   return (
     <Paper className={classes.listPaper}>

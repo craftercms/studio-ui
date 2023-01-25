@@ -35,7 +35,6 @@ import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
 import { isInvalidGroupName, validateGroupNameMinLength, validateRequiredField } from '../GroupManagement/utils';
-import { validateGroupNameMinLength } from '../GroupManagement/utils';
 import { not, useTransferListState } from '../TransferList/utils';
 import { LookupTable, PaginationOptions } from '../../models';
 import useMount from '../../hooks/useMount';
