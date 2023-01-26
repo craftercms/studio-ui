@@ -16,7 +16,7 @@
 
 import { FullSxRecord, PartialSxRecord } from '../../models';
 
-export type ContentTypeEditorClassKey = 'drawer' | 'fieldsAccordion';
+export type ContentTypeEditorClassKey = 'drawer' | 'fieldsAccordion' | 'contentTypeField' | 'semibold';
 
 export type ContentTypeEditorFullSx = FullSxRecord<ContentTypeEditorClassKey>;
 
@@ -56,7 +56,16 @@ function getStyles(sx?: ContentTypeEditorPartialSx): ContentTypeEditorFullSx {
             fontWeight: '600'
           }
         }
-      }
+      },
+      ...sx?.fieldsAccordion
+    },
+    contentTypeField: {
+      width: '100%',
+      justifyContent: 'flex-start',
+      mb: 1
+    },
+    semibold: {
+      fontWeight: 600
     }
   };
 }

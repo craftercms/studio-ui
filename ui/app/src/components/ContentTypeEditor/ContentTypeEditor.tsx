@@ -40,23 +40,20 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnhancedDialogState from '../../hooks/useEnhancedDialogState';
 import { editControllerActionCreator } from '../../utils/itemActions';
 import DeleteContentTypeDialog from '../DeleteContentTypeDialog';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import StarIcon from '@mui/icons-material/Star';
 import ListItemText from '@mui/material/ListItemText';
 import getStyles from './styles';
+import { EmptyState } from '../EmptyState';
+import TypesAccordion from './TypesAccordion';
+import ContentTypeSection from './ContentTypeSection';
 
 export interface ContentTypeEditorProps {
   contentType: LegacyContentType;
   definition: ContentType;
 }
-
-const drawerWidth = 286;
 
 export function ContentTypeEditor(props: ContentTypeEditorProps) {
   // const { contentType, definition } = props;
@@ -73,8 +70,9 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
   const [controls, setControls] = useState(null);
   const [datasources, setDatasources] = useState(null);
   const sx = getStyles();
-
-  const [controlsFilterKeyword, setControlsFilterKeyword] = useState('');
+  const [filterKeyword, setFilterKeyword] = useState('');
+  const filteredControls = controls?.filter((control) => control.name.includes(filterKeyword));
+  const filteredDatasources = datasources?.filter((datasource) => datasource.name.includes(filterKeyword));
 
   console.log('props', props);
 
@@ -101,45 +99,44 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
       <Box display="flex">
         <Drawer sx={sx.drawer} variant="permanent" anchor="left">
           <SearchBar
-            keyword={controlsFilterKeyword}
-            onChange={setControlsFilterKeyword}
+            keyword={filterKeyword}
+            onChange={setFilterKeyword}
             showDecoratorIcon
-            showActionButton={Boolean(controlsFilterKeyword)}
+            showActionButton={Boolean(filterKeyword)}
           />
-          <Accordion sx={sx.fieldsAccordion}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{formatMessage(translations.controls)}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List sx={{ width: '100%' }}>
-                {controls?.map((control) => (
+          {/* NOTE: Legacy content type editor loads each of the controls/datasources to retrieve data and functionality */}
+          <TypesAccordion title={formatMessage(translations.controls)}>
+            <List sx={{ width: '100%' }}>
+              {filteredControls?.length ? (
+                filteredControls?.map((control) => (
                   <ListItem key={control.name}>
                     <ListItemAvatar>
                       <StarIcon />
                     </ListItemAvatar>
                     <ListItemText primary={control.name} />
                   </ListItem>
-                ))}
-              </List>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion sx={sx.fieldsAccordion}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography>{formatMessage(translations.datasources)}</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List sx={{ width: '100%' }}>
-                {datasources?.map((datasource) => (
+                ))
+              ) : (
+                <EmptyState title={formatMessage(translations.noControlsFound)} />
+              )}
+            </List>
+          </TypesAccordion>
+          <TypesAccordion title={formatMessage(translations.datasources)}>
+            <List sx={{ width: '100%' }}>
+              {filteredDatasources?.length ? (
+                filteredDatasources?.map((datasource) => (
                   <ListItem key={datasource.name}>
                     <ListItemAvatar>
                       <StarIcon />
                     </ListItemAvatar>
                     <ListItemText primary={datasource.name} />
                   </ListItem>
-                ))}
-              </List>
-            </AccordionDetails>
-          </Accordion>
+                ))
+              ) : (
+                <EmptyState title={formatMessage(translations.noDatasourcesFound)} />
+              )}
+            </List>
+          </TypesAccordion>
         </Drawer>
         <Box flexGrow={1} p={2}>
           <Card sx={{ display: 'flex' }}>
@@ -195,6 +192,12 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
               </CardContent>
             </Box>
           </Card>
+
+          {definition?.sections.map((section, index) => (
+            <React.Fragment key={index}>
+              <ContentTypeSection {...section} fieldsDefinitions={definition.fields} />
+            </React.Fragment>
+          ))}
         </Box>
         <Drawer sx={sx.drawer} variant="permanent" anchor="right"></Drawer>
         <DeleteContentTypeDialog

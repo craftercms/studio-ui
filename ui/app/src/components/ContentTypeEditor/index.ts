@@ -17,3 +17,9 @@
 export { default } from './ContentTypeEditor';
 
 export * from './ContentTypeEditor';
+
+export * from './TypesAccordion';
+
+export * from './ContentTypeSection';
+
+export * from './ContentTypeField';

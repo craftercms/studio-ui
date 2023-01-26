@@ -18,7 +18,7 @@ import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
   newContentType: {
-    id: 'ContentTypeEditor.newContentType',
+    id: 'contentTypeEditor.newContentType',
     defaultMessage: 'New Content Type'
   },
   controls: {
@@ -28,6 +28,14 @@ export const translations = defineMessages({
   datasources: {
     id: 'words.datasources',
     defaultMessage: 'Datasources'
+  },
+  noControlsFound: {
+    id: 'contentTypeEditor.noControlsFound',
+    defaultMessage: 'No controls found'
+  },
+  noDatasourcesFound: {
+    id: 'contentTypeEditor.noDatasourcesFound',
+    defaultMessage: 'No datasources found'
   }
 });
 
