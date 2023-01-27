@@ -227,7 +227,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       limit: usersFetchSize,
       ...options
     }).subscribe((_users) => {
-      setUsersHaveNextPage(_users.total >= (options?.offset ?? usersOffset) + usersFetchSize);
+      setUsersHaveNextPage(_users.total >= _users.length);
       setUsers(_users);
       setUsersOffset(options?.limit ?? usersFetchSize);
     });
@@ -239,7 +239,8 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       offset: usersOffset,
       ...options
     }).subscribe((_users) => {
-      setUsersHaveNextPage(_users.total >= usersOffset + usersFetchSize);
+      const newUsersLength = usersRef.current.length + _users.length;
+      setUsersHaveNextPage(_users.total >= newUsersLength);
       setUsers([...usersRef.current, ..._users]);
       setUsersOffset(usersOffset + usersFetchSize);
     });
