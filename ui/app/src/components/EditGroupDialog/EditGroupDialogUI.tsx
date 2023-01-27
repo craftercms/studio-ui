@@ -241,8 +241,8 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                     disabledItems: membersLookup,
                     emptyStateMessage: (
                       <FormattedMessage
-                        id="transferList.emptyListMessage"
-                        defaultMessage="All users are members of this group"
+                        id="transferList.noResults"
+                        defaultMessage="No results, try to change the query"
                       />
                     ),
                     onItemClick: onItemClicked,
