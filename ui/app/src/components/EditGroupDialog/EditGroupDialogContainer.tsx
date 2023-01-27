@@ -88,13 +88,14 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const [membersLookup, setMembersLookup] = useState<LookupTable<boolean>>(null);
   const [inProgressIds, setInProgressIds] = useState<string[]>([]);
   const transferListState = useTransferListState();
-  const { sourceItems, targetItems, setSourceItems, setTargetItems, sourceFilterKeyword, isAllChecked } =
+  const { sourceItems, targetItems, setSourceItems, setTargetItems, sourceFilterKeyword, isAllChecked, getChecked } =
     transferListState;
   const usersFetchSize = 5;
   const [usersOffset, setUsersOffset] = useState(0);
   const sourceItemsAllChecked = useMemo(() => {
     return isAllChecked(not(sourceItems, targetItems));
   }, [isAllChecked, sourceItems, targetItems]);
+  const disableAddMembers = getChecked(not(sourceItems, targetItems)).length === 0;
 
   const onDeleteGroup = (group: Group) => {
     trash(group.id).subscribe({
@@ -329,6 +330,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onFilterUsers={onFilterUsers}
       onFetchMoreUsers={fetchMoreUsers}
       hasMoreUsers={usersHaveNextPage}
+      disableAddMembers={disableAddMembers}
     />
   );
 }

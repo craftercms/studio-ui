@@ -83,7 +83,8 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     sourceItemsAllChecked,
     onFilterUsers,
     onFetchMoreUsers,
-    hasMoreUsers
+    hasMoreUsers,
+    disableAddMembers
   } = props;
 
   const {
@@ -96,7 +97,6 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     checkedList,
     onItemClicked,
     onCheckAllClicked,
-    disableAdd,
     disableRemove,
     targetItemsAllChecked
   } = transferListState;
@@ -273,7 +273,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                     isAllChecked: targetItemsAllChecked,
                     onCheckAllClicked
                   }}
-                  disableAdd={disableAdd}
+                  disableAdd={disableAddMembers}
                   disableRemove={disableRemove}
                   addToTarget={onAddMembers}
                   removeFromTarget={onRemoveMembers}

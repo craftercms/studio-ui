@@ -60,4 +60,5 @@ export interface GroupEditDialogUIProps {
   onFilterUsers(keyword: string): void;
   onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
   hasMoreUsers: boolean;
+  disableAddMembers: boolean;
 }
