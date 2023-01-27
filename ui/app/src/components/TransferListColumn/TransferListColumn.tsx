@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import LookupTable from '../../models/LookupTable';
 import useStyles from './styles';
 import Paper from '@mui/material/Paper';
@@ -29,6 +29,9 @@ import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import TransferListItem from './TransferListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import { PaginationOptions } from '../../models';
+import InfiniteScroll from 'react-infinite-scroller';
+import Box from '@mui/material/Box';
 
 export interface TransferListColumnProps {
   title: ReactNode;
@@ -44,7 +47,8 @@ export interface TransferListColumnProps {
   filterKeyword: string;
   setFilterKeyword(keyword: string): void;
   onFilter?(keyword: string);
-  onScroll?(event: React.UIEvent<HTMLElement>): void;
+  onFetchMore?(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+  hasMoreItems?: boolean;
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
@@ -62,9 +66,11 @@ export function TransferListColumn(props: TransferListColumnProps) {
     filterKeyword: keyword,
     setFilterKeyword: setKeyword,
     onFilter,
-    onScroll
+    onFetchMore,
+    hasMoreItems
   } = props;
   const { classes } = useStyles();
+  const listRef = useRef();
 
   const onSearch = (value) => {
     onFilter?.(value);
@@ -93,7 +99,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
           showActionButton={Boolean(keyword)}
         />
       </header>
-      <List dense component="div" role="list" className={classes.list} onScroll={onScroll}>
+      <List dense component="div" role="list" className={classes.list} ref={listRef}>
         {items.length ? (
           list.length === 0 ? (
             <EmptyState
@@ -105,33 +111,52 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
-            list.map((item, i) => (
-              <ListItemButton
-                disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
-                key={item.id}
-                role="listitem"
-                onClick={(e) => onItemClick(item, e)}
+            <>
+              <InfiniteScroll
+                initialLoad={false}
+                pageStart={0}
+                loadMore={() => {
+                  onFetchMore({ keyword });
+                }}
+                // hasMoreItems may be null (using fixed data), in that case infinite scroll will be 'disabled'
+                hasMore={Boolean(hasMoreItems)}
+                loader={
+                  <Box key={0} display="flex" justifyContent="center" m={1}>
+                    <CircularProgress size={16} />
+                  </Box>
+                }
+                useWindow={false}
+                getScrollParent={() => listRef.current}
               >
-                {!disabled && (
-                  <ListItemIcon>
-                    {inProgressIds.includes(item.id) ? (
-                      <CircularProgress size={42} />
-                    ) : (
-                      <Checkbox
-                        checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
-                        tabIndex={-1}
-                        disableRipple
-                      />
+                {list.map((item, i) => (
+                  <ListItemButton
+                    disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
+                    key={item.id}
+                    role="listitem"
+                    onClick={(e) => onItemClick(item, e)}
+                  >
+                    {!disabled && (
+                      <ListItemIcon>
+                        {inProgressIds.includes(item.id) ? (
+                          <CircularProgress size={42} />
+                        ) : (
+                          <Checkbox
+                            checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
+                            tabIndex={-1}
+                            disableRipple
+                          />
+                        )}
+                      </ListItemIcon>
                     )}
-                  </ListItemIcon>
-                )}
-                <ListItemText
-                  primary={item.title}
-                  secondary={item.subtitle}
-                  primaryTypographyProps={{ noWrap: true, title: item.title }}
-                />
-              </ListItemButton>
-            ))
+                    <ListItemText
+                      primary={item.title}
+                      secondary={item.subtitle}
+                      primaryTypographyProps={{ noWrap: true, title: item.title }}
+                    />
+                  </ListItemButton>
+                ))}
+              </InfiniteScroll>
+            </>
           )
         ) : (
           emptyStateMessage && <EmptyState title={emptyStateMessage} />

@@ -70,7 +70,8 @@ export function TransferList(props: TransferListProps) {
         filterKeyword={source.filterKeyword}
         setFilterKeyword={source.setFilterKeyword}
         onFilter={source.onFilter}
-        onScroll={source.onScroll}
+        onFetchMore={source.onFetchMore}
+        hasMoreItems={source.hasMoreItems}
       />
       <section className={classes.buttonsWrapper}>
         {!disabled && (
@@ -128,7 +129,8 @@ export function TransferList(props: TransferListProps) {
         filterKeyword={target.filterKeyword}
         setFilterKeyword={target.setFilterKeyword}
         onFilter={target.onFilter}
-        onScroll={target.onScroll}
+        onFetchMore={target.onFetchMore}
+        hasMoreItems={target.hasMoreItems}
       />
     </Box>
   );

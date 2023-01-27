@@ -227,7 +227,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       limit: usersFetchSize,
       ...options
     }).subscribe((_users) => {
-      setUsersHaveNextPage(_users.total >= _users.length);
+      setUsersHaveNextPage(_users.total > _users.length);
       setUsers(_users);
       setUsersOffset(options?.limit ?? usersFetchSize);
     });
@@ -240,7 +240,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       ...options
     }).subscribe((_users) => {
       const newUsersLength = usersRef.current.length + _users.length;
-      setUsersHaveNextPage(_users.total >= newUsersLength);
+      setUsersHaveNextPage(_users.total > newUsersLength);
       setUsers([...usersRef.current, ..._users]);
       setUsersOffset(usersOffset + usersFetchSize);
     });
@@ -251,15 +251,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       keyword,
       offset: 0
     });
-  };
-
-  const onTransferListUsersScroll = (e) => {
-    const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-    if (bottom && usersHaveNextPage) {
-      fetchMoreUsers({
-        ...(sourceFilterKeyword && { keyword: sourceFilterKeyword })
-      });
-    }
   };
 
   // region effects
@@ -335,8 +326,9 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       isDirty={isDirty}
       transferListState={transferListState}
       sourceItemsAllChecked={sourceItemsAllChecked}
-      onTransferListUsersScroll={onTransferListUsersScroll}
       onFilterUsers={onFilterUsers}
+      onFetchMoreUsers={fetchMoreUsers}
+      hasMoreUsers={usersHaveNextPage}
     />
   );
 }

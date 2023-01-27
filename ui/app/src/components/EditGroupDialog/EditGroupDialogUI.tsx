@@ -81,8 +81,9 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     isEdit,
     transferListState,
     sourceItemsAllChecked,
-    onTransferListUsersScroll,
-    onFilterUsers
+    onFilterUsers,
+    onFetchMoreUsers,
+    hasMoreUsers
   } = props;
 
   const {
@@ -252,7 +253,8 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                       onCheckAllClicked(not(items, targetItems), checked);
                     },
                     onFilter: onFilterUsers,
-                    onScroll: onTransferListUsersScroll
+                    onFetchMore: onFetchMoreUsers,
+                    hasMoreItems: hasMoreUsers
                   }}
                   target={{
                     title: <FormattedMessage id="words.members" defaultMessage="Members" />,
