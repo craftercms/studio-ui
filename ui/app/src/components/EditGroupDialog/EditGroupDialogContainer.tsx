@@ -115,7 +115,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 
   const onAddMembers = () => {
     const { sourceItems, targetItems, getChecked, setCheckedList } = transferListState;
-    const users = getChecked(sourceItems);
+    const users = getChecked(not(sourceItems, targetItems));
     const usernames = users.map((item) => item.id as string);
 
     if (usernames.length) {
