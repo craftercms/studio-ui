@@ -26,6 +26,7 @@ import { forkJoin } from 'rxjs';
 import TransferListColumn from '../TransferListColumn/TransferListColumn';
 import { showSystemNotification } from '../../state/actions/system';
 import { TransferListItem } from '../TransferListColumn';
+import { transferListItemsFilter } from '../TransferList';
 
 export interface UserGroupMembershipEditorProps {
   username?: string;
@@ -60,6 +61,8 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
     () => groups.map((group) => ({ id: `${group.id}`, title: group.name, subtitle: group.desc })),
     [groups]
   );
+  const [transferListItemsKeyword, setTransferListItemsKeyword] = useState('');
+  const filteredTransferListItems = transferListItemsFilter(transferListItems, transferListItemsKeyword);
 
   refs.current.inProgressIds = inProgressIds;
 
@@ -169,12 +172,14 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
   return (
     <TransferListColumn
       title={<FormattedMessage id="words.groups" defaultMessage="Groups" />}
-      items={transferListItems}
+      items={filteredTransferListItems}
       onItemClick={onItemClick}
       checkedList={selectedGroups}
       inProgressIds={inProgressIds}
       isAllChecked={username ? null : !groups.some((group) => selectedGroups[group.id] !== true)}
       onCheckAllClicked={username ? null : onCheckAllClicked}
+      keyword={transferListItemsKeyword}
+      setKeyword={setTransferListItemsKeyword}
     />
   );
 }
