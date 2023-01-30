@@ -57,12 +57,19 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
   const [selectedGroups, setSelectedGroups] = useState<LookupTable<boolean>>({});
   const [inProgressIds, setInProgressIds] = useState<Array<string | number>>([]);
   const refs = useRef({ inProgressIds });
-  const transferListItems = useMemo(
-    () => groups.map((group) => ({ id: `${group.id}`, title: group.name, subtitle: group.desc })),
-    [groups]
-  );
   const [transferListItemsKeyword, setTransferListItemsKeyword] = useState('');
-  const filteredTransferListItems = transferListItemsFilter(transferListItems, transferListItemsKeyword);
+  const transferListItems = useMemo(
+    () =>
+      transferListItemsFilter(
+        groups.map((group) => ({
+          id: `${group.id}`,
+          title: group.name,
+          subtitle: group.desc
+        })),
+        transferListItemsKeyword
+      ),
+    [groups, transferListItemsKeyword]
+  );
 
   refs.current.inProgressIds = inProgressIds;
 
@@ -172,7 +179,7 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
   return (
     <TransferListColumn
       title={<FormattedMessage id="words.groups" defaultMessage="Groups" />}
-      items={filteredTransferListItems}
+      items={transferListItems}
       onItemClick={onItemClick}
       checkedList={selectedGroups}
       inProgressIds={inProgressIds}

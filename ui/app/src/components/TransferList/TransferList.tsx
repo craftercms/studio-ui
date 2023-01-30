@@ -49,7 +49,11 @@ function intersection(a: any, b: any) {
 }
 
 export const transferListItemsFilter = (items, keyword) =>
-  items?.length ? items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword)) : null;
+  items?.length
+    ? items.filter(
+        (item) => item.title.toLowerCase().includes(keyword) || item.subtitle.toLowerCase().includes(keyword)
+      )
+    : null;
 
 export function TransferList(props: TransferListProps) {
   const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved, disabled = false } = props;
