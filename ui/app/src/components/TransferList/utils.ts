@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TransferListItem } from '../TransferListColumn';
 import { createLookupTable } from '../../utils/object';
 import { LookupTable } from '../../models';
@@ -56,11 +56,17 @@ export const useTransferListState = (): useTransferListStateReturn => {
   const [checkedList, setCheckedList] = useState({});
   const [sourceFilterKeyword, setSourceFilterKeyword] = useState('');
   const [targetFilterKeyword, setTargetFilterKeyword] = useState('');
+  const [itemsLookup, setItemsLookup] = useState({});
+  const itemsLookupRef = useRef({});
+  itemsLookupRef.current = itemsLookup;
 
-  const itemsLookup = {
-    ...createLookupTable(sourceItems),
-    ...createLookupTable(targetItems)
-  };
+  useEffect(() => {
+    setItemsLookup({
+      ...itemsLookupRef.current,
+      ...createLookupTable(sourceItems),
+      ...createLookupTable(targetItems)
+    });
+  }, [sourceItems, targetItems]);
 
   const isAllChecked = useCallback(
     (items: TransferListItem[]) => {
