@@ -26,6 +26,7 @@ import { forkJoin } from 'rxjs';
 import TransferListColumn from '../TransferListColumn/TransferListColumn';
 import { showSystemNotification } from '../../state/actions/system';
 import { TransferListItem } from '../TransferListColumn';
+import { transferListItemsFilter } from '../TransferList/utils';
 
 export interface UserGroupMembershipEditorProps {
   username?: string;
@@ -58,8 +59,16 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
   const [inProgressIds, setInProgressIds] = useState<Array<string | number>>([]);
   const refs = useRef({ inProgressIds });
   const transferListItems = useMemo(
-    () => groups.map((group) => ({ id: `${group.id}`, title: group.name, subtitle: group.desc })),
-    [groups]
+    () =>
+      transferListItemsFilter(
+        groups.map((group) => ({
+          id: `${group.id}`,
+          title: group.name,
+          subtitle: group.desc
+        })),
+        groupsFilterKeyword
+      ),
+    [groups, groupsFilterKeyword]
   );
 
   refs.current.inProgressIds = inProgressIds;

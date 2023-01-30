@@ -77,20 +77,12 @@ export function TransferListColumn(props: TransferListColumnProps) {
     setKeyword(value);
   };
 
-  const list = onFilter
-    ? items
-    : items.filter(
-        (item) =>
-          item.title.toLowerCase().includes(keyword.toLowerCase()) ||
-          item.subtitle.toLowerCase().includes(keyword.toLowerCase())
-      );
-
   return (
     <Paper className={classes.listPaper}>
       <header className={classes.listHeader}>
         {!disabled && onCheckAllClicked && (
           <Checkbox
-            disabled={items.length === 0}
+            disabled={items?.length === 0}
             checked={isAllChecked}
             onChange={(event) => onCheckAllClicked(items, event.target.checked)}
           />
@@ -104,8 +96,8 @@ export function TransferListColumn(props: TransferListColumnProps) {
         />
       </header>
       <List dense component="div" role="list" className={classes.list} ref={listRef}>
-        {items.length ? (
-          list.length === 0 ? (
+        {items ? (
+          items.length === 0 ? (
             <EmptyState
               title={
                 <FormattedMessage
@@ -132,7 +124,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
                 useWindow={false}
                 getScrollParent={() => listRef.current}
               >
-                {list.map((item, i) => (
+                {items.map((item, i) => (
                   <ListItemButton
                     disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
                     key={item.id}

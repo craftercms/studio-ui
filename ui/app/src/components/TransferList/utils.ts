@@ -27,11 +27,21 @@ export function not(a: any, b: any) {
   return a.filter((value) => !b.find((next) => value.id === next.id));
 }
 
+// Client-side default filtering
+export const transferListItemsFilter = (items, keyword) =>
+  items?.length
+    ? items.filter(
+        (item) => item.title.toLowerCase().includes(keyword) || item.subtitle.toLowerCase().includes(keyword)
+      )
+    : null;
+
 export interface useTransferListStateReturn {
   sourceItems: TransferListItem[];
   setSourceItems(items: TransferListItem[]): void;
   sourceFilterKeyword: string;
   setSourceFilterKeyword(keyword: string): void;
+  filteredSourceItems: TransferListItem[];
+  filteredTargetItems: TransferListItem[];
   targetItems: TransferListItem[];
   setTargetItems(items: TransferListItem[]): void;
   targetFilterKeyword: string;
@@ -56,6 +66,9 @@ export const useTransferListState = (): useTransferListStateReturn => {
   const [checkedList, setCheckedList] = useState({});
   const [sourceFilterKeyword, setSourceFilterKeyword] = useState('');
   const [targetFilterKeyword, setTargetFilterKeyword] = useState('');
+  // Client-side filtered items
+  const filteredSourceItems = transferListItemsFilter(sourceItems, sourceFilterKeyword);
+  const filteredTargetItems = transferListItemsFilter(targetItems, targetFilterKeyword);
   const [itemsLookup, setItemsLookup] = useState({});
   const itemsLookupRef = useRef({});
   itemsLookupRef.current = itemsLookup;
@@ -70,7 +83,7 @@ export const useTransferListState = (): useTransferListStateReturn => {
 
   const isAllChecked = useCallback(
     (items: TransferListItem[]) => {
-      return items.length
+      return items?.length
         ? !items.some(
             (item) =>
               !Object.keys(checkedList).find(function (checked) {
@@ -133,22 +146,24 @@ export const useTransferListState = (): useTransferListStateReturn => {
   };
 
   const sourceItemsAllChecked = useMemo(() => {
-    return isAllChecked(sourceItems);
-  }, [isAllChecked, sourceItems]);
+    return isAllChecked(filteredSourceItems);
+  }, [isAllChecked, filteredSourceItems]);
 
   const targetItemsAllChecked = useMemo(() => {
-    return isAllChecked(targetItems);
-  }, [isAllChecked, targetItems]);
+    return isAllChecked(filteredTargetItems);
+  }, [isAllChecked, filteredTargetItems]);
 
   return {
     sourceItems,
     setSourceItems,
     sourceFilterKeyword,
     setSourceFilterKeyword,
+    filteredSourceItems,
     targetItems,
     setTargetItems,
     targetFilterKeyword,
     setTargetFilterKeyword,
+    filteredTargetItems,
     checkedList,
     setCheckedList,
     onItemClicked,

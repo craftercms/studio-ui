@@ -92,6 +92,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     sourceFilterKeyword,
     setSourceFilterKeyword,
     targetItems,
+    filteredTargetItems,
     targetFilterKeyword,
     setTargetFilterKeyword,
     checkedList,
@@ -258,7 +259,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                   }}
                   target={{
                     title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                    items: targetItems,
+                    items: filteredTargetItems,
                     filterKeyword: targetFilterKeyword,
                     setFilterKeyword: setTargetFilterKeyword,
                     emptyStateMessage: (
