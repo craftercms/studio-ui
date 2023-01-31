@@ -30,9 +30,12 @@ export function not(a: any, b: any) {
 // Client-side default filtering
 export const transferListItemsFilter = (items, keyword) =>
   items?.length
-    ? items.filter(
-        (item) => item.title.toLowerCase().includes(keyword) || item.subtitle.toLowerCase().includes(keyword)
-      )
+    ? items.filter((item) => {
+        const lowerCaseKeyword = keyword.toLowerCase();
+        return (
+          item.title.toLowerCase().includes(lowerCaseKeyword) || item.subtitle.toLowerCase().includes(lowerCaseKeyword)
+        );
+      })
     : null;
 
 export interface useTransferListStateReturn {
