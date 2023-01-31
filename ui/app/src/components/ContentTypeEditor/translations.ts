@@ -36,6 +36,14 @@ export const translations = defineMessages({
   noDatasourcesFound: {
     id: 'contentTypeEditor.noDatasourcesFound',
     defaultMessage: 'No datasources found'
+  },
+  search: {
+    id: 'words.search',
+    defaultMessage: 'Search'
+  },
+  repeat: {
+    id: 'words.repeat',
+    defaultMessage: 'Repeat'
   }
 });
 

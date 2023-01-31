@@ -16,11 +16,11 @@
 
 import React, { useEffect, useState } from 'react';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { fetchContentType, fetchLegacyContentTypes } from '../../services/contentTypes';
+import { fetchLegacyContentTypes } from '../../services/contentTypes';
 import useSpreadState from '../../hooks/useSpreadState';
 import { ContentTypesLoader } from '../NewContentDialog';
 import { EmptyState } from '../EmptyState';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { ContentTypesGrid } from '../ContentTypesGrid';
 import Paper from '@mui/material/Paper';
 import { GlobalAppToolbar } from '../GlobalAppToolbar';
@@ -31,14 +31,30 @@ import Box from '@mui/material/Box';
 import useSubject from '../../hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
 import { SearchBar } from '../SearchBar';
-import { ApiResponse, ContentType, LegacyContentType } from '../../models';
+import { ApiResponse, LegacyContentType } from '../../models';
 import { ContentTypeEditor } from '../ContentTypeEditor';
 import useContentTypeList from '../../hooks/useContentTypeList';
+import Drawer from '@mui/material/Drawer';
+import getStyles from './styles';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import AutoAwesomeMotionOutlinedIcon from '@mui/icons-material/AutoAwesomeMotionOutlined';
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
+import ExtensionOutlinedIcon from '@mui/icons-material/ExtensionOutlined';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
 export interface ContentTypesManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
 }
+
+const messages = defineMessages({
+  search: {
+    id: 'words.search',
+    defaultMessage: 'Search'
+  }
+});
 
 export function ContentTypesManagement(props: ContentTypesManagementProps) {
   const { embedded, showAppsButton } = props;
@@ -56,22 +72,16 @@ export function ContentTypesManagement(props: ContentTypesManagementProps) {
   });
   useContentTypeList();
   const [view, setView] = useState<'list' | 'editor'>('list');
-  const [selectedContentType, setSelectedContentType] = useState<{
-    contentType: LegacyContentType;
-    definition: ContentType;
-  }>(null);
+  const [contentTypeConfig, setContentTypeConfig] = useState<LegacyContentType>();
   const [keyword, setKeyword] = useState('');
   const [debounceKeyword, setDebounceKeyword] = useState('');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'page' | 'component'>('all');
+  const sx = getStyles();
+  const { formatMessage } = useIntl();
 
   const selectContentType = (selected: LegacyContentType) => {
-    setSelectedContentType(null);
-    fetchContentType(siteId, selected.name).subscribe((contentType) => {
-      setView('editor');
-      setSelectedContentType({
-        contentType: selected,
-        definition: contentType
-      });
-    });
+    setContentTypeConfig(selected);
+    setView('editor');
   };
 
   useEffect(() => {
@@ -90,11 +100,13 @@ export function ContentTypesManagement(props: ContentTypesManagementProps) {
     if (state.contentTypes) {
       setState({
         filteredContentTypes: state.contentTypes.filter((contentType) =>
-          contentType.label.toLowerCase().includes(debounceKeyword.toLowerCase())
+          contentType.label.toLowerCase().includes(debounceKeyword.toLowerCase()) && typeFilter === 'all'
+            ? true
+            : typeFilter === contentType.type
         )
       });
     }
-  }, [debounceKeyword, setState, state.contentTypes]);
+  }, [debounceKeyword, setState, state.contentTypes, typeFilter]);
 
   const onSearch$ = useSubject<string>();
 
@@ -124,36 +136,71 @@ export function ContentTypesManagement(props: ContentTypesManagementProps) {
             showAppsButton={showAppsButton}
           />
 
-          <Box sx={{ p: 2 }}>
-            <Box display="flex" justifyContent="space-between" alignItems="flex-end">
-              <Box>
-                <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
-              </Box>
-            </Box>
-
-            {state.loadingContentTypes && <ContentTypesLoader isCompact={false} />}
-            {state.error && <ApiResponseErrorState error={state.error} />}
-            {state.filteredContentTypes?.length === 0 && (
-              <EmptyState
-                title={
-                  <FormattedMessage
-                    id="contentTypesManagement.emptyStateMessage"
-                    defaultMessage="No Content Types Found"
+          <Box display="flex">
+            <Drawer variant="permanent" anchor="left" sx={sx.drawer}>
+              <List>
+                <ListItemButton selected={typeFilter === 'all'} onClick={() => setTypeFilter('all')}>
+                  <ListItemIcon>
+                    <AutoAwesomeMotionOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <FormattedMessage
+                        id="contentTypesManagement.allContentTypes"
+                        defaultMessage="All Content Types"
+                      />
+                    }
                   />
-                }
-              />
-            )}
-            {state.filteredContentTypes?.length > 0 && (
-              <ContentTypesGrid
-                filterContentTypes={state.filteredContentTypes}
-                isCompact={true}
-                onTypeOpen={selectContentType}
-              />
-            )}
+                </ListItemButton>
+                <ListItemButton selected={typeFilter === 'page'} onClick={() => setTypeFilter('page')}>
+                  <ListItemIcon>
+                    <InsertDriveFileOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={<FormattedMessage id="words.pages" defaultMessage="Pages" />} />
+                </ListItemButton>
+                <ListItemButton selected={typeFilter === 'component'} onClick={() => setTypeFilter('component')}>
+                  <ListItemIcon>
+                    <ExtensionOutlinedIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={<FormattedMessage id="words.components" defaultMessage="Components" />} />
+                </ListItemButton>
+              </List>
+            </Drawer>
+            <Box sx={sx.body}>
+              <Box display="flex" justifyContent="flex-end">
+                <SearchBar
+                  onChange={onSearch}
+                  keyword={keyword}
+                  autoFocus
+                  showActionButton={Boolean(keyword)}
+                  placeholder={formatMessage(messages.search)}
+                />
+              </Box>
+
+              {state.loadingContentTypes && <ContentTypesLoader isCompact={false} />}
+              {state.error && <ApiResponseErrorState error={state.error} />}
+              {state.filteredContentTypes?.length === 0 && (
+                <EmptyState
+                  title={
+                    <FormattedMessage
+                      id="contentTypesManagement.emptyStateMessage"
+                      defaultMessage="No Content Types Found"
+                    />
+                  }
+                />
+              )}
+              {state.filteredContentTypes?.length > 0 && (
+                <ContentTypesGrid
+                  filterContentTypes={state.filteredContentTypes}
+                  isCompact={false}
+                  onTypeOpen={selectContentType}
+                />
+              )}
+            </Box>
           </Box>
         </>
       ) : (
-        <ContentTypeEditor contentType={selectedContentType.contentType} definition={selectedContentType.definition} />
+        <ContentTypeEditor config={contentTypeConfig} onGoBack={() => setView('list')} />
       )}
     </Paper>
   );

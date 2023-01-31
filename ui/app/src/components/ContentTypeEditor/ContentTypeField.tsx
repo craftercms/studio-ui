@@ -19,14 +19,18 @@ import { ContentTypeField as ContentTypeFieldType } from '../../models';
 import Chip from '@mui/material/Chip';
 import getStyles from './styles';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import { FormattedMessage, useIntl } from 'react-intl';
+import translations from './translations';
+import Button from '@mui/material/Button';
 
 export interface ContentTypeFieldProps {
   field: ContentTypeFieldType;
 }
 
-export function ContentTypeField(props: ContentTypeFieldProps) {
-  const { field } = props;
-  const { name, id, type } = field;
+function SingleField(props: ContentTypeFieldProps) {
+  const { name, id, type } = props.field;
   const sx = getStyles();
 
   return (
@@ -45,10 +49,42 @@ export function ContentTypeField(props: ContentTypeFieldProps) {
           ({id}) • {type}
         </>
       }
-      sx={sx.contentTypeField}
+      sx={sx.contentTypeSingleField}
       color="default"
     />
   );
+}
+
+function RepeatField(props: ContentTypeFieldProps) {
+  const { name, fields } = props.field;
+  const sx = getStyles();
+  const { formatMessage } = useIntl();
+
+  return (
+    <Paper sx={sx.contentTypeRepeatField}>
+      <Typography sx={{ mb: 1 }}>
+        <strong>{formatMessage(translations.repeat)}</strong>: {name}
+      </Typography>
+      {Object.values(fields).map((field) => (
+        <React.Fragment key={field.name}>
+          <ContentTypeField field={field} />
+        </React.Fragment>
+      ))}
+      <Button variant="outlined" fullWidth sx={{ borderStyle: 'dashed !important', borderRadius: '4px' }}>
+        <FormattedMessage id="contentTypeEditor.addFields" defaultMessage="Add Fields" />
+      </Button>
+    </Paper>
+  );
+}
+
+export function ContentTypeField(props: ContentTypeFieldProps) {
+  const { field } = props;
+
+  if (field.type === 'repeat') {
+    return <RepeatField field={field} />;
+  } else {
+    return <SingleField field={field} />;
+  }
 }
 
 export default ContentTypeField;

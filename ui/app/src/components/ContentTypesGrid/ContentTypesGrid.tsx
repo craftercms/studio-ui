@@ -26,7 +26,7 @@ export function ContentTypesGrid(props: ContentTypesGridProps) {
   return (
     <Grid container spacing={3} className={classes.cardsContainer}>
       {filterContentTypes.map((content) => (
-        <Grid item key={content.label} xs={12} sm={!isCompact ? 4 : 6}>
+        <Grid item key={content.label}>
           <NewContentCard
             isCompact={isCompact}
             headerTitle={content.label}

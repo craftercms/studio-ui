@@ -27,10 +27,12 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 const useStyles = makeStyles()(() => ({
   defaultCard: {
-    maxWidth: 345,
+    // maxWidth: 345,
+    width: '273px',
     cursor: 'pointer'
   },
   compactCard: {
+    width: '422px',
     display: 'flex',
     cursor: 'pointer'
   },

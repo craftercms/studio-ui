@@ -4,8 +4,6 @@
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
  * the Free Software Foundation.
-export * from './PropertiesEditor';
-
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,10 +14,8 @@ export * from './PropertiesEditor';
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './ContentTypeEditor';
+export { default } from './CreateContentTypeFieldDialog';
 
-export * from './ContentTypeEditor';
+export * from './CreateContentTypeFieldDialog';
 
-export * from './ContentTypeSection';
-
-export * from './ContentTypeField';
+export * from './CreateContentTypeFieldDialogContainer';

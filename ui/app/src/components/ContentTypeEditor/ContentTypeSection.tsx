@@ -23,6 +23,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import IconButton from '@mui/material/IconButton';
 import { ContentTypeField as ContentTypeFieldType, LookupTable } from '../../models';
 import { ContentTypeField } from './ContentTypeField';
+import Button from '@mui/material/Button';
+import { FormattedMessage } from 'react-intl';
 
 export interface ContentTypeSectionProps {
   title: string;
@@ -30,10 +32,11 @@ export interface ContentTypeSectionProps {
   expandByDefault: boolean;
   fields: string[];
   fieldsDefinitions: LookupTable<ContentTypeFieldType>;
+  onAddField(): void;
 }
 
 export function ContentTypeSection(props: ContentTypeSectionProps) {
-  const { title, fields, fieldsDefinitions } = props;
+  const { title, fields, fieldsDefinitions, onAddField } = props;
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -49,10 +52,18 @@ export function ContentTypeSection(props: ContentTypeSectionProps) {
       </AccordionSummary>
       <AccordionDetails>
         {fields.map((field) => (
-          <>
+          <React.Fragment key={field}>
             <ContentTypeField field={fieldsDefinitions[field]} />
-          </>
+          </React.Fragment>
         ))}
+        <Button
+          variant="outlined"
+          fullWidth
+          sx={{ mt: 1, borderStyle: 'dashed !important', borderRadius: '4px' }}
+          onClick={onAddField}
+        >
+          <FormattedMessage id="contentTypeEditor.addFields" defaultMessage="Add Fields" />
+        </Button>
       </AccordionDetails>
     </Accordion>
   );
