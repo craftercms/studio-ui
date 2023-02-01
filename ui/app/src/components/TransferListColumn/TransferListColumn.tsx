@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import LookupTable from '../../models/LookupTable';
 import useStyles from './styles';
 import Paper from '@mui/material/Paper';
@@ -40,6 +40,8 @@ export interface TransferListColumnProps {
   isAllChecked?: boolean;
   onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
   disabled?: boolean;
+  keyword: string;
+  setKeyword(keyword: string): void;
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
@@ -52,30 +54,28 @@ export function TransferListColumn(props: TransferListColumnProps) {
     onCheckAllClicked,
     inProgressIds,
     emptyStateMessage,
-    disabled = false
+    disabled = false,
+    keyword,
+    setKeyword
   } = props;
   const { classes } = useStyles();
-  const [keyword, setKeyword] = useState('');
 
   const onSearch = (value) => {
     setKeyword(value);
   };
-
-  const filteredList = items.filter((item) => item.title.includes(keyword) || item.subtitle.includes(keyword));
 
   return (
     <Paper className={classes.listPaper}>
       <header className={classes.listHeader}>
         {!disabled && onCheckAllClicked && (
           <Checkbox
-            disabled={items.length === 0}
+            disabled={items?.length === 0}
             checked={isAllChecked}
             onChange={(event) => onCheckAllClicked(items, event.target.checked)}
           />
         )}
         {title && <Typography color="textSecondary">{title}</Typography>}
         <SearchBar
-          disabled={items.length === 0}
           keyword={keyword}
           onChange={onSearch}
           classes={{ root: classes.searchBar }}
@@ -83,8 +83,8 @@ export function TransferListColumn(props: TransferListColumnProps) {
         />
       </header>
       <List dense component="div" role="list" className={classes.list}>
-        {items.length ? (
-          filteredList.length === 0 ? (
+        {items ? (
+          items.length === 0 ? (
             <EmptyState
               title={
                 <FormattedMessage
@@ -94,7 +94,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
-            filteredList.map((item, i) => (
+            items.map((item, i) => (
               <ListItemButton
                 disabled={disabled || inProgressIds.includes(item.id)}
                 key={item.id}

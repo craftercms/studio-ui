@@ -26,6 +26,7 @@ import { forkJoin } from 'rxjs';
 import TransferListColumn from '../TransferListColumn/TransferListColumn';
 import { showSystemNotification } from '../../state/actions/system';
 import { TransferListItem } from '../TransferListColumn';
+import { transferListItemsFilter } from '../TransferList';
 
 export interface UserGroupMembershipEditorProps {
   username?: string;
@@ -56,9 +57,18 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
   const [selectedGroups, setSelectedGroups] = useState<LookupTable<boolean>>({});
   const [inProgressIds, setInProgressIds] = useState<Array<string | number>>([]);
   const refs = useRef({ inProgressIds });
+  const [transferListItemsKeyword, setTransferListItemsKeyword] = useState('');
   const transferListItems = useMemo(
-    () => groups.map((group) => ({ id: `${group.id}`, title: group.name, subtitle: group.desc })),
-    [groups]
+    () =>
+      transferListItemsFilter(
+        groups.map((group) => ({
+          id: `${group.id}`,
+          title: group.name,
+          subtitle: group.desc
+        })),
+        transferListItemsKeyword
+      ),
+    [groups, transferListItemsKeyword]
   );
 
   refs.current.inProgressIds = inProgressIds;
@@ -175,6 +185,8 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
       inProgressIds={inProgressIds}
       isAllChecked={username ? null : !groups.some((group) => selectedGroups[group.id] !== true)}
       onCheckAllClicked={username ? null : onCheckAllClicked}
+      keyword={transferListItemsKeyword}
+      setKeyword={setTransferListItemsKeyword}
     />
   );
 }
