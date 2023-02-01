@@ -170,7 +170,7 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
   const onCheckAllClicked = (items, checked) => {
     const next = {};
     if (checked) {
-      groups.forEach((group) => (next[group.id] = true));
+      transferListItems.forEach((group) => (next[group.id] = true));
     }
     setSelectedGroups(next);
     onChange?.(Object.keys(next));
@@ -183,7 +183,7 @@ export function UserGroupMembershipEditor(props: UserGroupMembershipEditorProps)
       onItemClick={onItemClick}
       checkedList={selectedGroups}
       inProgressIds={inProgressIds}
-      isAllChecked={username ? null : !groups.some((group) => selectedGroups[group.id] !== true)}
+      isAllChecked={username ? null : !transferListItems?.some((group) => selectedGroups[group.id] !== true)}
       onCheckAllClicked={username ? null : onCheckAllClicked}
       filterKeyword={groupsFilterKeyword}
       setFilterKeyword={setGroupsFilterKeyword}
