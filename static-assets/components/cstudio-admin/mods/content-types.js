@@ -349,7 +349,6 @@
                           }
                         });
                       }
-
                       var validation = _self.componentsValidation(formDef);
                       var istemplate = _self.templateValidation(formDef);
 
