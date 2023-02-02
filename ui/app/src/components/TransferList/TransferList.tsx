@@ -15,23 +15,24 @@
  */
 
 import Box from '@mui/material/Box';
-import React, { ReactNode, useCallback, useMemo, useState } from 'react';
+import React, { ReactNode } from 'react';
 import IconButton from '@mui/material/IconButton';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import useStyles from './styles';
-import { createLookupTable } from '../../utils/object';
-import TransferListColumn, { TransferListItem } from '../TransferListColumn';
+import TransferListColumn, { TransferListColumnProps, TransferListItem } from '../TransferListColumn';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
 
 export interface TransferListProps {
-  source: TransferListObject;
-  target: TransferListObject;
+  source: TransferListColumnProps;
+  target: TransferListColumnProps;
   inProgressIds: (string | number)[];
   disabled?: boolean;
-  onTargetListItemsAdded(items: TransferListItem[]): void;
-  onTargetListItemsRemoved(items: TransferListItem[]): void;
+  disableAdd: boolean;
+  disableRemove: boolean;
+  addToTarget(): void;
+  removeFromTarget(): void;
 }
 
 export interface TransferListObject {
@@ -40,128 +41,37 @@ export interface TransferListObject {
   items: TransferListItem[];
 }
 
-function not(a: any, b: any) {
-  return a.filter((value) => !b.find((next) => value.id === next.id));
-}
-
-function intersection(a: any, b: any) {
-  return a.filter((value) => b.find((next) => value.id === next.id));
-}
-
-export const transferListItemsFilter = (items, keyword) =>
-  items?.length
-    ? items.filter((item) => {
-        const lowerCaseKeyword = keyword.toLowerCase();
-        return (
-          item.title.toLowerCase().includes(lowerCaseKeyword) || item.subtitle.toLowerCase().includes(lowerCaseKeyword)
-        );
-      })
-    : null;
-
 export function TransferList(props: TransferListProps) {
-  const { source, target, inProgressIds, onTargetListItemsAdded, onTargetListItemsRemoved, disabled = false } = props;
-  const [sourceItems, setSourceItems] = useState<TransferListItem[]>(source.items);
-  const [targetItems, setTargetItems] = useState<TransferListItem[]>(target.items);
-  const [sourceFilterKeyword, setSourceFilterKeyword] = useState('');
-  const [targetFilterKeyword, setTargetFilterKeyword] = useState('');
-  const filteredSourceItems = transferListItemsFilter(sourceItems, sourceFilterKeyword);
-  const filteredTargetItems = transferListItemsFilter(targetItems, targetFilterKeyword);
-  const [checkedList, setCheckedList] = useState({});
+  const {
+    source,
+    target,
+    inProgressIds,
+    disableAdd,
+    disableRemove,
+    addToTarget,
+    removeFromTarget,
+    disabled = false
+  } = props;
   const { classes } = useStyles();
-
-  const itemsLookup = {
-    ...createLookupTable(sourceItems),
-    ...createLookupTable(targetItems)
-  };
-
-  const onItemClicked = (item: TransferListItem) => {
-    if (checkedList[item.id]) {
-      setCheckedList({ ...checkedList, [item.id]: false });
-    } else {
-      setCheckedList({ ...checkedList, [item.id]: true });
-    }
-  };
-
-  const onCheckAllClicked = (items: TransferListItem[], checked: boolean) => {
-    const nextCheckedList = {};
-    items.forEach((item) => {
-      nextCheckedList[item.id] = checked;
-    });
-    setCheckedList({ ...checkedList, ...nextCheckedList });
-  };
-
-  const getChecked = (items: TransferListItem[]) => {
-    return intersection(
-      Object.keys(checkedList)
-        .filter((key) => checkedList[key])
-        .map((id) => itemsLookup[id]),
-      items
-    );
-  };
-
-  const addToTarget = () => {
-    const nextCheckedList = {};
-    const leftCheckedItems = getChecked(sourceItems);
-    if (leftCheckedItems.length) {
-      leftCheckedItems.forEach((item) => (nextCheckedList[item.id] = false));
-      setCheckedList({ ...checkedList, ...nextCheckedList });
-      setSourceItems(not(sourceItems, leftCheckedItems));
-      setTargetItems([...targetItems, ...leftCheckedItems]);
-      onTargetListItemsAdded(leftCheckedItems);
-    }
-  };
-
-  const removeFromTarget = () => {
-    const nextCheckedList = {};
-    const rightCheckedItems = getChecked(targetItems);
-    if (rightCheckedItems.length) {
-      rightCheckedItems.forEach((item) => (nextCheckedList[item.id] = false));
-      setCheckedList({ ...checkedList, ...nextCheckedList });
-      setTargetItems(not(targetItems, rightCheckedItems));
-      setSourceItems([...sourceItems, ...rightCheckedItems]);
-      onTargetListItemsRemoved(rightCheckedItems);
-    }
-  };
-
-  const disableAdd = getChecked(sourceItems).length === 0;
-  const disableRemove = getChecked(targetItems).length === 0;
-
-  const isAllChecked = useCallback(
-    (items: TransferListItem[]) => {
-      return items?.length
-        ? !items.some(
-            (item) =>
-              !Object.keys(checkedList).find(function (checked) {
-                return checked === item.id && checkedList[checked];
-              })
-          )
-        : false;
-    },
-    [checkedList]
-  );
-
-  const sourceItemsAllChecked = useMemo(() => {
-    return isAllChecked(filteredSourceItems);
-  }, [isAllChecked, filteredSourceItems]);
-
-  const targetItemsAllChecked = useMemo(() => {
-    return isAllChecked(filteredTargetItems);
-  }, [isAllChecked, filteredTargetItems]);
 
   return (
     <Box display="flex">
       <TransferListColumn
-        title={props.source.title}
-        items={filteredSourceItems}
-        checkedList={checkedList}
-        onCheckAllClicked={onCheckAllClicked}
-        onItemClick={onItemClicked}
-        isAllChecked={sourceItemsAllChecked}
+        title={source.title}
+        items={source.items}
+        disabledItems={source.disabledItems}
+        checkedList={source.checkedList}
+        onCheckAllClicked={source.onCheckAllClicked}
+        onItemClick={source.onItemClick}
+        isAllChecked={source.isAllChecked}
         inProgressIds={inProgressIds}
-        emptyStateMessage={source.emptyMessage}
+        emptyStateMessage={source.emptyStateMessage}
         disabled={disabled}
-        keyword={sourceFilterKeyword}
-        setKeyword={setSourceFilterKeyword}
+        filterKeyword={source.filterKeyword}
+        setFilterKeyword={source.setFilterKeyword}
+        onFilter={source.onFilter}
+        onFetchMore={source.onFetchMore}
+        hasMoreItems={source.hasMoreItems}
       />
       <section className={classes.buttonsWrapper}>
         {!disabled && (
@@ -206,17 +116,21 @@ export function TransferList(props: TransferListProps) {
         )}
       </section>
       <TransferListColumn
-        title={props.target.title}
-        items={filteredTargetItems}
-        checkedList={checkedList}
-        onCheckAllClicked={onCheckAllClicked}
-        onItemClick={onItemClicked}
-        isAllChecked={targetItemsAllChecked}
+        title={target.title}
+        items={target.items}
+        disabledItems={target.disabledItems}
+        checkedList={target.checkedList}
+        onCheckAllClicked={target.onCheckAllClicked}
+        onItemClick={target.onItemClick}
+        isAllChecked={target.isAllChecked}
         inProgressIds={inProgressIds}
-        emptyStateMessage={target.emptyMessage}
+        emptyStateMessage={target.emptyStateMessage}
         disabled={disabled}
-        keyword={targetFilterKeyword}
-        setKeyword={setTargetFilterKeyword}
+        filterKeyword={target.filterKeyword}
+        setFilterKeyword={target.setFilterKeyword}
+        onFilter={target.onFilter}
+        onFetchMore={target.onFetchMore}
+        hasMoreItems={target.hasMoreItems}
       />
     </Box>
   );

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import LookupTable from '../../models/LookupTable';
 import useStyles from './styles';
 import Paper from '@mui/material/Paper';
@@ -29,6 +29,9 @@ import EmptyState from '../EmptyState/EmptyState';
 import { FormattedMessage } from 'react-intl';
 import TransferListItem from './TransferListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import { PaginationOptions } from '../../models';
+import InfiniteScroll from 'react-infinite-scroller';
+import Box from '@mui/material/Box';
 
 export interface TransferListColumnProps {
   title: ReactNode;
@@ -40,8 +43,12 @@ export interface TransferListColumnProps {
   isAllChecked?: boolean;
   onCheckAllClicked?(items: TransferListItem[], checked: boolean): void;
   disabled?: boolean;
-  keyword: string;
-  setKeyword(keyword: string): void;
+  disabledItems?: LookupTable<boolean>;
+  filterKeyword: string;
+  setFilterKeyword(keyword: string): void;
+  onFilter?(keyword: string);
+  onFetchMore?(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+  hasMoreItems?: boolean;
 }
 
 export function TransferListColumn(props: TransferListColumnProps) {
@@ -55,12 +62,18 @@ export function TransferListColumn(props: TransferListColumnProps) {
     inProgressIds,
     emptyStateMessage,
     disabled = false,
-    keyword,
-    setKeyword
+    disabledItems,
+    filterKeyword: keyword,
+    setFilterKeyword: setKeyword,
+    onFilter,
+    onFetchMore,
+    hasMoreItems
   } = props;
   const { classes } = useStyles();
+  const listRef = useRef();
 
   const onSearch = (value) => {
+    onFilter?.(value);
     setKeyword(value);
   };
 
@@ -82,7 +95,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
           showActionButton={Boolean(keyword)}
         />
       </header>
-      <List dense component="div" role="list" className={classes.list}>
+      <List dense component="div" role="list" className={classes.list} ref={listRef}>
         {items ? (
           items.length === 0 ? (
             <EmptyState
@@ -94,29 +107,50 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
-            items.map((item, i) => (
-              <ListItemButton
-                disabled={disabled || inProgressIds.includes(item.id)}
-                key={item.id}
-                role="listitem"
-                onClick={(e) => onItemClick(item, e)}
-              >
-                {!disabled && (
-                  <ListItemIcon>
-                    {inProgressIds.includes(item.id) ? (
-                      <CircularProgress size={42} />
-                    ) : (
-                      <Checkbox checked={checkedList[item.id] ?? false} tabIndex={-1} disableRipple />
-                    )}
-                  </ListItemIcon>
-                )}
-                <ListItemText
-                  primary={item.title}
-                  secondary={item.subtitle}
-                  primaryTypographyProps={{ noWrap: true, title: item.title }}
-                />
-              </ListItemButton>
-            ))
+            <InfiniteScroll
+              initialLoad={false}
+              pageStart={0}
+              loadMore={() => {
+                onFetchMore({ keyword });
+              }}
+              // hasMoreItems may be null (using fixed data), in that case infinite scroll will be 'disabled'
+              hasMore={Boolean(hasMoreItems)}
+              loader={
+                <Box key={0} display="flex" justifyContent="center" m={1}>
+                  <CircularProgress size={16} />
+                </Box>
+              }
+              useWindow={false}
+              getScrollParent={() => listRef.current}
+            >
+              {items.map((item, i) => (
+                <ListItemButton
+                  disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
+                  key={item.id}
+                  role="listitem"
+                  onClick={(e) => onItemClick(item, e)}
+                >
+                  {!disabled && (
+                    <ListItemIcon>
+                      {inProgressIds.includes(item.id) ? (
+                        <CircularProgress size={42} />
+                      ) : (
+                        <Checkbox
+                          checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
+                          tabIndex={-1}
+                          disableRipple
+                        />
+                      )}
+                    </ListItemIcon>
+                  )}
+                  <ListItemText
+                    primary={item.title}
+                    secondary={item.subtitle}
+                    primaryTypographyProps={{ noWrap: true, title: item.title }}
+                  />
+                </ListItemButton>
+              ))}
+            </InfiniteScroll>
           )
         ) : (
           emptyStateMessage && <EmptyState title={emptyStateMessage} />

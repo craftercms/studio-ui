@@ -40,6 +40,7 @@ import {
   validateGroupNameMinLength,
   validateRequiredField
 } from '../GroupManagement/utils';
+import { excludeCommonItems } from '../TransferList/utils';
 
 const translations = defineMessages({
   confirmHelperText: {
@@ -74,10 +75,32 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     onCloseButtonClick,
     users,
     members,
+    membersLookup,
     inProgressIds,
     isDirty,
-    isEdit
+    isEdit,
+    transferListState,
+    sourceItemsAllChecked,
+    onFilterUsers,
+    onFetchMoreUsers,
+    hasMoreUsers,
+    disableAddMembers
   } = props;
+
+  const {
+    sourceItems,
+    sourceFilterKeyword,
+    setSourceFilterKeyword,
+    targetItems,
+    filteredTargetItems,
+    targetFilterKeyword,
+    setTargetFilterKeyword,
+    checkedList,
+    onItemClicked,
+    onCheckAllClicked,
+    disableRemove,
+    targetItemsAllChecked
+  } = transferListState;
 
   return (
     <>
@@ -210,29 +233,51 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                 </Typography>
                 <TransferList
                   disabled={group.externallyManaged}
-                  onTargetListItemsAdded={(items) => onAddMembers(items.map((item) => item.id))}
-                  onTargetListItemsRemoved={(items) => onRemoveMembers(items.map((item) => item.id))}
                   inProgressIds={inProgressIds}
                   source={{
                     title: <FormattedMessage id="words.users" defaultMessage="Users" />,
-                    items: users.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
-                    emptyMessage: (
+                    items: sourceItems,
+                    filterKeyword: sourceFilterKeyword,
+                    setFilterKeyword: setSourceFilterKeyword,
+                    disabledItems: membersLookup,
+                    emptyStateMessage: (
                       <FormattedMessage
-                        id="transferList.emptyListMessage"
-                        defaultMessage="All users are members of this group"
+                        id="transferList.noResults"
+                        defaultMessage="No results, try to change the query"
                       />
-                    )
+                    ),
+                    onItemClick: onItemClicked,
+                    checkedList,
+                    inProgressIds,
+                    isAllChecked: sourceItemsAllChecked,
+                    onCheckAllClicked: (items, checked) => {
+                      onCheckAllClicked(excludeCommonItems(items, targetItems), checked);
+                    },
+                    onFilter: onFilterUsers,
+                    onFetchMore: onFetchMoreUsers,
+                    hasMoreItems: hasMoreUsers
                   }}
                   target={{
                     title: <FormattedMessage id="words.members" defaultMessage="Members" />,
-                    items: members.map((user) => ({ id: user.username, title: user.username, subtitle: user.email })),
-                    emptyMessage: (
+                    items: filteredTargetItems,
+                    filterKeyword: targetFilterKeyword,
+                    setFilterKeyword: setTargetFilterKeyword,
+                    emptyStateMessage: (
                       <FormattedMessage
                         id="transferList.targetEmptyStateMessage"
                         defaultMessage="No members on this group"
                       />
-                    )
+                    ),
+                    onItemClick: onItemClicked,
+                    checkedList,
+                    inProgressIds,
+                    isAllChecked: targetItemsAllChecked,
+                    onCheckAllClicked
                   }}
+                  disableAdd={disableAddMembers}
+                  disableRemove={disableRemove}
+                  addToTarget={onAddMembers}
+                  removeFromTarget={onRemoveMembers}
                 />
               </>
             )

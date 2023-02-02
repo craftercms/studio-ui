@@ -19,6 +19,8 @@ import React from 'react';
 import User from '../../models/User';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { EnhancedDialogProps } from '../EnhancedDialog';
+import { LookupTable, PaginationOptions } from '../../models';
+import { useTransferListStateReturn } from '../TransferList/utils';
 
 export interface EditGroupBaseProps {
   group?: Group;
@@ -47,9 +49,16 @@ export interface GroupEditDialogUIProps {
   submitOk: boolean;
   onCancel(): void;
   onChangeValue(value: { key: string; value: string }): void;
-  onAddMembers?(members: (string | number)[]): void;
-  onRemoveMembers?(members: (string | number)[]): void;
+  onAddMembers?(): void;
+  onRemoveMembers?(): void;
   users?: User[];
   members?: User[];
+  membersLookup?: LookupTable<boolean>;
   inProgressIds?: (string | number)[];
+  transferListState: useTransferListStateReturn;
+  sourceItemsAllChecked: boolean;
+  onFilterUsers(keyword: string): void;
+  onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
+  hasMoreUsers: boolean;
+  disableAddMembers: boolean;
 }

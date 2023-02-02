@@ -4041,6 +4041,7 @@ __metadata:
     "@types/prettier": ^2.4.2
     "@types/react": ^18.0.15
     "@types/react-dom": ^18.0.5
+    "@types/react-infinite-scroller": ^1
     "@types/react-swipeable-views": ^0.13.1
     "@types/video.js": ^7.3.27
     "@types/zxcvbn": ^4
@@ -4074,6 +4075,7 @@ __metadata:
     react-animations: ^1.0.0
     react-dom: 18.1.0
     react-hotkeys-hook: ^3.4.4
+    react-infinite-scroller: ^1.2.6
     react-intl: ^6.0.5
     react-redux: ^7.2.6
     react-router-dom: ^5.3.0
@@ -6416,6 +6418,15 @@ __metadata:
   dependencies:
     "@types/react": "*"
   checksum: cd48b81950f499b52a3f0c08261f00046f9b7c96699fa249c9664e257e820daf6ecac815cd1028cebc9d105094adc39d047d1efd79214394b8b2d515574c0787
+  languageName: node
+  linkType: hard
+
+"@types/react-infinite-scroller@npm:^1":
+  version: 1.2.3
+  resolution: "@types/react-infinite-scroller@npm:1.2.3"
+  dependencies:
+    "@types/react": "*"
+  checksum: ae11063b5e114bff1f06e9d3d2ca0948a3a224f13b4a30fbfe56f84e535ee6232de9667456695bbbb409de51887d701f8558fd28c36a2ea172e8593346de85d1
   languageName: node
   linkType: hard
 
@@ -16122,7 +16133,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.8.1":
+"prop-types@npm:^15.5.8, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -16359,6 +16370,17 @@ __metadata:
     react: ">=16.8.1"
     react-dom: ">=16.8.1"
   checksum: c5553e18a0a4d9c642c797e5684f2cc51737d920636d9b6afce5e8c410856068079604eaea9e27648184a7e6566143b4d7b431e45362a8d4b5bf915f4d04c8a5
+  languageName: node
+  linkType: hard
+
+"react-infinite-scroller@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "react-infinite-scroller@npm:1.2.6"
+  dependencies:
+    prop-types: ^15.5.8
+  peerDependencies:
+    react: ^0.14.9 || ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 5f5aae76c484b4039bada87070d5f8c54d2786697ae600be19a68f4e85158ff550122f15dccc5997d8b01fa487da47b9ffbc3e9d9a29f2cf71c77275f72551fd
   languageName: node
   linkType: hard
 
