@@ -35,7 +35,7 @@ import Typography from '@mui/material/Typography';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { EditGroupDialogContainerProps } from './utils';
 import { isInvalidGroupName, validateGroupNameMinLength, validateRequiredField } from '../GroupManagement/utils';
-import { not, useTransferListState } from '../TransferList/utils';
+import { excludeCommonItems, useTransferListState } from '../TransferList/utils';
 import { LookupTable, PaginationOptions } from '../../models';
 import useMount from '../../hooks/useMount';
 import { createPresenceTable } from '../../utils/array';
@@ -90,12 +90,13 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   const transferListState = useTransferListState();
   const { sourceItems, targetItems, setSourceItems, setTargetItems, sourceFilterKeyword, isAllChecked, getChecked } =
     transferListState;
-  const usersFetchSize = 5;
+  const usersFetchSize = 10;
   const [usersOffset, setUsersOffset] = useState(0);
-  const sourceItemsAllChecked = useMemo(() => {
-    return isAllChecked(not(sourceItems, targetItems));
-  }, [isAllChecked, sourceItems, targetItems]);
-  const disableAddMembers = getChecked(not(sourceItems, targetItems)).length === 0;
+  const sourceItemsAllChecked = useMemo(
+    () => isAllChecked(excludeCommonItems(sourceItems, targetItems)),
+    [isAllChecked, sourceItems, targetItems]
+  );
+  const disableAddMembers = getChecked(excludeCommonItems(sourceItems, targetItems)).length === 0;
 
   const onDeleteGroup = (group: Group) => {
     trash(group.id).subscribe({
@@ -115,7 +116,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
 
   const onAddMembers = () => {
     const { sourceItems, targetItems, getChecked, setCheckedList } = transferListState;
-    const users = getChecked(not(sourceItems, targetItems));
+    const users = getChecked(excludeCommonItems(sourceItems, targetItems));
     const usernames = users.map((item) => item.id as string);
 
     if (usernames.length) {
@@ -158,7 +159,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       deleteUsersFromGroup(group.id, usernames).subscribe({
         next() {
           setCheckedList({});
-          setTargetItems(not(targetItems, users));
+          setTargetItems(excludeCommonItems(targetItems, users));
           setMembersLookup(reversePluckProps(membersLookup, ...usernames));
           dispatch(
             showSystemNotification({

@@ -19,25 +19,6 @@ import { TransferListItem } from '../TransferListColumn';
 import { createLookupTable } from '../../utils/object';
 import { LookupTable } from '../../models';
 
-function intersection(a: any, b: any) {
-  return a.filter((value) => b.find((next) => value.id === next.id));
-}
-
-export function not(a: any, b: any) {
-  return a.filter((value) => !b.find((next) => value.id === next.id));
-}
-
-// Client-side default filtering
-export const transferListItemsFilter = (items, keyword) =>
-  items?.length
-    ? items.filter((item) => {
-        const lowerCaseKeyword = keyword.toLowerCase();
-        return (
-          item.title.toLowerCase().includes(lowerCaseKeyword) || item.subtitle.toLowerCase().includes(lowerCaseKeyword)
-        );
-      })
-    : null;
-
 export interface useTransferListStateReturn {
   sourceItems: TransferListItem[];
   setSourceItems(items: TransferListItem[]): void;
@@ -63,6 +44,17 @@ export interface useTransferListStateReturn {
   removeFromTarget(): void;
 }
 
+function intersection(listItemsA: TransferListItem[], listItemsB: TransferListItem[]): TransferListItem[] {
+  return listItemsA.filter((itemA) => listItemsB.find((itemB) => itemA.id === itemB.id));
+}
+
+export function excludeCommonItems(listItemsA: TransferListItem[], listItemsB: TransferListItem[]): TransferListItem[] {
+  return listItemsA.filter((itemA) => !listItemsB.find((itemB) => itemA.id === itemB.id));
+}
+
+export const filterTransferListItemsByKeyword = (items: TransferListItem[], keyword: string) =>
+  items?.filter((item) => `${item.title}${item.subtitle}`.toLowerCase().includes(keyword.toLowerCase())) ?? null;
+
 export const useTransferListState = (): useTransferListStateReturn => {
   const [sourceItems, setSourceItems] = useState<TransferListItem[]>([]);
   const [targetItems, setTargetItems] = useState<TransferListItem[]>([]);
@@ -70,8 +62,8 @@ export const useTransferListState = (): useTransferListStateReturn => {
   const [sourceFilterKeyword, setSourceFilterKeyword] = useState('');
   const [targetFilterKeyword, setTargetFilterKeyword] = useState('');
   // Client-side filtered items
-  const filteredSourceItems = transferListItemsFilter(sourceItems, sourceFilterKeyword);
-  const filteredTargetItems = transferListItemsFilter(targetItems, targetFilterKeyword);
+  const filteredSourceItems = filterTransferListItemsByKeyword(sourceItems, sourceFilterKeyword);
+  const filteredTargetItems = filterTransferListItemsByKeyword(targetItems, targetFilterKeyword);
   const [itemsLookup, setItemsLookup] = useState({});
   const itemsLookupRef = useRef({});
   itemsLookupRef.current = itemsLookup;
@@ -132,7 +124,7 @@ export const useTransferListState = (): useTransferListStateReturn => {
     if (leftCheckedItems.length) {
       leftCheckedItems.forEach((item) => (nextCheckedList[item.id] = false));
       setCheckedList({ ...checkedList, ...nextCheckedList });
-      setSourceItems(not(sourceItems, leftCheckedItems));
+      setSourceItems(excludeCommonItems(sourceItems, leftCheckedItems));
       setTargetItems([...targetItems, ...leftCheckedItems]);
     }
   };
@@ -143,7 +135,7 @@ export const useTransferListState = (): useTransferListStateReturn => {
     if (rightCheckedItems.length) {
       rightCheckedItems.forEach((item) => (nextCheckedList[item.id] = false));
       setCheckedList({ ...checkedList, ...nextCheckedList });
-      setTargetItems(not(targetItems, rightCheckedItems));
+      setTargetItems(excludeCommonItems(targetItems, rightCheckedItems));
       setSourceItems([...sourceItems, ...rightCheckedItems]);
     }
   };

@@ -107,52 +107,50 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
-            <>
-              <InfiniteScroll
-                initialLoad={false}
-                pageStart={0}
-                loadMore={() => {
-                  onFetchMore({ keyword });
-                }}
-                // hasMoreItems may be null (using fixed data), in that case infinite scroll will be 'disabled'
-                hasMore={Boolean(hasMoreItems)}
-                loader={
-                  <Box key={0} display="flex" justifyContent="center" m={1}>
-                    <CircularProgress size={16} />
-                  </Box>
-                }
-                useWindow={false}
-                getScrollParent={() => listRef.current}
-              >
-                {items.map((item, i) => (
-                  <ListItemButton
-                    disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
-                    key={item.id}
-                    role="listitem"
-                    onClick={(e) => onItemClick(item, e)}
-                  >
-                    {!disabled && (
-                      <ListItemIcon>
-                        {inProgressIds.includes(item.id) ? (
-                          <CircularProgress size={42} />
-                        ) : (
-                          <Checkbox
-                            checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
-                            tabIndex={-1}
-                            disableRipple
-                          />
-                        )}
-                      </ListItemIcon>
-                    )}
-                    <ListItemText
-                      primary={item.title}
-                      secondary={item.subtitle}
-                      primaryTypographyProps={{ noWrap: true, title: item.title }}
-                    />
-                  </ListItemButton>
-                ))}
-              </InfiniteScroll>
-            </>
+            <InfiniteScroll
+              initialLoad={false}
+              pageStart={0}
+              loadMore={() => {
+                onFetchMore({ keyword });
+              }}
+              // hasMoreItems may be null (using fixed data), in that case infinite scroll will be 'disabled'
+              hasMore={Boolean(hasMoreItems)}
+              loader={
+                <Box key={0} display="flex" justifyContent="center" m={1}>
+                  <CircularProgress size={16} />
+                </Box>
+              }
+              useWindow={false}
+              getScrollParent={() => listRef.current}
+            >
+              {items.map((item, i) => (
+                <ListItemButton
+                  disabled={disabled || inProgressIds.includes(item.id) || disabledItems?.[item.id]}
+                  key={item.id}
+                  role="listitem"
+                  onClick={(e) => onItemClick(item, e)}
+                >
+                  {!disabled && (
+                    <ListItemIcon>
+                      {inProgressIds.includes(item.id) ? (
+                        <CircularProgress size={42} />
+                      ) : (
+                        <Checkbox
+                          checked={(checkedList[item.id] && !disabledItems?.[item.id]) ?? false}
+                          tabIndex={-1}
+                          disableRipple
+                        />
+                      )}
+                    </ListItemIcon>
+                  )}
+                  <ListItemText
+                    primary={item.title}
+                    secondary={item.subtitle}
+                    primaryTypographyProps={{ noWrap: true, title: item.title }}
+                  />
+                </ListItemButton>
+              ))}
+            </InfiniteScroll>
           )
         ) : (
           emptyStateMessage && <EmptyState title={emptyStateMessage} />

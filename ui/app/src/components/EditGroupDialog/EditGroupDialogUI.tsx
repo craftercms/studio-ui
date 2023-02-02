@@ -40,7 +40,7 @@ import {
   validateGroupNameMinLength,
   validateRequiredField
 } from '../GroupManagement/utils';
-import { not } from '../TransferList/utils';
+import { excludeCommonItems } from '../TransferList/utils';
 
 const translations = defineMessages({
   confirmHelperText: {
@@ -251,7 +251,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                     inProgressIds,
                     isAllChecked: sourceItemsAllChecked,
                     onCheckAllClicked: (items, checked) => {
-                      onCheckAllClicked(not(items, targetItems), checked);
+                      onCheckAllClicked(excludeCommonItems(items, targetItems), checked);
                     },
                     onFilter: onFilterUsers,
                     onFetchMore: onFetchMoreUsers,
