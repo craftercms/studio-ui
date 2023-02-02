@@ -40,6 +40,13 @@
 
   const onSetDirty = (value) => {
     CStudioAdminConsole.isDirty = value;
+
+    // Update close/cancel button, when dirty => cancel, when not dirty => close
+    const cancelBtn = document.getElementById('contentTypeEditorCancelBtn');
+    if (cancelBtn) {
+      cancelBtn.value = CMgs.format(langBundle, value ? 'cancel' : 'close');
+    }
+
     window.top.postMessage(
       {
         type: 'CONTENT_TYPES_ON_SUBMITTING_OR_PENDING_CHANGES_MESSAGE',
@@ -221,7 +228,8 @@
                 // render save bar
                 CStudioAdminConsole.CommandBar.render([
                   {
-                    label: CMgs.format(langBundle, 'cancel'),
+                    label: CMgs.format(langBundle, 'close'),
+                    id: 'contentTypeEditorCancelBtn',
                     class: 'btn-default',
                     fn: function () {
                       if (CStudioAdminConsole.isDirty) {
@@ -341,6 +349,7 @@
                           }
                         });
                       }
+
                       var validation = _self.componentsValidation(formDef);
                       var istemplate = _self.templateValidation(formDef);
 
@@ -409,7 +418,7 @@
                                 text: formatMessage(words.save),
                                 handler: function () {
                                   this.destroy();
-                                  saveFn();
+                                  saveFn(type);
                                 },
                                 isDefault: false
                               }
