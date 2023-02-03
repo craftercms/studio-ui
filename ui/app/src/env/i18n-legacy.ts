@@ -1354,7 +1354,7 @@ export const itemSuccessMessages = defineMessages({
   itemPublishedNow: {
     id: 'item.publishedNow',
     defaultMessage:
-      '{count, plural, one {The selected item has been published to {environment}. It will be visible shortly} other {The selected items have been published to {environment}. They will be visible soon}}'
+      '{count, plural, one {The selected item has been published to {environment}. It will be visible soon} other {The selected items have been published to {environment}. They will be visible soon}}'
   },
   itemRequestedToPublishNow: {
     id: 'item.requestedToPublishNow',
