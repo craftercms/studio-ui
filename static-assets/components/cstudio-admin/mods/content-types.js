@@ -391,45 +391,25 @@
                       } else {
                         // if there are no errors, check for templateError (that has different dialog)
                         if (!istemplate.flagTemplateError) {
-                          var dialogEl = document.getElementById('errTemplates');
-                          if (dialogEl) {
-                            dialogEl.parentNode.removeChild(dialogEl);
-                          }
-                          var dialog = new YAHOO.widget.SimpleDialog('errTemplates', {
-                            width: '400px',
-                            fixedcenter: true,
-                            visible: false,
-                            draggable: false,
-                            close: false,
-                            modal: true,
-                            text: formatMessage(contentTypesMessages.noTemplateAssoc),
-                            icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-                            constraintoviewport: true,
-                            buttons: [
-                              {
-                                text: formatMessage(contentTypesMessages.continueEditing),
-                                handler: function () {
-                                  this.destroy();
-                                },
-                                isDefault: false
-                              },
-                              {
-                                text: formatMessage(words.save),
-                                handler: function () {
-                                  this.destroy();
-                                  saveFn(type);
-                                },
-                                isDefault: false
-                              }
-                            ]
-                          });
-
-                          dialog.setHeader(CMgs.format(formsLangBundle, 'cancelDialogHeader'));
-                          dialog.render(document.body);
-                          dialogEl = document.getElementById('errTemplates');
-                          dialogEl.dialog = dialog;
-                          dialogEl.className += ' studioDialog';
-                          dialogEl.dialog.show();
+                          let unmount;
+                          const elem = document.createElement('div');
+                          CrafterCMSNext.render(elem, 'NoTemplateDialog', {
+                            open: true,
+                            type,
+                            onSave: () => {
+                              saveFn(type);
+                              unmount();
+                            },
+                            onTemplateCreated: (templateUrl) => {
+                              console.log('created templateUrl', templateUrl);
+                            },
+                            onTemplateSelected: (templateUrl) => {
+                              console.log('selected templateUrl', templateUrl);
+                            },
+                            onStay: () => {
+                              unmount();
+                            }
+                          }).then((done) => (unmount = done.unmount));
                         } else {
                           // otherwise, save
                           saveFn(type);
