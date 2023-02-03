@@ -216,6 +216,7 @@ export const components = {
   NewContentDialog: lazy(() => import('../components/NewContentDialog')),
   NewRemoteRepositoryDialog: lazy(() => import('../components/NewRemoteRepositoryDialog')),
   NewRemoteRepositoryForm: lazy(() => import('../components/NewRemoteRepositoryForm')),
+  NoTemplateDialog: lazy(() => import('../components/NoTemplateDialog')),
   NonReactWidget: lazy(() => import('../components/NonReactWidget')),
   PackageDetailsDialog: lazy(() => import('../components/PackageDetailsDialog')),
   PaddingModeSwitchListItem: lazy(() => import('../components/PaddingModeSwitchListItem')),

@@ -161,6 +161,7 @@ export * from './MultiChoiceSaveButton';
 export * from './NewContentDialog';
 export * from './NewRemoteRepositoryDialog';
 export * from './NewRemoteRepositoryForm';
+export * from './NoTemplateDialog';
 export * from './NonReactWidget';
 export * from './PackageDetailsDialog';
 export * from './PaddingModeSwitchListItem';

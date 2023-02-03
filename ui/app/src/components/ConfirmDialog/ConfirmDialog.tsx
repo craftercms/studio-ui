@@ -15,50 +15,11 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { useOnClose } from '../../hooks/useOnClose';
-import { ConfirmDialogProps, ConfirmDialogStateClassKey, ConfirmDialogStateStyles } from './utils';
+import { ConfirmDialogProps } from './utils';
 import ConfirmDialogContainer from './ConfirmDialogContainer';
 import { Dialog } from '@mui/material';
-
-const useStyles = makeStyles<ConfirmDialogStateStyles, ConfirmDialogStateClassKey>()(
-  (_theme, { dialog, dialogImage, dialogBody, dialogTitle, dialogFooter } = {} as ConfirmDialogStateStyles) => ({
-    dialog: {
-      '& .MuiPaper-root': {
-        borderRadius: '20px'
-      },
-      ...dialog
-    },
-    dialogImage: {
-      paddingBottom: '35px',
-      ...dialogImage
-    },
-    dialogBody: {
-      textAlign: 'center',
-      padding: '40px 20px 0 !important',
-      ...dialogBody
-    },
-    dialogTitle: {
-      paddingBottom: '5px',
-      ...dialogTitle
-    },
-    dialogFooter: {
-      borderTop: 'none',
-      display: 'flex',
-      flexDirection: 'column',
-      padding: '25px 40px 35px',
-      '& button': {
-        fontWeight: 600,
-        letterSpacing: '0.46px'
-      },
-      '& > :not(:first-child)': {
-        marginTop: '10px',
-        marginLeft: 0
-      },
-      ...dialogFooter
-    }
-  })
-);
+import { useStyles } from './styles';
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
   const { classes } = useStyles(props.styles);
