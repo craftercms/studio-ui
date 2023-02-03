@@ -90,6 +90,16 @@ const useStyles = makeStyles()((theme) => ({
   },
   itemSkeletonText: {
     height: '20px'
+  },
+  errorState: {
+    height: 'calc(100% - 65px)'
+  },
+  sampleErrorState: {
+    maxWidth: '50%',
+    margin: '0 auto',
+    '& p': {
+      wordBreak: 'break-word'
+    }
   }
 }));
 
