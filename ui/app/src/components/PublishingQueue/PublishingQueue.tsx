@@ -29,7 +29,6 @@ import TablePagination from '@mui/material/TablePagination';
 import EmptyState from '../EmptyState/EmptyState';
 import Typography from '@mui/material/Typography';
 import HighlightOffIcon from '@mui/icons-material/HighlightOffRounded';
-import Spinner from '../Spinner/Spinner';
 import RefreshIcon from '@mui/icons-material/RefreshRounded';
 import Button from '@mui/material/Button';
 import { alpha } from '@mui/material/styles';
@@ -41,6 +40,7 @@ import ConfirmDropdown from '../ConfirmDropdown';
 import { publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import { LoadingState } from '../LoadingState';
 
 const messages = defineMessages({
   selectAll: {
@@ -447,7 +447,7 @@ function PublishingQueue(props: PublishingQueueProps) {
         <ApiResponseErrorState error={apiState.errorResponse} />
       ) : (
         <div className={classes.queueList}>
-          {packages === null && isFetchingPackages && <Spinner />}
+          {packages === null && isFetchingPackages && <LoadingState />}
           {packages && renderPackages()}
           {packages !== null && packages.length === 0 && (
             <div className={classes.empty}>

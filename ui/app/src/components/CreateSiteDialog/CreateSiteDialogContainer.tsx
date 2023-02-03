@@ -49,7 +49,6 @@ import Button from '@mui/material/Button';
 import EmptyState from '../EmptyState';
 import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
-import Spinner from '../Spinner';
 import DialogFooter from '../DialogFooter';
 import PrimaryButton from '../PrimaryButton';
 import { useStyles } from './styles';
@@ -601,7 +600,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
             <ApiResponseErrorState classes={{ root: classes.errorPaperRoot }} error={apiState.errorResponse} />
           ) : (
             <div className={classes.loading}>
-              <Spinner background="none" />
+              <LoadingState />
             </div>
           )}
           {site.selectedView !== 0 && (

@@ -310,7 +310,6 @@ export const components = {
   SitesGrid: lazy(() => import('../components/SitesGrid')),
   SitesGridSkeleton: lazy(() => import('../components/SitesGrid/SitesGridSkeleton')),
   SnackbarCloseButton: lazy(() => import('../components/SnackbarCloseButton')),
-  Spinner: lazy(() => import('../components/Spinner')),
   SplitButton: lazy(() => import('../components/SplitButton')),
   StoreProvider: lazy(() => import('../components/StoreProvider')),
   Suspencified: lazy(() => import('../components/Suspencified')),
