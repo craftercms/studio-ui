@@ -1027,8 +1027,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'de', {
   jobsError: 'Fehler beim Laden der Jobs.',
   cancelDeploymentError: 'Fehler beim Versuch, das Deployment abzubrechen.',
   saveDateError: 'Das Datumsfeld konnte nicht gespeichert werden. Bitte kontaktieren Sie Ihren Systemadministrator.',
-  contentTypeModifiedWarn:
-    'Der Content-Typ wurde bearbeitet. Sind Sie sicher, dass Sie Ihre Änderungen verwerfen möchten?',
+  contentTypeModifiedWarn: 'Der Inhaltstyp wurde geändert. Möchten Sie Ihre Änderungen wirklich verwerfen?',
   noPathSetError:
     'Der Pfad für die Data Source {DATASOURCENAME} ist ungültig. Bitte kontaktieren Sie Ihren Systemadministrator.',
 

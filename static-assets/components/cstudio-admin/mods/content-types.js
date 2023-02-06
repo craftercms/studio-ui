@@ -211,6 +211,16 @@
         CStudioAdminConsole.CommandBar.hide();
       },
 
+      updateFormDefProp: function (propName, value, reloadPropExplorer) {
+        const typeProps = CStudioAdminConsole.selectedFormDef.properties;
+        const prop = typeProps.find((prop) => prop.name === propName);
+        prop.value = value;
+
+        if (reloadPropExplorer) {
+          this.renderContentTypeTools(this.config);
+        }
+      },
+
       openExistingItemRender: function (contentType) {
         var _self = this;
 
@@ -233,32 +243,14 @@
                     class: 'btn-default',
                     fn: function () {
                       if (CStudioAdminConsole.isDirty) {
-                        CStudioAuthoring.Operations.showSimpleDialog(
-                          'error-dialog',
-                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                        CStudioAuthoring.Utils.showConfirmDialog(
                           CMgs.format(langBundle, 'notification'),
                           CMgs.format(langBundle, 'contentTypeModifiedWarn'),
-                          [
-                            {
-                              text: CMgs.format(formsLangBundle, 'yes'),
-                              handler: function () {
-                                onSetDirty(false);
-                                _self.renderWorkarea();
-                                this.destroy();
-                                CStudioAdminConsole.CommandBar.hide();
-                              },
-                              isDefault: false
-                            },
-                            {
-                              text: CMgs.format(formsLangBundle, 'no'),
-                              handler: function () {
-                                this.destroy();
-                              },
-                              isDefault: false
-                            }
-                          ],
-                          YAHOO.widget.SimpleDialog.ICON_WARN,
-                          'studioDialog'
+                          () => {
+                            // Revert state
+                            onSetDirty(false);
+                            _self.openExistingItemRender(CStudioAdminConsole.contentTypeSelected);
+                          }
                         );
                       } else {
                         _self.closeEditor();
@@ -349,6 +341,7 @@
                           }
                         });
                       }
+
                       var validation = _self.componentsValidation(formDef);
                       var istemplate = _self.templateValidation(formDef);
 
@@ -397,14 +390,19 @@
                             open: true,
                             type,
                             onSave: () => {
+                              _self.updateFormDefProp('no-template-required', 'true', type === 'save');
                               saveFn(type);
                               unmount();
                             },
                             onTemplateCreated: (templateUrl) => {
-                              console.log('created templateUrl', templateUrl);
+                              _self.updateFormDefProp('display-template', templateUrl, type === 'save');
+                              saveFn(type);
+                              unmount();
                             },
                             onTemplateSelected: (templateUrl) => {
-                              console.log('selected templateUrl', templateUrl);
+                              _self.updateFormDefProp('display-template', templateUrl, type === 'save');
+                              saveFn(type);
+                              unmount();
                             },
                             onStay: () => {
                               unmount();

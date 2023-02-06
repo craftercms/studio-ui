@@ -977,7 +977,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'es', {
   cancelDeploymentError: 'Error al cancelar la implementación.',
   saveDateError:
     'No se puede guardar el campo Fecha / Hora. Por favor, póngase en contacto con el administrador del sistema.',
-  contentTypeModifiedWarn: 'Se ha modificado el tipo de contenido, ¿está seguro de que desea abandonar los cambios?',
+  contentTypeModifiedWarn: 'Se ha modificado el tipo de contenido, ¿está seguro de que desea descartar los cambios?',
   noPathSetError:
     'El campo de ruta del origen de datos {DATASOURCENAME} no está configurado correctamente. Por favor contacte a su administrador.',
 

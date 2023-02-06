@@ -944,7 +944,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   jobsError: '작업을로드하지 못했습니다.',
   cancelDeploymentError: '배포를 취소하지 못했습니다.',
   saveDateError: '날짜 / 시간 필드를 저장할 수 없습니다. 시스템 관리자에게 문의하십시오.',
-  contentTypeModifiedWarn: '콘텐츠 유형이 수정되었습니다. 변경 사항을 취소 하시겠습니까',
+  contentTypeModifiedWarn: '콘텐츠 유형이 수정되었습니다. 변경 사항을 취소하시겠습니까?',
   noPathSetError: '{DATASOURCENAME} 데이터 소스의 경로 필드가 올바르게 구성되지 않았습니다. 관리자에게 문의하십시오.',
 
   add: '더하다',
