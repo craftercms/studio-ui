@@ -33,24 +33,39 @@ import { useState } from 'react';
 import { MediaItem } from '../../models';
 
 export function NoTemplateDialogContainer(props: NoTemplateDialogContainerProps) {
-  const { type, classes, imageUrl = questionGraphicUrl, onTemplateCreated, onTemplateSelected, onStay, onSave } = props;
+  const {
+    type,
+    classes,
+    imageUrl = questionGraphicUrl,
+    onTemplateCreated,
+    onTemplateSelected,
+    onStay,
+    onSave,
+    onCancel
+  } = props;
   const [browseDialogOpen, setBrowseDialogOpen] = useState(false);
   const dispatch = useDispatch();
 
   const onCreateTemplate = () => {
     const templateCreatedEvent = 'templateCreated';
+    const closeCreateFileDialogEvent = 'closeCreateFileDialogEvent';
 
     dispatch(
       showCreateFileDialog({
         path: '/templates/web',
         type: 'template',
-        onCreated: batchActions([closeCreateFileDialog(), dispatchDOMEvent({ id: templateCreatedEvent })])
+        onCreated: batchActions([closeCreateFileDialog(), dispatchDOMEvent({ id: templateCreatedEvent })]),
+        onClosed: dispatchDOMEvent({ id: closeCreateFileDialogEvent })
       })
     );
 
     createCustomDocumentEventListener(templateCreatedEvent, (response) => {
       const { fileName, path } = response;
       onTemplateCreated(`${path}/${fileName}`);
+    });
+
+    createCustomDocumentEventListener(templateCreatedEvent, () => {
+      onCancel?.();
     });
   };
 
@@ -90,7 +105,10 @@ export function NoTemplateDialogContainer(props: NoTemplateDialogContainerProps)
       <BrowseFilesDialog
         path="/templates/web"
         open={browseDialogOpen}
-        onClose={() => setBrowseDialogOpen(false)}
+        onClose={() => {
+          setBrowseDialogOpen(false);
+          onCancel?.();
+        }}
         onSuccess={(template: MediaItem) => {
           setBrowseDialogOpen(false);
           onTemplateSelected(template.path);

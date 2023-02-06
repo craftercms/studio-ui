@@ -24,6 +24,7 @@ export interface NoTemplateDialogProps {
   onTemplateCreated(templateUrl: string): void;
   onTemplateSelected(templateUrl: string): void;
   onStay(): void;
+  onCancel?(): void;
 }
 
 export interface NoTemplateDialogContainerProps extends Omit<NoTemplateDialogProps, 'open'> {

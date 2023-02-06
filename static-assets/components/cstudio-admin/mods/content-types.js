@@ -406,6 +406,9 @@
                             },
                             onStay: () => {
                               unmount();
+                            },
+                            onCancel: () => {
+                              unmount();
                             }
                           }).then((done) => (unmount = done.unmount));
                         } else {
