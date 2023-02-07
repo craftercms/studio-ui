@@ -255,7 +255,6 @@ export * from './SiteToolsPanel';
 export * from './SitesGrid';
 export * from './SitesGrid/SitesGridSkeleton';
 export * from './SnackbarCloseButton';
-export * from './Spinner';
 export * from './SplitButton';
 export * from './StoreProvider';
 export * from './Suspencified';
