@@ -39,7 +39,7 @@ export function LegacyConcierge() {
       const hostToGuest$ = getHostToGuestBus();
       const subscription = hostToGuest$.pipe(filter((action) => action.type === reloadRequest.type)).subscribe(() => {
         // @ts-ignore
-        CStudioAuthoring.Operations.refreshPreview();
+        CStudioAuthoring.Operations.refreshPreview?.();
       });
 
       const updateGuest = ({ contentTO: item }: { contentTO: LegacyItem }) => {
