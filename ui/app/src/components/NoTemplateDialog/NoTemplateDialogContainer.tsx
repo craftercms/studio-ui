@@ -26,7 +26,7 @@ import SecondaryButton from '../SecondaryButton';
 import { NoTemplateDialogContainerProps } from './utils';
 import { closeCreateFileDialog, showCreateFileDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { batchActions, dispatchDOMEvent, editTemplate } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import BrowseFilesDialog from '../BrowseFilesDialog';
 import { useState } from 'react';
@@ -54,7 +54,11 @@ export function NoTemplateDialogContainer(props: NoTemplateDialogContainerProps)
       showCreateFileDialog({
         path: '/templates/web',
         type: 'template',
-        onCreated: batchActions([closeCreateFileDialog(), dispatchDOMEvent({ id: templateCreatedEvent })]),
+        onCreated: batchActions([
+          closeCreateFileDialog(),
+          dispatchDOMEvent({ id: templateCreatedEvent }),
+          editTemplate()
+        ]),
         onClosed: dispatchDOMEvent({ id: closeCreateFileDialogEvent })
       })
     );
