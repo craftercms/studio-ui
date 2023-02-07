@@ -68,7 +68,7 @@ export function NoTemplateDialogContainer(props: NoTemplateDialogContainerProps)
       onTemplateCreated(`${path}/${fileName}`);
     });
 
-    createCustomDocumentEventListener(templateCreatedEvent, () => {
+    createCustomDocumentEventListener(closeCreateFileDialogEvent, () => {
       onCancel?.();
     });
   };
