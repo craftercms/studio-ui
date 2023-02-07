@@ -1349,27 +1349,27 @@ export const itemSuccessMessages = defineMessages({
   itemDeleted: {
     id: 'item.delete',
     defaultMessage:
-      '{count, plural, one {The selected item is being deleted and will be removed shortly} other {The selected items are being deleted and will be removed shortly}}'
+      '{count, plural, one {The selected item is being deleted and will be removed soon} other {The selected items are being deleted and will be removed soon}}'
   },
   itemPublishedNow: {
     id: 'item.publishedNow',
     defaultMessage:
-      '{count, plural, one {The selected item has been pushed to {environment}. It will be visible shortly} other {The selected items has been pushed to {environment}. Them will be visible shortly}}'
+      '{count, plural, one {The selected item has been published to {environment}. It will be visible soon} other {The selected items have been published to {environment}. They will be visible soon}}'
   },
   itemRequestedToPublishNow: {
     id: 'item.requestedToPublishNow',
     defaultMessage:
-      '{count, plural, one {The selected item has been requested to be pushed to {environment}} other {The selected items has been requested to be pushed to {environment}}}'
+      '{count, plural, one {The selected item has been requested to be published to {environment}} other {The selected items have been requested to be published to {environment}}}'
   },
   itemRequestedToSchedulePublish: {
     id: 'item.requestedToSchedulePublish',
     defaultMessage:
-      '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
+      '{count, plural, one {The selected item has been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
   },
   itemSchedulePublished: {
     id: 'item.schedulePublished',
     defaultMessage:
-      '{count, plural, one {The selected item have been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
+      '{count, plural, one {The selected item has been scheduled to go {environment}} other {The selected items have been scheduled to go {environment}}}'
   },
   itemCreated: {
     id: 'item.created',
