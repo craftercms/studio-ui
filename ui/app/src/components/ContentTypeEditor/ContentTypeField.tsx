@@ -24,9 +24,12 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import translations from './translations';
 import Button from '@mui/material/Button';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { FIELD_DROPPABLE_TYPE } from './utils';
 
 export interface ContentTypeFieldProps {
   field: ContentTypeFieldType;
+  sectionId: string;
 }
 
 function SingleField(props: ContentTypeFieldProps) {
@@ -56,7 +59,8 @@ function SingleField(props: ContentTypeFieldProps) {
 }
 
 function RepeatField(props: ContentTypeFieldProps) {
-  const { name, fields } = props.field;
+  const { field, sectionId } = props;
+  const { name, fields } = field;
   const sx = getStyles();
   const { formatMessage } = useIntl();
 
@@ -65,11 +69,22 @@ function RepeatField(props: ContentTypeFieldProps) {
       <Typography sx={{ mb: 1 }}>
         <strong>{formatMessage(translations.repeat)}</strong>: {name}
       </Typography>
-      {Object.values(fields).map((field) => (
-        <React.Fragment key={field.name}>
-          <ContentTypeField field={field} />
-        </React.Fragment>
-      ))}
+      <Droppable droppableId={sectionId} type={FIELD_DROPPABLE_TYPE + '-test'}>
+        {(provided, snapshot) => (
+          <div {...provided.droppableProps} ref={provided.innerRef}>
+            {Object.values(fields).map((field, index) => (
+              <Draggable key={field.name} index={index} draggableId={`${sectionId}|${field.name}`}>
+                {(provided, snapshot) => (
+                  <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                    <ContentTypeField field={field} sectionId={`${sectionId}|${field.name}`} />
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
       <Button variant="outlined" fullWidth sx={{ borderStyle: 'dashed !important', borderRadius: '4px' }}>
         <FormattedMessage id="contentTypeEditor.addFields" defaultMessage="Add Fields" />
       </Button>
@@ -78,12 +93,12 @@ function RepeatField(props: ContentTypeFieldProps) {
 }
 
 export function ContentTypeField(props: ContentTypeFieldProps) {
-  const { field } = props;
+  const { field, sectionId } = props;
 
   if (field.type === 'repeat') {
-    return <RepeatField field={field} />;
+    return <RepeatField field={field} sectionId={sectionId} />;
   } else {
-    return <SingleField field={field} />;
+    return <SingleField field={field} sectionId={sectionId} />;
   }
 }
 

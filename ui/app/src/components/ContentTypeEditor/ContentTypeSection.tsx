@@ -25,6 +25,8 @@ import { ContentTypeField as ContentTypeFieldType, LookupTable } from '../../mod
 import { ContentTypeField } from './ContentTypeField';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
+import { FIELD_DROPPABLE_TYPE } from './utils';
 
 export interface ContentTypeSectionProps {
   title: string;
@@ -32,11 +34,12 @@ export interface ContentTypeSectionProps {
   expandByDefault: boolean;
   fields: string[];
   fieldsDefinitions: LookupTable<ContentTypeFieldType>;
+  sectionIndex: number;
   onAddField(): void;
 }
 
 export function ContentTypeSection(props: ContentTypeSectionProps) {
-  const { title, fields, fieldsDefinitions, onAddField } = props;
+  const { title, fields, fieldsDefinitions, sectionIndex, onAddField } = props;
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -51,11 +54,23 @@ export function ContentTypeSection(props: ContentTypeSectionProps) {
         <Typography>{title}</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {fields.map((field) => (
-          <React.Fragment key={field}>
-            <ContentTypeField field={fieldsDefinitions[field]} />
-          </React.Fragment>
-        ))}
+        <Droppable droppableId={`${sectionIndex}`} type={FIELD_DROPPABLE_TYPE}>
+          {(provided, snapshot) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              {fields.map((field, index) => (
+                <Draggable key={field} index={index} draggableId={`${sectionIndex}|${field}`}>
+                  {(provided, snapshot) => (
+                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                      <ContentTypeField field={fieldsDefinitions[field]} sectionId={`${sectionIndex}|${field}`} />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+
         <Button
           variant="outlined"
           fullWidth
