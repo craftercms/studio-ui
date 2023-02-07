@@ -177,11 +177,10 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         error({ response }) {
           if (response.response.code === 7000) {
             setSelectedConfigFileXml('');
-            setLoadingXml(false);
           } else {
             setConfigError(response.response);
-            setLoadingXml(false);
           }
+          setLoadingXml(false);
         }
       });
     }
