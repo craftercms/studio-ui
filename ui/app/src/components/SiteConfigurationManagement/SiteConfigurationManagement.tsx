@@ -175,8 +175,13 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
           setLoadingXml(false);
         },
         error({ response }) {
-          setConfigError(response.response);
-          setLoadingXml(false);
+          if (response.response.code === 7000) {
+            setSelectedConfigFileXml('');
+            setLoadingXml(false);
+          } else {
+            setConfigError(response.response);
+            setLoadingXml(false);
+          }
         }
       });
     }
