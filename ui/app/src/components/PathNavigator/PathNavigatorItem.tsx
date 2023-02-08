@@ -104,7 +104,6 @@ function PathNavigatorItem(props: NavItemProps) {
           sx={{ p: 0.75 }}
           size="small"
           color="primary"
-          className={classes.navItemCheckbox}
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => {
             onItemChecked(item, e.currentTarget.checked);

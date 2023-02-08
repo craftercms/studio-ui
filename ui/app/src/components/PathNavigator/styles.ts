@@ -158,23 +158,6 @@ export const useStyles = makeStyles()((theme) => ({
     paddingLeft: 0,
     marginLeft: 10,
     width: 'auto'
-  },
-  navItemText: {
-    color: theme.palette.mode === 'dark' ? palette.teal.tint : palette.teal.shade,
-    padding: 0,
-    marginRight: 'auto',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    '&.opacity': {
-      opacity: '0.7'
-    },
-    '&.select-mode, &.non-navigable': {
-      color: theme.palette.text.primary
-    }
-  },
-  navItemCheckbox: {
-    padding: '6px'
   }
   // endregion
 }));
