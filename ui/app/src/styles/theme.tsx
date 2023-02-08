@@ -105,6 +105,11 @@ export function createDefaultThemeOptions({ mode }: { mode: ThemeOptions['palett
         defaultProps: {
           variant: 'outlined'
         }
+      },
+      MuiTooltip: {
+        defaultProps: {
+          disableInteractive: true
+        }
       }
     }
   };

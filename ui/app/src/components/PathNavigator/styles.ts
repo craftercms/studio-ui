@@ -37,12 +37,6 @@ export const useStyles = makeStyles()((theme) => ({
     display: 'flex',
     position: 'absolute'
   },
-  itemMenu: {
-    visibility: 'hidden'
-  },
-  itemMenuOver: {
-    visibility: 'visible'
-  },
   headerTitle: {
     flexGrow: 1
   },
@@ -153,36 +147,17 @@ export const useStyles = makeStyles()((theme) => ({
     padding: '0 0 0 5px',
     marginLeft: 15,
     width: 'calc(100% - 15px)',
-    '&.noLeftPadding': {
-      paddingLeft: 0
-    },
     '&:hover': {
       backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
     }
+  },
+  noLeftPadding: {
+    paddingLeft: 0
   },
   currentPathItem: {
     paddingLeft: 0,
     marginLeft: 10,
     width: 'auto'
-  },
-  navItemLevelDescriptor: {},
-  navItemText: {
-    color: theme.palette.mode === 'dark' ? palette.teal.tint : palette.teal.shade,
-    padding: 0,
-    marginRight: 'auto',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    '&.opacity': {
-      opacity: '0.7'
-    },
-    '&.select-mode, &.non-navigable': {
-      color: theme.palette.text.primary
-    }
-  },
-  navItemCheckbox: {
-    padding: '6px',
-    color: theme.palette.primary.main
   }
   // endregion
 }));
