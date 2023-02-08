@@ -66,10 +66,6 @@ export function fetchAll(options?: Partial<PaginationOptions & { keyword?: strin
   );
 }
 
-export function byId(): Observable<User> {
-  return null;
-}
-
 export function enable(username: string): Observable<User>;
 export function enable(usernames: string[]): Observable<User[]>;
 export function enable(usernames: string | string[]): Observable<User | User[]> {
