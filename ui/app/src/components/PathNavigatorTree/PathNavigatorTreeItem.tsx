@@ -143,19 +143,6 @@ const useStyles = makeStyles<void, 'content' | 'labelContainer'>()((theme, _para
   focused: {
     background: 'none !important'
   },
-  optionsWrapper: {
-    top: 0,
-    right: 0,
-    visibility: 'hidden',
-    position: 'absolute',
-    marginLeft: 'auto',
-    display: 'flex',
-    minHeight: '23.5px',
-    alignItems: 'center'
-  },
-  optionsWrapperOver: {
-    visibility: 'visible'
-  },
   loading: {
     display: 'flex',
     alignItems: 'center',
@@ -340,7 +327,8 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
             <ItemDisplay
               styles={{
                 root: {
-                  width: over ? 'calc(100% - 60px)' : '100%',
+                  flex: 1,
+                  minWidth: 0,
                   minHeight: '23.5px'
                 }
               }}
@@ -350,78 +338,74 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
               showPublishingTarget={showPublishingTarget}
               showWorkflowState={showWorkflowState}
             />
-            <section className={cx(classes.optionsWrapper, over && classes.optionsWrapperOver)}>
-              {showItemMenu && onOpenItemMenu && (
-                <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
-                  <IconButton
-                    size="small"
-                    className={classes.iconButton}
-                    data-item-menu
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onOpenItemMenu(e.currentTarget, path);
-                    }}
-                  >
-                    <MoreVertRoundedIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
-              {(Boolean(children.length) || showFilter) && (
-                <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
-                  <IconButton
-                    size="small"
-                    className={classes.iconButton}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onClearKeywords();
-                      onFilterButtonClick();
-                    }}
-                  >
-                    <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </section>
-          </section>
-          {showFilter && (
-            <>
-              <section className={classes.filterSection}>
-                <SearchBar
-                  autoFocus
-                  onClick={(e) => e.stopPropagation()}
-                  onChange={(keyword) => {
-                    setKeyword(keyword);
-                    onFilterChange(keyword, path);
-                  }}
-                  keyword={keyword}
-                  placeholder={formatMessage(translations.filter)}
-                  onActionButtonClick={(e, input) => {
-                    e.stopPropagation();
-                    onClearKeywords();
-                    input.focus();
-                  }}
-                  showActionButton={keyword && true}
-                  classes={{
-                    root: cx(classes.searchRoot, props.classes?.searchRoot),
-                    inputInput: cx(classes.searchInput, props.classes?.searchInput),
-                    actionIcon: cx(classes.searchCloseIcon, props.classes?.searchCleanButton)
-                  }}
-                />
+            {over && showItemMenu && onOpenItemMenu && (
+              <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
                 <IconButton
                   size="small"
+                  className={classes.iconButton}
+                  data-item-menu
                   onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onOpenItemMenu(e.currentTarget, path);
+                  }}
+                >
+                  <MoreVertRoundedIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {over && (showFilter || Boolean(children.length)) && (
+              <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
+                <IconButton
+                  size="small"
+                  className={classes.iconButton}
+                  onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     onClearKeywords();
-                    setShowFilter(false);
+                    onFilterButtonClick();
                   }}
-                  className={cx(classes.searchCloseButton, props.classes?.searchCloseButton)}
                 >
-                  <CloseIconRounded />
+                  <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
                 </IconButton>
-              </section>
-            </>
+              </Tooltip>
+            )}
+          </section>
+          {showFilter && (
+            <section className={classes.filterSection}>
+              <SearchBar
+                autoFocus
+                onClick={(e) => e.stopPropagation()}
+                onChange={(keyword) => {
+                  setKeyword(keyword);
+                  onFilterChange(keyword, path);
+                }}
+                keyword={keyword}
+                placeholder={formatMessage(translations.filter)}
+                onActionButtonClick={(e, input) => {
+                  e.stopPropagation();
+                  onClearKeywords();
+                  input.focus();
+                }}
+                showActionButton={keyword && true}
+                classes={{
+                  root: cx(classes.searchRoot, props.classes?.searchRoot),
+                  inputInput: cx(classes.searchInput, props.classes?.searchInput),
+                  actionIcon: cx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+                }}
+              />
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClearKeywords();
+                  setShowFilter(false);
+                }}
+                className={cx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+              >
+                <CloseIconRounded />
+              </IconButton>
+            </section>
           )}
         </>
       }
