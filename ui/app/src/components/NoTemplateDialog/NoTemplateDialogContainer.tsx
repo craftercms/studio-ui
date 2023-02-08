@@ -92,8 +92,10 @@ export function NoTemplateDialogContainer(props: NoTemplateDialogContainerProps)
         <PrimaryButton onClick={onSave} fullWidth>
           {type === 'save' ? (
             <FormattedMessage id="noTemplateDialog.saveAndClose" defaultMessage="Template not required, save" />
-          ) : (
+          ) : type === 'saveAndClose' ? (
             <FormattedMessage id="noTemplateDialog.save" defaultMessage="Template not required, save & close" />
+          ) : (
+            <FormattedMessage id="noTemplateDialog.save" defaultMessage="Template not required, save & minimize" />
           )}
         </PrimaryButton>
         <PrimaryButton onClick={onCreateTemplate} fullWidth>

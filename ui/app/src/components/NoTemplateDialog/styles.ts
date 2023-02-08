@@ -14,21 +14,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from 'react';
-import NoTemplateDialogContainer from './NoTemplateDialogContainer';
-import Dialog from '@mui/material/Dialog';
-import { useStyles } from './styles';
-import { NoTemplateDialogProps } from './utils';
+import { makeStyles } from 'tss-react/mui';
 
-export function NoTemplateDialog(props: NoTemplateDialogProps) {
-  const { open, ...rest } = props;
-  const { classes } = useStyles();
-
-  return (
-    <Dialog open={open} maxWidth="xs" className={classes.dialog}>
-      <NoTemplateDialogContainer classes={classes} {...rest} />
-    </Dialog>
-  );
-}
-
-export default NoTemplateDialog;
+export const useStyles = makeStyles()((_theme) => ({
+  dialog: {
+    '& .MuiPaper-root': {
+      borderRadius: '20px'
+    }
+  },
+  dialogImage: {
+    paddingBottom: '35px'
+  },
+  dialogBody: {
+    textAlign: 'center',
+    padding: '40px 20px 0 !important'
+  },
+  dialogTitle: {
+    paddingBottom: '5px'
+  },
+  dialogFooter: {
+    borderTop: 'none',
+    display: 'flex',
+    flexDirection: 'column',
+    padding: '25px 40px 35px',
+    '& button': {
+      fontWeight: 600,
+      letterSpacing: '0.46px'
+    },
+    '& > :not(:first-child)': {
+      marginTop: '10px',
+      marginLeft: 0
+    }
+  }
+}));
