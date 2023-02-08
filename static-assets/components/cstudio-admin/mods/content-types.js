@@ -390,7 +390,7 @@
                             open: true,
                             type,
                             onSave: () => {
-                              _self.updateFormDefProp('no-template-required', 'true', type === 'save');
+                              _self.updateFormDefProp('no-template-required', 'true', type !== 'saveAndClose');
                               saveFn(type);
                               unmount();
                             },
