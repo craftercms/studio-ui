@@ -88,7 +88,8 @@ const useStyles = makeStyles()(() => ({
     textOverflow: 'ellipsis'
   },
   itemText: {
-    wordBreak: 'break-word'
+    textOverflow: 'ellipsis',
+    overflow: 'hidden'
   }
 }));
 
@@ -178,7 +179,7 @@ export function SelectionList(props: SelectionListProps) {
                   </ListItemIcon>
                 )}
                 <ListItemText id={labelId}>
-                  <Typography variant="subtitle1" className={classes.itemText}>
+                  <Typography variant="subtitle1" className={classes.itemText} title={item.label}>
                     {item.label}
                   </Typography>
                   {(item.stateMap.submitted || item.stateMap.scheduled) && (
@@ -240,7 +241,7 @@ export function SelectionList(props: SelectionListProps) {
                       </Typography>
                     </Box>
                   )}
-                  <Typography variant="body2" color="textSecondary" className={classes.itemText}>
+                  <Typography variant="body2" color="textSecondary" className={classes.itemText} title={item.path}>
                     {item.path}
                   </Typography>
                 </ListItemText>
