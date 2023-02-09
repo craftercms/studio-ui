@@ -86,6 +86,10 @@ const useStyles = makeStyles()(() => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis'
+  },
+  itemText: {
+    textOverflow: 'ellipsis',
+    overflow: 'hidden'
   }
 }));
 
@@ -175,7 +179,9 @@ export function SelectionList(props: SelectionListProps) {
                   </ListItemIcon>
                 )}
                 <ListItemText id={labelId}>
-                  <Typography variant="subtitle1">{item.label}</Typography>
+                  <Typography variant="subtitle1" className={classes.itemText} title={item.label}>
+                    {item.label}
+                  </Typography>
                   {(item.stateMap.submitted || item.stateMap.scheduled) && (
                     <Box display="flex" alignItems="center">
                       <ItemStateIcon displayTooltip={false} className={classes.stateScheduledIcon} item={item} />
@@ -235,7 +241,7 @@ export function SelectionList(props: SelectionListProps) {
                       </Typography>
                     </Box>
                   )}
-                  <Typography variant="body2" color="textSecondary">
+                  <Typography variant="body2" color="textSecondary" className={classes.itemText} title={item.path}>
                     {item.path}
                   </Typography>
                 </ListItemText>
