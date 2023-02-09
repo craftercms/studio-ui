@@ -386,30 +386,112 @@
                         if (!istemplate.flagTemplateError) {
                           let unmount;
                           const elem = document.createElement('div');
-                          CrafterCMSNext.render(elem, 'NoTemplateDialog', {
+
+                          const React = craftercms.libs.React;
+                          const createElement = React.createElement;
+                          const PrimaryButton = craftercms.components.PrimaryButton;
+                          const SecondaryButton = craftercms.components.SecondaryButton;
+
+                          const saveButton = createElement(
+                            PrimaryButton,
+                            {
+                              fullWidth: true,
+                              onClick: () => {
+                                _self.updateFormDefProp('no-template-required', 'true', type !== 'saveAndClose');
+                                saveFn(type);
+                                unmount();
+                              }
+                            },
+                            type === 'save'
+                              ? formatMessage(contentTypesMessages.templateNotRequiredSave)
+                              : type === 'saveAndClose'
+                              ? formatMessage(contentTypesMessages.templateNotRequiredSaveAndClose)
+                              : formatMessage(contentTypesMessages.templateNotRequiredSaveAndMinimize)
+                          );
+
+                          const customEventId = 'createFileDialogEventId';
+                          const createTemplateButton = createElement(
+                            PrimaryButton,
+                            {
+                              fullWidth: true,
+                              onClick: () => {
+                                unmount();
+                                CrafterCMSNext.system.store.dispatch({
+                                  type: 'SHOW_CREATE_FILE_DIALOG',
+                                  payload: {
+                                    path: '/templates/web',
+                                    type: 'template',
+                                    onCreated: {
+                                      type: 'BATCH_ACTIONS',
+                                      payload: [
+                                        {
+                                          type: 'DISPATCH_DOM_EVENT',
+                                          payload: { id: customEventId, type: 'onCreated' }
+                                        },
+                                        { type: 'CLOSE_CREATE_FILE_DIALOG' }
+                                      ]
+                                    }
+                                  }
+                                });
+
+                                CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
+                                  const { fileName, path } = response;
+                                  const templateUrl = `${path}/${fileName}`;
+
+                                  CStudioAuthoring.Operations.openCodeEditor({
+                                    path: templateUrl,
+                                    contentType,
+                                    mode: 'ftl',
+                                    onSuccess: () => {
+                                      _self.updateFormDefProp('display-template', templateUrl, type !== 'saveAndClose');
+                                      saveFn(type);
+                                    },
+                                    onClose: () => {
+                                      // When closing, update the template (since template is already created) and save,
+                                      // but do not close/minimize the editor.
+                                      _self.updateFormDefProp('display-template', templateUrl, true);
+                                      saveFn('save');
+                                    }
+                                  });
+                                });
+                              }
+                            },
+                            formatMessage(contentTypesMessages.createATemplate)
+                          );
+
+                          const chooseTemplateButton = createElement(
+                            PrimaryButton,
+                            {
+                              fullWidth: true,
+                              onClick: () => {
+                                CStudioAuthoring.Operations.openBrowseFilesDialog({
+                                  path: '/templates/web',
+                                  onSuccess: ({ path }) => {
+                                    _self.updateFormDefProp('display-template', path, type !== 'saveAndClose');
+                                    saveFn(type);
+                                    unmount();
+                                  },
+                                  onClose: () => unmount()
+                                });
+                              }
+                            },
+                            formatMessage(contentTypesMessages.chooseExistingTemplate)
+                          );
+
+                          const stayButton = createElement(
+                            SecondaryButton,
+                            {
+                              fullWidth: true,
+                              onClick: () => unmount()
+                            },
+                            formatMessage(contentTypesMessages.stayEditing)
+                          );
+
+                          CrafterCMSNext.render(elem, 'AlertDialog', {
                             open: true,
-                            type,
-                            onSave: () => {
-                              _self.updateFormDefProp('no-template-required', 'true', type !== 'saveAndClose');
-                              saveFn(type);
-                              unmount();
-                            },
-                            onTemplateCreated: (templateUrl) => {
-                              _self.updateFormDefProp('display-template', templateUrl, type === 'save');
-                              saveFn(type);
-                              unmount();
-                            },
-                            onTemplateSelected: (templateUrl) => {
-                              _self.updateFormDefProp('display-template', templateUrl, type === 'save');
-                              saveFn(type);
-                              unmount();
-                            },
-                            onStay: () => {
-                              unmount();
-                            },
-                            onCancel: () => {
-                              unmount();
-                            }
+                            title: formatMessage(contentTypesMessages.missingTemplateTitle),
+                            body: formatMessage(contentTypesMessages.missingTemplateBody),
+                            buttons: [saveButton, createTemplateButton, chooseTemplateButton, stayButton]
                           }).then((done) => (unmount = done.unmount));
                         } else {
                           // otherwise, save

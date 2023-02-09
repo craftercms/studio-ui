@@ -435,6 +435,39 @@ export const contentTypesMessages = defineMessages({
   maxValueError: {
     id: 'contentType.maxSizeError',
     defaultMessage: "Maximum value can't be lower than minimum value"
+  },
+  missingTemplateTitle: {
+    id: 'contentType.missingTemplateTitle',
+    defaultMessage: 'Missing Template'
+  },
+  missingTemplateBody: {
+    id: 'contentType.missingTemplateBody',
+    defaultMessage:
+      'Confirm a template is not required for this content type. Failing to assign a template would cause rendering issues on templated apps.'
+  },
+  templateNotRequiredSave: {
+    id: 'contentType.templateNotRequiredSave',
+    defaultMessage: 'Template not required, save'
+  },
+  templateNotRequiredSaveAndClose: {
+    id: 'contentType.templateNotRequiredSaveAndClose',
+    defaultMessage: 'Template not required, save & close'
+  },
+  templateNotRequiredSaveAndMinimize: {
+    id: 'contentType.templateNotRequiredSaveAndMinimize',
+    defaultMessage: 'Template not required, save & minimize'
+  },
+  createATemplate: {
+    id: 'contentType.createATemplate',
+    defaultMessage: 'Create a template'
+  },
+  chooseExistingTemplate: {
+    id: 'contentType.chooseExistingTemplate',
+    defaultMessage: 'Choose existing template'
+  },
+  stayEditing: {
+    id: 'contentType.stayEditing',
+    defaultMessage: 'Stay & continue editing'
   }
 });
 
