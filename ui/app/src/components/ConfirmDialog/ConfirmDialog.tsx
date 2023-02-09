@@ -15,45 +15,35 @@
  */
 
 import React from 'react';
-import { useOnClose } from '../../hooks/useOnClose';
 import { ConfirmDialogProps } from './utils';
-import ConfirmDialogContainer from './ConfirmDialogContainer';
-import { Dialog } from '@mui/material';
-import { useStyles } from './styles';
+import { AlertDialog } from '../AlertDialog';
+import PrimaryButton from '../PrimaryButton';
+import { useIntl } from 'react-intl';
+import SecondaryButton from '../SecondaryButton';
+import translations from './translations';
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
-  const { classes } = useStyles(props.styles);
-  const {
-    open,
-    disableBackdropClick,
-    disableEnforceFocus,
-    hideBackdrop,
-    maxWidth,
-    disableEscapeKeyDown,
-    onClose,
-    ...rest
-  } = props;
-
-  const onCloseHandler = useOnClose({
-    onClose: onClose,
-    disableBackdropClick: disableBackdropClick,
-    disableEscapeKeyDown: disableEscapeKeyDown
-  });
+  const { onOk, onCancel, disableOkButton, disableCancelButton, ...rest } = props;
+  const { formatMessage } = useIntl();
 
   return (
-    <Dialog
-      open={open}
-      onClose={onCloseHandler}
-      aria-labelledby="confirmDialogTitle"
-      aria-describedby="confirmDialogBody"
-      disableEnforceFocus={disableEnforceFocus}
-      hideBackdrop={hideBackdrop}
-      className={classes.dialog}
-      maxWidth={maxWidth ?? 'xs'}
-      fullWidth
-    >
-      <ConfirmDialogContainer {...rest} classes={classes} />
-    </Dialog>
+    <AlertDialog
+      {...rest}
+      buttons={
+        <>
+          {onOk && (
+            <PrimaryButton onClick={onOk} autoFocus fullWidth size="large" disabled={disableOkButton}>
+              {formatMessage(translations.accept)}
+            </PrimaryButton>
+          )}
+          {onCancel && (
+            <SecondaryButton onClick={onCancel} fullWidth size="large" disabled={disableCancelButton}>
+              {formatMessage(translations.cancel)}
+            </SecondaryButton>
+          )}
+        </>
+      }
+    />
   );
 }
 
