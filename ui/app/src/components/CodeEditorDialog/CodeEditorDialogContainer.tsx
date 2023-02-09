@@ -51,7 +51,7 @@ import useUpToDateRefs from '../../hooks/useUpdateRefs';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen } = props;
+  const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
   const { open, isSubmitting } = useEnhancedDialogContext();
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
@@ -101,6 +101,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           );
           setTimeout(callback);
           getHostToGuestBus().next(reloadRequest());
+          onSuccess?.();
         },
         error({ response }) {
           dispatch(showErrorDialog({ error: response }));

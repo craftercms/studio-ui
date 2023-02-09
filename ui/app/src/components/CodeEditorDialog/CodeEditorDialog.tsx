@@ -34,6 +34,7 @@ export function CodeEditorDialog(props: CodeEditorDialogProps) {
         onMinimize={onMinimize}
         readonly={readonly}
         onFullScreen={props.isFullScreen ? props.onCancelFullScreen : props.onFullScreen}
+        onSuccess={onSuccess}
       />
     </EnhancedDialog>
   );
