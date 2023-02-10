@@ -21,22 +21,20 @@ import useUnmount from '../../hooks/useUnmount';
 import DialogContent from '@mui/material/DialogContent';
 import Typography from '@mui/material/Typography';
 import DialogContentText from '@mui/material/DialogContentText';
-import { getStyles } from './styles';
 import Box from '@mui/material/Box';
 import { DialogFooter } from '../DialogFooter';
 import { nnou } from '../../utils/object';
 
 export function AlertDialogContainer(props: AlertDialogContainerProps) {
-  const { onClosed, body, title, children, imageUrl = questionGraphicUrl, buttons } = props;
-  const sx = getStyles();
+  const { onClosed, body, title, children, imageUrl = questionGraphicUrl, buttons, sxs } = props;
 
   useUnmount(onClosed);
   return (
     <>
-      <DialogContent id="confirmDialogBody" sx={sx.dialogBody}>
-        <Box component="img" src={imageUrl} alt="" sx={sx.dialogImage} />
+      <DialogContent id="alertDialogBody" sx={sxs.body}>
+        {imageUrl && <Box component="img" src={imageUrl} alt="" sx={sxs.image} />}
         {title && (
-          <Typography variant="body1" component="h2" sx={sx.dialogTitle}>
+          <Typography variant="body1" component="h2" sx={sxs.title}>
             {title}
           </Typography>
         )}
@@ -47,7 +45,7 @@ export function AlertDialogContainer(props: AlertDialogContainerProps) {
         )}
         {children}
       </DialogContent>
-      <DialogFooter sx={sx.dialogFooter}>{nnou(buttons) && buttons}</DialogFooter>
+      {nnou(buttons) && <DialogFooter sx={sxs?.footer}>{buttons}</DialogFooter>}
     </>
   );
 }
