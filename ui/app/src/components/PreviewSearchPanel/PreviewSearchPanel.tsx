@@ -19,7 +19,6 @@ import { defineMessages, useIntl } from 'react-intl';
 import List from '@mui/material/List';
 import SearchBar from '../SearchBar/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
 import { getHostToGuestBus } from '../../utils/subjects';
 import {
@@ -32,7 +31,6 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
-import { Resource } from '../../models/Resource';
 import { createLookupTable } from '../../utils/object';
 import { fetchContentInstance } from '../../services/content';
 import { forkJoin, Observable, of } from 'rxjs';
@@ -41,7 +39,6 @@ import { useDispatch } from 'react-redux';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useContentTypeList } from '../../hooks/useContentTypeList';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { useSpreadState } from '../../hooks/useSpreadState';
@@ -49,6 +46,9 @@ import { useSubject } from '../../hooks/useSubject';
 import Pagination from '../Pagination';
 import { getFileNameFromPath } from '../../utils/path';
 import { makeStyles } from 'tss-react/mui';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
+import { EmptyState } from '../EmptyState';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -62,6 +62,10 @@ const translations = defineMessages({
   nextPage: {
     id: 'pagination.nextPage',
     defaultMessage: 'Next page'
+  },
+  noResults: {
+    id: 'previewSearchPanel.noResults',
+    defaultMessage: 'No results found'
   }
 });
 
@@ -72,14 +76,13 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 interface SearchResultsProps {
-  resource: Resource<SearchItem[]>;
+  items: SearchItem[];
   onDragStart(item: SearchItem): void;
   onDragEnd(item: SearchItem): void;
 }
 
 function SearchResults(props: SearchResultsProps) {
-  const { resource, onDragStart, onDragEnd } = props;
-  const items = resource.read();
+  const { items, onDragStart, onDragEnd } = props;
   return (
     <List>
       {items.map((item: SearchItem) => (
@@ -131,17 +134,10 @@ export function PreviewSearchPanel() {
   const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
 
-  const resource = useLogicResource<SearchItem[], { isFetching: Boolean; items: Array<SearchItem> }>(state, {
-    shouldResolve: (data) => Boolean(data) && data.isFetching === false,
-    shouldReject: () => Boolean(error),
-    shouldRenew: (data, resourceArg) => data.isFetching && resourceArg.complete,
-    resultSelector: (data) => data.items,
-    errorSelector: () => error
-  });
-
   const onSearch = useCallback(
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
       setState({ isFetching: true });
+      setError(null);
       search(site, {
         ...initialSearchParameters,
         keywords,
@@ -183,7 +179,7 @@ export function PreviewSearchPanel() {
             }
           },
           error: ({ response }) => {
-            setError(response);
+            setError(response.response);
           }
         });
     },
@@ -259,7 +255,7 @@ export function PreviewSearchPanel() {
           showActionButton={Boolean(keyword)}
         />
       </div>
-      {state.items && (
+      {state.items && !error && (
         <Pagination
           count={state.count}
           rowsPerPage={state.limit}
@@ -268,9 +264,17 @@ export function PreviewSearchPanel() {
           onRowsPerPageChange={onRowsPerPageChange}
         />
       )}
-      <SuspenseWithEmptyState resource={resource}>
-        <SearchResults resource={resource} onDragStart={onDragStart} onDragEnd={onDragEnd} />
-      </SuspenseWithEmptyState>
+      {error ? (
+        <ApiResponseErrorState error={error} />
+      ) : state.isFetching ? (
+        <LoadingState />
+      ) : state.items && state.items.length ? (
+        <SearchResults items={state.items} onDragStart={onDragStart} onDragEnd={onDragEnd} />
+      ) : state.items && state.items.length === 0 ? (
+        <EmptyState title={formatMessage(translations.noResults)} />
+      ) : (
+        <></>
+      )}
     </>
   );
 }
