@@ -90,7 +90,7 @@ export function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDashletGrid
               <FormattedMessage id="awaitingApprovalDashlet.publishingTarget" defaultMessage="Publishing Target" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
-              <FormattedMessage id="awaitingApprovalDashlet.publishingDate" defaultMessage="Publishing Date" />
+              <FormattedMessage defaultMessage="Publishing Date" />
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
               <FormattedMessage id="awaitingApprovalDashlet.lastEditedBy" defaultMessage="Last Edited By" />

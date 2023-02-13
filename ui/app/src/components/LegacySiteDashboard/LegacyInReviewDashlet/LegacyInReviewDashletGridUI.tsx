@@ -84,7 +84,7 @@ export function LegacyInReviewDashletGridUI(props: LegacyInReviewDashletGridUIPr
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
               <Typography variant="subtitle2">
-                <FormattedMessage id="inReviewDashlet.publishingDate" defaultMessage="Publishing Date" />
+                <FormattedMessage defaultMessage="Publishing Date" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">

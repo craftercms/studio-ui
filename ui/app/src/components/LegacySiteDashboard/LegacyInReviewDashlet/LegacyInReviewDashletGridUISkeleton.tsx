@@ -51,22 +51,22 @@ export function LegacyRecentActivityDashletUiSkeleton(props: LegacyRecentActivit
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
-                <FormattedMessage id="recentActivity.publishDate" defaultMessage="Publishing Target" />
+                <FormattedMessage id="common.publishingTarget" defaultMessage="Publishing Target" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
               <Typography variant="subtitle2">
-                <FormattedMessage id="recentActivity.lastEditedBy" defaultMessage="Publishing Date" />
+                <FormattedMessage defaultMessage="Publishing Date" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
-                <FormattedMessage id="recentlyPublished.myLastEdit" defaultMessage="Last Edited By" />
+                <FormattedMessage defaultMessage="Last Edited By" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
-                <FormattedMessage id="recentlyPublished.myLastEdit" defaultMessage="Last Edited" />
+                <FormattedMessage defaultMessage="Last Edited" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="checkbox" />
