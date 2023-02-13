@@ -3878,7 +3878,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@craftercms/ace-adapter@workspace:ui/ace"
   dependencies:
-    ace-builds: ^1.5.3
+    ace-builds: ^1.15.0
     build-if-changed: ^1.5.5
     js-yaml: ^4.1.0
   languageName: unknown
@@ -3933,7 +3933,7 @@ __metadata:
     "@types/react-is": ^17.0.3
     "@types/tinymce": ^4.6.4
     build-if-changed: ^1.5.5
-    jquery: ^3.6.0
+    jquery: ^3.6.3
     js-cookie: ^3.0.1
     npm-run-all: ^4.1.5
     prop-types: ^15.8.1
@@ -3976,7 +3976,7 @@ __metadata:
   dependencies:
     "@types/rimraf": ^3
     build-if-changed: ^1.5.5
-    monaco-editor: 0.33.0
+    monaco-editor: 0.35.0
     monaco-editor-webpack-plugin: ^7.0.1
     npm-run-all: ^4.1.5
     rimraf: ^3.0.2
@@ -4034,7 +4034,7 @@ __metadata:
   dependencies:
     build-if-changed: ^1.5.5
     npm-run-all: ^4.1.5
-    sass: ^1.52.1
+    sass: ^1.58.0
   languageName: unknown
   linkType: soft
 
@@ -4073,28 +4073,28 @@ __metadata:
     "@types/video.js": ^7.3.27
     "@types/zxcvbn": ^4
     "@videojs/vhs-utils": ^2.3.0
-    autosuggest-highlight: ^3.2.1
+    autosuggest-highlight: ^3.3.4
     babel-plugin-react-intl: ^5.1.16
     build-if-changed: ^1.5.5
     clsx: ^1.2.1
     eslint: ^8.3.0
-    fast-xml-parser: ^4.0.12
-    graphiql: ^1.9.9
+    fast-xml-parser: ^4.1.2
+    graphiql: ^1.11.5
     graphiql-explorer: ^0.9.0
-    graphql: ^16.5.0
-    graphql-ws: ^5.5.5
-    highlight.js: ^11.5.1
-    jabber: ^1.4.0
-    jquery: ^3.6.0
+    graphql: ^16.6.0
+    graphql-ws: ^5.11.3
+    highlight.js: ^11.7.0
+    jabber: ^1.5.3
+    jquery: ^3.6.3
     js-cookie: ^3.0.1
-    marked: ^4.0.16
-    moment-timezone: ^0.5.34
+    marked: ^4.2.12
+    moment-timezone: ^0.5.40
     nanoid: ^3.3.4
     ncp: ^2.0.0
     notistack: 2.0.8
     npm-run-all: ^4.1.5
     postcss-normalize: ^10.0.1
-    prettier: ^2.6.2
+    prettier: ^2.8.4
     prop-types: ^15.8.1
     query-string: ^6.14.1
     react: 18.1.0
@@ -4114,7 +4114,7 @@ __metadata:
     rollup: ^2.59.0
     rxjs: ^7.0.0
     slugify: ^1.6.5
-    tss-react: ^3.7.0
+    tss-react: ^3.7.1
     typescript: ^4.1.2
     uppy: ^2.13.8
     video.js: ^7.21.2
@@ -4135,7 +4135,7 @@ __metadata:
     "@rollup/plugin-replace": ^3.0.0
     "@types/node": ^16.11.13
     "@types/rimraf": ^3
-    browserslist: ^4
+    browserslist: ^4.21.5
     build-if-changed: ^1.5.5
     eslint: ^8.3.0
     eslint-config-prettier: ^8.3.0
@@ -4793,11 +4793,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "@graphiql/react@npm:0.4.2"
+"@graphiql/react@npm:^0.10.0":
+  version: 0.10.0
+  resolution: "@graphiql/react@npm:0.10.0"
   dependencies:
-    "@graphiql/toolkit": ^0.6.0
+    "@graphiql/toolkit": ^0.6.1
     codemirror: ^5.65.3
     codemirror-graphql: ^1.3.2
     copy-to-clipboard: ^3.2.0
@@ -4809,20 +4809,20 @@ __metadata:
     graphql: ^15.5.0 || ^16.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 67a04c1c56d14d674f03635aeb53b872ef6ac864edaab0fe48191a43a959f600320109578dbe5a9d02abace54c4ff50f4629fa01297103745cb1eb88e4b3c89a
+  checksum: 1c473f6dbacba617ea6f9c272abbe22aa61643a0ce059835b40bfd368c211bccec806bca24600ba42cf356f02649f062622802cd8afba3bfdd5aae2783935e37
   languageName: node
   linkType: hard
 
-"@graphiql/toolkit@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "@graphiql/toolkit@npm:0.6.0"
+"@graphiql/toolkit@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "@graphiql/toolkit@npm:0.6.1"
   dependencies:
     "@n1ru4l/push-pull-async-iterable-iterator": ^3.1.0
     meros: ^1.1.4
   peerDependencies:
     graphql: ^15.5.0 || ^16.0.0
     graphql-ws: ">= 4.5.0"
-  checksum: 19878d8e3c1ac5f3390b138f866a2f5239decb5da44920ee73817e587726d3fe8294f588f173479ce92e6eb1f538777e99e8ac5e1d78d3430eee0b87572d1724
+  checksum: c3701687f70a643441cc18253beeb2cf79c993f5be0d0d16210da456f0c6abde229b0ff79cc1cc63eccd98f306f918cb8d88f3ad54f0329c52879c9dec0d596c
   languageName: node
   linkType: hard
 
@@ -7533,10 +7533,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ace-builds@npm:^1.5.3":
-  version: 1.5.3
-  resolution: "ace-builds@npm:1.5.3"
-  checksum: 2d379543a5a46a2c121c77271c2f618f1ad385d1b7add085bae1ba65d18443420948272decef49559495ef1b9fa5ec045eb46cc2c5ebc9418362a53928f8cd50
+"ace-builds@npm:^1.15.0":
+  version: 1.15.0
+  resolution: "ace-builds@npm:1.15.0"
+  checksum: fc67d8c4358a3029c1d4caab7fbc5a4b021bd082dbd16684e4a8ab7e77da2cf194e2fac577ac4a6e22e06af8bd306ebb9382ad34c7f028dbea8895081f4ee9ce
   languageName: node
   linkType: hard
 
@@ -8055,12 +8055,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autosuggest-highlight@npm:^3.2.1":
-  version: 3.2.1
-  resolution: "autosuggest-highlight@npm:3.2.1"
+"autosuggest-highlight@npm:^3.3.4":
+  version: 3.3.4
+  resolution: "autosuggest-highlight@npm:3.3.4"
   dependencies:
-    diacritic: 0.0.2
-  checksum: 0d711e536dcc3780b3bd3e18b3dcf7915d17d4eaa8e14238a8622b2247d6f28c4a5ae133fd01dacb1ba1afaebc35ceede4f7ca858db0ec3a0c351280212cdae0
+    remove-accents: ^0.4.2
+  checksum: ec89d69770c65f4a6615d1443307553ca1d1b6d397bce4e2e488610a3c42ffc534b986424c362c84089865922c5713cba94be9fd74ed30e13bd5bbf47162c61d
   languageName: node
   linkType: hard
 
@@ -9782,13 +9782,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"diacritic@npm:0.0.2":
-  version: 0.0.2
-  resolution: "diacritic@npm:0.0.2"
-  checksum: 0242731039aefa2ef4b81cc9a2687ed0f6257d23c1aa78c052aad60f3e3851863e2344fa4c7ead094d59d6086ce5f2581a1f544bfd1c5db90267317acdd02222
-  languageName: node
-  linkType: hard
-
 "didyoumean@npm:^1.2.2":
   version: 1.2.2
   resolution: "didyoumean@npm:1.2.2"
@@ -10865,14 +10858,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.0.12":
-  version: 4.0.12
-  resolution: "fast-xml-parser@npm:4.0.12"
+"fast-xml-parser@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "fast-xml-parser@npm:4.1.2"
   dependencies:
     strnum: ^1.0.5
   bin:
     fxparser: src/cli/cli.js
-  checksum: afb800fdc39d3c53ce0be76dd57afafc5556790a798524c98bdb984af2adc0d35360d05d1360cdb37db3f6de1fa754ae5596f16934c60b490b22ffb47948846d
+  checksum: 6a7d1b17057f8470e70603eddfa75f990625735d068d57ece861d0154ad8d27fda63c2831d07e1ecd7e68e993738b2448925cb9277d8c0ed68009623bbcd63c6
   languageName: node
   linkType: hard
 
@@ -11480,12 +11473,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:^1.9.9":
-  version: 1.9.9
-  resolution: "graphiql@npm:1.9.9"
+"graphiql@npm:^1.11.5":
+  version: 1.11.5
+  resolution: "graphiql@npm:1.11.5"
   dependencies:
-    "@graphiql/react": ^0.4.2
-    "@graphiql/toolkit": ^0.6.0
+    "@graphiql/react": ^0.10.0
+    "@graphiql/toolkit": ^0.6.1
     entities: ^2.0.0
     graphql-language-service: ^5.0.6
     markdown-it: ^12.2.0
@@ -11493,7 +11486,7 @@ __metadata:
     graphql: ^15.5.0 || ^16.0.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: e1eb304e929753f5810db6995f2ee7c407230fe5fcaa2e7a1a22c1c2aada76077f73809893f4285ac0277e7e849a1a5f8cf880266db23a98d352b6d4ef536825
+  checksum: 0bad3d056ba1185aae1020277bb08a5ee75c352f8c659ca092f0cb4f2126a1c176015e7f58ff8fd5f8de8709a8bc3ff9d1b765ca9d2fcc412d67e23d45c862f6
   languageName: node
   linkType: hard
 
@@ -11511,12 +11504,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^5.5.5":
-  version: 5.8.2
-  resolution: "graphql-ws@npm:5.8.2"
+"graphql-ws@npm:^5.11.3":
+  version: 5.11.3
+  resolution: "graphql-ws@npm:5.11.3"
   peerDependencies:
     graphql: ">=0.11 <=16"
-  checksum: 2f7701ffc531f053c47fd42ea1fa4555775195f621f1ff767d668eef41ab1376900c1ef166c0063dbc81aa49a2aabd60becb517b8d1b7bc0b3dd687bd4d319a6
+  checksum: 75ea80702fa027b8d4ff1faba9824b11184fef0946560c535040b79f0f7f56ac7ce42873ea3b34083373ddf3a439cda1e7b7bfae20939ab739330456f4e7776b
   languageName: node
   linkType: hard
 
@@ -11527,10 +11520,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.5.0":
-  version: 16.5.0
-  resolution: "graphql@npm:16.5.0"
-  checksum: a82a926d085818934d04fdf303a269af170e79de943678bd2726370a96194f9454ade9d6d76c2de69afbd7b9f0b4f8061619baecbbddbe82125860e675ac219e
+"graphql@npm:^16.6.0":
+  version: 16.6.0
+  resolution: "graphql@npm:16.6.0"
+  checksum: bf1d9e3c1938ce3c1a81e909bd3ead1ae4707c577f91cff1ca2eca474bfbc7873d5d7b942e1e9777ff5a8304421dba57a4b76d7a29eb19de8711cb70e3c2415e
   languageName: node
   linkType: hard
 
@@ -11649,10 +11642,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"highlight.js@npm:^11.5.1":
-  version: 11.5.1
-  resolution: "highlight.js@npm:11.5.1"
-  checksum: bff556101d7691c6275ad19318e368fc971cd0621ef3d86222f5373df7d8191a2fc1ffd47f118138cbcf85e5fe91cfeefaecd6184f49a3ec18090955efc9edef
+"highlight.js@npm:^11.7.0":
+  version: 11.7.0
+  resolution: "highlight.js@npm:11.7.0"
+  checksum: 19e3fb8b56f4b361b057a8523b989dfeb6479bbd1e29cec3fac6fa5c78d09927d5fa61b7dba6631fdb57cfdca9b3084aa4da49405ceaf4a67f67beae2ed5b77d
   languageName: node
   linkType: hard
 
@@ -12531,12 +12524,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jabber@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "jabber@npm:1.4.0"
+"jabber@npm:^1.5.3":
+  version: 1.5.3
+  resolution: "jabber@npm:1.5.3"
   bin:
-    jabber: bin/index.js
-  checksum: 18e35b21b4b7193ad23c7ca44894af7b3b9fa9dc91171b66aef0c37786bc0a6267e5bc1f5ed079cad306e538f7b7087e7a18750f8e698c2d287d536bfca0e6a0
+    jabber: build/bin/index.js
+  checksum: 7a4ab48933db345ee64a8ed34478bb0f595950af02806be25f16b167b5d28fe468bb3572972260ecfb9eda51327d3a4b173b574cc29aa3e75c818fa5fb471ca1
   languageName: node
   linkType: hard
 
@@ -13136,10 +13129,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jquery@npm:^3.6.0":
-  version: 3.6.0
-  resolution: "jquery@npm:3.6.0"
-  checksum: 8fd5fef4aa48fd374ec716dd1c1df1af407814a228e15c1260ca140de3a697c2a77c30c54ff1d238b6a3ab4ddc445ddeef9adce6c6d28e4869d85eb9d3951c0e
+"jquery@npm:^3.6.3":
+  version: 3.6.3
+  resolution: "jquery@npm:3.6.3"
+  checksum: 0fd366bdcaa0c84a7a8751ce20f8192290141913978b5059574426d9b01f4365daa675f95aab3eec94fd794d27b08d32078a2236bef404b8ba78073009988ce6
   languageName: node
   linkType: hard
 
@@ -13788,12 +13781,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^4.0.16":
-  version: 4.0.16
-  resolution: "marked@npm:4.0.16"
+"marked@npm:^4.2.12":
+  version: 4.2.12
+  resolution: "marked@npm:4.2.12"
   bin:
     marked: bin/marked.js
-  checksum: c0ef780bf56c9bb49c15b66683e5648410c924c1d725f1489fc3c7dc3bd01194c50d720052bb0282ad7907f472dfdc8fa278acbc7903c5db3be4b83487e0d684
+  checksum: bd551cd61028ee639d4ca2ccdfcc5a6ba4227c1b143c4538f3cde27f569dcb57df8e6313560394645b418b84a7336c07ab1e438b89b6324c29d7d8cdd3102d63
   languageName: node
   linkType: hard
 
@@ -14126,12 +14119,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.34":
-  version: 0.5.37
-  resolution: "moment-timezone@npm:0.5.37"
+"moment-timezone@npm:^0.5.40":
+  version: 0.5.40
+  resolution: "moment-timezone@npm:0.5.40"
   dependencies:
     moment: ">= 2.9.0"
-  checksum: b3fc24848a396ee3801331a4b5511591df0e22241e59f55200a475603f23a8429f01887294c7a0c005dae25b8e4bef20472fbc875ff20080f26fded066559f1a
+  checksum: 6f6be5412b37fd937bb143efe74bf65b2c3f115fd967a6dc13b717a126ed6dd198bff6db6e179d69a089e20ac03ce7622c6b5598dd585005195554487a91b528
   languageName: node
   linkType: hard
 
@@ -14154,10 +14147,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.33.0":
-  version: 0.33.0
-  resolution: "monaco-editor@npm:0.33.0"
-  checksum: f88fd1c9be0d6845436aa92ee7f7bcc49f9e9bf452f73bb5efbbe52e50678d1c2aec4d612a943310f5e2282c1d9fcc41b792b65a5b9008e6054908e7e10311ea
+"monaco-editor@npm:0.35.0":
+  version: 0.35.0
+  resolution: "monaco-editor@npm:0.35.0"
+  checksum: ff86d99add0140a8513fbfdbf31488578d77d0cd85f4071f4399125208ae16c93eb34d72b47fb106de111be0043ba7dacf8a5144174f57d066c56fcd9aa9c8a4
   languageName: node
   linkType: hard
 
@@ -15905,12 +15898,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:>=2.4.0, prettier@npm:^2.6.2":
+"prettier@npm:>=2.4.0":
   version: 2.6.2
   resolution: "prettier@npm:2.6.2"
   bin:
     prettier: bin-prettier.js
   checksum: 48d08dde8e9fb1f5bccdd205baa7f192e9fc8bc98f86e1b97d919de804e28c806b0e6cc685e4a88211aa7987fa9668f30baae19580d87ced3ed0f2ec6572106f
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^2.8.4":
+  version: 2.8.4
+  resolution: "prettier@npm:2.8.4"
+  bin:
+    prettier: bin-prettier.js
+  checksum: c173064bf3df57b6d93d19aa98753b9b9dd7657212e33b41ada8e2e9f9884066bb9ca0b4005b89b3ab137efffdf8fbe0b462785aba20364798ff4303aadda57e
   languageName: node
   linkType: hard
 
@@ -16800,6 +16802,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"remove-accents@npm:^0.4.2":
+  version: 0.4.4
+  resolution: "remove-accents@npm:0.4.4"
+  checksum: 0219a20550f8e6d7ebb47993fc08633c9c10b171d573467671641178de7a00b47ffcdbbf3be323a22c45de8903ac869cc4707dfc5aa5f25b7711e0c9b4daf4f4
+  languageName: node
+  linkType: hard
+
 "renderkid@npm:^3.0.0":
   version: 3.0.0
   resolution: "renderkid@npm:3.0.0"
@@ -17212,16 +17221,16 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"sass@npm:^1.52.1":
-  version: 1.52.1
-  resolution: "sass@npm:1.52.1"
+"sass@npm:^1.58.0":
+  version: 1.58.0
+  resolution: "sass@npm:1.58.0"
   dependencies:
     chokidar: ">=3.0.0 <4.0.0"
     immutable: ^4.0.0
     source-map-js: ">=0.6.2 <2.0.0"
   bin:
     sass: sass.js
-  checksum: a0508c88b149641202e8fb589f731e0cb09a15650128dfee6d0d1ee4a868cb57f1e71575535ccd72f54c5313b684a8beb208d293402ca8d32084ee1709d9f26d
+  checksum: a7219634881d2de6441fb619787fb1a02e3fa0333fb715be26aa335ba49d6bdb4f1105d9df70a80a67200893022b08346745783dc49046095d94fc6e044492d6
   languageName: node
   linkType: hard
 
@@ -18570,9 +18579,9 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"tss-react@npm:^3.7.0":
-  version: 3.7.0
-  resolution: "tss-react@npm:3.7.0"
+"tss-react@npm:^3.7.1":
+  version: 3.7.1
+  resolution: "tss-react@npm:3.7.1"
   dependencies:
     "@emotion/cache": "*"
     "@emotion/serialize": "*"
@@ -18584,7 +18593,7 @@ resolve@^2.0.0-next.3:
   peerDependenciesMeta:
     "@emotion/server":
       optional: true
-  checksum: bd2764d4e1578564b67b9f7d5bc6b81fd5acc3265f44cbacf533e15dcd12bd9cf4df356df9f47755c38363d8db24094fb96cf2fba797d9e12f2bbcac9dc54ae8
+  checksum: beb58baebda01f212c45632f21c6df89156fbce3221aac92cf14cccbf425d034272ce5d880f78f2feb00550dbd322acdf0e376d0c04d718a1d778af07b96bc46
   languageName: node
   linkType: hard
 

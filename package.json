@@ -62,7 +62,7 @@
     "browserslist": "^4.21.5",
     "caniuse-lite": "^1.0.30001451",
     "react-is": "^18.2.0",
-    "@types/react": "18.0.15"
+    "@types/react": "^18.0.28"
   },
   "packageManager": "yarn@3.1.0",
   "scripts": {
@@ -103,6 +103,6 @@
     "yargs": "^15.4.1"
   },
   "dependencies": {
-    "browserslist": "^4"
+    "browserslist": "^4.21.5"
   }
 }
