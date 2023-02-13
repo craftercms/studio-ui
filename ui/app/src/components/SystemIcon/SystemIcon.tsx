@@ -21,6 +21,8 @@ import { components } from '../../utils/constants';
 import { SvgIconProps, Tooltip } from '@mui/material';
 import clsx from 'clsx';
 import { Skeleton } from '@mui/material';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material/styles';
 
 export type SystemIconDescriptor = { id?: string; class?: string; style?: object; content?: string };
 
@@ -29,33 +31,28 @@ export interface SystemIconProps {
   fontIconProps?: IconProps;
   svgIconProps?: SvgIconProps;
   className?: string;
-  style?: object;
+  sx?: SxProps<Theme>;
+  /** @deprecated Use `sx` prop */
+  style?: SxProps<Theme>;
 }
 
 export function SystemIcon(props: SystemIconProps) {
-  let { icon, className, style } = props;
+  let { icon, className, style, sx = style } = props;
+  const combinedSx = { ...sx, ...icon.style, ...props.svgIconProps?.sx } as SxProps<Theme>;
   if ('id' in icon) {
     const IconComponent = components.get(icon.id) as typeof ErrorRounded;
-    const iconStyle = { ...icon.style, ...style, ...props.svgIconProps?.style };
     const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
     return IconComponent ? (
-      <Suspense fallback={<Skeleton variant="rectangular" width="24px" style={iconStyle} className={iconClassName} />}>
-        <IconComponent {...props.svgIconProps} style={iconStyle} className={iconClassName} />
+      <Suspense fallback={<Skeleton variant="rectangular" width="24px" sx={combinedSx} className={iconClassName} />}>
+        <IconComponent {...props.svgIconProps} sx={combinedSx} className={iconClassName} />
       </Suspense>
     ) : (
       <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
-        <ErrorRounded />
+        <ErrorRounded sx={combinedSx} />
       </Tooltip>
     );
   } else {
-    return (
-      <MuiIcon
-        className={icon.class}
-        children={icon.content}
-        {...props.fontIconProps}
-        style={{ ...icon.style, ...style, ...props.fontIconProps?.style }}
-      />
-    );
+    return <MuiIcon className={icon.class} children={icon.content} {...props.fontIconProps} sx={combinedSx} />;
   }
 }
 

@@ -24,9 +24,8 @@ import Css from '../../icons/Css';
 import ComponentIcon from '../../icons/Component';
 import PageIcon from '../../icons/Page';
 import LevelDescriptorIcon from '../../icons/LevelDescriptor';
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 import * as React from 'react';
-import { ItemDisplayProps } from '../ItemDisplay';
 import ImageIcon from '@mui/icons-material/ImageOutlined';
 import VideoIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
 import CodeRounded from '@mui/icons-material/CodeRounded';
@@ -35,14 +34,13 @@ import TextIcon from '@mui/icons-material/SubjectRounded';
 import FolderIcon from '@mui/icons-material/FolderOpenRounded';
 import TaxonomyIcon from '@mui/icons-material/LocalOfferOutlined';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import clsx from 'clsx';
 import { IntlFormatters, useIntl } from 'react-intl';
 import { messages } from './translations';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 
-export interface ItemTypeIconProps {
+export interface ItemTypeIconProps extends SvgIconProps {
   item: DetailedItem | SandboxItem;
-  classes?: ItemDisplayProps['classes'];
-  className?: string;
+  tooltipProps?: Partial<TooltipProps>;
 }
 
 export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage: IntlFormatters['formatMessage']) {
@@ -54,7 +52,7 @@ export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage:
 }
 
 export function ItemTypeIcon(props: ItemTypeIconProps) {
-  const { item, classes, className } = props;
+  const { item, tooltipProps, ...rest } = props;
   const { formatMessage } = useIntl();
   let TheIcon = UnknownStateIcon;
   switch (item.systemType) {
@@ -132,8 +130,8 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
       break;
   }
   return (
-    <Tooltip title={getItemTypeText(item, formatMessage)}>
-      <TheIcon className={clsx(classes?.root, className)} />
+    <Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage)}>
+      <TheIcon {...rest} />
     </Tooltip>
   );
 }

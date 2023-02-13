@@ -18,7 +18,7 @@ import React, { ChangeEvent } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import { useStyles } from './styles';
-import Header from './PathNavigatorHeader';
+import PathNavigatorHeader from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import PathNavigatorItem from './PathNavigatorItem';
 import PathNavigatorList from './PathNavigatorList';
@@ -31,7 +31,7 @@ import { PathNavigatorStateProps } from './PathNavigator';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { lookupItemByPath } from '../../utils/content';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
-import NavLoader from './NavLoader';
+import PathNavigatorSkeletonList from './PathNavigatorSkeletonList';
 import { ErrorState } from '../ErrorState';
 import { renderErrorState } from '../ErrorState/util';
 import { Pagination } from '../Pagination';
@@ -177,8 +177,8 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         ...(container ? (state.collapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
       }}
     >
-      {/* region Header */}
-      <Header
+      {/* region PathNavigatorHeader */}
+      <PathNavigatorHeader
         icon={icon}
         title={title}
         locale={state.localeCode}
@@ -230,7 +230,9 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             )}
             {/* endregion */}
             {state.isFetching ? (
-              <NavLoader numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit} />
+              <PathNavigatorSkeletonList
+                numOfItems={state.itemsInPath?.length > 0 ? state.itemsInPath.length : state.limit}
+              />
             ) : state.error ? (
               renderErrorState(state.error, { imageUrl: null })
             ) : state.itemsInPath.length === 0 && !Boolean(levelDescriptor) ? (

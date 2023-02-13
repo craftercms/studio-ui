@@ -15,7 +15,7 @@
  */
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
+import { PartialSxRecord } from '../../models/CustomRecord';
 import { MessageDescriptor } from 'react-intl';
 
 export interface KeyboardShortcutsDialogProps extends EnhancedDialogProps {
@@ -24,8 +24,8 @@ export interface KeyboardShortcutsDialogProps extends EnhancedDialogProps {
 }
 
 export type KeyboardShortcutsDialogClassKey = 'categoryTitle' | 'shortcutChip' | 'shortcutsList';
+
 export type KeyboardShortcutsDialogPartialSx = PartialSxRecord<KeyboardShortcutsDialogClassKey>;
-export type KeyboardShortcutsDialogFullSx = FullSxRecord<KeyboardShortcutsDialogClassKey>;
 
 export interface KeyboardShortcutDescriptor {
   label: MessageDescriptor | string;

@@ -32,6 +32,7 @@ import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import { CSSObject as CSSProperties } from 'tss-react';
 import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 
 export type ItemStateIconClassKey =
   | 'root'
@@ -56,8 +57,10 @@ export interface ItemStateIconProps {
   className?: string;
   styles?: ItemStateIconStyles;
   displayTooltip?: boolean;
+  fontSize?: SvgIconProps['fontSize'];
 }
 
+// region makeStyles()
 const useStyles = makeStyles<ItemStateIconStyles, ItemStateIconClassKey>()(
   (
     _theme,
@@ -130,9 +133,10 @@ const useStyles = makeStyles<ItemStateIconStyles, ItemStateIconClassKey>()(
     }
   })
 );
+// endregion
 
 export function ItemStateIcon(props: ItemStateIconProps) {
-  const { item, classes: propClasses, styles, className, displayTooltip = true } = props;
+  const { item, classes: propClasses, styles, className, displayTooltip = true, fontSize } = props;
   const { classes, cx } = useStyles(styles);
   const { Icon, stateSpecificClass } = useMemo(() => {
     if (item.systemType === 'folder') {
@@ -185,13 +189,13 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     item
   ]);
   return Icon === null ? null : item.systemType === 'folder' ? (
-    <Icon className={cx(classes.root, propClasses?.root, className, stateSpecificClass)} />
+    <Icon className={cx(classes.root, propClasses?.root, className, stateSpecificClass)} fontSize={fontSize} />
   ) : (
     <Tooltip
       title={displayTooltip ? getItemStateText(item.stateMap, { user: item.lockOwner }) : ''}
       open={displayTooltip ? void 0 : false}
     >
-      <Icon className={cx(classes.root, propClasses?.root, className, stateSpecificClass)} />
+      <Icon className={cx(classes.root, propClasses?.root, className, stateSpecificClass)} fontSize={fontSize} />
     </Tooltip>
   );
 }

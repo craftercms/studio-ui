@@ -15,6 +15,7 @@
  */
 
 export { default as About } from './About';
+export { default as Asterisk } from './Asterisk';
 export { default as BrokenLink } from './BrokenLink';
 export { default as Component } from './Component';
 export { default as ContentTypeField } from './ContentTypeField';

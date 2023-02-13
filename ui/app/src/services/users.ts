@@ -157,7 +157,7 @@ export function fetchMyRolesBySite(sites?: Site[]): Observable<LookupTable<strin
   );
 }
 
-export function fetchGlobalProperties(): Observable<LookupTable<any>> {
+export function fetchGlobalProperties(): Observable<LookupTable<string>> {
   return get('/studio/api/2/users/me/properties').pipe(pluck('response', 'properties', ''));
 }
 
@@ -167,7 +167,7 @@ export function deleteGlobalProperties(...preferenceKeys: string[]): Observable<
   );
 }
 
-export function fetchSiteProperties(siteId: string): Observable<LookupTable<any>> {
+export function fetchSiteProperties(siteId: string): Observable<LookupTable<string>> {
   return get(`/studio/api/2/users/me/properties?siteId=${siteId}`).pipe(pluck('response', 'properties', siteId));
 }
 

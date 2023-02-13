@@ -164,7 +164,8 @@ export const contentTreeFieldSelected = /*#__PURE__*/ createAction<{ iceProps; s
 export const clearContentTreeFieldSelected = /*#__PURE__*/ createAction('CLEAR_CONTENT_TREE_FIELD_SELECTED');
 export const snackGuestMessage = /*#__PURE__*/ createAction<ValidationResult>('SNACK_GUEST_MESSAGE');
 export const editModeToggleHotkey = /*#__PURE__*/ createAction<{ mode: string }>('EDIT_MODE_TOGGLE_HOTKEY');
-export const hotKey = /*#__PURE__*/ createAction<{ key: string; type: 'keyup' | 'keydown' }>('HOT_KEY');
+export const hotKey =
+  /*#__PURE__*/ createAction<Pick<KeyboardEvent, 'key' | 'type' | 'shiftKey' | 'ctrlKey' | 'metaKey'>>('HOT_KEY');
 export const showEditDialog = /*#__PURE__*/ createAction('SHOW_EDIT_DIALOG');
 export const requestWorkflowCancellationDialog = /*#__PURE__*/ createAction<{
   siteId: string;

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import ViewToolbar from '../ViewToolbar';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { closeToolsPanel, initToolbarConfig, openToolsPanel } from '../../state/actions/preview';
@@ -24,11 +24,10 @@ import Tooltip from '@mui/material/Tooltip';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
 import { renderWidgets } from '../Widget';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { usePreviewGuest } from '../../hooks/usePreviewGuest';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useActiveUser } from '../../hooks/useActiveUser';
-import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
+import useCurrentPreviewItem from '../../hooks/useCurrentPreviewItem';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -52,11 +51,7 @@ export function ToolBar() {
   const user = useActiveUser();
   const userRoles = user.rolesBySite[site];
   const { showToolsPanel, toolbar } = usePreviewState();
-  const guest = usePreviewGuest();
-  const modelId = guest?.modelId;
-  const models = guest?.models;
-  const items = useItemsByPath();
-  const item = items?.[models?.[modelId]?.craftercms.path];
+  const item = useCurrentPreviewItem();
   const uiConfig = useSiteUIConfig();
 
   useEffect(() => {

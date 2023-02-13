@@ -174,7 +174,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                     <FormattedMessage id="editGroupDialog.requiredGroupName" defaultMessage="Group name is required." />
                   ) : validateGroupNameMinLength(group.name) ? (
                     <FormattedMessage
-                      id="editGroupDialog.invalidMinLength"
+                      id="editGroupDialog.minLength"
                       defaultMessage="Min {length} characters."
                       values={{
                         length: GROUP_NAME_MIN_LENGTH
