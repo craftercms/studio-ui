@@ -395,7 +395,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case 'a':
           if (store.getState().dialogs.itemMegaMenu.open) {
             dispatch(closeItemMegaMenu());
-          } else {
+          } else if (upToDateRefs.current.item) {
             let top, left;
             let menuButton = document.querySelector('#previewAddressBarActionsMenuButton');
             if (menuButton) {

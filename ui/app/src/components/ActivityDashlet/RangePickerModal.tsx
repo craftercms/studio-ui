@@ -20,15 +20,16 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import Box from '@mui/material/Box';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { AdapterMoment as DateAdapter } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Stack from '@mui/material/Stack';
-import DateTimePicker from '@mui/lab/DateTimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import React from 'react';
+import React, { useState } from 'react';
+import { Moment } from 'moment-timezone';
 
 interface RangePickerModalProps {
   open: boolean;
@@ -42,6 +43,8 @@ export function RangePickerModal(props: RangePickerModalProps) {
   // Can't ever have data before the release of CrafterCMS 4.0.0
   const minDate = new Date('2022-03-30T00:00:00.000Z');
   const today = new Date();
+  const [fromPickerOpen, setFromPickerOpen] = useState(false);
+  const [toPickerOpen, setToPickerOpen] = useState(false);
   const [{ pickerDateFrom, pickerDateTo }, setState] = useSpreadState({
     openRangePicker: true,
     dateFrom: null,
@@ -64,6 +67,10 @@ export function RangePickerModal(props: RangePickerModalProps) {
       onAccept(pickerDateTo, pickerDateFrom);
     }
   };
+  const openFromPicker = () => setFromPickerOpen(true);
+  const closeFromPicker = () => setFromPickerOpen(false);
+  const openToPicker = () => setToPickerOpen(true);
+  const closeToPicker = () => setToPickerOpen(false);
   return (
     <Dialog open={open} onClose={onClose} aria-labelledby="rangePickerModalTitle">
       <DialogTitle id="rangePickerModalTitle">
@@ -71,25 +78,47 @@ export function RangePickerModal(props: RangePickerModalProps) {
       </DialogTitle>
       <DialogContent>
         <Box sx={{ pt: 1 }}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider dateAdapter={DateAdapter}>
             <Stack direction="row" spacing={1}>
               <DateTimePicker
+                open={fromPickerOpen}
+                onOpen={openFromPicker}
+                onClose={closeFromPicker}
+                onAccept={closeFromPicker}
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
                 minDate={minDate}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    onClick={openFromPicker}
+                    inputProps={{ ...params.inputProps, onChange: (e) => e.preventDefault() }}
+                  />
+                )}
                 value={pickerDateFrom}
-                onChange={(newValue) => {
-                  onDatePickerChange('pickerDateFrom', newValue);
+                onChange={(arg) => {
+                  let newValue: Moment = arg as any;
+                  newValue.isValid() && onDatePickerChange('pickerDateFrom', newValue.toDate());
                 }}
               />
               <DateTimePicker
+                open={toPickerOpen}
+                onOpen={openToPicker}
+                onClose={closeToPicker}
+                onAccept={closeToPicker}
                 maxDate={today}
                 minDate={minDate}
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
-                renderInput={(params) => <TextField {...params} />}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    onClick={openToPicker}
+                    inputProps={{ ...params.inputProps, onChange: (e) => e.preventDefault() }}
+                  />
+                )}
                 value={pickerDateTo}
-                onChange={(newValue) => {
-                  onDatePickerChange('pickerDateTo', newValue);
+                onChange={(arg) => {
+                  let newValue: Moment = arg as any;
+                  newValue.isValid() && onDatePickerChange('pickerDateTo', newValue.toDate());
                 }}
               />
             </Stack>
