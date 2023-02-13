@@ -3828,21 +3828,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@craco/craco@npm:6.4.3":
-  version: 6.4.3
-  resolution: "@craco/craco@npm:6.4.3"
+"@craco/craco@npm:7.0.0":
+  version: 7.0.0
+  resolution: "@craco/craco@npm:7.0.0"
   dependencies:
+    autoprefixer: ^10.4.12
     cosmiconfig: ^7.0.1
     cosmiconfig-typescript-loader: ^1.0.0
-    cross-spawn: ^7.0.0
-    lodash: ^4.17.15
-    semver: ^7.3.2
-    webpack-merge: ^4.2.2
+    cross-spawn: ^7.0.3
+    lodash: ^4.17.21
+    semver: ^7.3.7
+    webpack-merge: ^5.8.0
   peerDependencies:
-    react-scripts: ^4.0.0
+    react-scripts: ^5.0.0
   bin:
-    craco: bin/craco.js
-  checksum: f177f0c15c32cb80ed5c25a62af7e0754268580bfdf2790f48f3d0399ae33288630ddcf3823e3f29b9f0010fef231eb48c91ba0371af6bac75ebc9e0e04b5a01
+    craco: dist/bin/craco.js
+  checksum: d8371d5508a586ea00070d66010e632c8dab2761c2dd51163003e5b4e62e044f5931b081c3d19f02eea187fd970f9ddffeeaefcae004962e63286682e41e86b1
   languageName: node
   linkType: hard
 
@@ -3856,27 +3857,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/classes@npm:2.0.6, @craftercms/classes@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "@craftercms/classes@npm:2.0.6"
+"@craftercms/classes@npm:2.0.7, @craftercms/classes@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@craftercms/classes@npm:2.0.7"
   dependencies:
-    "@craftercms/models": 2.0.6
-    "@craftercms/utils": 2.0.6
+    "@craftercms/models": 2.0.7
+    "@craftercms/utils": 2.0.7
     query-string: ^7.1.0
     url-search-params-polyfill: ^5.0.0
-  checksum: 467087f02940c92edffe3be33372a94959bbe98bf00ef61c2f51349ed139d43eab496c65e112c611a5600cdbb8d2d6c9f724e54855bd86d0ef90d36293afc549
+  checksum: 1f4992f08c5d9660b57eb11b43b4fc85f80027508e991cae701ec558b9cf7a9cfa2371d83a5c7cb77a9c5de6cf48d4c44f3b0fdedadd35fa87ec5b0e9d8b5d8e
   languageName: node
   linkType: hard
 
-"@craftercms/content@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "@craftercms/content@npm:2.0.6"
+"@craftercms/content@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@craftercms/content@npm:2.0.7"
   dependencies:
-    "@craftercms/classes": 2.0.6
-    "@craftercms/models": 2.0.6
-    "@craftercms/utils": 2.0.6
+    "@craftercms/classes": 2.0.7
+    "@craftercms/models": 2.0.7
+    "@craftercms/utils": 2.0.7
     rxjs: ^7.0.0
-  checksum: c0634819b5078db4b14d878a6cff13fb7848a8405506876d83478a2af1a35542faef42cb1993e84b58fefba330c6194d8c09d148b625d84c5514419116f1d0c3
+  checksum: 65518b98c15a591c196bde93efcf5339ab4498c4f2dec82880bad5bc17eef1fd9dfda4fb0df265532b47513e228b4445f10fa71d2e875154da7c29109a71887e
   languageName: node
   linkType: hard
 
@@ -3887,10 +3888,10 @@ __metadata:
     "@babel/cli": ^7.8.4
     "@babel/core": ^7.16.0
     "@babel/preset-typescript": ^7.16.0
-    "@craftercms/classes": ^2.0.6
-    "@craftercms/content": ^2.0.6
-    "@craftercms/ice": ^2.0.6
-    "@craftercms/search": ^2.0.6
+    "@craftercms/classes": ^2.0.7
+    "@craftercms/content": ^2.0.7
+    "@craftercms/ice": ^2.0.7
+    "@craftercms/search": ^2.0.7
     "@craftercms/studio-ui": "workspace:^"
     "@emotion/react": ^11.5.0
     "@emotion/styled": ^11.3.0
@@ -3923,21 +3924,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/ice@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "@craftercms/ice@npm:2.0.6"
+"@craftercms/ice@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@craftercms/ice@npm:2.0.7"
   dependencies:
-    "@craftercms/models": 2.0.6
+    "@craftercms/models": 2.0.7
   peerDependencies:
     react: ^16.8.0 || ^17.0.0
-  checksum: 7a4024dfbe92f4016f4b1b5972b39c04b77fd3919b9c99cc4672e5a8a21823caac8e4e02996161a2dd2822c087c989404297fe439c1c6f15b6a08fe929fc2ffe
+  checksum: 5a1ced90f15bc5f99b38da3b6a86ea196cd546050f832106d85bf6068b0641c8b34ad413dddfde6c251a4d385f0e2f44d083dc4da29fd67ed02677b1296e7cfb
   languageName: node
   linkType: hard
 
-"@craftercms/models@npm:2.0.6":
-  version: 2.0.6
-  resolution: "@craftercms/models@npm:2.0.6"
-  checksum: 95f7440ffa9915dc6ceb94b9bebc2c561370b1ada047991facfab28b7f5c4a0ecde13b9f1c700204af630cae8de14eedf2b54519efef7660ae9a8c575967b0e8
+"@craftercms/models@npm:2.0.7":
+  version: 2.0.7
+  resolution: "@craftercms/models@npm:2.0.7"
+  checksum: 5ce41961ed754451f5cbaa6b3757cb5a8f245d261666d538e4306c77f5be937f1b2ea05d3ef1bc65bf6d509df7b2bf70cc20101ce88f7af4261d38748aa23a35
   languageName: node
   linkType: hard
 
@@ -3956,17 +3957,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/search@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "@craftercms/search@npm:2.0.6"
+"@craftercms/search@npm:^2.0.7":
+  version: 2.0.7
+  resolution: "@craftercms/search@npm:2.0.7"
   dependencies:
-    "@craftercms/classes": 2.0.6
-    "@craftercms/models": 2.0.6
-    "@craftercms/utils": 2.0.6
+    "@craftercms/classes": 2.0.7
+    "@craftercms/models": 2.0.7
+    "@craftercms/utils": 2.0.7
     rxjs: ^7.0.0
     url-search-params-polyfill: ^5.0.0
     uuid: ^3.4.0
-  checksum: c59380e257aa1e609c0e38bd3e2c834d76dbfec44f84f62ed291a77c60e1fba1ddcc9da4bbc8759e75c8e32e85d136edd404abdb8f6505c67add0708835e44f2
+  checksum: 6bb826155bb5115de8b9b812a4e26f0fa2217cf3114fd3f460940054b9e8047f19f31693843c9ed9af4d6fc480be82be9a60a50ed09ef22f331d39d307c6cd23
   languageName: node
   linkType: hard
 
@@ -4016,7 +4017,7 @@ __metadata:
     "@babel/cli": ^7.8.4
     "@babel/core": ^7.16.0
     "@babel/runtime": ^7.17.2
-    "@craco/craco": 6.4.3
+    "@craco/craco": 7.0.0
     "@craftercms/uppy": "workspace:^"
     "@date-io/core": ^1.3.6
     "@date-io/date-fns": ^1.3.11
@@ -4091,7 +4092,7 @@ __metadata:
     tss-react: ^3.7.0
     typescript: ^4.1.2
     uppy: ^2.10.0
-    video.js: ^7.20.0
+    video.js: ^7.21.2
     web-vitals: ^1.0.1
     zxcvbn: ^4.4.2
   languageName: unknown
@@ -4140,10 +4141,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/utils@npm:2.0.6":
-  version: 2.0.6
-  resolution: "@craftercms/utils@npm:2.0.6"
-  checksum: c997fa1af8fd1e5a228ade283ecb164019423b3957da9fe5db0f67aa3fa1ad40ade8ae906dd761cf364423c3036103606bee55f913a4175aaf8bef0212961dd6
+"@craftercms/utils@npm:2.0.7":
+  version: 2.0.7
+  resolution: "@craftercms/utils@npm:2.0.7"
+  checksum: 46392e32d98958de548ccbe332bac34b45be4acda1090e935ffd1d100afb223440d8a433018f91d321699fa4cba540f30ef864cff8b7c4fcbd13f71315871f13
   languageName: node
   linkType: hard
 
@@ -7272,21 +7273,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@videojs/http-streaming@npm:2.14.2":
-  version: 2.14.2
-  resolution: "@videojs/http-streaming@npm:2.14.2"
+"@videojs/http-streaming@npm:2.16.0":
+  version: 2.16.0
+  resolution: "@videojs/http-streaming@npm:2.16.0"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@videojs/vhs-utils": 3.0.5
     aes-decrypter: 3.1.3
     global: ^4.4.0
-    m3u8-parser: 4.7.1
-    mpd-parser: 0.21.1
+    m3u8-parser: 4.8.0
+    mpd-parser: ^0.22.1
     mux.js: 6.0.1
     video.js: ^6 || ^7
   peerDependencies:
     video.js: ^6 || ^7
-  checksum: 917855c1498ba745d8147297516a8cef0800d8caa3024e4af1f7cb5a6cf087ea0387a031dd7ba5b7d515ba37fe671ec61b0330a17e2cc1854cd2a4b5706fb620
+  checksum: 1ee5991b6899ebaec93a869770529c09a55d1cbfc7ad16015fd9b4b5e5824a2e4112ca6adad695dcfbb2da66af3f97e671e5f3e0c976d550183d84b6441a491d
   languageName: node
   linkType: hard
 
@@ -7531,6 +7532,13 @@ __metadata:
   version: 0.7.8
   resolution: "@xmldom/xmldom@npm:0.7.8"
   checksum: 3bae232f9e6e8218a2c4ab4baa0e2afd5d15d070236cd14b36a59261e5bc9ab26ddf919671fd3ed7474552c7528cf659f14993fdb12f26418f568121f8f4385f
+  languageName: node
+  linkType: hard
+
+"@xmldom/xmldom@npm:^0.8.3":
+  version: 0.8.6
+  resolution: "@xmldom/xmldom@npm:0.8.6"
+  checksum: f17ac6d99a971a6aeb831fcfc5cfa86f367664e45815046548814b2deb17ccc421fef4e0d5ba29e66179d112b552f6caa5680064f8e7bd8a389b788a60404c8e
   languageName: node
   linkType: hard
 
@@ -8068,6 +8076,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"autoprefixer@npm:^10.4.12":
+  version: 10.4.13
+  resolution: "autoprefixer@npm:10.4.13"
+  dependencies:
+    browserslist: ^4.21.4
+    caniuse-lite: ^1.0.30001426
+    fraction.js: ^4.2.0
+    normalize-range: ^0.1.2
+    picocolors: ^1.0.0
+    postcss-value-parser: ^4.2.0
+  peerDependencies:
+    postcss: ^8.1.0
+  bin:
+    autoprefixer: bin/autoprefixer
+  checksum: dcb1cb7ae96a3363d65d82e52f9a0a7d8c982256f6fd032d7e1ec311f099c23acfebfd517ff8e96bf93f716a66c4ea2b80c60aa19efd2f474ce434bd75ef7b79
+  languageName: node
+  linkType: hard
+
 "autoprefixer@npm:^10.4.7":
   version: 10.4.7
   resolution: "autoprefixer@npm:10.4.7"
@@ -8520,48 +8546,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4, browserslist@npm:^4.14.5, browserslist@npm:^4.20.2, browserslist@npm:^4.20.3":
-  version: 4.20.3
-  resolution: "browserslist@npm:4.20.3"
+"browserslist@npm:^4.21.5":
+  version: 4.21.5
+  resolution: "browserslist@npm:4.21.5"
   dependencies:
-    caniuse-lite: ^1.0.30001332
-    electron-to-chromium: ^1.4.118
-    escalade: ^3.1.1
-    node-releases: ^2.0.3
-    picocolors: ^1.0.0
+    caniuse-lite: ^1.0.30001449
+    electron-to-chromium: ^1.4.284
+    node-releases: ^2.0.8
+    update-browserslist-db: ^1.0.10
   bin:
     browserslist: cli.js
-  checksum: 1e4b719ac2ca0fe235218a606e8b8ef16b8809e0973b924158c39fbc435a0b0fe43437ea52dd6ef5ad2efcb83fcb07431244e472270177814217f7c563651f7d
-  languageName: node
-  linkType: hard
-
-"browserslist@npm:^4.0.0, browserslist@npm:^4.16.6, browserslist@npm:^4.17.0":
-  version: 4.17.0
-  resolution: "browserslist@npm:4.17.0"
-  dependencies:
-    caniuse-lite: ^1.0.30001254
-    colorette: ^1.3.0
-    electron-to-chromium: ^1.3.830
-    escalade: ^3.1.1
-    node-releases: ^1.1.75
-  bin:
-    browserslist: cli.js
-  checksum: 9b45ec283d7ba1513bd8be6143dadb34a65e8be7f7210b3a2bce947e019184408df6126238e54f8061e9be74362b19d04eaba739b3ee0d5d41d57ac0ae5fe4cd
-  languageName: node
-  linkType: hard
-
-"browserslist@npm:^4.17.5, browserslist@npm:^4.18.1":
-  version: 4.19.1
-  resolution: "browserslist@npm:4.19.1"
-  dependencies:
-    caniuse-lite: ^1.0.30001286
-    electron-to-chromium: ^1.4.17
-    escalade: ^3.1.1
-    node-releases: ^2.0.1
-    picocolors: ^1.0.0
-  bin:
-    browserslist: cli.js
-  checksum: c0777fd483691638fd6801e16c9d809e1d65f6d2b06db2e806654be51045cbab1452a89841a2c5caea2cbe19d621b4f1d391cffbb24512aa33280039ab345875
+  checksum: 9755986b22e73a6a1497fd8797aedd88e04270be33ce66ed5d85a1c8a798292a65e222b0f251bafa1c2522261e237d73b08b58689d4920a607e5a53d56dc4706
   languageName: node
   linkType: hard
 
@@ -8717,10 +8712,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001254, caniuse-lite@npm:^1.0.30001286, caniuse-lite@npm:^1.0.30001332, caniuse-lite@npm:^1.0.30001335":
-  version: 1.0.30001344
-  resolution: "caniuse-lite@npm:1.0.30001344"
-  checksum: 9dba66f796dc98632dced4c5d487d0fad219e137a27c634eec68520f2e598a613e3371b9207e15a078689a629128eca898793e37fc98841821ab481bddad51b9
+"caniuse-lite@npm:^1.0.30001451":
+  version: 1.0.30001451
+  resolution: "caniuse-lite@npm:1.0.30001451"
+  checksum: 48a06a7881093bb4d8a08ed5428f24a1cbdaa544b0a6f0c3614287d4f34b6c853e79a0f608a5bd901c27995f5e951825606fba11e7930251cc422bd61de9d849
   languageName: node
   linkType: hard
 
@@ -9002,7 +8997,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colorette@npm:^1.1.0, colorette@npm:^1.3.0":
+"colorette@npm:^1.1.0":
   version: 1.4.0
   resolution: "colorette@npm:1.4.0"
   checksum: 01c3c16058b182a4ab4c126a65a75faa4d38a20fa7c845090b25453acec6c371bb2c5dceb0a2338511f17902b9d1a9af0cadd8509c9403894b79311032c256c3
@@ -9326,7 +9321,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^7.0.0, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
+"cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3":
   version: 7.0.3
   resolution: "cross-spawn@npm:7.0.3"
   dependencies:
@@ -10082,24 +10077,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-to-chromium@npm:^1.3.830":
-  version: 1.3.843
-  resolution: "electron-to-chromium@npm:1.3.843"
-  checksum: 4adb18cf1c0f3ee8014fe6976c3e9a2c5f05353a9fd9712cf95a578ede66cd3d85106a764b6d0291c81ca31edcd8f5da4a2f7606858a11e31e410c1e6ea3f303
-  languageName: node
-  linkType: hard
-
-"electron-to-chromium@npm:^1.4.118":
-  version: 1.4.140
-  resolution: "electron-to-chromium@npm:1.4.140"
-  checksum: bf06151bdd76dbcf00c97215d0c79479a4d2116e4a1734ee319cf83865ceab56ee834b3f4347bf9c01ae5c0a953fb0b93e2f097c3ed33f6292d03bcb40af651d
-  languageName: node
-  linkType: hard
-
-"electron-to-chromium@npm:^1.4.17":
-  version: 1.4.18
-  resolution: "electron-to-chromium@npm:1.4.18"
-  checksum: 59d8da47d997b35fca63286cc486e84b0b84587e62c632dd22f9c2b98b5c2116fa8ff0ca3b64518f0957a7f3d6812b42459a7301f5e81607b600526e1bb55227
+"electron-to-chromium@npm:^1.4.284":
+  version: 1.4.295
+  resolution: "electron-to-chromium@npm:1.4.295"
+  checksum: 66fff1341d3c94c2ccd1f2a39cffdb92118304f4b949d3194427e7022d6a6bd8c482b5c4afd9dce210117ba20cac01c1a1466089f5a862fe9c563113b86ff829
   languageName: node
   linkType: hard
 
@@ -13727,7 +13708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0":
+"lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -13774,14 +13755,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"m3u8-parser@npm:4.7.1":
-  version: 4.7.1
-  resolution: "m3u8-parser@npm:4.7.1"
+"m3u8-parser@npm:4.8.0":
+  version: 4.8.0
+  resolution: "m3u8-parser@npm:4.8.0"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@videojs/vhs-utils": ^3.0.5
     global: ^4.4.0
-  checksum: 859b5c8701f91687fd9a265a0e188109acaf43f1c99c18f9c256af2bebe0dd6d4f9174991f645f2ddeed6323b90e2a8261c8fa8f73cd865985b6b54fe8baec9b
+  checksum: 850a8c5cacdbdc154d4fa18c79af77fdf45ef4afcb3d8a0507d04e8d9ddb5c0a9d18cb48c8e23be707d007c063038cdeab0d3de23100e5c02050a7aff6e2b2b8
   languageName: node
   linkType: hard
 
@@ -14262,17 +14243,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mpd-parser@npm:0.21.1":
-  version: 0.21.1
-  resolution: "mpd-parser@npm:0.21.1"
+"mpd-parser@npm:0.22.1, mpd-parser@npm:^0.22.1":
+  version: 0.22.1
+  resolution: "mpd-parser@npm:0.22.1"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@videojs/vhs-utils": ^3.0.5
-    "@xmldom/xmldom": ^0.7.2
+    "@xmldom/xmldom": ^0.8.3
     global: ^4.4.0
   bin:
     mpd-to-m3u8-json: bin/parse.js
-  checksum: 5e8cec29c32dab397eefa1c6c5680e88119bafc69adc0766c16c6212a5e5b2ce297a63071cd3e9545621526fc9abdf6bd0c11ffd0349cc4a13da0ec23963acc9
+  checksum: 688e4d6c2353e3e55a9a7841fff263825d92ec44e0d0800e4c9d332fa27f9ffffac201723d9f5793a49813060fd150e9f203f20e840e64f7da2626b49764ba01
   languageName: node
   linkType: hard
 
@@ -14445,24 +14426,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-releases@npm:^1.1.75":
-  version: 1.1.75
-  resolution: "node-releases@npm:1.1.75"
-  checksum: 74028e7d193c9c5986b2f6bb51f4f6405a3f144599bbb19751c81faece52af8eb3f5abac40cbcd11ead44be3f856be125aa71fbb8dd8bf0c7f90caa94179ee51
-  languageName: node
-  linkType: hard
-
-"node-releases@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "node-releases@npm:2.0.1"
-  checksum: b20dd8d4bced11f75060f0387e05e76b9dc4a0451f7bb3516eade6f50499ea7768ba95d8a60d520c193402df1e58cb3fe301510cc1c1ad68949c3d57b5149866
-  languageName: node
-  linkType: hard
-
-"node-releases@npm:^2.0.3":
-  version: 2.0.5
-  resolution: "node-releases@npm:2.0.5"
-  checksum: e85d949addd19f8827f32569d2be5751e7812ccf6cc47879d49f79b5234ff4982225e39a3929315f96370823b070640fb04d79fc0ddec8b515a969a03493a42f
+"node-releases@npm:^2.0.8":
+  version: 2.0.10
+  resolution: "node-releases@npm:2.0.10"
+  checksum: d784ecde25696a15d449c4433077f5cce620ed30a1656c4abf31282bfc691a70d9618bae6868d247a67914d1be5cc4fde22f65a05f4398cdfb92e0fc83cadfbc
   languageName: node
   linkType: hard
 
@@ -18903,6 +18870,20 @@ typescript@^4.1.2:
   languageName: node
   linkType: hard
 
+"update-browserslist-db@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "update-browserslist-db@npm:1.0.10"
+  dependencies:
+    escalade: ^3.1.1
+    picocolors: ^1.0.0
+  peerDependencies:
+    browserslist: ">= 4.21.0"
+  bin:
+    browserslist-lint: cli.js
+  checksum: 12db73b4f63029ac407b153732e7cd69a1ea8206c9100b482b7d12859cd3cd0bc59c602d7ae31e652706189f1acb90d42c53ab24a5ba563ed13aebdddc5561a0
+  languageName: node
+  linkType: hard
+
 "uppy@npm:^2.10.0":
   version: 2.10.0
   resolution: "uppy@npm:2.10.0"
@@ -19106,24 +19087,24 @@ typescript@^4.1.2:
   languageName: node
   linkType: hard
 
-"video.js@npm:^7.20.0":
-  version: 7.20.0
-  resolution: "video.js@npm:7.20.0"
+"video.js@npm:^7.21.2":
+  version: 7.21.2
+  resolution: "video.js@npm:7.21.2"
   dependencies:
     "@babel/runtime": ^7.12.5
-    "@videojs/http-streaming": 2.14.2
+    "@videojs/http-streaming": 2.16.0
     "@videojs/vhs-utils": ^3.0.4
     "@videojs/xhr": 2.6.0
     aes-decrypter: 3.1.3
     global: ^4.4.0
     keycode: ^2.2.0
-    m3u8-parser: 4.7.1
-    mpd-parser: 0.21.1
+    m3u8-parser: 4.8.0
+    mpd-parser: 0.22.1
     mux.js: 6.0.1
     safe-json-parse: 4.0.0
     videojs-font: 3.2.0
-    videojs-vtt.js: ^0.15.3
-  checksum: fa3878acc9c0a6e7791ea0bbfd60fa2c0b847a19e21bd149e566374222a7627ad1a155c953904a17050108cc6e0e2502fadb9d3e083ad9e141b4a7c5a4183c23
+    videojs-vtt.js: ^0.15.4
+  checksum: cd03a79360ccd9472b5a59c6f538c8126921ddee72464e7cc9464a51ba9826f6f8ecd52f7004b48b112b2daa38bc412e118cf0b40c6744675da06c6b97cecfec
   languageName: node
   linkType: hard
 
@@ -19140,6 +19121,15 @@ typescript@^4.1.2:
   dependencies:
     global: ^4.3.1
   checksum: de1a1d3c56ead76925c86ecccb861fd4bbe49f0e70d6d623664c8c971c90e6ee840cfb52b30dbd1557d3afe2c0b92ec2323a49241ac05f1ff1b18195fe5fe691
+  languageName: node
+  linkType: hard
+
+"videojs-vtt.js@npm:^0.15.4":
+  version: 0.15.4
+  resolution: "videojs-vtt.js@npm:0.15.4"
+  dependencies:
+    global: ^4.3.1
+  checksum: 10c6c861621d4314e7d4b60b7bef1afc60f1ac438879f6b3f22e8944d694c8e9dfc809a8187ed72f44e06c39a159044d8fa15e80695b9bf7b9bef99ea2740b70
   languageName: node
   linkType: hard
 
@@ -19336,16 +19326,7 @@ typescript@^4.1.2:
   languageName: node
   linkType: hard
 
-"webpack-merge@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "webpack-merge@npm:4.2.2"
-  dependencies:
-    lodash: ^4.17.15
-  checksum: ce58bc8ab53a3dd5d9a0df65684571349eef53372bf8f224521072110485391335b26ab097c5f07829b88d0c146056944149566e5a953f05997b0fe2cbaf8dd6
-  languageName: node
-  linkType: hard
-
-"webpack-merge@npm:^5.7.3":
+"webpack-merge@npm:^5.7.3, webpack-merge@npm:^5.8.0":
   version: 5.8.0
   resolution: "webpack-merge@npm:5.8.0"
   dependencies:

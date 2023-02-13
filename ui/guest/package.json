@@ -91,10 +91,10 @@
     "build:npm": "run-s clean:npm build:modern create-package-file"
   },
   "dependencies": {
-    "@craftercms/classes": "^2.0.6",
-    "@craftercms/content": "^2.0.6",
-    "@craftercms/ice": "^2.0.6",
-    "@craftercms/search": "^2.0.6",
+    "@craftercms/classes": "^2.0.7",
+    "@craftercms/content": "^2.0.7",
+    "@craftercms/ice": "^2.0.7",
+    "@craftercms/search": "^2.0.7",
     "@craftercms/studio-ui": "workspace:^",
     "@emotion/react": "^11.5.0",
     "@emotion/styled": "^11.3.0",
