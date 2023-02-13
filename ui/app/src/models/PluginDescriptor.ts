@@ -23,11 +23,11 @@ export interface PluginDescriptor {
   // description: string;
   // author: string;
   // logo: string;
-  locales: Record<string, object>;
+  locales?: Record<string, object>;
   // apps: Array<{ route: string; widget: { id: string; configuration: any } }>;
-  widgets: Record<string, WidgetRecord>;
-  scripts: Array<string | object>;
-  stylesheets: Array<string | object>;
+  widgets?: Record<string, WidgetRecord>;
+  scripts?: Array<string | object>;
+  stylesheets?: Array<string | object>;
   // themes: Array<{ id: string; name: string; themeOptions: ThemeOptions[] }>;
 }
 
