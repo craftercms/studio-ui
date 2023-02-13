@@ -47,7 +47,6 @@ export const useStyles = makeStyles()((theme) => ({
   accordion: {
     background: 'none'
   },
-  accordionSummary: {},
   accordionSummaryContent: {
     alignItems: 'center',
     placeContent: 'center space-between',

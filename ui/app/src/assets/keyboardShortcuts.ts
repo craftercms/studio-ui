@@ -45,6 +45,14 @@ const messages = defineMessages({
   reload: {
     id: 'shortcuts.reloadPreview',
     defaultMessage: 'Reload preview'
+  },
+  openForm: {
+    id: 'shortcuts.openForm',
+    defaultMessage: 'Open form for current item'
+  },
+  openItemMegaMenu: {
+    id: 'shortcuts.openItemMegaMenu',
+    defaultMessage: 'Open actions menu for current item'
   }
 });
 
@@ -71,6 +79,14 @@ export const previewKeyboardShortcuts: KeyboardShortcutsCategory[] = [
       {
         label: messages.reload,
         shortcut: 'r'
+      },
+      {
+        label: messages.openForm,
+        shortcut: 'shift+e'
+      },
+      {
+        label: messages.openItemMegaMenu,
+        shortcut: 'a'
       },
       {
         label: messages.showShortcuts,

@@ -21,6 +21,7 @@ import { getItemPublishingTargetText } from '../ItemDisplay/utils';
 import { CSSObject as CSSProperties } from 'tss-react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { useStyles } from './styles';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 
 export type ItemPublishingTargetIconClassKey =
   | 'root'
@@ -35,10 +36,11 @@ export interface ItemPublishingTargetIconProps {
   className?: string;
   styles?: ItemPublishingTargetIconStyles;
   displayTooltip?: boolean;
+  fontSize?: SvgIconProps['fontSize'];
 }
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
-  const { item, classes: propClasses, styles, className, displayTooltip = true } = props;
+  const { item, classes: propClasses, styles, className, displayTooltip = true, fontSize } = props;
   const { classes, cx } = useStyles(styles);
 
   return (
@@ -47,6 +49,7 @@ export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
       open={displayTooltip ? void 0 : false}
     >
       <PublishingTargetIcon
+        fontSize={fontSize}
         className={cx(
           classes.root,
           classes.publishingIcon,

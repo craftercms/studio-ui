@@ -22,9 +22,9 @@ import { CSSObject as CSSProperties } from 'tss-react';
 import palette from '../../styles/palette';
 import Typography, { TypographyProps } from '@mui/material/Typography';
 import { isPreviewable } from '../PathNavigator/utils';
-import ItemStateIcon from '../ItemStateIcon';
-import ItemTypeIcon from '../ItemTypeIcon';
-import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
+import ItemStateIcon, { ItemStateIconProps } from '../ItemStateIcon';
+import ItemTypeIcon, { ItemTypeIconProps } from '../ItemTypeIcon';
+import ItemPublishingTargetIcon, { ItemPublishingTargetIconProps } from '../ItemPublishingTargetIcon';
 import { isInWorkflow } from './utils';
 
 export type ItemDisplayClassKey = 'root' | 'label' | 'labelPreviewable' | 'icon' | 'typeIcon';
@@ -42,6 +42,9 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
   isNavigableFn?: (item: DetailedItem | SandboxItem) => boolean;
   labelComponent?: ElementType;
+  stateIconProps?: Partial<ItemStateIconProps>;
+  publishingTargetIconProps?: Partial<ItemPublishingTargetIconProps>;
+  itemTypeIconProps?: Partial<ItemTypeIconProps>;
 }
 
 const useStyles = makeStyles<ItemDisplayStyles, ItemDisplayClassKey>()(
@@ -51,9 +54,6 @@ const useStyles = makeStyles<ItemDisplayStyles, ItemDisplayClassKey>()(
       alignItems: 'center',
       placeContent: 'left center',
       maxWidth: '100%',
-      '& .MuiSvgIcon-root': {
-        fontSize: '1.1rem'
-      },
       ...root
     },
     label: {
@@ -66,7 +66,7 @@ const useStyles = makeStyles<ItemDisplayStyles, ItemDisplayClassKey>()(
       ...labelPreviewable
     },
     icon: {
-      fontSize: '1rem',
+      fontSize: '1.1rem',
       ...icon
     },
     typeIcon: {
@@ -77,6 +77,7 @@ const useStyles = makeStyles<ItemDisplayStyles, ItemDisplayClassKey>()(
 );
 
 const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) => {
+  // region const { ... } = props;
   const {
     item,
     styles,
@@ -90,8 +91,12 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     isNavigableFn = isPreviewable,
     labelTypographyProps,
     labelComponent = 'span',
+    stateIconProps,
+    publishingTargetIconProps,
+    itemTypeIconProps,
     ...rest
   } = props;
+  // endregion
   const { classes, cx } = useStyles(props.styles);
   if (!item) {
     // Prevents crashing if the item is nullish
@@ -102,11 +107,27 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     <span ref={ref} {...rest} className={cx(classes.root, propClasses?.root, rest?.className)}>
       {/* @see https://github.com/craftercms/craftercms/issues/5442 */}
       {inWorkflow
-        ? showWorkflowState && <ItemStateIcon item={item} className={cx(classes.icon, propClasses?.icon)} />
+        ? showWorkflowState && (
+            <ItemStateIcon
+              {...stateIconProps}
+              item={item}
+              className={cx(classes.icon, propClasses?.icon, stateIconProps?.className)}
+            />
+          )
         : showPublishingTarget && (
-            <ItemPublishingTargetIcon item={item} className={cx(classes.icon, propClasses?.icon)} />
+            <ItemPublishingTargetIcon
+              {...publishingTargetIconProps}
+              item={item}
+              className={cx(classes.icon, propClasses?.icon, publishingTargetIconProps?.className)}
+            />
           )}
-      {showItemType && <ItemTypeIcon item={item} className={cx(classes.icon, propClasses?.icon)} />}
+      {showItemType && (
+        <ItemTypeIcon
+          {...itemTypeIconProps}
+          item={item}
+          className={cx(classes.icon, propClasses?.icon, itemTypeIconProps?.className)}
+        />
+      )}
       <Typography
         noWrap
         component={labelComponent}

@@ -249,8 +249,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   // region Hotkeys
 
   // This requires maintenance as key shortcuts evolve/change.
-  useHotkeys('r,m,e,p,shift+/', (e) => {
-    post(hotKey({ key: e.key, type: 'keydown' }));
+  useHotkeys('a,r,m,e,p,shift+/,shift+e', (e) => {
+    post(hotKey({ key: e.key, type: 'keydown', shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, metaKey: e.metaKey }));
   });
 
   // ICE bypass key

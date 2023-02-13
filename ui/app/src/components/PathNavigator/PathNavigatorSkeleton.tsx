@@ -18,7 +18,7 @@ import * as React from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from './utils';
 import Box from '@mui/material/Box';
-import NavLoader from './NavLoader';
+import PathNavigatorSkeletonList from './PathNavigatorSkeletonList';
 
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
 
@@ -40,7 +40,7 @@ const PathNavigatorSkeleton = React.memo(({ numOfItems = 5, renderBody = false }
       <Skeleton variant="rectangular" width="20px" />
       <Skeleton variant="text" style={{ margin: '0 10px', width: `${rand(40, 70)}%` }} />
     </Box>
-    {renderBody && <NavLoader numOfItems={numOfItems} />}
+    {renderBody && <PathNavigatorSkeletonList numOfItems={numOfItems} />}
   </div>
 ));
 
