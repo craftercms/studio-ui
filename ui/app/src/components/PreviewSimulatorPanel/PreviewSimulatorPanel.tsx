@@ -107,10 +107,12 @@ export function PreviewSimulatorPanel(props: any) {
   const maxWidth = window.innerWidth - toolsPanelWidth;
 
   const devices = useMemo(() => {
-    const _devices = props.devices;
+    let _devices = props.devices;
     if (_devices) {
+      // TODO: Fix bad config crashes if not an array. Show error state?
       if (!Array.isArray(_devices)) {
-        console.log(`[SimulatorPanel] Expected devices to be array but instead got "${typeof _devices}"`);
+        _devices = Array.from(_devices);
+        console.error(`[SimulatorPanel] Expected devices to be array but instead got "${typeof _devices}"`);
       }
       return _devices.map((device) => ({
         ...device,

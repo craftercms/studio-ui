@@ -115,6 +115,7 @@ import EditFormPanel from '../EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
   getComputedEditMode,
+  getNumOfMenuOptionsForItem,
   hasEditAction,
   isItemLockedForMe,
   normalizeModel,
@@ -134,11 +135,13 @@ import { useActiveUser } from '../../hooks/useActiveUser';
 import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { getPathFromPreviewURL, processPathMacros } from '../../utils/path';
+import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';
 import {
+  closeItemMegaMenu,
   closeSingleFileUploadDialog,
   rtePickerActionResult,
   showEditDialog,
+  showItemMegaMenu,
   showRtePickerActions,
   ShowRtePickerActionsPayload,
   showSingleFileUploadDialog,
@@ -179,6 +182,7 @@ import DataSourcesActionsList, { DataSourcesActionsListProps } from '../DataSour
 import { editControllerActionCreator, itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
 import useAuth from '../../hooks/useAuth';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 
 const originalDocDomain = document.domain;
 
@@ -360,7 +364,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     showToolsPanel,
     toolsPanelWidth,
     browseFilesDialogState,
-    onShortCutKeypress(key: string) {
+    onShortCutKeypress(event: KeyboardEvent) {
+      const key = event.key;
       switch (key) {
         case 'e':
           upToDateRefs.current.conditionallyToggleEditMode('all');
@@ -376,6 +381,45 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         case 'r':
           getHostToGuestBus().next(reloadRequest());
+          break;
+        case 'E':
+          dispatch(
+            showEditDialog({
+              site: upToDateRefs.current.siteId,
+              path: upToDateRefs.current.guest.path,
+              readonly: isItemLockedForMe(upToDateRefs.current.item, upToDateRefs.current.user.username),
+              authoringBase: upToDateRefs.current.authoringBase
+            })
+          );
+          break;
+        case 'a':
+          if (store.getState().dialogs.itemMegaMenu.open) {
+            dispatch(closeItemMegaMenu());
+          } else if (upToDateRefs.current.item) {
+            let top, left;
+            let menuButton = document.querySelector('#previewAddressBarActionsMenuButton');
+            if (menuButton) {
+              let anchorRect = menuButton.getBoundingClientRect();
+              top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+              left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+            } else {
+              top = 80;
+              left = (upToDateRefs.current.showToolsPanel ? upToDateRefs.current.toolsPanelWidth : 0) + 20;
+            }
+            let path = upToDateRefs.current.item.path;
+            if (path === '/site/website') {
+              path = withIndex(path);
+            }
+            dispatch(
+              showItemMegaMenu({
+                path: path,
+                anchorReference: 'anchorPosition',
+                anchorPosition: { top, left },
+                loaderItems: getNumOfMenuOptionsForItem(item)
+              })
+            );
+          }
+          break;
       }
     }
   });
@@ -969,7 +1013,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case hotKey.type: {
-          upToDateRefs.current.onShortCutKeypress(payload.key);
+          upToDateRefs.current.onShortCutKeypress(payload);
           break;
         }
         case showEditDialogAction.type: {
@@ -1254,15 +1298,21 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   }, [uiConfig.xml, siteId, rteConfig, dispatch]);
 
   // Host hotkeys
-  useHotkeys('r,e,m,p,shift+/', (e) => {
-    upToDateRefs.current.onShortCutKeypress(e.key);
-  });
+  useHotkeys(
+    'a,r,e,m,p,shift+/,shift+e',
+    (e) => {
+      upToDateRefs.current.onShortCutKeypress(e);
+    },
+    { keyup: true, keydown: false }
+  );
 
   // Guest hotkeys
   useHotkeys(
     'z',
     (e) => {
-      getHostToGuestBus().next(hotKey({ key: e.key, type: e.type as 'keyup' }));
+      getHostToGuestBus().next(
+        hotKey({ key: e.key, type: e.type as 'keyup', shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, metaKey: e.metaKey })
+      );
     },
     { keyup: true, keydown: true }
   );

@@ -19,8 +19,8 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment as DateAdapter } from '@mui/x-date-pickers/AdapterMoment';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -29,7 +29,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import { AuditGridFilterPopoverProps } from './AuditGridFilterPopover';
-import moment from 'moment-timezone';
+import moment, { Moment } from 'moment-timezone';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 
 const translations = defineMessages({
@@ -136,16 +136,16 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
     }
   };
 
-  const onFromDateSelected = (date) => {
-    if (!isNaN(Date.parse(date))) {
-      onFilterChange('dateFrom', date ? moment(date).format() : 'all');
+  const onFromDateSelected = (date: Moment) => {
+    if (date.isValid()) {
+      onFilterChange('dateFrom', date?.format() || 'all');
     }
     setFromDate(date);
   };
 
-  const onToDateSelected = (date) => {
-    if (!isNaN(Date.parse(date))) {
-      onFilterChange('dateTo', date ? moment(date).format() : 'all');
+  const onToDateSelected = (date: Moment) => {
+    if (date.isValid()) {
+      onFilterChange('dateTo', date?.format() || 'all');
     }
     setToDate(date);
   };
@@ -169,7 +169,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
         </IconButton>
       </Box>
       {filterId === 'operationTimestamp' && (
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={DateAdapter}>
           <form noValidate autoComplete="off">
             <Box className={classes.timestampFiltersContainer}>
               <DateTimePicker

@@ -334,8 +334,9 @@ function main(...args) {
       break;
     }
     case 'all': {
+      main('mui-icons');
+      // muiExport();
       studioUI();
-      main('muiicons');
       componentsIndex();
       iconsIndex();
       modelsIndex();

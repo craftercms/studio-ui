@@ -15,18 +15,23 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
+import LookupTable from '../../models/LookupTable';
 
 export const sessionTimeout = /*#__PURE__*/ createAction('SESSION_TIMEOUT');
 
 export const fetchGlobalProperties = /*#__PURE__*/ createAction('FETCH_GLOBAL_PROPERTIES');
 
-export const fetchGlobalPropertiesComplete = /*#__PURE__*/ createAction('FETCH_GLOBAL_PROPERTIES_COMPLETE');
+export const fetchGlobalPropertiesComplete = /*#__PURE__*/ createAction<{ properties: LookupTable<string> }>(
+  'FETCH_GLOBAL_PROPERTIES_COMPLETE'
+);
 
 export const fetchGlobalPropertiesFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_PROPERTIES_FAILED');
 
 export const fetchSiteProperties = /*#__PURE__*/ createAction('FETCH_SITE_PROPERTIES');
 
-export const fetchSitePropertiesComplete = /*#__PURE__*/ createAction('FETCH_SITE_PROPERTIES_COMPLETE');
+export const fetchSitePropertiesComplete = /*#__PURE__*/ createAction<{ properties: LookupTable<string> }>(
+  'FETCH_SITE_PROPERTIES_COMPLETE'
+);
 
 export const fetchSitePropertiesFailed = /*#__PURE__*/ createAction('FETCH_SITE_PROPERTIES_FAILED');
 
@@ -34,7 +39,9 @@ export const deleteProperties = /*#__PURE__*/ createAction<{ properties: string[
   'DELETE_PROPERTIES'
 );
 
-export const deletePropertiesComplete = /*#__PURE__*/ createAction('DELETE_PROPERTIES_COMPLETE');
+export const deletePropertiesComplete = /*#__PURE__*/ createAction<{ properties: LookupTable<string> }>(
+  'DELETE_PROPERTIES_COMPLETE'
+);
 
 export const deletePropertiesFailed = /*#__PURE__*/ createAction('DELETE_PROPERTIES_FAILED');
 

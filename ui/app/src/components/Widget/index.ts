@@ -17,3 +17,5 @@
 export { default } from './Widget';
 
 export * from './Widget';
+
+export * from './renderWidgets';

@@ -56,12 +56,12 @@ export function RecentActivityDashletUiSkeleton(props: RecentActivityDashletUiSk
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width15 ellipsis">
               <Typography variant="subtitle2">
-                <FormattedMessage id="recentActivity.lastEditedBy" defaultMessage="Last Edited By" />
+                <FormattedMessage defaultMessage="Last Edited By" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="width20 ellipsis">
               <Typography variant="subtitle2">
-                <FormattedMessage id="recentlyPublished.myLastEdit" defaultMessage="My Last Edit" />
+                <FormattedMessage defaultMessage="My Last Edit" />
               </Typography>
             </GlobalAppGridCell>
             <GlobalAppGridCell className="checkbox" />

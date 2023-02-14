@@ -40,7 +40,7 @@ import {
   isPdfDocument
 } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
-import { getNumOfMenuOptionsForItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
 import { previewItem } from '../../state/actions/preview';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
@@ -159,7 +159,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const keywordByPath = state?.keywordByPath;
   const totalByPath = state?.totalByPath;
   const childrenByParentPath = state?.childrenByParentPath;
-  const rootItem = itemsByPath[rootPath];
+  const rootItem = lookupItemByPath(rootPath, itemsByPath);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to

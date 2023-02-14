@@ -15,11 +15,13 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
+import TranslationConfig from '../../models/TranslationConfig';
+import { AjaxError } from 'rxjs/ajax';
 
 // region Supported Locales
 
 export const fetchSiteLocales = /*#__PURE__*/ createAction('FETCH_SITE_LOCALES');
-export const fetchSiteLocalesComplete = /*#__PURE__*/ createAction('FETCH_SITE_LOCALES_COMPLETE');
-export const fetchSiteLocalesFailed = /*#__PURE__*/ createAction('FETCH_SITE_LOCALES_FAILED');
+export const fetchSiteLocalesComplete = /*#__PURE__*/ createAction<TranslationConfig>('FETCH_SITE_LOCALES_COMPLETE');
+export const fetchSiteLocalesFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SITE_LOCALES_FAILED');
 
 // endregion

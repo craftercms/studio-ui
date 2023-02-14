@@ -30,4 +30,4 @@ export * from './PathNavigatorSkeletonItem';
 
 export * from './PathNavigatorUI';
 
-export * from './NavLoader';
+export * from './PathNavigatorSkeletonList';

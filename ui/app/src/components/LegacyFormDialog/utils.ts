@@ -16,7 +16,6 @@
 
 import { PropsWithChildren } from 'react';
 import StandardAction from '../../models/StandardAction';
-import { LookupTable } from '../../models';
 
 export interface LegacyFormDialogBaseProps {
   open?: boolean;

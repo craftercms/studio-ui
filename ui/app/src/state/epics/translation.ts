@@ -31,7 +31,7 @@ export default [
       withLatestFrom(state$),
       exhaustMap(([, state]) =>
         fetchSiteLocalesService(state.sites.active).pipe(
-          map(fetchSiteLocalesComplete),
+          map((config) => fetchSiteLocalesComplete(config)),
           catchAjaxError(fetchSiteLocalesFailed)
         )
       )

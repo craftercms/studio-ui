@@ -23,7 +23,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 
-interface HeaderProps {
+export interface PathNavigatorHeaderProps {
   locale: string;
   title: string;
   icon?: SystemIconDescriptor & Partial<{ expandedStyle: {}; collapsedStyle: {} }>;
@@ -36,7 +36,7 @@ interface HeaderProps {
 }
 
 // PathNavigatorHeader
-export function PathNavigatorHeader(props: HeaderProps) {
+export function PathNavigatorHeader(props: PathNavigatorHeaderProps) {
   const { classes, cx } = useStyles();
   const {
     title,
@@ -52,7 +52,7 @@ export function PathNavigatorHeader(props: HeaderProps) {
   return (
     <AccordionSummary
       classes={{
-        root: cx(classes.accordionSummary, className, props.classes?.root),
+        root: cx(className, props.classes?.root),
         content: cx(classes.accordionSummaryContent, props.classes?.content)
       }}
     >

@@ -40,7 +40,12 @@ const epics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(login.type),
-      switchMap((action) => auth.login(action.payload).pipe(map(loginComplete), catchAjaxError(loginFailed)))
+      switchMap((action) =>
+        auth.login(action.payload).pipe(
+          map(() => loginComplete()),
+          catchAjaxError(loginFailed)
+        )
+      )
     ),
   // endregion
   // region loginComplete

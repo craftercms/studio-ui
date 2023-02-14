@@ -113,12 +113,8 @@ export function PreviewAddressBar(props: AddressBarProps) {
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
   const disabled = noSiteSet || !item;
-
-  useEffect(() => {
-    currentUrlPath && setInternalUrl(currentUrlPath);
-  }, [currentUrlPath]);
-
   const dispatch = useDispatch();
+
   const onOptions = (e) => {
     const anchorRect = e.currentTarget.getBoundingClientRect();
     const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
@@ -144,6 +140,10 @@ export function PreviewAddressBar(props: AddressBarProps) {
   const onRefresh = () => {
     getHostToGuestBus().next({ type: reloadRequest.type });
   };
+
+  useEffect(() => {
+    currentUrlPath && setInternalUrl(currentUrlPath);
+  }, [currentUrlPath]);
 
   return (
     <>
@@ -195,7 +195,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
         />
       </Paper>
       <Tooltip title={Boolean(item) ? <FormattedMessage id="words.options" defaultMessage="Options" /> : ''}>
-        <IconButton onClick={onOptions} disabled={!item} size="large">
+        <IconButton onClick={onOptions} disabled={!item} size="large" id="previewAddressBarActionsMenuButton">
           <MoreRounded />
         </IconButton>
       </Tooltip>

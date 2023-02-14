@@ -15,33 +15,19 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
-import CircularProgress from '@mui/material/CircularProgress';
+import List from '@mui/material/List';
+import PathNavigatorSkeletonItem from './PathNavigatorSkeletonItem';
 
-const useStyles = makeStyles<{ background: string }>()((theme, { background } = {} as any) => ({
-  progress: {
-    margin: theme.spacing(2)
-  },
-  center: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    background: background,
-    transform: 'translate(-50%, -50%)'
-  }
-}));
-
-interface SpinnerProps {
-  background?: string;
-}
-
-export function Spinner(props: SpinnerProps) {
-  const { classes } = useStyles({ background: props.background || '#fff' });
+export function PathNavigatorSkeletonList(props: { numOfItems?: number }) {
+  const { numOfItems = 5 } = props;
+  const items = new Array(numOfItems).fill(null);
   return (
-    <div className={classes.center}>
-      <CircularProgress className={classes.progress} />
-    </div>
+    <List component="nav" disablePadding>
+      {items.map((value, i) => (
+        <PathNavigatorSkeletonItem key={i} />
+      ))}
+    </List>
   );
 }
 
-export default Spinner;
+export default PathNavigatorSkeletonList;

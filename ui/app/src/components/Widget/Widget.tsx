@@ -50,7 +50,7 @@ const messages = defineMessages({
   }
 });
 
-const Widget = memo(function (props: WidgetProps) {
+const Widget = memo<WidgetProps>(function (props) {
   const { id, plugin, configuration } = props;
   const record = components.get(id);
   const { formatMessage } = useIntl();
@@ -118,29 +118,5 @@ const Widget = memo(function (props: WidgetProps) {
 });
 
 export { Widget };
-
-export function renderWidgets(
-  widgets: WidgetDescriptor[],
-  options?: Pick<WidgetProps, 'overrideProps' | 'defaultProps'> & {
-    userRoles?: string[];
-  }
-): JSX.Element[] {
-  if (!Array.isArray(widgets)) {
-    return [];
-  }
-  const { userRoles, overrideProps, defaultProps } = options;
-  const mapperFn = (widget, index) => (
-    <Widget key={widget.uiKey ?? index} {...widget} overrideProps={overrideProps} defaultProps={defaultProps} />
-  );
-  return Array.isArray(userRoles)
-    ? widgets
-        .filter(
-          (widget) =>
-            (widget.permittedRoles ?? []).length === 0 ||
-            (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
-        )
-        .map(mapperFn)
-    : widgets.map(mapperFn);
-}
 
 export default Widget;

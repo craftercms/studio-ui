@@ -51,7 +51,10 @@ export function initializeDragSubjects(state$: GuestStateObservable): Observable
     scrolling$ = fromEvent(document, 'scroll').pipe(takeUntil(killSignal$), share());
   }
   return merge(
-    dragover$.pipe(throttleTime(100), map(computedDragOver)),
+    dragover$.pipe(
+      throttleTime(100),
+      map((data) => computedDragOver(data))
+    ),
     scrolling$.pipe(
       throttleTime(200),
       withLatestFrom(state$),

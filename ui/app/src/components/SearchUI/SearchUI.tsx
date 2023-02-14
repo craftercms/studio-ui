@@ -31,7 +31,6 @@ import { translations } from '../Search/translations';
 import TablePagination from '@mui/material/TablePagination';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import Grid from '@mui/material/Grid';
-import Spinner from '../Spinner/Spinner';
 import MediaCard from '../MediaCard/MediaCard';
 import EmptyState from '../EmptyState/EmptyState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
@@ -44,6 +43,7 @@ import ApiResponse from '../../models/ApiResponse';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { UNDEFINED } from '../../utils/constants';
+import { LoadingState } from '../LoadingState';
 
 export interface SearchUIProps {
   selectedPath: string;
@@ -441,9 +441,14 @@ export function SearchUI(props: SearchUIProps) {
           {error ? (
             <ApiResponseErrorState error={error} />
           ) : (
-            <Grid container spacing={3} className={searchResults?.items.length === 0 ? classes.empty : ''}>
+            <Grid
+              container
+              spacing={3}
+              minHeight="100%"
+              className={searchResults?.items.length === 0 ? classes.empty : ''}
+            >
               {isFetching || searchResults === null ? (
-                <Spinner background="inherit" />
+                <LoadingState />
               ) : (
                 <>
                   {searchResults.items.length > 0 ? (

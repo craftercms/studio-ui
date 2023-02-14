@@ -17,29 +17,14 @@
 import { ofType } from 'redux-observable';
 import { storeInitialized } from '../actions/system';
 import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { fetchMyPermissions, fetchMyRolesInSite as fetchMyRolesInSiteService } from '../../services/users';
 import {
-  deleteProperties,
-  fetchGlobalProperties,
-  fetchMyRolesInSite as fetchMyRolesInSiteService,
-  fetchSiteProperties,
-  fetchMyPermissions
-} from '../../services/users';
-import {
-  deleteProperties as deletePropertiesAction,
-  deletePropertiesComplete,
-  deletePropertiesFailed,
-  fetchGlobalProperties as fetchGlobalPropertiesAction,
-  fetchGlobalPropertiesComplete,
-  fetchGlobalPropertiesFailed,
   fetchMyPermissionsInSite,
   fetchMyPermissionsInSiteComplete,
   fetchMyPermissionsInSiteFailed,
   fetchMyRolesInSite,
   fetchMyRolesInSiteComplete,
-  fetchMyRolesInSiteFailed,
-  fetchSiteProperties as fetchSitePropertiesAction,
-  fetchSitePropertiesComplete,
-  fetchSitePropertiesFailed
+  fetchMyRolesInSiteFailed
 } from '../actions/user';
 import { CrafterCMSEpic } from '../store';
 import { changeSite } from '../actions/sites';
@@ -50,7 +35,7 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(storeInitialized.type),
-      switchMap(() => [fetchSitePropertiesAction(), fetchMyRolesInSite(), fetchMyPermissionsInSite()])
+      switchMap(() => [fetchMyRolesInSite(), fetchMyPermissionsInSite()])
     ),
   // endregion
   // region changeSite
@@ -86,41 +71,45 @@ export default [
           catchAjaxError(fetchMyRolesInSiteFailed)
         )
       )
-    ),
+    )
   // endregion
+  // TODO: Site/Global Properties currently not in use...
   // region fetchGlobalPropertiesAction
-  (action$) =>
-    action$.pipe(
-      ofType(fetchGlobalPropertiesAction.type),
-      switchMap(() =>
-        fetchGlobalProperties().pipe(map(fetchGlobalPropertiesComplete), catchAjaxError(fetchGlobalPropertiesFailed))
-      )
-    ),
+  // (action$) =>
+  //   action$.pipe(
+  //     ofType(fetchGlobalPropertiesAction.type),
+  //     switchMap(() =>
+  //       fetchGlobalProperties().pipe(
+  //         map((properties) => fetchGlobalPropertiesComplete({ properties })),
+  //         catchAjaxError(fetchGlobalPropertiesFailed)
+  //       )
+  //     )
+  //   ),
   // endregion
   // region fetchSitePropertiesAction
-  (action$, state$) =>
-    action$.pipe(
-      ofType(fetchSitePropertiesAction.type),
-      withLatestFrom(state$),
-      filter(([, state]) => Boolean(state.sites.active)),
-      switchMap(([, state]) =>
-        fetchSiteProperties(state.sites.active).pipe(
-          map(fetchSitePropertiesComplete),
-          catchAjaxError(fetchSitePropertiesFailed)
-        )
-      )
-    ),
+  // (action$, state$) =>
+  //   action$.pipe(
+  //     ofType(fetchSitePropertiesAction.type),
+  //     withLatestFrom(state$),
+  //     filter(([, state]) => Boolean(state.sites.active)),
+  //     switchMap(([, state]) =>
+  //       fetchSiteProperties(state.sites.active).pipe(
+  //         map((properties) => fetchSitePropertiesComplete({ properties })),
+  //         catchAjaxError(fetchSitePropertiesFailed)
+  //       )
+  //     )
+  //   ),
   // endregion
   // region deletePropertiesAction
-  (action$) =>
-    action$.pipe(
-      ofType(deletePropertiesAction.type),
-      switchMap((action) =>
-        deleteProperties(action.payload.properties, action.payload.siteId).pipe(
-          map(deletePropertiesComplete),
-          catchAjaxError(deletePropertiesFailed)
-        )
-      )
-    )
+  // (action$) =>
+  //   action$.pipe(
+  //     ofType(deletePropertiesAction.type),
+  //     switchMap((action) =>
+  //       deleteProperties(action.payload.properties, action.payload.siteId).pipe(
+  //         map((properties) => deletePropertiesComplete({ properties })),
+  //         catchAjaxError(deletePropertiesFailed)
+  //       )
+  //     )
+  //   )
   // endregion
 ] as CrafterCMSEpic[];
