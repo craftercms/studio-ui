@@ -15,55 +15,10 @@
  */
 
 import * as React from 'react';
-import { AlertDialogProps } from './utils';
+import { AlertDialogProps } from './types';
 import useOnClose from '../../hooks/useOnClose';
-import { Dialog } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
 import AlertDialogContainer from './AlertDialogContainer';
-import { FullSxRecord, PartialSxRecord } from '../../models';
-
-type AlertDialogClassKey = 'root' | 'image' | 'body' | 'title' | 'footer';
-type AlertDialogFullSx = FullSxRecord<AlertDialogClassKey>;
-type AlertDialogPartialSx = PartialSxRecord<AlertDialogClassKey>;
-
-function getStyles(sx?: AlertDialogPartialSx): AlertDialogFullSx {
-  return {
-    root: {
-      '& .MuiPaper-root': {
-        borderRadius: '20px'
-      },
-      ...sx?.root
-    },
-    image: {
-      paddingBottom: '35px',
-      ...sx?.image
-    },
-    body: {
-      textAlign: 'center',
-      padding: '40px 20px 25px !important',
-      ...sx?.body
-    },
-    title: {
-      paddingBottom: '5px',
-      ...sx?.title
-    },
-    footer: {
-      borderTop: 'none !important',
-      display: 'flex',
-      flexDirection: 'column',
-      padding: '0 40px 35px !important',
-      mt: 2,
-      '& button': {
-        fontWeight: 600,
-        letterSpacing: '0.46px'
-      },
-      '& > :not(:first-child)': {
-        marginTop: '10px',
-        marginLeft: 0
-      },
-      ...sx?.footer
-    }
-  };
-}
 
 export function AlertDialog(props: AlertDialogProps) {
   const {
@@ -77,7 +32,6 @@ export function AlertDialog(props: AlertDialogProps) {
     sxs,
     ...rest
   } = props;
-  const sx = getStyles(sxs);
 
   const onCloseHandler = useOnClose({
     onClose: onClose,
@@ -93,11 +47,14 @@ export function AlertDialog(props: AlertDialogProps) {
       aria-describedby="alertDialogBody"
       disableEnforceFocus={disableEnforceFocus}
       hideBackdrop={hideBackdrop}
-      sx={sx.root}
       maxWidth={maxWidth ?? 'xs'}
       fullWidth
+      sx={{
+        '& .MuiPaper-root': { borderRadius: 2.5 },
+        ...sxs?.root
+      }}
     >
-      <AlertDialogContainer {...rest} sxs={sx} />
+      <AlertDialogContainer {...rest} sxs={sxs} />
     </Dialog>
   );
 }

@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { AlertDialogContainerProps } from './utils';
+import { AlertDialogContainerProps } from './types';
 import questionGraphicUrl from '../../assets/question.svg';
 import useUnmount from '../../hooks/useUnmount';
 import DialogContent from '@mui/material/DialogContent';
@@ -27,14 +27,39 @@ import { nnou } from '../../utils/object';
 
 export function AlertDialogContainer(props: AlertDialogContainerProps) {
   const { onClosed, body, title, children, imageUrl = questionGraphicUrl, buttons, sxs } = props;
-
   useUnmount(onClosed);
   return (
     <>
-      <DialogContent id="alertDialogBody" sx={sxs.body}>
-        {imageUrl && <Box component="img" src={imageUrl} alt="" sx={sxs.image} />}
+      <DialogContent
+        id="alertDialogBody"
+        sx={{
+          textAlign: 'center',
+          padding: '40px 20px 25px !important',
+          ...sxs?.body
+        }}
+      >
+        {imageUrl && (
+          <Box
+            component="img"
+            src={imageUrl}
+            alt=""
+            sx={{
+              margin: 'auto',
+              display: 'block',
+              paddingBottom: '35px',
+              ...sxs?.image
+            }}
+          />
+        )}
         {title && (
-          <Typography variant="body1" component="h2" sx={sxs.title}>
+          <Typography
+            variant="body1"
+            component="h2"
+            sx={{
+              paddingBottom: '5px',
+              ...sxs?.title
+            }}
+          >
             {title}
           </Typography>
         )}
@@ -45,7 +70,24 @@ export function AlertDialogContainer(props: AlertDialogContainerProps) {
         )}
         {children}
       </DialogContent>
-      {nnou(buttons) && <DialogFooter sx={sxs?.footer}>{buttons}</DialogFooter>}
+      {nnou(buttons) && (
+        <DialogFooter
+          sx={{
+            mt: 2,
+            borderTop: 'none',
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '0 40px 35px',
+            '& > :not(:first-child)': {
+              marginTop: '10px',
+              marginLeft: 0
+            },
+            ...sxs?.footer
+          }}
+        >
+          {buttons}
+        </DialogFooter>
+      )}
     </>
   );
 }

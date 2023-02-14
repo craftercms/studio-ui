@@ -25,7 +25,6 @@ import translations from './translations';
 export function ConfirmDialog(props: ConfirmDialogProps) {
   const { onOk, onCancel, disableOkButton, disableCancelButton, ...rest } = props;
   const { formatMessage } = useIntl();
-
   return (
     <AlertDialog
       {...rest}

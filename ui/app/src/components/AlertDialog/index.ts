@@ -19,3 +19,5 @@ export { default } from './AlertDialog';
 export * from './AlertDialog';
 
 export * from './AlertDialogContainer';
+
+export * from './types';
