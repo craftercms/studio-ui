@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -13,15 +13,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 import { ReactNode } from 'react';
-import { CSSObject as CSSProperties } from 'tss-react';
-import StandardAction from '../../models/StandardAction';
 import { DialogProps } from '@mui/material/Dialog';
+import { ConfirmDialogStateStyles } from '../ConfirmDialog';
+import { PartialSxRecord } from '../../models';
 
-export type ConfirmDialogStateClassKey = 'dialog' | 'dialogImage' | 'dialogBody' | 'dialogTitle' | 'dialogFooter';
-export type ConfirmDialogStateStyles = Partial<Record<ConfirmDialogStateClassKey, CSSProperties>>;
-
-export interface ConfirmDialogBaseProps {
+export interface AlertDialogBaseProps {
   title?: ReactNode;
   body?: ReactNode;
   hideBackdrop?: boolean;
@@ -31,20 +29,14 @@ export interface ConfirmDialogBaseProps {
   disableBackdropClick?: boolean;
   maxWidth?: DialogProps['maxWidth'];
   styles?: ConfirmDialogStateStyles;
+  buttons?: ReactNode;
+  sxs?: PartialSxRecord<'root' | 'image' | 'body' | 'title' | 'footer'>;
 }
 
-export interface ConfirmDialogProps extends ConfirmDialogBaseProps, Omit<DialogProps, 'title' | 'classes'> {
-  classes?: Partial<Record<ConfirmDialogStateClassKey, string>>;
-  disableOkButton?: boolean;
-  disableCancelButton?: boolean;
-  onOk?(): void;
-  onCancel?(): void;
+export interface AlertDialogProps extends AlertDialogBaseProps, Omit<DialogProps, 'title' | 'classes'> {
   onClosed?(): void;
 }
 
-export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps, Pick<DialogProps, 'open'> {
-  onOk?: StandardAction;
-  onCancel?: StandardAction;
-  onClose?: StandardAction;
-  onClosed?: StandardAction;
-}
+export interface AlertDialogContainerProps
+  extends AlertDialogBaseProps,
+    Pick<AlertDialogProps, 'onClosed' | 'children'> {}

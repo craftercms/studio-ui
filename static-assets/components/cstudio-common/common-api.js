@@ -2404,6 +2404,18 @@ var nodeOpen = false,
                   payload: { id: customEventId, type: 'onSuccess' }
                 }
               ]
+            },
+            onClose: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'CLOSE_CODE_EDITOR_DIALOG'
+                },
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: customEventId, type: 'onClose' }
+                }
+              ]
             }
           }
         });
@@ -2411,6 +2423,8 @@ var nodeOpen = false,
         CrafterCMSNext.createLegacyCallbackListener(customEventId, ({ type }) => {
           if (type === 'onSuccess') {
             payload.onSuccess?.();
+          } else {
+            payload.onClose?.();
           }
         });
       },

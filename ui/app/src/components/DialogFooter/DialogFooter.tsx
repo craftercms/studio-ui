@@ -16,21 +16,23 @@
 
 import React from 'react';
 import MuiDialogActions, { DialogActionsProps } from '@mui/material/DialogActions';
-import { makeStyles } from 'tss-react/mui';
-
-const styles = makeStyles()((theme) => ({
-  root: {
-    minHeight: '50px',
-    backgroundColor: theme.palette.background.paper,
-    borderTop: '1px solid rgba(0, 0, 0, 0.12)',
-    padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`,
-    alignItems: 'center'
-  }
-}));
+import { useTheme } from '@mui/material/styles';
 
 export function DialogFooter(props: DialogActionsProps) {
-  const { classes, cx } = styles();
-  return <MuiDialogActions {...props} className={cx(classes.root, props.className)} />;
+  const theme = useTheme();
+  return (
+    <MuiDialogActions
+      {...props}
+      sx={{
+        minHeight: '50px',
+        backgroundColor: theme.palette.background.paper,
+        borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+        padding: `${theme.spacing(1)} ${theme.spacing(1.8)}`,
+        alignItems: 'center',
+        ...props.sx
+      }}
+    />
+  );
 }
 
 export default DialogFooter;

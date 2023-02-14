@@ -65,6 +65,7 @@ export const components = {
   ActionsBar: lazy(() => import('../components/ActionsBar')),
   ActionsGroup: lazy(() => import('../components/ActionsGroup')),
   ActivityDashlet: lazy(() => import('../components/ActivityDashlet')),
+  AlertDialog: lazy(() => import('../components/AlertDialog')),
   ApiResponseErrorState: lazy(() => import('../components/ApiResponseErrorState')),
   AsyncVideoPlayer: lazy(() => import('../components/AsyncVideoPlayer')),
   AuditGrid: lazy(() => import('../components/AuditGrid')),

@@ -20,6 +20,7 @@ export * from './AceEditor';
 export * from './ActionsBar';
 export * from './ActionsGroup';
 export * from './ActivityDashlet';
+export * from './AlertDialog';
 export * from './ApiResponseErrorState';
 export * from './AsyncVideoPlayer';
 export * from './AuditGrid';
