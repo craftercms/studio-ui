@@ -27,7 +27,7 @@
   "adminConfigurations.encryptHinPt1": "Para cifrar el contenido de una etiqueta, (1) marque las etiquetas deseadas para el cifrado, luego (2) haga clic en el botón \"Cifrar marcado\".",
   "adminConfigurations.encryptHinPt2": "(1) Marque sus etiquetas para el cifrado agregando el atributo <bold>`encrypted =\" \"`</bold>.",
   "adminConfigurations.encryptHinPt3": "Ejemplo: {lt}accessKey encrypted = \"\"{gt}AKIAIOSFODNN7EXAMPLE{lt}/ accessKey{gt}",
-  "adminConfigurations.encryptHinPt4": "(2) Haga clic en el botón <bold>`Cifrar marcado '</bold>. Trás completar la petición, su etiqueta ahora debería verse así:",
+  "adminConfigurations.encryptHinPt4": "(2) Haga clic en el botón <bold>`Cifrar marcado`</bold>. Trás completar la petición, su etiqueta ahora debería verse así:",
   "adminConfigurations.encryptHinPt5": "{lt}accessKey encrypted = \"true\"{gt}${lc}enc: xeJW23SomeEncryptedValuesListedHere{rc}{lt}/ accessKey{gt}",
   "adminConfigurations.encryptHinPt6": "Recuerde:",
   "adminConfigurations.encryptHinPt7": "Utilice el atributo `encrypted =” ”` solo en etiquetas que contengan directamente el valor a cifrar (texto).",

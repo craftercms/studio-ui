@@ -33,7 +33,7 @@ const plugins = [
   babel({
     exclude: 'node_modules/**',
     // TODO: @babel/preset-env breaks the build of AMD-style third party libs (e.g. jQuery, js-cookie)
-    presets: [/* '@babel/preset-env', */ '@babel/preset-react', '@babel/preset-typescript'],
+    presets: ['@babel/preset-react', '@babel/preset-typescript'],
     plugins: [
       'babel-plugin-transform-react-remove-prop-types',
       '@babel/plugin-proposal-nullish-coalescing-operator',

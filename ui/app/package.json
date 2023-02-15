@@ -106,7 +106,14 @@
     "clean:npm": "rimraf ./build_tsc ./tsconfig.build.tsbuildinfo",
     "clean:models": "rimraf ./build_tsc/models/**/*.{js,map} && touch ./build_tsc/models/index.js",
     "test": "react-scripts test",
-    "i18n:extract": "formatjs extract './src/**/*.{ts,tsx}' --ignore='**/*.d.ts' --out-file src/translations/en.json",
+    "i18n:extract": "formatjs extract './src/**/*.{ts,tsx}' --ignore='**/*.d.ts' --out-file src/translations/en-extract.json",
+    "i18n:compile": "run-s i18n:compile-en i18n:compile-es i18n:compile-de i18n:compile-ko",
+    "i18n-create-en": "formatjs compile './src/translations/en.json' --out-file './src/translations/en.json'",
+    "i18n:compile-en": "formatjs compile './src/translations/en-extract.json' --ast --out-file './src/translations/en.ast.json'",
+    "i18n:compile-es": "formatjs compile './src/translations/es.json' --ast --out-file './src/translations/es.ast.json' --format simple",
+    "i18n:compile-de": "formatjs compile './src/translations/de.json' --ast --out-file './src/translations/de.ast.json' --format simple",
+    "i18n:compile-ko": "formatjs compile './src/translations/ko.json' --ast --out-file './src/translations/ko.ast.json' --format simple",
+    "i18n-clean": "rimraf ./src/translations/{*.ast}.json",
     "custom-prettier": "node ../../scripts/prettier.js"
   },
   "dependencies": {
@@ -170,9 +177,6 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.16.0",
-    "@babel/runtime": "^7.17.2",
     "@craco/craco": "7.0.0",
     "@formatjs/cli": "^5.0.6",
     "@rollup/plugin-typescript": "^8.5.0",
@@ -181,6 +185,7 @@
     "@types/prettier": "^2.7.2",
     "@types/react-infinite-scroller": "^1.2.3",
     "@types/zxcvbn": "^4.4.1",
+    "babel-plugin-formatjs": "^10.3.36",
     "babel-plugin-react-intl": "^5.1.16",
     "build-if-changed": "^1.5.5",
     "eslint": "^8.3.0",

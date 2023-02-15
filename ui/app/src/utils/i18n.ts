@@ -14,28 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import es from '../translations/es.json';
-import de from '../translations/de.json';
-import ko from '../translations/ko.json';
 import { createIntl, createIntlCache, IntlShape } from 'react-intl';
 import { Subject } from 'rxjs';
 import TranslationOrText from '../models/TranslationOrText';
 import { nou } from './object';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { ReactNode } from 'react';
+import LookupTable from '../models/LookupTable';
 
-export type BundledTranslationsLocaleCodes = 'en' | 'es' | 'de' | 'ko';
-
-export type BundledTranslations = { [T in BundledTranslationsLocaleCodes | 'kr']: object };
+export type BundledLocaleCodes = 'en' | 'es' | 'de' | 'ko';
 
 /* private */
-const bundledTranslations: BundledTranslations = {
-  en: {},
-  es,
-  de,
-  ko,
-  kr: ko // TODO: Currently old studio UI uses the wrong code for korean
-};
+let currentTranslations = { en: {} };
+
+let fetchedLocales: Partial<Record<BundledLocaleCodes, boolean>> = { en: true };
 
 /* private */
 const intl$$ = new Subject<IntlShape>();
@@ -44,18 +36,51 @@ const intl$$ = new Subject<IntlShape>();
 export const intl$ = intl$$.asObservable();
 
 /* private */
-let currentTranslations = bundledTranslations;
+let intl = createIntl({ locale: 'en', messages: currentTranslations.en }, createIntlCache());
 
-/* private */
-let intl = createIntlInstance(getCurrentLocale());
+if (getCurrentLocale() !== 'en') {
+  createIntlInstance(getCurrentLocale()).then((newIntl) => {
+    intl = newIntl;
+    intl$$.next(newIntl);
+  });
+}
 
-function createIntlInstance(locale: string): IntlShape {
+async function fetchLocale(locale: string): Promise<LookupTable<string>> {
+  let translations;
+  switch (locale) {
+    case 'de':
+      translations = await import('../translations/de.json');
+      break;
+    case 'es':
+      translations = await import('../translations/es.json');
+      break;
+    case 'ko':
+      translations = await import('../translations/ko.json');
+      break;
+    default:
+      translations = Promise.resolve({});
+      break;
+  }
+  return translations;
+}
+
+async function createIntlInstance(localeCode: string): Promise<IntlShape> {
   // TODO: Currently old studio UI uses the wrong code for korean
-  locale = locale.replace('kr', 'ko');
+  localeCode = localeCode.replace('kr', 'ko');
+  if (
+    !fetchedLocales[localeCode] &&
+    // Nothing to fetch point if we don't have the locale
+    ['de', 'es', 'kr'].includes(localeCode)
+  ) {
+    let fetchedTranslations = await fetchLocale(localeCode as BundledLocaleCodes);
+    // Plugins may have added translations to a locale that hasn't been fetched.
+    currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...fetchedTranslations };
+    fetchedLocales[localeCode] = true;
+  }
   return createIntl(
     {
-      locale: locale,
-      messages: currentTranslations[locale] || bundledTranslations.en
+      locale: localeCode,
+      messages: currentTranslations[localeCode] || currentTranslations.en
     },
     createIntlCache()
   );
@@ -63,13 +88,18 @@ function createIntlInstance(locale: string): IntlShape {
 
 export function augmentTranslations(translations: { [localeCode: string]: object }): void {
   if (translations) {
-    const nextCurrentTranslations = { ...currentTranslations };
-    Object.entries(translations).forEach(([locale, translations]) => {
-      nextCurrentTranslations[locale] = { ...nextCurrentTranslations[locale], ...translations };
+    let currentLocale = intl.locale;
+    let currentLocaleChanged = false;
+    Object.entries(translations).forEach(([localeCode, translations]) => {
+      currentTranslations[localeCode] = { ...currentTranslations[localeCode], ...translations };
+      currentLocale === localeCode && (currentLocaleChanged = true);
     });
-    currentTranslations = nextCurrentTranslations;
-    intl = createIntlInstance(intl.locale);
-    intl$$.next(intl);
+    if (currentLocaleChanged) {
+      createIntlInstance(currentLocale).then((newIntl) => {
+        intl = newIntl;
+        intl$$.next(newIntl);
+      });
+    }
   }
 }
 
@@ -103,10 +133,6 @@ export function getCurrentIntl(): IntlShape {
   return intl;
 }
 
-export function getBundledTranslations(): BundledTranslations {
-  return bundledTranslations;
-}
-
 export function buildStoredLanguageKey(username: string): string {
   return `${username}_crafterStudioLanguage`;
 }
@@ -134,9 +160,9 @@ export function dispatchLanguageChange(language: string): void {
 // @ts-ignore
 document.addEventListener(
   'setlocale',
-  (e: CustomEvent<string>) => {
+  async (e: CustomEvent<string>) => {
     if (e.detail && e.detail !== intl.locale) {
-      intl = createIntlInstance(e.detail);
+      intl = await createIntlInstance(e.detail);
       document.documentElement.setAttribute('lang', e.detail);
       intl$$.next(intl);
     }

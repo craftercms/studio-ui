@@ -59,10 +59,10 @@
     }
   },
   "resolutions": {
+    "@types/react": "^18.0.28",
     "browserslist": "^4.21.5",
     "caniuse-lite": "^1.0.30001451",
-    "react-is": "^18.2.0",
-    "@types/react": "^18.0.28"
+    "react-is": "^18.2.0"
   },
   "packageManager": "yarn@3.1.0",
   "scripts": {
@@ -80,9 +80,6 @@
     "upgrade-yarn": "yarn set version latest"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.16.0",
-    "@babel/runtime": "^7.17.2",
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^3.1.0",

@@ -10,6 +10,18 @@ module.exports = {
       // ...
       return config;
     }
+  },
+  babel: {
+    plugins: [
+      [
+        'formatjs',
+        {
+          removeDefaultMessage: false,
+          idInterpolationPattern: '[sha512:contenthash:base64:6]',
+          ast: true
+        }
+      ]
+    ]
   }
 };
 

@@ -474,7 +474,7 @@
   "historyDialog.options.compareToCurrent": "현재와 비교",
   "historyDialog.options.compareToPrevious": "이전과 비교",
   "historyDialog.options.revertToPrevious": " <b>이전</b>(으)로 되돌리기",
-  "historyDialog.options.revertToThisVersion": "이 버전</b>을(를) <b>(으)로 되돌리기",
+  "historyDialog.options.revertToThisVersion": "<b>이 버전</b>으로 되돌리기",
   "icePanel.itemLockedWarning": "항목이 잠겨 있어 일부 기능이 비활성화될 수 있습니다.",
   "icePanel.noWidgetsMessage": "도구가 구성되지 않았습니다.",
   "iconGuide.css": "CSS",
