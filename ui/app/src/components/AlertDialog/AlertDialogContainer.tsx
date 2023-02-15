@@ -73,11 +73,11 @@ export function AlertDialogContainer(props: AlertDialogContainerProps) {
       {nnou(buttons) && (
         <DialogFooter
           sx={{
-            mt: 2,
             borderTop: 'none',
             display: 'flex',
             flexDirection: 'column',
             padding: '0 40px 35px',
+            backgroundColor: null,
             '& > :not(:first-child)': {
               marginTop: '10px',
               marginLeft: 0
