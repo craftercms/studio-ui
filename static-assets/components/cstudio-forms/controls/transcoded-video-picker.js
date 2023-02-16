@@ -280,6 +280,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       if (datasource.insertVideoAction) {
         var callback = {
           success: function (videoData) {
+            self.deleteVideo(); // When replacing video, first need to delete current selection
             var videoContainer;
 
             this.videoPicker.noPreviewEl.style.display = 'none';
@@ -296,7 +297,6 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
             self.videoEl.style.minHeight = '100px';
             self.videoEl.style.height = 'auto';
 
-            YAHOO.util.Dom.addClass(this.videoPicker.addEl, 'cstudio-button-disabled');
             YAHOO.util.Dom.removeClass(this.videoPicker.delEl, 'cstudio-button-disabled');
 
             this.videoPicker.addEl.value = CMgs.format(langBundle, 'replace');
