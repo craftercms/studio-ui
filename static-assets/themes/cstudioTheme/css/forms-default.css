@@ -92,6 +92,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   position: relative;
   width: 100%;
   cursor: default;
+  margin: 0 !important;
 }
 
 .cstudio-form-control-transcoded-video-selector-item .video-preview {
@@ -1055,6 +1056,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   flex-wrap: wrap;
   min-height: 100px;
   height: auto;
+  row-gap: 8px;
+  padding: 8px;
 }
 
 .cstudio-form-control-transcoded-video-preview-block .cstudio-form-control-asset-picker-preview-content {
