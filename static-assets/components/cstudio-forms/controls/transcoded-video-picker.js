@@ -453,7 +453,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       addEl.value = CMgs.format(langBundle, 'replace');
     }
 
-    YAHOO.util.Dom.addClass(addEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(addEl, 'cstudio-button btn btn-default btn-sm');
     optionsEl.appendChild(addEl);
 
     var delEl = document.createElement('input');
@@ -463,7 +463,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     delEl.style.position = 'relative';
     delEl.style.padding = '6px 12px';
     delEl.disabled = true;
-    YAHOO.util.Dom.addClass(delEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(delEl, 'cstudio-button btn btn-default btn-sm');
     YAHOO.util.Dom.addClass(delEl, 'cstudio-button-disabled');
 
     optionsEl.appendChild(delEl);
