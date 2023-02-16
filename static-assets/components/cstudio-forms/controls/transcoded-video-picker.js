@@ -584,7 +584,6 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
           _self.createVideoContainer(video);
         });
 
-        YAHOO.util.Dom.addClass(this.addEl, 'cstudio-button-disabled');
         YAHOO.util.Dom.removeClass(this.delEl, 'cstudio-button-disabled');
         this.delEl.disabled = false;
       } else {
