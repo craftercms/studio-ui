@@ -264,6 +264,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
               this.videoPicker.remote = videoData.remote && videoData.remote === true ? true : false;
 
               this.videoPicker.noPreviewEl.style.display = 'none';
+              this.videoPicker.noPreviewEl.parentElement.classList.remove('no-selection');
               this.videoPicker.previewEl.style.display = 'inline';
 
               this.videoPicker.downloadEl.style.display = 'inline-block';
@@ -298,6 +299,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     if (inputValue != '') {
       this.inputEl.value = '';
       this.noPreviewEl.style.display = 'inline';
+      this.noPreviewEl.parentElement.classList.add('no-selection');
       this.addEl.value = CMgs.format(langBundle, 'add');
       this.remote = false;
       this.delEl.disabled = true;
@@ -341,22 +343,30 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
     var inputEl = document.createElement('input');
     this.inputEl = inputEl;
-    inputEl.style.display = 'none';
-    YAHOO.util.Dom.addClass(inputEl, 'datum');
+    inputEl.disabled = true;
+    inputEl.placeholder = `(${CMgs.format(langBundle, 'path')})`;
+    YAHOO.util.Dom.addClass(inputEl, 'datum cstudio-form-control-input');
+    inputEl.style.marginBottom = '5px';
     controlWidgetContainerEl.appendChild(inputEl);
 
     var urlEl = document.createElement('div');
-    YAHOO.util.Dom.addClass(urlEl, 'url');
+    YAHOO.util.Dom.addClass(urlEl, 'url info');
     this.urlEl = urlEl;
     urlEl.textContent = this.inputEl.value;
+    urlEl.style.display = 'none';
     controlWidgetContainerEl.appendChild(urlEl);
+
+    var bodyEl = document.createElement('div');
+    bodyEl.style.width = '100%';
+    YAHOO.util.Dom.addClass(bodyEl, 'cstudio-form-control-asset-picker-body');
+    controlWidgetContainerEl.appendChild(bodyEl);
 
     var videoEl = document.createElement('div');
     this.videoEl = videoEl;
     videoEl.id = divPrefix + 'cstudio-form-video-picker';
 
     YAHOO.util.Dom.addClass(videoEl, 'cstudio-form-control-asset-picker-preview-block');
-    controlWidgetContainerEl.appendChild(videoEl);
+    bodyEl.appendChild(videoEl);
 
     var noPreviewEl = document.createElement('span');
     this.noPreviewEl = noPreviewEl;
@@ -383,6 +393,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
     if (this.inputEl.value === null || this.inputEl.value === '') {
       zoomEl.style.display = 'none';
+      previewEl.style.display = 'none';
     } else {
       zoomEl.style.display = 'inline-block';
     }
@@ -407,6 +418,11 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
     videoEl.appendChild(downloadEl);
 
+    var ctrlOptionsEl = document.createElement('div');
+    YAHOO.util.Dom.addClass(ctrlOptionsEl, 'cstudio-form-control-image-picker-options');
+    bodyEl.appendChild(ctrlOptionsEl);
+    this.ctrlOptionsEl = ctrlOptionsEl;
+
     var addEl = document.createElement('input');
     this.addEl = addEl;
     addEl.type = 'button';
@@ -418,7 +434,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     }
 
     YAHOO.util.Dom.addClass(addEl, 'cstudio-button btn btn-default btn-sm');
-    controlWidgetContainerEl.appendChild(addEl);
+    ctrlOptionsEl.appendChild(addEl);
 
     var delEl = document.createElement('input');
     this.delEl = delEl;
@@ -429,7 +445,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
     YAHOO.util.Dom.addClass(delEl, 'cstudio-button btn btn-default btn-sm');
     YAHOO.util.Dom.addClass(delEl, 'cstudio-button-disabled');
 
-    controlWidgetContainerEl.appendChild(delEl);
+    ctrlOptionsEl.appendChild(delEl);
 
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
@@ -540,6 +556,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
 
     if (value === null || value === '') {
       this.noPreviewEl.style.display = 'inline';
+      this.noPreviewEl.parentElement.classList.add('no-selection');
     } else {
       // if value is array => multiple values, otherwise regular video picker
       if (Array.isArray(this.value)) {
@@ -572,6 +589,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
       }
 
       this.noPreviewEl.style.display = 'none';
+      this.noPreviewEl.parentElement.classList.remove('no-selection');
       this.addEl.value = CMgs.format(langBundle, 'replace');
       if (!this.readonly) {
         this.delEl.disabled = false;
