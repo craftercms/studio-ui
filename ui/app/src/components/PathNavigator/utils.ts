@@ -40,7 +40,9 @@ export function isVideo(item: DetailedItem | SandboxItem): boolean {
 export function isTextContent(mimeType: string): boolean {
   return (
     /^text\//.test(mimeType) ||
-    /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh)$/.test(mimeType)
+    /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh|x-yaml|ld+json|x-csh)$/.test(
+      mimeType
+    )
   );
 }
 
