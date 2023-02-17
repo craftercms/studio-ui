@@ -88,6 +88,17 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   margin-top: -6px;
 }
 
+.cstudio-form-control-transcoded-video-selector-item {
+  position: relative;
+  width: 100%;
+  cursor: default;
+  margin: 0 !important;
+}
+
+.cstudio-form-control-transcoded-video-selector-item .video-preview {
+  margin-right: 5px;
+}
+
 .cstudio-form-control-node-selector-container {
   display: inline-block;
   width: 74%;
@@ -1019,7 +1030,8 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 
 /* Start Asset Picker Styles - image, video and flash */
 
-.cstudio-form-control-asset-picker-preview-block {
+.cstudio-form-control-asset-picker-preview-block,
+.cstudio-form-control-transcoded-video-preview-block {
   border-radius: 4px;
   border: 1px solid #ced4da;
   background: #fafafa;
@@ -1029,8 +1041,27 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   place-content: center;
 }
 
-.cstudio-form-control-asset-picker-preview-block.no-selection {
+.cstudio-form-control-transcoded-video-preview-block {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  border-bottom: none;
+}
+
+.cstudio-form-control-asset-picker-preview-block.no-selection,
+.cstudio-form-control-transcoded-video-preview-block.no-selection {
   height: 50px;
+}
+
+.cstudio-form-control-transcoded-video-preview-block {
+  flex-wrap: wrap;
+  min-height: 100px;
+  height: auto;
+  row-gap: 8px;
+  padding: 8px;
+}
+
+.cstudio-form-control-transcoded-video-preview-block .cstudio-form-control-asset-picker-preview-content {
+  display: none;
 }
 
 @media screen and (max-width: 1105px) {
@@ -1532,7 +1563,8 @@ body.yui-skin-cstudioTheme.masked {
   margin-left: 5px;
 }
 
-.cstudio-form-control-node-selector-controlbox {
+.cstudio-form-control-node-selector-controlbox,
+.cstudio-form-control-transcoded-video-controlbox {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -1585,13 +1617,18 @@ body.yui-skin-cstudioTheme.masked {
   margin-left: auto;
 }
 
-.cstudio-form-control-node-selector-options {
+.cstudio-form-control-node-selector-options,
+.cstudio-form-control-transcoded-video-options {
   width: 100%;
   display: flex;
   background: #fafafa;
   border: 1px solid #ced4da;
   border-radius: 0 0 4px 4px;
   align-items: center;
+}
+
+.cstudio-form-control-transcoded-video-options {
+  padding: 5px;
 }
 
 .cstudio-form-field-description {
