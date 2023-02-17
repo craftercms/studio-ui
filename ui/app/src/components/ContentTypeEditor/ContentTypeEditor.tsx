@@ -232,6 +232,13 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
     createFieldDialogState.onOpen();
   };
 
+  const initialSection = {
+    description: '',
+    expandByDefault: true,
+    fields: [],
+    title: 'New Section'
+  };
+
   // region DND test
   const onDragEnd = (result: DropResult) => {
     const { destination, source, type } = result;
@@ -259,6 +266,13 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
     }
   };
   // endregion
+
+  const addSection = () => {
+    setFormDefinition({
+      ...formDefinition,
+      sections: [...formDefinition.sections, initialSection]
+    });
+  };
 
   return (
     <>
