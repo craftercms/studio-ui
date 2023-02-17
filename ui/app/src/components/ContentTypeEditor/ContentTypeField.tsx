@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { ContentTypeField as ContentTypeFieldType } from '../../models';
+import { ContentTypeField as ContentTypeFieldType, LookupTable } from '../../models';
 import Chip from '@mui/material/Chip';
 import getStyles from './styles';
 import Box from '@mui/material/Box';
@@ -30,6 +30,7 @@ import { FIELD_DROPPABLE_TYPE } from './utils';
 export interface ContentTypeFieldProps {
   field: ContentTypeFieldType;
   sectionId: string;
+  repeatingFieldsOrder: LookupTable<string[]>;
 }
 
 function SingleField(props: ContentTypeFieldProps) {
@@ -59,28 +60,36 @@ function SingleField(props: ContentTypeFieldProps) {
 }
 
 function RepeatField(props: ContentTypeFieldProps) {
-  const { field, sectionId } = props;
-  const { name, fields } = field;
+  const { field, sectionId, repeatingFieldsOrder } = props;
+  const { name, fields, id } = field;
   const sx = getStyles();
   const { formatMessage } = useIntl();
+  const fieldsOrder = repeatingFieldsOrder[id];
 
   return (
     <Paper sx={sx.contentTypeRepeatField}>
       <Typography sx={{ mb: 1 }}>
         <strong>{formatMessage(translations.repeat)}</strong>: {name}
       </Typography>
-      <Droppable droppableId={sectionId} type={FIELD_DROPPABLE_TYPE + '-test'}>
+      <Droppable droppableId={sectionId} type={FIELD_DROPPABLE_TYPE}>
         {(provided, snapshot) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
-            {Object.values(fields).map((field, index) => (
-              <Draggable key={field.name} index={index} draggableId={`${sectionId}|${field.name}`}>
-                {(provided, snapshot) => (
-                  <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                    <ContentTypeField field={field} sectionId={`${sectionId}|${field.name}`} />
-                  </div>
-                )}
-              </Draggable>
-            ))}
+            {fieldsOrder.map((fieldId, index) => {
+              const field = fields[fieldId];
+              return (
+                <Draggable key={field.name} index={index} draggableId={`${sectionId}|${field.name}`}>
+                  {(provided, snapshot) => (
+                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                      <ContentTypeField
+                        field={field}
+                        sectionId={`${sectionId}|${field.name}`}
+                        repeatingFieldsOrder={repeatingFieldsOrder}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
             {provided.placeholder}
           </div>
         )}
@@ -93,12 +102,12 @@ function RepeatField(props: ContentTypeFieldProps) {
 }
 
 export function ContentTypeField(props: ContentTypeFieldProps) {
-  const { field, sectionId } = props;
+  const { field } = props;
 
   if (field.type === 'repeat') {
-    return <RepeatField field={field} sectionId={sectionId} />;
+    return <RepeatField {...props} />;
   } else {
-    return <SingleField field={field} sectionId={sectionId} />;
+    return <SingleField {...props} />;
   }
 }
 

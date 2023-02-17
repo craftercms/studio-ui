@@ -21,7 +21,7 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { LegacyContentType } from '../../models';
+import { ContentType, LegacyContentType, LookupTable } from '../../models';
 import useSpreadState from '../../hooks/useSpreadState';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { asLocalizedDateTime } from '../../utils/datetime';
@@ -42,7 +42,7 @@ import ArrowBackOutlinedIcon from '@mui/icons-material/ArrowBackOutlined';
 import IconButton from '@mui/material/IconButton';
 import { fetchContentType } from '../../services/contentTypes';
 import CreateContentTypeFieldDialog from '../CreateContentTypeFieldDialog/CreateContentTypeFieldDialog';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult, DraggableLocation } from 'react-beautiful-dnd';
 import { FIELD_DROPPABLE_TYPE, SECTION_DROPPABLE_TYPE } from './utils';
 
 export interface ContentTypeEditorProps {
@@ -50,7 +50,50 @@ export interface ContentTypeEditorProps {
   onGoBack(): void;
 }
 
-const reorderSections = (formDefinition, result) => {
+const getInfoFromDraggableLocation = (
+  formDefinition: ContentType,
+  repeatingFieldsOrder: LookupTable<string[]>,
+  location: DraggableLocation
+) => {
+  const { droppableId } = location;
+  const droppableIdParts = droppableId.split('|');
+  const isRepeatingGroup = droppableIdParts.length > 1;
+  let field;
+  let fieldId;
+  let containerIndex;
+  let container;
+
+  if (isRepeatingGroup) {
+    const repeatingId = droppableIdParts[1];
+    container = formDefinition.fields[repeatingId];
+    fieldId = repeatingFieldsOrder[repeatingId][location.index];
+    field = container.fields[fieldId];
+  } else {
+    containerIndex = parseInt(droppableIdParts[0]);
+    container = formDefinition.sections[containerIndex];
+    fieldId = container.fields[location.index];
+    field = formDefinition.fields[fieldId];
+  }
+
+  return {
+    isRepeatingGroup,
+    index: location.index,
+    fieldId,
+    field,
+    containerIndex,
+    container
+  };
+};
+
+const parseResult = (formDefinition: ContentType, repeatingFieldsOrder: LookupTable<string[]>, result: DropResult) => {
+  const { source, destination } = result;
+  return {
+    source: getInfoFromDraggableLocation(formDefinition, repeatingFieldsOrder, source),
+    destination: getInfoFromDraggableLocation(formDefinition, repeatingFieldsOrder, destination)
+  };
+};
+
+const reorderSections = (formDefinition: ContentType, result: DropResult) => {
   const { destination, source } = result;
 
   const newSectionsOrder = Array.from(formDefinition.sections);
@@ -61,51 +104,95 @@ const reorderSections = (formDefinition, result) => {
   return newSectionsOrder;
 };
 
-const reorderFields = (formDefinition, result) => {
-  const { destination, source } = result;
+const reorderFields = (
+  formDefinition: ContentType,
+  repeatingFieldsOrder: LookupTable<string[]>,
+  result: DropResult
+) => {
+  const parsedResult = parseResult(formDefinition, repeatingFieldsOrder, result);
+  const { source, destination } = parsedResult;
+  let newRepeatingFieldsOrder;
+  let repeatingGroupFields;
 
-  // TODO: this needs to change when dnd repeatItem fields
-  const sourceSectionIndex = parseInt(source.droppableId.split('|')[0]);
-  const newSourceSection = JSON.parse(JSON.stringify(formDefinition.sections[sourceSectionIndex]));
-  const field = newSourceSection.fields[source.index];
+  console.log('formDefinition', formDefinition);
+  console.log('parsedResult', parsedResult);
 
-  const destinationSectionIndex = parseInt(destination.droppableId.split('|')[0]);
-  const newDestinationSection = JSON.parse(JSON.stringify(formDefinition.sections[destinationSectionIndex]));
+  const newSourceContainer = JSON.parse(JSON.stringify(source.container));
+  const newDestinationContainer = JSON.parse(JSON.stringify(destination.container));
+
+  const sourceContainerIndex = source.containerIndex;
+  const destinationContainerIndex = destination.containerIndex;
 
   const newSections = Array.from(formDefinition.sections);
+  const newFormDefFields = JSON.parse(JSON.stringify(formDefinition.fields));
 
-  if (sourceSectionIndex === destinationSectionIndex) {
+  if (sourceContainerIndex === destinationContainerIndex) {
     // If field is moved inside its own section
 
-    const newFields = newSourceSection.fields;
+    const newFields = newSourceContainer.fields;
     newFields.splice(source.index, 1);
-    newFields.splice(destination.index, 0, field);
+    newFields.splice(destination.index, 0, source.fieldId);
 
     // Update sections array
-    newSections[sourceSectionIndex] = newSourceSection;
+    newSections[sourceContainerIndex] = newSourceContainer;
+  } else if (
+    source.isRepeatingGroup &&
+    destination.isRepeatingGroup &&
+    source.container.id &&
+    destination.container.id
+  ) {
+    // If both source and destination are repeating groups, and are the same repeating group
+    // TODO!
   } else {
-    // If field is moved to another section
+    // If field is moved to another section, or between rep groups
 
-    // Update sourceFields array
-    const newSourceFields = newSourceSection.fields;
-    newSourceFields.splice(source.index, 1);
+    if (source.isRepeatingGroup) {
+      // If source is repeating group
+      // TODO, remove field from repeating group fields lookup table, update rep-groups order lookup table
+      const repeatingGroupId = source.container.id;
+      repeatingGroupFields = JSON.parse(JSON.stringify(formDefinition.fields[repeatingGroupId].fields));
+      delete repeatingGroupFields[source.fieldId];
+      newRepeatingFieldsOrder = {
+        ...repeatingFieldsOrder,
+        [repeatingGroupId]: repeatingFieldsOrder[repeatingGroupId].splice(source.index, 1)
+      };
+      newFormDefFields[repeatingGroupId].fields = repeatingGroupFields;
+    } else {
+      // If source is not repeating group - Update sourceFields array
+      const newSourceFields = newSourceContainer.fields;
+      newSourceFields.splice(source.index, 1);
+      newSections[sourceContainerIndex] = newSourceContainer;
+    }
 
-    // Update destinationFields array
-    const newDestinationFields = newDestinationSection.fields;
-    newDestinationFields.splice(destination.index, 0, field);
+    if (destination.isRepeatingGroup) {
+      // If destination is repeating group
+      // TODO!
+    } else {
+      // If source is not repeating group - Update destinationFields array
+      const newDestinationFields = newDestinationContainer.fields;
+      newDestinationFields.splice(destination.index, 0, source.fieldId);
 
-    // Update sections array
-    newSections[sourceSectionIndex] = newSourceSection;
-    newSections[destinationSectionIndex] = newDestinationSection;
+      // If source is a repeating group, I need to get the source field and put it in the form definition fields lookup.
+      if (source.isRepeatingGroup) {
+        newFormDefFields[source.field.id] = source.field;
+      }
+
+      newSections[destinationContainerIndex] = newDestinationContainer;
+    }
   }
 
-  return newSections;
+  return {
+    sections: newSections,
+    fields: newFormDefFields,
+    repeatingFieldsOrder: newRepeatingFieldsOrder
+  };
 };
 
 export function ContentTypeEditor(props: ContentTypeEditorProps) {
   const { onGoBack } = props;
   const [config, setConfig] = useSpreadState(props.config);
   const [formDefinition, setFormDefinition] = useSpreadState(null);
+  const [repeatingFieldsOrder, setRepeatingFieldsOrder] = useSpreadState({});
   const { name: contentTypeId, label, lastUpdated, type } = config;
   const imageSrc = useContentTypePreviewImage(contentTypeId);
   const locale = useLocale();
@@ -121,9 +208,16 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
     if (config) {
       fetchContentType(siteId, config.name).subscribe((definition) => {
         setFormDefinition(definition);
+        const repFieldsOrder = {};
+        Object.entries(definition.fields).forEach(([key, value]) => {
+          if (value.type === 'repeat') {
+            repFieldsOrder[key] = Object.keys(value.fields);
+          }
+        });
+        setRepeatingFieldsOrder(repFieldsOrder);
       });
     }
-  }, [config, setFormDefinition, siteId]);
+  }, [config, setFormDefinition, siteId, setRepeatingFieldsOrder]);
   // endregion
 
   const editTemplate = () => {
@@ -139,11 +233,8 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
   };
 
   // region DND test
-  const onDragEnd = (result) => {
-    const { destination, source, draggableId, type } = result;
-
-    console.log('source', source);
-    console.log('destination', destination);
+  const onDragEnd = (result: DropResult) => {
+    const { destination, source, type } = result;
 
     // Dropped outside the list or moving to the same position
     if (!destination || (destination.droppableId === source.droppableId && destination.index === source.index)) {
@@ -158,9 +249,12 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
       });
     } else if (type === FIELD_DROPPABLE_TYPE) {
       // Reordering field
+      const reorderedFields = reorderFields(formDefinition, repeatingFieldsOrder, result);
+
       setFormDefinition({
         ...formDefinition,
-        sections: reorderFields(formDefinition, result)
+        ...(reorderedFields.sections && { sections: reorderedFields.sections }),
+        ...(reorderedFields.fields && { fields: reorderedFields.fields })
       });
     }
   };
@@ -242,6 +336,7 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
                                 {...section}
                                 sectionIndex={index}
                                 fieldsDefinitions={formDefinition.fields}
+                                repeatingFieldsOrder={repeatingFieldsOrder}
                                 onAddField={openCreateFieldDialog}
                               />
                             </div>
@@ -255,7 +350,11 @@ export function ContentTypeEditor(props: ContentTypeEditorProps) {
               </DragDropContext>
 
               <Box display="flex" justifyContent="center">
-                <Button variant="outlined" sx={{ borderStyle: 'dashed !important', borderRadius: '4px' }}>
+                <Button
+                  variant="outlined"
+                  sx={{ borderStyle: 'dashed !important', borderRadius: '4px' }}
+                  onClick={addSection}
+                >
                   <FormattedMessage id="contentTypeEditor.addSection" defaultMessage="Add Section" />
                 </Button>
               </Box>

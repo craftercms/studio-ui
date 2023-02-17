@@ -35,11 +35,12 @@ export interface ContentTypeSectionProps {
   fields: string[];
   fieldsDefinitions: LookupTable<ContentTypeFieldType>;
   sectionIndex: number;
+  repeatingFieldsOrder: LookupTable<string[]>;
   onAddField(): void;
 }
 
 export function ContentTypeSection(props: ContentTypeSectionProps) {
-  const { title, fields, fieldsDefinitions, sectionIndex, onAddField } = props;
+  const { title, fields, fieldsDefinitions, sectionIndex, repeatingFieldsOrder, onAddField } = props;
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -61,7 +62,11 @@ export function ContentTypeSection(props: ContentTypeSectionProps) {
                 <Draggable key={field} index={index} draggableId={`${sectionIndex}|${field}`}>
                   {(provided, snapshot) => (
                     <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                      <ContentTypeField field={fieldsDefinitions[field]} sectionId={`${sectionIndex}|${field}`} />
+                      <ContentTypeField
+                        field={fieldsDefinitions[field]}
+                        sectionId={`${sectionIndex}|${field}`}
+                        repeatingFieldsOrder={repeatingFieldsOrder}
+                      />
                     </div>
                   )}
                 </Draggable>
