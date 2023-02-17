@@ -32,7 +32,12 @@ import { getRequestForgeryToken } from '../utils/auth';
 import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
 import { VersionsResponse } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
-import { parseContentXML, parseSandBoxItemToDetailedItem, prepareVirtualItemProps } from '../utils/content';
+import {
+  generateComponentPath,
+  parseContentXML,
+  parseSandBoxItemToDetailedItem,
+  prepareVirtualItemProps
+} from '../utils/content';
 import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
@@ -289,7 +294,9 @@ export function insertComponent(
     path,
     (element) => {
       const id = instance.craftercms.id;
-      const path = shared ? instance.craftercms.path ?? getComponentPath(id, instance.craftercms.contentTypeId) : null;
+      const path = shared
+        ? instance.craftercms.path ?? generateComponentPath(id, instance.craftercms.contentTypeId)
+        : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = createElement('item');
@@ -855,11 +862,6 @@ function createModifiedDate() {
 
 function updateModifiedDateElement(doc: Element) {
   doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
-}
-
-function getComponentPath(id: string, contentType: string) {
-  const pathBase = `/site/components/${contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
-  return `${pathBase}/${id}.xml`;
 }
 
 function insertCollectionItem(

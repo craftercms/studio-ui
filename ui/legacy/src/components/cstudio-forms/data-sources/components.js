@@ -30,7 +30,8 @@
     this.allowEmbedded = false;
     this.enableSearch = false;
     this.enableBrowse = false;
-    this.baseRepoPath = '/site/components';
+    this.defaultBaseRepoPath = '/site/components';
+    this.baseRepoPath = null;
     this.baseBrowsePath = '/site/components';
 
     properties.forEach((prop) => {
@@ -132,7 +133,7 @@
         },
         {
           label: formatMessage('baseRepositoryPath'),
-          name: 'baseRepositoryPath',
+          name: 'baseRepoPath',
           type: 'string',
           defaultValue: '/site/components'
         },
@@ -233,7 +234,7 @@
         true,
         type === 'embedded',
         (item) => item.type === 'component',
-        this.baseRepoPath
+        this.baseRepoPath ?? this.defaultBaseRepoPath
       );
     },
 
@@ -344,7 +345,7 @@
 
     _openContentTypeForm(contentType, type, control) {
       const self = this;
-      const path = `${self.baseRepoPath}/${contentType.replace(/^\/component(s?)\//, '')}`;
+      const path = this.baseRepoPath ?? craftercms.utils.content.generateComponentBasePath(contentType);
 
       let parentPath = self.form.path;
       CStudioAuthoring.Operations.openContentWebForm(

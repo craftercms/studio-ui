@@ -1009,3 +1009,10 @@ export const openItemEditor = (
     );
   }
 };
+
+export function generateComponentBasePath(contentType: string) {
+  return `/site/components/${contentType.replace('/component/', '')}s/`.replace(/\/{1,}$/m, '');
+}
+export function generateComponentPath(modelId: string, contentType: string) {
+  return `${generateComponentBasePath(contentType)}/${modelId}.xml`;
+}
