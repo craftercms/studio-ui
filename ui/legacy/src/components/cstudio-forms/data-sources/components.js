@@ -176,7 +176,9 @@
     },
 
     _openSearch: function (control) {
+      const searchPath = craftercms.utils.string.ensureSingleSlash(`${this.baseBrowsePath}/.+`);
       const searchContext = {
+        path: searchPath,
         searchId: null,
         itemsPerPage: 12,
         keywords: '',
