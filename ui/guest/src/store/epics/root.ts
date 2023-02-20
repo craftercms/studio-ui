@@ -16,14 +16,30 @@
 
 import { combineEpics, ofType } from 'redux-observable';
 import { GuestStandardAction } from '../models/GuestStandardAction';
-import { filter, ignoreElements, map, switchMap, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  catchError,
+  filter,
+  ignoreElements,
+  map,
+  switchMap,
+  take,
+  takeUntil,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
-import { getById } from '../../iceRegistry';
+import { getById, getReferentialEntries, isTypeAcceptedAsByField } from '../../iceRegistry';
 import { beforeWrite$, dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
-import { getCachedModel, getCachedModels, getCachedSandboxItem, modelHierarchyMap } from '../../contentController';
+import {
+  createContentInstance,
+  getCachedModel,
+  getCachedModels,
+  getCachedSandboxItem,
+  modelHierarchyMap
+} from '../../contentController';
 import { interval, merge, NEVER, Observable, of, Subscriber } from 'rxjs';
 import { clearAndListen$, destroyDragSubjects, dragover$, escape$, initializeDragSubjects } from '../subjects';
 import { initTinyMCE } from '../../controls/rte';
@@ -43,8 +59,8 @@ import {
   contentTypeDropTargetsResponse,
   instanceDragBegun,
   instanceDragEnded,
-  trashed,
-  snackGuestMessage
+  snackGuestMessage,
+  trashed
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
@@ -57,6 +73,10 @@ import {
   computedDragEnd,
   desktopAssetDragEnded,
   desktopAssetDragStarted,
+  desktopAssetUploadComplete,
+  desktopAssetUploadFailed,
+  desktopAssetUploadProgress,
+  desktopAssetUploadStarted,
   documentDragEnd,
   documentDragLeave,
   documentDragOver,
@@ -65,11 +85,7 @@ import {
   dropzoneLeave,
   exitComponentInlineEdit,
   setEditingStatus,
-  startListening,
-  desktopAssetUploadComplete,
-  desktopAssetUploadFailed,
-  desktopAssetUploadProgress,
-  desktopAssetUploadStarted
+  startListening
 } from '../actions';
 import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
@@ -80,7 +96,6 @@ import { validateActionPolicy } from '@craftercms/studio-ui/services/sites';
 import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
-import { catchError } from 'rxjs/operators';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -242,14 +257,29 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 }
                 case EditingStatus.PLACING_NEW_COMPONENT: {
                   if (notNullOrUndefined(dragContext.targetIndex)) {
+                    // `contentType` on the dragContext is the content type of the thing getting created
                     const { targetIndex, contentType, dropZone } = dragContext;
                     const record = iceRegistry.getById(dropZone.iceId);
+                    const entries = getReferentialEntries(record);
+                    // This assumes the validation of the type being accepted by the field has been performed prior
+                    // to this running. Hence, create as embedded if accepted, otherwise create as shared.
+                    const createAsEmbedded = isTypeAcceptedAsByField(entries.field, contentType.id, 'embedded');
+                    const instance = createContentInstance(
+                      contentType,
+                      createAsEmbedded
+                        ? null
+                        : entries.contentType.dataSources?.find(
+                            (ds) => ds.type === 'components' && ds.contentTypes.split(',').includes(contentType.id)
+                          )?.baseRepoPath ?? null
+                    );
                     setTimeout(() => {
                       contentController.insertComponent(
                         record.modelId,
                         record.fieldId,
                         record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-                        contentType
+                        instance,
+                        !createAsEmbedded,
+                        true
                       );
                     });
                   }
@@ -260,14 +290,15 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                     const { targetIndex, instance, dropZone } = dragContext;
                     const record = iceRegistry.getById(dropZone.iceId);
                     setTimeout(() => {
-                      contentController.insertInstance(
+                      contentController.insertComponent(
                         record.modelId,
                         record.fieldId,
                         record.fieldId.includes('.') ? `${record.index}.${targetIndex}` : targetIndex,
-                        instance
+                        instance,
+                        // Only shared components ever come through this path
+                        true
                       );
                     });
-                    // return of({ type: 'insert_instance' });
                   }
                   break;
                 }

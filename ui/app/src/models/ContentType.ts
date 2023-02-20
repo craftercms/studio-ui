@@ -23,15 +23,17 @@ export interface ContentTypeSection {
   expandByDefault: boolean;
 }
 
-export interface ContentTypeFieldValidation {
+export interface ContentTypeFieldValidation<T = any> {
   id: string;
-  value: any;
+  value: T;
   level: 'required' | 'suggestion';
 }
 
 export type ValidationKeys =
   | 'allowedContentTypeTags'
-  | 'allowedContentTypes'
+  | 'allowedContentTypes' // TODO: access removing this validation in favour of keeping allowedEmbeddedContentTypes & allowedSharedContentTypes only
+  | 'allowedEmbeddedContentTypes'
+  | 'allowedSharedContentTypes'
   | 'minCount'
   | 'maxCount'
   | 'maxLength'
@@ -163,9 +165,7 @@ export interface LegacyDataSource {
   title: string; // display name for authors
   type: string; // data source id
   interface: string; // ?
-  properties: {
-    property: LegacyFormDefinitionProperty[] | LegacyFormDefinitionProperty;
-  };
+  properties: { property: LegacyFormDefinitionProperty[] | LegacyFormDefinitionProperty };
 }
 
 export interface LegacyFormDefinition {
@@ -224,6 +224,17 @@ export interface LegacyContentType {
   quickCreatePath: string;
   type: LegacyComponentTypes;
   useRoundedFolder: string;
+}
+
+export interface ComponentsDatasource extends LegacyDataSource {
+  allowEmbedded: boolean;
+  allowShared: boolean;
+  baseBrowsePath: string;
+  baseRepositoryPath: string;
+  contentTypes: string;
+  enableBrowse: boolean;
+  enableSearch: boolean;
+  tags: string;
 }
 
 export default ContentType;

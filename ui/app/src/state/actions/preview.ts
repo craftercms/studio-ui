@@ -54,6 +54,8 @@ export const guestCheckIn = /*#__PURE__*/ createAction<{
   path: string;
   site: string;
   documentDomain?: string;
+  // TODO:
+  // version: string;
 }>('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction<{ path: string }>('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
@@ -68,17 +70,17 @@ export const sortItemOperationComplete = /*#__PURE__*/ createAction<{ index: str
   'SORT_ITEM_OPERATION_COMPLETE'
 );
 export const sortItemOperationFailed = /*#__PURE__*/ createAction('SORT_ITEM_OPERATION_FAILED');
-export const insertComponentOperation = /*#__PURE__*/ createAction<
-  {
-    targetIndex: string | number;
-    contentType: ContentType;
-    instance: InstanceRecord;
-    shared: boolean;
-  } & CommonOperationProps
->('INSERT_COMPONENT_OPERATION');
-export const insertInstanceOperation = /*#__PURE__*/ createAction<
-  { targetIndex: string | number; instance: InstanceRecord } & CommonOperationProps
->('INSERT_INSTANCE_OPERATION');
+
+export interface InsertComponentOperationPayload extends CommonOperationProps {
+  targetIndex: string | number;
+  instance: ContentInstance;
+  shared: boolean;
+  create: boolean;
+}
+
+export const insertComponentOperation =
+  /*#__PURE__*/ createAction<InsertComponentOperationPayload>('INSERT_COMPONENT_OPERATION');
+
 export const insertOperationComplete = /*#__PURE__*/ createAction<
   {
     currentFullUrl: string;

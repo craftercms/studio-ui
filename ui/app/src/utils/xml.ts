@@ -30,10 +30,6 @@ export function serialize(doc: Node, options?: { format: boolean }): string {
   return options.format ? beautify(content, { printWidth: +Infinity }) : content;
 }
 
-export function minify(xml: string) {
-  throw new Error('minify error is not implemented.');
-}
-
 interface BeautifyOptions {
   tabWidth: number;
   printWidth: number;
@@ -166,10 +162,10 @@ export function wrapElementInAuxDocument(element: Element): XMLDocument {
   return fromString(`<?xml version="1.0" encoding="UTF-8"?>${element.outerHTML}`);
 }
 
-export function newXMLDocument(): XMLDocument {
+export function newXMLDocument(rootTagName = 'root'): XMLDocument {
   // With the document.implementation.createDocument, new elements then inserted into the xml document
   // end up with an undesirable namespace and serialization looses the case, so sticking with creating from string.
-  return fromString(`<?xml version="1.0" encoding="UTF-8"?><root />`);
+  return fromString(`<?xml version="1.0" encoding="UTF-8"?><${rootTagName} />`);
 }
 
 export function createElement(tagName: string): Element;
@@ -190,7 +186,6 @@ export function deserialize(xml: string | Node, options?: X2jOptionsOptional): a
     ignoreDeclaration: true,
     ...options
   });
-
   if (typeof xml !== 'string') {
     xml = serialize(xml);
   }
