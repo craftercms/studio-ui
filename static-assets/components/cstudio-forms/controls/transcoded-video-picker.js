@@ -184,14 +184,14 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     var previewEl = document.createElement('div');
     YAHOO.util.Dom.addClass(
       previewEl,
-      'cstudio-form-control-node-selector-item cstudio-form-control-video-selector-item'
+      'cstudio-form-control-node-selector-item cstudio-form-control-transcoded-video-selector-item'
     );
     previewEl.style.wordWrap = 'break-word';
 
     previewEl.innerHTML = '<span>' + video.url + '</span>';
 
     var previewBtn = document.createElement('a');
-    YAHOO.util.Dom.addClass(previewBtn, 'action video-preview');
+    YAHOO.util.Dom.addClass(previewBtn, 'action video-preview ml-auto');
     previewBtn.setAttribute('href', '#');
     previewBtn.setAttribute('data-url', video.url);
     previewBtn.innerHTML = '<i class="fa fa-search-plus" aria-hidden="true"></i>';
@@ -280,6 +280,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       if (datasource.insertVideoAction) {
         var callback = {
           success: function (videoData) {
+            self.deleteVideo(); // When replacing video, first need to delete current selection
             var videoContainer;
 
             this.videoPicker.noPreviewEl.style.display = 'none';
@@ -296,7 +297,6 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
             self.videoEl.style.minHeight = '100px';
             self.videoEl.style.height = 'auto';
 
-            YAHOO.util.Dom.addClass(this.videoPicker.addEl, 'cstudio-button-disabled');
             YAHOO.util.Dom.removeClass(this.videoPicker.delEl, 'cstudio-button-disabled');
 
             this.videoPicker.addEl.value = CMgs.format(langBundle, 'replace');
@@ -332,7 +332,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
       YAHOO.util.Dom.removeClass(this.addEl, 'cstudio-button-disabled');
 
       if (inputValue === 'multiple') {
-        $(this.videoEl).find('.cstudio-form-control-video-selector-item').remove();
+        $(this.videoEl).find('.cstudio-form-control-transcoded-video-selector-item').remove();
       } else {
         this.urlEl.innerHTML = '';
         this.previewEl.src = '';
@@ -365,7 +365,6 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     var validEl = document.createElement('span');
     YAHOO.util.Dom.addClass(validEl, 'validation-hint');
     YAHOO.util.Dom.addClass(validEl, 'cstudio-form-control-validation fa fa-check');
-    controlWidgetContainerEl.appendChild(validEl);
 
     var inputEl = document.createElement('input');
     this.inputEl = inputEl;
@@ -378,12 +377,16 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     urlEl.innerHTML = this.inputEl.value;
     controlWidgetContainerEl.appendChild(urlEl);
 
+    const controlBoxEl = document.createElement('div');
+    controlBoxEl.className = 'cstudio-form-control-transcoded-video-controlbox';
+    controlWidgetContainerEl.appendChild(controlBoxEl);
+
     var videoEl = document.createElement('div');
     this.videoEl = videoEl;
     videoEl.id = divPrefix + 'cstudio-form-video-picker';
 
-    YAHOO.util.Dom.addClass(videoEl, 'cstudio-form-control-asset-picker-preview-block');
-    controlWidgetContainerEl.appendChild(videoEl);
+    YAHOO.util.Dom.addClass(videoEl, 'cstudio-form-control-transcoded-video-preview-block');
+    controlBoxEl.appendChild(videoEl);
 
     var noPreviewEl = document.createElement('span');
     this.noPreviewEl = noPreviewEl;
@@ -434,29 +437,36 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
 
     videoEl.appendChild(downloadEl);
 
+    const optionsEl = document.createElement('div');
+    optionsEl.className = 'cstudio-form-control-transcoded-video-options';
+    controlBoxEl.appendChild(optionsEl);
+
     var addEl = document.createElement('input');
     this.addEl = addEl;
     addEl.type = 'button';
     addEl.style.position = 'relative';
+    addEl.style.padding = '6px 12px';
+    addEl.style.marginLeft = 'auto';
     if (this.inputEl.value === null || this.inputEl.value === '') {
       addEl.value = CMgs.format(langBundle, 'add');
     } else {
       addEl.value = CMgs.format(langBundle, 'replace');
     }
 
-    YAHOO.util.Dom.addClass(addEl, 'cstudio-button');
-    controlWidgetContainerEl.appendChild(addEl);
+    YAHOO.util.Dom.addClass(addEl, 'cstudio-button btn btn-default btn-sm');
+    optionsEl.appendChild(addEl);
 
     var delEl = document.createElement('input');
     this.delEl = delEl;
     delEl.type = 'button';
     delEl.value = CMgs.format(langBundle, 'delete');
     delEl.style.position = 'relative';
+    delEl.style.padding = '6px 12px';
     delEl.disabled = true;
-    YAHOO.util.Dom.addClass(delEl, 'cstudio-button');
+    YAHOO.util.Dom.addClass(delEl, 'cstudio-button btn btn-default btn-sm');
     YAHOO.util.Dom.addClass(delEl, 'cstudio-button-disabled');
 
-    controlWidgetContainerEl.appendChild(delEl);
+    optionsEl.appendChild(delEl);
 
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
@@ -500,6 +510,7 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     descriptionEl.style.position = 'relative';
 
     containerEl.appendChild(titleEl);
+    containerEl.appendChild(validEl);
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
 
@@ -569,15 +580,10 @@ YAHOO.extend(CStudioForms.Controls.TranscodedVideoPicker, CStudioForms.CStudioFo
     } else {
       // if value is array => multiple values, otherwise regular video picker
       if (Array.isArray(this.value)) {
-        this.previewEl.style.display = 'none';
-        this.videoEl.style.minHeight = '100px';
-        this.videoEl.style.height = 'auto';
-
         value.forEach(function (video) {
           _self.createVideoContainer(video);
         });
 
-        YAHOO.util.Dom.addClass(this.addEl, 'cstudio-button-disabled');
         YAHOO.util.Dom.removeClass(this.delEl, 'cstudio-button-disabled');
         this.delEl.disabled = false;
       } else {
