@@ -94,7 +94,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
-import { nnou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import RubbishBin from '../RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
@@ -562,8 +562,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           const { version: guestVersion } = payload;
           const studioVersion = env.version;
 
-          if (type === guestCheckIn.type && guestVersion && guestVersion.substr(0, 5) !== studioVersion) {
-            enqueueSnackbar(formatMessage(guestMessages.invalidExpBuilderVersion));
+          if (type === guestCheckIn.type && (nou(guestVersion) || guestVersion.substr(0, 5) !== studioVersion)) {
+            enqueueSnackbar(formatMessage(guestMessages.outdatedExpBuilderVersion));
           }
 
           clearTimeout(guestDetectionTimeoutRef.current);

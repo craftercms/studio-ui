@@ -30,7 +30,7 @@ message$.subscribe(function ({ type, payload }) {
 
 const location = createLocationArgument();
 
-post(guestCheckIn.type, { location, __CRAFTERCMS_GUEST_LANDING__: true });
+post(guestCheckIn.type, { location, __CRAFTERCMS_GUEST_LANDING__: true, version: process.env.VERSION });
 
 setTimeout(() => {
   $('img').fadeIn();
