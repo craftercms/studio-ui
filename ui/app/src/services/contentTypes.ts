@@ -358,7 +358,7 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
 
   // get receptacles dataSources
   asArray(definition.datasources?.datasource).forEach((datasource: LegacyDataSource) => {
-    // TODO: Delete datasource.properties after props have been added to the root object? Most update code usages of datasource.properties.
+    // TODO: Delete datasource.properties after props have been added to the root object? Must update code usages of datasource.properties.
     const properties = asArray(datasource.properties?.property);
     properties.forEach((property) => {
       let value: any = property.value;

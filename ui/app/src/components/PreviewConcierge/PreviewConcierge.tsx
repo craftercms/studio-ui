@@ -736,7 +736,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           // - Shared new - shared: true, create: true -> insertComponent
           // - Shared existing - shared: true, create: false -> insertInstance
           // - Embedded new - shared: false, create: true -> insertComponent
-          // * Embedded existing - shared: false, create: false -> insertInstance <- This case doesn't go through here as it is the move/sort operation.
+          // * Embedded existing - shared: false, create: false -> insertInstance <- This case doesn't go through here, it goes by the move/sort operation.
           let serviceObservable = create
             ? // region insertComponent
               insertComponent(
@@ -762,7 +762,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               );
           // endregion
 
-          // Writing the xml document only makes sense for shared.
+          // Writing the xml document for the component being inserted only applies to new & shared.
           if (shared && create) {
             let postWriteObs = serviceObservable;
             serviceObservable = writeInstance(siteId, instance, contentType, shouldSerializeFn).pipe(

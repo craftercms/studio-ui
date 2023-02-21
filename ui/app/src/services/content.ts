@@ -230,10 +230,11 @@ function createComponentObject(
   const serializedInstance = {};
   for (let key in instance) {
     if (key !== 'craftercms' && key !== 'fileName' && key !== 'internalName') {
+      let value = instance[key];
       serializedInstance[key] =
-        nnou(instance[key]) && !isBlank(instance[key]) && shouldSerializeValueFn?.(key)
-          ? cdataWrap(`${instance[key]}`)
-          : instance[key];
+        nnou(value) && (typeof value !== 'string' || !isBlank(value)) && shouldSerializeValueFn?.(key)
+          ? cdataWrap(`${value}`)
+          : value;
     }
   }
 
@@ -249,7 +250,7 @@ function createComponentObject(
   });
 }
 
-// region writeComponent
+// region writeInstance
 /**
  * Creates a new content item xml document and writes it to the repo.
  */
@@ -444,7 +445,11 @@ export function insertItem(
       const serializedInstance = {};
       for (let key in instance) {
         if (key !== 'craftercms') {
-          serializedInstance[key] = shouldSerializeValueFn?.(key) ? cdataWrap(`${instance[key]}`) : instance[key];
+          let value = instance[key];
+          serializedInstance[key] =
+            nnou(value) && (typeof value !== 'string' || !isBlank(value)) && shouldSerializeValueFn?.(key)
+              ? cdataWrap(`${value}`)
+              : value;
         }
       }
       createElements(newItem, serializedInstance);

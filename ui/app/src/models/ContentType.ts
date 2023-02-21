@@ -31,7 +31,7 @@ export interface ContentTypeFieldValidation<T = any> {
 
 export type ValidationKeys =
   | 'allowedContentTypeTags'
-  | 'allowedContentTypes' // TODO: access removing this validation in favour of keeping allowedEmbeddedContentTypes & allowedSharedContentTypes only
+  | 'allowedContentTypes' // TODO: assess removing this validation in favour of keeping allowedEmbeddedContentTypes & allowedSharedContentTypes only
   | 'allowedEmbeddedContentTypes'
   | 'allowedSharedContentTypes'
   | 'minCount'
