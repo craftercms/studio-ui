@@ -165,6 +165,6 @@ export const guestMessages = defineMessages({
   outdatedExpBuilderVersion: {
     id: 'validations.outdatedExpBuilderVersion',
     defaultMessage:
-      "Your application's Experience Builder package version is out of date. Please notify the development team to perform the update to avoid issues."
+      "Your application's Experience Builder package version is out of date. Please notify the development team to perform the necessary updates to avoid any possible issues."
   }
 });
