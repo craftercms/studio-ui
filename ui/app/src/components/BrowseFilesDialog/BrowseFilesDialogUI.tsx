@@ -46,8 +46,9 @@ import Menu from '@mui/material/Menu';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import Typography from '@mui/material/Typography';
 import { inputBaseClasses } from '@mui/material/InputBase';
+import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
+import GridViewIcon from '@mui/icons-material/GridOnRounded';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -78,7 +79,9 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onCloseButtonClick,
     onRefresh,
     onUpload,
-    allowUpload = true
+    allowUpload = true,
+    compact = false,
+    onToggleViewMode
   } = props;
   // endregion
   const { classes, cx: clsx } = useStyles();
@@ -91,9 +94,6 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
       <DialogBody className={classes.dialogBody}>
         <Box display="flex" className={classes.dialogContent}>
           <Box className={classes.leftWrapper} display="flex" flexDirection="column" rowGap="20px">
-            <Typography variant="subtitle2">
-              <FormattedMessage id="words.path" defaultMessage="Path" />
-            </Typography>
             <FolderBrowserTreeView rootPath={path} onPathSelected={onPathSelected} selectedPath={currentPath} />
           </Box>
           <section className={classes.rightWrapper}>
@@ -216,11 +216,17 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                   </Menu>
                   <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
                 </Box>
-
-                <Box sx={{ flexGrow: 0 }}>
+                <Box sx={{ display: 'flex', flexGrow: 0 }}>
+                  <Tooltip title={<FormattedMessage defaultMessage="Toggle compact view" />}>
+                    <IconButton onClick={onToggleViewMode} sx={{ mr: 1 }}>
+                      {compact ? <GridViewIcon /> : <ListViewIcon />}
+                    </IconButton>
+                  </Tooltip>
+                  <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
                   {items && (
                     <Pagination
                       sxs={{
+                        toolbar: { pl: 0 },
                         root: {
                           [`.${inputBaseClasses.root}`]: {
                             marginRight: (theme) => theme.spacing(1),
@@ -243,6 +249,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
               {items
                 ? items.map((item: SearchItem) => (
                     <MediaCard
+                      compact={compact}
                       classes={{
                         root: clsx(classes.mediaCardRoot, item.path === selectedCard?.path && classes.selectedCard)
                       }}

@@ -143,14 +143,6 @@ export function removeStoredPathNavigatorTree(siteIdentifier: string, user: stri
   window.localStorage.removeItem(`craftercms.${user}.pathNavigatorTree.${siteIdentifier}.${id}`);
 }
 
-export function setStoredFolderBrowserPathView(siteIdentifier: string, user: string, value: { limit: number }): void {
-  window.localStorage.setItem(`craftercms.${user}.folderBrowserPathView.${siteIdentifier}`, JSON.stringify(value));
-}
-
-export function getStoredFolderBrowserPathView(siteIdentifier: string, user: string) {
-  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.folderBrowserPathView.${siteIdentifier}`));
-}
-
 export function setStoredGlobalAppOpenSidebar(user: string, value: boolean) {
   window.localStorage.setItem(`craftercms.${user}.globalAppOpenSidebar`, JSON.stringify(value));
 }
@@ -313,4 +305,12 @@ export function setStoredPreviewBackgroundMode(username: string, mode: number): 
 
 export function getStoredPreviewBackgroundMode(username: string): number {
   return JSON.parse(localStorage.getItem(`craftercms.${username}.previewDialog.backgroundMode`));
+}
+
+export function setStoredBrowseDialogCompactMode(username: string, compact: boolean): void {
+  localStorage.setItem(`craftercms.${username}.browseDialog.compactMode`, String(compact));
+}
+
+export function getStoredBrowseDialogCompactMode(username: string): boolean {
+  return JSON.parse(localStorage.getItem(`craftercms.${username}.browseDialog.compactMode`)) ?? false;
 }

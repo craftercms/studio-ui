@@ -76,6 +76,7 @@ interface MediaCardProps {
   showPath?: boolean;
   selected?: Array<string>;
   previewAppBaseUri: string;
+  compact?: boolean;
   action?: CardHeaderProps['action'];
   avatar?: CardHeaderProps['avatar'];
   classes?: Partial<Record<'root' | 'checkbox' | 'media' | 'mediaIcon' | 'cardActionArea' | 'cardHeader', string>>;
@@ -101,7 +102,8 @@ function MediaCard(props: MediaCardProps) {
     action,
     avatar,
     onDragStart,
-    onDragEnd
+    onDragEnd,
+    compact = false
   } = props;
   // endregion
   const { name, path, type } = item;
@@ -171,26 +173,28 @@ function MediaCard(props: MediaCardProps) {
           title: item.path
         }}
       />
-      <CardActionAreaOrFragment {...cardActionAreaOrFragmentProps}>
-        {type === 'Image' ? (
-          <CardMedia
-            className={cx(classes.media, props.classes?.media)}
-            image={`${previewAppBaseUri}${path}`}
-            title={name}
-          />
-        ) : (
-          <div className={cx(classes.mediaIcon, props.classes?.mediaIcon)}>
-            {type === 'Video' ? (
-              <video className={classes.videoThumbnail}>
-                <source src={path} type="video/mp4" />
-                {systemIcon}
-              </video>
-            ) : (
-              systemIcon
-            )}
-          </div>
-        )}
-      </CardActionAreaOrFragment>
+      {!compact && (
+        <CardActionAreaOrFragment {...cardActionAreaOrFragmentProps}>
+          {type === 'Image' ? (
+            <CardMedia
+              className={cx(classes.media, props.classes?.media)}
+              image={`${previewAppBaseUri}${path}`}
+              title={name}
+            />
+          ) : (
+            <div className={cx(classes.mediaIcon, props.classes?.mediaIcon)}>
+              {type === 'Video' ? (
+                <video className={classes.videoThumbnail}>
+                  <source src={path} type="video/mp4" />
+                  {systemIcon}
+                </video>
+              ) : (
+                systemIcon
+              )}
+            </div>
+          )}
+        </CardActionAreaOrFragment>
+      )}
     </Card>
   );
 }

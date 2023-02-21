@@ -77,6 +77,7 @@ export interface PathNavigatorTreeProps
   collapsedIcon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
   initialCollapsed?: boolean;
+  collapsible?: boolean;
   initialSystemTypes?: SystemType[];
   initialExpanded?: string[];
   onNodeClick?: PathNavigatorTreeUIProps['onLabelClick'];
@@ -136,6 +137,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     rootPath,
     initialExpanded,
     initialCollapsed = true,
+    collapsible = true,
     initialSystemTypes,
     onNodeClick,
     active,
@@ -208,7 +210,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   // region Handlers
 
   const onChangeCollapsed = (collapsed) => {
-    dispatch(pathNavigatorTreeToggleCollapsed({ id, collapsed }));
+    collapsible && dispatch(pathNavigatorTreeToggleCollapsed({ id, collapsed }));
   };
 
   const onNodeLabelClick =
