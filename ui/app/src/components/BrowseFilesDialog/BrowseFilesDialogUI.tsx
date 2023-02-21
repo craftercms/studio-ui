@@ -47,8 +47,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import { inputBaseClasses } from '@mui/material/InputBase';
-import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
-import ViewModuleRoundedIcon from '@mui/icons-material/ViewModuleRounded';
+import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
+import GridViewIcon from '@mui/icons-material/GridOnRounded';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -219,7 +219,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                 <Box sx={{ display: 'flex', flexGrow: 0 }}>
                   <Tooltip title={<FormattedMessage defaultMessage="Toggle compact view" />}>
                     <IconButton onClick={onToggleViewMode} sx={{ mr: 1 }}>
-                      {compact ? <GridViewRoundedIcon /> : <ViewModuleRoundedIcon />}
+                      {compact ? <GridViewIcon /> : <ListViewIcon />}
                     </IconButton>
                   </Tooltip>
                   <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
