@@ -1143,7 +1143,7 @@ var CStudioForms =
         var _content = content.responseXML ? content.responseXML : content;
         if (_content) {
           try {
-            return _content.querySelector(':scope > internal-name').textContent;
+            return _content?.querySelector?.(':scope > internal-name').textContent;
           } catch (err) {
             console.error(err);
             return '';

@@ -33,12 +33,8 @@ import { determineRecordType, findComponentContainerFields } from './utils/ice';
 import { isSimple, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
 
-const validationChecks: Record<ValidationKeys, Function> = {
-  allowVideoUpload(p0) {},
-  allowVideosFromRepo(p0) {},
-  // TODO: implement max/min value.
-  maxValue(p0) {},
-  minValue(p0) {},
+/** Functions return nullish if everything is fine */
+const validationChecks: Partial<Record<ValidationKeys, Function>> = {
   minCount(id, minCount, level, length) {
     if (length < minCount) {
       return {
@@ -60,22 +56,7 @@ const validationChecks: Record<ValidationKeys, Function> = {
     } else {
       return null;
     }
-  },
-  allowedContentTypeTags() {},
-  allowedContentTypes() {},
-  maxLength() {},
-  readOnly() {},
-  required() {},
-  width() {},
-  height() {},
-  minWidth() {},
-  minHeight() {},
-  maxWidth() {},
-  maxHeight() {},
-  dropTargetsNotFound() {},
-  registerNotFound() {},
-  allowImagesFromRepo() {},
-  allowImageUpload() {}
+  }
 };
 
 let rid = 0;
@@ -274,18 +255,19 @@ export function getComponentItemDropTargets(record: ICERecord): number[] {
  * Returns a list of ICE records that matches a content type
  * @param contentType {string | ContentType} The content type that the records should match.
  * @param excludeFn {(record: ICERecord, hierarchyMap: ModelHierarchyMap) => boolean} function that returns true if record has to be excluded, and false it not.
+ * @param storedAs {shared | embedded} Check if the content is accepted based on a particular storage format (i.e. shared or embedded)
  */
 export function getContentTypeDropTargets(
   contentType: string | ContentType,
-  excludeFn?: (record: ICERecord, hierarchyMap: ModelHierarchyMap) => boolean
+  excludeFn?: (record: ICERecord, hierarchyMap: ModelHierarchyMap) => boolean,
+  storedAs?: 'shared' | 'embedded'
 ): ICERecord[] {
   const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
   return Array.from(registry.values()).filter((record) => {
     const { fieldId, index } = record;
     if (notNullOrUndefined(fieldId) && !excludeFn?.(record, contentController.modelHierarchyMap)) {
       const { field, contentType: _contentType, model } = getReferentialEntries(record);
-      const acceptedTypes = field?.validations?.allowedContentTypes?.value;
-      const accepts = acceptedTypes && (acceptedTypes.includes(contentTypeId) || acceptedTypes.includes('*'));
+      const accepts = isTypeAcceptedAsByField(field, contentTypeId, storedAs);
       if (!accepts) {
         return false;
       } else if (nullOrUndefined(index)) {
@@ -309,6 +291,26 @@ export function getContentTypeDropTargets(
       return false;
     }
   });
+}
+
+/**
+ * Checks if a content type is accepted (as shared, embedded or at-all) by a specific receiver field
+ * @param receiverField {ContentTypeField}
+ * @param contentTypeId {string}
+ * @param storedAs {embedded | shared}
+ */
+export function isTypeAcceptedAsByField(
+  receiverField: ContentTypeField,
+  contentTypeId: string,
+  storedAs?: 'embedded' | 'shared'
+): boolean {
+  const acceptedTypes: string[] =
+    (storedAs === 'shared'
+      ? receiverField?.validations?.allowedSharedContentTypes?.value
+      : storedAs === 'embedded'
+      ? receiverField?.validations?.allowedEmbeddedContentTypes?.value
+      : receiverField?.validations?.allowedContentTypes?.value) ?? [];
+  return acceptedTypes.some((typeId) => typeId === contentTypeId || typeId === '*');
 }
 
 export function runDropTargetsValidations(dropTargets: ICERecord[]): LookupTable<LookupTable<ValidationResult>> {
@@ -354,7 +356,7 @@ export function runValidation(iceId: number, validationId: ValidationKeys, args?
   const record = getById(iceId);
   const validations = getReferentialEntries(record).field?.validations;
   if (validations?.[validationId]) {
-    return validationChecks[validationId](...[...Object.values(validations[validationId]), ...args]);
+    return validationChecks[validationId]?.(...[...Object.values(validations[validationId]), ...args]);
   } else {
     return null;
   }

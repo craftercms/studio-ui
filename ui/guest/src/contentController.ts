@@ -29,7 +29,6 @@ import {
   deleteItemOperation,
   duplicateItemOperation,
   insertComponentOperation,
-  insertInstanceOperation,
   insertItemOperation,
   moveItemOperation,
   sortItemOperation,
@@ -226,8 +225,6 @@ export function getCachedContentTypes(): LookupTable<ContentType> {
 
 // endregion
 
-// region Operations
-
 // To propagate the update up the model tree for
 // reference based UI rendering libraries.
 function collectReferrers(modelId) {
@@ -334,39 +331,29 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
     [modelId]: model
   });
 
-  // Post the update to studio to persist it
-  post(
-    updateFieldValueOperation({
-      modelId,
-      fieldId,
-      index,
-      value,
-      parentModelId
-    })
-  );
-
-  operations$.next({
-    type: updateFieldValueOperation.type,
-    args: { modelId: getModelIdFromInheritedField(modelId, fieldId), fieldId, index, value }
+  const action = updateFieldValueOperation({
+    modelId,
+    fieldId,
+    index,
+    value,
+    parentModelId
   });
+
+  // Post the update to studio to persist it
+  post(action);
+  operations$.next(action);
 }
 
 export function duplicateItem(modelId: string, fieldId: string, index: number | string): void {
   const models = getCachedModels();
-
-  post(
-    duplicateItemOperation({
-      modelId,
-      fieldId,
-      index,
-      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-    })
-  );
-
-  operations$.next({
-    type: duplicateItemOperation.type,
-    args: {}
+  const action = duplicateItemOperation({
+    modelId,
+    fieldId,
+    index,
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
   });
+  post(action);
+  operations$.next(action);
 }
 
 export function insertItem(modelId: string, fieldId: string, index: number | string, contentType: ContentType): void {
@@ -378,113 +365,51 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
     }
   });
 
-  post(
-    insertItemOperation({
-      modelId,
-      fieldId,
-      index,
-      instance,
-      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-    })
-  );
-
-  operations$.next({
-    type: insertItemOperation.type,
-    args: {}
+  const action = insertItemOperation({
+    modelId,
+    fieldId,
+    index,
+    instance,
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
   });
+
+  post(action);
+  operations$.next(action);
 }
 
 const systemProps = ['fileName', 'internalName'];
 
-export function insertComponent(
-  modelId: string,
-  fieldId: string,
-  targetIndex: number | string,
-  contentType: ContentType,
-  shared: boolean = false
-): void {
-  if (typeof contentType === 'string') {
-    contentType = getCachedContentType(contentType);
-  }
-
-  const models = getCachedModels();
-  const result = getCollection(models[modelId], fieldId, targetIndex).concat();
-
-  // Create Item
-  // const now = new Date().toISOString();
+export function createContentInstance(contentType: ContentType, path: string = null): ContentInstance {
+  const id = uuid();
+  const now = new Date().toISOString();
   const instance: ContentInstance = {
     craftercms: {
-      id: uuid(),
-      path: null,
+      id,
+      path: path ? `${path}/${id}.xml` : null,
       label: `New ${contentType.name}`,
       contentTypeId: contentType.id,
-      dateCreated: null,
-      dateModified: null
+      dateCreated: now,
+      dateModified: now
     }
   };
-
   Object.entries(contentType.fields).forEach(([id, field]) => {
     if (!systemProps.includes(field.id)) {
       instance[id] = getDefaultValue(field);
     }
   });
-
-  // Insert in desired position
-  result.splice(targetIndex as number, 0, instance.craftercms.id);
-
-  const model = setCollection(
-    models[modelId],
-    fieldId,
-    typeof targetIndex === 'string' ? removeLastPiece(targetIndex) : targetIndex,
-    result
-  );
-
-  models$.next({
-    ...models,
-    [instance.craftercms.id]: instance,
-    [modelId]: model
-  });
-
-  modelHierarchyMap[instance.craftercms.id] = {
-    children: [],
-    modelId: instance.craftercms.id,
-    parentContainerFieldIndex: isSimple(targetIndex) ? null : removeLastPiece(targetIndex as string),
-    parentContainerFieldPath: isSimple(fieldId) ? fieldId : removeLastPiece(fieldId),
-    parentId: modelId
-  };
-
-  modelHierarchyMap[modelId]?.children.push(instance.craftercms.id);
-
-  updateHierarchyMapIndexesFromCollection(result);
-
-  post(
-    insertComponentOperation({
-      modelId,
-      fieldId,
-      targetIndex,
-      contentType,
-      instance,
-      parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
-      shared
-    })
-  );
-
-  operations$.next({
-    type: insertComponentOperation.type,
-    args: { modelId, fieldId, targetIndex, contentType, shared, instance }
-  });
+  return instance;
 }
 
-// insertInstance(modelId: string, fieldId: string, targetIndex: number, instance: ContentInstance): void;
-// insertInstance(modelId: string, fieldId: string, targetIndex: string, instance: ContentInstance): void;
-export function insertInstance(
+// region export function insertComponent(...) ...
+export function insertComponent(
   modelId: string,
   fieldId: string,
   targetIndex: number | string,
-  instance: ContentInstance
+  instance: ContentInstance,
+  shared = false,
+  create = false
 ): void {
   const models = getCachedModels();
-
   const result = getCollection(models[modelId], fieldId, targetIndex).concat();
 
   // Insert in desired position
@@ -515,21 +440,20 @@ export function insertInstance(
 
   updateHierarchyMapIndexesFromCollection(result);
 
-  post(
-    insertInstanceOperation({
-      modelId,
-      fieldId,
-      targetIndex,
-      instance,
-      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-    })
-  );
-
-  operations$.next({
-    type: insertInstanceOperation.type,
-    args: { modelId, fieldId, targetIndex, instance }
+  const action = insertComponentOperation({
+    modelId,
+    fieldId,
+    targetIndex,
+    instance,
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap),
+    shared,
+    create
   });
+
+  post(action);
+  operations$.next(action);
 }
+// endregion
 
 export function insertGroup(modelId, fieldId, data): void {}
 
@@ -561,6 +485,7 @@ export function sortDownItem(modelId: string, fieldId: string, index: number | s
   }
 }
 
+// region export function sortItem(...) ...
 export function sortItem(
   modelId: string,
   fieldId: string,
@@ -616,22 +541,20 @@ export function sortItem(
     [modelId]: model
   });
 
-  post(
-    sortItemOperation({
-      modelId,
-      fieldId,
-      currentIndex,
-      targetIndex,
-      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-    })
-  );
-
-  operations$.next({
-    type: sortItemOperation.type,
-    args: arguments
+  const action = sortItemOperation({
+    modelId,
+    fieldId,
+    currentIndex,
+    targetIndex,
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
   });
-}
 
+  post(action);
+  operations$.next(action);
+}
+// endregion
+
+// region export function moveItem(...) ...
 export function moveItem(
   originalModelId: string,
   originalFieldId: string,
@@ -730,24 +653,21 @@ export function moveItem(
         }
   );
 
-  post(
-    moveItemOperation({
-      originalModelId,
-      originalFieldId,
-      originalIndex,
-      targetModelId,
-      targetFieldId,
-      targetIndex,
-      originalParentModelId: getParentModelId(originalModelId, models, modelHierarchyMap),
-      targetParentModelId: getParentModelId(targetModelId, models, modelHierarchyMap)
-    })
-  );
-
-  operations$.next({
-    type: moveItemOperation.type,
-    args: arguments
+  const action = moveItemOperation({
+    originalModelId,
+    originalFieldId,
+    originalIndex,
+    targetModelId,
+    targetFieldId,
+    targetIndex,
+    originalParentModelId: getParentModelId(originalModelId, models, modelHierarchyMap),
+    targetParentModelId: getParentModelId(targetModelId, models, modelHierarchyMap)
   });
+
+  post(action);
+  operations$.next(action);
 }
+// endregion
 
 export function deleteItem(modelId: string, fieldId: string, index: number | string): void {
   const isStringIndex = typeof index === 'string';
@@ -793,23 +713,16 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
     [modelId]: model
   });
 
-  post(
-    deleteItemOperation({
-      modelId,
-      fieldId,
-      index,
-      parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
-    })
-  );
-
-  operations$.next({
-    type: deleteItemOperation.type,
-    args: arguments,
-    state: { item: collection[parsedIndex] }
+  const action = deleteItemOperation({
+    modelId,
+    fieldId,
+    index,
+    parentModelId: getParentModelId(modelId, models, modelHierarchyMap)
   });
-}
 
-// endregion
+  post(action);
+  operations$.next(action);
+}
 
 // Host sends over all content types upon Guest check in.
 fromTopic(contentTypesResponse.type)

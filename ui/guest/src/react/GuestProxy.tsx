@@ -24,6 +24,7 @@ import {
   contentTypes$,
   getCachedContentType,
   getCachedModel,
+  getModelIdFromInheritedField,
   models$,
   operations$,
   paths$
@@ -38,7 +39,6 @@ import {
   duplicateItemOperation,
   duplicateItemOperationComplete,
   insertComponentOperation,
-  insertInstanceOperation,
   insertItemOperation,
   insertItemOperationComplete,
   insertOperationComplete,
@@ -217,7 +217,7 @@ export function GuestProxy() {
     const sub = operations$.subscribe((op: Operation) => {
       switch (op.type) {
         case sortItemOperation.type: {
-          let [modelId, fieldId, index, newIndex] = op.args;
+          let { modelId, fieldId, currentIndex: index, targetIndex: newIndex } = op.payload;
           const currentIndexParsed = typeof index === 'number' ? index : parseInt(popPiece(index));
           const targetIndexParsed = typeof newIndex === 'number' ? newIndex : parseInt(popPiece(newIndex));
           // This works only for repeat groups
@@ -246,14 +246,14 @@ export function GuestProxy() {
           break;
         }
         case moveItemOperation.type: {
-          const [
-            modelId /* : string */,
-            fieldId /* : string */,
-            index /* : number */,
+          const {
+            originalModelId: modelId /* : string */,
+            originalFieldId: fieldId /* : string */,
+            originalIndex: index /* : number */,
             targetModelId /* : string */,
             targetFieldId /* : string */,
             targetIndex
-          ] = op.args;
+          } = op.payload;
 
           const targetIndexParsed = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
           const currentDropZoneICEId = iceRegistry.exists({
@@ -315,7 +315,7 @@ export function GuestProxy() {
           break;
         }
         case deleteItemOperation.type: {
-          const [modelId, fieldId, index] = op.args;
+          const { modelId, fieldId, index } = op.payload;
 
           const iceId = iceRegistry.exists({ modelId, fieldId, index });
           const phyRecord = ElementRegistry.fromICEId(iceId);
@@ -361,9 +361,8 @@ export function GuestProxy() {
             });
           break;
         }
-        case insertComponentOperation.type:
-        case insertInstanceOperation.type: {
-          const { modelId, fieldId, targetIndex, instance } = op.args;
+        case insertComponentOperation.type: {
+          const { modelId, fieldId, targetIndex, instance } = op.payload;
 
           const $spinner = $(`
             <div style="text-align: center">
@@ -433,7 +432,8 @@ export function GuestProxy() {
           break;
         }
         case updateFieldValueOperation.type:
-          const { modelId, fieldId, index, value } = op.args;
+          let { modelId, fieldId, index, value } = op.payload;
+          modelId = getModelIdFromInheritedField(modelId, fieldId);
           // TODO: consider index 'path'
           // If index has a value, filter by `data-craftercms-index`
           let updatedField: JQuery<any> = $(

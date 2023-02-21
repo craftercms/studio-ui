@@ -40,7 +40,6 @@ import {
   iceZoneSelected,
   initRichTextEditorConfig,
   insertComponentOperation,
-  insertInstanceOperation,
   insertItemOperation,
   insertItemOperationComplete,
   insertItemOperationFailed,
@@ -71,9 +70,11 @@ import {
   updateFieldValueOperationComplete,
   updateFieldValueOperationFailed,
   updateRteConfig,
-  snackGuestMessage
+  snackGuestMessage,
+  InsertComponentOperationPayload
 } from '../../state/actions/preview';
 import {
+  writeInstance,
   deleteItem,
   duplicateItem,
   fetchContentInstance,
@@ -712,73 +713,64 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         case insertComponentOperation.type: {
-          const { fieldId, targetIndex, instance, shared } = payload;
+          const {
+            fieldId,
+            targetIndex,
+            instance,
+            shared = false,
+            create = false
+          } = payload as InsertComponentOperationPayload;
           let { modelId, parentModelId } = payload;
           const path = models[modelId ?? parentModelId].craftercms.path;
+          const contentType = contentTypes[instance.craftercms.contentTypeId];
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
             parentModelId = findParentModelId(modelId, hierarchyMap, models);
           }
 
-          insertComponent(
-            siteId,
-            modelId,
-            fieldId,
-            targetIndex,
-            contentTypes[instance.craftercms.contentTypeId],
-            instance,
-            models[parentModelId ? parentModelId : modelId].craftercms.path,
-            shared,
-            (instanceFieldId) =>
-              upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(instanceFieldId.match(pattern)))
-          ).subscribe({
-            next() {
-              issueDescriptorRequest({
-                site: siteId,
-                path: path ?? models[parentModelId].craftercms.path,
-                contentTypes,
-                requestedSourceMapPaths,
-                dispatch,
-                completeAction: fetchGuestModelComplete
-              });
-              hostToGuest$.next(
-                insertOperationComplete({
-                  ...payload,
-                  currentFullUrl: `${guestBase}${upToDateRefs.current.currentUrlPath}`
-                })
+          const shouldSerializeFn = (instanceFieldId) =>
+            upToDateRefs.current.cdataEscapedFieldPatterns.some((pattern) => Boolean(instanceFieldId.match(pattern)));
+
+          // Cases:
+          // - Shared new - shared: true, create: true -> insertComponent
+          // - Shared existing - shared: true, create: false -> insertInstance
+          // - Embedded new - shared: false, create: true -> insertComponent
+          // * Embedded existing - shared: false, create: false -> insertInstance <- This case doesn't go through here, it goes by the move/sort operation.
+          let serviceObservable = create
+            ? // region insertComponent
+              insertComponent(
+                siteId,
+                modelId,
+                fieldId,
+                targetIndex,
+                contentType,
+                instance,
+                models[parentModelId ? parentModelId : modelId].craftercms.path,
+                shared,
+                shouldSerializeFn
+              )
+            : // endregion
+              // region insertInstance
+              insertInstance(
+                siteId,
+                modelId,
+                fieldId,
+                targetIndex,
+                instance,
+                models[parentModelId ? parentModelId : modelId].craftercms.path
               );
-              updatedModifiedItem(path);
-              enqueueSnackbar(formatMessage(guestMessages.insertOperationComplete));
-            },
-            error(error) {
-              console.error(`${type} failed`, error);
-              hostToGuest$.next(insertOperationFailed());
-              // If write operation fails the items remains locked, so we need to dispatch unlockItem
-              dispatch(unlockItem({ path }));
-              enqueueSnackbar(formatMessage(guestMessages.insertOperationFailed), { variant: 'error' });
-            }
-          });
-          break;
-        }
-        case insertInstanceOperation.type: {
-          const { fieldId, targetIndex, instance } = payload;
-          let { modelId, parentModelId } = payload;
-          const path = models[modelId ?? parentModelId].craftercms.path;
+          // endregion
 
-          if (isInheritedField(models[modelId], fieldId)) {
-            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, hierarchyMap, models);
+          // Writing the xml document for the component being inserted only applies to new & shared.
+          if (shared && create) {
+            let postWriteObs = serviceObservable;
+            serviceObservable = writeInstance(siteId, instance, contentType, shouldSerializeFn).pipe(
+              switchMap(() => postWriteObs)
+            );
           }
 
-          insertInstance(
-            siteId,
-            modelId,
-            fieldId,
-            targetIndex,
-            instance,
-            models[parentModelId ? parentModelId : modelId].craftercms.path
-          ).subscribe({
+          serviceObservable.subscribe({
             next() {
               issueDescriptorRequest({
                 site: siteId,
@@ -788,7 +780,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 dispatch,
                 completeAction: fetchGuestModelComplete
               });
-
               hostToGuest$.next(
                 insertOperationComplete({
                   ...payload,

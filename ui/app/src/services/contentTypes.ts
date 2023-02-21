@@ -15,6 +15,7 @@
  */
 
 import {
+  ComponentsDatasource,
   ContentType,
   ContentTypeField,
   ContentTypeFieldValidation,
@@ -142,18 +143,41 @@ function getFieldValidations(
     if (systemValidationsNames.includes(key)) {
       if (key === 'itemManager' && dropTargetsLookup) {
         map.itemManager?.value &&
-          map.itemManager.value.split(',').forEach((value) => {
-            if (dropTargetsLookup[value]) {
-              asArray(dropTargetsLookup[value].properties?.property).forEach((prop) => {
-                if (systemValidationsKeysMap[prop.name]) {
-                  validations[systemValidationsKeysMap[prop.name]] = {
-                    id: systemValidationsKeysMap[prop.name],
-                    value: prop.value ? prop.value.split(',') : [],
-                    level: 'required'
+          map.itemManager.value.split(',').forEach((itemManagerId) => {
+            asArray(dropTargetsLookup[itemManagerId]?.properties?.property).forEach((prop) => {
+              let mappedPropName = systemValidationsKeysMap[prop.name];
+              if (mappedPropName) {
+                let value = prop.value ? prop.value.split(',') : [];
+                if (mappedPropName === 'allowedContentTypes') {
+                  const datasource = dropTargetsLookup[itemManagerId] as ComponentsDatasource;
+                  validations.allowedEmbeddedContentTypes = validations.allowedEmbeddedContentTypes ?? {
+                    id: 'allowedEmbeddedContentTypes',
+                    level: 'required',
+                    value: []
                   };
+                  validations.allowedSharedContentTypes = validations.allowedSharedContentTypes ?? {
+                    id: 'allowedSharedContentTypes',
+                    level: 'required',
+                    value: []
+                  };
+                  datasource.allowEmbedded &&
+                    (validations.allowedEmbeddedContentTypes.value =
+                      validations.allowedEmbeddedContentTypes.value.concat(value));
+                  datasource.allowShared &&
+                    (validations.allowedSharedContentTypes.value =
+                      validations.allowedSharedContentTypes.value.concat(value));
+                  // If there is more than one Components DS on this type, make sure they don't override each other as they get parsed
+                  if (validations[mappedPropName]) {
+                    value = validations[mappedPropName].value.concat(value);
+                  }
                 }
-              });
-            }
+                validations[mappedPropName] = {
+                  id: mappedPropName,
+                  value,
+                  level: 'required'
+                };
+              }
+            });
           });
       } else if (systemValidationsNames.includes(key) && !isBlank(map[key]?.value)) {
         validations[systemValidationsKeysMap[key]] = {
@@ -181,19 +205,17 @@ function getFieldDataSourceValidations(
     validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
       (table, prop) => {
         if (prop.name === 'imageManager' || prop.name === 'videoManager') {
-          const dataSourcesNames = prop.value !== '' ? prop.value.split(',') : null;
-          if (dataSourcesNames) {
-            dataSourcesNames.forEach((name) => {
-              const dataSource = dataSources.find((datasource) => datasource.id === name);
-              if (dataSource && systemValidationsNames.includes(camelize(dataSource.type))) {
-                table[systemValidationsKeysMap[camelize(dataSource.type)]] = {
-                  id: systemValidationsKeysMap[camelize(dataSource.type)],
-                  value: asArray(dataSource.properties.property).find((prop) => prop.name === 'repoPath').value,
-                  level: 'required'
-                };
-              }
-            });
-          }
+          const dataSourcesIds = prop.value.trim() !== '' ? prop.value.split(',') : null;
+          dataSourcesIds?.forEach((id) => {
+            const dataSource = dataSources.find((datasource) => datasource.id === id);
+            if (dataSource && systemValidationsNames.includes(camelize(dataSource.type))) {
+              table[systemValidationsKeysMap[camelize(dataSource.type)]] = {
+                id: systemValidationsKeysMap[camelize(dataSource.type)],
+                value: asArray(dataSource.properties.property).find((prop) => prop.name === 'repoPath').value,
+                level: 'required'
+              };
+            }
+          });
         }
         return table;
       },
@@ -336,6 +358,24 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
 
   // get receptacles dataSources
   asArray(definition.datasources?.datasource).forEach((datasource: LegacyDataSource) => {
+    // TODO: Delete datasource.properties after props have been added to the root object? Must update code usages of datasource.properties.
+    const properties = asArray(datasource.properties?.property);
+    properties.forEach((property) => {
+      let value: any = property.value;
+      switch (property.type) {
+        case 'boolean':
+          value = property.value.trim().toLowerCase() === 'true';
+          break;
+        case 'int':
+          value = parseInt(property.value);
+          if (isNaN(value)) value = 0;
+        // TODO: There's more `types`. Review getSupportedProperties across different datasources.
+        // case 'minMax':
+        //   value =
+        //   break;
+      }
+      datasource[property.name] = value;
+    });
     if (datasource.type === 'components') dropTargetsLookup[datasource.id] = datasource;
     dataSources[datasource.id] = datasource;
   });

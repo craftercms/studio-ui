@@ -509,7 +509,6 @@ const reducer = createReducer(initialState, {
         validationsLookup
       );
       const highlighted = getHighlighted(dropZones);
-
       return {
         ...state,
         highlighted,
@@ -542,7 +541,9 @@ const reducer = createReducer(initialState, {
         (record: ICERecord, hierarchyMap: ModelHierarchyMap) => {
           const instanceId = instance.craftercms.id;
           return hierarchyMap[record.modelId]?.children.includes(instanceId);
-        }
+        },
+        // This action type ensures we're working with 'shared' components
+        'shared'
       );
       const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
       const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(
