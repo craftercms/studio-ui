@@ -28,7 +28,8 @@ const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 const plugins = [
   replace({
     preventAssignment: true,
-    'process.env.NODE_ENV': JSON.stringify('production')
+    'process.env.NODE_ENV': JSON.stringify('production'),
+    'process.env.VERSION': JSON.stringify(pkg.version)
   }),
   babel({
     exclude: 'node_modules/**',

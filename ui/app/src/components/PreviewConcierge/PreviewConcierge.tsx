@@ -325,6 +325,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const [dataSourceActionsListState, setDataSourceActionsListState] = useSpreadState<DataSourcesActionsListProps>(
     dataSourceActionsListInitialState
   );
+  const env = useEnv();
   const conditionallyToggleEditMode = (nextHighlightMode?: HighlightMode) => {
     if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
       dispatch(
@@ -422,7 +423,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           }
           break;
       }
-    }
+    },
+    env
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -550,12 +552,20 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         authoringBase,
         formatMessage,
         modelIdByPath,
-        enqueueSnackbar
+        enqueueSnackbar,
+        env
       } = upToDateRefs.current;
       const { type, payload } = action;
       switch (type) {
         case guestSiteLoad.type:
         case guestCheckIn.type:
+          const { version: guestVersion } = payload;
+          const studioVersion = env.version;
+
+          if (type === guestCheckIn.type && guestVersion && guestVersion.substr(0, 5) !== studioVersion) {
+            enqueueSnackbar(formatMessage(guestMessages.invalidExpBuilderVersion));
+          }
+
           clearTimeout(guestDetectionTimeoutRef.current);
           setGuestDetectionSnackbarOpen(false);
           break;
@@ -565,7 +575,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestSiteLoad.type: {
           const { url, location } = payload;
           const path = getPathFromPreviewURL(url);
-          dispatch(guestCheckIn({ location, site: siteId, path }));
+          dispatch(guestCheckIn({ location, site: siteId, path, version: '' }));
           issueDescriptorRequest({
             site: siteId,
             path,

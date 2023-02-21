@@ -161,5 +161,10 @@ export const guestMessages = defineMessages({
   uploadError: {
     id: 'desktopAssetUpload.uploadError',
     defaultMessage: 'Upload error. File was not uploaded'
+  },
+  invalidExpBuilderVersion: {
+    id: 'validations.invalidExpBuilderVersion',
+    defaultMessage:
+      'Your application’s Experience Builder package version is out of date. Please notify the development team to perform the update to avoid issues.'
   }
 });
