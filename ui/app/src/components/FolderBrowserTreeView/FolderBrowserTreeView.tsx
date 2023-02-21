@@ -30,6 +30,7 @@ import { forkJoin, of } from 'rxjs';
 import { batchActions } from '../../state/actions/misc';
 import useSelection from '../../hooks/useSelection';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { useIntl } from 'react-intl';
 
 export interface FolderBrowserTreeViewProps {
   rootPath: string;
@@ -37,13 +38,14 @@ export interface FolderBrowserTreeViewProps {
   onPathSelected(path: string): void;
 }
 
-const useStyles = makeStyles()(() => ({
-  pathNavTreeHeader: { display: 'none' }
+const useStyles = makeStyles()((theme) => ({
+  pathNavTreeHeader: { '.MuiTypography-root': { fontWeight: theme.typography.fontWeightMedium } }
 }));
 
 export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
   const { rootPath, selectedPath, onPathSelected } = props;
   const { classes } = useStyles();
+  const { formatMessage } = useIntl();
   const id = useId();
   const tree = useSelection((state) => state.pathNavigatorTree[id]);
   const { uuid, id: siteId } = useActiveSite();
@@ -100,8 +102,9 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
   return (
     <PathNavigatorTree
       id={id}
-      label=""
+      label={formatMessage({ id: 'words.path', defaultMessage: 'Path' })}
       rootPath={rootPath}
+      collapsible={false}
       initialCollapsed={false}
       initialSystemTypes={['folder', 'page']}
       active={{ [selectedPathWithIndex in (tree?.totalByPath ?? {}) ? selectedPathWithIndex : selectedPath]: true }}
@@ -111,6 +114,7 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
       showPublishingTarget={false}
       showWorkflowState={false}
       showItemMenu={false}
+      limit={30}
     />
   );
 }

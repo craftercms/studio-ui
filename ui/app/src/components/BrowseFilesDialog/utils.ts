@@ -48,6 +48,7 @@ export interface BrowseFilesDialogUIProps {
   selectedCard: MediaItem;
   selectedArray: string[];
   multiSelect?: boolean;
+  compact?: boolean;
   path: string;
   currentPath: string;
   searchParameters: ElasticParams;
@@ -70,6 +71,7 @@ export interface BrowseFilesDialogUIProps {
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onRefresh(): void;
   onUpload(): void;
+  onToggleViewMode?(): void;
 }
 
 export const initialParameters: ElasticParams = {

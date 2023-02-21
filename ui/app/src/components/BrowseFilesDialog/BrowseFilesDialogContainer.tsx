@@ -32,6 +32,8 @@ import EmptyState from '../EmptyState';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';
+import { getStoredBrowseDialogCompactMode, setStoredBrowseDialogCompactMode } from '../../utils/state';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
   const {
@@ -66,6 +68,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [fetchingBrowsePathExists, setFetchingBrowsePathExists] = useState(false);
   const [browsePathExists, setBrowsePathExists] = useState(false);
   const [sortKeys, setSortKeys] = useState([]);
+  const { username } = useActiveUser();
+  const [compact, setCompact] = useState(() => getStoredBrowseDialogCompactMode(username));
 
   const fetchItems = useCallback(
     () =>
@@ -163,10 +167,17 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
     fetchItems();
   };
 
+  const toggleCompact = () => {
+    setStoredBrowseDialogCompactMode(username, !compact);
+    setCompact(!compact);
+  };
+
   return fetchingBrowsePathExists ? (
     <BrowseFilesDialogContainerSkeleton />
   ) : browsePathExists ? (
     <BrowseFilesDialogUI
+      compact={compact}
+      onToggleViewMode={toggleCompact}
       currentPath={currentPath}
       items={items}
       path={browsePath}
