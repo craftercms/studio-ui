@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const pkg = require('../../app/package.json');
+const pkg = require('../package.json');
 const path = require('path');
 const packagePath = process.cwd();
 const buildPath = path.join(packagePath, './build_tsc');
