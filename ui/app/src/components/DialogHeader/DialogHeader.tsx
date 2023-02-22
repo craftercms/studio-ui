@@ -28,6 +28,7 @@ import Action, { DialogHeaderActionProps } from '../DialogHeaderAction/DialogHea
 import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { CSSObject } from 'tss-react';
+import Box from '@mui/material/Box';
 
 const dialogTitleStyles = makeStyles()((theme) => ({
   root: {
@@ -211,14 +212,27 @@ export function DialogHeader(props: DialogHeaderProps) {
         )}
       </section>
       {(subtitle || children) && (
-        <section className={cx(classes.subtitleWrapper, props.classes?.subtitleWrapper)}>
+        <Box
+          component="section"
+          className={cx(classes.subtitleWrapper, props.classes?.subtitleWrapper)}
+          sx={{ maxWidth: '100%' }}
+        >
           {subtitle && (
-            <Typography className={classes.subtitle} {...subtitleTypographyProps}>
+            <Typography
+              className={classes.subtitle}
+              {...subtitleTypographyProps}
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
+              title={typeof subtitle === 'string' ? subtitle : null}
+            >
               {subtitle}
             </Typography>
           )}
           {children}
-        </section>
+        </Box>
       )}
     </div>
   );

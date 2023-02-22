@@ -24,7 +24,7 @@ import { getStoredPreviewBackgroundMode, setStoredPreviewBackgroundMode } from '
 import useActiveUser from '../../hooks/useActiveUser';
 
 export function PreviewDialog(props: PreviewDialogProps) {
-  const { title, type, url, content, mode, mimeType, ...rest } = props;
+  const { title, subtitle = props.url, type, url, content, mode, mimeType, ...rest } = props;
   const { username } = useActiveUser();
   const [backgroundModeIndex, setBackgroundModeIndex] = useState(getStoredPreviewBackgroundMode(username) ?? 0);
   const { formatMessage } = useIntl();
@@ -32,9 +32,9 @@ export function PreviewDialog(props: PreviewDialogProps) {
   return (
     <EnhancedDialog
       maxWidth="xl"
-      title={props.title}
+      title={title}
       dialogHeaderProps={{
-        subtitle: props.subtitle,
+        subtitle,
         rightActions: [
           (type === 'image' || type === 'video') && {
             icon: { id: '@mui/icons-material/ColorLensOutlined' },
