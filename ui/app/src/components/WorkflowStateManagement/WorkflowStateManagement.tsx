@@ -89,6 +89,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   const { embedded, showAppsButton = !embedded, onSubmittingAndOrPendingChange } = props;
   const [fetching, setFetching] = useState(false);
   const [items, setItems] = useState<PagedArray<SandboxItem>>(null);
+  const [totalItems, setTotalItems] = useState(0);
   const [error, setError] = useState<ApiResponse>();
   const siteId = useActiveSiteId();
   const [openSetStateDialog, setOpenSetStateDialog] = useState(false);
@@ -132,16 +133,17 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 
     setFetching(true);
     setItems(null);
-    fetchItemStates(siteId, debouncePathRegex, stateBitmap ? stateBitmap : null, { limit, offset }).subscribe(
-      (states) => {
+    fetchItemStates(siteId, debouncePathRegex, stateBitmap ? stateBitmap : null, { limit, offset }).subscribe({
+      next(states) {
         setItems(states);
+        setTotalItems(states.total);
         setFetching(false);
       },
-      ({ response }) => {
+      error({ response }) {
         setError(response);
         setFetching(false);
       }
-    );
+    });
   }, [debouncePathRegex, filtersLookup, siteId, limit, offset]);
 
   useEffect(() => {
@@ -343,13 +345,13 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
                 : [
                     {
                       id: 'selectAll',
-                      label: formatMessage(translations.selectAll, { count: items.total })
+                      label: formatMessage(translations.selectAll, { count: totalItems })
                     }
                   ]),
               {
                 id: 'clearSelected',
                 label: formatMessage(translations.clearSelected, {
-                  count: isSelectedItemsOnAllPages ? items.total : selectedItemsLength
+                  count: isSelectedItemsOnAllPages ? totalItems : selectedItemsLength
                 })
               }
             ]}
