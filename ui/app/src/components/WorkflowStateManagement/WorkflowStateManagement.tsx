@@ -363,7 +363,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
             title={<FormattedMessage id="itemStates.emptyStateMessage" defaultMessage="No results found" />}
           />
         )}
-        {items?.length && (
+        {Boolean(items?.length) && (
           <ItemStatesGridUI
             itemStates={items}
             selectedItems={selectedItems}
