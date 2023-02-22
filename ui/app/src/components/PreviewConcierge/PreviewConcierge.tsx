@@ -94,7 +94,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
-import { nnou, nou } from '../../utils/object';
+import { nnou } from '../../utils/object';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import RubbishBin from '../RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
@@ -562,7 +562,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           const { version: guestVersion } = payload;
           const studioVersion = env.version;
 
-          if (type === guestCheckIn.type && (nou(guestVersion) || guestVersion.substr(0, 5) !== studioVersion)) {
+          if (type === guestCheckIn.type && guestVersion?.substr(0, 5) !== studioVersion) {
             enqueueSnackbar(formatMessage(guestMessages.outdatedExpBuilderVersion));
           }
 
@@ -575,7 +575,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestSiteLoad.type: {
           const { url, location } = payload;
           const path = getPathFromPreviewURL(url);
-          dispatch(guestCheckIn({ location, site: siteId, path, version: '' }));
+          dispatch(guestCheckIn({ location, site: siteId, path }));
           issueDescriptorRequest({
             site: siteId,
             path,
