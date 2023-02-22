@@ -103,7 +103,9 @@ import {
   getStoredEditModeChoice,
   getStoredEditModePadding,
   getStoredHighlightModeChoice,
-  removeStoredClipboard
+  removeStoredClipboard,
+  getOutdatedXBValidationDate,
+  setOutdatedXBValidationDate
 } from '../../utils/state';
 import {
   fetchSandboxItem,
@@ -184,6 +186,7 @@ import { editControllerActionCreator, itemActionDispatcher } from '../../utils/i
 import useEnv from '../../hooks/useEnv';
 import useAuth from '../../hooks/useAuth';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
+import { isSameDay } from '../../utils/datetime';
 
 const originalDocDomain = document.domain;
 
@@ -553,7 +556,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         formatMessage,
         modelIdByPath,
         enqueueSnackbar,
-        env
+        env,
+        user
       } = upToDateRefs.current;
       const { type, payload } = action;
       switch (type) {
@@ -563,7 +567,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           const studioVersion = env.version;
 
           if (type === guestCheckIn.type && guestVersion?.substr(0, 5) !== studioVersion) {
-            enqueueSnackbar(formatMessage(guestMessages.outdatedExpBuilderVersion));
+            const xbOutdatedValidationDate = getOutdatedXBValidationDate(siteId, user.username);
+            // If message has not been shown today or not shown at all
+            if (!xbOutdatedValidationDate || !isSameDay(xbOutdatedValidationDate, new Date())) {
+              enqueueSnackbar(formatMessage(guestMessages.outdatedExpBuilderVersion));
+              setOutdatedXBValidationDate(siteId, user.username, new Date());
+            }
           }
 
           clearTimeout(guestDetectionTimeoutRef.current);

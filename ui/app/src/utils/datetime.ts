@@ -85,3 +85,11 @@ export const get8601Pieces = (date: string | Date) => {
     .match(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(.{6})/);
   return [pieces[1], pieces[2], pieces[3]];
 };
+
+export function isSameDay(date1: Date, date2: Date) {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
