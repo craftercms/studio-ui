@@ -498,7 +498,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         dispatch(contentReady());
       });
 
-    post(guestCheckIn({ location, path, site, documentDomain }));
+    post(guestCheckIn({ location, path, site, documentDomain, version: process.env.VERSION }));
 
     return () => {
       post(guestCheckOut({ path }));
