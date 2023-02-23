@@ -14,25 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
 import { PagedArray } from '../../models/PagedArray';
 import { ApiResponse } from '../../models/ApiResponse';
 import Group from '../../models/Group';
 import { fetchAll } from '../../services/groups';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import GroupsGridUI, { GroupsGridSkeletonTable } from '../GroupsGrid';
 import EditGroupDialog from '../EditGroupDialog';
 import Button from '@mui/material/Button';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import SearchBar from '../SearchBar';
 import useStyles from '../UserManagement/styles';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { EmptyState } from '../EmptyState';
 
 export function GroupManagement() {
   const [offset, setOffset] = useState(0);
@@ -48,16 +48,16 @@ export function GroupManagement() {
   const fetchGroups = useCallback(
     (keyword = '', _offset = offset) => {
       setFetching(true);
-      fetchAll({ limit, offset: _offset, keyword }).subscribe(
-        (users) => {
+      fetchAll({ limit, offset: _offset, keyword }).subscribe({
+        next(users) {
           setGroups(users);
           setFetching(false);
         },
-        ({ response }) => {
+        error({ response }) {
           setError(response);
           setFetching(false);
         }
-      );
+      });
     },
     [limit, offset]
   );
@@ -65,20 +65,6 @@ export function GroupManagement() {
   useEffect(() => {
     fetchGroups();
   }, [fetchGroups]);
-
-  const resource = useLogicResource<
-    PagedArray<Group>,
-    { groups: PagedArray<Group>; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(() => ({ groups, error, fetching }), [groups, error, fetching]),
-    {
-      shouldResolve: (source) => Boolean(source.groups) && !fetching,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetching && resource.complete,
-      resultSelector: (source) => source.groups,
-      errorSelector: () => error
-    }
-  );
 
   const editGroupDialogState = useEnhancedDialogState();
   const editGroupDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(editGroupDialogState.onClose);
@@ -152,24 +138,26 @@ export function GroupManagement() {
           />
         }
       />
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <GroupsGridSkeletonTable numOfItems={limit} />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: <FormattedMessage id="groupsGrid.emptyStateMessage" defaultMessage="No Groups Found" />
-          }
-        }}
-      >
-        <GroupsGridUI
-          resource={resource}
-          onRowClicked={onRowClicked}
-          onPageChange={onPageChange}
-          onRowsPerPageChange={onRowsPerPageChange}
-        />
-      </SuspenseWithEmptyState>
+
+      {error ? (
+        <ApiResponseErrorState error={error} />
+      ) : fetching ? (
+        <GroupsGridSkeletonTable numOfItems={limit} />
+      ) : groups ? (
+        groups.length ? (
+          <GroupsGridUI
+            groups={groups}
+            onRowClicked={onRowClicked}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange}
+          />
+        ) : (
+          <EmptyState title={<FormattedMessage id="groupsGrid.emptyStateMessage" defaultMessage="No Groups Found" />} />
+        )
+      ) : (
+        <></>
+      )}
+
       <EditGroupDialog
         open={editGroupDialogState.open}
         group={selectedGroup}
