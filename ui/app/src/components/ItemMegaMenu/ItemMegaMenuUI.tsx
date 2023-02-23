@@ -333,6 +333,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           <>
             <Typography
               variant="body2"
+              color="text.secondary"
               title={item.path}
               sx={{
                 overflow: 'hidden',
