@@ -28,6 +28,8 @@ import Action, { DialogHeaderActionProps } from '../DialogHeaderAction/DialogHea
 import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { CSSObject } from 'tss-react';
+import Box from '@mui/material/Box';
+import { PartialSxRecord } from '../../models';
 
 const dialogTitleStyles = makeStyles()((theme) => ({
   root: {
@@ -112,6 +114,9 @@ export type DialogHeaderProps<
   backIcon?: ElementType;
   classes?: Partial<Record<'root' | 'titleWrapper' | 'subtitleWrapper', string>>;
   className?: string;
+  sxs?: PartialSxRecord<
+    'root' | 'titleWrapper' | 'title' | 'subtitle' | 'subtitleWrapper' | 'leftActions' | 'rightActions' | 'backIcon'
+  >;
   disabled?: boolean;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, reason: string): void;
   onMinimizeButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
@@ -147,20 +152,22 @@ export function DialogHeader(props: DialogHeaderProps) {
       variant: 'subtitle1',
       component: 'p'
     },
-    className
+    className,
+    sxs
   } = props;
   // endregion
   return (
-    <div id={id} className={cx(className, classes.root, props.classes?.root)}>
-      <section className={cx(classes.titleWrapper, props.classes?.titleWrapper)}>
+    <Box id={id} className={cx(className, classes.root, props.classes?.root)} sx={sxs?.root}>
+      <Box component="section" className={cx(classes.titleWrapper, props.classes?.titleWrapper)} sx={sxs?.titleWrapper}>
         {(leftActions || onBack) && (
-          <div className={classes.leftActions}>
+          <Box className={classes.leftActions} sx={sxs?.leftActions}>
             {onBack && (
               <Tooltip title={disabled ? '' : formatMessage(translations.back)}>
                 <IconButton
                   aria-label="close"
                   onClick={onBack}
                   className={classes.backIcon}
+                  sx={sxs?.backIcon}
                   size="large"
                   disabled={disabled}
                 >
@@ -171,13 +178,13 @@ export function DialogHeader(props: DialogHeaderProps) {
             {leftActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderActionProps, i: number) => (
               <Action key={i} icon={icon} tooltip={tooltip} disabled={disabled} {...rest} />
             ))}
-          </div>
+          </Box>
         )}
-        <Typography className={classes.title} {...titleTypographyProps}>
+        <Typography className={classes.title} {...titleTypographyProps} sx={sxs?.title}>
           {title}
         </Typography>
         {(rightActions || onCloseButtonClick || onMinimizeButtonClick || onFullScreenButtonClick) && (
-          <div className={classes.rightActions}>
+          <Box className={classes.rightActions} sx={sxs?.rightActions}>
             {rightActions?.map(({ icon, 'aria-label': tooltip, ...rest }: DialogHeaderActionProps, i: number) => (
               <Action key={i} icon={icon} tooltip={tooltip} disabled={disabled} {...rest} />
             ))}
@@ -207,20 +214,24 @@ export function DialogHeader(props: DialogHeaderProps) {
                 </IconButton>
               </Tooltip>
             )}
-          </div>
+          </Box>
         )}
-      </section>
+      </Box>
       {(subtitle || children) && (
-        <section className={cx(classes.subtitleWrapper, props.classes?.subtitleWrapper)}>
+        <Box
+          component="section"
+          className={cx(classes.subtitleWrapper, props.classes?.subtitleWrapper)}
+          sx={sxs?.subtitleWrapper}
+        >
           {subtitle && (
-            <Typography className={classes.subtitle} {...subtitleTypographyProps}>
+            <Typography className={classes.subtitle} {...subtitleTypographyProps} sx={sxs?.subtitle}>
               {subtitle}
             </Typography>
           )}
           {children}
-        </section>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
 

@@ -330,30 +330,35 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         {isLoading ? (
           <Skeleton animation="wave" width="100%" />
         ) : (
-          <Typography variant="body2">
-            <FormattedMessage
-              id="itemMegaMenu.editedBy"
-              defaultMessage="{edited} {date} {byLabel} {by}"
-              values={{
-                date: new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
-                  new Date(item?.sandbox.dateModified)
-                ),
-                by: item?.sandbox.modifier,
-                edited: (
-                  <span className={classes.itemEditedText}>
-                    <FormattedMessage id="words.edited" defaultMessage="Edited" />
-                  </span>
-                ),
-                byLabel: item?.sandbox.modifier ? (
-                  <span className={classes.itemEditedText}>
-                    <FormattedMessage id="words.by" defaultMessage="By" />
-                  </span>
-                ) : (
-                  ''
-                )
-              }}
-            />
-          </Typography>
+          <>
+            <Typography variant="body2" color="text.secondary" title={item.path} noWrap>
+              {item.path}
+            </Typography>
+            <Typography variant="body2">
+              <FormattedMessage
+                id="itemMegaMenu.editedBy"
+                defaultMessage="{edited} {date} {byLabel} {by}"
+                values={{
+                  date: new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
+                    new Date(item?.sandbox.dateModified)
+                  ),
+                  by: item?.sandbox.modifier,
+                  edited: (
+                    <span className={classes.itemEditedText}>
+                      <FormattedMessage id="words.edited" defaultMessage="Edited" />
+                    </span>
+                  ),
+                  byLabel: item?.sandbox.modifier ? (
+                    <span className={classes.itemEditedText}>
+                      <FormattedMessage id="words.by" defaultMessage="By" />
+                    </span>
+                  ) : (
+                    ''
+                  )
+                }}
+              />
+            </Typography>
+          </>
         )}
       </section>
     </Popover>
