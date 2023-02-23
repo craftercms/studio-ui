@@ -16,7 +16,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import UsersGridUI, { UsersGridSkeletonTable } from '../UsersGrid';
 import CreateUserDialog from '../CreateUserDialog';
 import EditUserDialog from '../EditUserDialog';
@@ -24,16 +24,16 @@ import { fetchAll } from '../../services/users';
 import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
 import { ApiResponse } from '../../models/ApiResponse';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import useStyles from './styles';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { EmptyState } from '../EmptyState';
 
 export interface UserManagementProps {
   passwordRequirementsMinComplexity?: number;
@@ -54,16 +54,16 @@ export function UserManagement(props: UserManagementProps) {
   const fetchUsers = useCallback(
     (keyword = '', _offset = offset) => {
       setFetching(true);
-      fetchAll({ limit, offset: _offset, keyword }).subscribe(
-        (users) => {
+      fetchAll({ limit, offset: _offset, keyword }).subscribe({
+        next(users) {
           setUsers(users);
           setFetching(false);
         },
-        ({ response }) => {
+        error({ response }) {
           setError(response);
           setFetching(false);
         }
-      );
+      });
     },
     [limit, offset]
   );
@@ -71,20 +71,6 @@ export function UserManagement(props: UserManagementProps) {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
-
-  const resource = useLogicResource<
-    PagedArray<User>,
-    { users: PagedArray<User>; error: ApiResponse; fetching: boolean }
-  >(
-    useMemo(() => ({ users, error, fetching }), [users, error, fetching]),
-    {
-      shouldResolve: (source) => Boolean(source.users) && !fetching,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetching && resource.complete,
-      resultSelector: (source) => source.users,
-      errorSelector: () => error
-    }
-  );
 
   const createUserDialogState = useEnhancedDialogState();
   const createUserDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createUserDialogState.onClose);
@@ -159,24 +145,25 @@ export function UserManagement(props: UserManagementProps) {
           />
         }
       />
-      <SuspenseWithEmptyState
-        resource={resource}
-        suspenseProps={{
-          fallback: <UsersGridSkeletonTable numOfItems={limit} />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: <FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />
-          }
-        }}
-      >
-        <UsersGridUI
-          resource={resource}
-          onRowClicked={onRowClicked}
-          onPageChange={onPageChange}
-          onRowsPerPageChange={onRowsPerPageChange}
-        />
-      </SuspenseWithEmptyState>
+
+      {error ? (
+        <ApiResponseErrorState error={error} />
+      ) : fetching ? (
+        <UsersGridSkeletonTable numOfItems={limit} />
+      ) : users ? (
+        users.length ? (
+          <UsersGridUI
+            users={users}
+            onRowClicked={onRowClicked}
+            onPageChange={onPageChange}
+            onRowsPerPageChange={onRowsPerPageChange}
+          />
+        ) : (
+          <EmptyState title={<FormattedMessage id="usersGrid.emptyStateMessage" defaultMessage="No Users Found" />} />
+        )
+      ) : (
+        <></>
+      )}
 
       <CreateUserDialog
         open={createUserDialogState.open}

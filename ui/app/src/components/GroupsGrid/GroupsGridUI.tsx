@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -31,16 +30,15 @@ import GlobalAppGridCell from '../GlobalAppGridCell';
 import Box from '@mui/material/Box';
 
 export interface GroupsGridUIProps {
-  resource: Resource<PagedArray<Group>>;
+  groups: PagedArray<Group>;
   onRowClicked(user: Group): void;
   onPageChange(page: number): void;
   onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 }
 
 export function GroupsGridUI(props: GroupsGridUIProps) {
-  const { resource, onRowClicked, onPageChange, onRowsPerPageChange } = props;
+  const { groups, onRowClicked, onPageChange, onRowsPerPageChange } = props;
   const { classes } = useStyles();
-  const groups = resource.read();
 
   return (
     <Box display="flex" flexDirection="column">
