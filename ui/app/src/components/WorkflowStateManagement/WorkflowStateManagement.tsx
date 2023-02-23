@@ -131,17 +131,16 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
     let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
 
     setFetching(true);
-    setItems(null);
-    fetchItemStates(siteId, debouncePathRegex, stateBitmap ? stateBitmap : null, { limit, offset }).subscribe(
-      (states) => {
+    fetchItemStates(siteId, debouncePathRegex, stateBitmap ? stateBitmap : null, { limit, offset }).subscribe({
+      next(states) {
         setItems(states);
         setFetching(false);
       },
-      ({ response }) => {
+      error({ response }) {
         setError(response);
         setFetching(false);
       }
-    );
+    });
   }, [debouncePathRegex, filtersLookup, siteId, limit, offset]);
 
   useEffect(() => {
@@ -364,7 +363,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
             title={<FormattedMessage id="itemStates.emptyStateMessage" defaultMessage="No results found" />}
           />
         )}
-        {items?.length && (
+        {Boolean(items?.length) && (
           <ItemStatesGridUI
             itemStates={items}
             selectedItems={selectedItems}
