@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -188,6 +188,7 @@ const filterToFacet = (filterKey, filterValue) => {
 
 export function SiteSearchFilters(props: SiteSearchFiltersProps) {
   const { classes } = useStyles();
+  // region const { ... } = props
   const {
     sortBy,
     sortOrder,
@@ -201,6 +202,7 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
     selectedPath,
     setSelectedPath
   } = props;
+  // endregion
   const { formatMessage } = useIntl();
   const [expanded, setExpanded] = useSpreadState({
     sortBy: false,
@@ -211,6 +213,11 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
   let filterKeys: string[] = [];
   let facetsLookupTable: LookupTable = {};
   const facetLabelLookup: LookupTable = {};
+  const parsedSelectedPath = selectedPath?.trim().replace('.+', '').replace(/\/$/, '');
+  // Don't want the root path set everytime select path changes. Only when select mode is first detected for it to get set once.
+  // TODO: Ultimately, the rootPath should change to be driven by a different explicit prop other than `mode`.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const rootPath = useMemo(() => (mode === 'select' ? parsedSelectedPath : null), [mode]);
 
   const addFacetValuesLabels = (facet) => {
     Object.keys(facet.values).forEach((value) => {
@@ -312,12 +319,7 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <PathSelector
-            value={selectedPath?.replace('.+', '')}
-            onPathSelected={onPathSelected}
-            // TODO: Should change the path clearing to depend on a more specific prop (e.g. `pathLock`)
-            disabled={mode === 'select'}
-          />
+          <PathSelector value={parsedSelectedPath} onPathSelected={onPathSelected} rootPath={rootPath} />
         </AccordionDetails>
       </Accordion>
       {filterKeys.map((key: string) => (

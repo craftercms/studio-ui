@@ -76,11 +76,13 @@ export interface PathSelectorProps {
   value: string;
   disabled?: boolean;
   stripXmlIndex?: boolean;
+  /** The minimum outer path allowed */
+  rootPath?: string;
   onPathSelected(path: string): void;
 }
 
 export function PathSelector(props: PathSelectorProps) {
-  const { onPathSelected, value, disabled = false, stripXmlIndex = true } = props;
+  const { onPathSelected, value, disabled = false, stripXmlIndex = true, rootPath } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const { classes, cx } = useStyles();
@@ -93,8 +95,9 @@ export function PathSelector(props: PathSelectorProps) {
   const onClean = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    setPath('');
-    onPathSelected('');
+    let cleanPath = rootPath ?? '';
+    setPath(cleanPath);
+    onPathSelected(cleanPath);
   };
 
   const onOpenPathSelectionDialog = () => {
@@ -102,9 +105,10 @@ export function PathSelector(props: PathSelectorProps) {
     const callbackAccept = 'accept';
     dispatch(
       showPathSelectionDialog({
-        rootPath: `/${path.split('/')[1] ?? ''}`,
+        rootPath: rootPath ?? `/${path.split('/')[1] ?? ''}`,
         initialPath: path,
         showCreateFolderOption: false,
+        allowSwitchingRootPath: !Boolean(rootPath),
         stripXmlIndex,
         onClosed: batchActions([dispatchDOMEvent({ id: callbackId, action: 'close' }), pathSelectionDialogClosed()]),
         onOk: batchActions([dispatchDOMEvent({ id: callbackId, action: callbackAccept }), closePathSelectionDialog()])
