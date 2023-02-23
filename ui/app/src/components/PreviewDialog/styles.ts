@@ -29,8 +29,7 @@ export const useStyles = makeStyles()((theme) => ({
     alignItems: 'center',
     '& img': {
       maxWidth: '100%'
-    },
-    padding: 0
+    }
   },
   containerBackgroundInverse: {
     backgroundColor: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black

@@ -107,6 +107,9 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
           backgroundModes[backgroundModeIndex]?.mode !== 'default' &&
             classes[backgroundModes[backgroundModeIndex].classKey]
         )}
+        sx={{
+          padding: 0
+        }}
       >
         {renderPreview()}
       </DialogBody>

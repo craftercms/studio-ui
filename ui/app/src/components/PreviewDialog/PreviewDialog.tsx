@@ -34,7 +34,15 @@ export function PreviewDialog(props: PreviewDialogProps) {
       maxWidth="xl"
       title={title}
       dialogHeaderProps={{
-        subtitle,
+        subtitle: <span title={subtitle}>{subtitle}</span>,
+        subtitleTypographyProps: {
+          noWrap: true
+        },
+        sxs: {
+          subtitleWrapper: {
+            maxWidth: '100%'
+          }
+        },
         rightActions: [
           (type === 'image' || type === 'video') && {
             icon: { id: '@mui/icons-material/ColorLensOutlined' },

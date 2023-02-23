@@ -331,16 +331,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           <Skeleton animation="wave" width="100%" />
         ) : (
           <>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              title={item.path}
-              sx={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}
-            >
+            <Typography variant="body2" color="text.secondary" title={item.path} noWrap>
               {item.path}
             </Typography>
             <Typography variant="body2">
