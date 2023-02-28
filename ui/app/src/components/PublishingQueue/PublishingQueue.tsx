@@ -159,7 +159,7 @@ const useStyles = makeStyles()((theme) => ({
 const currentFiltersInitialState: CurrentFilters = {
   environment: '',
   path: '',
-  state: [READY_FOR_LIVE],
+  state: [READY_FOR_LIVE, PROCESSING, COMPLETED, CANCELLED, BLOCKED],
   limit: 5,
   page: 0
 };
@@ -361,8 +361,6 @@ function PublishingQueue(props: PublishingQueueProps) {
       } else {
         if (event.target.value) {
           state.splice(state.indexOf(event.target.value), 1);
-        } else {
-          state = [];
         }
       }
       setCurrentFilters({ ...currentFilters, state, page: 0 });

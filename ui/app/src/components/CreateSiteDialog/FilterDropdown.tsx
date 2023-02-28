@@ -219,7 +219,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
                   <Checkbox
                     color="primary"
                     value=""
-                    checked={currentFilters.state.length === filters.states.length || currentFilters.state.length === 0}
+                    checked={currentFilters.state.length === filters.states.length}
                     onChange={handleFilterChange}
                   />
                 }
