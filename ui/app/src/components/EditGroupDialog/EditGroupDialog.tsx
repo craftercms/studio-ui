@@ -20,7 +20,7 @@ import { EditGroupDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 
 export function EditGroupDialog(props: EditGroupDialogProps) {
-  const { group, onGroupDeleted, onGroupSaved, onSubmittingAndOrPendingChange, ...rest } = props;
+  const { group, onGroupDeleted, onGroupSaved, isSubmitting, onSubmittingAndOrPendingChange, ...rest } = props;
 
   return (
     <EnhancedDialog omitHeader {...rest}>
@@ -29,6 +29,7 @@ export function EditGroupDialog(props: EditGroupDialogProps) {
         onGroupSaved={onGroupSaved}
         onGroupDeleted={onGroupDeleted}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+        isSubmitting={isSubmitting}
       />
     </EnhancedDialog>
   );
