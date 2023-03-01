@@ -29,14 +29,13 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 export function PublishingQueueWidget(props: PublishingQueueProps) {
-  const { siteId } = props;
   const { classes } = useStyles();
 
   return (
     <Paper elevation={2}>
       <DialogHeader title={<FormattedMessage id="publishingQueue.title" defaultMessage="Publishing Queue" />} />
       <div className={classes.paperContent}>
-        <PublishingQueue siteId={siteId} />
+        <PublishingQueue {...props} />
       </div>
     </Paper>
   );

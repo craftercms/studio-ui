@@ -166,6 +166,7 @@ const currentFiltersInitialState: CurrentFilters = {
 
 export interface PublishingQueueProps {
   siteId: string;
+  readOnly?: boolean;
 }
 
 function getFilters(currentFilters: CurrentFilters) {
@@ -207,7 +208,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   });
   const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
   const { formatMessage } = useIntl();
-  const { siteId } = props;
+  const { siteId, readOnly } = props;
   const hasReadyForLivePackages = (packages || []).filter((item: Package) => item.state === READY_FOR_LIVE).length > 0;
 
   const getPackages = useCallback(
@@ -286,6 +287,7 @@ function PublishingQueue(props: PublishingQueueProps) {
         setSelected={setSelected}
         filesPerPackage={filesPerPackage}
         setFilesPerPackage={setFilesPerPackage}
+        readOnly={readOnly}
       />
     ));
   }
@@ -391,7 +393,7 @@ function PublishingQueue(props: PublishingQueueProps) {
                 <Checkbox
                   color="primary"
                   checked={areAllSelected()}
-                  disabled={!packages || !hasReadyForLivePackages}
+                  disabled={!packages || !hasReadyForLivePackages || readOnly}
                   onClick={handleSelectAll}
                 />
               }
@@ -416,7 +418,7 @@ function PublishingQueue(props: PublishingQueueProps) {
             confirmText={formatMessage(messages.confirm)}
             confirmHelperText={formatMessage(messages.confirmAllHelper)}
             onConfirm={handleCancelAll}
-            disabled={!(hasReadyForLivePackages && Object.values(selected).length > 0)}
+            disabled={!(hasReadyForLivePackages && Object.values(selected).length > 0) || readOnly}
           />
         )}
         <FilterDropdown
