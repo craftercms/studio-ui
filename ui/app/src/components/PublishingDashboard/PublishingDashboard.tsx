@@ -33,16 +33,13 @@ interface PublishingDashboardProps {
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
-const permittedRoles = ['developer', 'admin'];
-
 export function PublishingDashboard(props: PublishingDashboardProps) {
   const { embedded, showAppsButton, onSubmittingAndOrPendingChange } = props;
   const user = useActiveUser();
   const site = useActiveSiteId();
-  const userRoles = user?.rolesBySite[site];
+  const userRoles = user?.rolesBySite[site] ?? [];
   const userPermissions = user?.permissionsBySite[site] ?? [];
-  const allowedRole = permittedRoles?.some((role) => userRoles.includes(role)) ?? false;
-
+  const allowedRole = userRoles.some((role) => role === 'developer' || role === 'admin');
   const {
     spacing,
     palette: { mode }

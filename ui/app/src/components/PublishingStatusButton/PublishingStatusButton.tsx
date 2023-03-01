@@ -18,16 +18,11 @@ import React, { forwardRef } from 'react';
 import { IconButtonProps } from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
 import PublishingStatusButtonUI, { PublishingStatusButtonUIProps } from './PublishingStatusButtonUI';
-import { showWidgetDialog } from '../../state/actions/dialogs';
+import { showPublishingStatusDialog, showWidgetDialog } from '../../state/actions/dialogs';
 import { useSelection } from '../../hooks/useSelection';
-import { defineMessages, useIntl } from 'react-intl';
-
-const translations = defineMessages({
-  publishing: {
-    id: 'words.publishing',
-    defaultMessage: 'Publishing'
-  }
-});
+import { useIntl } from 'react-intl';
+import useActiveUser from '../../hooks/useActiveUser';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 export interface PublishingStatusButtonProps extends IconButtonProps {
   variant?: PublishingStatusButtonUIProps['variant'];
@@ -39,19 +34,30 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
   );
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
+  const user = useActiveUser();
+  const site = useActiveSiteId();
 
   const onShowDialog = () => {
+    const userRoles = user?.rolesBySite[site] ?? [];
+    const userPermissions = user?.permissionsBySite[site] ?? [];
     dispatch(
-      showWidgetDialog({
-        title: formatMessage(translations.publishing),
-        widget: {
-          id: 'craftercms.components.PublishingDashboard',
-          configuration: {
-            embedded: true
-          }
-        },
-        fullHeight: false
-      })
+      // If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
+      // Publishing Dashboard. Otherwise, just show the simple status dialog.
+      userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
+        userRoles.some((role) => role === 'developer' || role === 'admin')
+        ? showWidgetDialog({
+            title: formatMessage({
+              id: 'words.publishing',
+              defaultMessage: 'Publishing'
+            }),
+            widget: {
+              id: 'craftercms.components.PublishingDashboard',
+              configuration: {
+                embedded: true
+              }
+            }
+          })
+        : showPublishingStatusDialog({})
     );
   };
 
