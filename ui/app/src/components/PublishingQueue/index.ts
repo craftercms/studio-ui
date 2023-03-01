@@ -21,3 +21,5 @@ export * from './PublishingPackage';
 export * from './PublishingQueue';
 
 export * from './PublishingQueueWidget';
+
+export * from './FilterDropdown';

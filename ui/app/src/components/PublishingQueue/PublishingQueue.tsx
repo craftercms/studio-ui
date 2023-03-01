@@ -23,7 +23,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
 import { cancelPackage, fetchPackages, fetchPublishingTargets } from '../../services/publishing';
 import { CurrentFilters, Package, Selected } from '../../models/Publishing';
-import FilterDropdown from '../CreateSiteDialog/FilterDropdown';
+import FilterDropdown from './FilterDropdown';
 import { setRequestForgeryToken } from '../../utils/auth';
 import TablePagination from '@mui/material/TablePagination';
 import EmptyState from '../EmptyState/EmptyState';
@@ -164,8 +164,6 @@ const currentFiltersInitialState: CurrentFilters = {
   page: 0
 };
 
-const selectedInitialState: Selected = {};
-
 export interface PublishingQueueProps {
   siteId: string;
 }
@@ -195,13 +193,13 @@ function PublishingQueue(props: PublishingQueueProps) {
   const [packages, setPackages] = useState(null);
   const [isFetchingPackages, setIsFetchingPackages] = useState(false);
   const [filesPerPackage, setFilesPerPackage] = useState(null);
-  const [selected, setSelected] = useState(selectedInitialState);
+  const [selected, setSelected] = useState<Selected>({});
   const [pending, setPending] = useState({});
   const [count, setCount] = useState(0);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useSpreadState({
     environments: null,
-    states: [READY_FOR_LIVE, PROCESSING, COMPLETED, CANCELLED, BLOCKED]
+    states: currentFiltersInitialState.state
   });
   const [apiState, setApiState] = useSpreadState({
     error: false,
@@ -215,17 +213,19 @@ function PublishingQueue(props: PublishingQueueProps) {
   const getPackages = useCallback(
     (siteId: string) => {
       setIsFetchingPackages(true);
-      fetchPackages(siteId, getFilters(currentFilters)).subscribe({
-        next: (packages) => {
-          setIsFetchingPackages(false);
-          setTotal(packages.total);
-          setPackages(packages);
-        },
-        error: ({ response }) => {
-          setIsFetchingPackages(false);
-          setApiState({ error: true, errorResponse: response.response });
-        }
-      });
+      if (currentFilters.state.length) {
+        fetchPackages(siteId, getFilters(currentFilters)).subscribe({
+          next: (packages) => {
+            setIsFetchingPackages(false);
+            setTotal(packages.total);
+            setPackages(packages);
+          },
+          error: ({ response }) => {
+            setIsFetchingPackages(false);
+            setApiState({ error: true, errorResponse: response.response });
+          }
+        });
+      }
     },
     [currentFilters, setApiState]
   );
@@ -361,6 +361,8 @@ function PublishingQueue(props: PublishingQueueProps) {
       } else {
         if (event.target.value) {
           state.splice(state.indexOf(event.target.value), 1);
+        } else {
+          state = [];
         }
       }
       setCurrentFilters({ ...currentFilters, state, page: 0 });

@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import LookupTable from './LookupTable';
+
 export type PublishingTargets = 'live' | 'staging';
 
 export interface Package {
@@ -26,9 +28,7 @@ export interface Package {
   comment: string;
 }
 
-export interface Selected {
-  [keys: string]: boolean;
-}
+export type Selected = LookupTable<boolean>;
 
 export interface File {
   contentTypeClass: string;
