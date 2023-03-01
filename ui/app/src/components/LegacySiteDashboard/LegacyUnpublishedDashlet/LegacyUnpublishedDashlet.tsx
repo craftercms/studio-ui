@@ -285,7 +285,11 @@ export function LegacyUnpublishedDashlet() {
       onRefresh={fetchUnpublished}
       headerRightSection={
         <>
-          <Button onClick={onClickPublishEverything} sx={{ mr: 1 }}>
+          <Button
+            sx={{ mr: 1 }}
+            onClick={onClickPublishEverything}
+            disabled={selectedItemsLength !== 0 || state.items === null || state.items.length === 0}
+          >
             <FormattedMessage id="unpublishedDashlet.publishEverything" defaultMessage="Publish Everything" />
           </Button>
           <TextField
