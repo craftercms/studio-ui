@@ -39,7 +39,7 @@ import { excludeCommonItems, useTransferListState } from '../TransferList/utils'
 import { LookupTable, PaginationOptions } from '../../models';
 import useMount from '../../hooks/useMount';
 import { createPresenceTable } from '../../utils/array';
-import { reversePluckProps } from '../../utils/object';
+import { pluckProps, reversePluckProps } from '../../utils/object';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const translations = defineMessages({
@@ -192,7 +192,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       isSubmitting: true
     });
     if (props.group) {
-      update(group).subscribe({
+      update(pluckProps(group, 'id', 'desc')).subscribe({
         next(group) {
           dispatch(
             showSystemNotification({
