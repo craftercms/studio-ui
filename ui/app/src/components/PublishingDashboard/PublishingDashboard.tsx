@@ -71,6 +71,11 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
         <Grid item xs={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>
+        {userPermissions.includes('get_publishing_queue') && (
+          <Grid item xs={12}>
+            <PublishingQueueWidget siteId={site} />
+          </Grid>
+        )}
         {userPermissions.includes('publish') && (
           <Grid item xs={12}>
             <PublishOnDemandWidget
@@ -78,11 +83,6 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
               mode={allowedRole ? null : 'everything'}
               onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
             />
-          </Grid>
-        )}
-        {userPermissions.includes('get_publishing_queue') && (
-          <Grid item xs={12}>
-            <PublishingQueueWidget siteId={site} />
           </Grid>
         )}
       </Grid>
