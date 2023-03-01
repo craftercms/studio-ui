@@ -19,7 +19,7 @@ import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useStyles } from './styles';
-import { DataGrid, GridCellParams, GridColDef, DataGridProps, GridOverlay, GridSortModel } from '@mui/x-data-grid';
+import { DataGrid, DataGridProps, GridCellParams, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
@@ -357,15 +357,18 @@ export function AuditGridUI(props: AuditGridUIProps) {
         components={{
           ColumnMenu: onFilterSelected,
           NoRowsOverlay: () => (
-            <GridOverlay className={classes.gridOverlay}>
-              <EmptyState title={<FormattedMessage id="auditGrid.emptyStateMessage" defaultMessage="No Logs Found" />}>
+            <Box>
+              <EmptyState
+                styles={{ root: { position: 'relative', zIndex: 1, paddingTop: 10, paddingBottom: 10, margin: 0 } }}
+                title={<FormattedMessage id="auditGrid.emptyStateMessage" defaultMessage="No Logs Found" />}
+              >
                 {hasActiveFilters && (
-                  <Button variant="text" color="primary" onClick={() => onResetFilters()}>
+                  <Button variant="text" color="primary" onClick={onResetFilters}>
                     <FormattedMessage id="auditGrid.clearFilters" defaultMessage="Clear filters" />
                   </Button>
                 )}
               </EmptyState>
-            </GridOverlay>
+            </Box>
           )
         }}
         disableSelectionOnClick
