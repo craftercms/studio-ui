@@ -216,7 +216,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
                     <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                   </SecondaryButton>
                 )}
-                <PrimaryButton disabled={!submitOk || inProgress} loading={inProgress} type="submit">
+                <PrimaryButton disabled={!submitOk} loading={inProgress} type="submit">
                   <FormattedMessage id="words.save" defaultMessage="Save" />
                 </PrimaryButton>
               </div>
