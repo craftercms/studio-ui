@@ -119,7 +119,7 @@ export function EditSiteDialogUI(props: EditSiteDialogUIProps) {
                 image={siteImage}
                 title={siteName}
                 className={classes.media}
-                onError={(event) => (event.target.src = fallbackImageSrc)}
+                onError={(event) => ((event.target as HTMLImageElement).src = fallbackImageSrc)}
               />
               <CardActions className={classes.cardActions} disableSpacing>
                 <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>

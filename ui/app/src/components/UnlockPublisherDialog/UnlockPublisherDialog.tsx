@@ -30,7 +30,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 export interface UnlockPublisherDialogProps {
   open: boolean;
   password?: string;
-  onError({ error: any }): void;
+  onError({ error }): void;
   onCancel(): void;
   onComplete(): void;
 }

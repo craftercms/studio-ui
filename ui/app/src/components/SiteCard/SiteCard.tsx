@@ -103,7 +103,7 @@ export function SiteCard(props: SiteCardProps) {
             className={classes.media}
             image={site.imageUrl}
             title={site.name}
-            onError={(event) => (event.target.src = fallbackImageSrc)}
+            onError={(event) => ((event.target as HTMLImageElement).src = fallbackImageSrc)}
           />
         )}
       </CardActionArea>
