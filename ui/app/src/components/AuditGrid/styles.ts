@@ -43,9 +43,6 @@ export const useStyles = makeStyles()((theme) => ({
       outline: 'none !important'
     }
   },
-  gridOverlay: {
-    zIndex: 1
-  },
   paginationRoot: {
     marginLeft: 'auto',
     marginRight: '20px'
