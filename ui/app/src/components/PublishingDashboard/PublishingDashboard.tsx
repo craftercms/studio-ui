@@ -40,6 +40,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
   const userRoles = user?.rolesBySite[site] ?? [];
   const userPermissions = user?.permissionsBySite[site] ?? [];
   const allowedRole = userRoles.some((role) => role === 'developer' || role === 'admin');
+  const hasPublishPermission = userPermissions?.includes('publish');
   const {
     spacing,
     palette: { mode }
@@ -70,10 +71,10 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
         </Grid>
         {userPermissions.includes('get_publishing_queue') && (
           <Grid item xs={12}>
-            <PublishingQueueWidget siteId={site} readOnly={!userPermissions.includes('publish')} />
+            <PublishingQueueWidget siteId={site} readOnly={!hasPublishPermission} />
           </Grid>
         )}
-        {userPermissions.includes('publish') && (
+        {hasPublishPermission && (
           <Grid item xs={12}>
             <PublishOnDemandWidget
               siteId={site}
