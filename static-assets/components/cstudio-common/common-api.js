@@ -7976,58 +7976,16 @@ CStudioAuthoring.FilesDiff = {
   CrafterStudioUtils._addScrollListener.listeningScroll = false;
 })(window);
 
-/*
- * Create crafterSite cookie on DOM Ready (so CStudioAuthoringContext object is available)
- */
+/* Create crafterSite cookie on DOM Ready (so CStudioAuthoringContext object is available) */
 (function (w) {
   // Parameter 'win' of the anonymous function will be the object passed as parameter 'w'
   YAHOO.util.Event.onDOMReady(function (e, args, win) {
-    //
-    if (!(!window.ActiveXObject && 'ActiveXObject' in window)) {
-      const state = CrafterCMSNext.system.store.getState();
-      CrafterCMSNext.util.auth.setSiteCookie(win.CStudioAuthoringContext.site, state.env.useBaseDomain);
-    }
-
-    const getInitialConfiguration = () => {
-      CStudioAuthoring.Service.getConfiguration(CStudioAuthoringContext.site, '/mime-type.xml', {
-        success: function (data) {
-          var mimeTypes = {}, //object to be stored
-            confMimeType, //current mimeType json object from service
-            mimeType,
-            key;
-
-          if (data && data['mime-type']) {
-            var mimeTypes = data['mime-type'];
-            if (!Array.isArray(mimeTypes)) {
-              //support single values coming from SiteServiceImpl#createMap
-              mimeTypes = [mimeTypes];
-            }
-            for (var i = 0; i < mimeTypes.length; i++) {
-              confMimeType = mimeTypes[i];
-              mimeType = {};
-
-              if (confMimeType.icon) {
-                if (confMimeType.icon.class) {
-                  mimeType.class = confMimeType.icon.class;
-                }
-                if (confMimeType.icon.styles) {
-                  mimeType.styles = confMimeType.icon.styles;
-                }
-              }
-
-              mimeTypes[confMimeType.type] = mimeType;
-            }
-          }
-
-          CStudioAuthoring.mimeTypes = mimeTypes;
-        }
-      });
-
+    CrafterCMSNext.system.getStore().subscribe((store) => {
+      if (!(!window.ActiveXObject && 'ActiveXObject' in window)) {
+        const state = store.getState();
+        CrafterCMSNext.util.auth.setSiteCookie(win.CStudioAuthoringContext.site, state.env.useBaseDomain);
+      }
       CStudioAuthoring.Utils.getTimeZoneConfig();
-    };
-
-    CrafterCMSNext.system.getStore().subscribe(() => {
-      getInitialConfiguration();
     });
   }, w);
 })(window);
