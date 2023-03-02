@@ -349,7 +349,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onFetchMoreUsers={fetchMoreUsers}
       hasMoreUsers={usersHaveNextPage}
       disableAddMembers={disableAddMembers}
-      inProgress={isSubmitting}
+      isSubmitting={isSubmitting}
     />
   );
 }

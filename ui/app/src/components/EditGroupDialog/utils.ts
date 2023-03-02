@@ -64,5 +64,5 @@ export interface GroupEditDialogUIProps {
   onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
   hasMoreUsers: boolean;
   disableAddMembers: boolean;
-  inProgress: boolean;
+  isSubmitting: boolean;
 }

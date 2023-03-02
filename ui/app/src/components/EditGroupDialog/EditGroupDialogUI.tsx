@@ -85,7 +85,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     onFetchMoreUsers,
     hasMoreUsers,
     disableAddMembers,
-    inProgress
+    isSubmitting
   } = props;
 
   const {
@@ -212,11 +212,11 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             {!group.externallyManaged && (
               <div className={classes.formActions}>
                 {isEdit && (
-                  <SecondaryButton disabled={!isDirty || inProgress} onClick={onCancel}>
+                  <SecondaryButton disabled={!isDirty || isSubmitting} onClick={onCancel}>
                     <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                   </SecondaryButton>
                 )}
-                <PrimaryButton disabled={!submitOk} loading={inProgress} type="submit">
+                <PrimaryButton disabled={!submitOk} loading={isSubmitting} type="submit">
                   <FormattedMessage id="words.save" defaultMessage="Save" />
                 </PrimaryButton>
               </div>
