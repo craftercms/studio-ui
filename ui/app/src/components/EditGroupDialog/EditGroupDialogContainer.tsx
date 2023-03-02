@@ -39,7 +39,8 @@ import { excludeCommonItems, useTransferListState } from '../TransferList/utils'
 import { LookupTable, PaginationOptions } from '../../models';
 import useMount from '../../hooks/useMount';
 import { createPresenceTable } from '../../utils/array';
-import { reversePluckProps } from '../../utils/object';
+import { pluckProps, reversePluckProps } from '../../utils/object';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const translations = defineMessages({
   groupCreated: {
@@ -65,7 +66,7 @@ const translations = defineMessages({
 });
 
 export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
-  const { onClose, onGroupSaved, onGroupDeleted, onSubmittingAndOrPendingChange } = props;
+  const { onClose, onGroupSaved, onGroupDeleted, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [group, setGroup] = useSpreadState(props.group ?? { id: null, name: '', desc: '', externallyManaged: false });
@@ -97,6 +98,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     [isAllChecked, sourceItems, targetItems]
   );
   const disableAddMembers = getChecked(excludeCommonItems(sourceItems, targetItems)).length === 0;
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
 
   const onDeleteGroup = (group: Group) => {
     trash(group.id).subscribe({
@@ -186,8 +188,11 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   };
 
   const onSave = () => {
+    onSubmittingAndOrPendingChange({
+      isSubmitting: true
+    });
     if (props.group) {
-      update(group).subscribe({
+      update(pluckProps(group, 'id', 'desc')).subscribe({
         next(group) {
           dispatch(
             showSystemNotification({
@@ -196,9 +201,15 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           );
           setIsDirty(false);
           onGroupSaved(group);
+          fnRefs.current.onSubmittingAndOrPendingChange({
+            isSubmitting: false
+          });
         },
         error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
+          fnRefs.current.onSubmittingAndOrPendingChange({
+            isSubmitting: false
+          });
         }
       });
     } else {
@@ -211,9 +222,15 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           );
           setIsDirty(false);
           onGroupSaved(group);
+          fnRefs.current.onSubmittingAndOrPendingChange({
+            isSubmitting: false
+          });
         },
         error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
+          fnRefs.current.onSubmittingAndOrPendingChange({
+            isSubmitting: false
+          });
         }
       });
     }
@@ -332,6 +349,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onFetchMoreUsers={fetchMoreUsers}
       hasMoreUsers={usersHaveNextPage}
       disableAddMembers={disableAddMembers}
+      isSubmitting={isSubmitting}
     />
   );
 }

@@ -28,6 +28,7 @@ import { useSitesBranch } from '../../hooks/useSitesBranch';
 import { EditUserDialogContainerProps } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { isInvalidEmail, validateFieldMinLength } from '../UserManagement/utils';
+import { pluckProps } from '../../utils/object';
 
 const translations = defineMessages({
   userDeleted: {
@@ -132,7 +133,7 @@ export function EditUserDialogContainer(props: EditUserDialogContainerProps) {
     onSubmittingAndOrPendingChange({
       isSubmitting: true
     });
-    update(user).subscribe({
+    update(pluckProps(user, 'id', 'firstName', 'lastName', 'email', 'enabled')).subscribe({
       next() {
         dispatch(
           showSystemNotification({

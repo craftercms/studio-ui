@@ -34,7 +34,10 @@ export interface EditGroupDialogProps extends EditGroupBaseProps, EnhancedDialog
 
 export interface EditGroupDialogContainerProps
   extends EditGroupBaseProps,
-    Pick<EditGroupDialogProps, 'onClose' | 'onGroupSaved' | 'onGroupDeleted' | 'onSubmittingAndOrPendingChange'> {}
+    Pick<
+      EditGroupDialogProps,
+      'onClose' | 'onGroupSaved' | 'onGroupDeleted' | 'isSubmitting' | 'onSubmittingAndOrPendingChange'
+    > {}
 
 export interface GroupEditDialogUIProps {
   group?: Group;
@@ -61,4 +64,5 @@ export interface GroupEditDialogUIProps {
   onFetchMoreUsers(options?: Partial<PaginationOptions & { keyword?: string }>): void;
   hasMoreUsers: boolean;
   disableAddMembers: boolean;
+  isSubmitting: boolean;
 }

@@ -66,8 +66,8 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
   const onSubmit = (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setUpdating(true);
-    setPassword(user.username, newPassword).subscribe(
-      () => {
+    setPassword(user.username, newPassword).subscribe({
+      next() {
         dispatch(
           showSystemNotification({
             message: formatMessage(translations.passwordUpdated)
@@ -76,10 +76,11 @@ function ResetPasswordDialogUI(props: ResetPasswordDialogProps) {
         setUpdating(false);
         onClose();
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
+        setUpdating(false);
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   return (
