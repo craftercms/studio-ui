@@ -28,6 +28,7 @@ import { CurrentFilters } from '../../models/Publishing';
 import SearchIcon from '@mui/icons-material/SearchRounded';
 import { Checkbox, FormGroup, Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles()((theme: Theme) => ({
   paper: {
@@ -166,7 +167,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
               <strong>{formatMessage(messages.pathExpression)}</strong>
             </Typography>
           </header>
-          <div className={classes.body}>
+          <Box className={classes.body} display="flex" alignItems="center">
             <div className={classes.searchIcon}>
               <SearchIcon />
             </div>
@@ -181,7 +182,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
               onKeyPress={(event) => onKeyPress(event, path)}
               value={path}
             />
-          </div>
+          </Box>
         </section>
         <section>
           <header className={classes.header}>
@@ -206,24 +207,26 @@ export function FilterDropdown(props: FilterDropdownProps) {
         </section>
         <section>
           <header className={classes.header}>
-            <Typography variant="body1">
-              <strong>{formatMessage(messages.state)}</strong>
-            </Typography>
-          </header>
-          <div className={classes.formControl}>
-            <FormGroup>
+            <Typography variant="body1" sx={{ ml: '5px' }}>
               <FormControlLabel
                 value=""
-                label={formatMessage(messages.all)}
+                label={<strong>{formatMessage(messages.state)}</strong>}
                 control={
                   <Checkbox
                     color="primary"
                     value=""
-                    checked={currentFilters.state.length === filters.states.length || currentFilters.state.length === 0}
+                    indeterminate={
+                      currentFilters.state.length > 0 && currentFilters.state.length !== filters.states.length
+                    }
+                    checked={currentFilters.state.length === filters.states.length}
                     onChange={handleFilterChange}
                   />
                 }
               />
+            </Typography>
+          </header>
+          <div className={classes.formControl}>
+            <FormGroup>
               {filters.states.map((filter: string, index: number) => (
                 <FormControlLabel
                   key={index}

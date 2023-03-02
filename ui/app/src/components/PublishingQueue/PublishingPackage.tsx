@@ -194,6 +194,7 @@ interface PublishingPackageProps {
   filesPerPackage: {
     [key: string]: any;
   };
+  readOnly?: boolean;
 
   setSelected(selected: any): any;
 
@@ -224,7 +225,8 @@ export function PublishingPackage(props: PublishingPackageProps) {
     getPackages,
     setApiState,
     filesPerPackage,
-    setFilesPerPackage
+    setFilesPerPackage,
+    readOnly
   } = props;
   const [loading, setLoading] = useState(null);
 
@@ -299,7 +301,12 @@ export function PublishingPackage(props: PublishingPackageProps) {
           <FormGroup className={classes.checkbox}>
             <FormControlLabel
               control={
-                <Checkbox color="primary" checked={checked} onChange={(event) => onSelect(event, id, checked)} />
+                <Checkbox
+                  color="primary"
+                  checked={checked}
+                  onChange={(event) => onSelect(event, id, checked)}
+                  disabled={readOnly}
+                />
               }
               label={<strong>{id}</strong>}
             />
@@ -317,6 +324,7 @@ export function PublishingPackage(props: PublishingPackageProps) {
             confirmText={formatMessage(translations.confirm)}
             confirmHelperText={formatMessage(translations.confirmHelperText)}
             onConfirm={() => handleCancel(id)}
+            disabled={readOnly}
           />
         )}
       </section>

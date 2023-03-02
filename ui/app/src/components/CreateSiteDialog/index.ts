@@ -24,6 +24,4 @@ export * from './BlueprintForm';
 
 export * from './BlueprintReview';
 
-export * from './FilterDropdown';
-
 export * from './GitForm';

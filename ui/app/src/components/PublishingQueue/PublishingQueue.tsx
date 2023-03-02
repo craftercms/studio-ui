@@ -23,7 +23,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import PublishingPackage from './PublishingPackage';
 import { cancelPackage, fetchPackages, fetchPublishingTargets } from '../../services/publishing';
 import { CurrentFilters, Package, Selected } from '../../models/Publishing';
-import FilterDropdown from '../CreateSiteDialog/FilterDropdown';
+import FilterDropdown from './FilterDropdown';
 import { setRequestForgeryToken } from '../../utils/auth';
 import TablePagination from '@mui/material/TablePagination';
 import EmptyState from '../EmptyState/EmptyState';
@@ -159,15 +159,14 @@ const useStyles = makeStyles()((theme) => ({
 const currentFiltersInitialState: CurrentFilters = {
   environment: '',
   path: '',
-  state: [READY_FOR_LIVE],
+  state: [READY_FOR_LIVE, PROCESSING, COMPLETED, CANCELLED, BLOCKED],
   limit: 5,
   page: 0
 };
 
-const selectedInitialState: Selected = {};
-
 export interface PublishingQueueProps {
   siteId: string;
+  readOnly?: boolean;
 }
 
 function getFilters(currentFilters: CurrentFilters) {
@@ -195,13 +194,13 @@ function PublishingQueue(props: PublishingQueueProps) {
   const [packages, setPackages] = useState(null);
   const [isFetchingPackages, setIsFetchingPackages] = useState(false);
   const [filesPerPackage, setFilesPerPackage] = useState(null);
-  const [selected, setSelected] = useState(selectedInitialState);
+  const [selected, setSelected] = useState<Selected>({});
   const [pending, setPending] = useState({});
   const [count, setCount] = useState(0);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useSpreadState({
     environments: null,
-    states: [READY_FOR_LIVE, PROCESSING, COMPLETED, CANCELLED, BLOCKED]
+    states: currentFiltersInitialState.state
   });
   const [apiState, setApiState] = useSpreadState({
     error: false,
@@ -209,23 +208,25 @@ function PublishingQueue(props: PublishingQueueProps) {
   });
   const [currentFilters, setCurrentFilters] = useState(currentFiltersInitialState);
   const { formatMessage } = useIntl();
-  const { siteId } = props;
+  const { siteId, readOnly } = props;
   const hasReadyForLivePackages = (packages || []).filter((item: Package) => item.state === READY_FOR_LIVE).length > 0;
 
   const getPackages = useCallback(
     (siteId: string) => {
       setIsFetchingPackages(true);
-      fetchPackages(siteId, getFilters(currentFilters)).subscribe({
-        next: (packages) => {
-          setIsFetchingPackages(false);
-          setTotal(packages.total);
-          setPackages(packages);
-        },
-        error: ({ response }) => {
-          setIsFetchingPackages(false);
-          setApiState({ error: true, errorResponse: response.response });
-        }
-      });
+      if (currentFilters.state.length) {
+        fetchPackages(siteId, getFilters(currentFilters)).subscribe({
+          next: (packages) => {
+            setIsFetchingPackages(false);
+            setTotal(packages.total);
+            setPackages(packages);
+          },
+          error: ({ response }) => {
+            setIsFetchingPackages(false);
+            setApiState({ error: true, errorResponse: response.response });
+          }
+        });
+      }
     },
     [currentFilters, setApiState]
   );
@@ -286,6 +287,7 @@ function PublishingQueue(props: PublishingQueueProps) {
         setSelected={setSelected}
         filesPerPackage={filesPerPackage}
         setFilesPerPackage={setFilesPerPackage}
+        readOnly={readOnly}
       />
     ));
   }
@@ -391,7 +393,7 @@ function PublishingQueue(props: PublishingQueueProps) {
                 <Checkbox
                   color="primary"
                   checked={areAllSelected()}
-                  disabled={!packages || !hasReadyForLivePackages}
+                  disabled={!packages || !hasReadyForLivePackages || readOnly}
                   onClick={handleSelectAll}
                 />
               }
@@ -416,7 +418,7 @@ function PublishingQueue(props: PublishingQueueProps) {
             confirmText={formatMessage(messages.confirm)}
             confirmHelperText={formatMessage(messages.confirmAllHelper)}
             onConfirm={handleCancelAll}
-            disabled={!(hasReadyForLivePackages && Object.values(selected).length > 0)}
+            disabled={!(hasReadyForLivePackages && Object.values(selected).length > 0) || readOnly}
           />
         )}
         <FilterDropdown
