@@ -16,6 +16,7 @@
 
 import { Theme } from '@mui/material/styles';
 import { PublishingStatusTileProps } from '../PublishingStatusTile';
+import { PublishingStatusCodes } from '../../models';
 
 export const getPublishingStatusCodeColor = (code: PublishingStatusTileProps['status'], theme: Theme) => {
   switch (code) {
@@ -29,5 +30,21 @@ export const getPublishingStatusCodeColor = (code: PublishingStatusTileProps['st
     case 'stopped': {
       return theme.palette.error.main;
     }
+    case 'readyWithErrors': {
+      return theme.palette.warning.main;
+    }
   }
+  // region Compiler hints
+  // Var below is for typescript to complain if we ever add/remove codes.
+  // eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
+  const control: Record<PublishingStatusCodes, any> = {
+    error: undefined,
+    processing: undefined,
+    publishing: undefined,
+    queued: undefined,
+    ready: undefined,
+    readyWithErrors: undefined,
+    stopped: undefined
+  };
+  // endregion
 };

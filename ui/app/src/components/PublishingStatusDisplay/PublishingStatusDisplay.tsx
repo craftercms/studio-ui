@@ -23,6 +23,7 @@ import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { PublishingStatus } from '../../models/Publishing';
 import { getPublishingStatusMessage, publishingStatusMessages } from './utils';
+import Box from '@mui/material/Box';
 
 export type PublishingStatusDisplayProps = PublishingStatus & {
   isFetching: boolean;
@@ -50,7 +51,19 @@ export function PublishingStatusDisplay(props: PublishingStatusDisplayProps) {
                     <br />
                   </>
                 )}
-                {lockTTL && formatMessage(publishingStatusMessages.lockTTL, { lockTTL })}
+                {lockTTL && (
+                  <>
+                    {formatMessage(publishingStatusMessages.lockTTL, { lockTTL })}
+                    <br />
+                  </>
+                )}
+                {status === 'readyWithErrors' && (
+                  <Box>
+                    {formatMessage({
+                      defaultMessage: 'Last publish completed with errors, please see the logs for more information.'
+                    })}
+                  </Box>
+                )}
               </>
             )
           }

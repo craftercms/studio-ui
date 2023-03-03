@@ -44,9 +44,18 @@ export interface CurrentFilters {
   page: number;
 }
 
+export type PublishingStatusCodes =
+  | 'ready'
+  | 'processing'
+  | 'publishing'
+  | 'queued'
+  | 'stopped'
+  | 'error'
+  | 'readyWithErrors';
+
 export interface PublishingStatus {
   enabled: boolean;
-  status: 'ready' | 'processing' | 'publishing' | 'queued' | 'stopped' | 'error';
+  status: PublishingStatusCodes;
   lockOwner: string;
   lockTTL: string;
   published: boolean;

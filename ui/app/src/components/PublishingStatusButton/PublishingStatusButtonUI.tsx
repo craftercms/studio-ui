@@ -43,7 +43,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
       )}`}
     >
       <Badge
-        badgeContent={status === 'error' || enabled === false ? '!' : null}
+        badgeContent={status === 'error' || status === 'readyWithErrors' || enabled === false ? '!' : null}
         color="error"
         overlap="circular"
         style={{ position: 'relative' }}
