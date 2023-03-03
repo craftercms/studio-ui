@@ -22,7 +22,9 @@
 
   function removeElAttributes(element) {
     element.getAttributeNames().forEach((attrName) => {
-      element.removeAttribute(attrName);
+      if (attrName !== 'href') {
+        element.removeAttribute(attrName);
+      }
     });
   }
 
