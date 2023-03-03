@@ -44,11 +44,12 @@ import useSpreadState from '../../hooks/useSpreadState';
 import { DetailedItem } from '../../models';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import useSelection from '../../hooks/useSelection';
 import Alert from '@mui/material/Alert';
 import { LoadingState } from '../LoadingState';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import getStyles from './styles';
+import useEnv from '../../hooks/useEnv';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const {
@@ -59,7 +60,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
     allowBraces = false,
     type,
     dependantItems,
-    fetchingDependantItems
+    fetchingDependantItems,
+    error
   } = props;
   const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
   const [name, setName] = useState(value);
@@ -75,11 +77,8 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const { formatMessage } = useIntl();
   const renameDisabled =
     isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
-  const authoringBase = useSelection<string>((state) => state.env.authoringBase);
-  const [contextMenu, setContextMenu] = useSpreadState({
-    el: null,
-    dependency: null
-  });
+  const { authoringBase } = useEnv();
+  const [contextMenu, setContextMenu] = useSpreadState({ el: null, dependency: null });
   const sx = getStyles();
 
   useEffect(() => {
@@ -250,7 +249,7 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
             )}
           </>
         ) : (
-          <></>
+          error && <ApiResponseErrorState error={error.response} />
         )}
       </DialogBody>
       <DialogFooter>
