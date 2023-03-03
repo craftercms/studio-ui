@@ -659,24 +659,35 @@ export const itemActionDispatcher = ({
         );
         fetchSandboxItem(site, item.path).subscribe({
           next(item) {
-            dispatch(
-              batchActions([
-                unblockUI(),
-                setClipboard({
-                  type: 'COPY',
-                  paths: [item.path],
-                  sourcePath: item.path
-                }),
-                showCopyItemSuccessNotification()
-              ])
-            );
+            if (item) {
+              dispatch(
+                batchActions([
+                  unblockUI(),
+                  setClipboard({
+                    type: 'COPY',
+                    paths: [item.path],
+                    sourcePath: item.path
+                  }),
+                  showCopyItemSuccessNotification()
+                ])
+              );
+            } else {
+              dispatch(
+                batchActions([
+                  unblockUI(),
+                  showErrorDialog({
+                    error: {
+                      code: '7000',
+                      message: `Content not found`,
+                      remedialAction: `Check if the item was deleted from the system or blob store`
+                    }
+                  })
+                ])
+              );
+            }
           },
           error(response) {
-            dispatch(
-              showErrorDialog({
-                error: response
-              })
-            );
+            dispatch(batchActions([unblockUI(), showErrorDialog({ error: response })]));
           }
         });
         break;

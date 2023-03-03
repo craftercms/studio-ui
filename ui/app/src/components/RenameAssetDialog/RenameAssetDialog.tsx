@@ -17,12 +17,11 @@
 import React from 'react';
 import { EnhancedDialog } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
-import { RenameAssetProps } from './utils';
+import { RenameAssetDialogProps } from './utils';
 import { RenameAssetDialogContainer } from './RenameAssetDialogContainer';
 
-export function RenameAssetDialog(props: RenameAssetProps) {
-  const { path, allowBraces, value, onRenamed, type, dependantItems, fetchingDependantItems, ...rest } = props;
-
+export function RenameAssetDialog(props: RenameAssetDialogProps) {
+  const { path, allowBraces, value, onRenamed, type, dependantItems, fetchingDependantItems, error, ...rest } = props;
   return (
     <EnhancedDialog
       title={<FormattedMessage id="renameAsset.title" defaultMessage="Rename Asset" />}
@@ -37,6 +36,7 @@ export function RenameAssetDialog(props: RenameAssetProps) {
         dependantItems={dependantItems}
         fetchingDependantItems={fetchingDependantItems}
         onRenamed={onRenamed}
+        error={error}
       />
     </EnhancedDialog>
   );

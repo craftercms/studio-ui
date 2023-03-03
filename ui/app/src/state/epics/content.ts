@@ -283,6 +283,10 @@ const content: CrafterCMSEpic[] = [
             ])
           )
         )
+      ),
+      catchAjaxError(
+        () => unblockUI(),
+        (error) => showErrorDialog({ error: error.response })
       )
     ),
   // endregion
@@ -343,7 +347,6 @@ const content: CrafterCMSEpic[] = [
             switchMap(({ item: path }) => {
               const mode = getEditorMode(state.content.itemsByPath[payload.path].mimeType);
               const editableAsset = isEditableAsset(payload.path);
-
               return [
                 unblockUI(),
                 ...(editableAsset
@@ -358,7 +361,11 @@ const content: CrafterCMSEpic[] = [
                     ]
                   : [])
               ];
-            })
+            }),
+            catchAjaxError(
+              () => unblockUI(),
+              (error) => showErrorDialog({ error: error.response })
+            )
           )
         )
       )
@@ -369,8 +376,8 @@ const content: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(duplicateWithPolicyValidation.type),
       withLatestFrom(state$),
-      switchMap(([{ payload }, state]) => {
-        return validateActionPolicy(state.sites.active, {
+      switchMap(([{ payload }, state]) =>
+        validateActionPolicy(state.sites.active, {
           type: 'COPY',
           target: payload.path,
           source: getParentPath(withoutIndex(payload.path))
@@ -419,8 +426,8 @@ const content: CrafterCMSEpic[] = [
               });
             }
           })
-        );
-      })
+        )
+      )
     ),
   // endregion
   // region pasteItem

@@ -77,7 +77,9 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
               });
               setDeps(dependantItems);
             },
-            error: (error) => setError(error)
+            error: (error) => {
+              setError(error.response?.response ?? error);
+            }
           });
         } else {
           setDeps(dialog.dependantItems);

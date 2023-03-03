@@ -28,6 +28,7 @@ import {
 } from '../../actions/dialogs';
 
 const initialState: RenameAssetStateProps = {
+  error: undefined,
   open: false,
   isSubmitting: null,
   isMinimized: null,
@@ -65,8 +66,9 @@ export default createReducer<GlobalState['dialogs']['renameAsset']>(initialState
     dependantItems: payload.dependants,
     fetchingDependantItems: false
   }),
-  [fetchRenameAssetDependantsFailed.type]: (state) => ({
+  [fetchRenameAssetDependantsFailed.type]: (state, { payload }) => ({
     ...state,
-    fetchingDependantItems: false
+    fetchingDependantItems: false,
+    error: payload
   })
 });
