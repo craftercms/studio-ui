@@ -15,7 +15,6 @@
  */
 
 import DialogBody from '../DialogBody/DialogBody';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
@@ -23,11 +22,17 @@ import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { PublishDialogUIProps } from './utils';
 import PublishDialogContentUI from './PublishDialogContentUI';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
+import { EmptyState } from '../EmptyState';
 
 export function PublishDialogUI(props: PublishDialogUIProps) {
   // region const { ... } = props
   const {
-    resource,
+    items,
+    publishingTargets,
+    isFetching,
+    error,
     published,
     publishingTargetsStatus,
     onPublishingChannelsFailRetry,
@@ -55,37 +60,42 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
   return (
     <>
       <DialogBody>
-        <SuspenseWithEmptyState
-          resource={resource}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: (
+        {error ? (
+          <ApiResponseErrorState error={error} />
+        ) : isFetching ? (
+          <LoadingState />
+        ) : items && publishingTargets ? (
+          items.length ? (
+            <PublishDialogContentUI
+              items={items}
+              publishingTargets={publishingTargets}
+              published={published}
+              selectedItems={selectedItems}
+              onItemClicked={onItemClicked}
+              dependencies={dependencies}
+              onSelectAll={onSelectAll}
+              onSelectAllSoftDependencies={onSelectAllSoftDependencies}
+              state={state}
+              isRequestPublish={isRequestPublish}
+              showRequestApproval={showRequestApproval}
+              publishingTargetsStatus={publishingTargetsStatus}
+              onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
+              mixedPublishingDates={mixedPublishingDates}
+              mixedPublishingTargets={mixedPublishingTargets}
+              submissionCommentRequired={submissionCommentRequired}
+              onPublishingArgumentChange={onPublishingArgumentChange}
+              isSubmitting={isSubmitting}
+            />
+          ) : (
+            <EmptyState
+              title={
                 <FormattedMessage id="publishDialog.noItemsSelected" defaultMessage="No items have been selected" />
-              )
-            },
-            isEmpty: (value) => value.items.length === 0
-          }}
-        >
-          <PublishDialogContentUI
-            resource={resource}
-            published={published}
-            selectedItems={selectedItems}
-            onItemClicked={onItemClicked}
-            dependencies={dependencies}
-            onSelectAll={onSelectAll}
-            onSelectAllSoftDependencies={onSelectAllSoftDependencies}
-            state={state}
-            isRequestPublish={isRequestPublish}
-            showRequestApproval={showRequestApproval}
-            publishingTargetsStatus={publishingTargetsStatus}
-            onPublishingChannelsFailRetry={onPublishingChannelsFailRetry}
-            mixedPublishingDates={mixedPublishingDates}
-            mixedPublishingTargets={mixedPublishingTargets}
-            submissionCommentRequired={submissionCommentRequired}
-            onPublishingArgumentChange={onPublishingArgumentChange}
-            isSubmitting={isSubmitting}
-          />
-        </SuspenseWithEmptyState>
+              }
+            />
+          )
+        ) : (
+          <></>
+        )}
       </DialogBody>
       <DialogFooter>
         {published && (

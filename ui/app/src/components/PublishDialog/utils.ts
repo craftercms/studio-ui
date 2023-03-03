@@ -20,20 +20,11 @@ import StandardAction from '../../models/StandardAction';
 import { GoLiveResponse } from '../../services/publishing';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { Resource } from '../../models/Resource';
 import React, { ReactNode } from 'react';
 import LookupTable from '../../models/LookupTable';
 import { DependencySelectionProps } from '../DependencySelection/DependencySelection';
 import { FetchDependenciesResponse } from '../../services/dependencies';
-
-export interface PublishDialogResourceInput {
-  items: DetailedItem[];
-  publishingTargets: any[];
-  error: ApiResponse;
-  submitting: boolean;
-}
-
-export type PublishDialogResourceBody = Omit<PublishDialogResourceInput, 'submitting' | 'error'>;
+import { PublishingTarget } from '../../models';
 
 export interface ExtendedGoLiveResponse extends GoLiveResponse {
   schedule: 'now' | 'custom';
@@ -76,7 +67,10 @@ export interface InternalDialogState {
 }
 
 export interface PublishDialogUIProps {
-  resource: Resource<PublishDialogResourceBody>;
+  items: DetailedItem[];
+  publishingTargets: PublishingTarget[];
+  isFetching: boolean;
+  error: ApiResponse;
   published: boolean;
   publishingTargetsStatus: string;
   onPublishingChannelsFailRetry(): void;

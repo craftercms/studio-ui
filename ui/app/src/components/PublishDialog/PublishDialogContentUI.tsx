@@ -25,7 +25,8 @@ import { Typography } from '@mui/material';
 
 export type PublishDialogContentUIProps = Pick<
   PublishDialogUIProps,
-  | 'resource'
+  | 'items'
+  | 'publishingTargets'
   | 'published'
   | 'selectedItems'
   | 'onItemClicked'
@@ -47,7 +48,8 @@ export type PublishDialogContentUIProps = Pick<
 export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
   // region { ... } = props
   const {
-    resource,
+    items,
+    publishingTargets,
     published,
     selectedItems,
     onItemClicked,
@@ -66,7 +68,6 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
     isSubmitting
   } = props;
   // endregion
-  const { items, publishingTargets } = resource.read();
   return (
     <>
       <Grid container spacing={3}>
