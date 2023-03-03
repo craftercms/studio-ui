@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { PublishingStatus } from '../../models/Publishing';
+import { PublishingStatus, PublishingStatusCodes } from '../../models/Publishing';
 import { defineMessages, IntlShape } from 'react-intl';
 import { capitalize } from '@mui/material';
 
@@ -43,6 +43,7 @@ export const publishingStatusMessages = defineMessages({
     id: 'words.error',
     defaultMessage: 'Error'
   },
+  readyWithErrors: { defaultMessage: 'Ready' },
   disabled: {
     id: 'words.disabled',
     defaultMessage: 'Disabled'
@@ -151,7 +152,22 @@ export function getPublishingStatusMessage(
       return formatMessage(publishingStatusMessages.stoppedMessage);
     case 'error':
       return formatMessage(publishingStatusMessages.errorMessage);
+    case 'readyWithErrors':
+      return formatMessage(publishingStatusMessages.readyWithErrors);
     default:
       return capitalize(props.status);
   }
+  // region Compiler hints
+  // Var below is for typescript to complain if we ever add/remove codes.
+  // eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
+  const control: Record<PublishingStatusCodes, any> = {
+    error: undefined,
+    processing: undefined,
+    publishing: undefined,
+    queued: undefined,
+    ready: undefined,
+    readyWithErrors: undefined,
+    stopped: undefined
+  };
+  // endregion
 }
