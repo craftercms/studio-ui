@@ -228,14 +228,6 @@ const dialogEpics: CrafterCMSEpic[] = [
       ignoreElements()
     ),
   // endregion
-  // region Show Publish Dialog
-  (action$) =>
-    action$.pipe(
-      ofType(showPublishDialog.type),
-      filter(({ payload }) => Boolean(payload.items?.length)),
-      map(({ payload }) => fetchDetailedItems({ paths: payload.items.map((item) => item.path) }))
-    ),
-  // endregion
   // region closeCodeEditorDialog
   // Moved unlock from dialog to epics since the container has no visibility of the backdrop click close and
   // was hence unable to unlock the item in all cases.
