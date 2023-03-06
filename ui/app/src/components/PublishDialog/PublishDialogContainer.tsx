@@ -36,8 +36,7 @@ import { DateChangeData } from '../DateTimePicker/DateTimePicker';
 import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
 import { approve, publish, requestPublish } from '../../services/workflow';
-import { forkJoin } from 'rxjs';
-import { fetchDetailedItem } from '../../services/content';
+import { fetchDetailedItems } from '../../services/content';
 import { DetailedItem } from '../../models';
 import { fetchDetailedItemComplete } from '../../state/actions/content';
 
@@ -221,8 +220,12 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
 
   useEffect(() => {
     setIsFetchingItems(true);
-    forkJoin(items.map((item) => fetchDetailedItem(siteId, item.path))).subscribe({
-      next(response: DetailedItem[]) {
+
+    fetchDetailedItems(
+      siteId,
+      items.map((item) => item.path)
+    ).subscribe({
+      next(response) {
         setDetailedItems(response);
         response.forEach((item) => {
           dispatch(fetchDetailedItemComplete(item));
