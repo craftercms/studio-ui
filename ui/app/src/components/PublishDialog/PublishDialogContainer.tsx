@@ -205,7 +205,9 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         // When no publishing target is selected
         !state.publishingTarget ||
         // If submission comment is required (per config) and blank
-        (submissionCommentRequired && isBlank(state.submissionComment))
+        (submissionCommentRequired && isBlank(state.submissionComment)) ||
+        // When there's an error
+        Boolean(state.error)
     );
   }, [
     isSubmitting,
@@ -213,7 +215,8 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     publishingTargets,
     state.publishingTarget,
     state.submissionComment,
-    submissionCommentRequired
+    submissionCommentRequired,
+    state.error
   ]);
 
   useEffect(() => {
