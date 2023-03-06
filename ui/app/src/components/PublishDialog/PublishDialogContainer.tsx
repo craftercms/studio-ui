@@ -36,12 +36,15 @@ import { DateChangeData } from '../DateTimePicker/DateTimePicker';
 import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
 import { approve, publish, requestPublish } from '../../services/workflow';
-import useDetailedItems from '../../hooks/useDetailedItems';
+import { forkJoin } from 'rxjs';
+import { fetchDetailedItem } from '../../services/content';
+import { DetailedItem } from '../../models';
+import { fetchDetailedItemComplete } from '../../state/actions/content';
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const { items, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
-  const detailedItems = useDetailedItems(items.map((item) => item.path));
-  const isFetchingItems = detailedItems?.isFetching;
+  const [detailedItems, setDetailedItems] = useState<DetailedItem[]>();
+  const [isFetchingItems, setIsFetchingItems] = useState(false);
   const {
     dateTimeFormatOptions: { timeZone = getUserTimeZone() }
   } = useLocale();
@@ -213,6 +216,25 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     submissionCommentRequired
   ]);
 
+  useEffect(() => {
+    setIsFetchingItems(true);
+    forkJoin(items.map((item) => fetchDetailedItem(siteId, item.path))).subscribe({
+      next(response: DetailedItem[]) {
+        setDetailedItems(response);
+        response.forEach((item) => {
+          dispatch(fetchDetailedItemComplete(item));
+        });
+        setIsFetchingItems(false);
+      },
+      error(error) {
+        setState({
+          error: error.response?.response ?? error
+        });
+        setIsFetchingItems(false);
+      }
+    });
+  }, [items, siteId, setState, dispatch]);
+
   const handleSubmit = () => {
     const {
       publishingTarget,
@@ -339,7 +361,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   return (
     <PublishDialogUI
       published={published}
-      items={items}
+      items={detailedItems}
       publishingTargets={publishingTargets}
       isFetching={isFetchingItems}
       error={state.error}
