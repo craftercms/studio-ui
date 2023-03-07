@@ -18,19 +18,12 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PublishingTarget } from '../../models/Publishing';
 import LookupTable from '../../models/LookupTable';
-import {
-  InternalDialogState,
-  paths,
-  PublishDialogContainerProps,
-  PublishDialogResourceBody,
-  PublishDialogResourceInput
-} from './utils';
+import { InternalDialogState, paths, PublishDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { getComputedPublishingTarget, getDateScheduled } from '../../utils/content';
 import { FormattedMessage } from 'react-intl';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { createPresenceTable } from '../../utils/array';
 import { fetchDependencies, FetchDependenciesResponse } from '../../services/dependencies';
 import { PublishDialogUI } from './PublishDialogUI';
@@ -40,15 +33,17 @@ import { isBlank } from '../../utils/string';
 import { useLocale } from '../../hooks/useLocale';
 import { getUserTimeZone } from '../../utils/datetime';
 import { DateChangeData } from '../DateTimePicker/DateTimePicker';
-import { pluckProps } from '../../utils/object';
 import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
 import { approve, publish, requestPublish } from '../../services/workflow';
-import useDetailedItems from '../../hooks/useDetailedItems';
+import { fetchDetailedItems } from '../../services/content';
+import { DetailedItem } from '../../models';
+import { fetchDetailedItemComplete } from '../../state/actions/content';
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const { items, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
-  const detailedItems = useDetailedItems(items.map((item) => item.path));
+  const [detailedItems, setDetailedItems] = useState<DetailedItem[]>();
+  const [isFetchingItems, setIsFetchingItems] = useState(false);
   const {
     dateTimeFormatOptions: { timeZone = getUserTimeZone() }
   } = useLocale();
@@ -170,24 +165,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     [siteId]
   );
 
-  const publishSource = useMemo(
-    () => ({
-      items: !detailedItems.isFetching ? Object.values(detailedItems.itemsByPath) : null,
-      error: state.error,
-      submitting: isSubmitting,
-      publishingTargets
-    }),
-    [detailedItems.isFetching, detailedItems.itemsByPath, state.error, isSubmitting, publishingTargets]
-  );
-
-  const resource = useLogicResource<PublishDialogResourceBody, PublishDialogResourceInput>(publishSource, {
-    shouldResolve: (source) => Boolean(source.items && source.publishingTargets),
-    shouldReject: (source) => Boolean(source.error),
-    shouldRenew: (source, resource) => source.submitting && resource.complete,
-    resultSelector: (source) => pluckProps(source, 'items', 'publishingTargets'),
-    errorSelector: (source) => source.error
-  });
-
   useEffect(() => {
     getPublishingChannels(() => {
       setSelectedItems(createPresenceTable(items, true, (item) => item.path));
@@ -227,7 +204,9 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         // When no publishing target is selected
         !state.publishingTarget ||
         // If submission comment is required (per config) and blank
-        (submissionCommentRequired && isBlank(state.submissionComment))
+        (submissionCommentRequired && isBlank(state.submissionComment)) ||
+        // When there's an error
+        Boolean(state.error)
     );
   }, [
     isSubmitting,
@@ -235,8 +214,32 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     publishingTargets,
     state.publishingTarget,
     state.submissionComment,
-    submissionCommentRequired
+    submissionCommentRequired,
+    state.error
   ]);
+
+  useEffect(() => {
+    setIsFetchingItems(true);
+
+    fetchDetailedItems(
+      siteId,
+      items.map((item) => item.path)
+    ).subscribe({
+      next(response) {
+        setDetailedItems(response);
+        response.forEach((item) => {
+          dispatch(fetchDetailedItemComplete(item));
+        });
+        setIsFetchingItems(false);
+      },
+      error(error) {
+        setState({
+          error: error.response?.response ?? error
+        });
+        setIsFetchingItems(false);
+      }
+    });
+  }, [items, siteId, setState, dispatch]);
 
   const handleSubmit = () => {
     const {
@@ -364,7 +367,10 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   return (
     <PublishDialogUI
       published={published}
-      resource={resource}
+      items={detailedItems}
+      publishingTargets={publishingTargets}
+      isFetching={isFetchingItems}
+      error={state.error}
       publishingTargetsStatus={publishingTargetsStatus}
       onPublishingChannelsFailRetry={getPublishingChannels}
       onCloseButtonClick={onCloseButtonClick}

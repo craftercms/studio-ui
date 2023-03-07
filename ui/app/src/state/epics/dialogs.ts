@@ -44,7 +44,6 @@ import {
   showConfirmDialog,
   showEditDialog,
   showPreviewDialog,
-  showPublishDialog,
   updateCodeEditorDialog,
   updateEditConfig,
   updatePreviewDialog,
@@ -62,7 +61,7 @@ import { formEngineMessages } from '../../env/i18n-legacy';
 import infoGraphic from '../../assets/information.svg';
 import { nnou, nou } from '../../utils/object';
 import { getHostToGuestBus } from '../../utils/subjects';
-import { fetchDetailedItems, unlockItem } from '../actions/content';
+import { unlockItem } from '../actions/content';
 import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import { LegacyItem } from '../../models';
 
@@ -226,14 +225,6 @@ const dialogEpics: CrafterCMSEpic[] = [
         hostToGuest$.next(action);
       }),
       ignoreElements()
-    ),
-  // endregion
-  // region Show Publish Dialog
-  (action$) =>
-    action$.pipe(
-      ofType(showPublishDialog.type),
-      filter(({ payload }) => Boolean(payload.items?.length)),
-      map(({ payload }) => fetchDetailedItems({ paths: payload.items.map((item) => item.path) }))
     ),
   // endregion
   // region closeCodeEditorDialog
