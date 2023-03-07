@@ -56,6 +56,7 @@ export function AuditManagement(props: AuditManagementProps) {
     offset: 0,
     limit: 10,
     sort: 'date',
+    order: 'DESC',
     siteId: site
   });
   const [parametersLookup, setParametersLookup] = useSpreadState<LookupTable<AuditLogEntryParameter[]>>({});

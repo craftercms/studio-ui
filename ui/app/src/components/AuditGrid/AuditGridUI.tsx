@@ -166,11 +166,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
 
     if (newSort !== sort) {
       setSortModel(model);
-      if (newSort === 'asc') {
-        onFilterChange({ id: 'order', value: newSort.toUpperCase() });
-      } else {
-        onFilterChange({ id: 'order', value: undefined });
-      }
+      onFilterChange({ id: 'order', value: newSort.toUpperCase() });
     }
   };
 
