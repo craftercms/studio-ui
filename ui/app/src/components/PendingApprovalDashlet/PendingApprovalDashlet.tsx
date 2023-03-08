@@ -17,14 +17,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { CommonDashletProps, useSpreadStateWithSelected, WithSelectedState } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
-import {
-  DashletEmptyMessage,
-  DenseCheckbox,
-  getItemSkeleton,
-  List,
-  ListItem,
-  ListItemIcon
-} from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListItemIcon } from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import Typography from '@mui/material/Typography';
@@ -36,6 +29,12 @@ import { DetailedItem } from '../../models';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
+import ItemDisplay from '../ItemDisplay';
+import { ActionsBar } from '../ActionsBar';
+import { UNDEFINED } from '../../utils/constants';
+import { itemActionDispatcher } from '../../utils/itemActions';
+import useEnv from '../../hooks/useEnv';
+import { useDispatch } from 'react-redux';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -51,17 +50,24 @@ const messages = defineMessages({
 
 export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const { borderLeftColor = palette.purple.tint } = props;
-  const [{ items, total, loading, isAllSelected }, setState, onSelectItem, onSelectAll, isSelected] =
-    useSpreadStateWithSelected<PendingApprovalDashletState>({
-      items: null,
-      total: null,
-      loading: false,
-      selected: {},
-      isAllSelected: false,
-      hasSelected: false
-    });
+  const [
+    { items, total, loading, isAllSelected, hasSelected, selected },
+    setState,
+    onSelectItem,
+    onSelectAll,
+    isSelected
+  ] = useSpreadStateWithSelected<PendingApprovalDashletState>({
+    items: null,
+    total: null,
+    loading: false,
+    selected: {},
+    isAllSelected: false,
+    hasSelected: false
+  });
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
+  const dispatch = useDispatch();
   const onRefresh = useMemo(
     () => () => {
       setState({ items: null, loading: true });
@@ -74,6 +80,19 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
+
+  const onOptionClicked = (option) => {
+    const clickedItems = items.filter((item) => selected[item.id]);
+    return itemActionDispatcher({
+      site,
+      authoringBase,
+      dispatch,
+      formatMessage,
+      option,
+      item: clickedItems.length > 1 ? clickedItems : clickedItems[0]
+    });
+  };
+
   return (
     <DashletCard
       {...props}
@@ -90,10 +109,29 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
           }}
         />
       }
+      sxs={{ actionsBar: { padding: 0 } }}
       actionsBar={
-        <>
-          <DenseCheckbox checked={isAllSelected} onChange={onSelectAll} />
-        </>
+        <ActionsBar
+          disabled={loading}
+          isChecked={isAllSelected}
+          isIndeterminate={hasSelected && !isAllSelected}
+          onCheckboxChange={onSelectAll}
+          onOptionClicked={onOptionClicked}
+          options={
+            hasSelected
+              ? [
+                  { id: 'approvePublish', label: 'Publish' },
+                  { id: 'rejectPublish', label: 'Reject' }
+                ]
+              : []
+          }
+          buttonProps={{ size: 'small' }}
+          sxs={{
+            root: { flexGrow: 1 },
+            container: { bgcolor: hasSelected ? 'action.selected' : UNDEFINED },
+            checkbox: { padding: '5px', borderRadius: 0 }
+          }}
+        />
       }
       headerAction={
         <IconButton onClick={onRefresh}>
@@ -114,7 +152,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 primary={
                   <FormattedMessage
                     id="pendingApprovalDashlet.entryPrimaryText"
-                    defaultMessage="{name} submitted to <render_target>{publishingTarget}</render_target>"
+                    defaultMessage="{name} submitted {item} to <render_target>{publishingTarget}</render_target>"
                     values={{
                       name: item.sandbox.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
@@ -128,7 +166,15 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Typography>
                         );
-                      }
+                      },
+                      item: (
+                        <ItemDisplay
+                          item={item}
+                          showPublishingTarget={false}
+                          showWorkflowState={false}
+                          showItemType={false}
+                        />
+                      )
                     }}
                   />
                 }
