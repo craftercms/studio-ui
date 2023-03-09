@@ -354,24 +354,24 @@ export function ActivityDashlet(props: ActivityDashletProps) {
         </Timeline>
       )}
       {Boolean(feed?.length) && (
-        <InfiniteScroll
-          initialLoad={false}
-          pageStart={0}
-          loadMore={() => {
-            loadNextPage();
-          }}
-          hasMore={hasMoreItemsToLoad}
-          loader={<>{getSkeletonTimelineItems({ items: 3 })}</>}
-          useWindow={false}
-          getScrollParent={() => listRef.current}
-        >
-          <Timeline position="right">
-            <CustomTimelineItem>
-              <SizedTimelineSeparator>
-                <TimelineDotWithoutAvatar />
-              </SizedTimelineSeparator>
-              <TimelineContent sx={emptyTimelineContentSx} />
-            </CustomTimelineItem>
+        <Timeline position="right">
+          <CustomTimelineItem>
+            <SizedTimelineSeparator>
+              <TimelineDotWithoutAvatar />
+            </SizedTimelineSeparator>
+            <TimelineContent sx={emptyTimelineContentSx} />
+          </CustomTimelineItem>
+          <InfiniteScroll
+            initialLoad={false}
+            pageStart={0}
+            loadMore={() => {
+              loadNextPage();
+            }}
+            hasMore={hasMoreItemsToLoad}
+            loader={<>{getSkeletonTimelineItems({ items: 3 })}</>}
+            useWindow={false}
+            getScrollParent={() => listRef.current}
+          >
             {feed.map((activity) => (
               <CustomTimelineItem key={activity.id}>
                 <SizedTimelineSeparator>
@@ -397,15 +397,15 @@ export function ActivityDashlet(props: ActivityDashletProps) {
                 </TimelineContent>
               </CustomTimelineItem>
             ))}
-            {!hasMoreItemsToLoad && (
-              <CustomTimelineItem>
-                <SizedTimelineSeparator>
-                  <TimelineDotWithoutAvatar />
-                </SizedTimelineSeparator>
-              </CustomTimelineItem>
-            )}
-          </Timeline>
-        </InfiniteScroll>
+          </InfiniteScroll>
+          {!hasMoreItemsToLoad && (
+            <CustomTimelineItem>
+              <SizedTimelineSeparator>
+                <TimelineDotWithoutAvatar />
+              </SizedTimelineSeparator>
+            </CustomTimelineItem>
+          )}
+        </Timeline>
       )}
       {total === 0 && (
         <DashletEmptyMessage>

@@ -15,9 +15,15 @@
  */
 
 import React, { useEffect, useMemo } from 'react';
-import { CommonDashletProps, useSpreadStateWithSelected, WithSelectedState } from '../SiteDashboard/utils';
+import {
+  CommonDashletProps,
+  isPage,
+  previewPage,
+  useSpreadStateWithSelected,
+  WithSelectedState
+} from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListItemIcon } from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon } from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import Typography from '@mui/material/Typography';
@@ -35,6 +41,8 @@ import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
+import ListItemButton from '@mui/material/ListItemButton';
+import { useWidgetDialogContext } from '../WidgetDialog';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -68,6 +76,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
+  const widgetDialogContext = useWidgetDialogContext();
   const onRefresh = useMemo(
     () => () => {
       setState({ items: null, loading: true });
@@ -93,6 +102,11 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     });
   };
 
+  const onItemClick = (e, item) => {
+    e.stopPropagation();
+    previewPage(site, authoringBase, item, dispatch, () => widgetDialogContext?.onClose(e, null));
+  };
+
   return (
     <DashletCard
       {...props}
@@ -109,7 +123,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
           }}
         />
       }
-      sxs={{ actionsBar: { padding: 0 } }}
+      sxs={{ actionsBar: { padding: 0 }, content: { pl: 0, pr: 0 } }}
       actionsBar={
         <ActionsBar
           disabled={loading}
@@ -139,17 +153,22 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         </IconButton>
       }
     >
-      {/* TODO: Stats bar not possible to implement under current API */}
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
       {Boolean(items?.length) && (
         <List>
           {items.map((item, index) => (
-            <ListItem key={index}>
+            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
               <ListItemText
-                primary={<ItemDisplay item={item} showNavigableAsLinks />}
+                primary={
+                  <ItemDisplay
+                    item={item}
+                    onClick={(e) => (isPage(item.systemType) ? onItemClick(e, item) : null)}
+                    showNavigableAsLinks={isPage(item.systemType)}
+                  />
+                }
                 secondary={
                   <FormattedMessage
                     defaultMessage="submitted to <render_target>{publishingTarget}</render_target> by {name}"
@@ -171,7 +190,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                   />
                 }
               />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       )}

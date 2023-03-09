@@ -14,7 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps, useSpreadStateWithSelected, WithSelectedState } from '../SiteDashboard/utils';
+import {
+  CommonDashletProps,
+  isPage,
+  previewPage,
+  useSpreadStateWithSelected,
+  WithSelectedState
+} from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -25,7 +31,7 @@ import useLocale from '../../hooks/useLocale';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchUnpublished } from '../../services/dashboard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListItemIcon } from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon } from '../DashletCard/dashletCommons';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -38,6 +44,8 @@ import { translations } from '../ItemActionsMenu/translations';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
+import ListItemButton from '@mui/material/ListItemButton';
+import { useWidgetDialogContext } from '../WidgetDialog';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -53,6 +61,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
+  const widgetDialogContext = useWidgetDialogContext();
   const [
     { loading, total, items, isAllSelected, hasSelected, selected, selectedCount },
     setState,
@@ -84,6 +93,11 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     });
   };
 
+  const onItemClick = (e, item) => {
+    e.stopPropagation();
+    previewPage(site, authoringBase, item, dispatch, () => widgetDialogContext?.onClose(e, null));
+  };
+
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
@@ -97,7 +111,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
           <RefreshRounded />
         </IconButton>
       }
-      sxs={{ actionsBar: { padding: 0 } }}
+      sxs={{ actionsBar: { padding: 0 }, content: { pl: 0, pr: 0 } }}
       actionsBar={
         <ActionsBar
           disabled={loading}
@@ -126,12 +140,19 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       {items && (
         <List>
           {items.map((item, index) => (
-            <ListItem key={index}>
+            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
               <ListItemText
-                primary={<ItemDisplay item={item} showPublishingTarget={false} />}
+                primary={
+                  <ItemDisplay
+                    item={item}
+                    showPublishingTarget={false}
+                    onClick={(e) => (isPage(item.systemType) ? onItemClick(e, item) : null)}
+                    showNavigableAsLinks={isPage(item.systemType)}
+                  />
+                }
                 secondary={
                   <Typography color="text.secondary" variant="body2">
                     <FormattedMessage
@@ -145,7 +166,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                   </Typography>
                 }
               />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       )}
