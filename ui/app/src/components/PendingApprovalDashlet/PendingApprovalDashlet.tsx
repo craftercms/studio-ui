@@ -149,10 +149,10 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
               <ListItemText
-                primary={
+                primary={<ItemDisplay item={item} showNavigableAsLinks />}
+                secondary={
                   <FormattedMessage
-                    id="pendingApprovalDashlet.entryPrimaryText"
-                    defaultMessage="{name} submitted {item} to <render_target>{publishingTarget}</render_target>"
+                    defaultMessage="submitted to <render_target>{publishingTarget}</render_target> by {name}"
                     values={{
                       name: item.sandbox.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
@@ -166,25 +166,9 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Typography>
                         );
-                      },
-                      item: (
-                        <ItemDisplay
-                          item={item}
-                          showPublishingTarget={false}
-                          showWorkflowState={false}
-                          showItemType={false}
-                        />
-                      )
+                      }
                     }}
                   />
-                }
-                secondary={
-                  <Typography color="text.secondary" variant="body2">
-                    <FormattedMessage
-                      id="pendingApprovalDashlet.noSubmissionCommentAvailable"
-                      defaultMessage="Submission comment not provided"
-                    />
-                  </Typography>
                 }
               />
             </ListItem>
