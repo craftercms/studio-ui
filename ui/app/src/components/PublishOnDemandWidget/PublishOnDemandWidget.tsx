@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
@@ -138,6 +138,7 @@ const initialPublishStudioFormData = {
   publishingTarget: '',
   comment: ''
 };
+
 const initialPublishGitFormData = {
   commitIds: '',
   publishingTarget: '',
@@ -200,24 +201,31 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     publishEverythingFormData.publishingTarget !== '' &&
     (!publishEverythingCommentRequired || !isBlank(publishEverythingFormData.comment));
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  // region currentFormData
   const currentFormData =
     selectedMode === 'studio'
       ? publishStudioFormData
       : selectedMode === 'git'
       ? publishGitFormData
       : publishEverythingFormData;
+  // endregion
+  // region currentSetFormData
   const currentSetFormData =
     selectedMode === 'studio'
       ? setPublishStudioFormData
       : selectedMode === 'git'
       ? setPublishGitFormData
       : setPublishEverythingFormData;
+  // endregion
+  // region currentFormValid
   const currentFormValid =
     selectedMode === 'studio'
       ? publishStudioFormValid
       : selectedMode === 'git'
       ? publishGitFormValid
       : publishEverythingFormValid;
+  // endregion
+  // region hasChanges
   const hasChanges =
     selectedMode === 'studio'
       ? publishStudioFormData.path !== initialPublishStudioFormData.path ||
@@ -229,6 +237,8 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
         publishGitFormData.publishingTarget !== initialPublishingTarget
       : publishEverythingFormData.comment !== initialPublishEverythingFormData.comment ||
         publishEverythingFormData.publishingTarget !== initialPublishingTarget;
+  // endregion
+  const bottomElId = useId();
 
   const setDefaultPublishingTarget = (targets, clearData?) => {
     if (targets.length) {
@@ -388,8 +398,12 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     }
   };
 
+  const scrollToBottom = () => document.getElementById(bottomElId).scrollIntoView({ behavior: 'smooth', block: 'end' });
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedMode((event.target as HTMLInputElement).value as PublishOnDemandMode);
+    const newMode = (event.target as HTMLInputElement).value as PublishOnDemandMode;
+    setSelectedMode(newMode);
+    setTimeout(scrollToBottom);
   };
 
   const toggleMode = (e) => {
@@ -444,7 +458,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           <>
             <Paper elevation={0} className={classes.modeSelector}>
               <form>
-                <RadioGroup value={selectedMode} onChange={handleChange}>
+                <RadioGroup value={selectedMode ?? ''} onChange={handleChange}>
                   {(nou(mode) || mode === 'studio') && (
                     <FormControlLabel
                       disabled={isSubmitting}
@@ -503,7 +517,13 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                 </RadioGroup>
               </form>
             </Paper>
-            <Collapse in={nnou(selectedMode)} timeout={300} unmountOnExit className={classes.formContainer}>
+            <Collapse
+              in={nnou(selectedMode)}
+              timeout={300}
+              unmountOnExit
+              className={classes.formContainer}
+              onEntered={scrollToBottom}
+            >
               <PublishOnDemandForm
                 disabled={isSubmitting}
                 formData={currentFormData}
@@ -574,6 +594,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
           </PrimaryButton>
         </DialogFooter>
       )}
+      <div id={bottomElId} />
     </Paper>
   );
 }

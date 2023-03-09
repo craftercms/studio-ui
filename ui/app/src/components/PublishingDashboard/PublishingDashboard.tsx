@@ -46,7 +46,7 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
     palette: { mode }
   } = useTheme();
   return (
-    <Box component="section" sx={{ bgcolor: `grey.${mode === 'light' ? 100 : 800}`, height: '100%' }}>
+    <Box component="section" sx={{ bgcolor: `grey.${mode === 'light' ? 100 : 800}`, height: '100%', pb: 3 }}>
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="publishingDashboard.title" defaultMessage="Publishing Dashboard" />}
