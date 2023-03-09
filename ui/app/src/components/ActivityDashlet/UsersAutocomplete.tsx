@@ -26,12 +26,13 @@ import Typography from '@mui/material/Typography';
 import User from '../../models/User';
 
 export interface UsersAutocompleteProps {
+  value: User[];
+  setValue(user: User[]): void;
   onChange(value: User[]): void;
 }
 
 export function UsersAutocomplete(props: UsersAutocompleteProps) {
-  const { onChange } = props;
-  const [value, setValue] = useState([]);
+  const { onChange, value, setValue } = props;
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState('');

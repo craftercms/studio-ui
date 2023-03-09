@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import { KeyboardArrowDownRounded } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
@@ -29,6 +29,8 @@ export function AuthorFilter(props: AuthorFilterProps) {
   const { onChange } = props;
   const [open, setOpen] = React.useState(false);
   const buttonRef = useRef<HTMLButtonElement>();
+  const [value, setValue] = useState([]);
+
   return (
     <>
       <Button
@@ -48,7 +50,7 @@ export function AuthorFilter(props: AuthorFilterProps) {
         onClose={() => setOpen(false)}
         PaperProps={{ sx: { width: 300, p: 1 } }}
       >
-        <UsersAutocomplete onChange={onChange} />
+        <UsersAutocomplete onChange={onChange} value={value} setValue={setValue} />
       </Popover>
     </>
   );
