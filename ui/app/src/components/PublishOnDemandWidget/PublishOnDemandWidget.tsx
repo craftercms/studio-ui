@@ -313,7 +313,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
 
   const onSubmitBulkPublish = () => {
     const eventId = 'bulkPublishWidgetSubmit';
-    const studioNote = formatMessage(messages.publishStudioNote).replace(/<\/?.*?>/g, '');
+    const studioNote = formatMessage(messages.publishStudioNote, { a: (msg) => msg[0] });
     dispatch(
       showConfirmDialog({
         body: `${formatMessage(messages.publishStudioWarning)} ${studioNote}`,
@@ -522,13 +522,11 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                         id="publishingDashboard.studioNote"
                         defaultMessage="Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>."
                         values={{
-                          a: (msg: string[]) => {
-                            return (
-                              <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
-                                {msg[0]}
-                              </Link>
-                            );
-                          }
+                          a: (msg: string[]) => (
+                            <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                              {msg[0]}
+                            </Link>
+                          )
                         }}
                       />
                     ) : (
