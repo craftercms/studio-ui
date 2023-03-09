@@ -46,6 +46,7 @@ import { useDispatch } from 'react-redux';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import ListItemButton from '@mui/material/ListItemButton';
 import { useWidgetDialogContext } from '../WidgetDialog';
+import { createLookupTable } from '../../utils/object';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -81,6 +82,12 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     },
     [setState, site]
   );
+  const itemsLookup = items ? createLookupTable(items) : {};
+  const selectedItems = Object.entries(selected)
+    .filter(([, value]) => value)
+    .map(([prop]) => {
+      return itemsLookup[prop];
+    });
   const onOptionClicked = (option) => {
     const clickedItems = items.filter((item) => selected[item.id]).map((item) => parseSandBoxItemToDetailedItem(item));
     return itemActionDispatcher({
@@ -122,7 +129,11 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
           options={
             hasSelected
               ? [
-                  selectedCount === 1 && { id: 'edit', label: formatMessage(translations.edit) },
+                  selectedCount === 1 &&
+                    selectedItems[0].availableActionsMap.edit && {
+                      id: 'edit',
+                      label: formatMessage(translations.edit)
+                    },
                   { id: 'approvePublish', label: formatMessage(translations.publish) }
                 ].filter(Boolean)
               : []
