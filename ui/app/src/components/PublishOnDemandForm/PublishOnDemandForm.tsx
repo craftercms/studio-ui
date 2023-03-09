@@ -84,7 +84,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
             <FormControl fullWidth>
               <TextField
                 disabled={disabled}
-                value={mode === 'studio' ? formData.path : formData.commitIds}
+                value={(mode === 'studio' ? formData.path : formData.commitIds) ?? ''}
                 label={
                   mode === 'studio' ? (
                     <FormattedMessage id="publishOnDemand.formPathLabel" defaultMessage="Path to Publish" />
