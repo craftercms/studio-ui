@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistoryPackageItems } from '../../services/dashboard';
@@ -28,6 +28,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ItemDisplay from '../ItemDisplay';
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
+import { Pagination } from '../Pagination';
 
 export interface PackageDetailsDialogProps extends EnhancedDialogProps {
   packageId: string;
@@ -39,8 +40,15 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
   const [state, setState] = useSpreadState({
     items: null,
     loading: false,
-    error: null
+    error: null,
+    itemsPerPage: 10,
+    page: 0
   });
+  const filteredItems = useMemo(() => {
+    const offset = state.page * state.itemsPerPage;
+    return state.items?.filter((item, index) => index >= offset && index < offset + state.itemsPerPage);
+  }, [state]);
+
   useEffect(() => {
     if (packageId) {
       setState({ items: null, loading: true });
@@ -54,6 +62,19 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
         });
     }
   }, [packageId, site, setState]);
+
+  // TODO: add server side pagination once API is ready
+  const onPageChange = (newPage: number) => {
+    setState({ page: newPage });
+  };
+
+  function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+    setState({
+      itemsPerPage: parseInt(e.target.value),
+      page: 0
+    });
+  }
+
   return (
     <EnhancedDialog
       fullWidth
@@ -91,13 +112,22 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
               }
             />
           ) : (
-            <List>
-              {state.items.map((item) => (
-                <ListItem key={item.id}>
-                  <ItemDisplay item={item} showNavigableAsLinks={false} />
-                </ListItem>
-              ))}
-            </List>
+            <>
+              <List>
+                {filteredItems.map((item) => (
+                  <ListItem key={item.id}>
+                    <ItemDisplay item={item} showNavigableAsLinks={false} />
+                  </ListItem>
+                ))}
+              </List>
+              <Pagination
+                count={state.items.length}
+                onPageChange={(e, page) => onPageChange(page)}
+                page={state.page}
+                rowsPerPage={state.itemsPerPage}
+                onRowsPerPageChange={onRowsPerPageChange}
+              />
+            </>
           ))}
       </DialogContent>
     </EnhancedDialog>
