@@ -15,7 +15,7 @@
  */
 
 import { Activity } from '../../models/Activity';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { MoreVertRounded, RefreshRounded } from '@mui/icons-material';
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
@@ -54,6 +54,7 @@ import { useDispatch } from 'react-redux';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { useWidgetDialogContext } from '../WidgetDialog';
 import PackageDetailsDialog from '../PackageDetailsDialog/PackageDetailsDialog';
+import InfiniteScroll from 'react-infinite-scroller';
 
 export interface ActivityDashletProps extends CommonDashletProps {}
 
@@ -143,7 +144,6 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       offset,
       total,
       openRangePicker,
-      loadingChunk,
       loadingFeed,
       selectedPackageId,
       openPackageDetailsDialog
@@ -218,6 +218,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     [site, activities, dateFrom, dateTo, limit, setState, usernames]
   );
   // endregion
+  const listRef = useRef();
   const loadNextPage = () => {
     let newOffset = offset + limit;
     setState({ loadingChunk: true });
@@ -315,6 +316,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
           </DropDownMenu>
         </>
       }
+      cardContentProps={{ ref: listRef }}
     >
       {loadingFeed && (
         <Timeline position="right">
@@ -352,79 +354,58 @@ export function ActivityDashlet(props: ActivityDashletProps) {
         </Timeline>
       )}
       {Boolean(feed?.length) && (
-        <Timeline position="right">
-          <CustomTimelineItem>
-            <SizedTimelineSeparator>
-              <TimelineDotWithoutAvatar />
-            </SizedTimelineSeparator>
-            <TimelineContent sx={emptyTimelineContentSx} />
-          </CustomTimelineItem>
-          {feed.map((activity) => (
-            <CustomTimelineItem key={activity.id}>
-              <SizedTimelineSeparator>
-                <TimelineConnector />
-                <TimelineDotWithAvatar>
-                  <PersonAvatar person={activity.person} />
-                </TimelineDotWithAvatar>
-                <TimelineConnector />
-              </SizedTimelineSeparator>
-              <TimelineContent sx={{ py: '12px', px: 2 }}>
-                <PersonFullName person={activity.person} />
-                <Typography>{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}</Typography>
-                <Typography
-                  variant="caption"
-                  title={asLocalizedDateTime(activity.actionTimestamp, locale.localeCode, locale.dateTimeFormatOptions)}
-                >
-                  {renderActivityTimestamp(activity.actionTimestamp, locale)}
-                </Typography>
-              </TimelineContent>
-            </CustomTimelineItem>
-          ))}
-          {loadingChunk ? (
-            getSkeletonTimelineItems({ items: 3 })
-          ) : (
+        <InfiniteScroll
+          initialLoad={false}
+          pageStart={0}
+          loadMore={() => {
+            loadNextPage();
+          }}
+          hasMore={hasMoreItemsToLoad}
+          loader={<>{getSkeletonTimelineItems({ items: 3 })}</>}
+          useWindow={false}
+          getScrollParent={() => listRef.current}
+        >
+          <Timeline position="right">
             <CustomTimelineItem>
               <SizedTimelineSeparator>
-                {hasMoreItemsToLoad ? (
-                  <TimelineDotWithAvatar sx={{ bgcolor: 'unset' }}>
-                    <Tooltip
-                      title={
-                        <FormattedMessage
-                          id="activityDashlet.loadMore"
-                          defaultMessage="Load {limit} more"
-                          values={{ limit }}
-                        />
-                      }
-                    >
-                      <IconButton color="primary" size="small" onClick={loadNextPage}>
-                        <MoreVertRounded />
-                      </IconButton>
-                    </Tooltip>
-                  </TimelineDotWithAvatar>
-                ) : (
-                  <TimelineDotWithoutAvatar />
-                )}
+                <TimelineDotWithoutAvatar />
               </SizedTimelineSeparator>
-              <TimelineContent
-                sx={
-                  hasMoreItemsToLoad
-                    ? { py: '12px', px: 2, display: 'flex', alignItems: 'center' }
-                    : emptyTimelineContentSx
-                }
-              >
-                {hasMoreItemsToLoad && (
-                  <Typography variant="body2" color="text.secondary">
-                    <FormattedMessage
-                      id="activityDashlet.hasMoreItemsToLoadMessage"
-                      defaultMessage="{count} more {count, plural, one {activity} other {activities}} available"
-                      values={{ count: total - (limit + offset) }}
-                    />
-                  </Typography>
-                )}
-              </TimelineContent>
+              <TimelineContent sx={emptyTimelineContentSx} />
             </CustomTimelineItem>
-          )}
-        </Timeline>
+            {feed.map((activity) => (
+              <CustomTimelineItem key={activity.id}>
+                <SizedTimelineSeparator>
+                  <TimelineConnector />
+                  <TimelineDotWithAvatar>
+                    <PersonAvatar person={activity.person} />
+                  </TimelineDotWithAvatar>
+                  <TimelineConnector />
+                </SizedTimelineSeparator>
+                <TimelineContent sx={{ py: '12px', px: 2 }}>
+                  <PersonFullName person={activity.person} />
+                  <Typography>{renderActivity(activity, { formatMessage, onPackageClick, onItemClick })}</Typography>
+                  <Typography
+                    variant="caption"
+                    title={asLocalizedDateTime(
+                      activity.actionTimestamp,
+                      locale.localeCode,
+                      locale.dateTimeFormatOptions
+                    )}
+                  >
+                    {renderActivityTimestamp(activity.actionTimestamp, locale)}
+                  </Typography>
+                </TimelineContent>
+              </CustomTimelineItem>
+            ))}
+            {!hasMoreItemsToLoad && (
+              <CustomTimelineItem>
+                <SizedTimelineSeparator>
+                  <TimelineDotWithoutAvatar />
+                </SizedTimelineSeparator>
+              </CustomTimelineItem>
+            )}
+          </Timeline>
+        </InfiniteScroll>
       )}
       {total === 0 && (
         <DashletEmptyMessage>

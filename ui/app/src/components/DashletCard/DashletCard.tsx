@@ -19,7 +19,7 @@ import { CommonDashletProps, parseDashletContentHeight } from '../SiteDashboard/
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
-import CardContent from '@mui/material/CardContent';
+import CardContent, { CardContentProps } from '@mui/material/CardContent';
 import Box, { BoxProps } from '@mui/material/Box';
 import { UNDEFINED } from '../../utils/constants';
 
@@ -36,6 +36,7 @@ export function DashletCard(
         header: BoxProps['sx'];
         actionsBar: BoxProps['sx'];
       }>;
+      cardContentProps?: CardContentProps;
     }
   >
 ) {
@@ -47,7 +48,8 @@ export function DashletCard(
     borderLeftColor,
     contentHeight: contentHeightProp,
     actionsBarHeight = 35,
-    headerAction
+    headerAction,
+    cardContentProps
   } = props;
   const contentHeight = contentHeightProp
     ? // Subtract toolbar height to avoid misalignment with other widgets
@@ -80,7 +82,15 @@ export function DashletCard(
         </Box>
       )}
       {/* region Body */}
-      <CardContent sx={{ overflow: 'auto', height: parseDashletContentHeight(contentHeight), pt: 0, ...sxs?.content }}>
+      <CardContent
+        sx={{
+          overflow: 'auto',
+          height: parseDashletContentHeight(contentHeight),
+          pt: 0,
+          ...sxs?.content
+        }}
+        {...cardContentProps}
+      >
         {children}
       </CardContent>
       {/* endregion */}
