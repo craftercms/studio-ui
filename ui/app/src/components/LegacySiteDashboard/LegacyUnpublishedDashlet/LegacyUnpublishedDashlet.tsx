@@ -52,6 +52,7 @@ import { getHostToHostBus } from '../../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import Button from '@mui/material/Button';
 import useStyles from '../styles';
+import useUpdateRefs from '../../../hooks/useUpdateRefs';
 
 const dashletInitialPreferences: LegacyDashboardPreferences = {
   numItems: 10,
@@ -109,6 +110,8 @@ export function LegacyUnpublishedDashlet() {
   );
   const selectedItemsLength = useMemo(() => Object.values(selectedLookup).filter(Boolean).length, [selectedLookup]);
 
+  const refs = useUpdateRefs({ selectedLookup });
+
   const onToggleCheckedAll = () => {
     if (isAllChecked) {
       setSelectedLookup({});
@@ -138,6 +141,26 @@ export function LegacyUnpublishedDashlet() {
         offset: 0
       }).subscribe({
         next(items) {
+          const selected = refs.current.selectedLookup;
+          const selectedKeys = Object.keys(selected);
+          if (selectedKeys.length) {
+            let shouldSetSelected = false;
+            const newSelectedLookup = {};
+            const unpublishedPresenceTable = createPresenceTable(items, true, (item) => item.path);
+            selectedKeys.forEach((path) => {
+              if (
+                // The item is still unpublished
+                unpublishedPresenceTable[path] &&
+                // It's selected (i.e. it's not set to false on the lookup table)
+                selected[path]
+              ) {
+                newSelectedLookup[path] = true;
+              } else {
+                shouldSetSelected = true;
+              }
+            });
+            shouldSetSelected && setSelectedLookup(newSelectedLookup);
+          }
           setState({
             items,
             total: items.total,
@@ -153,7 +176,7 @@ export function LegacyUnpublishedDashlet() {
         }
       });
     },
-    [siteId, preferences.numItems, setState]
+    [siteId, preferences.numItems, setState, refs]
   );
 
   const onNumItemsChange = (e) => {
@@ -226,7 +249,6 @@ export function LegacyUnpublishedDashlet() {
 
   const onClickPublishEverything = (e) => {
     e.stopPropagation();
-
     dispatch(
       showWidgetDialog({
         title: formatMessage(translations.publishEverything),
@@ -246,11 +268,13 @@ export function LegacyUnpublishedDashlet() {
     );
   };
 
-  // region Effects
+  // region setStoredDashboardPreferences
   useEffect(() => {
     setStoredDashboardPreferences(preferences, currentUser, uuid, dashletPreferencesId);
   }, [preferences, currentUser, uuid]);
+  // endregion
 
+  // region fetchUnpublished
   useEffect(() => {
     fetchUnpublished();
   }, [fetchUnpublished]);
