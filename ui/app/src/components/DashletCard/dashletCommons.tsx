@@ -64,7 +64,7 @@ export const getItemSkeleton = ({
 }: Partial<{ numOfItems: number; showCheckbox: boolean; showAvatar: boolean }>) => (
   <List>
     {new Array(numOfItems).fill(null).map((nothing, index) => (
-      <ListItem key={index}>
+      <ListItem key={index} sx={{ pl: 2, pr: 2 }}>
         {showCheckbox && (
           <ListItemIcon>
             <Checkbox edge="start" disabled />

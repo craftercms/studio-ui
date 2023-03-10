@@ -153,7 +153,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         </IconButton>
       }
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
+      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {Boolean(items?.length) && (
         <List>
           {items.map((item, index) => (

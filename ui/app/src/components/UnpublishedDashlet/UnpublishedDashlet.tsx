@@ -147,7 +147,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         />
       }
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
+      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {items && (
         <List>
           {items.map((item, index) => (
