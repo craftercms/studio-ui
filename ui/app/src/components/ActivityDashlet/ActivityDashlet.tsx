@@ -55,6 +55,7 @@ import { changeCurrentUrl } from '../../state/actions/preview';
 import { useWidgetDialogContext } from '../WidgetDialog';
 import PackageDetailsDialog from '../PackageDetailsDialog/PackageDetailsDialog';
 import InfiniteScroll from 'react-infinite-scroller';
+import Box from '@mui/material/Box';
 
 export interface ActivityDashletProps extends CommonDashletProps {}
 
@@ -368,7 +369,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               loadNextPage();
             }}
             hasMore={hasMoreItemsToLoad}
-            loader={<>{getSkeletonTimelineItems({ items: 3 })}</>}
+            loader={<Box key={0}>{getSkeletonTimelineItems({ items: 3 })}</Box>}
             useWindow={false}
             getScrollParent={() => listRef.current}
           >
