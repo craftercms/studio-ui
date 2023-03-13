@@ -44,25 +44,28 @@ interface ExpiringDashletState {
   refresh: number;
 }
 
-const renderExpiredItems = (items: ExpiredItem[], locale: GlobalState['uiConfig']['locale']) =>
-  items.map((item, index) => (
-    <ListItem key={index}>
-      <ListItemText
-        primary={item.itemName}
-        secondary={
-          <Typography color="text.error" variant="body2">
-            <FormattedMessage
-              id="expiringDashlet.expiredOn"
-              defaultMessage="Expiration on {date}"
-              values={{
-                date: asLocalizedDateTime(item.expiredDateTime, locale.localeCode, locale.dateTimeFormatOptions)
-              }}
-            />
-          </Typography>
-        }
-      />
-    </ListItem>
-  ));
+const renderExpiredItems = (items: ExpiredItem[], locale: GlobalState['uiConfig']['locale'], expired?: boolean) =>
+  items.map((item, index) => {
+    return (
+      <ListItem key={index}>
+        <ListItemText
+          primary={item.itemName}
+          secondary={
+            <Typography color={expired ? 'error.main' : 'text.secondary'} variant="body2">
+              <FormattedMessage
+                id="expiringDashlet.expiredOn"
+                defaultMessage="{expirationText} on {date}"
+                values={{
+                  date: asLocalizedDateTime(item.expiredDateTime, locale.localeCode, locale.dateTimeFormatOptions),
+                  expirationText: expired ? 'Expired' : 'Expires'
+                }}
+              />
+            </Typography>
+          }
+        />
+      </ListItem>
+    );
+  });
 
 export function ExpiringDashlet(props: ExpiringDashletProps) {
   const { borderLeftColor = palette.purple.tint, days = 30 } = props;
@@ -119,7 +122,7 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
               </ListSubheader>
             }
           >
-            {renderExpiredItems(state.expired, locale)}
+            {renderExpiredItems(state.expired, locale, true)}
           </List>
         ))}
       <Divider sx={{ mt: 1, mb: 1 }} />
