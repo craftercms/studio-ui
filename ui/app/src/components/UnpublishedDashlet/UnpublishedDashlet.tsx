@@ -31,7 +31,7 @@ import useLocale from '../../hooks/useLocale';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchUnpublished } from '../../services/dashboard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon } from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -53,6 +53,8 @@ interface UnpublishedDashletProps extends CommonDashletProps {}
 interface UnpublishedDashletState extends WithSelectedState<SandboxItem> {
   total: number;
   loading: boolean;
+  limit: number;
+  offset: number;
 }
 
 export function UnpublishedDashlet(props: UnpublishedDashletProps) {
@@ -64,24 +66,37 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const dispatch = useDispatch();
   const widgetDialogContext = useWidgetDialogContext();
   const [
-    { loading, total, items, isAllSelected, hasSelected, selected, selectedCount },
+    { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
     isSelected
   ] = useSpreadStateWithSelected<UnpublishedDashletState>({
     loading: false,
-    total: null
+    total: null,
+    limit: 10,
+    offset: 0
   });
+  const currentPage = offset / limit;
+  const totalPages = total ? Math.ceil(total / limit) : 0;
   const onRefresh = useMemo(
     () => () => {
       setState({ loading: true, items: null, selected: {}, isAllSelected: false });
-      fetchUnpublished(site, { limit: 10, offset: 0 }).subscribe((items) => {
-        setState({ loading: false, items, total: items.total });
+      fetchUnpublished(site, { limit, offset: 0 }).subscribe((items) => {
+        setState({ loading: false, items, offset: 0, total: items.total });
       });
     },
-    [setState, site]
+    [setState, site, limit]
   );
+
+  const loadPage = (pageNumber: number) => {
+    const newOffset = pageNumber * limit;
+    setState({ loading: true });
+    fetchUnpublished(site, { limit, offset: newOffset }).subscribe((items) => {
+      setState({ loading: false, items, offset: newOffset, total: items.total });
+    });
+  };
+
   const itemsLookup = items ? createLookupTable(items) : {};
   const selectedItems = Object.entries(selected)
     .filter(([, value]) => value)
@@ -118,7 +133,13 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
           <RefreshRounded />
         </IconButton>
       }
-      sxs={{ actionsBar: { padding: 0 }, content: { pl: 0, pr: 0 } }}
+      sxs={{
+        actionsBar: { padding: 0 },
+        content: { pl: 0, pr: 0 },
+        footer: {
+          justifyContent: 'space-between'
+        }
+      }}
       actionsBar={
         <ActionsBar
           disabled={loading}
@@ -145,6 +166,19 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
             checkbox: { padding: '5px', borderRadius: 0 }
           }}
         />
+      }
+      footer={
+        Boolean(items?.length) && (
+          <Pager
+            totalPages={totalPages}
+            totalItems={total}
+            currentPage={currentPage}
+            rowsPerPage={limit}
+            onPagePickerChange={(page) => loadPage(page)}
+            onPageChange={(page) => loadPage(page)}
+            onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
+          />
+        )
       }
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}

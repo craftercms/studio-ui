@@ -33,6 +33,10 @@ import { getInitials } from '../../utils/string';
 import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
 import { getPersonFullName } from '../SiteDashboard/utils';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { FormattedMessage } from 'react-intl';
+import { Pagination } from '../Pagination';
 
 export const List = styled(MuiList)({ paddingTop: 0 });
 
@@ -105,4 +109,47 @@ export interface PersonFullNameProps {
 
 export function PersonFullName({ person }: PersonFullNameProps) {
   return <Typography variant="h6">{getPersonFullName(person)}</Typography>;
+}
+
+export function Pager(props: {
+  totalPages: number;
+  totalItems: number;
+  currentPage: number;
+  rowsPerPage: number;
+  onPagePickerChange(page: number): void;
+  onPageChange(page: number): void;
+  onRowsPerPageChange(rowsPerPage: number): void;
+}) {
+  const { totalPages, totalItems, currentPage, rowsPerPage, onPagePickerChange, onPageChange, onRowsPerPageChange } =
+    props;
+
+  return (
+    <>
+      <Select
+        variant="standard"
+        disableUnderline
+        value={`${currentPage}`}
+        onChange={(e) => onPagePickerChange(parseInt(e.target.value))}
+        sx={{ fontSize: (theme) => theme.typography.fontSize }}
+      >
+        {new Array(totalPages).fill(null).map((nothing, index) => (
+          <MenuItem value={index} sx={{ fontSize: (theme) => theme.typography.fontSize }} key={index}>
+            {currentPage === index ? (
+              <FormattedMessage defaultMessage="Page {pageNumber}" values={{ pageNumber: index + 1 }} />
+            ) : (
+              <FormattedMessage defaultMessage="Go to page {pageNumber}" values={{ pageNumber: index + 1 }} />
+            )}
+          </MenuItem>
+        ))}
+      </Select>
+      <Pagination
+        count={totalItems}
+        onPageChange={(e, page) => onPageChange(page)}
+        page={currentPage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value))}
+        mode="table"
+      />
+    </>
+  );
 }

@@ -23,7 +23,7 @@ import {
   WithSelectedState
 } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon } from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import Typography from '@mui/material/Typography';
@@ -49,6 +49,8 @@ interface PendingApprovalDashletProps extends CommonDashletProps {}
 interface PendingApprovalDashletState extends WithSelectedState<DetailedItem> {
   loading: boolean;
   total: number;
+  limit: number;
+  offset: number;
 }
 
 const messages = defineMessages({
@@ -59,7 +61,7 @@ const messages = defineMessages({
 export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const { borderLeftColor = palette.purple.tint } = props;
   const [
-    { items, total, loading, isAllSelected, hasSelected, selected },
+    { items, total, loading, isAllSelected, hasSelected, selected, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
@@ -70,8 +72,12 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     loading: false,
     selected: {},
     isAllSelected: false,
-    hasSelected: false
+    hasSelected: false,
+    limit: 10,
+    offset: 0
   });
+  const currentPage = offset / limit;
+  const totalPages = total ? Math.ceil(total / limit) : 0;
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
@@ -80,15 +86,23 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const onRefresh = useMemo(
     () => () => {
       setState({ items: null, loading: true });
-      fetchPendingApproval(site, { limit: 10, offset: 0 }).subscribe((items) => {
-        setState({ items: items, total: items.total, loading: false });
+      fetchPendingApproval(site, { limit, offset: 0 }).subscribe((items) => {
+        setState({ items: items, total: items.total, offset: 0, loading: false });
       });
     },
-    [setState, site]
+    [setState, site, limit]
   );
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
+
+  const loadPage = (pageNumber: number) => {
+    const newOffset = pageNumber * limit;
+    setState({ loading: true });
+    fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
+      setState({ items, total: items.total, offset: newOffset, loading: false });
+    });
+  };
 
   const onOptionClicked = (option) => {
     const clickedItems = items.filter((item) => selected[item.id]);
@@ -123,7 +137,13 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
           }}
         />
       }
-      sxs={{ actionsBar: { padding: 0 }, content: { pl: 0, pr: 0 } }}
+      sxs={{
+        actionsBar: { padding: 0 },
+        content: { pl: 0, pr: 0 },
+        footer: {
+          justifyContent: 'space-between'
+        }
+      }}
       actionsBar={
         <ActionsBar
           disabled={loading}
@@ -151,6 +171,19 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         <IconButton onClick={onRefresh}>
           <RefreshRounded />
         </IconButton>
+      }
+      footer={
+        Boolean(items?.length) && (
+          <Pager
+            totalPages={totalPages}
+            totalItems={total}
+            currentPage={currentPage}
+            rowsPerPage={limit}
+            onPagePickerChange={(page) => loadPage(page)}
+            onPageChange={(page) => loadPage(page)}
+            onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
+          />
+        )
       }
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}

@@ -22,6 +22,7 @@ import Divider from '@mui/material/Divider';
 import CardContent, { CardContentProps } from '@mui/material/CardContent';
 import Box, { BoxProps } from '@mui/material/Box';
 import { UNDEFINED } from '../../utils/constants';
+import CardActions from '@mui/material/CardActions';
 
 export function DashletCard(
   props: PropsWithChildren<
@@ -29,12 +30,15 @@ export function DashletCard(
       title: React.ReactNode;
       actionsBar?: React.ReactNode;
       actionsBarHeight?: number;
+      footerHeight?: number;
       headerAction?: React.ReactNode;
+      footer?: React.ReactNode;
       sxs?: Partial<{
         card: BoxProps['sx'];
         content: BoxProps['sx'];
         header: BoxProps['sx'];
         actionsBar: BoxProps['sx'];
+        footer: BoxProps['sx'];
       }>;
       cardContentProps?: CardContentProps;
     }
@@ -48,12 +52,14 @@ export function DashletCard(
     borderLeftColor,
     contentHeight: contentHeightProp,
     actionsBarHeight = 35,
+    footerHeight = 51,
     headerAction,
-    cardContentProps
+    cardContentProps,
+    footer
   } = props;
   const contentHeight = contentHeightProp
-    ? // Subtract toolbar height to avoid misalignment with other widgets
-      parseDashletContentHeight(contentHeightProp) - (actionsBar ? actionsBarHeight : 0)
+    ? // Subtract toolbar and footer height to avoid misalignment with other widgets
+      parseDashletContentHeight(contentHeightProp) - (actionsBar ? actionsBarHeight : 0) - (footer ? footerHeight : 0)
     : UNDEFINED;
   return (
     <Card sx={{ borderLeft: 5, borderLeftColor, ...sxs?.card }}>
@@ -93,6 +99,21 @@ export function DashletCard(
       >
         {children}
       </CardContent>
+      {/* endregion */}
+      {/* region Actions */}
+      {footer && (
+        <CardActions
+          sx={{
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            paddingTop: '4px',
+            paddingBottom: '4px',
+            ...sxs?.footer
+          }}
+        >
+          {footer}
+        </CardActions>
+      )}
       {/* endregion */}
     </Card>
   );
