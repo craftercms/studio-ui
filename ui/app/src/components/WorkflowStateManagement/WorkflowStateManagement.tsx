@@ -171,6 +171,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 
         try {
           new RegExp(keyword);
+          setOffset(0);
           setDebouncePathRegex(keyword);
           setInvalidPathRegex(false);
         } catch (e) {
@@ -190,6 +191,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
 
   const onFilterChecked = (id: string, value: boolean) => {
     clearSelectedItems();
+    setOffset(0);
     if (id === 'any') {
       setFiltersLookup(createPresenceTable(states, !value));
     } else {
@@ -198,6 +200,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   };
 
   const onClearFilters = () => {
+    setOffset(0);
     setFiltersLookup(createPresenceTable(states, false));
     setDebouncePathRegex('');
     setPathRegex('');
