@@ -18,7 +18,6 @@ import React, { useEffect, useMemo } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistoryPackageItems } from '../../services/dashboard';
-import { delay } from 'rxjs/operators';
 import { FormattedMessage } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import { LoadingState } from '../LoadingState';
@@ -52,14 +51,12 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
   useEffect(() => {
     if (packageId) {
       setState({ items: null, loading: true });
-      fetchPublishingHistoryPackageItems(site, packageId)
-        .pipe(delay(1000))
-        .subscribe({
-          next: (items) => setState({ items, loading: false }),
-          error(error) {
-            setState({ error, loading: false });
-          }
-        });
+      fetchPublishingHistoryPackageItems(site, packageId).subscribe({
+        next: (items) => setState({ items, loading: false }),
+        error(error) {
+          setState({ error, loading: false });
+        }
+      });
     }
   }, [packageId, site, setState]);
 

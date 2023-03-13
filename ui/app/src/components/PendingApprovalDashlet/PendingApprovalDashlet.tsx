@@ -210,11 +210,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (
-                          <Typography
-                            component="span"
-                            fontWeight="bold"
-                            color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}
-                          >
+                          <Typography component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Typography>
                         );
