@@ -36,6 +36,48 @@ import UnpublishedDashlet from '../UnpublishedDashlet/UnpublishedDashlet';
 import ScheduledDashlet from '../ScheduledDashlet/ScheduledDashlet';
 import RecentlyPublishedDashlet from '../RecentlyPublishedDashlet/RecentlyPublishedDashlet';
 import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
+import { MyRecentActivityDashlet } from '../MyRecentActivityDashlet';
+import { PublisherStatusDashlet } from '../PublisherStatusDashlet';
+import { FullSxRecord, PartialSxRecord } from '../../models';
+
+export type SiteDashboardClassKey = 'root' | 'container' | 'compactDashletItem' | 'compactDashlet' | 'activityDashlet';
+export type SiteDashboardFullSx = FullSxRecord<SiteDashboardClassKey>;
+export type SiteDashboardPartialSx = PartialSxRecord<SiteDashboardClassKey>;
+
+function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string }): SiteDashboardFullSx {
+  const { mode } = props;
+  return {
+    root: {
+      p: 2,
+      bgcolor: `grey.${mode === 'light' ? 100 : 800}`,
+      height: '100vh',
+      overflow: 'hidden'
+    },
+    container: {
+      width: 'calc(66.66% + 22px)',
+      height: '100vh',
+      overflowY: 'scroll',
+      pb: 2,
+      pr: 2
+    },
+    compactDashletItem: {
+      display: 'flex',
+      flexWrap: 'wrap'
+    },
+    compactDashlet: {
+      width: '100%'
+    },
+    activityDashlet: {
+      width: '33.33%',
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'fixed',
+      right: 0,
+      top: 0,
+      bottom: 0
+    }
+  };
+}
 
 export interface DashboardProps {}
 
@@ -44,6 +86,7 @@ export function Dashboard(props: DashboardProps) {
   const {
     palette: { mode }
   } = useTheme();
+  const sx = getStyles({}, { mode });
   // const site = useActiveSiteId();
   // const user = useActiveUser();
   // const userRoles = user.rolesBySite[site];
@@ -55,32 +98,36 @@ export function Dashboard(props: DashboardProps) {
   //     dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
   //   }
   // }, [uiConfig.xml, dashboard, dispatch]);
-  const height = 300;
+  const height = 350;
   return (
-    <Box sx={{ p: 2, bgcolor: `grey.${mode === 'light' ? 100 : 800}`, minHeight: '100vh' }}>
-      <Grid container spacing={2}>
-        <Grid item md={4}>
-          <ActivityDashlet contentHeight={height} />
+    <Box sx={sx.root}>
+      <Grid container spacing={2} sx={sx.container}>
+        <Grid item md={6} sx={sx.compactDashletItem}>
+          <PublisherStatusDashlet sxs={{ card: sx.compactDashlet }} />
         </Grid>
-        <Grid item md={4}>
-          <PendingApprovalDashlet contentHeight={height} />
+        <Grid item md={6} sx={sx.compactDashletItem}>
+          <DevContentOpsDashlet sxs={{ card: sx.compactDashlet }} />
         </Grid>
-        <Grid item md={4}>
-          <ExpiringDashlet contentHeight={height} />
+        <Grid item md={6}>
+          <MyRecentActivityDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={4}>
+        <Grid item md={6}>
           <UnpublishedDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={4}>
+        <Grid item md={6}>
+          <PendingApprovalDashlet contentHeight={height} />
+        </Grid>
+        <Grid item md={6}>
           <ScheduledDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={4}>
+        <Grid item md={6}>
           <RecentlyPublishedDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={4}>
-          <DevContentOpsDashlet contentHeight={height} />
+        <Grid item md={6}>
+          <ExpiringDashlet contentHeight={height} />
         </Grid>
       </Grid>
+      <ActivityDashlet sxs={{ card: sx.activityDashlet }} />
       {/*
       <Suspense fallback={<DashboardSkeleton />}>
         {dashboard ? (

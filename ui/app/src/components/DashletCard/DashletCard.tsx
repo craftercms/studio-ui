@@ -24,31 +24,31 @@ import Box, { BoxProps } from '@mui/material/Box';
 import { UNDEFINED } from '../../utils/constants';
 import CardActions from '@mui/material/CardActions';
 
-export function DashletCard(
-  props: PropsWithChildren<
-    CommonDashletProps & {
-      title: React.ReactNode;
-      actionsBar?: React.ReactNode;
-      actionsBarHeight?: number;
-      footerHeight?: number;
-      headerAction?: React.ReactNode;
-      footer?: React.ReactNode;
-      sxs?: Partial<{
-        card: BoxProps['sx'];
-        content: BoxProps['sx'];
-        header: BoxProps['sx'];
-        actionsBar: BoxProps['sx'];
-        footer: BoxProps['sx'];
-      }>;
-      cardContentProps?: CardContentProps;
-    }
-  >
-) {
+export type DashletCardProps = PropsWithChildren<
+  CommonDashletProps & {
+    title?: React.ReactNode;
+    actionsBar?: React.ReactNode;
+    actionsBarHeight?: number;
+    footerHeight?: number;
+    headerAction?: React.ReactNode;
+    footer?: React.ReactNode;
+    sxs?: Partial<{
+      card: BoxProps['sx'];
+      content: BoxProps['sx'];
+      header: BoxProps['sx'];
+      actionsBar: BoxProps['sx'];
+      footer: BoxProps['sx'];
+    }>;
+    cardContentProps?: CardContentProps;
+  }
+>;
+
+export function DashletCard(props: DashletCardProps) {
   const {
     sxs,
     children,
     actionsBar,
-    title,
+    title = '',
     borderLeftColor,
     contentHeight: contentHeightProp,
     actionsBarHeight = 35,
@@ -57,19 +57,28 @@ export function DashletCard(
     cardContentProps,
     footer
   } = props;
+  const cardHeaderHeight = 62;
+  const renderCardHeader = Boolean(title) || Boolean(headerAction);
+
   const contentHeight = contentHeightProp
-    ? // Subtract toolbar and footer height to avoid misalignment with other widgets
-      parseDashletContentHeight(contentHeightProp) - (actionsBar ? actionsBarHeight : 0) - (footer ? footerHeight : 0)
+    ? // Subtract toolbar and footer height to avoid misalignment with other widgets, also, if CardHeader won't be rendered,
+      // increase its size
+      parseDashletContentHeight(contentHeightProp) -
+      (actionsBar ? actionsBarHeight : 0) -
+      (footer ? footerHeight : 0) +
+      (!renderCardHeader ? cardHeaderHeight : 0)
     : UNDEFINED;
   return (
     <Card sx={{ borderLeft: 5, borderLeftColor, ...sxs?.card }}>
       {/* region Header */}
-      <CardHeader
-        title={title}
-        titleTypographyProps={{ variant: 'h6', component: 'h2' }}
-        action={headerAction}
-        sx={sxs?.header}
-      />
+      {renderCardHeader && (
+        <CardHeader
+          title={title}
+          titleTypographyProps={{ variant: 'h6', component: 'h2' }}
+          action={headerAction}
+          sx={sxs?.header}
+        />
+      )}
       {/* endregion */}
       <Divider />
       {actionsBar && (

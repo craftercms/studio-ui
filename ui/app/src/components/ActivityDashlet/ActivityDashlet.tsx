@@ -32,7 +32,6 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import Typography from '@mui/material/Typography';
-import { CommonDashletProps } from '../SiteDashboard/utils';
 import DropDownMenu from '../DropDownMenuButton/DropDownMenuButton';
 import {
   ActivitiesAndAll,
@@ -46,7 +45,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { RangePickerModal } from './RangePickerModal';
 import Tooltip from '@mui/material/Tooltip';
-import DashletCard from '../DashletCard/DashletCard';
+import DashletCard, { DashletCardProps } from '../DashletCard/DashletCard';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import { DashletAvatar, DashletEmptyMessage, PersonAvatar, PersonFullName } from '../DashletCard/dashletCommons';
 import { getSystemLink } from '../../utils/system';
@@ -57,7 +56,7 @@ import PackageDetailsDialog from '../PackageDetailsDialog/PackageDetailsDialog';
 import InfiniteScroll from 'react-infinite-scroller';
 import Box from '@mui/material/Box';
 
-export interface ActivityDashletProps extends CommonDashletProps {}
+export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
 interface ActivityDashletState {
   openRangePicker: boolean;
