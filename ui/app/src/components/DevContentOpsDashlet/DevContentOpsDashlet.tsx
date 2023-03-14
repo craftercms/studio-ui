@@ -14,15 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import DashletCard from '../DashletCard/DashletCard';
-import { CommonDashletProps } from '../SiteDashboard/utils';
+import DashletCard, { DashletCardProps } from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { FormattedMessage } from 'react-intl';
 import React, { useEffect, useMemo } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import IconButton from '@mui/material/IconButton';
-import { RefreshRounded } from '@mui/icons-material';
 import { fetchPublishingStats } from '../../services/dashboard';
 import { PublishingStats } from '../../models';
 import Skeleton from '@mui/material/Skeleton';
@@ -30,7 +27,7 @@ import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-export interface DevContentOpsDashletProps extends CommonDashletProps {}
+export interface DevContentOpsDashletProps extends Omit<Partial<DashletCardProps>, 'contentHeight'> {}
 
 interface DevContentOpsDashletState {
   stats: PublishingStats;
@@ -57,17 +54,7 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
     onRefresh();
   }, [onRefresh]);
   return (
-    <DashletCard
-      {...props}
-      sxs={{ content: { pt: 2 } }}
-      borderLeftColor={borderLeftColor}
-      title={<FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />}
-      headerAction={
-        <IconButton onClick={onRefresh}>
-          <RefreshRounded />
-        </IconButton>
-      }
-    >
+    <DashletCard {...props} sxs={{ content: { pt: 2 }, ...props.sxs }} borderLeftColor={borderLeftColor}>
       {loading && (
         <>
           <Skeleton />
@@ -75,20 +62,38 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
         </>
       )}
       {stats && (
-        <Stack direction="column" spacing={2}>
-          <Box>
-            <Typography variant="h2" component="span" children={stats.numberOfPublishes} lineHeight={1} />
-            <Typography component="span" children="Publishes" />
-          </Box>
-          <Box>
-            <Typography variant="h2" component="span" children={stats.numberOfNewAndPublishedItems} lineHeight={1} />
-            <Typography component="span" children="Created & Published" />
-          </Box>
-          <Box>
-            <Typography variant="h2" component="span" children={stats.numberOfEditedAndPublishedItems} lineHeight={1} />
-            <Typography component="span" children="Edited & Published" />
-          </Box>
-        </Stack>
+        <>
+          <FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />
+          <Stack direction="row" spacing={2} mt={2}>
+            <Box>
+              <Typography
+                component="span"
+                children={stats.numberOfPublishes}
+                lineHeight={1}
+                sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+              />{' '}
+              <Typography component="span" children="Publishes" />
+            </Box>
+            <Box>
+              <Typography
+                component="span"
+                children={stats.numberOfNewAndPublishedItems}
+                lineHeight={1}
+                sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+              />{' '}
+              <Typography component="span" children="Created & Published" />
+            </Box>
+            <Box>
+              <Typography
+                component="span"
+                children={stats.numberOfEditedAndPublishedItems}
+                lineHeight={1}
+                sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+              />{' '}
+              <Typography component="span" children="Edited & Published" />
+            </Box>
+          </Stack>
+        </>
       )}
     </DashletCard>
   );
