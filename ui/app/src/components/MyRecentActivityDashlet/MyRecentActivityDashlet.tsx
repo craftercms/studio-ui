@@ -91,6 +91,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     setState({ loading: true });
     fetchActivity(site, {
       usernames: [username],
+      offset: newOffset,
       limit
     }).subscribe((feed) => {
       setState({ feed, total: feed.total, offset: newOffset, loading: false });
