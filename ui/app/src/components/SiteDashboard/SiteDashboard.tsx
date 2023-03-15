@@ -54,6 +54,7 @@ function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string; desktopS
   const { mode, desktopScreen } = props;
   return {
     root: {
+      position: 'relative',
       p: 2,
       bgcolor: `grey.${mode === 'light' ? 100 : 800}`,
       ...(desktopScreen
@@ -83,7 +84,7 @@ function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string; desktopS
       ...(desktopScreen
         ? {
             width: '33.33%',
-            position: 'fixed',
+            position: 'absolute',
             right: 0,
             top: 0,
             bottom: 0
