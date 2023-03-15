@@ -208,11 +208,19 @@ export function fetchPublishingHistory(
   );
 }
 
-export function fetchPublishingHistoryPackageItems(siteId: string, packageId: string): Observable<SandboxItem[]> {
-  const qs = toQueryString({ siteId });
+export function fetchPublishingHistoryPackageItems(
+  siteId: string,
+  packageId: string,
+  options?: PaginationOptions
+): Observable<PagedArray<SandboxItem>> {
+  const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/publishing/history/${packageId}${qs}`).pipe(
-    pluck('response', 'publishingPackageItems'),
-    map((items) => items.map((item) => prepareVirtualItemProps(item)))
+    map(({ response }) =>
+      createPagedArray(
+        response.publishingPackageItems.map((item) => prepareVirtualItemProps(item)),
+        response
+      )
+    )
   );
 }
 

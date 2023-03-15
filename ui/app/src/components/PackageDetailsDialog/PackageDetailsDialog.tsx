@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistoryPackageItems } from '../../services/dashboard';
@@ -27,7 +27,10 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ItemDisplay from '../ItemDisplay';
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
-import { Pagination } from '../Pagination';
+import { Pager } from '../DashletCard/dashletCommons';
+import Box from '@mui/material/Box';
+
+const dialogContentHeight = 420;
 
 export interface PackageDetailsDialogProps extends EnhancedDialogProps {
   packageId: string;
@@ -40,35 +43,44 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
     items: null,
     loading: false,
     error: null,
-    itemsPerPage: 10,
-    page: 0
+    total: null,
+    limit: 10,
+    offset: 0
   });
-  const filteredItems = useMemo(() => {
-    const offset = state.page * state.itemsPerPage;
-    return state.items?.filter((item, index) => index >= offset && index < offset + state.itemsPerPage);
-  }, [state]);
+  const currentPage = state.offset / state.limit;
+  const totalPages = state.total ? Math.ceil(state.total / state.limit) : 0;
 
   useEffect(() => {
     if (packageId) {
       setState({ items: null, loading: true });
-      fetchPublishingHistoryPackageItems(site, packageId).subscribe({
-        next: (items) => setState({ items, loading: false }),
+      fetchPublishingHistoryPackageItems(site, packageId, { limit: state.limit, offset: 0 }).subscribe({
+        next: (items) => {
+          setState({ items, loading: false, offset: 0, total: items.total });
+        },
         error(error) {
           setState({ error, loading: false });
         }
       });
     }
-  }, [packageId, site, setState]);
+  }, [packageId, site, setState, state.limit]);
 
-  // TODO: add server side pagination once API is ready
-  const onPageChange = (newPage: number) => {
-    setState({ page: newPage });
+  const loadPage = (pageNumber: number) => {
+    const newOffset = pageNumber * state.limit;
+    setState({ items: null, loading: true });
+    fetchPublishingHistoryPackageItems(site, packageId, { limit: state.limit, offset: newOffset }).subscribe({
+      next: (items) => {
+        setState({ items, loading: false, offset: newOffset, total: items.total });
+      },
+      error(error) {
+        setState({ error, loading: false });
+      }
+    });
   };
 
-  function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
+  function onRowsPerPageChange(rowsPerPage: number) {
     setState({
-      itemsPerPage: parseInt(e.target.value),
-      page: 0
+      limit: rowsPerPage,
+      offset: 0
     });
   }
 
@@ -85,7 +97,7 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
       }
     >
       <DialogContent>
-        {state.loading && <LoadingState styles={{ root: { width: 100 } }} />}
+        {state.loading && <LoadingState styles={{ root: { width: 100, height: dialogContentHeight } }} />}
         {!Boolean(packageId) && (
           <Typography color="error.main">
             <FormattedMessage
@@ -110,20 +122,24 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
             />
           ) : (
             <>
-              <List>
-                {filteredItems.map((item) => (
+              <List sx={{ height: dialogContentHeight, overflowY: 'auto' }}>
+                {state.items.map((item) => (
                   <ListItem key={item.id}>
                     <ItemDisplay item={item} showNavigableAsLinks={false} />
                   </ListItem>
                 ))}
               </List>
-              <Pagination
-                count={state.items.length}
-                onPageChange={(e, page) => onPageChange(page)}
-                page={state.page}
-                rowsPerPage={state.itemsPerPage}
-                onRowsPerPageChange={onRowsPerPageChange}
-              />
+              <Box display="flex" justifyContent="space-between">
+                <Pager
+                  totalPages={totalPages}
+                  totalItems={state.total}
+                  currentPage={currentPage}
+                  rowsPerPage={state.limit}
+                  onPagePickerChange={(page) => loadPage(page)}
+                  onPageChange={(page) => loadPage(page)}
+                  onRowsPerPageChange={onRowsPerPageChange}
+                />
+              </Box>
             </>
           ))}
       </DialogContent>
