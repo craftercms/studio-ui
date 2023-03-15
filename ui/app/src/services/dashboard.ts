@@ -174,8 +174,8 @@ export function fetchUnpublished(siteId: string, options: PaginationOptions): Ob
 export interface FetchScheduledOptions extends PaginationOptions {
   publishingTarget?: PublishingTargets;
   approver?: string;
-  dateFrom: string;
-  dateTo: string;
+  dateFrom?: string;
+  dateTo?: string;
 }
 
 export function fetchScheduled(siteId: string, options: FetchScheduledOptions): Observable<PagedArray<DetailedItem>> {

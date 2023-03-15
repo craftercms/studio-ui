@@ -83,9 +83,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       setState({ loading: true, items: null, selected: {}, isAllSelected: false });
       fetchScheduled(site, {
         limit,
-        offset: 0,
-        dateFrom: '2023-03-01T22:00:00.000Z',
-        dateTo: '2023-04-28T22:00:00.000Z'
+        offset: 0
       }).subscribe((items) => {
         setState({ loading: false, items, total: items.total, offset: 0 });
       });
