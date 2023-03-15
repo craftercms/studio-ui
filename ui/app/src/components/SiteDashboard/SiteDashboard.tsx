@@ -39,21 +39,31 @@ import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 import { MyRecentActivityDashlet } from '../MyRecentActivityDashlet';
 import { PublisherStatusDashlet } from '../PublisherStatusDashlet';
 import { FullSxRecord, PartialSxRecord } from '../../models';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-export type SiteDashboardClassKey = 'root' | 'container' | 'compactDashletItem' | 'compactDashlet' | 'activityDashlet';
+export type SiteDashboardClassKey =
+  | 'root'
+  | 'containerOverflow'
+  | 'compactDashletItem'
+  | 'compactDashlet'
+  | 'activityDashlet';
 export type SiteDashboardFullSx = FullSxRecord<SiteDashboardClassKey>;
 export type SiteDashboardPartialSx = PartialSxRecord<SiteDashboardClassKey>;
 
-function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string }): SiteDashboardFullSx {
-  const { mode } = props;
+function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string; desktopScreen: boolean }): SiteDashboardFullSx {
+  const { mode, desktopScreen } = props;
   return {
     root: {
       p: 2,
       bgcolor: `grey.${mode === 'light' ? 100 : 800}`,
-      height: '100vh',
-      overflow: 'hidden'
+      ...(desktopScreen
+        ? {
+            height: '100vh',
+            overflow: 'hidden'
+          }
+        : {})
     },
-    container: {
+    containerOverflow: {
       width: 'calc(66.66% + 22px)',
       height: '100vh',
       overflowY: 'scroll',
@@ -68,13 +78,19 @@ function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string }): SiteD
       width: '100%'
     },
     activityDashlet: {
-      width: '33.33%',
       display: 'flex',
       flexDirection: 'column',
-      position: 'fixed',
-      right: 0,
-      top: 0,
-      bottom: 0
+      ...(desktopScreen
+        ? {
+            width: '33.33%',
+            position: 'fixed',
+            right: 0,
+            top: 0,
+            bottom: 0
+          }
+        : {
+            mt: 2
+          })
     }
   };
 }
@@ -86,7 +102,9 @@ export function Dashboard(props: DashboardProps) {
   const {
     palette: { mode }
   } = useTheme();
-  const sx = getStyles({}, { mode });
+  const theme = useTheme();
+  const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
+  const sx = getStyles({}, { mode, desktopScreen });
   // const site = useActiveSiteId();
   // const user = useActiveUser();
   // const userRoles = user.rolesBySite[site];
@@ -101,33 +119,33 @@ export function Dashboard(props: DashboardProps) {
   const height = 350;
   return (
     <Box sx={sx.root}>
-      <Grid container spacing={2} sx={sx.container}>
-        <Grid item md={6} sx={sx.compactDashletItem}>
+      <Grid container spacing={2} sx={desktopScreen ? sx.containerOverflow : {}}>
+        <Grid item xs={12} md={6} sx={sx.compactDashletItem}>
           <PublisherStatusDashlet sxs={{ card: sx.compactDashlet }} />
         </Grid>
-        <Grid item md={6} sx={sx.compactDashletItem}>
+        <Grid item xs={12} md={6} sx={sx.compactDashletItem}>
           <DevContentOpsDashlet sxs={{ card: sx.compactDashlet }} />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <MyRecentActivityDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <UnpublishedDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <PendingApprovalDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <ScheduledDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <RecentlyPublishedDashlet contentHeight={height} />
         </Grid>
-        <Grid item md={6}>
+        <Grid item xs={12} md={6}>
           <ExpiringDashlet contentHeight={height} />
         </Grid>
       </Grid>
-      <ActivityDashlet sxs={{ card: sx.activityDashlet }} />
+      <ActivityDashlet sxs={{ card: sx.activityDashlet }} contentHeight={desktopScreen ? null : height} />
       {/*
       <Suspense fallback={<DashboardSkeleton />}>
         {dashboard ? (
