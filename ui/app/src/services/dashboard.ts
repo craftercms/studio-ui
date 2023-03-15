@@ -178,13 +178,15 @@ export interface FetchScheduledOptions extends PaginationOptions {
   dateTo: string;
 }
 
-export function fetchScheduled(
-  siteId: string,
-  options: FetchScheduledOptions
-): Observable<PagedArray<DashboardPublishingPackage>> {
+export function fetchScheduled(siteId: string, options: FetchScheduledOptions): Observable<PagedArray<DetailedItem>> {
   const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/publishing/scheduled${qs}`).pipe(
-    map(({ response }) => createPagedArray(response.publishingPackages, response))
+    map(({ response }) =>
+      createPagedArray(
+        response.publishingItems.map((item) => prepareVirtualItemProps(item)),
+        response
+      )
+    )
   );
 }
 

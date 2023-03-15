@@ -19,31 +19,33 @@ import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { useEffect, useMemo } from 'react';
-import {
-  DashletEmptyMessage,
-  DenseCheckbox,
-  getItemSkeleton,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemIcon,
-  PersonAvatar
-} from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchScheduled } from '../../services/dashboard';
-import { DashboardPublishingPackage } from '../../models';
+import { DetailedItem } from '../../models';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
+import ItemDisplay from '../ItemDisplay';
+import ListItemButton from '@mui/material/ListItemButton';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import useLocale from '../../hooks/useLocale';
+import { ActionsBar } from '../ActionsBar';
+import { UNDEFINED } from '../../utils/constants';
+import { itemActionDispatcher } from '../../utils/itemActions';
+import { useDispatch } from 'react-redux';
+import useEnv from '../../hooks/useEnv';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
-interface ScheduledDashletState extends WithSelectedState<DashboardPublishingPackage> {
+interface ScheduledDashletState extends WithSelectedState<DetailedItem> {
   total: number;
   loading: boolean;
+  limit: number;
+  offset: number;
 }
 
 const messages = defineMessages({
@@ -54,30 +56,68 @@ const messages = defineMessages({
 export function ScheduledDashlet(props: ScheduledDashletProps) {
   const { borderLeftColor = palette.blue.tint } = props;
   const site = useActiveSiteId();
+  const locale = useLocale();
   const { formatMessage } = useIntl();
-  const [{ loading, total, items, isAllSelected }, setState, onSelectItem, onSelectAll, isSelected] =
-    useSpreadStateWithSelected<ScheduledDashletState>({
-      loading: false,
-      items: null,
-      total: null,
-      selected: {},
-      isAllSelected: false,
-      hasSelected: false
-    });
+  const { authoringBase } = useEnv();
+  const dispatch = useDispatch();
+  const [
+    { loading, total, items, isAllSelected, hasSelected, selected, limit, offset },
+    setState,
+    onSelectItem,
+    onSelectAll,
+    isSelected
+  ] = useSpreadStateWithSelected<ScheduledDashletState>({
+    loading: false,
+    items: null,
+    total: null,
+    selected: {},
+    isAllSelected: false,
+    hasSelected: false,
+    limit: 10,
+    offset: 0
+  });
+  const currentPage = offset / limit;
+  const totalPages = total ? Math.ceil(total / limit) : 0;
   const onRefresh = useMemo(
     () => () => {
       setState({ loading: true, items: null, selected: {}, isAllSelected: false });
       fetchScheduled(site, {
-        limit: 10,
+        limit,
         offset: 0,
-        dateFrom: '2022-03-28T22:00:00.000Z',
-        dateTo: '2022-04-28T22:00:00.000Z'
+        dateFrom: '2023-03-01T22:00:00.000Z',
+        dateTo: '2023-04-28T22:00:00.000Z'
       }).subscribe((items) => {
-        setState({ loading: false, items, total: items.total });
+        setState({ loading: false, items, total: items.total, offset: 0 });
       });
     },
-    [setState, site]
+    [setState, site, limit]
   );
+
+  const loadPage = (pageNumber: number) => {
+    const newOffset = pageNumber * limit;
+    setState({ loading: true });
+    fetchScheduled(site, {
+      limit,
+      offset: newOffset,
+      dateFrom: '2023-03-01T22:00:00.000Z',
+      dateTo: '2023-04-28T22:00:00.000Z'
+    }).subscribe((items) => {
+      setState({ loading: false, items, total: items.total, offset: newOffset });
+    });
+  };
+
+  const onOptionClicked = (option) => {
+    const clickedItems = items.filter((item) => selected[item.id]);
+    return itemActionDispatcher({
+      site,
+      authoringBase,
+      dispatch,
+      formatMessage,
+      option,
+      item: clickedItems.length > 1 ? clickedItems : clickedItems[0]
+    });
+  };
+
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
@@ -92,54 +132,83 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         </IconButton>
       }
       actionsBar={
-        <>
-          <DenseCheckbox disabled={loading} checked={isAllSelected} onChange={onSelectAll} />
-        </>
+        <ActionsBar
+          disabled={loading}
+          isChecked={isAllSelected}
+          isIndeterminate={hasSelected && !isAllSelected}
+          onCheckboxChange={onSelectAll}
+          onOptionClicked={onOptionClicked}
+          options={
+            hasSelected
+              ? [
+                  { id: 'approvePublish', label: 'Publish' },
+                  { id: 'rejectPublish', label: 'Reject' }
+                ]
+              : []
+          }
+          buttonProps={{ size: 'small' }}
+          sxs={{
+            root: { flexGrow: 1 },
+            container: { bgcolor: hasSelected ? 'action.selected' : UNDEFINED },
+            checkbox: { padding: '5px', borderRadius: 0 }
+          }}
+        />
       }
+      footer={
+        Boolean(items?.length) && (
+          <Pager
+            totalPages={totalPages}
+            totalItems={total}
+            currentPage={currentPage}
+            rowsPerPage={limit}
+            onPagePickerChange={(page) => loadPage(page)}
+            onPageChange={(page) => loadPage(page)}
+            onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
+          />
+        )
+      }
+      sxs={{
+        actionsBar: { padding: 0 },
+        content: { pl: 0, pr: 0 },
+        footer: {
+          justifyContent: 'space-between'
+        }
+      }}
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
       {items && (
         <List>
           {items.map((item, index) => (
-            <ListItem key={index}>
+            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
-              <ListItemAvatar>
-                <PersonAvatar person={item.submitter} />
-              </ListItemAvatar>
               <ListItemText
-                primary={
+                primary={<ItemDisplay item={item} showNavigableAsLinks={false} />}
+                secondary={
                   <FormattedMessage
-                    id="pendingApprovalDashlet.entryPrimaryText"
-                    defaultMessage="{name} submitted to <render_target>{publishingTarget}</render_target>"
+                    id="scheduledDashlet.entrySecondaryText"
+                    defaultMessage="Approved by {name} to <render_target>{publishingTarget}</render_target> on {date}"
                     values={{
-                      name: item.submitter.firstName,
-                      publishingTarget: item.publishingTarget,
+                      name: item.sandbox.modifier,
+                      publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (
-                          <Typography
-                            component="span"
-                            fontWeight="bold"
-                            color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}
-                          >
+                          <Typography component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Typography>
                         );
-                      }
+                      },
+                      date: asLocalizedDateTime(
+                        item.sandbox.dateModified,
+                        locale.localeCode,
+                        locale.dateTimeFormatOptions
+                      )
                     }}
                   />
                 }
-                secondary={
-                  <Typography color="text.secondary" variant="body2">
-                    <FormattedMessage
-                      id="pendingApprovalDashlet.noSubmissionCommentAvailable"
-                      defaultMessage="Submission comment not provided"
-                    />
-                  </Typography>
-                }
               />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       )}
