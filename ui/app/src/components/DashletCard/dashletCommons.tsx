@@ -68,7 +68,14 @@ export interface PersonAvatarProps {
 
 export function PersonAvatar(props: PersonAvatarProps) {
   const { person } = props;
-  return <DashletAvatar src={person.avatar ?? UNDEFINED} children={person.avatar ? UNDEFINED : getInitials(person)} />;
+  const backgroundColor = stringToColor(person.username);
+  return (
+    <DashletAvatar
+      src={person.avatar ?? UNDEFINED}
+      children={person.avatar ? UNDEFINED : getInitials(person)}
+      sx={{ backgroundColor }}
+    />
+  );
 }
 
 export const getItemSkeleton = ({
