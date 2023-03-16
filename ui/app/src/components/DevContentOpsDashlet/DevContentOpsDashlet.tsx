@@ -17,7 +17,7 @@
 import DashletCard, { DashletCardProps } from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { FormattedMessage } from 'react-intl';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingStats } from '../../services/dashboard';
@@ -26,6 +26,8 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 export interface DevContentOpsDashletProps extends Omit<Partial<DashletCardProps>, 'contentHeight'> {}
 
@@ -41,29 +43,33 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
     stats: null,
     loading: false
   });
+  const [days, setDays] = useState(30);
   const onRefresh = useMemo(
     () => () => {
       setState({ stats: null, loading: true });
-      fetchPublishingStats(site, 30).subscribe((stats) => {
+      fetchPublishingStats(site, days).subscribe((stats) => {
         setState({ stats, loading: false });
       });
     },
-    [site, setState]
+    [site, setState, days]
   );
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
   return (
     <DashletCard {...props} sxs={{ content: { pt: 2 }, ...props.sxs }} borderLeftColor={borderLeftColor}>
-      {loading && (
-        <>
-          <Skeleton />
-          <Skeleton />
-        </>
-      )}
-      {stats && (
-        <>
+      <>
+        <Box display="flex" justifyContent="space-between">
           <FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />
+          <Select variant="standard" disableUnderline value={days} onChange={(e) => setDays(e.target.value as number)}>
+            <MenuItem value={3}>3 days ago</MenuItem>
+            <MenuItem value={7}>7 days ago</MenuItem>
+            <MenuItem value={30}>1 month ago</MenuItem>
+            <MenuItem value={90}>3 months ago</MenuItem>
+            <MenuItem value={365}>1 year ago</MenuItem>
+          </Select>
+        </Box>
+        {stats && (
           <Stack direction="row" spacing={2} mt={2}>
             <Box>
               <Typography
@@ -93,6 +99,11 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
               <Typography component="span" children="Edited & Published" />
             </Box>
           </Stack>
+        )}
+      </>
+      {loading && (
+        <>
+          <Skeleton />
         </>
       )}
     </DashletCard>
