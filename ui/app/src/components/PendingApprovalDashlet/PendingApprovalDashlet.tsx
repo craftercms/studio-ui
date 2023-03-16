@@ -19,6 +19,7 @@ import {
   CommonDashletProps,
   isPage,
   previewPage,
+  useSelectionOptions,
   useSpreadStateWithSelected,
   WithSelectedState
 } from '../SiteDashboard/utils';
@@ -43,6 +44,8 @@ import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
 import ListItemButton from '@mui/material/ListItemButton';
 import { useWidgetDialogContext } from '../WidgetDialog';
+import { createLookupTable } from '../../utils/object';
+import useDetailedItems from '../../hooks/useDetailedItems';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -61,7 +64,7 @@ const messages = defineMessages({
 export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const { borderLeftColor = palette.purple.tint } = props;
   const [
-    { items, total, loading, isAllSelected, hasSelected, selected, limit, offset },
+    { items, total, loading, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
@@ -76,10 +79,18 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     limit: 10,
     offset: 0
   });
+  const { formatMessage } = useIntl();
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
+  const itemsLookup = items ? createLookupTable(items) : {};
+  const selectedItemsPaths = Object.entries(selected)
+    .filter(([, value]) => value)
+    .map(([prop]) => {
+      return itemsLookup[prop].path;
+    });
+  const { itemsByPath } = useDetailedItems(selectedItemsPaths);
+  const selectionOptions = useSelectionOptions(Object.values(itemsByPath), formatMessage, selectedCount);
   const site = useActiveSiteId();
-  const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const widgetDialogContext = useWidgetDialogContext();
@@ -151,14 +162,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
           isIndeterminate={hasSelected && !isAllSelected}
           onCheckboxChange={onSelectAll}
           onOptionClicked={onOptionClicked}
-          options={
-            hasSelected
-              ? [
-                  { id: 'approvePublish', label: 'Publish' },
-                  { id: 'rejectPublish', label: 'Reject' }
-                ]
-              : []
-          }
+          options={selectionOptions}
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },

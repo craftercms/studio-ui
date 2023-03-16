@@ -16,12 +16,16 @@
 
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
 import Person from '../../models/Person';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
 import { DetailedItem } from '../../models';
 import { AnyAction } from '@reduxjs/toolkit';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { getSystemLink } from '../../utils/system';
+import { IntlShape } from 'react-intl';
+import { generateMultipleItemOptions, generateSingleItemOptions } from '../../utils/itemActions';
+import { actionsToBeShown } from '../DashletCard/dashletCommons';
+import { ActionsBarAction } from '../ActionsBar';
 
 export interface CommonDashletProps {
   contentHeight?: number | string;
@@ -130,4 +134,20 @@ export function previewPage(
       authoringBase
     });
   }
+}
+
+export function useSelectionOptions(
+  items: DetailedItem[],
+  formatMessage: IntlShape['formatMessage'],
+  selectedCount: number
+): ActionsBarAction[] {
+  return useMemo(() => {
+    return selectedCount
+      ? selectedCount === 1
+        ? (generateSingleItemOptions(items[0], formatMessage, {
+            includeOnly: actionsToBeShown
+          }).flat() as ActionsBarAction[])
+        : (generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown }) as ActionsBarAction[])
+      : [];
+  }, [items, formatMessage, selectedCount]);
 }

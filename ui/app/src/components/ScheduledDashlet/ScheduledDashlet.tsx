@@ -14,7 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps, useSpreadStateWithSelected, WithSelectedState } from '../SiteDashboard/utils';
+import {
+  CommonDashletProps,
+  useSelectionOptions,
+  useSpreadStateWithSelected,
+  WithSelectedState
+} from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -38,6 +43,8 @@ import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import useEnv from '../../hooks/useEnv';
+import useDetailedItems from '../../hooks/useDetailedItems';
+import { createLookupTable } from '../../utils/object';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
@@ -61,7 +68,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const [
-    { loading, total, items, isAllSelected, hasSelected, selected, limit, offset },
+    { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
@@ -78,6 +85,14 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
+  const itemsLookup = items ? createLookupTable(items) : {};
+  const selectedItemsPaths = Object.entries(selected)
+    .filter(([, value]) => value)
+    .map(([prop]) => {
+      return itemsLookup[prop].path;
+    });
+  const { itemsByPath } = useDetailedItems(selectedItemsPaths);
+  const selectionOptions = useSelectionOptions(Object.values(itemsByPath), formatMessage, selectedCount);
   const onRefresh = useMemo(
     () => () => {
       setState({ loading: true, items: null, selected: {}, isAllSelected: false });
@@ -136,14 +151,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
           isIndeterminate={hasSelected && !isAllSelected}
           onCheckboxChange={onSelectAll}
           onOptionClicked={onOptionClicked}
-          options={
-            hasSelected
-              ? [
-                  { id: 'approvePublish', label: 'Publish' },
-                  { id: 'rejectPublish', label: 'Reject' }
-                ]
-              : []
-          }
+          options={selectionOptions}
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },

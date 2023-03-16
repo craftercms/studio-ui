@@ -25,6 +25,7 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  Pager,
   PersonAvatar
 } from '../DashletCard/dashletCommons';
 import ListItemText from '@mui/material/ListItemText';
@@ -35,9 +36,11 @@ import useLocale from '../../hooks/useLocale';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistory } from '../../services/dashboard';
 import { DashboardPublishingPackage } from '../../models';
-import { asLocalizedDateTime } from '../../utils/datetime';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
+import Link from '@mui/material/Link';
+import { PackageDetailsDialog } from '../PackageDetailsDialog';
+import { renderActivityTimestamp } from '../ActivityDashlet';
 
 interface RecentlyPublishedDashletProps extends CommonDashletProps {}
 
@@ -45,6 +48,10 @@ interface RecentlyPublishedDashletState {
   items: DashboardPublishingPackage[];
   loading: boolean;
   total: number;
+  limit: number;
+  offset: number;
+  openPackageDetailsDialog: boolean;
+  selectedPackageId: string;
 }
 
 const messages = defineMessages({
@@ -54,11 +61,18 @@ const messages = defineMessages({
 
 export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
   const { borderLeftColor = palette.blue.tint } = props;
-  const [{ items, total, loading }, setState] = useSpreadState<RecentlyPublishedDashletState>({
-    items: null,
-    total: null,
-    loading: false
-  });
+  const [{ items, total, loading, limit, offset, openPackageDetailsDialog, selectedPackageId }, setState] =
+    useSpreadState<RecentlyPublishedDashletState>({
+      items: null,
+      total: null,
+      loading: false,
+      limit: 10,
+      offset: 0,
+      openPackageDetailsDialog: false,
+      selectedPackageId: null
+    });
+  const currentPage = offset / limit;
+  const totalPages = total ? Math.ceil(total / limit) : 0;
   const locale = useLocale();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
@@ -66,16 +80,35 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
     () => () => {
       setState({ items: null, loading: true });
       fetchPublishingHistory(site, {
-        limit: 10,
+        limit,
         offset: 0,
-        dateFrom: '2022-03-28T22:00:00.000Z',
-        dateTo: '2022-04-28T22:00:00.000Z'
+        dateFrom: '2023-03-01T22:00:00.000Z',
+        dateTo: '2023-04-28T22:00:00.000Z'
       }).subscribe((packages) => {
-        setState({ items: packages, total: packages.total, loading: false });
+        setState({ items: packages, total: packages.total, offset: 0, loading: false });
       });
     },
-    [setState, site]
+    [setState, site, limit]
   );
+
+  const loadPage = (pageNumber: number) => {
+    const newOffset = pageNumber * limit;
+    setState({ loading: true });
+    // TODO: dateFrom/dateTo will be optional, need to update when API change is ready
+    fetchPublishingHistory(site, {
+      limit,
+      offset: newOffset,
+      dateFrom: '2023-03-01T22:00:00.000Z',
+      dateTo: '2023-04-28T22:00:00.000Z'
+    }).subscribe((packages) => {
+      setState({ items: packages, total: packages.total, offset: newOffset, loading: false });
+    });
+  };
+
+  const onPackageClick = (pkg) => {
+    setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
+  };
+
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
@@ -89,6 +122,24 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
           <RefreshRounded />
         </IconButton>
       }
+      footer={
+        Boolean(items?.length) && (
+          <Pager
+            totalPages={totalPages}
+            totalItems={total}
+            currentPage={currentPage}
+            rowsPerPage={limit}
+            onPagePickerChange={(page) => loadPage(page)}
+            onPageChange={(page) => loadPage(page)}
+            onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
+          />
+        )
+      }
+      sxs={{
+        footer: {
+          justifyContent: 'space-between'
+        }
+      }}
     >
       {/*
       TODO: Stats bar not possible to implement under current API
@@ -118,7 +169,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
                 primary={
                   <FormattedMessage
                     id="recentlyPublishedDashlet.entryPrimaryText"
-                    defaultMessage="{name} published {count} {count, plural, one {package} other {packages}} to <render_target>{publishingTarget}</render_target> <render_date>{date}</render_date>"
+                    defaultMessage="{name} published <render_package_link>{count} {count, plural, one {item} other {items}}</render_package_link> to <render_target>{publishingTarget}</render_target> <render_date>{date}</render_date>"
                     values={{
                       count: item.size,
                       name: item.submitter.firstName,
@@ -126,17 +177,20 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
                       date: item.schedule,
                       render_target(target: string[]) {
                         return (
-                          <Typography
-                            component="span"
-                            fontWeight="bold"
-                            color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}
-                          >
+                          <Typography component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Typography>
                         );
                       },
                       render_date(date: string[]) {
-                        return asLocalizedDateTime(date[0], locale.localeCode, locale.dateTimeFormatOptions);
+                        return renderActivityTimestamp(date[0], locale);
+                      },
+                      render_package_link(message) {
+                        return (
+                          <Link sx={{ cursor: 'pointer' }} onClick={() => onPackageClick(item)}>
+                            {message}
+                          </Link>
+                        );
                       }
                     }}
                   />
@@ -162,6 +216,12 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
           />
         </DashletEmptyMessage>
       )}
+      <PackageDetailsDialog
+        open={openPackageDetailsDialog}
+        onClose={() => setState({ openPackageDetailsDialog: false })}
+        onClosed={() => setState({ selectedPackageId: null })}
+        packageId={selectedPackageId}
+      />
     </DashletCard>
   );
 }

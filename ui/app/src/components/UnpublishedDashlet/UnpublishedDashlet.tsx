@@ -18,6 +18,7 @@ import {
   CommonDashletProps,
   isPage,
   previewPage,
+  useSelectionOptions,
   useSpreadStateWithSelected,
   WithSelectedState
 } from '../SiteDashboard/utils';
@@ -40,13 +41,13 @@ import ItemDisplay from '../ItemDisplay';
 import { SandboxItem } from '../../models';
 import ActionsBar from '../ActionsBar';
 import { UNDEFINED } from '../../utils/constants';
-import { translations } from '../ItemActionsMenu/translations';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import ListItemButton from '@mui/material/ListItemButton';
 import { useWidgetDialogContext } from '../WidgetDialog';
 import { createLookupTable } from '../../utils/object';
+import useDetailedItems from '../../hooks/useDetailedItems';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -77,8 +78,16 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     limit: 10,
     offset: 0
   });
+  const itemsLookup = items ? createLookupTable(items) : {};
+  const selectedItemsPaths = Object.entries(selected)
+    .filter(([, value]) => value)
+    .map(([prop]) => {
+      return itemsLookup[prop].path;
+    });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
+  const { itemsByPath } = useDetailedItems(selectedItemsPaths);
+  const selectionOptions = useSelectionOptions(Object.values(itemsByPath), formatMessage, selectedCount);
   const onRefresh = useMemo(
     () => () => {
       setState({ loading: true, items: null, selected: {}, isAllSelected: false });
@@ -97,12 +106,6 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     });
   };
 
-  const itemsLookup = items ? createLookupTable(items) : {};
-  const selectedItems = Object.entries(selected)
-    .filter(([, value]) => value)
-    .map(([prop]) => {
-      return itemsLookup[prop];
-    });
   const onOptionClicked = (option) => {
     const clickedItems = items.filter((item) => selected[item.id]).map((item) => parseSandBoxItemToDetailedItem(item));
     return itemActionDispatcher({
@@ -147,18 +150,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
           isIndeterminate={hasSelected && !isAllSelected}
           onCheckboxChange={onSelectAll}
           onOptionClicked={onOptionClicked}
-          options={
-            hasSelected
-              ? [
-                  selectedCount === 1 &&
-                    selectedItems[0].availableActionsMap.edit && {
-                      id: 'edit',
-                      label: formatMessage(translations.edit)
-                    },
-                  { id: 'approvePublish', label: formatMessage(translations.publish) }
-                ].filter(Boolean)
-              : []
-          }
+          options={selectionOptions}
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },

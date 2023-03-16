@@ -29,7 +29,7 @@ import MuiListSubheader from '@mui/material/ListSubheader';
 import { CheckRounded } from '@mui/icons-material';
 import Box, { BoxProps } from '@mui/material/Box';
 import { UNDEFINED } from '../../utils/constants';
-import { getInitials } from '../../utils/string';
+import { getInitials, stringToColor } from '../../utils/string';
 import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
 import { getPersonFullName } from '../SiteDashboard/utils';
@@ -37,6 +37,16 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import { Pagination } from '../Pagination';
+import { AllItemActions } from '../../models';
+
+export const actionsToBeShown: AllItemActions[] = [
+  'edit',
+  'delete',
+  'publish',
+  'rejectPublish',
+  'dependencies',
+  'history'
+];
 
 export const List = styled(MuiList)({ paddingTop: 0 });
 
