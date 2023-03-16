@@ -16,6 +16,8 @@
 
 import {
   CommonDashletProps,
+  isPage,
+  previewPage,
   useSelectionOptions,
   useSpreadStateWithSelected,
   WithSelectedState
@@ -45,6 +47,7 @@ import { useDispatch } from 'react-redux';
 import useEnv from '../../hooks/useEnv';
 import useDetailedItems from '../../hooks/useDetailedItems';
 import { createLookupTable } from '../../utils/object';
+import { useWidgetDialogContext } from '../WidgetDialog';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
@@ -67,6 +70,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
+  const widgetDialogContext = useWidgetDialogContext();
   const [
     { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
@@ -131,6 +135,11 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     });
   };
 
+  const onItemClick = (e, item) => {
+    e.stopPropagation();
+    previewPage(site, authoringBase, item, dispatch, () => widgetDialogContext?.onClose(e, null));
+  };
+
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
@@ -190,7 +199,13 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
               <ListItemText
-                primary={<ItemDisplay item={item} showNavigableAsLinks={false} />}
+                primary={
+                  <ItemDisplay
+                    item={item}
+                    onClick={(e) => (isPage(item.systemType) ? onItemClick(e, item) : null)}
+                    showNavigableAsLinks={isPage(item.systemType)}
+                  />
+                }
                 secondary={
                   <FormattedMessage
                     id="scheduledDashlet.entrySecondaryText"
