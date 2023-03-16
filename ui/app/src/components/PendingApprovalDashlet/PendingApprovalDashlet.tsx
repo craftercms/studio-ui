@@ -167,7 +167,8 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
           sxs={{
             root: { flexGrow: 1 },
             container: { bgcolor: hasSelected ? 'action.selected' : UNDEFINED },
-            checkbox: { padding: '5px', borderRadius: 0 }
+            checkbox: { padding: '5px', borderRadius: 0 },
+            button: { minWidth: 50 }
           }}
         />
       }

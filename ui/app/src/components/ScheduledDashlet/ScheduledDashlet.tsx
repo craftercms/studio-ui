@@ -45,8 +45,6 @@ import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import useEnv from '../../hooks/useEnv';
-import useDetailedItems from '../../hooks/useDetailedItems';
-import { createLookupTable } from '../../utils/object';
 import { useWidgetDialogContext } from '../WidgetDialog';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
@@ -89,14 +87,8 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const itemsLookup = items ? createLookupTable(items) : {};
-  const selectedItemsPaths = Object.entries(selected)
-    .filter(([, value]) => value)
-    .map(([prop]) => {
-      return itemsLookup[prop].path;
-    });
-  const { itemsByPath } = useDetailedItems(selectedItemsPaths);
-  const selectionOptions = useSelectionOptions(Object.values(itemsByPath), formatMessage, selectedCount);
+  const selectedItems = items?.filter((item) => selected[item.id]) ?? [];
+  const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const onRefresh = useMemo(
     () => () => {
       setState({ loading: true, items: null, selected: {}, isAllSelected: false });
@@ -165,7 +157,8 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
           sxs={{
             root: { flexGrow: 1 },
             container: { bgcolor: hasSelected ? 'action.selected' : UNDEFINED },
-            checkbox: { padding: '5px', borderRadius: 0 }
+            checkbox: { padding: '5px', borderRadius: 0 },
+            button: { minWidth: 50 }
           }}
         />
       }

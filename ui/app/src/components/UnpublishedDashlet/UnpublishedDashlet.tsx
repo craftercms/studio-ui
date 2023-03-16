@@ -46,8 +46,6 @@ import { useDispatch } from 'react-redux';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import ListItemButton from '@mui/material/ListItemButton';
 import { useWidgetDialogContext } from '../WidgetDialog';
-import { createLookupTable } from '../../utils/object';
-import useDetailedItems from '../../hooks/useDetailedItems';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -78,16 +76,11 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     limit: 10,
     offset: 0
   });
-  const itemsLookup = items ? createLookupTable(items) : {};
-  const selectedItemsPaths = Object.entries(selected)
-    .filter(([, value]) => value)
-    .map(([prop]) => {
-      return itemsLookup[prop].path;
-    });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const { itemsByPath } = useDetailedItems(selectedItemsPaths);
-  const selectionOptions = useSelectionOptions(Object.values(itemsByPath), formatMessage, selectedCount);
+  const selectedItems =
+    items?.filter((item) => selected[item.id]).map((item) => parseSandBoxItemToDetailedItem(item)) ?? [];
+  const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const onRefresh = useMemo(
     () => () => {
       setState({ loading: true, items: null, selected: {}, isAllSelected: false });
@@ -155,7 +148,8 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
           sxs={{
             root: { flexGrow: 1 },
             container: { bgcolor: hasSelected ? 'action.selected' : UNDEFINED },
-            checkbox: { padding: '5px', borderRadius: 0 }
+            checkbox: { padding: '5px', borderRadius: 0 },
+            button: { minWidth: 50 }
           }}
         />
       }
