@@ -50,8 +50,11 @@ export type SiteDashboardClassKey =
 export type SiteDashboardFullSx = FullSxRecord<SiteDashboardClassKey>;
 export type SiteDashboardPartialSx = PartialSxRecord<SiteDashboardClassKey>;
 
-function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string; desktopScreen: boolean }): SiteDashboardFullSx {
-  const { mode, desktopScreen } = props;
+function getStyles(
+  sx?: SiteDashboardPartialSx,
+  props?: { mode: string; desktopScreen: boolean; mountMode: string }
+): SiteDashboardFullSx {
+  const { mode, desktopScreen, mountMode } = props;
   return {
     root: {
       position: 'relative',
@@ -59,15 +62,16 @@ function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string; desktopS
       bgcolor: `grey.${mode === 'light' ? 100 : 800}`,
       ...(desktopScreen
         ? {
-            height: '100vh',
+            height: mountMode === 'dialog' ? '100%' : 'calc(100% - 65px)',
             overflow: 'hidden'
           }
         : {})
     },
     containerOverflow: {
-      width: 'calc(66.66% + 22px)',
-      height: '100vh',
-      overflowY: 'scroll',
+      width: '66.66%',
+      height: '100%',
+      position: 'absolute',
+      overflowY: 'auto',
       pb: 2,
       pr: 2
     },
@@ -96,16 +100,20 @@ function getStyles(sx?: SiteDashboardPartialSx, props?: { mode: string; desktopS
   };
 }
 
-export interface DashboardProps {}
+export interface DashboardProps {
+  mountMode?: string;
+}
 
 // TODO: Uncomment below when dashboard apis are ready and we can go back to making these the primary dashboards.
 export function Dashboard(props: DashboardProps) {
+  const { mountMode } = props;
+
   const {
     palette: { mode }
   } = useTheme();
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
-  const sx = getStyles({}, { mode, desktopScreen });
+  const sx = getStyles({}, { mode, desktopScreen, mountMode });
   // const site = useActiveSiteId();
   // const user = useActiveUser();
   // const userRoles = user.rolesBySite[site];
@@ -117,7 +125,7 @@ export function Dashboard(props: DashboardProps) {
   //     dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
   //   }
   // }, [uiConfig.xml, dashboard, dispatch]);
-  const height = 350;
+  const height = 380;
   return (
     <Box sx={sx.root}>
       <Grid container spacing={2} sx={desktopScreen ? sx.containerOverflow : {}}>
