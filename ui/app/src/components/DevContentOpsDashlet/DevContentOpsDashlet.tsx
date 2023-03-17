@@ -61,12 +61,37 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
       <>
         <Box display="flex" justifyContent="space-between">
           <FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />
-          <Select variant="standard" disableUnderline value={days} onChange={(e) => setDays(e.target.value as number)}>
-            <MenuItem value={3}>3 days ago</MenuItem>
-            <MenuItem value={7}>7 days ago</MenuItem>
-            <MenuItem value={30}>1 month ago</MenuItem>
-            <MenuItem value={90}>3 months ago</MenuItem>
-            <MenuItem value={365}>1 year ago</MenuItem>
+          <Select
+            variant="standard"
+            disableUnderline
+            value={days}
+            onChange={(e) => setDays(e.target.value as number)}
+            SelectDisplayProps={{ style: { paddingLeft: '8px' } }}
+          >
+            <MenuItem value={3}>
+              <FormattedMessage defaultMessage="{days} days" values={{ days: 3 }} />
+            </MenuItem>
+            <MenuItem value={7}>
+              <FormattedMessage defaultMessage="{days} days" values={{ days: 7 }} />
+            </MenuItem>
+            <MenuItem value={30}>
+              <FormattedMessage
+                defaultMessage="{months} {months, plural, one {month} other {months}}"
+                values={{ months: 1 }}
+              />
+            </MenuItem>
+            <MenuItem value={90}>
+              <FormattedMessage
+                defaultMessage="{months} {months, plural, one {month} other {months}}"
+                values={{ months: 3 }}
+              />
+            </MenuItem>
+            <MenuItem value={365}>
+              <FormattedMessage
+                defaultMessage="{years} {years, plural, one {year} other {years}}"
+                values={{ years: 1 }}
+              />
+            </MenuItem>
           </Select>
         </Box>
         {stats && (
