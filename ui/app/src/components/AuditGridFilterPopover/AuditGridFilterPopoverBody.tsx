@@ -222,6 +222,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
             label={formatMessage(translations[filterId])}
             value={value ? value : 'all'}
             onChange={(e) => onFilterChange(filterId, e.target.value)}
+            sx={{ width: 200 }}
           >
             {options.map((option) => (
               <MenuItem key={option.id} value={option.value}>
@@ -249,6 +250,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
             value={value?.split(',') ?? ['all']}
             SelectProps={{ multiple: true }}
             onChange={onMultipleSelectChanges}
+            sx={{ width: 200 }}
           >
             {options.map((option) => (
               <MenuItem key={option.id} value={option.value}>
