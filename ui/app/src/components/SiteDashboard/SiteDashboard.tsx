@@ -102,11 +102,12 @@ function getStyles(
 
 export interface DashboardProps {
   mountMode?: string;
+  onMinimize?(): void;
 }
 
 // TODO: Uncomment below when dashboard apis are ready and we can go back to making these the primary dashboards.
 export function Dashboard(props: DashboardProps) {
-  const { mountMode } = props;
+  const { mountMode, onMinimize } = props;
 
   const {
     palette: { mode }
@@ -129,23 +130,23 @@ export function Dashboard(props: DashboardProps) {
   return (
     <Box sx={sx.root}>
       <Grid container spacing={2} sx={desktopScreen ? sx.containerOverflow : {}}>
-        <Grid item xs={12} md={6} sx={sx.compactDashletItem}>
+        {/* <Grid item xs={12} md={6} sx={sx.compactDashletItem}>
           <PublisherStatusDashlet sxs={{ card: sx.compactDashlet }} />
-        </Grid>
-        <Grid item xs={12} md={6} sx={sx.compactDashletItem}>
+        </Grid> */}
+        <Grid item xs={12} md={12} sx={sx.compactDashletItem}>
           <DevContentOpsDashlet sxs={{ card: sx.compactDashlet }} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <MyRecentActivityDashlet contentHeight={height} />
+          <MyRecentActivityDashlet contentHeight={height} onMinimize={onMinimize} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <UnpublishedDashlet contentHeight={height} />
+          <UnpublishedDashlet contentHeight={height} onMinimize={onMinimize} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <PendingApprovalDashlet contentHeight={height} />
+          <PendingApprovalDashlet contentHeight={height} onMinimize={onMinimize} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <ScheduledDashlet contentHeight={height} />
+          <ScheduledDashlet contentHeight={height} onMinimize={onMinimize} />
         </Grid>
         <Grid item xs={12} md={6}>
           <RecentlyPublishedDashlet contentHeight={height} />
@@ -154,7 +155,11 @@ export function Dashboard(props: DashboardProps) {
           <ExpiringDashlet contentHeight={height} />
         </Grid>
       </Grid>
-      <ActivityDashlet sxs={{ card: sx.activityDashlet }} contentHeight={desktopScreen ? null : height} />
+      <ActivityDashlet
+        sxs={{ card: sx.activityDashlet }}
+        contentHeight={desktopScreen ? null : height}
+        onMinimize={onMinimize}
+      />
       {/*
       <Suspense fallback={<DashboardSkeleton />}>
         {dashboard ? (

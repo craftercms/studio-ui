@@ -21,7 +21,6 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
-import { useWidgetDialogContext } from '../WidgetDialog';
 import React, { useEffect, useMemo } from 'react';
 import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
@@ -53,14 +52,13 @@ interface MyRecentActivityDashletState {
 }
 
 export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
-  const { borderLeftColor = palette.blue.tint } = props;
+  const { borderLeftColor = palette.blue.tint, onMinimize } = props;
   const locale = useLocale();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const { username } = useActiveUser();
   const dispatch = useDispatch();
-  const widgetDialogContext = useWidgetDialogContext();
   const [{ loading, total, feed, limit, offset, selectedPackageId, openPackageDetailsDialog }, setState] =
     useSpreadState<MyRecentActivityDashletState>({
       feed: null,
@@ -102,7 +100,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     const pathname = window.location.pathname;
     if (pathname.includes(PREVIEW_URL_PATH)) {
       dispatch(changeCurrentUrl(previewUrl));
-      widgetDialogContext?.onClose(e, null);
+      onMinimize?.();
     } else {
       window.location.href = getSystemLink({
         page: previewUrl,
@@ -127,7 +125,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="myRecentActivityDashlet.widgetTitle" defaultMessage="My Recent Activity" />}
       sxs={{
-        content: { pl: 0, pr: 0 },
+        content: { padding: 0 },
         footer: { justifyContent: 'space-between' }
       }}
       headerAction={
@@ -151,7 +149,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {feed && (
-        <List>
+        <List sx={{ pb: 0 }}>
           {feed.map((activity) => (
             <ListItem key={activity.id} sx={{ pt: 0, pb: 0 }}>
               <ListItemText

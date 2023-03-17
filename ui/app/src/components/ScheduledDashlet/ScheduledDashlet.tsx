@@ -16,6 +16,7 @@
 
 import {
   CommonDashletProps,
+  getItemViewOption,
   isPage,
   previewPage,
   useSelectionOptions,
@@ -45,7 +46,6 @@ import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import useEnv from '../../hooks/useEnv';
-import { useWidgetDialogContext } from '../WidgetDialog';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
@@ -62,13 +62,12 @@ const messages = defineMessages({
 });
 
 export function ScheduledDashlet(props: ScheduledDashletProps) {
-  const { borderLeftColor = palette.blue.tint } = props;
+  const { borderLeftColor = palette.blue.tint, onMinimize } = props;
   const site = useActiveSiteId();
   const locale = useLocale();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const widgetDialogContext = useWidgetDialogContext();
   const [
     { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
@@ -128,8 +127,21 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   };
 
   const onItemClick = (e, item) => {
-    e.stopPropagation();
-    previewPage(site, authoringBase, item, dispatch, () => widgetDialogContext?.onClose(e, null));
+    if (isPage(item.systemType)) {
+      e.stopPropagation();
+      previewPage(site, authoringBase, item, dispatch, onMinimize);
+    } else if (item.availableActionsMap.view) {
+      e.stopPropagation();
+
+      itemActionDispatcher({
+        site,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        option: getItemViewOption(item),
+        item
+      });
+    }
   };
 
   useEffect(() => {
@@ -177,7 +189,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       }
       sxs={{
         actionsBar: { padding: 0 },
-        content: { pl: 0, pr: 0 },
+        content: { padding: 0 },
         footer: {
           justifyContent: 'space-between'
         }
@@ -185,7 +197,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
       {items && (
-        <List>
+        <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
             <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
@@ -195,8 +207,10 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                 primary={
                   <ItemDisplay
                     item={item}
-                    onClick={(e) => (isPage(item.systemType) ? onItemClick(e, item) : null)}
-                    showNavigableAsLinks={isPage(item.systemType)}
+                    onClick={(e) =>
+                      isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
+                    }
+                    showNavigableAsLinks={isPage(item.systemType) || item.availableActionsMap.view}
                   />
                 }
                 secondary={

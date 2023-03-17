@@ -16,6 +16,7 @@
 
 import {
   CommonDashletProps,
+  getItemViewOption,
   isPage,
   previewPage,
   useSelectionOptions,
@@ -45,7 +46,6 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import ListItemButton from '@mui/material/ListItemButton';
-import { useWidgetDialogContext } from '../WidgetDialog';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -57,13 +57,12 @@ interface UnpublishedDashletState extends WithSelectedState<SandboxItem> {
 }
 
 export function UnpublishedDashlet(props: UnpublishedDashletProps) {
-  const { borderLeftColor = palette.blue.tint } = props;
+  const { borderLeftColor = palette.blue.tint, onMinimize } = props;
   const site = useActiveSiteId();
   const locale = useLocale();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const widgetDialogContext = useWidgetDialogContext();
   const [
     { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
@@ -112,8 +111,21 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   };
 
   const onItemClick = (e, item) => {
-    e.stopPropagation();
-    previewPage(site, authoringBase, item, dispatch, () => widgetDialogContext?.onClose(e, null));
+    if (isPage(item.systemType)) {
+      e.stopPropagation();
+      previewPage(site, authoringBase, item, dispatch, onMinimize);
+    } else if (item.availableActionsMap.view) {
+      e.stopPropagation();
+
+      itemActionDispatcher({
+        site,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        option: getItemViewOption(item),
+        item
+      });
+    }
   };
 
   useEffect(() => {
@@ -131,7 +143,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       }
       sxs={{
         actionsBar: { padding: 0 },
-        content: { pl: 0, pr: 0 },
+        content: { padding: 0 },
         footer: {
           justifyContent: 'space-between'
         }
@@ -169,7 +181,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {items && (
-        <List>
+        <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
             <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
@@ -180,8 +192,10 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                   <ItemDisplay
                     item={item}
                     showPublishingTarget={false}
-                    onClick={(e) => (isPage(item.systemType) ? onItemClick(e, item) : null)}
-                    showNavigableAsLinks={isPage(item.systemType)}
+                    onClick={(e) =>
+                      isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
+                    }
+                    showNavigableAsLinks={isPage(item.systemType) || item.availableActionsMap.view}
                   />
                 }
                 secondary={

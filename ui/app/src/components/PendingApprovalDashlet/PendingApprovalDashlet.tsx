@@ -17,6 +17,7 @@
 import React, { useEffect, useMemo } from 'react';
 import {
   CommonDashletProps,
+  getItemViewOption,
   isPage,
   previewPage,
   useSelectionOptions,
@@ -43,7 +44,6 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
 import ListItemButton from '@mui/material/ListItemButton';
-import { useWidgetDialogContext } from '../WidgetDialog';
 import { createLookupTable } from '../../utils/object';
 import useDetailedItems from '../../hooks/useDetailedItems';
 
@@ -62,7 +62,7 @@ const messages = defineMessages({
 });
 
 export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
-  const { borderLeftColor = palette.purple.tint } = props;
+  const { borderLeftColor = palette.purple.tint, onMinimize } = props;
   const [
     { items, total, loading, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
@@ -93,7 +93,6 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const widgetDialogContext = useWidgetDialogContext();
   const onRefresh = useMemo(
     () => () => {
       setState({ items: null, loading: true });
@@ -128,8 +127,21 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   };
 
   const onItemClick = (e, item) => {
-    e.stopPropagation();
-    previewPage(site, authoringBase, item, dispatch, () => widgetDialogContext?.onClose(e, null));
+    if (isPage(item.systemType)) {
+      e.stopPropagation();
+      previewPage(site, authoringBase, item, dispatch, onMinimize);
+    } else if (item.availableActionsMap.view) {
+      e.stopPropagation();
+
+      itemActionDispatcher({
+        site,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        option: getItemViewOption(item),
+        item
+      });
+    }
   };
 
   return (
@@ -150,7 +162,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       }
       sxs={{
         actionsBar: { padding: 0 },
-        content: { pl: 0, pr: 0 },
+        content: { padding: 0 },
         footer: {
           justifyContent: 'space-between'
         }
@@ -193,7 +205,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {Boolean(items?.length) && (
-        <List>
+        <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
             <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
@@ -203,8 +215,10 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 primary={
                   <ItemDisplay
                     item={item}
-                    onClick={(e) => (isPage(item.systemType) ? onItemClick(e, item) : null)}
-                    showNavigableAsLinks={isPage(item.systemType)}
+                    onClick={(e) =>
+                      isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
+                    }
+                    showNavigableAsLinks={isPage(item.systemType) || item.availableActionsMap.view}
                   />
                 }
                 secondary={

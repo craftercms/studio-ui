@@ -26,10 +26,12 @@ import { IntlShape } from 'react-intl';
 import { generateMultipleItemOptions, generateSingleItemOptions } from '../../utils/itemActions';
 import { actionsToBeShown } from '../DashletCard/dashletCommons';
 import { ActionsBarAction } from '../ActionsBar';
+import { isImage, isPdfDocument, isPreviewable, isVideo } from '../PathNavigator/utils';
 
 export interface CommonDashletProps {
   contentHeight?: number | string;
   borderLeftColor?: string;
+  onMinimize?(): void;
 }
 
 export function parseDashletContentHeight(contentHeight: string | number): number {
@@ -150,4 +152,19 @@ export function useSelectionOptions(
         : (generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown }) as ActionsBarAction[])
       : [];
   }, [items, formatMessage, selectedCount]);
+}
+
+export function getItemViewOption(item) {
+  const type = item.systemType;
+  let option;
+  if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
+    option = 'view';
+  } else if (isPreviewable(item)) {
+    if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
+      option = 'viewMedia';
+    } else {
+      option = 'viewCode';
+    }
+  }
+  return option;
 }

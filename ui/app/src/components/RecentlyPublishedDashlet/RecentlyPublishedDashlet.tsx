@@ -136,6 +136,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
         )
       }
       sxs={{
+        content: { pb: 0 },
         footer: {
           justifyContent: 'space-between'
         }
@@ -159,7 +160,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
       */}
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true })}
       {items && (
-        <List>
+        <List sx={{ pb: 0 }}>
           {items.map((item) => (
             <ListItem key={item.id}>
               <ListItemAvatar>
