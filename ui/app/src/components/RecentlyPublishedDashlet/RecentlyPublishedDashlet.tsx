@@ -81,9 +81,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
       setState({ items: null, loading: true });
       fetchPublishingHistory(site, {
         limit,
-        offset: 0,
-        dateFrom: '2023-03-01T22:00:00.000Z',
-        dateTo: '2023-04-28T22:00:00.000Z'
+        offset: 0
       }).subscribe((packages) => {
         setState({ items: packages, total: packages.total, offset: 0, loading: false });
       });
