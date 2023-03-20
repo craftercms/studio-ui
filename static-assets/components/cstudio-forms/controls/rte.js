@@ -434,24 +434,31 @@ CStudioAuthoring.Module.requireModule(
               });
 
               editor.on('Change', function (e) {
-                const id = _thisControl.editorId,
-                  windowHeight = $(window).height(),
-                  $editorIframe = $('#' + id + '_ifr'),
-                  editorScrollTop = $editorIframe.offset().top, // Top position in document
-                  editorPos =
-                    $editorIframe[0].getBoundingClientRect().top > 0 ? $editorIframe[0].getBoundingClientRect().top : 0, // Top position in current view
-                  currentSelectionPos = $(tinymce.activeEditor.selection.getNode()).offset().top, // Top position of current node selected in editor
-                  editorHeight = $editorIframe.height();
+                // When re-rendering a repeating group, all the instances of the RTEs are removed (to clear all things
+                // related to those RTEs). That removal triggers a change event, that causes the model to be 'saved'
+                // with the current (possibly outdated) value. This validation avoids model updating when removing RTEs.
+                if (!e.originalEvent?.is_removing) {
+                  const id = _thisControl.editorId,
+                    windowHeight = $(window).height(),
+                    $editorIframe = $('#' + id + '_ifr'),
+                    editorScrollTop = $editorIframe.offset().top, // Top position in document
+                    editorPos =
+                      $editorIframe[0].getBoundingClientRect().top > 0
+                        ? $editorIframe[0].getBoundingClientRect().top
+                        : 0, // Top position in current view
+                    currentSelectionPos = $(tinymce.activeEditor.selection.getNode()).offset().top, // Top position of current node selected in editor
+                    editorHeight = $editorIframe.height();
 
-                // if current selection it out of view, scroll to selection
-                if (editorPos + currentSelectionPos > windowHeight - 100) {
-                  $(document).scrollTop(editorScrollTop + editorHeight - windowHeight + 100);
-                }
+                  // if current selection it out of view, scroll to selection
+                  if (editorPos + currentSelectionPos > windowHeight - 100) {
+                    $(document).scrollTop(editorScrollTop + editorHeight - windowHeight + 100);
+                  }
 
-                if (!e.initial) {
-                  _thisControl.save();
+                  if (!e.initial) {
+                    _thisControl.save();
+                  }
+                  _thisControl._onChangeVal(null, _thisControl);
                 }
-                _thisControl._onChangeVal(null, _thisControl);
               });
 
               editor.on('DblClick', function (e) {
