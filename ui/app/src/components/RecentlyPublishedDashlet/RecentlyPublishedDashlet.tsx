@@ -92,12 +92,9 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
   const loadPage = (pageNumber: number) => {
     const newOffset = pageNumber * limit;
     setState({ loading: true });
-    // TODO: dateFrom/dateTo will be optional, need to update when API change is ready
     fetchPublishingHistory(site, {
       limit,
-      offset: newOffset,
-      dateFrom: '2023-03-01T22:00:00.000Z',
-      dateTo: '2023-04-28T22:00:00.000Z'
+      offset: newOffset
     }).subscribe((packages) => {
       setState({ items: packages, total: packages.total, offset: newOffset, loading: false });
     });

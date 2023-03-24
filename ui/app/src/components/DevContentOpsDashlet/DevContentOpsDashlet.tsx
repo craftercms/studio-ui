@@ -103,7 +103,7 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
                 lineHeight={1}
                 sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
               />{' '}
-              <Typography component="span" children="Publishes" />
+              <Typography component="span" children={<FormattedMessage defaultMessage="Publishes" />} />
             </Box>
             <Box>
               <Typography
@@ -112,7 +112,7 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
                 lineHeight={1}
                 sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
               />{' '}
-              <Typography component="span" children="Created & Published" />
+              <Typography component="span" children={<FormattedMessage defaultMessage="Created & Published" />} />
             </Box>
             <Box>
               <Typography
@@ -121,16 +121,12 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
                 lineHeight={1}
                 sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
               />{' '}
-              <Typography component="span" children="Edited & Published" />
+              <Typography component="span" children={<FormattedMessage defaultMessage="Edited & Published" />} />
             </Box>
           </Stack>
         )}
       </>
-      {loading && (
-        <>
-          <Skeleton />
-        </>
-      )}
+      {loading && <Skeleton />}
     </DashletCard>
   );
 }

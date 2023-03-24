@@ -21,9 +21,9 @@ import useSpreadState from '../../hooks/useSpreadState';
 import { fetchStatus } from '../../services/publishing';
 import { DashletCard, DashletCardProps } from '../DashletCard';
 import Skeleton from '@mui/material/Skeleton';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Typography } from '@mui/material';
-import { capitalize } from '../../utils/string';
+import { getPublishingStatusMessage } from '../PublishingStatusDisplay';
 
 export interface PublisherStatusDashletProps extends Omit<Partial<DashletCardProps>, 'contentHeight'> {}
 
@@ -39,6 +39,7 @@ export function PublisherStatusDashlet(props: PublisherStatusDashletProps) {
     publishingStatus: null,
     loading: false
   });
+  const { formatMessage } = useIntl();
   const onRefresh = useMemo(
     () => () => {
       setState({ publishingStatus: null, loading: true });
@@ -62,8 +63,8 @@ export function PublisherStatusDashlet(props: PublisherStatusDashletProps) {
       )}
       {publishingStatus && (
         <>
-          <FormattedMessage id="publisherStatusDashlet.widgetTitle" defaultMessage="Publisher Status" />{' '}
-          <Typography component="div" children={capitalize(publishingStatus.status)} mt={2} />
+          <FormattedMessage defaultMessage="Publisher Status" />{' '}
+          <Typography component="div" children={getPublishingStatusMessage(publishingStatus, formatMessage)} mt={2} />
         </>
       )}
     </DashletCard>

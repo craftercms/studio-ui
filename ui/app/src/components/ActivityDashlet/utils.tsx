@@ -24,7 +24,7 @@ import moment from 'moment';
 import { messages } from '../ItemTypeIcon/translations';
 import SystemType from '../../models/SystemType';
 import { DashboardPublishingPackage } from '../../models';
-import { isPage } from '../SiteDashboard';
+import { isPage } from '../SiteDashboard/utils';
 
 export interface ActivityItem {
   id: number;

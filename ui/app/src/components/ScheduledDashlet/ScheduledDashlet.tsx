@@ -106,9 +106,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     setState({ loading: true });
     fetchScheduled(site, {
       limit,
-      offset: newOffset,
-      dateFrom: '2023-03-01T22:00:00.000Z',
-      dateTo: '2023-04-28T22:00:00.000Z'
+      offset: newOffset
     }).subscribe((items) => {
       setState({ loading: false, items, total: items.total, offset: newOffset });
     });
@@ -215,7 +213,6 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                 }
                 secondary={
                   <FormattedMessage
-                    id="scheduledDashlet.entrySecondaryText"
                     defaultMessage="Approved by {name} to <render_target>{publishingTarget}</render_target> on {date}"
                     values={{
                       name: item.sandbox.modifier,

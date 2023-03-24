@@ -31,6 +31,11 @@ export function AuthorFilter(props: AuthorFilterProps) {
   const buttonRef = useRef<HTMLButtonElement>();
   const [value, setValue] = useState([]);
 
+  const onFilterChange = (value) => {
+    onChange(value);
+    setValue(value);
+  };
+
   return (
     <>
       <Button
@@ -50,7 +55,7 @@ export function AuthorFilter(props: AuthorFilterProps) {
         onClose={() => setOpen(false)}
         PaperProps={{ sx: { width: 300, p: 1 } }}
       >
-        <UsersAutocomplete onChange={onChange} value={value} setValue={setValue} />
+        <UsersAutocomplete onChange={onFilterChange} value={value} />
       </Popover>
     </>
   );

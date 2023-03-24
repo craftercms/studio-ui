@@ -27,12 +27,11 @@ import User from '../../models/User';
 
 export interface UsersAutocompleteProps {
   value: User[];
-  setValue(user: User[]): void;
   onChange(value: User[]): void;
 }
 
 export function UsersAutocomplete(props: UsersAutocompleteProps) {
-  const { onChange, value, setValue } = props;
+  const { onChange, value } = props;
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [keyword, setKeyword] = useState('');
@@ -105,7 +104,6 @@ export function UsersAutocomplete(props: UsersAutocompleteProps) {
       onChange={(event, newValue) => {
         const nextValue = [...newValue];
         setUsers([]);
-        setValue(nextValue);
         onChange(nextValue);
       }}
     />

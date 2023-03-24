@@ -21,7 +21,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
@@ -138,7 +138,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
               }}
             />
           )}
-          <FormattedMessage id="myRecentActivityDashlet.widgetTitle" defaultMessage="My Recent Activity" />
+          <FormattedMessage defaultMessage="My Recent Activity" />
         </>
       }
       sxs={{
