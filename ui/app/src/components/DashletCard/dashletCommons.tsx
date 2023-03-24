@@ -38,6 +38,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage } from 'react-intl';
 import { Pagination } from '../Pagination';
 import { AllItemActions } from '../../models';
+import { SxProps } from '@mui/system';
 
 export const actionsToBeShown: AllItemActions[] = [
   'edit',
@@ -64,16 +65,17 @@ export const DashletAvatar = styled(Avatar)({ width: 40, height: 40 });
 
 export interface PersonAvatarProps {
   person: Person;
+  sxs?: SxProps;
 }
 
 export function PersonAvatar(props: PersonAvatarProps) {
-  const { person } = props;
+  const { person, sxs } = props;
   const backgroundColor = stringToColor(person.username);
   return (
     <DashletAvatar
       src={person.avatar ?? UNDEFINED}
       children={person.avatar ? UNDEFINED : getInitials(person)}
-      sx={{ backgroundColor }}
+      sx={{ backgroundColor, ...sxs }}
     />
   );
 }

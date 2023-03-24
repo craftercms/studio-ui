@@ -91,7 +91,8 @@ function getStyles(
             position: 'absolute',
             right: 0,
             top: 0,
-            bottom: 0
+            bottom: 0,
+            borderRadius: 0
           }
         : {
             mt: 2
@@ -152,7 +153,7 @@ export function Dashboard(props: DashboardProps) {
           <RecentlyPublishedDashlet contentHeight={height} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <ExpiringDashlet contentHeight={height} />
+          <ExpiringDashlet contentHeight={height} onMinimize={onMinimize} />
         </Grid>
       </Grid>
       <ActivityDashlet

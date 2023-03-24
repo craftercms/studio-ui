@@ -15,19 +15,19 @@
  */
 
 import { CommonDashletProps } from '../SiteDashboard';
-import { Activity } from '../../models';
+import { Activity, Person } from '../../models';
 import palette from '../../styles/palette';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
-import { getItemSkeleton, Pager } from '../DashletCard/dashletCommons';
+import { getItemSkeleton, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import { renderActivity, renderActivityTimestamp } from '../ActivityDashlet';
@@ -57,7 +57,8 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
-  const { username } = useActiveUser();
+  const { username, firstName, lastName } = useActiveUser();
+  const person: Person = { username, firstName, lastName, avatar: null };
   const dispatch = useDispatch();
   const [{ loading, total, feed, limit, offset, selectedPackageId, openPackageDetailsDialog }, setState] =
     useSpreadState<MyRecentActivityDashletState>({
@@ -123,7 +124,23 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
-      title={<FormattedMessage id="myRecentActivityDashlet.widgetTitle" defaultMessage="My Recent Activity" />}
+      title={
+        <>
+          {person && (
+            <PersonAvatar
+              person={person}
+              sxs={{
+                display: 'inline-flex',
+                mr: 1,
+                width: 30,
+                height: 30,
+                fontSize: '1.1rem'
+              }}
+            />
+          )}
+          <FormattedMessage id="myRecentActivityDashlet.widgetTitle" defaultMessage="My Recent Activity" />
+        </>
+      }
       sxs={{
         content: { padding: 0 },
         footer: { justifyContent: 'space-between' }
