@@ -27,7 +27,7 @@ import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
-import { getItemSkeleton, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import { renderActivity, renderActivityTimestamp } from '../ActivityDashlet';
@@ -180,6 +180,11 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
             </ListItem>
           ))}
         </List>
+      )}
+      {total === 0 && (
+        <DashletEmptyMessage>
+          <FormattedMessage id="activityDashlet.noEntriesFound" defaultMessage="No activity was found." />
+        </DashletEmptyMessage>
       )}
       <PackageDetailsDialog
         open={openPackageDetailsDialog}
