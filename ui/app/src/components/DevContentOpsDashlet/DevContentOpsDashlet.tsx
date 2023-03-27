@@ -28,6 +28,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
 
 export interface DevContentOpsDashletProps extends Omit<Partial<DashletCardProps>, 'contentHeight'> {}
 
@@ -45,10 +48,12 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
   });
   const [days, setDays] = useState(30);
   const onRefresh = useMemo(
-    () => () => {
-      setState({ stats: null, loading: true });
+    () => (backgroundRefresh?: boolean) => {
+      if (!backgroundRefresh) {
+        setState({ stats: null, loading: true });
+      }
       fetchPublishingStats(site, days).subscribe((stats) => {
-        setState({ stats, loading: false });
+        setState({ stats, ...(!backgroundRefresh && { loading: false }) });
       });
     },
     [site, setState, days]
@@ -56,6 +61,20 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      onRefresh(true);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [onRefresh]);
+  // endregion
+
   return (
     <DashletCard {...props} sxs={{ content: { pt: 2 }, ...props.sxs }} borderLeftColor={borderLeftColor}>
       <>

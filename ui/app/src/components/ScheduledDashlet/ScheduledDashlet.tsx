@@ -26,7 +26,7 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchScheduled } from '../../services/dashboard';
@@ -46,6 +46,9 @@ import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import useEnv from '../../hooks/useEnv';
+import { publishEvent, workflowEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
@@ -90,7 +93,14 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const onRefresh = useMemo(
     () => () => {
-      setState({ loading: true, items: null, selected: {}, isAllSelected: false });
+      setState({
+        items: null,
+        selected: {},
+        hasSelected: false,
+        isAllSelected: false,
+        selectedCount: 0,
+        loading: true
+      });
       fetchScheduled(site, {
         limit,
         offset: 0
@@ -101,16 +111,21 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     [setState, site, limit]
   );
 
-  const loadPage = (pageNumber: number) => {
-    const newOffset = pageNumber * limit;
-    setState({ loading: true });
-    fetchScheduled(site, {
-      limit,
-      offset: newOffset
-    }).subscribe((items) => {
-      setState({ loading: false, items, total: items.total, offset: newOffset });
-    });
-  };
+  const loadPage = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      const newOffset = pageNumber * limit;
+      if (!backgroundRefresh) {
+        setState({ loading: true });
+      }
+      fetchScheduled(site, {
+        limit,
+        offset: newOffset
+      }).subscribe((items) => {
+        setState({ items, total: items.total, offset: newOffset, ...(!backgroundRefresh && { loading: false }) });
+      });
+    },
+    [limit, setState, site]
+  );
 
   const onOptionClicked = (option) => {
     const clickedItems = items.filter((item) => selected[item.id]);
@@ -145,6 +160,20 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [workflowEvent.type, publishEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      loadPage(0, true);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [limit, offset, loadPage]);
+  // endregion
+
   return (
     <DashletCard
       {...props}

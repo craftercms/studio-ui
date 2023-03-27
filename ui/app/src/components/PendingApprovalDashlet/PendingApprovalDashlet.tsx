@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   CommonDashletProps,
   getItemViewOption,
@@ -46,6 +46,9 @@ import { useDispatch } from 'react-redux';
 import ListItemButton from '@mui/material/ListItemButton';
 import { createLookupTable } from '../../utils/object';
 import useDetailedItems from '../../hooks/useDetailedItems';
+import { publishEvent, workflowEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -95,7 +98,14 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const dispatch = useDispatch();
   const onRefresh = useMemo(
     () => () => {
-      setState({ items: null, loading: true });
+      setState({
+        items: null,
+        selected: {},
+        hasSelected: false,
+        isAllSelected: false,
+        selectedCount: 0,
+        loading: true
+      });
       fetchPendingApproval(site, { limit, offset: 0 }).subscribe((items) => {
         setState({ items: items, total: items.total, offset: 0, loading: false });
       });
@@ -106,13 +116,19 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     onRefresh();
   }, [onRefresh]);
 
-  const loadPage = (pageNumber: number) => {
-    const newOffset = pageNumber * limit;
-    setState({ loading: true });
-    fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
-      setState({ items, total: items.total, offset: newOffset, loading: false });
-    });
-  };
+  const loadPage = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      const newOffset = pageNumber * limit;
+      if (!backgroundRefresh) {
+        setState({ loading: true });
+      }
+      setState({ loading: true });
+      fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
+        setState({ items, total: items.total, offset: newOffset, ...(!backgroundRefresh && { loading: false }) });
+      });
+    },
+    [limit, setState, site]
+  );
 
   const onOptionClicked = (option) => {
     const clickedItems = items.filter((item) => selected[item.id]);
@@ -143,6 +159,19 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       });
     }
   };
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [workflowEvent.type, publishEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      loadPage(0, true);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [limit, offset, loadPage]);
+  // endregion
 
   return (
     <DashletCard

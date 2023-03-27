@@ -26,7 +26,7 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
 import useLocale from '../../hooks/useLocale';
@@ -46,6 +46,9 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import ListItemButton from '@mui/material/ListItemButton';
+import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -82,7 +85,14 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const onRefresh = useMemo(
     () => () => {
-      setState({ loading: true, items: null, selected: {}, isAllSelected: false });
+      setState({
+        items: null,
+        selected: {},
+        hasSelected: false,
+        isAllSelected: false,
+        selectedCount: 0,
+        loading: true
+      });
       fetchUnpublished(site, { limit, offset: 0 }).subscribe((items) => {
         setState({ loading: false, items, offset: 0, total: items.total });
       });
@@ -90,13 +100,18 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     [setState, site, limit]
   );
 
-  const loadPage = (pageNumber: number) => {
-    const newOffset = pageNumber * limit;
-    setState({ loading: true });
-    fetchUnpublished(site, { limit, offset: newOffset }).subscribe((items) => {
-      setState({ loading: false, items, offset: newOffset, total: items.total });
-    });
-  };
+  const loadPage = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      const newOffset = pageNumber * limit;
+      if (!backgroundRefresh) {
+        setState({ loading: true });
+      }
+      fetchUnpublished(site, { limit, offset: newOffset }).subscribe((items) => {
+        setState({ items, offset: newOffset, total: items.total, ...(!backgroundRefresh && { loading: false }) });
+      });
+    },
+    [limit, setState, site]
+  );
 
   const onOptionClicked = (option) => {
     const clickedItems = items.filter((item) => selected[item.id]).map((item) => parseSandBoxItemToDetailedItem(item));
@@ -131,6 +146,20 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      loadPage(0, true);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [limit, offset, loadPage]);
+  // endregion
+
   return (
     <DashletCard
       {...props}

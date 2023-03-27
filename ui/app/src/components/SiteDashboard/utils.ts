@@ -168,3 +168,7 @@ export function getItemViewOption(item) {
   }
   return option;
 }
+
+export function getCurrentPage(offset: number, limit: number) {
+  return offset / limit;
+}

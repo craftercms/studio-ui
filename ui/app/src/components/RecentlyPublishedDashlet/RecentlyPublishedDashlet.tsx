@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps } from '../SiteDashboard/utils';
+import { CommonDashletProps, getCurrentPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   DashletEmptyMessage,
   getItemSkeleton,
@@ -41,6 +41,9 @@ import { RefreshRounded } from '@mui/icons-material';
 import Link from '@mui/material/Link';
 import { PackageDetailsDialog } from '../PackageDetailsDialog';
 import { renderActivityTimestamp } from '../ActivityDashlet';
+import { publishEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
 
 interface RecentlyPublishedDashletProps extends CommonDashletProps {}
 
@@ -89,16 +92,26 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
     [setState, site, limit]
   );
 
-  const loadPage = (pageNumber: number) => {
-    const newOffset = pageNumber * limit;
-    setState({ loading: true });
-    fetchPublishingHistory(site, {
-      limit,
-      offset: newOffset
-    }).subscribe((packages) => {
-      setState({ items: packages, total: packages.total, offset: newOffset, loading: false });
-    });
-  };
+  const loadPage = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      const newOffset = pageNumber * limit;
+      if (!backgroundRefresh) {
+        setState({ loading: true });
+      }
+      fetchPublishingHistory(site, {
+        limit,
+        offset: newOffset
+      }).subscribe((packages) => {
+        setState({
+          items: packages,
+          total: packages.total,
+          offset: newOffset,
+          ...(!backgroundRefresh && { loading: false })
+        });
+      });
+    },
+    [limit, setState, site]
+  );
 
   const onPackageClick = (pkg) => {
     setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
@@ -107,6 +120,20 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [publishEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      loadPage(getCurrentPage(offset, limit), true);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [limit, offset, loadPage]);
+  // endregion
+
   return (
     <DashletCard
       {...props}

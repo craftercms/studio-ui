@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps } from '../SiteDashboard';
+import { CommonDashletProps, getCurrentPage } from '../SiteDashboard';
 import { Activity, Person } from '../../models';
 import palette from '../../styles/palette';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
@@ -38,6 +38,9 @@ import { getSystemLink } from '../../utils/system';
 import useSpreadState from '../../hooks/useSpreadState';
 import ListItem from '@mui/material/ListItem';
 import PackageDetailsDialog from '../PackageDetailsDialog';
+import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -85,17 +88,22 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     [setState, site, username, limit]
   );
 
-  const loadPage = (pageNumber: number) => {
-    const newOffset = pageNumber * limit;
-    setState({ loading: true });
-    fetchActivity(site, {
-      usernames: [username],
-      offset: newOffset,
-      limit
-    }).subscribe((feed) => {
-      setState({ feed, total: feed.total, offset: newOffset, loading: false });
-    });
-  };
+  const loadPage = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      const newOffset = pageNumber * limit;
+      if (!backgroundRefresh) {
+        setState({ loading: true });
+      }
+      fetchActivity(site, {
+        usernames: [username],
+        offset: newOffset,
+        limit
+      }).subscribe((feed) => {
+        setState({ feed, total: feed.total, offset: newOffset, ...(!backgroundRefresh && { loading: false }) });
+      });
+    },
+    [limit, setState, site, username]
+  );
 
   const onItemClick = (previewUrl, e) => {
     const pathname = window.location.pathname;
@@ -119,6 +127,21 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$
+      .pipe(filter((e) => events.includes(e.type) && e.payload.user.username === username))
+      .subscribe(({ type, payload }) => {
+        loadPage(getCurrentPage(offset, limit), true);
+      });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [limit, offset, loadPage, username]);
+  // endregion
 
   return (
     <DashletCard

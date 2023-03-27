@@ -55,6 +55,9 @@ import { useWidgetDialogContext } from '../WidgetDialog';
 import PackageDetailsDialog from '../PackageDetailsDialog/PackageDetailsDialog';
 import InfiniteScroll from 'react-infinite-scroller';
 import Box from '@mui/material/Box';
+import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -203,8 +206,10 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   // endregion
   // region onRefresh
   const onRefresh = useMemo(
-    () => () => {
-      setState({ feed: null, total: null, offset: 0, loadingFeed: true });
+    () => (backgroundRefresh?: boolean) => {
+      if (!backgroundRefresh) {
+        setState({ feed: null, total: null, offset: 0, loadingFeed: true });
+      }
       fetchActivity(site, {
         actions: activities.filter((key) => key !== 'ALL'),
         usernames,
@@ -212,7 +217,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
         dateFrom,
         limit
       }).subscribe((feed) => {
-        setState({ feed, total: feed.total, loadingFeed: false });
+        setState({ feed, total: feed.total, ...(!backgroundRefresh && { loadingFeed: false }) });
       });
     },
     [site, activities, dateFrom, dateTo, limit, setState, usernames]
@@ -259,13 +264,27 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   useEffect(() => {
     onRefresh();
   }, [onRefresh, setState]);
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      onRefresh(true);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [onRefresh]);
+  // endregion
+
   return (
     <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <IconButton onClick={() => onRefresh()}>
           <RefreshRounded />
         </IconButton>
       }
