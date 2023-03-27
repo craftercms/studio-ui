@@ -49,6 +49,7 @@ import useDetailedItems from '../../hooks/useDetailedItems';
 import { publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import translations from '../SiteDashboard/translations';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -131,15 +132,19 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   );
 
   const onOptionClicked = (option) => {
-    const clickedItems = items.filter((item) => selected[item.id]);
-    return itemActionDispatcher({
-      site,
-      authoringBase,
-      dispatch,
-      formatMessage,
-      option,
-      item: clickedItems.length > 1 ? clickedItems : clickedItems[0]
-    });
+    if (option === 'clear') {
+      setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
+    } else {
+      const clickedItems = items.filter((item) => selected[item.id]);
+      return itemActionDispatcher({
+        site,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        option,
+        item: clickedItems.length > 1 ? clickedItems : clickedItems[0]
+      });
+    }
   };
 
   const onItemClick = (e, item) => {
@@ -203,7 +208,16 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
           isIndeterminate={hasSelected && !isAllSelected}
           onCheckboxChange={onSelectAll}
           onOptionClicked={onOptionClicked}
-          options={selectionOptions}
+          options={selectionOptions?.concat([
+            ...(selectedCount > 0
+              ? [
+                  {
+                    id: 'clear',
+                    label: formatMessage(translations.clear, { count: selectedCount })
+                  }
+                ]
+              : [])
+          ])}
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },
