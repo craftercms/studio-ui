@@ -76,10 +76,41 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
   // endregion
 
   return (
-    <DashletCard {...props} sxs={{ content: { pt: 2 }, ...props.sxs }} borderLeftColor={borderLeftColor}>
+    <DashletCard {...props} sxs={{ content: { pt: 2, pb: 2 }, ...props.sxs }} borderLeftColor={borderLeftColor}>
       <>
-        <Box display="flex" justifyContent="space-between">
+        <Box display="flex" justifyContent="space-between" alignItems="center">
           <FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />
+          {stats && (
+            <Stack direction="row" spacing={2} sx={{ ml: 2 }}>
+              <Box>
+                <Typography
+                  component="span"
+                  children={stats.numberOfPublishes}
+                  lineHeight={1}
+                  sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+                />{' '}
+                <Typography component="span" children={<FormattedMessage defaultMessage="Publishes" />} />
+              </Box>
+              <Box>
+                <Typography
+                  component="span"
+                  children={stats.numberOfNewAndPublishedItems}
+                  lineHeight={1}
+                  sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+                />{' '}
+                <Typography component="span" children={<FormattedMessage defaultMessage="Created & Published" />} />
+              </Box>
+              <Box>
+                <Typography
+                  component="span"
+                  children={stats.numberOfEditedAndPublishedItems}
+                  lineHeight={1}
+                  sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+                />{' '}
+                <Typography component="span" children={<FormattedMessage defaultMessage="Edited & Published" />} />
+              </Box>
+            </Stack>
+          )}
           <Select
             variant="standard"
             disableUnderline
@@ -113,37 +144,6 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
             </MenuItem>
           </Select>
         </Box>
-        {stats && (
-          <Stack direction="row" spacing={2} mt={2}>
-            <Box>
-              <Typography
-                component="span"
-                children={stats.numberOfPublishes}
-                lineHeight={1}
-                sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
-              />{' '}
-              <Typography component="span" children={<FormattedMessage defaultMessage="Publishes" />} />
-            </Box>
-            <Box>
-              <Typography
-                component="span"
-                children={stats.numberOfNewAndPublishedItems}
-                lineHeight={1}
-                sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
-              />{' '}
-              <Typography component="span" children={<FormattedMessage defaultMessage="Created & Published" />} />
-            </Box>
-            <Box>
-              <Typography
-                component="span"
-                children={stats.numberOfEditedAndPublishedItems}
-                lineHeight={1}
-                sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
-              />{' '}
-              <Typography component="span" children={<FormattedMessage defaultMessage="Edited & Published" />} />
-            </Box>
-          </Stack>
-        )}
       </>
       {loading && <Skeleton />}
     </DashletCard>
