@@ -29,7 +29,7 @@ import MuiListSubheader from '@mui/material/ListSubheader';
 import { CheckRounded } from '@mui/icons-material';
 import Box, { BoxProps } from '@mui/material/Box';
 import { UNDEFINED } from '../../utils/constants';
-import { getInitials, stringToColor } from '../../utils/string';
+import { getInitials, toColor } from '../../utils/string';
 import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
 import { getPersonFullName } from '../SiteDashboard/utils';
@@ -65,17 +65,17 @@ export const DashletAvatar = styled(Avatar)({ width: 40, height: 40 });
 
 export interface PersonAvatarProps {
   person: Person;
-  sxs?: SxProps;
+  sx?: SxProps;
 }
 
 export function PersonAvatar(props: PersonAvatarProps) {
-  const { person, sxs } = props;
-  const backgroundColor = stringToColor(person.username);
+  const { person, sx } = props;
+  const backgroundColor = toColor(person.username);
   return (
     <DashletAvatar
       src={person.avatar ?? UNDEFINED}
       children={person.avatar ? UNDEFINED : getInitials(person)}
-      sx={{ backgroundColor, ...sxs }}
+      sx={{ backgroundColor, ...sx }}
     />
   );
 }

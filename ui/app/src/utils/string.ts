@@ -206,7 +206,7 @@ export function stripCData(str: string): string {
   return str.replace(/<!\[CDATA\[|\]\]>/gi, '');
 }
 
-export function stringToColor(str: string) {
+export function toColor(str: string) {
   var hash = 0;
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);

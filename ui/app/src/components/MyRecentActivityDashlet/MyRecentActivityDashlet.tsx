@@ -150,7 +150,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
           {person && (
             <PersonAvatar
               person={person}
-              sxs={{
+              sx={{
                 display: 'inline-flex',
                 mr: 1,
                 width: 30,
