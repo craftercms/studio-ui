@@ -132,11 +132,9 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   useEffect(() => {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$
-      .pipe(filter((e) => events.includes(e.type) && e.payload.user.username === username))
-      .subscribe(({ type, payload }) => {
-        loadPage(getCurrentPage(offset, limit), true);
-      });
+    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      loadPage(getCurrentPage(offset, limit), true);
+    });
     return () => {
       subscription.unsubscribe();
     };

@@ -39,7 +39,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import ItemDisplay from '../ItemDisplay';
-import { SandboxItem } from '../../models';
+import { DetailedItem, LookupTable, SandboxItem } from '../../models';
 import ActionsBar from '../ActionsBar';
 import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
@@ -50,6 +50,7 @@ import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '.
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import translations from '../SiteDashboard/translations';
+import useSpreadState from '../../hooks/useSpreadState';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -81,8 +82,8 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const selectedItems =
-    items?.filter((item) => selected[item.id]).map((item) => parseSandBoxItemToDetailedItem(item)) ?? [];
+  const [itemsByPath, setItemsByPath] = useSpreadState<LookupTable<DetailedItem>>({});
+  const selectedItems = Object.values(itemsByPath)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const isIndeterminate = hasSelected && !isAllSelected;
   const onRefresh = useMemo(
@@ -119,16 +120,13 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     if (option === 'clear') {
       setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
     } else {
-      const clickedItems = items
-        .filter((item) => selected[item.id])
-        .map((item) => parseSandBoxItemToDetailedItem(item));
       return itemActionDispatcher({
         site,
         authoringBase,
         dispatch,
         formatMessage,
         option,
-        item: clickedItems.length > 1 ? clickedItems : clickedItems[0]
+        item: selectedItems.length > 1 ? selectedItems : selectedItems[0]
       });
     }
   };
@@ -150,6 +148,16 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       });
     }
   };
+
+  useEffect(() => {
+    if (items) {
+      const itemsObj = {};
+      items.forEach((item) => {
+        itemsObj[item.id] = parseSandBoxItemToDetailedItem(item);
+      });
+      setItemsByPath(itemsObj);
+    }
+  }, [items, setItemsByPath]);
 
   useEffect(() => {
     onRefresh();

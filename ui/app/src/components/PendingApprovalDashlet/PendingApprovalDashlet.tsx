@@ -33,7 +33,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import { fetchPendingApproval } from '../../services/dashboard';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { DetailedItem } from '../../models';
+import { DetailedItem, LookupTable } from '../../models';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
@@ -44,12 +44,11 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
 import ListItemButton from '@mui/material/ListItemButton';
-import { createLookupTable } from '../../utils/object';
-import useDetailedItems from '../../hooks/useDetailedItems';
 import { publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import translations from '../SiteDashboard/translations';
+import useSpreadState from '../../hooks/useSpreadState';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -86,14 +85,9 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const { formatMessage } = useIntl();
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const itemsLookup = items ? createLookupTable(items) : {};
-  const selectedItemsPaths = Object.entries(selected)
-    .filter(([, value]) => value)
-    .map(([prop]) => {
-      return itemsLookup[prop].path;
-    });
-  const { itemsByPath } = useDetailedItems(selectedItemsPaths);
-  const selectionOptions = useSelectionOptions(Object.values(itemsByPath), formatMessage, selectedCount);
+  const [itemsByPath, setItemsByPath] = useSpreadState<LookupTable<DetailedItem>>({});
+  const selectedItems = Object.values(itemsByPath)?.filter((item) => selected[item.id]) ?? [];
+  const selectionOptions = useSelectionOptions(Object.values(selectedItems), formatMessage, selectedCount);
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
@@ -123,7 +117,6 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       if (!backgroundRefresh) {
         setState({ loading: true });
       }
-      setState({ loading: true });
       fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, ...(!backgroundRefresh && { loading: false }) });
       });
@@ -135,14 +128,13 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     if (option === 'clear') {
       setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
     } else {
-      const clickedItems = items.filter((item) => selected[item.id]);
       return itemActionDispatcher({
         site,
         authoringBase,
         dispatch,
         formatMessage,
         option,
-        item: clickedItems.length > 1 ? clickedItems : clickedItems[0]
+        item: selectedItems.length > 1 ? selectedItems : selectedItems[0]
       });
     }
   };
@@ -164,6 +156,16 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       });
     }
   };
+
+  useEffect(() => {
+    if (items) {
+      const itemsObj = {};
+      items.forEach((item) => {
+        itemsObj[item.id] = item;
+      });
+      setItemsByPath(itemsObj);
+    }
+  }, [items, setItemsByPath]);
 
   // region Item Updates Propagation
   useEffect(() => {

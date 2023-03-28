@@ -30,7 +30,7 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchScheduled } from '../../services/dashboard';
-import { DetailedItem } from '../../models';
+import { DetailedItem, LookupTable } from '../../models';
 import IconButton from '@mui/material/IconButton';
 import { RefreshRounded } from '@mui/icons-material';
 import Checkbox from '@mui/material/Checkbox';
@@ -50,6 +50,7 @@ import { publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import translations from '../SiteDashboard/translations';
+import useSpreadState from '../../hooks/useSpreadState';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
@@ -90,7 +91,8 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const selectedItems = items?.filter((item) => selected[item.id]) ?? [];
+  const [itemsByPath, setItemsByPath] = useSpreadState<LookupTable<DetailedItem>>({});
+  const selectedItems = Object.values(itemsByPath)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const onRefresh = useMemo(
     () => () => {
@@ -132,14 +134,13 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     if (option === 'clear') {
       setState({ isAllSelected: false, selectedCount: 0, selected: {}, hasSelected: false });
     } else {
-      const clickedItems = items.filter((item) => selected[item.id]);
       return itemActionDispatcher({
         site,
         authoringBase,
         dispatch,
         formatMessage,
         option,
-        item: clickedItems.length > 1 ? clickedItems : clickedItems[0]
+        item: selectedItems.length > 1 ? selectedItems : selectedItems[0]
       });
     }
   };
@@ -165,6 +166,16 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   useEffect(() => {
     onRefresh();
   }, [onRefresh]);
+
+  useEffect(() => {
+    if (items) {
+      const itemsObj = {};
+      items.forEach((item) => {
+        itemsObj[item.id] = item;
+      });
+      setItemsByPath(itemsObj);
+    }
+  }, [items, setItemsByPath]);
 
   // region Item Updates Propagation
   useEffect(() => {
