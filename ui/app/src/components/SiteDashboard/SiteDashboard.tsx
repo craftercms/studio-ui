@@ -37,7 +37,6 @@ import ScheduledDashlet from '../ScheduledDashlet/ScheduledDashlet';
 import RecentlyPublishedDashlet from '../RecentlyPublishedDashlet/RecentlyPublishedDashlet';
 import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 import { MyRecentActivityDashlet } from '../MyRecentActivityDashlet';
-import { PublisherStatusDashlet } from '../PublisherStatusDashlet';
 import { FullSxRecord, PartialSxRecord } from '../../models';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
@@ -131,9 +130,6 @@ export function Dashboard(props: DashboardProps) {
   return (
     <Box sx={sx.root}>
       <Grid container spacing={2} sx={desktopScreen ? sx.containerOverflow : {}}>
-        {/* <Grid item xs={12} md={6} sx={sx.compactDashletItem}>
-          <PublisherStatusDashlet sxs={{ card: sx.compactDashlet }} />
-        </Grid> */}
         <Grid item xs={12} md={12} sx={sx.compactDashletItem}>
           <DevContentOpsDashlet sxs={{ card: sx.compactDashlet }} />
         </Grid>
