@@ -9,7 +9,7 @@
     "build": "chmod +x build.sh; ./build.sh"
   },
   "dependencies": {
-    "ace-builds": "^1.15.2",
+    "ace-builds": "^1.16.0",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {

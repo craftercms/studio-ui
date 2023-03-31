@@ -1683,7 +1683,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@craftercms/ace-adapter@workspace:ui/ace"
   dependencies:
-    ace-builds: ^1.15.2
+    ace-builds: ^1.16.0
     build-if-changed: ^1.5.5
     js-yaml: ^4.1.0
   languageName: unknown
@@ -1854,8 +1854,8 @@ __metadata:
     "@types/zxcvbn": ^4.4.1
     "@videojs/vhs-utils": ^2.3.0
     autosuggest-highlight: ^3.3.4
-    babel-plugin-formatjs: ^10.3.36
-    babel-plugin-react-intl: ^5.1.16
+    babel-plugin-formatjs: ^10.4.0
+    babel-plugin-react-intl: ^5.1.18
     build-if-changed: ^1.5.5
     clsx: ^1.2.1
     eslint: ^8.3.0
@@ -2515,14 +2515,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/icu-messageformat-parser@npm:2.2.0":
-  version: 2.2.0
-  resolution: "@formatjs/icu-messageformat-parser@npm:2.2.0"
+"@formatjs/icu-messageformat-parser@npm:2.3.0":
+  version: 2.3.0
+  resolution: "@formatjs/icu-messageformat-parser@npm:2.3.0"
   dependencies:
     "@formatjs/ecma402-abstract": 1.14.3
     "@formatjs/icu-skeleton-parser": 1.3.18
     tslib: ^2.4.0
-  checksum: bd457714296a3503d57383ee9ba8c9fb01e0097379c2bcf18c827ff736f64cf83132f2ab539f534b716726d6554beede354c30180d543dd8a1cf8e4c8f842bd7
+  checksum: e8aca733bed81c94ec16fa9f1a88dbaf93a644a8c5796a6ab1e795112dd1f6c1e92528a123483d3034ac5e6b2b454481ef61f7e56e6e77f1467f9524be7fe331
   languageName: node
   linkType: hard
 
@@ -2622,11 +2622,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/ts-transformer@npm:3.11.6":
-  version: 3.11.6
-  resolution: "@formatjs/ts-transformer@npm:3.11.6"
+"@formatjs/ts-transformer@npm:3.12.0":
+  version: 3.12.0
+  resolution: "@formatjs/ts-transformer@npm:3.12.0"
   dependencies:
-    "@formatjs/icu-messageformat-parser": 2.2.0
+    "@formatjs/icu-messageformat-parser": 2.3.0
     "@types/json-stable-stringify": ^1.0.32
     "@types/node": 14 || 16 || 17
     chalk: ^4.0.0
@@ -2638,7 +2638,7 @@ __metadata:
   peerDependenciesMeta:
     ts-jest:
       optional: true
-  checksum: 048bd0a1a88d7e5b4ffe69d74045231f2cb049c4f78d73cd933de65ff6e5fce5519070ddb3bdfa74a21fd0e69b3ad6a9eb9289a64be781a16120c8de521c85a2
+  checksum: 2e511868d2a6518ff0ed2afdc0b3255cdc551fa7470d43119f31829dc363941183b168bd0d9b582342725cdbe5a6ab1f07feebcd9ed3ce8417829affdab60a43
   languageName: node
   linkType: hard
 
@@ -5514,10 +5514,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ace-builds@npm:^1.15.2":
-  version: 1.15.2
-  resolution: "ace-builds@npm:1.15.2"
-  checksum: 44d5af411b1f244a452fb3f330e927bd1e85418d726824ab8c29bb0f5c5e66a0508bd4f5eb29c04637c61454d253f1aca017b834b5c7371fb3f9fe50b7919943
+"ace-builds@npm:^1.16.0":
+  version: 1.16.0
+  resolution: "ace-builds@npm:1.16.0"
+  checksum: 1dca0aa438d6f1cb0204fafbdfb66500d8a68497a41b0566df74430b44b49595f6f8f892ef196383ab58f7ec6b3b513dbcd6f11bdad9e4170e84030a2e4a2ff4
   languageName: node
   linkType: hard
 
@@ -6086,22 +6086,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-formatjs@npm:^10.3.36":
-  version: 10.3.36
-  resolution: "babel-plugin-formatjs@npm:10.3.36"
+"babel-plugin-formatjs@npm:^10.4.0":
+  version: 10.4.0
+  resolution: "babel-plugin-formatjs@npm:10.4.0"
   dependencies:
     "@babel/core": ^7.10.4
     "@babel/helper-plugin-utils": ^7.10.4
     "@babel/plugin-syntax-jsx": 7
     "@babel/traverse": 7
     "@babel/types": ^7.12.11
-    "@formatjs/icu-messageformat-parser": 2.2.0
-    "@formatjs/ts-transformer": 3.11.6
+    "@formatjs/icu-messageformat-parser": 2.3.0
+    "@formatjs/ts-transformer": 3.12.0
     "@types/babel__core": ^7.1.7
     "@types/babel__helper-plugin-utils": ^7.10.0
     "@types/babel__traverse": ^7.1.7
     tslib: ^2.4.0
-  checksum: 3640cabffe0428e6ee842110495e132dd134be691f463ec1e2f6b0c5fa158971ebb2d9cb24cfd4443cd294b69caccb80b3cfd4572a5bd4a74fddeac96f1c1a98
+  checksum: 5fdebc25f840cfeb38b11daa9fbbda6a1fd99ff052c86c299f039a1de3df82ceb17d19c736abeb4f6771b7c2d078c1bbcad8ec925041aeb57ae749a27b8d2567
   languageName: node
   linkType: hard
 
@@ -6193,7 +6193,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-react-intl@npm:^5.1.16":
+"babel-plugin-react-intl@npm:^5.1.18":
   version: 5.1.18
   resolution: "babel-plugin-react-intl@npm:5.1.18"
   dependencies:
