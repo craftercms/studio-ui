@@ -1727,7 +1727,7 @@ __metadata:
     "@emotion/styled": ^11.10.6
     "@mui/icons-material": ^5.11.11
     "@mui/material": ^5.11.15
-    "@reduxjs/toolkit": ^1.9.2
+    "@reduxjs/toolkit": ^1.9.3
     "@types/jquery": ^3.5.16
     "@types/js-cookie": ^3.0.3
     "@types/prop-types": ^15.7.5
@@ -1837,7 +1837,7 @@ __metadata:
     "@mui/x-data-grid": ^5.17.26
     "@mui/x-date-pickers": ^5.0.20
     "@prettier/plugin-xml": ^2.2.0
-    "@reduxjs/toolkit": ^1.9.2
+    "@reduxjs/toolkit": ^1.9.3
     "@rollup/plugin-typescript": ^8.5.0
     "@stomp/stompjs": ^7.0.0
     "@types/ace": ^0.0.48
@@ -3526,9 +3526,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reduxjs/toolkit@npm:^1.9.2":
-  version: 1.9.2
-  resolution: "@reduxjs/toolkit@npm:1.9.2"
+"@reduxjs/toolkit@npm:^1.9.3":
+  version: 1.9.3
+  resolution: "@reduxjs/toolkit@npm:1.9.3"
   dependencies:
     immer: ^9.0.16
     redux: ^4.2.0
@@ -3542,7 +3542,7 @@ __metadata:
       optional: true
     react-redux:
       optional: true
-  checksum: 8eac4fb65aa5ef969545e4d72a81c5a7679935d08df8cc4dd955362beb0b0b8d3cb1e2252df256a50bbe0c887b797a0e2e271656d6b50cbec5d26f61da3a80d4
+  checksum: d965fc6197fd420e4b8eb714015aa908d4ea214e6e10889cf4521e64ac4f8e0a7de29ee4e8da63b291acc40ac330dd31682334090d54838add73c746dc590650
   languageName: node
   linkType: hard
 
