@@ -101,7 +101,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.11",
-    "@mui/material": "^5.11.11",
+    "@mui/material": "^5.11.15",
     "@reduxjs/toolkit": "^1.9.2",
     "@types/react-dom": "^18.0.10",
     "jquery": "^3.6.4",
