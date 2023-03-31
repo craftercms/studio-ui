@@ -168,12 +168,12 @@
     "redux": "^4.2.1",
     "redux-observable": "^2.0.0",
     "rxjs": "^7.0.0",
-    "slugify": "^1.6.5",
+    "slugify": "^1.6.6",
     "tss-react": "^3.7.1",
     "typescript": "^4.9.5",
     "uppy": "^2.13.8",
-    "video.js": "^7.21.2",
-    "web-vitals": "^1.0.1",
+    "video.js": "^7.21.4",
+    "web-vitals": "^1.1.2",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
