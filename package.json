@@ -83,7 +83,7 @@
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^3.1.0",
-    "@types/node": "^16.11.13",
+    "@types/node": "^16.18.23",
     "@types/rimraf": "^3.0.2",
     "build-if-changed": "^1.5.5",
     "eslint": "^8.3.0",

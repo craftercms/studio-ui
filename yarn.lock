@@ -1729,9 +1729,9 @@ __metadata:
     "@mui/material": ^5.11.15
     "@reduxjs/toolkit": ^1.9.2
     "@types/jquery": ^3.5.16
-    "@types/js-cookie": ^3.0.2
+    "@types/js-cookie": ^3.0.3
     "@types/prop-types": ^15.7.5
-    "@types/react-dom": ^18.0.10
+    "@types/react-dom": ^18.0.11
     "@types/react-is": ^17.0.3
     "@types/tinymce": ^4.6.5
     build-if-changed: ^1.5.5
@@ -1843,11 +1843,11 @@ __metadata:
     "@types/ace": ^0.0.48
     "@types/graphql": ^14.5.0
     "@types/jquery": ^3.5.16
-    "@types/js-cookie": ^3.0.2
+    "@types/js-cookie": ^3.0.3
     "@types/marked": ^4.0.8
     "@types/prettier": ^2.7.2
-    "@types/react": ^18.0.28
-    "@types/react-dom": ^18.0.10
+    "@types/react": ^18.0.31
+    "@types/react-dom": ^18.0.11
     "@types/react-infinite-scroller": ^1.2.3
     "@types/react-swipeable-views": ^0.13.1
     "@types/video.js": ^7.3.51
@@ -1911,7 +1911,7 @@ __metadata:
     "@rollup/plugin-commonjs": ^21.1.0
     "@rollup/plugin-node-resolve": ^13.3.0
     "@rollup/plugin-replace": ^3.1.0
-    "@types/node": ^16.11.13
+    "@types/node": ^16.18.23
     "@types/rimraf": ^3.0.2
     browserslist: ^4.21.5
     build-if-changed: ^1.5.5
@@ -4218,10 +4218,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/js-cookie@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@types/js-cookie@npm:3.0.2"
-  checksum: 7ab964288dd26373e134ed0bcde4a7dbea7e6f5de1805e2d1e48eac847e89a0e7f5fdc9164c37931680ec97c6e6e5a73e3e4039e0d08527c2e21badd7bee62d1
+"@types/js-cookie@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@types/js-cookie@npm:3.0.3"
+  checksum: 927254ec37ce4fbe4d9d54f53a446b4351259799d9933db5808ddb7c430396aa2496bdd0a4e47e1b56048ffbec98645cbd4daa9e3ed9a6fff55e25eb640fcb15
   languageName: node
   linkType: hard
 
@@ -4288,10 +4288,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.13":
-  version: 16.11.13
-  resolution: "@types/node@npm:16.11.13"
-  checksum: 7c9d62c024537d7c9f2229097b9e7a93a60bc60efbc9171977f172819e229b01d0b6ed276d335996d39b0096aed2cefa58c4a34b264d712ae3595449e8d96ab7
+"@types/node@npm:^16.18.23":
+  version: 16.18.23
+  resolution: "@types/node@npm:16.18.23"
+  checksum: 00e51db28fc7a182747f37215b3f25400b1c7a8525e09fa14e55be5798891a118ebf636a49d3197335a3580fcb8222fd4ecc20c2ccff69f1c0d233fc5697465d
   languageName: node
   linkType: hard
 
@@ -4344,12 +4344,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.0.10":
-  version: 18.0.10
-  resolution: "@types/react-dom@npm:18.0.10"
+"@types/react-dom@npm:^18.0.11":
+  version: 18.0.11
+  resolution: "@types/react-dom@npm:18.0.11"
   dependencies:
     "@types/react": "*"
-  checksum: ff8282d5005a0b1cd95fb65bf79d3d8485e4cfe2aaf052129033a178684b940014a3f4536bc20d573f8a01cf4c6f4770c74988cef7c2b5cac3041d9f172647e3
+  checksum: 579691e4d5ec09688087568037c35edf8cfb1ab3e07f6c60029280733ee7b5c06d66df6fcc90786702c93ac8cb13bc7ff16c79ddfc75d082938fbaa36e1cdbf4
   languageName: node
   linkType: hard
 
