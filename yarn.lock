@@ -1846,7 +1846,7 @@ __metadata:
     "@types/js-cookie": ^3.0.3
     "@types/marked": ^4.0.8
     "@types/prettier": ^2.7.2
-    "@types/react": ^18.0.31
+    "@types/react": ^18.0.32
     "@types/react-dom": ^18.0.11
     "@types/react-infinite-scroller": ^1.2.3
     "@types/react-swipeable-views": ^0.13.1
@@ -1863,7 +1863,7 @@ __metadata:
     graphiql: ^1.11.5
     graphiql-explorer: ^0.9.0
     graphql: ^16.6.0
-    graphql-ws: ^5.11.3
+    graphql-ws: ^5.12.1
     highlight.js: ^11.7.0
     jabber: ^1.5.3
     jquery: ^3.6.4
@@ -9514,12 +9514,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^5.11.3":
-  version: 5.11.3
-  resolution: "graphql-ws@npm:5.11.3"
+"graphql-ws@npm:^5.12.1":
+  version: 5.12.1
+  resolution: "graphql-ws@npm:5.12.1"
   peerDependencies:
     graphql: ">=0.11 <=16"
-  checksum: 75ea80702fa027b8d4ff1faba9824b11184fef0946560c535040b79f0f7f56ac7ce42873ea3b34083373ddf3a439cda1e7b7bfae20939ab739330456f4e7776b
+  checksum: 88d587c431feba681957faecd96101bb3860e1a4765f34b8cae1c514e7f98754b5f31c6b3127775e4732f26883b0802fe426bf9f7031c16cd0b25a27ad90ec9c
   languageName: node
   linkType: hard
 
