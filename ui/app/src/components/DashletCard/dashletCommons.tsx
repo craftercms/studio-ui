@@ -26,7 +26,7 @@ import React, { PropsWithChildren } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
-import { CheckRounded } from '@mui/icons-material';
+import CheckRounded from '@mui/icons-material/CheckRounded';
 import Box, { BoxProps } from '@mui/material/Box';
 import { UNDEFINED } from '../../utils/constants';
 import { getInitials, toColor } from '../../utils/string';

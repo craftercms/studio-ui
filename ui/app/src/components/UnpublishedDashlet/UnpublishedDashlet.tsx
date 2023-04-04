@@ -28,7 +28,7 @@ import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import IconButton from '@mui/material/IconButton';
-import { RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import useLocale from '../../hooks/useLocale';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
@@ -173,7 +173,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [limit, offset, loadPage]);
+  }, [loadPage]);
   // endregion
 
   return (

@@ -36,7 +36,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { DetailedItem, LookupTable } from '../../models';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import IconButton from '@mui/material/IconButton';
-import { RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import ItemDisplay from '../ItemDisplay';
 import { ActionsBar } from '../ActionsBar';
 import { UNDEFINED } from '../../utils/constants';

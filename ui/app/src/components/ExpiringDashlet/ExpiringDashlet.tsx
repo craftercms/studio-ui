@@ -26,7 +26,7 @@ import { ExpiredItem, fetchExpired, fetchExpiring } from '../../services/dashboa
 import useSpreadState from '../../hooks/useSpreadState';
 import useLocale from '../../hooks/useLocale';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import IconButton from '@mui/material/IconButton';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Divider from '@mui/material/Divider';

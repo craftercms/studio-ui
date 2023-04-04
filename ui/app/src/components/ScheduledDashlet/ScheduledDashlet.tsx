@@ -32,7 +32,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchScheduled } from '../../services/dashboard';
 import { DetailedItem, LookupTable } from '../../models';
 import IconButton from '@mui/material/IconButton';
-import { RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';

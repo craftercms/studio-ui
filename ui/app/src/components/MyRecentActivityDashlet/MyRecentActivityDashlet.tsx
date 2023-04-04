@@ -26,7 +26,7 @@ import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
 import IconButton from '@mui/material/IconButton';
-import { RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { DashletEmptyMessage, getItemSkeleton, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';

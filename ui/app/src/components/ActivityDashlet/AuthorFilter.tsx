@@ -16,9 +16,9 @@
 
 import React, { useRef, useState } from 'react';
 import Button from '@mui/material/Button';
-import { KeyboardArrowDownRounded } from '@mui/icons-material';
+import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
 import { FormattedMessage } from 'react-intl';
-import { Popover } from '@mui/material';
+import Popover from '@mui/material/Popover';
 import UsersAutocomplete, { UsersAutocompleteProps } from './UsersAutocomplete';
 
 export interface AuthorFilterProps {

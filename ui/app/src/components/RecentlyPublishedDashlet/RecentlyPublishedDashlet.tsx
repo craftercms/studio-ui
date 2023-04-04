@@ -37,7 +37,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistory } from '../../services/dashboard';
 import { DashboardPublishingPackage } from '../../models';
 import IconButton from '@mui/material/IconButton';
-import { RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Link from '@mui/material/Link';
 import { PackageDetailsDialog } from '../PackageDetailsDialog';
 import { renderActivityTimestamp } from '../ActivityDashlet';

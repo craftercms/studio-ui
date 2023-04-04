@@ -16,7 +16,8 @@
 
 import { Activity } from '../../models/Activity';
 import React, { useEffect, useMemo, useRef } from 'react';
-import { MoreVertRounded, RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnv from '../../hooks/useEnv';

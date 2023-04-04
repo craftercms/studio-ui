@@ -22,7 +22,7 @@ import { fetchStatus } from '../../services/publishing';
 import { DashletCard, DashletCardProps } from '../DashletCard';
 import Skeleton from '@mui/material/Skeleton';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { getPublishingStatusMessage } from '../PublishingStatusDisplay';
 
 export interface PublisherStatusDashletProps extends Omit<Partial<DashletCardProps>, 'contentHeight'> {}

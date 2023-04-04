@@ -175,7 +175,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { batchActions, dispatchDOMEvent, editContentTypeTemplate } from '../../state/actions/misc';
 import SocketEventBase from '../../models/SocketEvent';
-import { RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { getPersonFullName } from '../SiteDashboard';
 import { useTheme } from '@mui/material/styles';
 import { createCustomDocumentEventListener } from '../../utils/dom';
