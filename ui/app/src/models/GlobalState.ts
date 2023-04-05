@@ -268,7 +268,10 @@ export interface GlobalState {
   pathNavigator: LookupTable<PathNavigatorStateProps>;
   pathNavigatorTree: LookupTable<PathNavigatorTreeStateProps>;
   dashboard: {
-    widgets: WidgetDescriptor[];
+    widgets?: WidgetDescriptor[];
+    mainSection?: {
+      widgets: WidgetDescriptor[];
+    };
   };
   globalNavigation: {
     error: AjaxError;

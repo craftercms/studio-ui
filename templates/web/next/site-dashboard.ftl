@@ -14,12 +14,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<#if RequestParameters.mode?? && RequestParameters.mode == "next">
-    <#assign next = true />
-<#else>
-    <#assign next = false />
-</#if>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,11 +27,10 @@
 <div id="root"></div>
 <#include "/templates/web/common/js-next-scripts.ftl" />
 <script>
-  <#assign component = next?then('SiteDashboard', 'LegacySiteDashboard') />
   (function (CrafterCMSNext) {
     const { createElement, Fragment } = craftercms.libs.React;
     const { Typography, Box } = craftercms.libs.MaterialUI;
-    const { ViewToolbar, LauncherOpenerButton, ${component} } = CrafterCMSNext.components;
+    const { ViewToolbar, LauncherOpenerButton, SiteDashboard } = CrafterCMSNext.components;
     const CrafterCMSIcon = craftercms.icons.CrafterCMSIcon;
     function Root() {
       return createElement(
@@ -52,7 +45,7 @@
           ),
           createElement(LauncherOpenerButton, { siteRailPosition: 'left', icon: 'apps' })
         ),
-        createElement(${component})
+        createElement(SiteDashboard)
       );
     }
     CrafterCMSNext.render('#root', Root, {}, false);

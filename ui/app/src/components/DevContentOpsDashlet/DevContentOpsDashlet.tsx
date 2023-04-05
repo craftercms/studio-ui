@@ -31,12 +31,52 @@ import MenuItem from '@mui/material/MenuItem';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import { SxProps } from '@mui/system';
 
 export interface DevContentOpsDashletProps extends Omit<Partial<DashletCardProps>, 'contentHeight'> {}
 
 interface DevContentOpsDashletState {
   stats: PublishingStats;
   loading: boolean;
+}
+
+function DevContentOpsStats(props: { stats: PublishingStats; sx?: { root: SxProps } }) {
+  const { stats, sx } = props;
+  return (
+    <>
+      {stats && (
+        <Stack direction="row" spacing={2} sx={sx?.root}>
+          <Box>
+            <Typography
+              component="span"
+              children={stats.numberOfPublishes}
+              lineHeight={1}
+              sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+            />{' '}
+            <Typography component="span" children={<FormattedMessage defaultMessage="Publishes" />} />
+          </Box>
+          <Box>
+            <Typography
+              component="span"
+              children={stats.numberOfNewAndPublishedItems}
+              lineHeight={1}
+              sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+            />{' '}
+            <Typography component="span" children={<FormattedMessage defaultMessage="Created & Published" />} />
+          </Box>
+          <Box>
+            <Typography
+              component="span"
+              children={stats.numberOfEditedAndPublishedItems}
+              lineHeight={1}
+              sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
+            />{' '}
+            <Typography component="span" children={<FormattedMessage defaultMessage="Edited & Published" />} />
+          </Box>
+        </Stack>
+      )}
+    </>
+  );
 }
 
 export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
@@ -76,41 +116,15 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
   // endregion
 
   return (
-    <DashletCard {...props} sxs={{ content: { pt: 2, pb: 2 }, ...props.sxs }} borderLeftColor={borderLeftColor}>
+    <DashletCard
+      {...props}
+      sxs={{ content: { pt: 2, pb: (theme) => `${theme.spacing(2)} !important` }, ...props.sxs }}
+      borderLeftColor={borderLeftColor}
+    >
       <>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />
-          {stats && (
-            <Stack direction="row" spacing={2} sx={{ ml: 2 }}>
-              <Box>
-                <Typography
-                  component="span"
-                  children={stats.numberOfPublishes}
-                  lineHeight={1}
-                  sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
-                />{' '}
-                <Typography component="span" children={<FormattedMessage defaultMessage="Publishes" />} />
-              </Box>
-              <Box>
-                <Typography
-                  component="span"
-                  children={stats.numberOfNewAndPublishedItems}
-                  lineHeight={1}
-                  sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
-                />{' '}
-                <Typography component="span" children={<FormattedMessage defaultMessage="Created & Published" />} />
-              </Box>
-              <Box>
-                <Typography
-                  component="span"
-                  children={stats.numberOfEditedAndPublishedItems}
-                  lineHeight={1}
-                  sx={{ fontWeight: (theme) => theme.typography.fontWeightMedium }}
-                />{' '}
-                <Typography component="span" children={<FormattedMessage defaultMessage="Edited & Published" />} />
-              </Box>
-            </Stack>
-          )}
+          <DevContentOpsStats stats={stats} sx={{ root: { ml: 2, display: { xs: 'none', lg: 'flex' } } }} />
           <Select
             variant="standard"
             disableUnderline
@@ -144,6 +158,7 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
             </MenuItem>
           </Select>
         </Box>
+        <DevContentOpsStats stats={stats} sx={{ root: { mt: 1, display: { lg: 'none' } } }} />
       </>
       {loading && <Skeleton />}
     </DashletCard>

@@ -16,27 +16,21 @@
 
 import Box from '@mui/material/Box';
 import React from 'react';
-// import { useEffect, Suspense } from 'react';
-// import useSiteUIConfig from '../../hooks/useSiteUIConfig';
-// import useDashboardState from '../../hooks/useDashboardState';
-// import useActiveUser from '../../hooks/useActiveUser';
-// import useActiveSiteId from '../../hooks/useActiveSiteId';
-// import { useDispatch } from 'react-redux';
-// import { initDashboardConfig } from '../../state/actions/dashboard';
-// import { renderWidgets } from '../Widget';
-// import EmptyState from '../EmptyState';
-// import { FormattedMessage } from 'react-intl';
-// import Skeleton from '@mui/material/Skeleton';
+import { useEffect, Suspense } from 'react';
+import useSiteUIConfig from '../../hooks/useSiteUIConfig';
+import useDashboardState from '../../hooks/useDashboardState';
+import useActiveUser from '../../hooks/useActiveUser';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { useDispatch } from 'react-redux';
+import { initDashboardConfig } from '../../state/actions/dashboard';
+import { renderWidgets } from '../Widget';
+import EmptyState from '../EmptyState';
+import { FormattedMessage } from 'react-intl';
+import Skeleton from '@mui/material/Skeleton';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import ActivityDashlet from '../ActivityDashlet/ActivityDashlet';
-import PendingApprovalDashlet from '../PendingApprovalDashlet/PendingApprovalDashlet';
-import ExpiringDashlet from '../ExpiringDashlet/ExpiringDashlet';
-import UnpublishedDashlet from '../UnpublishedDashlet/UnpublishedDashlet';
-import ScheduledDashlet from '../ScheduledDashlet/ScheduledDashlet';
-import RecentlyPublishedDashlet from '../RecentlyPublishedDashlet/RecentlyPublishedDashlet';
 import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
-import { MyRecentActivityDashlet } from '../MyRecentActivityDashlet';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 export interface DashboardProps {
@@ -44,7 +38,6 @@ export interface DashboardProps {
   onMinimize?(): void;
 }
 
-// TODO: Uncomment below when dashboard apis are ready and we can go back to making these the primary dashboards.
 export function Dashboard(props: DashboardProps) {
   const { mountMode, onMinimize } = props;
 
@@ -53,17 +46,17 @@ export function Dashboard(props: DashboardProps) {
   } = useTheme();
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
-  // const site = useActiveSiteId();
-  // const user = useActiveUser();
-  // const userRoles = user.rolesBySite[site];
-  // const uiConfig = useSiteUIConfig();
-  // const dashboard = useDashboardState();
-  // const dispatch = useDispatch();
-  // useEffect(() => {
-  //   if (uiConfig.xml && !dashboard) {
-  //     dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
-  //   }
-  // }, [uiConfig.xml, dashboard, dispatch]);
+  const site = useActiveSiteId();
+  const user = useActiveUser();
+  const userRoles = user.rolesBySite[site];
+  const uiConfig = useSiteUIConfig();
+  const dashboard = useDashboardState();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (uiConfig.xml && !dashboard) {
+      dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
+    }
+  }, [uiConfig.xml, dashboard, dispatch]);
   const height = 380;
   return (
     <Box
@@ -82,8 +75,10 @@ export function Dashboard(props: DashboardProps) {
       <Grid
         container
         spacing={2}
-        sx={
-          desktopScreen
+        sx={{
+          alignItems: 'baseline',
+          alignContent: 'baseline',
+          ...(desktopScreen
             ? {
                 width: '66.66%',
                 height: '100%',
@@ -92,8 +87,8 @@ export function Dashboard(props: DashboardProps) {
                 pb: 2,
                 pr: 2
               }
-            : {}
-        }
+            : {})
+        }}
       >
         <Grid
           item
@@ -112,24 +107,42 @@ export function Dashboard(props: DashboardProps) {
             }}
           />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <MyRecentActivityDashlet contentHeight={height} onMinimize={onMinimize} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <UnpublishedDashlet contentHeight={height} onMinimize={onMinimize} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <PendingApprovalDashlet contentHeight={height} onMinimize={onMinimize} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <ScheduledDashlet contentHeight={height} onMinimize={onMinimize} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <RecentlyPublishedDashlet contentHeight={height} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <ExpiringDashlet contentHeight={height} onMinimize={onMinimize} />
-        </Grid>
+
+        <Suspense fallback={<DashboardSkeleton />}>
+          {dashboard ? (
+            Boolean(dashboard?.mainSection?.widgets?.length) ? (
+              renderWidgets(dashboard.mainSection.widgets, {
+                userRoles,
+                defaultProps: { contentHeight: height, onMinimize },
+                createMapperFn: (mapper) => (widget, index) =>
+                  (
+                    <Grid item xs={12} md={6}>
+                      {mapper(widget, index)}
+                    </Grid>
+                  )
+              })
+            ) : (
+              <Grid item xs={12}>
+                <EmptyState
+                  title={
+                    <FormattedMessage
+                      id="siteDashboard.emptyStateMessageTitle"
+                      defaultMessage="No widgets to display"
+                    />
+                  }
+                  subtitle={
+                    <FormattedMessage
+                      id="siteDashboard.emptyStateMessageSubtitle"
+                      defaultMessage="Add widgets at your project's User Interface Configuration"
+                    />
+                  }
+                />
+              </Grid>
+            )
+          ) : (
+            <DashboardSkeleton />
+          )}
+        </Suspense>
       </Grid>
       <ActivityDashlet
         sxs={{
@@ -153,43 +166,20 @@ export function Dashboard(props: DashboardProps) {
         contentHeight={desktopScreen ? null : height}
         onMinimize={onMinimize}
       />
-      {/*
-      <Suspense fallback={<DashboardSkeleton />}>
-        {dashboard ? (
-          Boolean(dashboard?.widgets?.length) ? (
-            renderWidgets(dashboard.widgets, { userRoles })
-          ) : (
-            <EmptyState
-              title={
-                <FormattedMessage id="siteDashboard.emptyStateMessageTitle" defaultMessage="No widgets to display" />
-              }
-              subtitle={
-                <FormattedMessage
-                  id="siteDashboard.emptyStateMessageSubtitle"
-                  defaultMessage="Add widgets at your project's User Interface Configuration"
-                />
-              }
-            />
-          )
-        ) : (
-          <DashboardSkeleton />
-        )}
-      </Suspense>
-      */}
     </Box>
   );
 }
 
-// function DashboardSkeleton() {
-//   return (
-//     <Grid container spacing={2}>
-//       {new Array(3).fill(null).map((nothing, index) => (
-//         <Grid item md={4} key={index}>
-//           <Skeleton variant="rectangular" sx={{ height: 350 }} />
-//         </Grid>
-//       ))}
-//     </Grid>
-//   );
-// }
+function DashboardSkeleton() {
+  return (
+    <>
+      {new Array(3).fill(null).map((nothing, index) => (
+        <Grid item xs={12} md={6} key={index}>
+          <Skeleton variant="rectangular" sx={{ height: 350 }} />
+        </Grid>
+      ))}
+    </>
+  );
+}
 
 export default Dashboard;
