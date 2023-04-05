@@ -37,68 +37,7 @@ import ScheduledDashlet from '../ScheduledDashlet/ScheduledDashlet';
 import RecentlyPublishedDashlet from '../RecentlyPublishedDashlet/RecentlyPublishedDashlet';
 import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 import { MyRecentActivityDashlet } from '../MyRecentActivityDashlet';
-import { FullSxRecord, PartialSxRecord } from '../../models';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
-export type SiteDashboardClassKey =
-  | 'root'
-  | 'containerOverflow'
-  | 'compactDashletItem'
-  | 'compactDashlet'
-  | 'activityDashlet';
-export type SiteDashboardFullSx = FullSxRecord<SiteDashboardClassKey>;
-export type SiteDashboardPartialSx = PartialSxRecord<SiteDashboardClassKey>;
-
-function getStyles(
-  sx?: SiteDashboardPartialSx,
-  props?: { mode: string; desktopScreen: boolean; mountMode: string }
-): SiteDashboardFullSx {
-  const { mode, desktopScreen, mountMode } = props;
-  return {
-    root: {
-      position: 'relative',
-      p: 2,
-      bgcolor: `grey.${mode === 'light' ? 100 : 800}`,
-      ...(desktopScreen
-        ? {
-            height: mountMode === 'dialog' ? '100%' : 'calc(100% - 65px)',
-            overflow: 'hidden'
-          }
-        : {})
-    },
-    containerOverflow: {
-      width: '66.66%',
-      height: '100%',
-      position: 'absolute',
-      overflowY: 'auto',
-      pb: 2,
-      pr: 2
-    },
-    compactDashletItem: {
-      display: 'flex',
-      flexWrap: 'wrap'
-    },
-    compactDashlet: {
-      width: '100%'
-    },
-    activityDashlet: {
-      display: 'flex',
-      flexDirection: 'column',
-      ...(desktopScreen
-        ? {
-            width: '33.33%',
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            bottom: 0,
-            borderRadius: 0
-          }
-        : {
-            mt: 2
-          })
-    }
-  };
-}
 
 export interface DashboardProps {
   mountMode?: string;
@@ -114,7 +53,6 @@ export function Dashboard(props: DashboardProps) {
   } = useTheme();
   const theme = useTheme();
   const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
-  const sx = getStyles({}, { mode, desktopScreen, mountMode });
   // const site = useActiveSiteId();
   // const user = useActiveUser();
   // const userRoles = user.rolesBySite[site];
@@ -128,10 +66,51 @@ export function Dashboard(props: DashboardProps) {
   // }, [uiConfig.xml, dashboard, dispatch]);
   const height = 380;
   return (
-    <Box sx={sx.root}>
-      <Grid container spacing={2} sx={desktopScreen ? sx.containerOverflow : {}}>
-        <Grid item xs={12} md={12} sx={sx.compactDashletItem}>
-          <DevContentOpsDashlet sxs={{ card: sx.compactDashlet }} />
+    <Box
+      sx={{
+        position: 'relative',
+        p: 2,
+        bgcolor: `grey.${mode === 'light' ? 100 : 800}`,
+        ...(desktopScreen
+          ? {
+              height: mountMode === 'dialog' ? '100%' : 'calc(100% - 65px)',
+              overflow: 'hidden'
+            }
+          : {})
+      }}
+    >
+      <Grid
+        container
+        spacing={2}
+        sx={
+          desktopScreen
+            ? {
+                width: '66.66%',
+                height: '100%',
+                position: 'absolute',
+                overflowY: 'auto',
+                pb: 2,
+                pr: 2
+              }
+            : {}
+        }
+      >
+        <Grid
+          item
+          xs={12}
+          md={12}
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap'
+          }}
+        >
+          <DevContentOpsDashlet
+            sxs={{
+              card: {
+                width: '100%'
+              }
+            }}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
           <MyRecentActivityDashlet contentHeight={height} onMinimize={onMinimize} />
@@ -153,7 +132,24 @@ export function Dashboard(props: DashboardProps) {
         </Grid>
       </Grid>
       <ActivityDashlet
-        sxs={{ card: sx.activityDashlet }}
+        sxs={{
+          card: {
+            display: 'flex',
+            flexDirection: 'column',
+            ...(desktopScreen
+              ? {
+                  width: '33.33%',
+                  position: 'absolute',
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  borderRadius: 0
+                }
+              : {
+                  mt: 2
+                })
+          }
+        }}
         contentHeight={desktopScreen ? null : height}
         onMinimize={onMinimize}
       />

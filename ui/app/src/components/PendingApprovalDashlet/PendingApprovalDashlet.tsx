@@ -47,7 +47,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import translations from '../SiteDashboard/translations';
 import useSpreadState from '../../hooks/useSpreadState';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
@@ -215,7 +214,12 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
               ? [
                   {
                     id: 'clear',
-                    label: formatMessage(translations.clear, { count: selectedCount })
+                    label: formatMessage(
+                      {
+                        defaultMessage: 'Clear {count} selected'
+                      },
+                      { count: selectedCount }
+                    )
                   }
                 ]
               : [])

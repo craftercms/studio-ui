@@ -49,7 +49,6 @@ import useEnv from '../../hooks/useEnv';
 import { publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import translations from '../SiteDashboard/translations';
 import useSpreadState from '../../hooks/useSpreadState';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
@@ -212,7 +211,12 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
               ? [
                   {
                     id: 'clear',
-                    label: formatMessage(translations.clear, { count: selectedCount })
+                    label: formatMessage(
+                      {
+                        defaultMessage: 'Clear {count} selected'
+                      },
+                      { count: selectedCount }
+                    )
                   }
                 ]
               : [])

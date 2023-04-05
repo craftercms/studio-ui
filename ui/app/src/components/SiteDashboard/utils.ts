@@ -170,5 +170,5 @@ export function getItemViewOption(item) {
 }
 
 export function getCurrentPage(offset: number, limit: number) {
-  return offset / limit;
+  return Math.ceil(offset / limit);
 }
