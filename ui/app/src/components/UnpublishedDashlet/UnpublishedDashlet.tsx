@@ -109,7 +109,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         setState({ loading: true });
       }
       fetchUnpublished(site, { limit, offset: newOffset }).subscribe((items) => {
-        setState({ items, offset: newOffset, total: items.total, ...(!backgroundRefresh && { loading: false }) });
+        setState({ items, offset: newOffset, total: items.total, loading: false });
       });
     },
     [limit, setState, site]

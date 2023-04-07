@@ -117,7 +117,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         setState({ loading: true });
       }
       fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
-        setState({ items, total: items.total, offset: newOffset, ...(!backgroundRefresh && { loading: false }) });
+        setState({ items, total: items.total, offset: newOffset, loading: false });
       });
     },
     [limit, setState, site]

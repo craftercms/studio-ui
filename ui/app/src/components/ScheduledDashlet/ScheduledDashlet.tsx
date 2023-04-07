@@ -123,7 +123,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         limit,
         offset: newOffset
       }).subscribe((items) => {
-        setState({ items, total: items.total, offset: newOffset, ...(!backgroundRefresh && { loading: false }) });
+        setState({ items, total: items.total, offset: newOffset, loading: false });
       });
     },
     [limit, setState, site]

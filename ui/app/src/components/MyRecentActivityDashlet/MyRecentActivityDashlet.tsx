@@ -99,7 +99,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
         offset: newOffset,
         limit
       }).subscribe((feed) => {
-        setState({ feed, total: feed.total, offset: newOffset, ...(!backgroundRefresh && { loading: false }) });
+        setState({ feed, total: feed.total, offset: newOffset, loading: false });
       });
     },
     [limit, setState, site, username]

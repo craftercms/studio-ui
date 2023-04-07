@@ -93,7 +93,7 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
         setState({ stats: null, loading: true });
       }
       fetchPublishingStats(site, days).subscribe((stats) => {
-        setState({ stats, ...(!backgroundRefresh && { loading: false }) });
+        setState({ stats, loading: false });
       });
     },
     [site, setState, days]

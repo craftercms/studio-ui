@@ -106,7 +106,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
           items: packages,
           total: packages.total,
           offset: newOffset,
-          ...(!backgroundRefresh && { loading: false })
+          loading: false
         });
       });
     },
