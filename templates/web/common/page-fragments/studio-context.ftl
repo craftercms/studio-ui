@@ -27,6 +27,7 @@
    * contextual variables
    * note: these are all fixed at the moment but will be dynamic
    */
+  <#outputformat "HTML">
   CStudioAuthoringContext = {
     user: "${envConfig.user}",
     role: "${envConfig.role}",
@@ -48,6 +49,7 @@
     xsrfParameterName: "${_csrf.parameterName}",
     passwordRequirementsMinComplexity: ${envConfig.passwordRequirementsMinComplexity}
   };
+  </#outputformat>
 
   window.addEventListener(
     'hashchange',

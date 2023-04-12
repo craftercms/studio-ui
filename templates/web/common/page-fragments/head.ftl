@@ -60,7 +60,9 @@
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js"></script>
   <script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js"></script>
 
+  <#outputformat "HTML">
   <script>document.domain = "${cookieDomain}";</script>
+  </#outputformat>
 
 </#if>
 
