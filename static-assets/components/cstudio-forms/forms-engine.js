@@ -1920,7 +1920,6 @@ var CStudioForms =
                 const onMultiChoiceSaveButtonClick = (e, type) => {
                   saveFn(type === 'saveAndPreview', type !== 'saveAndClose', null, type);
                 };
-
                 CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
                   defaultSelected,
                   disablePortal: false,
