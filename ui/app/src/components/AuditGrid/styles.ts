@@ -34,7 +34,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   gridRoot: {
     border: '0 !important',
-    minHeight: '300px',
+    minHeight: '400px',
     '& .MuiDataGrid-menuIcon': {
       width: 'auto !important',
       visibility: 'visible !important' as 'visible'
