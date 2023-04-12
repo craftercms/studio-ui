@@ -35,7 +35,7 @@ export const isInvalidEmail = (email: string) => {
 };
 
 export const isInvalidUsername = (username: string) => {
-  const usernameRegex = /^[a-zA-Z0-9_.@]+$/g;
+  const usernameRegex = /^[a-zA-Z0-9_\\.\\-]+$/g;
   return Boolean(username) && !usernameRegex.test(username);
 };
 
