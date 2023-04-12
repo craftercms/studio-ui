@@ -827,13 +827,28 @@ var CStudioForms =
         enabled = true;
       }
 
-      var saveAndCloseEl = document.getElementById('cstudioSaveAndClose');
-      var saveAndPreviewEl = document.getElementById('cstudioSaveAndPreview');
-      var saveAndCloseDraftEl = document.getElementById('cstudioSaveAndCloseDraft');
+      const splitButtonContainer = document.getElementById('splitButtonContainer');
+      const currentActionButton = splitButtonContainer.querySelectorAll('button')[0];
+      const actionSelectorButton = splitButtonContainer.querySelectorAll('button')[1];
+      const cancelBtnEl = document.getElementById('cancelBtn');
 
-      if (saveAndCloseEl) saveAndCloseEl.disabled = !enabled;
-      if (saveAndPreviewEl) saveAndPreviewEl.disabled = !enabled;
-      if (saveAndCloseDraftEl) saveAndCloseDraftEl.disabled = !enabled;
+      if (currentActionButton) {
+        currentActionButton.disabled = !enabled;
+        if (enabled) {
+          currentActionButton.classList.remove('Mui-disabled');
+        } else {
+          currentActionButton.classList.add('Mui-disabled');
+        }
+      }
+      if (actionSelectorButton) {
+        actionSelectorButton.disabled = !enabled;
+        if (enabled) {
+          actionSelectorButton.classList.remove('Mui-disabled');
+        } else {
+          actionSelectorButton.classList.add('Mui-disabled');
+        }
+      }
+      if (cancelBtnEl) cancelBtnEl.disabled = !enabled;
     }
 
     function resolvePendingComponents(doc) {
@@ -1905,6 +1920,7 @@ var CStudioForms =
                 const onMultiChoiceSaveButtonClick = (e, type) => {
                   saveFn(type === 'saveAndPreview', type !== 'saveAndClose', null, type);
                 };
+
                 CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
                   defaultSelected,
                   disablePortal: false,
