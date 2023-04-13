@@ -826,29 +826,15 @@ var CStudioForms =
       if (enabled === undefined) {
         enabled = true;
       }
-
-      const splitButtonContainer = document.getElementById('splitButtonContainer');
-      const currentActionButton = splitButtonContainer.querySelectorAll('button')[0];
-      const actionSelectorButton = splitButtonContainer.querySelectorAll('button')[1];
       const cancelBtnEl = document.getElementById('cancelBtn');
-
-      if (currentActionButton) {
-        currentActionButton.disabled = !enabled;
-        if (enabled) {
-          currentActionButton.classList.remove('Mui-disabled');
-        } else {
-          currentActionButton.classList.add('Mui-disabled');
-        }
-      }
-      if (actionSelectorButton) {
-        actionSelectorButton.disabled = !enabled;
-        if (enabled) {
-          actionSelectorButton.classList.remove('Mui-disabled');
-        } else {
-          actionSelectorButton.classList.add('Mui-disabled');
-        }
-      }
       if (cancelBtnEl) cancelBtnEl.disabled = !enabled;
+
+      window.postMessage(
+        {
+          type: enabled ? 'EMBEDDED_LEGACY_FORM_SAVE_END' : 'EMBEDDED_LEGACY_FORM_SAVE_START'
+        },
+        '*'
+      );
     }
 
     function resolvePendingComponents(doc) {
@@ -1411,7 +1397,6 @@ var CStudioForms =
             showWarnMsg = false;
             var saveDraft = draft == true ? true : false;
 
-            // TODO make Buttons Disabled/Progress
             setButtonsEnabled(false);
 
             var entityId = buildEntityIdFn(draft);
@@ -1524,7 +1509,6 @@ var CStudioForms =
                         var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
                         var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
 
-                        // TODO: We need a method to set disable the .render Buttons;
                         setButtonsEnabled(true);
                         sendMessage({ type: CHILD_FORM_DRAFT_COMPLETE });
 
@@ -1920,7 +1904,7 @@ var CStudioForms =
                 const onMultiChoiceSaveButtonClick = (e, type) => {
                   saveFn(type === 'saveAndPreview', type !== 'saveAndClose', null, type);
                 };
-                CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
+                CrafterCMSNext.render(buttonsContainer, 'LegacyMultiChoiceSaveButton', {
                   defaultSelected,
                   disablePortal: false,
                   storageKey: storedId,

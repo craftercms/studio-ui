@@ -123,7 +123,8 @@ export function createCodebaseBridge() {
       PagesWidget: lazy(() => import('../components/PathNavigator/PathNavigator')),
       QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton')),
-      PreviewCompatDialog: lazy(() => import('../components/PreviewCompatibilityDialog/PreviewCompatibilityDialog'))
+      PreviewCompatDialog: lazy(() => import('../components/PreviewCompatibilityDialog/PreviewCompatibilityDialog')),
+      LegacyMultiChoiceSaveButton: lazy(() => import('../pages/LegacyMultiChoiceSaveButton'))
     },
 
     system: {
