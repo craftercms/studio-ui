@@ -353,9 +353,18 @@ export function AuditGridUI(props: AuditGridUIProps) {
         components={{
           ColumnMenu: onFilterSelected,
           NoRowsOverlay: () => (
-            <Box>
+            <Box height="100%">
               <EmptyState
-                styles={{ root: { position: 'relative', zIndex: 1, paddingTop: 10, paddingBottom: 10, margin: 0 } }}
+                styles={{
+                  root: {
+                    position: 'relative',
+                    zIndex: 1,
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    margin: 0,
+                    height: 'calc(100% - 10px)'
+                  }
+                }}
                 title={<FormattedMessage id="auditGrid.emptyStateMessage" defaultMessage="No Logs Found" />}
               >
                 {hasActiveFilters && (
