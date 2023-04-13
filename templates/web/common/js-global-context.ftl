@@ -15,6 +15,8 @@
 -->
 
 <#assign env_config = envConfig???then(envConfig + _csrf, {})/>
+<#outputformat "HTML">
 <script type="text/plain" id="xsrfHeader">${env_config.headerName!_csrf.headerName!'X-XSRF-TOKEN'}</script>
 <script type="text/plain" id="xsrfArgument">${env_config.parameterName!_csrf.parameterName!'_csrf'}</script>
 <script type="text/plain" id="useBaseDomain">${env_config.useBaseDomain!'false'}</script>
+</#outputformat>

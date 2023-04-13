@@ -46,10 +46,12 @@
         ui.React.Suspense,
         { fallback: '' },
         createElement(CrafterCMSNext.components.Login, {
+          <#outputformat "HTML">
           xsrfToken: '${_csrf.token}',
           xsrfParamName: '${_csrf.parameterName}',
           xsrfHeaderName: '${_csrf.headerName}',
           passwordRequirementsMinComplexity: ${passwordRequirementsMinComplexity}
+          </#outputformat>
         })
       ),
       document.querySelector('#root')
