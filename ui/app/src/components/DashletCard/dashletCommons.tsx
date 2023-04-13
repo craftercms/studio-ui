@@ -26,13 +26,28 @@ import React, { PropsWithChildren } from 'react';
 import MuiListItem from '@mui/material/ListItem';
 import MuiListItemIcon from '@mui/material/ListItemIcon';
 import MuiListSubheader from '@mui/material/ListSubheader';
-import { CheckRounded } from '@mui/icons-material';
+import CheckRounded from '@mui/icons-material/CheckRounded';
 import Box, { BoxProps } from '@mui/material/Box';
 import { UNDEFINED } from '../../utils/constants';
-import { getInitials } from '../../utils/string';
+import { getInitials, toColor } from '../../utils/string';
 import Person from '../../models/Person';
 import Avatar from '@mui/material/Avatar';
 import { getPersonFullName } from '../SiteDashboard/utils';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { FormattedMessage } from 'react-intl';
+import { Pagination } from '../Pagination';
+import { AllItemActions } from '../../models';
+import { SxProps } from '@mui/system';
+
+export const actionsToBeShown: AllItemActions[] = [
+  'edit',
+  'delete',
+  'publish',
+  'rejectPublish',
+  'dependencies',
+  'history'
+];
 
 export const List = styled(MuiList)({ paddingTop: 0 });
 
@@ -50,11 +65,19 @@ export const DashletAvatar = styled(Avatar)({ width: 40, height: 40 });
 
 export interface PersonAvatarProps {
   person: Person;
+  sx?: SxProps;
 }
 
 export function PersonAvatar(props: PersonAvatarProps) {
-  const { person } = props;
-  return <DashletAvatar src={person.avatar ?? UNDEFINED} children={person.avatar ? UNDEFINED : getInitials(person)} />;
+  const { person, sx } = props;
+  const backgroundColor = toColor(person.username);
+  return (
+    <DashletAvatar
+      src={person.avatar ?? UNDEFINED}
+      children={person.avatar ? UNDEFINED : getInitials(person)}
+      sx={{ backgroundColor, ...sx }}
+    />
+  );
 }
 
 export const getItemSkeleton = ({
@@ -64,7 +87,7 @@ export const getItemSkeleton = ({
 }: Partial<{ numOfItems: number; showCheckbox: boolean; showAvatar: boolean }>) => (
   <List>
     {new Array(numOfItems).fill(null).map((nothing, index) => (
-      <ListItem key={index}>
+      <ListItem key={index} sx={{ pl: 2, pr: 2 }}>
         {showCheckbox && (
           <ListItemIcon>
             <Checkbox edge="start" disabled />
@@ -105,4 +128,47 @@ export interface PersonFullNameProps {
 
 export function PersonFullName({ person }: PersonFullNameProps) {
   return <Typography variant="h6">{getPersonFullName(person)}</Typography>;
+}
+
+export function Pager(props: {
+  totalPages: number;
+  totalItems: number;
+  currentPage: number;
+  rowsPerPage: number;
+  onPagePickerChange(page: number): void;
+  onPageChange(page: number): void;
+  onRowsPerPageChange(rowsPerPage: number): void;
+}) {
+  const { totalPages, totalItems, currentPage, rowsPerPage, onPagePickerChange, onPageChange, onRowsPerPageChange } =
+    props;
+
+  return (
+    <>
+      <Select
+        variant="standard"
+        disableUnderline
+        value={`${currentPage}`}
+        onChange={(e) => onPagePickerChange(parseInt(e.target.value))}
+        sx={{ fontSize: (theme) => theme.typography.fontSize }}
+      >
+        {new Array(totalPages).fill(null).map((nothing, index) => (
+          <MenuItem value={index} sx={{ fontSize: (theme) => theme.typography.fontSize }} key={index}>
+            {currentPage === index ? (
+              <FormattedMessage defaultMessage="Page {pageNumber}" values={{ pageNumber: index + 1 }} />
+            ) : (
+              <FormattedMessage defaultMessage="Go to page {pageNumber}" values={{ pageNumber: index + 1 }} />
+            )}
+          </MenuItem>
+        ))}
+      </Select>
+      <Pagination
+        count={totalItems}
+        onPageChange={(e, page) => onPageChange(page)}
+        page={currentPage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={(e) => onRowsPerPageChange(parseInt(e.target.value))}
+        mode="table"
+      />
+    </>
+  );
 }

@@ -24,6 +24,7 @@ import moment from 'moment';
 import { messages } from '../ItemTypeIcon/translations';
 import SystemType from '../../models/SystemType';
 import { DashboardPublishingPackage } from '../../models';
+import { isPage } from '../SiteDashboard/utils';
 
 export interface ActivityItem {
   id: number;
@@ -49,7 +50,7 @@ export function renderActivity(
     systemType = formatMessage(messages[systemType]).toLowerCase();
   }
   const anchor = ([label, systemType, previewUrl]) => {
-    return systemType !== 'page' && systemType !== 'component' ? (
+    return !isPage(systemType) ? (
       <em>{label}</em>
     ) : (
       <Link sx={{ cursor: 'pointer' }} onClick={(e) => onItemClick(previewUrl, e)}>
@@ -202,7 +203,7 @@ export function renderActivityTimestamp(timestamp: string, locale: GlobalState['
   const date = new Date(timestamp).getTime();
   return now - date < 3.6e7
     ? moment(date).fromNow()
-    : asLocalizedDateTime(date, locale.localeCode, locale.dateTimeFormatOptions);
+    : asLocalizedDateTime(timestamp, locale.localeCode, locale.dateTimeFormatOptions);
 }
 
 export const activityNameLookup: Record<Activities | 'ALL', any> = {

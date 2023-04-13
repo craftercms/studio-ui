@@ -15,22 +15,25 @@
  */
 
 import WidgetDescriptor from '../../models/WidgetDescriptor';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import Widget, { WidgetProps } from './Widget';
+
+type MapperFn = (widget: WidgetDescriptor, index: number) => ReactElement;
 
 export function renderWidgets(
   widgets: WidgetDescriptor[],
   options?: Pick<WidgetProps, 'overrideProps' | 'defaultProps'> & {
     userRoles?: string[];
+    createMapperFn?(originalMapperFn: MapperFn): MapperFn; // <==== OJO
   }
 ): JSX.Element[] {
   if (!Array.isArray(widgets)) {
     return [];
   }
-  const { userRoles, overrideProps, defaultProps } = options;
-  const mapperFn = (widget, index) => (
+  const { userRoles, overrideProps, defaultProps, createMapperFn = (fn) => fn } = options;
+  const mapperFn = createMapperFn((widget, index) => (
     <Widget key={widget.uiKey ?? index} {...widget} overrideProps={overrideProps} defaultProps={defaultProps} />
-  );
+  ));
   return Array.isArray(userRoles)
     ? widgets
         .filter(

@@ -31,23 +31,6 @@ export const registerComponents = () => {
   Object.entries(components).forEach(([name, component]) => {
     if (name === 'LegacySiteDashboard') {
       registry.set('craftercms.components.Dashboard', component);
-    } else if (
-      [
-        'LegacyAwaitingApprovalDashlet',
-        'LegacyRecentlyPublishedDashlet',
-        'LegacyApprovedScheduledDashlet',
-        'LegacyRecentActivityDashlet'
-      ].includes(name)
-    ) {
-      // TODO:
-      //  Leaving these dashlet without the "Legacy" part of the name for 4.0.0. On 4.0.1, the new
-      //  dashlets will take precedence and UM needs to update sites. Also need to change the selector
-      //  on reducers/dashboard.ts
-      registry.set(`craftercms.components.${name.replace('Legacy', '')}`, component);
-    } else if (name === 'RecentlyPublishedDashlet') {
-      // Rename as it collides with the Legacy "RecentlyPublishedDashlet".
-      // Remove rename when we officially ship new dashboards.
-      name = name + 'Next';
     }
     registry.set(`craftercms.components.${name}`, component);
   });

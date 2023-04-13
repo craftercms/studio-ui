@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Button from '@mui/material/Button';
-import { KeyboardArrowDownRounded } from '@mui/icons-material';
+import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
 import { FormattedMessage } from 'react-intl';
-import { Popover } from '@mui/material';
+import Popover from '@mui/material/Popover';
 import UsersAutocomplete, { UsersAutocompleteProps } from './UsersAutocomplete';
 
 export interface AuthorFilterProps {
@@ -29,6 +29,13 @@ export function AuthorFilter(props: AuthorFilterProps) {
   const { onChange } = props;
   const [open, setOpen] = React.useState(false);
   const buttonRef = useRef<HTMLButtonElement>();
+  const [value, setValue] = useState([]);
+
+  const onFilterChange = (value) => {
+    onChange(value);
+    setValue(value);
+  };
+
   return (
     <>
       <Button
@@ -48,7 +55,7 @@ export function AuthorFilter(props: AuthorFilterProps) {
         onClose={() => setOpen(false)}
         PaperProps={{ sx: { width: 300, p: 1 } }}
       >
-        <UsersAutocomplete onChange={onChange} />
+        <UsersAutocomplete onChange={onFilterChange} value={value} />
       </Popover>
     </>
   );

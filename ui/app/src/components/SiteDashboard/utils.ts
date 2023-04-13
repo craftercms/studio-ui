@@ -14,14 +14,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UNDEFINED } from '../../utils/constants';
+import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
 import Person from '../../models/Person';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
+import { DetailedItem } from '../../models';
+import { AnyAction } from '@reduxjs/toolkit';
+import { changeCurrentUrl } from '../../state/actions/preview';
+import { getSystemLink } from '../../utils/system';
+import { IntlShape } from 'react-intl';
+import { generateMultipleItemOptions, generateSingleItemOptions } from '../../utils/itemActions';
+import { actionsToBeShown } from '../DashletCard/dashletCommons';
+import { ActionsBarAction } from '../ActionsBar';
+import { isImage, isPdfDocument, isPreviewable, isVideo } from '../PathNavigator/utils';
 
 export interface CommonDashletProps {
   contentHeight?: number | string;
   borderLeftColor?: string;
+  onMinimize?(): void;
 }
 
 export function parseDashletContentHeight(contentHeight: string | number): number {
@@ -86,7 +96,7 @@ export function useSpreadStateWithSelected<S extends WithSelectedState>(
     }
   };
   const onSelectItem = (e, item) => {
-    let isChecked = e.target.checked;
+    let isChecked = !isSelected(item);
     let nextState: Partial<S> = {};
     nextState.selected = { ...selected, [item.id]: isChecked };
     let checkedOnly = Object.values(nextState.selected).filter(Boolean);
@@ -99,4 +109,66 @@ export function useSpreadStateWithSelected<S extends WithSelectedState>(
     return selected[item.id] ?? false;
   };
   return [state, setState, onSelectItem, onSelectAll, isSelected];
+}
+
+export function isPage(systemType) {
+  return systemType === 'page';
+}
+
+export function previewPage(
+  site,
+  authoringBase,
+  item: DetailedItem,
+  dispatch: Dispatch<AnyAction>,
+  onWidgetModeAction?: Function
+) {
+  const previewUrl = item.previewUrl;
+  const pathname = window.location.pathname;
+
+  if (pathname.includes(PREVIEW_URL_PATH)) {
+    dispatch(changeCurrentUrl(previewUrl));
+    onWidgetModeAction?.();
+  } else {
+    window.location.href = getSystemLink({
+      page: previewUrl,
+      systemLinkId: 'preview',
+      site,
+      authoringBase
+    });
+  }
+}
+
+export function useSelectionOptions(
+  items: DetailedItem[],
+  formatMessage: IntlShape['formatMessage'],
+  selectedCount: number
+): ActionsBarAction[] {
+  return useMemo(() => {
+    return selectedCount
+      ? selectedCount === 1
+        ? (generateSingleItemOptions(items[0], formatMessage, {
+            includeOnly: actionsToBeShown
+          }).flat() as ActionsBarAction[])
+        : (generateMultipleItemOptions(items, formatMessage, { includeOnly: actionsToBeShown }) as ActionsBarAction[])
+      : [];
+  }, [items, formatMessage, selectedCount]);
+}
+
+export function getItemViewOption(item) {
+  const type = item.systemType;
+  let option;
+  if (['page', 'component', 'taxonomy', 'levelDescriptor'].includes(type)) {
+    option = 'view';
+  } else if (isPreviewable(item)) {
+    if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
+      option = 'viewMedia';
+    } else {
+      option = 'viewCode';
+    }
+  }
+  return option;
+}
+
+export function getCurrentPage(offset: number, limit: number) {
+  return Math.ceil(offset / limit);
 }

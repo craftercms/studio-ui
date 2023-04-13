@@ -15,23 +15,28 @@
  */
 
 import React, { useEffect } from 'react';
-import { CommonDashletProps } from '../SiteDashboard/utils';
+import { CommonDashletProps, getItemViewOption, isPage, previewPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListSubheader } from '../DashletCard/dashletCommons';
 import palette from '../../styles/palette';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 import { ExpiredItem, fetchExpired, fetchExpiring } from '../../services/dashboard';
 import useSpreadState from '../../hooks/useSpreadState';
 import useLocale from '../../hooks/useLocale';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { RefreshRounded } from '@mui/icons-material';
+import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import IconButton from '@mui/material/IconButton';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Divider from '@mui/material/Divider';
 import GlobalState from '../../models/GlobalState';
 import { forkJoin } from 'rxjs';
+import ItemDisplay from '../ItemDisplay';
+import { itemActionDispatcher } from '../../utils/itemActions';
+import useEnv from '../../hooks/useEnv';
+import { useDispatch } from 'react-redux';
+import { SandboxItem } from '../../models';
 
 interface ExpiringDashletProps extends CommonDashletProps {
   days?: number;
@@ -44,28 +49,44 @@ interface ExpiringDashletState {
   refresh: number;
 }
 
-const renderExpiredItems = (items: ExpiredItem[], locale: GlobalState['uiConfig']['locale']) =>
-  items.map((item, index) => (
-    <ListItem key={index}>
-      <ListItemText
-        primary={item.itemName}
-        secondary={
-          <Typography color="text.error" variant="body2">
-            <FormattedMessage
-              id="expiringDashlet.expiredOn"
-              defaultMessage="Expiration on {date}"
-              values={{
-                date: asLocalizedDateTime(item.expireDateTime, locale.localeCode, locale.dateTimeFormatOptions)
-              }}
+const renderExpiredItems = (
+  items: ExpiredItem[],
+  locale: GlobalState['uiConfig']['locale'],
+  onItemClick: (e: React.MouseEvent, item: SandboxItem) => void,
+  expired?: boolean
+) =>
+  items.map((item, index) => {
+    const isItemPreviewable = isPage(item.sandboxItem.systemType) || item.sandboxItem.availableActionsMap.view;
+    return (
+      <ListItem key={index}>
+        <ListItemText
+          primary={
+            <ItemDisplay
+              item={item.sandboxItem}
+              onClick={(e) => (isItemPreviewable ? onItemClick(e, item.sandboxItem) : null)}
+              showNavigableAsLinks={isItemPreviewable}
+              styles={{ ...(isItemPreviewable && { root: { cursor: 'pointer' } }) }}
             />
-          </Typography>
-        }
-      />
-    </ListItem>
-  ));
+          }
+          secondary={
+            <Typography color={expired ? 'error.main' : 'text.secondary'} variant="body2">
+              <FormattedMessage
+                id="expiringDashlet.expiredOn"
+                defaultMessage="{expirationText} on {date}"
+                values={{
+                  date: asLocalizedDateTime(item.expiredDateTime, locale.localeCode, locale.dateTimeFormatOptions),
+                  expirationText: expired ? 'Expired' : 'Expires'
+                }}
+              />
+            </Typography>
+          }
+        />
+      </ListItem>
+    );
+  });
 
 export function ExpiringDashlet(props: ExpiringDashletProps) {
-  const { borderLeftColor = palette.purple.tint, days = 30 } = props;
+  const { borderLeftColor = palette.purple.tint, days = 30, onMinimize } = props;
   const site = useActiveSiteId();
   const locale = useLocale();
   const [state, setState] = useSpreadState<ExpiringDashletState>({
@@ -74,7 +95,29 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
     refresh: 0,
     loading: false
   });
+  const { formatMessage } = useIntl();
+  const { authoringBase } = useEnv();
+  const dispatch = useDispatch();
   const onRefresh = () => setState({ refresh: ++state.refresh });
+
+  const onItemClick = (e, item) => {
+    if (isPage(item.systemType)) {
+      e.stopPropagation();
+      previewPage(site, authoringBase, item, dispatch, onMinimize);
+    } else if (item.availableActionsMap.view) {
+      e.stopPropagation();
+
+      itemActionDispatcher({
+        site,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        option: getItemViewOption(item),
+        item
+      });
+    }
+  };
+
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const foo = state.refresh + 1;
@@ -119,7 +162,7 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
               </ListSubheader>
             }
           >
-            {renderExpiredItems(state.expired, locale)}
+            {renderExpiredItems(state.expired, locale, onItemClick, true)}
           </List>
         ))}
       <Divider sx={{ mt: 1, mb: 1 }} />
@@ -144,7 +187,7 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
               </ListSubheader>
             }
           >
-            {renderExpiredItems(state.expiring, locale)}
+            {renderExpiredItems(state.expiring, locale, onItemClick)}
           </List>
         ))}
     </DashletCard>
