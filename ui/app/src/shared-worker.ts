@@ -107,6 +107,7 @@ function unauthenticated(excludeClient?: MessagePort) {
   log(`Auth has expired.`);
   clearTimeout(timeout);
   status = 'expired';
+  socketClient?.deactivate();
   broadcast(sharedWorkerUnauthenticated(), excludeClient);
 }
 
