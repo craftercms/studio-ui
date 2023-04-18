@@ -28,8 +28,9 @@
    * contextual variables
    * note: these are all fixed at the moment but will be dynamic
    */
-  <#outputformat "HTML">
+
   CStudioAuthoringContext = {
+    <#outputformat "HTML">
     user: "${envConfig.user}",
     role: "${envConfig.role}",
     site: siteId,
@@ -49,9 +50,9 @@
     graphQLBaseURI: `${'$'}{origin}/api/1/site/graphql`,
     xsrfHeaderName: "${_csrf.headerName}",
     xsrfParameterName: "${_csrf.parameterName}",
+    </#outputformat>
     passwordRequirementsRegex: "${envConfig.passwordRequirementsRegex?js_string}"
   };
-  </#outputformat>
 
   if (CStudioAuthoringContext.role === '') {
     document.location = CStudioAuthoringContext.baseUri;
