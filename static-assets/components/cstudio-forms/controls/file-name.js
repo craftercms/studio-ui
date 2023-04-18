@@ -134,7 +134,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   _onChange: function (evt, obj) {
     var oldValue = obj.value;
     obj.value = obj.inputEl.value;
-    if (obj.value != '' && oldValue != obj.value)
+    if (oldValue != obj.value)
       // Just check if the value was changed
       obj.filenameAvailable();
 
