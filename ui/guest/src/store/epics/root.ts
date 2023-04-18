@@ -322,7 +322,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       of(desktopAssetDragEnded()),
                       validateActionPolicy(state.activeSite, {
                         type: 'CREATE',
-                        target: path + file.name
+                        target: path + file.name,
+                        contentMetadata: {
+                          fileSize: file.size
+                        }
                       }).pipe(
                         switchMap(({ allowed, modifiedValue }) => {
                           const aImg = record.element;

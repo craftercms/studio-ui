@@ -61,7 +61,7 @@ const messages = defineMessages({
   },
   policyError: {
     id: 'fileUpload.policyError',
-    defaultMessage: 'The upload file name goes against project policies.'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies and can\'t be uploaded'
   }
 });
 
@@ -260,7 +260,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       setFileNameErrorClass('');
       validateActionPolicy(site, {
         type: 'CREATE',
-        target: path + file.name
+        target: path + file.name,
+        contentMetadata: {
+          fileSize: file.size
+        }
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
           if (modifiedValue) {
@@ -278,7 +281,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         } else {
           setConfirm({
             error: true,
-            body: formatMessage(messages.policyError)
+            body: formatMessage(messages.policyError, { fileName: file.name })
           });
         }
       });
