@@ -72,6 +72,7 @@ var CStudioForms =
     const defaultValuesLookup = {};
     // lookup to check the fields that have the `no-default` attribute set
     const noDefaultLookup = {};
+    let disableClose = false;
 
     // private methods
 
@@ -826,6 +827,7 @@ var CStudioForms =
       if (enabled === undefined) {
         enabled = true;
       }
+      disableClose = !enabled;
       const cancelBtnEl = document.getElementById('cancelBtn');
       if (cancelBtnEl) cancelBtnEl.disabled = !enabled;
 
@@ -1768,8 +1770,7 @@ var CStudioForms =
 
             var flag = isModified();
 
-            const editDialogDisableOnClose = craftercms.getStore().getState().dialogs.edit.disableOnClose;
-            if (!editDialogDisableOnClose) {
+            if (!disableClose) {
               if (showWarnMsg && (flag || repeatEdited)) {
                 if (CStudioAuthoring.InContextEdit.isDialogCollapsed()) {
                   collapseFn();
@@ -1931,55 +1932,6 @@ var CStudioForms =
                     }
                   ]
                 });
-
-                // const multiChoiceSaveButton = ReactDOM.createRoot(buttonsContainer);
-                // multiChoiceSaveButton.render(
-                //   React.createElement(LegacyMultiChoiceSaveButton, {
-                //     defaultSelected,
-                //     disablePortal: false,
-                //     storageKey: storedId,
-                //     options: [
-                //       {
-                //         id: 'saveDraft',
-                //         label: formatMessage(formEngineMessages.saveDraft),
-                //         callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
-                //       },
-                //       {
-                //         id: 'saveAndClose',
-                //         label: formatMessage(formEngineMessages.saveAndClose),
-                //         callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndClose')
-                //       },
-                //       {
-                //         id: 'saveAndMinimize',
-                //         label: formatMessage(formEngineMessages.saveAndMinimize),
-                //         callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndMinimize')
-                //       }
-                //     ]
-                //   })
-                // );
-
-                // CrafterCMSNext.render(buttonsContainer, 'LegacyMultiChoiceSaveButton', {
-                //   defaultSelected,
-                //   disablePortal: false,
-                //   storageKey: storedId,
-                //   options: [
-                //     {
-                //       id: 'saveDraft',
-                //       label: formatMessage(formEngineMessages.saveDraft),
-                //       callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
-                //     },
-                //     {
-                //       id: 'saveAndClose',
-                //       label: formatMessage(formEngineMessages.saveAndClose),
-                //       callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndClose')
-                //     },
-                //     {
-                //       id: 'saveAndMinimize',
-                //       label: formatMessage(formEngineMessages.saveAndMinimize),
-                //       callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndMinimize')
-                //     }
-                //   ]
-                // });
               },
               failure: function () {}
             });

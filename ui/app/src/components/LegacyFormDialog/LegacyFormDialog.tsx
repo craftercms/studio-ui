@@ -53,27 +53,6 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
     onClose(e);
   };
 
-  useEffect(() => {
-    const messagesSubscription = fromEvent(window, 'message')
-      .pipe(filter((e: any) => e.data && e.data.type))
-      .subscribe((e) => {
-        switch (e.data.type) {
-          case 'EMBEDDED_LEGACY_FORM_SAVE_START': {
-            dispatch(updateEditConfig({ disableOnClose: true }));
-            break;
-          }
-          case 'EMBEDDED_LEGACY_FORM_SAVE_END': {
-            dispatch(updateEditConfig({ disableOnClose: false }));
-            break;
-          }
-        }
-      });
-
-    return () => {
-      messagesSubscription.unsubscribe();
-    };
-  }, [dispatch]);
-
   return (
     <>
       <Dialog
