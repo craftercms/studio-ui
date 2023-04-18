@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
 import { LegacyFormDialogProps } from './utils';
@@ -23,11 +23,16 @@ import MinimizedBar from '../MinimizedBar';
 import Dialog from '@mui/material/Dialog';
 import { useStyles } from './styles';
 import { translations } from './translations';
+import { fromEvent } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { useDispatch } from 'react-redux';
+import { updateEditConfig } from '../../state/actions/dialogs';
 
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
   const { classes } = useStyles();
   const { open, inProgress, disableOnClose, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
+  const dispatch = useDispatch();
 
   const iframeRef = useRef<HTMLIFrameElement>();
 
@@ -36,7 +41,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const onClose = (e, reason?) => {
     // The form engine is too expensive to load to lose it with an unintentional
     // backdrop click. Disabling backdrop click until form engine 2.
-    if ('backdropClick' !== reason) {
+    if ('backdropClick' !== reason && !disableOnClose) {
       if (inProgress) {
         props?.onClose();
       }
@@ -47,6 +52,27 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const onCloseButtonClick = (e) => {
     onClose(e);
   };
+
+  useEffect(() => {
+    const messagesSubscription = fromEvent(window, 'message')
+      .pipe(filter((e: any) => e.data && e.data.type))
+      .subscribe((e) => {
+        switch (e.data.type) {
+          case 'EMBEDDED_LEGACY_FORM_SAVE_START': {
+            dispatch(updateEditConfig({ disableOnClose: true }));
+            break;
+          }
+          case 'EMBEDDED_LEGACY_FORM_SAVE_END': {
+            dispatch(updateEditConfig({ disableOnClose: false }));
+            break;
+          }
+        }
+      });
+
+    return () => {
+      messagesSubscription.unsubscribe();
+    };
+  }, [dispatch]);
 
   return (
     <>

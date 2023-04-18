@@ -27,7 +27,8 @@ const initialState: LegacyFormDialogStateProps = {
   path: null,
   site: null,
   authoringBase: null,
-  inProgress: true
+  inProgress: true,
+  disableOnClose: false
 };
 
 export default createReducer<GlobalState['dialogs']['edit']>(initialState, {
