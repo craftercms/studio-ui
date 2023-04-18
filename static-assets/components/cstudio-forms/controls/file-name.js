@@ -116,10 +116,10 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   },
 
   getRequirementCount: function () {
-    // 2 Requirement:
+    // 2 Requirements for this field, both will be validated as one (since it's only one field in the form):
     // 1. The field is required
     // 2. The Path must be valid
-    return 2;
+    return 1;
   },
 
   getCurrentPath: function () {
