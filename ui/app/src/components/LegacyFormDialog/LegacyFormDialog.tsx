@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
 import { LegacyFormDialogProps } from './utils';
@@ -23,16 +23,11 @@ import MinimizedBar from '../MinimizedBar';
 import Dialog from '@mui/material/Dialog';
 import { useStyles } from './styles';
 import { translations } from './translations';
-import { fromEvent } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { useDispatch } from 'react-redux';
-import { updateEditConfig } from '../../state/actions/dialogs';
 
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
   const { classes } = useStyles();
-  const { open, inProgress, disableOnClose, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
-  const dispatch = useDispatch();
+  const { open, inProgress, isSubmitting, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
 
   const iframeRef = useRef<HTMLIFrameElement>();
 
@@ -41,7 +36,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const onClose = (e, reason?) => {
     // The form engine is too expensive to load to lose it with an unintentional
     // backdrop click. Disabling backdrop click until form engine 2.
-    if ('backdropClick' !== reason && !disableOnClose) {
+    if ('backdropClick' !== reason && !isSubmitting) {
       if (inProgress) {
         props?.onClose();
       }
@@ -66,7 +61,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         {!disableHeader && (
           <DialogHeader
             title={title}
-            disabled={disableOnClose}
+            disabled={isSubmitting}
             onCloseButtonClick={onCloseButtonClick}
             rightActions={[
               {

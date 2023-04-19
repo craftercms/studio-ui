@@ -184,11 +184,11 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           break;
         }
         case EMBEDDED_LEGACY_FORM_ENABLE_ON_CLOSE: {
-          dispatch(updateEditConfig({ disableOnClose: false }));
+          dispatch(updateEditConfig({ isSubmitting: false }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_DISABLE_ON_CLOSE: {
-          dispatch(updateEditConfig({ disableOnClose: true }));
+          dispatch(updateEditConfig({ isSubmitting: true }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_ENABLE_HEADER: {
@@ -245,11 +245,11 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE_START: {
-          dispatch(updateEditConfig({ disableOnClose: true }));
+          dispatch(updateEditConfig({ isSubmitting: true }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE_END: {
-          dispatch(updateEditConfig({ disableOnClose: false }));
+          dispatch(updateEditConfig({ isSubmitting: false }));
           break;
         }
       }
