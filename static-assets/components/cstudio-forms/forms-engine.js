@@ -73,6 +73,26 @@ var CStudioForms =
     // lookup to check the fields that have the `no-default` attribute set
     const noDefaultLookup = {};
 
+    // This sets the dropup class to bootstrap dropdowns (used to display datasources selected for controls) when
+    // there's no space below to fit the dropdown.
+    $(document)
+      .on('shown.bs.dropdown', '.dropdown', function () {
+        // calculate the required sizes, spaces
+        const $ul = $(this).children('.dropdown-menu');
+        const $button = $(this).children('.dropdown-toggle');
+        const ulOffset = $ul.offset();
+        // how much space would be left on the top if the dropdown opened that direction
+        const spaceUp = ulOffset.top - $button.height() - $ul.height() - $(window).scrollTop();
+        // how much space is left at the bottom
+        const spaceDown = $(window).scrollTop() + $(window).height() - (ulOffset.top + $ul.height());
+        // switch to dropup only if there is no space at the bottom AND there is space at the top, or there isn't either but it would be still better fit
+        if (spaceDown < 0 && (spaceUp >= 0 || spaceUp > spaceDown)) $(this).addClass('dropup');
+      })
+      .on('hidden.bs.dropdown', '.dropdown', function () {
+        // always reset after close
+        $(this).removeClass('dropup');
+      });
+
     // private methods
 
     /**
