@@ -27,6 +27,6 @@ export const validateRequiredField = (value: string, isDirty: boolean) => {
 };
 
 export const isInvalidGroupName = (groupName: string): boolean => {
-  const groupNameRegex = /^[a-zA-Z0-9_\\.\\-]{3,512}$/g;
+  const groupNameRegex = /^[a-zA-Z][\w.-]*$/g;
   return Boolean(groupName) && !groupNameRegex.test(groupName);
 };

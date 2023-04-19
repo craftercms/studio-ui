@@ -16,7 +16,7 @@
 
 export const USER_FIRST_NAME_MIN_LENGTH = 2;
 export const USER_LAST_NAME_MIN_LENGTH = 2;
-export const USER_USERNAME_MIN_LENGTH = 3;
+export const USER_USERNAME_MIN_LENGTH = 5;
 export const USER_USERNAME_MAX_LENGTH = 255;
 export const USER_PASSWORD_MAX_LENGTH = 128;
 export const USER_FIRST_NAME_MAX_LENGTH = 32;
@@ -35,7 +35,7 @@ export const isInvalidEmail = (email: string) => {
 };
 
 export const isInvalidUsername = (username: string) => {
-  const usernameRegex = /^[a-zA-Z0-9_.@]+$/g;
+  const usernameRegex = /^[a-zA-Z][\w.\-@+]+$/g;
   return Boolean(username) && !usernameRegex.test(username);
 };
 
