@@ -18,7 +18,7 @@ import { camelize } from './string';
 import { LookupTable } from '../models/LookupTable';
 import { MutableRefObject } from 'react';
 import { EntityState } from '../models/EntityState';
-import { stringify, StringifyOptions } from 'query-string';
+import queryString, { StringifyOptions } from 'query-string';
 
 export function pluckProps<T extends object, K extends keyof T>(
   source: T,
@@ -199,7 +199,7 @@ export function toQueryString<T extends {} = {}>(args: T, options?: StringifyOpt
     return '';
   }
   options = { prefix: '?', ...options };
-  return `${options.prefix}${stringify(args, options)}`;
+  return `${options.prefix}${queryString.stringify(args, options)}`;
 }
 
 export function applyDeserializedXMLTransforms<T extends object = {}>(

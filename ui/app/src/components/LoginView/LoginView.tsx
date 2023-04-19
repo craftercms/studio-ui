@@ -33,7 +33,7 @@ import LogInForm from '../LoginForm/LoginForm';
 import MenuItem from '@mui/material/MenuItem';
 import { fetchProductLanguages } from '../../services/configuration';
 import WarningRounded from '@mui/icons-material/WarningRounded';
-import { parse } from 'query-string';
+import queryString from 'query-string';
 import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
@@ -209,7 +209,7 @@ function LoginView(props: SubViewProps) {
   useMount(() => {
     username$.next(username);
   });
-  const qsError = parse(window.location.search).error;
+  const qsError = queryString.parse(window.location.search).error;
   useEffect(() => {
     if (qsError) {
       setError(formatMessage(translations.incorrectCredentialsMessage));
@@ -507,7 +507,7 @@ function LanguageDropDown(props: LanguageDropDownProps) {
 export function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
   const { classes, cx } = useStyles();
-  const token = parse(window.location.search).token as string;
+  const token = queryString.parse(window.location.search).token as string;
   const { xsrfToken, xsrfParamName, passwordRequirementsMinComplexity } = props;
 
   const [mode, setMode] = useState<Modes>(token ? 'reset' : 'login');
