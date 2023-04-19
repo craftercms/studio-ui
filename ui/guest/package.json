@@ -109,7 +109,7 @@
     "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hotkeys-hook": "^3.4.7",
+    "react-hotkeys-hook": "^4.4.0",
     "react-is": "^18.2.0",
     "react-redux": "^7.2.9",
     "redux": "^4.2.1",

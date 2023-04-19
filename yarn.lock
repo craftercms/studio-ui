@@ -1741,7 +1741,7 @@ __metadata:
     prop-types: ^15.8.1
     react: 18.2.0
     react-dom: 18.2.0
-    react-hotkeys-hook: ^3.4.7
+    react-hotkeys-hook: ^4.4.0
     react-is: ^18.2.0
     react-redux: ^7.2.9
     redux: ^4.2.1
@@ -1884,7 +1884,7 @@ __metadata:
     react: 18.2.0
     react-animations: ^1.0.0
     react-dom: 18.2.0
-    react-hotkeys-hook: ^3.4.7
+    react-hotkeys-hook: ^4.4.0
     react-infinite-scroller: ^1.2.6
     react-intl: ^6.0.5
     react-redux: ^7.2.9
@@ -9675,13 +9675,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hotkeys-js@npm:3.9.4":
-  version: 3.9.4
-  resolution: "hotkeys-js@npm:3.9.4"
-  checksum: 98c3121d458f960c8804f5d8d6be02c4187aaeee5a0b7df28c8d99705e5f65f67b1140658d8128401892bb07b19d18c5e9ea9e84fe170fb06206b639ad53438b
-  languageName: node
-  linkType: hard
-
 "hpack.js@npm:^2.1.6":
   version: 2.1.6
   resolution: "hpack.js@npm:2.1.6"
@@ -14324,15 +14317,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hotkeys-hook@npm:^3.4.7":
-  version: 3.4.7
-  resolution: "react-hotkeys-hook@npm:3.4.7"
-  dependencies:
-    hotkeys-js: 3.9.4
+"react-hotkeys-hook@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "react-hotkeys-hook@npm:4.4.0"
   peerDependencies:
     react: ">=16.8.1"
     react-dom: ">=16.8.1"
-  checksum: 1ec5d197377713168454d0c4c3f8d609cf8302afd276b267a219beb956de6df5c9a5baf06c244c45368c64538e0881d65eb844bd56c45823752fc8deeaf41031
+  checksum: 1c39bbcbb29bea15fec225facee27fb2b24bc84b385f4492d0eebdafa70a2eb0835454d9ba14d81eb9930cf469600b86e21113cd0899e15d8d5163b26819c5dd
   languageName: node
   linkType: hard
 
