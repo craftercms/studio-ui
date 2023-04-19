@@ -1781,7 +1781,7 @@ __metadata:
     build-if-changed: ^1.5.5
     css-loader: ^6.7.3
     file-loader: ^6.2.0
-    monaco-editor: 0.36.1
+    monaco-editor: 0.37.1
     monaco-editor-webpack-plugin: ^7.0.1
     npm-run-all: ^4.1.5
     rimraf: ^3.0.2
@@ -12258,10 +12258,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.36.1":
-  version: 0.36.1
-  resolution: "monaco-editor@npm:0.36.1"
-  checksum: 75e7cfbe03b4cb964e550c8021d6b2cc4f5265ee17703ddda7a63a26492a95fdbfaf34aa3e50004930ff8afb1422ae2b1dc0b9d3f122d558bdf1a335403937fd
+"monaco-editor@npm:0.37.1":
+  version: 0.37.1
+  resolution: "monaco-editor@npm:0.37.1"
+  checksum: f2ac123d3044a1386d36ba52bb617ad18fb1c745d515a63258858b41c91bb68b71b57c7e5aff3fc2b3226b22c12ca3ad5b14c117babc85eebcf80317cb10691b
   languageName: node
   linkType: hard
 
