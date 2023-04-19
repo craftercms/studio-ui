@@ -1727,7 +1727,7 @@ __metadata:
     "@emotion/styled": ^11.10.6
     "@mui/icons-material": ^5.11.16
     "@mui/material": ^5.12.1
-    "@reduxjs/toolkit": ^1.9.3
+    "@reduxjs/toolkit": ^1.9.5
     "@types/jquery": ^3.5.16
     "@types/js-cookie": ^3.0.3
     "@types/prop-types": ^15.7.5
@@ -1840,7 +1840,7 @@ __metadata:
     "@mui/x-data-grid": ^5.17.26
     "@mui/x-date-pickers": ^5.0.20
     "@prettier/plugin-xml": ^2.2.0
-    "@reduxjs/toolkit": ^1.9.3
+    "@reduxjs/toolkit": ^1.9.5
     "@rollup/plugin-typescript": ^8.5.0
     "@stomp/stompjs": ^7.0.0
     "@types/ace": ^0.0.48
@@ -3512,14 +3512,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@reduxjs/toolkit@npm:^1.9.3":
-  version: 1.9.3
-  resolution: "@reduxjs/toolkit@npm:1.9.3"
+"@reduxjs/toolkit@npm:^1.9.5":
+  version: 1.9.5
+  resolution: "@reduxjs/toolkit@npm:1.9.5"
   dependencies:
-    immer: ^9.0.16
-    redux: ^4.2.0
+    immer: ^9.0.21
+    redux: ^4.2.1
     redux-thunk: ^2.4.2
-    reselect: ^4.1.7
+    reselect: ^4.1.8
   peerDependencies:
     react: ^16.9.0 || ^17.0.0 || ^18
     react-redux: ^7.2.1 || ^8.0.2
@@ -3528,7 +3528,7 @@ __metadata:
       optional: true
     react-redux:
       optional: true
-  checksum: d965fc6197fd420e4b8eb714015aa908d4ea214e6e10889cf4521e64ac4f8e0a7de29ee4e8da63b291acc40ac330dd31682334090d54838add73c746dc590650
+  checksum: 54672c5593d05208af577e948a338f23128d3aa01ef056ab0d40bcfa14400cf6566be99e11715388f12c1d7655cdf7c5c6b63cb92eb0fecf996c454a46a3914c
   languageName: node
   linkType: hard
 
@@ -9944,7 +9944,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:^9.0.16, immer@npm:^9.0.7":
+"immer@npm:^9.0.21":
+  version: 9.0.21
+  resolution: "immer@npm:9.0.21"
+  checksum: 70e3c274165995352f6936695f0ef4723c52c92c92dd0e9afdfe008175af39fa28e76aafb3a2ca9d57d1fb8f796efc4dd1e1cc36f18d33fa5b74f3dfb0375432
+  languageName: node
+  linkType: hard
+
+"immer@npm:^9.0.7":
   version: 9.0.19
   resolution: "immer@npm:9.0.19"
   checksum: f02ee53989989c287cd548a3d817fccf0bfe56db919755ee94a72ea3ae78a00363fba93ee6c010fe54a664380c29c53d44ed4091c6a86cae60957ad2cfabc010
@@ -14738,7 +14745,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:^4.2.0, redux@npm:^4.2.1":
+"redux@npm:^4.2.1":
   version: 4.2.1
   resolution: "redux@npm:4.2.1"
   dependencies:
@@ -14918,10 +14925,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reselect@npm:^4.1.6, reselect@npm:^4.1.7":
+"reselect@npm:^4.1.6":
   version: 4.1.7
   resolution: "reselect@npm:4.1.7"
   checksum: 738d8e2b8f0dca154ad29de6a209c9fbca2d70ae6788fd85df87f2c74b95a65bbf2d16d43a9e2faff39de34d17a29d706ba08a6b2ee5660c09589edbd19af7e1
+  languageName: node
+  linkType: hard
+
+"reselect@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "reselect@npm:4.1.8"
+  checksum: a4ac87cedab198769a29be92bc221c32da76cfdad6911eda67b4d3e7136dca86208c3b210e31632eae31ebd2cded18596f0dd230d3ccc9e978df22f233b5583e
   languageName: node
   linkType: hard
 
