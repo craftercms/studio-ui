@@ -30,6 +30,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
     items,
     childItems,
     dependentItems,
+    disabledDependentItems,
     comment,
     selectedItems,
     isCommentRequired = false,
@@ -63,6 +64,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
               <FormattedMessage id="deleteDialog.emptyDependentItems" defaultMessage="No dependent items" />
             }
             paths={dependentItems}
+            disabledPaths={disabledDependentItems}
             displayItemTitle={false}
             onSelectAllClicked={onSelectAllDependantClicked}
             onItemClicked={onItemClicked}

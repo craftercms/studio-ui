@@ -30,6 +30,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
     items,
     childItems,
     dependentItems,
+    disabledDependentItems,
     error,
     submitError,
     isFetching,
@@ -66,6 +67,7 @@ export function DeleteDialogUI(props: DeleteDialogUIProps) {
             items={items}
             childItems={childItems}
             dependentItems={dependentItems}
+            disabledDependentItems={disabledDependentItems}
             comment={comment}
             onCommentChange={onCommentChange}
             isCommentRequired={isCommentRequired}

@@ -46,7 +46,8 @@ export interface SelectionListProps {
   displayItemTitle: boolean;
   // Optional since list may not have checkboxes
   selectedItems?: LookupTable<boolean>;
-  disabled?: boolean;
+  disabled?: boolean; // Entire Selection List disabled
+  disabledPaths?: string[]; // List of disabled paths
   onItemClicked?(event: React.MouseEvent, path: string): void;
   onSelectAllClicked?(event: React.ChangeEvent, checked: boolean): void;
   onEditClick?(event: React.MouseEvent, path: string): void;
@@ -105,6 +106,7 @@ export function SelectionList(props: SelectionListProps) {
     onSelectAllClicked,
     selectedItems,
     disabled = false,
+    disabledPaths = [],
     onEditClick
   } = props;
   // endregion
@@ -160,7 +162,7 @@ export function SelectionList(props: SelectionListProps) {
               <ListItem
                 dense
                 key={item.path}
-                disabled={disabled}
+                disabled={disabled || disabledPaths.includes(item.path)}
                 // @ts-ignore
                 button={Boolean(onItemClicked)}
                 onClick={onItemClicked ? (e) => onItemClicked(e, item.path) : void 0}
@@ -174,7 +176,7 @@ export function SelectionList(props: SelectionListProps) {
                       tabIndex={-1}
                       disableRipple
                       inputProps={{ 'aria-labelledby': item.path }}
-                      disabled={disabled}
+                      disabled={disabled || disabledPaths.includes(item.path)}
                     />
                   </ListItemIcon>
                 )}
@@ -258,7 +260,7 @@ export function SelectionList(props: SelectionListProps) {
                 <ListItem
                   dense
                   key={path}
-                  disabled={disabled}
+                  disabled={disabled || disabledPaths.includes(path)}
                   // @ts-ignore
                   button={Boolean(onItemClicked)}
                   onClick={onItemClicked ? (e) => onItemClicked(e, path) : null}
@@ -272,7 +274,7 @@ export function SelectionList(props: SelectionListProps) {
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ 'aria-labelledby': path }}
-                        disabled={disabled}
+                        disabled={disabled || disabledPaths.includes(path)}
                       />
                     </ListItemIcon>
                   )}
