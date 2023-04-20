@@ -116,10 +116,10 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   },
 
   getRequirementCount: function () {
-    // 2 Requirement:
+    // 2 Requirements for this field, both will be validated as one (since it's only one field in the form):
     // 1. The field is required
     // 2. The Path must be valid
-    return 2;
+    return 1;
   },
 
   getCurrentPath: function () {
@@ -134,7 +134,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
   _onChange: function (evt, obj) {
     var oldValue = obj.value;
     obj.value = obj.inputEl.value;
-    if (obj.value != '' && oldValue != obj.value)
+    if (oldValue != obj.value)
       // Just check if the value was changed
       obj.filenameAvailable();
 
