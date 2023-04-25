@@ -42,23 +42,34 @@ export function initTinyMCE(
   const { field, model } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
   const inlineElsRegex =
-    /B|BIG|I|SMALL|TT|ABBR|ACRINYM|CITE|CODE|DFN|EM|KBD|STRONG|SAMP|VAR|A|BDO|BR|IMG|MAP|OBJECT|Q|SCRIPT|SPAN|SUB|SUP|BUTTON|INPUT|LABEL|SELECT|TEXTAREA/;
+    /^B$|^BIG$|^I$|^SMALL$|^TT$|^ABBR$|^ACRINYM$|^CITE$|^CODE$|^DFN$|^EM$|^KBD$|^STRONG$|^SAMP$|^VAR$|^A$|^BDO$|^BR$|^IMG$|^MAP$|^OBJECT$|^Q$|^SCRIPT$|^SPAN$|^SUB$|^SUP$|^BUTTON$|^INPUT$|^LABEL$|^SELECT$|^TEXTAREA$/;
   let rteEl = record.element;
   const isRecordElInline = record.element.tagName.match(inlineElsRegex);
 
   // If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
   if (isRecordElInline) {
+    const recordEl = record.element;
     const blockEl = document.createElement('div');
-    blockEl.innerHTML = record.element.innerHTML;
+    blockEl.innerHTML = recordEl.innerHTML;
+
+    // Copy original element inline styles (copying all styles causes issues with XB styles because they end up all
+    // being inline styles).
+    const inlineStyles = recordEl.style;
+    blockEl.style.cssText = Array.from(inlineStyles).reduce((str, property) => {
+      return `${str}${property}:${inlineStyles.getPropertyValue(property)};`;
+    }, '');
+
+    // Copy original element className
+    blockEl.className = recordEl.className;
     blockEl.style.display = 'inline-block';
 
-    blockEl.style.minHeight = record.element.offsetHeight + 'px';
+    blockEl.style.minHeight = recordEl.offsetHeight + 'px';
     blockEl.style.minWidth = '10px';
     rteEl = blockEl;
 
     // Hide original element
-    record.element.style.display = 'none';
-    record.element.parentNode.insertBefore(rteEl, record.element);
+    recordEl.style.display = 'none';
+    recordEl.parentNode.insertBefore(rteEl, recordEl);
   }
 
   const openEditForm = () => {
