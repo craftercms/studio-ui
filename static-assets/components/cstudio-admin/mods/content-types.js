@@ -2696,7 +2696,7 @@
 
           var updatePropertyFn = function (name, value) {
             for (var l = item.properties.length - 1; l >= 0; l--) {
-              if (item.properties[l].name === name) {
+              if (item.properties[l].name === name && item.properties[l].value !== value) {
                 onSetDirty(true);
                 item.properties[l].value =
                   typeof value == 'object' && !Array.isArray(value) ? JSON.stringify(value) : value;
