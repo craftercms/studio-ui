@@ -47,6 +47,8 @@ export function initTinyMCE(
   const isRecordElInline = record.element.tagName.match(inlineElsRegex);
 
   // If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
+  // This is because of an issue happening with inline elements (for example a span tag even with 'display: block' style
+  // was still causing an issue, and also for example a div element with 'display: inline' doesn't present the issue).
   if (isRecordElInline) {
     const recordEl = record.element;
     const blockEl = document.createElement('div');
