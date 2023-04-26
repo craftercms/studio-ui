@@ -63,7 +63,10 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const authoringBase = useSelection((state) => state.env.authoringBase);
   const itemsByPath = useItemsByPath();
   useFetchSandboxItems(dependentItems ?? []);
-  const disabledDependentItems = dependentItems?.filter((item) => !itemsByPath[item].availableActionsMap.delete) ?? [];
+  const disabledDependentItems = createPresenceTable(
+    dependentItems?.filter((item) => !itemsByPath[item].availableActionsMap.delete) ?? [],
+    true
+  );
 
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);
@@ -130,8 +133,8 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   };
 
   const onSelectAllDependantClicked = () => {
-    const selectableDependent = dependentItems.filter((item) => !disabledDependentItems.includes(item));
-    const setChecked = Boolean(selectableDependent.find((path) => !selectedItems[path]));
+    const selectableDependent = dependentItems.filter((item) => !disabledDependentItems[item]);
+    const setChecked = selectableDependent.some((path) => !selectedItems[path]);
     // Clean up all set to `false` from the selected lookup.
     const cleanLookup = createPresenceTable(createCheckedList(selectedItems, selectableDependent));
     const nextChecked = {
