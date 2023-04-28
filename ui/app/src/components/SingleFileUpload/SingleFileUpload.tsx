@@ -260,7 +260,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       setFileNameErrorClass('');
       validateActionPolicy(site, {
         type: 'CREATE',
-        target: path + file.name,
+        target: `${path}${path.endsWith('/') ? '' : '/'}${file.name}`,
         contentMetadata: {
           fileSize: file.size
         }

@@ -322,7 +322,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       of(desktopAssetDragEnded()),
                       validateActionPolicy(state.activeSite, {
                         type: 'CREATE',
-                        target: path + file.name,
+                        target: `${path}${path.endsWith('/') ? '' : '/'}${file.name}`,
                         contentMetadata: {
                           fileSize: file.size
                         }
