@@ -24,6 +24,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import User from '../../models/User';
+import { USER_USERNAME_MAX_LENGTH } from '../UserManagement/utils';
 
 export interface UsersAutocompleteProps {
   value: User[];
@@ -86,6 +87,7 @@ export function UsersAutocomplete(props: UsersAutocompleteProps) {
         <TextField
           {...params}
           label={<FormattedMessage id="words.username" defaultMessage="Username" />}
+          inputProps={{ ...params.inputProps, maxLength: USER_USERNAME_MAX_LENGTH }}
           onChange={(e) => {
             keyword$.next(e.target.value);
           }}
