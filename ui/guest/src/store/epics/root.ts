@@ -38,6 +38,8 @@ import {
   getCachedModel,
   getCachedModels,
   getCachedSandboxItem,
+  getModelIdFromInheritedField,
+  isInheritedField,
   modelHierarchyMap
 } from '../../contentController';
 import { interval, merge, NEVER, Observable, of, Subscriber } from 'rxjs';
@@ -224,10 +226,14 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           const path = models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
           const cachedSandboxItem = getCachedSandboxItem(path);
 
+          const pathToLock = isInheritedField(modelId, record.fieldId)
+            ? models[getModelIdFromInheritedField(modelId, record.fieldId)].craftercms.path
+            : path;
+
           // TODO: In the case of "move", only locking the source dropzone currently.
           // The item unlock happens with write content API
           return beforeWrite$({
-            path,
+            path: pathToLock,
             site: state.activeSite,
             username: state.username,
             localItem: cachedSandboxItem
@@ -533,12 +539,16 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                 const path = models[parentModelId ?? modelId].craftercms.path;
                 const cachedSandboxItem = getCachedSandboxItem(path);
 
+                const pathToLock = isInheritedField(modelId, field.id)
+                  ? models[getModelIdFromInheritedField(modelId, field.id)].craftercms.path
+                  : path;
+
                 return beforeWrite$({
-                  path,
+                  path: pathToLock,
                   site: state.activeSite,
                   username: state.username,
                   localItem: cachedSandboxItem
-                }).pipe(switchMap(() => initTinyMCE(path, record, validations, type === 'html' ? setup : {})));
+                }).pipe(switchMap(() => initTinyMCE(pathToLock, record, validations, type === 'html' ? setup : {})));
               }
               break;
             }
