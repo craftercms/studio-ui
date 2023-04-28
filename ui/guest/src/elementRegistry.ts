@@ -20,6 +20,7 @@ import {
   byPathFetchIfNotLoaded,
   getCachedContentType,
   getCachedModels,
+  getCachedModel,
   hasCachedModel,
   isInheritedField,
   model$
@@ -148,18 +149,35 @@ export function register(payload: ElementRecordRegistration): number {
     };
   }
 
+  function completeRegistration(id) {
+    const model = getCachedModel(modelId);
+    // The field may be inherited (for example, from a level descriptor), so it needs to be checked, and if so, wait
+    // for the model to be loaded.
+    if (model.craftercms.sourceMap?.[fieldId]) {
+      byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
+        model$(response.craftercms.id)
+          .pipe(take(1))
+          .subscribe(() => {
+            create();
+            completeDeferredRegistration(id);
+          });
+      });
+    } else {
+      create();
+      completeDeferredRegistration(id);
+    }
+  }
+
   // If the relevant model is loaded, complete it's registration, otherwise,
   // request it and complete registration when it does load.
   if (hasCachedModel(modelId)) {
-    create();
-    completeDeferredRegistration(id);
+    completeRegistration(id);
   } else {
     path && byPathFetchIfNotLoaded(path).subscribe();
     model$(modelId)
       .pipe(take(1))
       .subscribe(() => {
-        create();
-        completeDeferredRegistration(id);
+        completeRegistration(id);
       });
   }
 
