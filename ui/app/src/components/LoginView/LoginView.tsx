@@ -47,6 +47,7 @@ import Menu from '@mui/material/Menu';
 import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
+import { USER_USERNAME_MAX_LENGTH } from '../UserManagement/utils';
 
 export interface SystemLang {
   id: string;
@@ -299,6 +300,7 @@ function RecoverView(props: SubViewProps) {
           onChange={(e: any) => setUsername(e.target.value)}
           className={classes?.username}
           label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
+          inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
         />
         <Button
           type="submit"

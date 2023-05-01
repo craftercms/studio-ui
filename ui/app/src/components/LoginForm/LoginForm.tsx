@@ -20,6 +20,7 @@ import { FormattedMessage } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 import Button from '@mui/material/Button';
 import { makeStyles } from 'tss-react/mui';
+import { USER_PASSWORD_MAX_LENGTH, USER_USERNAME_MAX_LENGTH } from '../UserManagement/utils';
 
 export type LogInFormProps = PropsWithChildren<{
   username: string;
@@ -87,6 +88,7 @@ export function LogInForm(props: LogInFormProps) {
         className={cx(cls.spacing, classes?.username)}
         label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
         InputLabelProps={{ className: cls.inputLabel }}
+        inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
       />
       <PasswordTextField
         id="loginFormPasswordField"
@@ -98,6 +100,7 @@ export function LogInForm(props: LogInFormProps) {
         className={cx(cls.spacing, classes?.password, 'last-before-button')}
         label={<FormattedMessage id="authMonitor.passwordTextFieldLabel" defaultMessage="Password" />}
         InputLabelProps={{ className: cls.inputLabel }}
+        inputProps={{ maxLength: USER_PASSWORD_MAX_LENGTH }}
       />
       {xsrfParamName && <input type="hidden" name={xsrfParamName} value={xsrfToken} />}
       <Button
