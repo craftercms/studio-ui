@@ -11,7 +11,7 @@
   "dependencies": {
     "css-loader": "^6.7.3",
     "file-loader": "^6.2.0",
-    "monaco-editor": "0.37.1",
+    "monaco-editor": "0.38.0",
     "style-loader": "^3.3.2"
   },
   "devDependencies": {
