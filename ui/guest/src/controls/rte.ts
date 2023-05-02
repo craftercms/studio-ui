@@ -42,20 +42,25 @@ export function initTinyMCE(
   const { field, model } = iceRegistry.getReferentialEntries(record.iceIds[0]);
   const type = field?.type;
   const inlineElsRegex =
-    /^B$|^BIG$|^I$|^SMALL$|^TT$|^ABBR$|^ACRINYM$|^CITE$|^CODE$|^DFN$|^EM$|^KBD$|^STRONG$|^SAMP$|^VAR$|^A$|^BDO$|^BR$|^IMG$|^MAP$|^OBJECT$|^Q$|^SCRIPT$|^SPAN$|^SUB$|^SUP$|^BUTTON$|^INPUT$|^LABEL$|^SELECT$|^TEXTAREA$/;
+    /^(B|BIG|I|SMALL|TT|ABBR|ACRINYM|CITE|CODE|DFN|EM|KBD|STRONG|SAMP|VAR|A|BDO|BR|IMG|MAP|OBJECT|Q|SCRIPT|SPAN|SUB|SUP|BUTTON|INPUT|LABEL|SELECT|TEXTAREA)$/;
   let rteEl = record.element;
   const isRecordElInline = record.element.tagName.match(inlineElsRegex);
 
   // If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
   // This is because of an issue happening with inline elements (for example a span tag even with 'display: block' style
   // was still causing an issue, and also for example a div element with 'display: inline' doesn't present the issue).
+  // https://github.com/craftercms/craftercms/issues/5212
   if (isRecordElInline) {
     const recordEl = record.element;
     const blockEl = document.createElement('div');
     blockEl.innerHTML = recordEl.innerHTML;
 
-    // Copy original element inline styles (copying all styles causes issues with XB styles because they end up all
-    // being inline styles).
+    /*
+     * Get and copy only the inline styles (from the 'style' prop) of the element. If we want to retrieve all the styles
+     * (inline styles and styles applied from css files, etc.) we would use `window.getComputedStyle(element)`, but
+     * that may cause an issue because all the styles would become inline styles and have higher precedence than other
+     * styles (for example styles applied by XB).
+     * */
     const inlineStyles = recordEl.style;
     blockEl.style.cssText = Array.from(inlineStyles).reduce((str, property) => {
       return `${str}${property}:${inlineStyles.getPropertyValue(property)};`;
