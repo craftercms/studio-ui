@@ -36,7 +36,6 @@ import {
   getCachedSandboxItem,
   getModelIdFromInheritedField,
   insertItem,
-  isInheritedField,
   modelHierarchyMap,
   sortDownItem,
   sortUpItem
@@ -198,7 +197,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     } else {
       let modelIdToEdit = modelId;
       // If inherited field - set correct modelId to edit
-      if (isInheritedField(modelId, fieldId)) {
+      if (record.inherited) {
         modelIdToEdit = getModelIdFromInheritedField(modelId, fieldId);
       }
       const parentModelId = getParentModelId(modelIdToEdit, getCachedModels(), modelHierarchyMap);

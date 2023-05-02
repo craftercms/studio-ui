@@ -226,7 +226,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           const path = models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
           const cachedSandboxItem = getCachedSandboxItem(path);
 
-          const pathToLock = isInheritedField(modelId, record.fieldId)
+          const pathToLock = record.inherited
             ? models[getModelIdFromInheritedField(modelId, record.fieldId)].craftercms.path
             : path;
 

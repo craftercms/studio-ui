@@ -153,7 +153,7 @@ export function register(payload: ElementRecordRegistration): number {
     const model = getCachedModel(modelId);
     // The field may be inherited (for example, from a level descriptor), so it needs to be checked, and if so, wait
     // for the model to be loaded.
-    if (model.craftercms.sourceMap?.[fieldId]) {
+    if (isInheritedField(model.craftercms.id, fieldId)) {
       byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
         model$(response.craftercms.id)
           .pipe(take(1))
