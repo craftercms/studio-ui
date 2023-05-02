@@ -64,7 +64,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const itemsByPath = useItemsByPath();
   useFetchSandboxItems(dependentItems ?? []);
   const disabledDependentItems = createPresenceTable(
-    dependentItems?.filter((item) => !itemsByPath[item].availableActionsMap.delete) ?? [],
+    dependentItems?.filter((path) => !itemsByPath[path]?.availableActionsMap.delete) ?? [],
     true
   );
 
