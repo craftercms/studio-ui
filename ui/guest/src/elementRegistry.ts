@@ -195,7 +195,7 @@ export function completeDeferredRegistration(id: number): void {
         registry[iceId] = [];
       }
       registry[iceId].push(record.id);
-      iceIds.push(iceId);
+      !iceIds.includes(iceId) && iceIds.push(iceId);
     });
   } else {
     const iceId = iceRegistry.register({ modelId, index });
@@ -203,7 +203,7 @@ export function completeDeferredRegistration(id: number): void {
       registry[iceId] = [];
     }
     registry[iceId].push(record.id);
-    iceIds.push(iceId);
+    !iceIds.includes(iceId) && iceIds.push(iceId);
   }
 
   db[id].complete = true;
