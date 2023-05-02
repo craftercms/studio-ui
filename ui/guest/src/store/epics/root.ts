@@ -96,6 +96,7 @@ import { validateActionPolicy } from '@craftercms/studio-ui/services/sites';
 import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
+import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -322,7 +323,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       of(desktopAssetDragEnded()),
                       validateActionPolicy(state.activeSite, {
                         type: 'CREATE',
-                        target: `${path}${path.endsWith('/') ? '' : '/'}${file.name}`,
+                        target: ensureSingleSlash(`${path}/${file.name}`),
                         contentMetadata: {
                           fileSize: file.size
                         }

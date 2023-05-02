@@ -32,6 +32,7 @@ import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
+import { ensureSingleSlash } from '../../utils/string';
 
 const messages = defineMessages({
   chooseFile: {
@@ -260,7 +261,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       setFileNameErrorClass('');
       validateActionPolicy(site, {
         type: 'CREATE',
-        target: `${path}${path.endsWith('/') ? '' : '/'}${file.name}`,
+        target: ensureSingleSlash(`${path}/${file.name}`),
         contentMetadata: {
           fileSize: file.size
         }
