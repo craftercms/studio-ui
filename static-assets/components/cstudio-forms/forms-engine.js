@@ -72,6 +72,7 @@ var CStudioForms =
     const defaultValuesLookup = {};
     // lookup to check the fields that have the `no-default` attribute set
     const noDefaultLookup = {};
+    let disableClose = false;
 
     // This sets the dropup class to bootstrap dropdowns (used to display datasources selected for controls) when
     // there's no space below to fit the dropdown.
@@ -846,14 +847,16 @@ var CStudioForms =
       if (enabled === undefined) {
         enabled = true;
       }
+      disableClose = !enabled;
+      const cancelBtnEl = document.getElementById('cancelBtn');
+      if (cancelBtnEl) cancelBtnEl.disabled = !enabled;
 
-      var saveAndCloseEl = document.getElementById('cstudioSaveAndClose');
-      var saveAndPreviewEl = document.getElementById('cstudioSaveAndPreview');
-      var saveAndCloseDraftEl = document.getElementById('cstudioSaveAndCloseDraft');
+      const payload = {
+        type: enabled ? 'EMBEDDED_LEGACY_FORM_SAVE_END' : 'EMBEDDED_LEGACY_FORM_SAVE_START'
+      };
 
-      if (saveAndCloseEl) saveAndCloseEl.disabled = !enabled;
-      if (saveAndPreviewEl) saveAndPreviewEl.disabled = !enabled;
-      if (saveAndCloseDraftEl) saveAndCloseDraftEl.disabled = !enabled;
+      window.postMessage(payload, '*');
+      window.top.postMessage(payload, '*');
     }
 
     function resolvePendingComponents(doc) {
@@ -1416,7 +1419,6 @@ var CStudioForms =
             showWarnMsg = false;
             var saveDraft = draft == true ? true : false;
 
-            // TODO make Buttons Disabled/Progress
             setButtonsEnabled(false);
 
             var entityId = buildEntityIdFn(draft);
@@ -1529,7 +1531,6 @@ var CStudioForms =
                         var formId = CStudioAuthoring.Utils.getQueryVariable(location.search.substring(1), 'wid');
                         var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
 
-                        // TODO: We need a method to set disable the .render Buttons;
                         setButtonsEnabled(true);
                         sendMessage({ type: CHILD_FORM_DRAFT_COMPLETE });
 
@@ -1789,98 +1790,68 @@ var CStudioForms =
 
             var flag = isModified();
 
-            if (showWarnMsg && (flag || repeatEdited)) {
-              if (CStudioAuthoring.InContextEdit.isDialogCollapsed()) {
-                collapseFn();
-              }
-              var dialogEl = document.getElementById('closeUserWarning');
-              if (!dialogEl) {
-                var dialog = new YAHOO.widget.SimpleDialog('closeUserWarning', {
-                  width: '300px',
-                  fixedcenter: true,
-                  visible: false,
-                  draggable: false,
-                  close: false,
-                  modal: true,
-                  text: message,
-                  icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-                  constraintoviewport: true,
-                  buttons: [
-                    {
-                      text: CMgs.format(formsLangBundle, 'yes'),
-                      handler: function () {
-                        if (iceWindowCallback && iceWindowCallback.cancelled) {
-                          iceWindowCallback.cancelled();
-                        }
-                        sendMessage({ type: FORM_CANCEL });
-                        this.destroy();
-                        var entityId = buildEntityIdFn(null);
-                        showWarnMsg = false;
+            if (!disableClose) {
+              if (showWarnMsg && (flag || repeatEdited)) {
+                if (CStudioAuthoring.InContextEdit.isDialogCollapsed()) {
+                  collapseFn();
+                }
+                $(document).trigger('CloseFormWithChangesUserWarningDialogShown');
 
-                        var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
-                        if (path && path.indexOf('.xml') != -1) {
-                          unlockBeforeCancel(path);
-                        } else {
-                          _notifyServer = false;
-                          var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                CStudioAuthoring.Utils.showConfirmDialog(null, message, () => {
+                  if (iceWindowCallback && iceWindowCallback.cancelled) {
+                    iceWindowCallback.cancelled();
+                  }
+                  sendMessage({ type: FORM_CANCEL });
+                  var entityId = buildEntityIdFn(null);
+                  showWarnMsg = false;
+
+                  var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
+                  if (path && path.indexOf('.xml') != -1) {
+                    unlockBeforeCancel(path);
+                  } else {
+                    _notifyServer = false;
+                    var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                    CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+
+                    if (path == '/site/components/page') {
+                      CStudioAuthoring.Operations.refreshPreview();
+                    }
+                  }
+                });
+              } else {
+                if (iceWindowCallback && iceWindowCallback.cancelled) {
+                  iceWindowCallback.cancelled();
+                }
+                //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
+                sendMessage({ type: FORM_CANCEL });
+                var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0],
+                  editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                if (acnDraftContent) {
+                  unlockBeforeCancel(path);
+                } else {
+                  if (!form.readOnly && path && path.indexOf('.xml') != -1 && !me.config.isInclude) {
+                    const entityId = buildEntityIdFn(null, Boolean(CStudioForms.currentValidFolder));
+                    CrafterCMSNext.services.content
+                      .unlock(CStudioAuthoringContext.site, entityId)
+                      .subscribe((response) => {
+                        YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
+
+                        if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
                           CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-
-                          if (path == '/site/components/page') {
-                            CStudioAuthoring.Operations.refreshPreview();
+                          var componentsOn = !!sessionStorage.getItem('components-on');
+                          if (componentsOn) {
+                            CStudioAuthoring.Operations.refreshPreviewParent();
+                          }
+                        } else {
+                          window.close();
+                          if (componentsOn) {
+                            CStudioAuthoring.Operations.refreshPreviewParent();
                           }
                         }
-                      },
-                      isDefault: false
-                    },
-                    {
-                      text: CMgs.format(formsLangBundle, 'no'),
-                      handler: function () {
-                        this.destroy();
-                      },
-                      isDefault: true
-                    }
-                  ]
-                });
-                dialog.setHeader(CMgs.format(formsLangBundle, 'cancelDialogHeader'));
-                dialog.render(document.body);
-                dialogEl = document.getElementById('closeUserWarning');
-                dialogEl.dialog = dialog;
-              }
-              $(document).trigger('CloseFormWithChangesUserWarningDialogShown');
-              dialogEl.dialog.show();
-            } else {
-              if (iceWindowCallback && iceWindowCallback.cancelled) {
-                iceWindowCallback.cancelled();
-              }
-              //Message to unsubscribe FORM_ENGINE_MESSAGE_POSTED
-              sendMessage({ type: FORM_CANCEL });
-              var acnDraftContent = YDom.getElementsByClassName('acnDraftContent', null, parent.document)[0],
-                editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-              if (acnDraftContent) {
-                unlockBeforeCancel(path);
-              } else {
-                if (!form.readOnly && path && path.indexOf('.xml') != -1 && !me.config.isInclude) {
-                  const entityId = buildEntityIdFn(null, Boolean(CStudioForms.currentValidFolder));
-                  CrafterCMSNext.services.content
-                    .unlock(CStudioAuthoringContext.site, entityId)
-                    .subscribe((response) => {
-                      YAHOO.util.Event.removeListener(window, 'beforeunload', unloadFn, me);
-
-                      if ((iceId && iceId != '') || (iceComponent && iceComponent != '')) {
-                        CStudioAuthoring.InContextEdit.unstackDialog(editorId);
-                        var componentsOn = !!sessionStorage.getItem('components-on');
-                        if (componentsOn) {
-                          CStudioAuthoring.Operations.refreshPreviewParent();
-                        }
-                      } else {
-                        window.close();
-                        if (componentsOn) {
-                          CStudioAuthoring.Operations.refreshPreviewParent();
-                        }
-                      }
-                    });
-                } else {
-                  CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                      });
+                  } else {
+                    CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                  }
                 }
               }
             }
@@ -1925,7 +1896,41 @@ var CStudioForms =
                 const onMultiChoiceSaveButtonClick = (e, type) => {
                   saveFn(type === 'saveAndPreview', type !== 'saveAndClose', null, type);
                 };
-                CrafterCMSNext.render(buttonsContainer, 'MultiChoiceSaveButton', {
+
+                const React = craftercms.libs.React;
+                const MultiChoiceSaveButton = craftercms.components.MultiChoiceSaveButton;
+
+                function LegacyMultiChoiceSaveButton(props) {
+                  const [disabled, setDisabled] = React.useState(props.disabled);
+
+                  React.useEffect(() => {
+                    const messagesSubscription = craftercms.libs.rxjs
+                      .fromEvent(window, 'message')
+                      .pipe(craftercms.libs.rxjs.filter((e) => e.data && e.data.type))
+                      .subscribe((e) => {
+                        switch (e.data.type) {
+                          case 'EMBEDDED_LEGACY_FORM_SAVE_START': {
+                            setDisabled(true);
+                            break;
+                          }
+                          case 'EMBEDDED_LEGACY_FORM_SAVE_END': {
+                            setDisabled(false);
+                            break;
+                          }
+                        }
+                        return () => {
+                          messagesSubscription.unsubscribe();
+                        };
+                      });
+                  }, []);
+
+                  return React.createElement(MultiChoiceSaveButton, {
+                    ...props,
+                    disabled
+                  });
+                }
+
+                CrafterCMSNext.render(buttonsContainer, LegacyMultiChoiceSaveButton, {
                   defaultSelected,
                   disablePortal: false,
                   storageKey: storedId,

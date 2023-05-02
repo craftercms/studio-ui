@@ -27,7 +27,7 @@ import { translations } from './translations';
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
   const { classes } = useStyles();
-  const { open, inProgress, disableOnClose, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
+  const { open, inProgress, isSubmitting, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
 
   const iframeRef = useRef<HTMLIFrameElement>();
 
@@ -36,7 +36,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const onClose = (e, reason?) => {
     // The form engine is too expensive to load to lose it with an unintentional
     // backdrop click. Disabling backdrop click until form engine 2.
-    if ('backdropClick' !== reason) {
+    if ('backdropClick' !== reason && !isSubmitting) {
       if (inProgress) {
         props?.onClose();
       }
@@ -61,7 +61,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         {!disableHeader && (
           <DialogHeader
             title={title}
-            disabled={disableOnClose}
+            disabled={isSubmitting}
             onCloseButtonClick={onCloseButtonClick}
             rightActions={[
               {

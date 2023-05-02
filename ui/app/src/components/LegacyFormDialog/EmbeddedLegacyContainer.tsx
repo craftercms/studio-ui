@@ -34,6 +34,8 @@ import {
   EMBEDDED_LEGACY_FORM_RENDER_FAILED,
   EMBEDDED_LEGACY_FORM_RENDERED,
   EMBEDDED_LEGACY_FORM_SAVE,
+  EMBEDDED_LEGACY_FORM_SAVE_END,
+  EMBEDDED_LEGACY_FORM_SAVE_START,
   EMBEDDED_LEGACY_FORM_SUCCESS,
   EMBEDDED_LEGACY_MINIMIZE_REQUEST,
   reloadRequest
@@ -182,11 +184,11 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           break;
         }
         case EMBEDDED_LEGACY_FORM_ENABLE_ON_CLOSE: {
-          dispatch(updateEditConfig({ disableOnClose: false }));
+          dispatch(updateEditConfig({ isSubmitting: false }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_DISABLE_ON_CLOSE: {
-          dispatch(updateEditConfig({ disableOnClose: true }));
+          dispatch(updateEditConfig({ isSubmitting: true }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_ENABLE_HEADER: {
@@ -240,6 +242,14 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         }
         case EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE: {
           dispatch(updateEditConfig({ readonly: false }));
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_SAVE_START: {
+          dispatch(updateEditConfig({ isSubmitting: true }));
+          break;
+        }
+        case EMBEDDED_LEGACY_FORM_SAVE_END: {
+          dispatch(updateEditConfig({ isSubmitting: false }));
           break;
         }
       }
