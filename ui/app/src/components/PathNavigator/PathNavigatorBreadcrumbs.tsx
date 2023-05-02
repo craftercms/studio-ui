@@ -104,37 +104,35 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           </div>
         </section>
       )}
-      <Box component="section" className={classes.widgetSection} sx={{ display: 'flex' }}>
-        {((showSearch && onSearch) || forceSearch) && (
-          <>
-            <SearchBar
-              autoFocus={!forceSearch}
-              onChange={onChange}
-              keyword={keyword}
-              placeholder={formatMessage(messages.filter, { name: breadcrumb[breadcrumb.length - 1]?.label })}
-              showActionButton={Boolean(keyword)}
-              classes={{
-                root: clsx(classes.searchRoot, props.classes?.searchRoot),
-                inputInput: clsx(classes.searchInput, props.classes?.searchInput),
-                actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+      {((showSearch && onSearch) || forceSearch) && (
+        <Box component="section" className={classes.widgetSection} sx={{ display: 'flex' }}>
+          <SearchBar
+            autoFocus={!forceSearch}
+            onChange={onChange}
+            keyword={keyword}
+            placeholder={formatMessage(messages.filter, { name: breadcrumb[breadcrumb.length - 1]?.label })}
+            showActionButton={Boolean(keyword)}
+            classes={{
+              root: clsx(classes.searchRoot, props.classes?.searchRoot),
+              inputInput: clsx(classes.searchInput, props.classes?.searchInput),
+              actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+            }}
+          />
+          {!forceSearch && (
+            <IconButton
+              size="small"
+              onClick={() => {
+                onSearch('');
+                setShowSearch(false);
               }}
-            />
-            {!forceSearch && (
-              <IconButton
-                size="small"
-                onClick={() => {
-                  onSearch('');
-                  setShowSearch(false);
-                }}
-                className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
-                sx={{ marginTop: '5px', marginBottom: '5px' }}
-              >
-                <CloseIconRounded />
-              </IconButton>
-            )}
-          </>
-        )}
-      </Box>
+              className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+              sx={{ marginTop: '5px', marginBottom: '5px' }}
+            >
+              <CloseIconRounded />
+            </IconButton>
+          )}
+        </Box>
+      )}
     </>
   );
 }
