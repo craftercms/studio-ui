@@ -1850,7 +1850,7 @@ __metadata:
     "@mui/x-date-pickers": ^6.3.0
     "@prettier/plugin-xml": ^2.2.0
     "@reduxjs/toolkit": ^1.9.5
-    "@rollup/plugin-typescript": ^8.5.0
+    "@rollup/plugin-typescript": ^11.1.0
     "@stomp/stompjs": ^7.0.0
     "@types/ace": ^0.0.48
     "@types/graphql": ^14.5.0
@@ -1922,7 +1922,7 @@ __metadata:
   dependencies:
     "@rollup/plugin-commonjs": ^24.1.0
     "@rollup/plugin-node-resolve": ^15.0.2
-    "@rollup/plugin-replace": ^3.1.0
+    "@rollup/plugin-replace": ^5.0.2
     "@types/node": ^18.16.3
     "@types/rimraf": ^4.0.5
     browserslist: ^4.21.5
@@ -3565,32 +3565,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rollup/plugin-replace@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@rollup/plugin-replace@npm:3.1.0"
+"@rollup/plugin-replace@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@rollup/plugin-replace@npm:5.0.2"
   dependencies:
-    "@rollup/pluginutils": ^3.1.0
-    magic-string: ^0.25.7
+    "@rollup/pluginutils": ^5.0.1
+    magic-string: ^0.27.0
   peerDependencies:
-    rollup: ^1.20.0 || ^2.0.0
-  checksum: 9f833d40f7ebd6bb32b1c7a118fedd27a6d63e591018543740c78d3bc6fe67efa7048c6457bcadf8f982385b78e33ff8e38a67ddd4d11c15d9c81898a0757c13
+    rollup: ^1.20.0||^2.0.0||^3.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 3a91b5fa2ce5acfe67c1faf8d479585da30f398f29499cf8a2d2153c899af0b2ef0363012db0e6edc2ebbb3d9fad6dd7ad591c9d977c1ae2ca3256b52e86d950
   languageName: node
   linkType: hard
 
-"@rollup/plugin-typescript@npm:^8.5.0":
-  version: 8.5.0
-  resolution: "@rollup/plugin-typescript@npm:8.5.0"
+"@rollup/plugin-typescript@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "@rollup/plugin-typescript@npm:11.1.0"
   dependencies:
-    "@rollup/pluginutils": ^3.1.0
-    resolve: ^1.17.0
+    "@rollup/pluginutils": ^5.0.1
+    resolve: ^1.22.1
   peerDependencies:
-    rollup: ^2.14.0
+    rollup: ^2.14.0||^3.0.0
     tslib: "*"
     typescript: ">=3.7.0"
   peerDependenciesMeta:
+    rollup:
+      optional: true
     tslib:
       optional: true
-  checksum: 2f100a73cdeb9bf82feaf8665fe791dabf5dcc17f6e727eb7b1825e7c7cf815ccd3f79f9f43ca53d7806c50686565c71f35fffcfc773b811a5c1e39eab167529
+  checksum: 64ed5abbae392032fb190a5d3a29beb73f968919aed964ed5545e2732de6a1670f97131785e9376c06f784ae61545c5ad47352c126f3830aaa16b669bee2e9b9
   languageName: node
   linkType: hard
 
@@ -15132,7 +15137,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@^1.10.0, resolve@^1.17.0, resolve@npm:^1.19.0":
+"resolve@^1.10.0, resolve@npm:^1.19.0":
   version: 1.20.0
   resolution: "resolve@npm:1.20.0"
   dependencies:
@@ -15181,7 +15186,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>":
   version: 1.20.0
   resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=07638b"
   dependencies:

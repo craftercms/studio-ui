@@ -82,7 +82,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.1.0",
     "@rollup/plugin-node-resolve": "^15.0.2",
-    "@rollup/plugin-replace": "^3.1.0",
+    "@rollup/plugin-replace": "^5.0.2",
     "@types/node": "^18.16.3",
     "@types/rimraf": "^4.0.5",
     "build-if-changed": "^1.5.5",
