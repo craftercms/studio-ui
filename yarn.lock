@@ -1898,7 +1898,7 @@ __metadata:
     rollup: ^2.79.1
     rxjs: ^7.0.0
     slugify: ^1.6.6
-    tss-react: ^3.7.1
+    tss-react: ^4.8.3
     typescript: ^4.9.5
     uppy: ^2.13.8
     video.js: ^8.0.4
@@ -16876,9 +16876,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tss-react@npm:^3.7.1":
-  version: 3.7.1
-  resolution: "tss-react@npm:3.7.1"
+"tss-react@npm:^4.8.3":
+  version: 4.8.3
+  resolution: "tss-react@npm:4.8.3"
   dependencies:
     "@emotion/cache": "*"
     "@emotion/serialize": "*"
@@ -16890,7 +16890,7 @@ __metadata:
   peerDependenciesMeta:
     "@emotion/server":
       optional: true
-  checksum: beb58baebda01f212c45632f21c6df89156fbce3221aac92cf14cccbf425d034272ce5d880f78f2feb00550dbd322acdf0e376d0c04d718a1d778af07b96bc46
+  checksum: bed0850b2625458758989c6b961d614753ffe2fb0b8a650ddda1a0ea750adfaf5be73ba7f9dfe3be1e0974e7149bf696da6265a2cbaeb39c284664374a1bb110
   languageName: node
   linkType: hard
 
