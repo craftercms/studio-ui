@@ -111,7 +111,7 @@
     "react-dom": "18.2.0",
     "react-hotkeys-hook": "^4.4.0",
     "react-is": "^18.2.0",
-    "react-redux": "^7.2.9",
+    "react-redux": "^8.0.5",
     "redux": "^4.2.1",
     "redux-observable": "^2.0.0",
     "rxjs": "^7.0.0",
