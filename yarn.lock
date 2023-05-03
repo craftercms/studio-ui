@@ -1732,7 +1732,7 @@ __metadata:
     "@types/js-cookie": ^3.0.3
     "@types/prop-types": ^15.7.5
     "@types/react-dom": ^18.2.2
-    "@types/react-is": ^17.0.3
+    "@types/react-is": ^18.2.0
     "@types/tinymce": ^4.6.5
     build-if-changed: ^1.5.5
     jquery: ^3.6.4
@@ -1914,7 +1914,7 @@ __metadata:
     "@rollup/plugin-commonjs": ^21.1.0
     "@rollup/plugin-node-resolve": ^13.3.0
     "@rollup/plugin-replace": ^3.1.0
-    "@types/node": ^16.18.23
+    "@types/node": ^18.16.3
     "@types/rimraf": ^4.0.5
     browserslist: ^4.21.5
     build-if-changed: ^1.5.5
@@ -4205,10 +4205,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.18.23":
-  version: 16.18.23
-  resolution: "@types/node@npm:16.18.23"
-  checksum: 00e51db28fc7a182747f37215b3f25400b1c7a8525e09fa14e55be5798891a118ebf636a49d3197335a3580fcb8222fd4ecc20c2ccff69f1c0d233fc5697465d
+"@types/node@npm:^18.16.3":
+  version: 18.16.3
+  resolution: "@types/node@npm:18.16.3"
+  checksum: 816b39d45b05ebdc6f362b630970df3f6d82f71d418a2555353522f4eeeb078fa201de5299f02c09a09faa975e43b2745fe19c263d44069f87ddf37d6c37b717
   languageName: node
   linkType: hard
 
@@ -4288,12 +4288,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-is@npm:^17.0.3":
-  version: 17.0.3
-  resolution: "@types/react-is@npm:17.0.3"
+"@types/react-is@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "@types/react-is@npm:18.2.0"
   dependencies:
     "@types/react": "*"
-  checksum: 6abb7c47d54f012272650df8a962a28bd82f219291e5ef8b4dfa7fe0bb98ae243b060bf9fbe8ceff6213141794855a006db194b490b00ffd15842ae19d0ce1f0
+  checksum: bceec20a57c91fa9b6b63898a228f6074b8d62dce29b7069a7e986bc7f8cd910ffd197808b559b0a0dd53221e6058db13622a1d1f1faa708557e8c41af1326e4
   languageName: node
   linkType: hard
 
