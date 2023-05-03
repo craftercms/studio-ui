@@ -148,7 +148,7 @@
     "jabber": "^1.5.3",
     "jquery": "^3.6.4",
     "js-cookie": "^3.0.5",
-    "marked": "^4.3.0",
+    "marked": "^5.0.0",
     "moment-timezone": "^0.5.43",
     "nanoid": "^4.0.2",
     "notistack": "3.0.1",
