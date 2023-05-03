@@ -191,29 +191,25 @@ function DateTimePicker(props: DateTimePickerProps) {
             <DatePicker
               open={datePickerOpen}
               views={['year', 'month', 'day']}
-              renderInput={(props) => (
-                <TextField
-                  size="small"
-                  margin="normal"
-                  placeholder={formatMessage(translations.datePlaceholder)}
-                  error={!pickerState.dateValid}
-                  helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
-                  onClick={
-                    disabled
-                      ? null
-                      : () => {
-                          setDatePickerOpen(true);
-                        }
-                  }
-                  {...props}
-                  inputProps={{
-                    ...props.inputProps,
+              slotProps={{
+                textField: {
+                  size: 'small',
+                  margin: 'normal',
+                  placeholder: formatMessage(translations.datePlaceholder),
+                  error: !pickerState.dateValid,
+                  helperText: pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage),
+                  onClick: disabled
+                    ? null
+                    : () => {
+                        setDatePickerOpen(true);
+                      },
+                  inputProps: {
                     value: asLocalizedDateTime(internalDate, localeCode),
                     onChange: handlePopupOnlyInputChange
-                  }}
-                />
-              )}
-              value={internalDate}
+                  }
+                }
+              }}
+              value={moment(internalDate)}
               onChange={createOnDateChange('date')}
               disabled={disabled}
               disablePast={disablePast}
@@ -230,29 +226,25 @@ function DateTimePicker(props: DateTimePickerProps) {
         {controls.includes('time') && (
           <TimePicker
             open={timePickerOpen}
-            value={internalDate}
+            value={moment(internalDate)}
             onChange={createOnDateChange('time')}
             disabled={disabled}
             ampm={hour12}
             onOpen={() => setTimePickerOpen(true)}
             onAccept={() => setTimePickerOpen(false)}
             onClose={() => setTimePickerOpen(false)}
-            renderInput={(props) => (
-              <TextField
-                size="small"
-                margin="normal"
-                helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
-                placeholder={formatMessage(translations.timePlaceholder)}
-                onClick={
-                  disabled
-                    ? null
-                    : () => {
-                        setTimePickerOpen(true);
-                      }
-                }
-                {...props}
-                inputProps={{
-                  ...props.inputProps,
+            slotProps={{
+              textField: {
+                size: 'small',
+                margin: 'normal',
+                helperText: pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage),
+                placeholder: formatMessage(translations.timePlaceholder),
+                onClick: disabled
+                  ? null
+                  : () => {
+                      setTimePickerOpen(true);
+                    },
+                inputProps: {
                   onChange: handlePopupOnlyInputChange,
                   value: asLocalizedDateTime(internalDate, localeCode, {
                     hour12,
@@ -263,9 +255,9 @@ function DateTimePicker(props: DateTimePickerProps) {
                     // display timezone here.
                     timeZoneName: controls.includes('timeZone') ? UNDEFINED : 'short'
                   })
-                }}
-              />
-            )}
+                }
+              }
+            }}
           />
         )}
       </LocalizationProvider>

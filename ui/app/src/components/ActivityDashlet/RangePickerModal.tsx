@@ -24,12 +24,11 @@ import { AdapterMoment as DateAdapter } from '@mui/x-date-pickers/AdapterMoment'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Stack from '@mui/material/Stack';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import React, { useState } from 'react';
-import { Moment } from 'moment-timezone';
+import moment, { Moment } from 'moment-timezone';
 
 interface RangePickerModalProps {
   open: boolean;
@@ -86,15 +85,14 @@ export function RangePickerModal(props: RangePickerModalProps) {
                 onClose={closeFromPicker}
                 onAccept={closeFromPicker}
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
-                minDate={minDate}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    onClick={openFromPicker}
-                    inputProps={{ ...params.inputProps, onChange: (e) => e.preventDefault() }}
-                  />
-                )}
-                value={pickerDateFrom}
+                minDate={moment(minDate)}
+                slotProps={{
+                  textField: {
+                    onClick: openFromPicker,
+                    inputProps: { onChange: (e) => e.preventDefault() }
+                  }
+                }}
+                value={moment(pickerDateFrom)}
                 onChange={(arg) => {
                   let newValue: Moment = arg as any;
                   newValue.isValid() && onDatePickerChange('pickerDateFrom', newValue.toDate());
@@ -105,17 +103,16 @@ export function RangePickerModal(props: RangePickerModalProps) {
                 onOpen={openToPicker}
                 onClose={closeToPicker}
                 onAccept={closeToPicker}
-                maxDate={today}
-                minDate={minDate}
+                maxDate={moment(today)}
+                minDate={moment(minDate)}
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    onClick={openToPicker}
-                    inputProps={{ ...params.inputProps, onChange: (e) => e.preventDefault() }}
-                  />
-                )}
-                value={pickerDateTo}
+                slotProps={{
+                  textField: {
+                    onClick: openToPicker,
+                    inputProps: { onChange: (e) => e.preventDefault() }
+                  }
+                }}
+                value={moment(pickerDateTo)}
                 onChange={(arg) => {
                   let newValue: Moment = arg as any;
                   newValue.isValid() && onDatePickerChange('pickerDateTo', newValue.toDate());

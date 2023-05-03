@@ -57,7 +57,7 @@ export interface AuditGridUIProps {
 
 export interface GridColumnMenuProps extends React.HTMLAttributes<HTMLUListElement> {
   hideMenu: () => void;
-  currentColumn: GridColDef;
+  colDef: GridColDef;
   open: boolean;
   id?: string;
   labelledby?: string;
@@ -142,7 +142,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
   const onFilterSelected = (props: GridColumnMenuProps) => {
     if (props.open && anchorPosition === null) {
       setTimeout(() => {
-        setOpenedFilter(props.currentColumn.field);
+        setOpenedFilter(props.colDef.field);
         const element = document.getElementById(props.labelledby);
         const anchorRect = element.getBoundingClientRect();
         const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
