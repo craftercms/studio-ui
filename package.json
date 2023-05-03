@@ -84,7 +84,7 @@
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^3.1.0",
     "@types/node": "^16.18.23",
-    "@types/rimraf": "^3.0.2",
+    "@types/rimraf": "^4.0.5",
     "build-if-changed": "^1.5.5",
     "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
