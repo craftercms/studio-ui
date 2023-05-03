@@ -19,7 +19,7 @@ import copy from 'rollup-plugin-copy';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-import pkg from './package.json';
+import pkg from './package.json' assert{ type: 'json'};
 
 const input = 'src/index.tsx';
 

@@ -92,10 +92,10 @@
     "build:install": "yarn",
     "build:react": "craco --max_old_space_size=4096 build",
     "deploy:app": "node scripts/deploy.js",
-    "build:worker": "rollup -c rollup.config.js --environment PRODUCTION",
-    "build:worker:dev": "rollup -c rollup.config.js --environment PRODUCTION:false",
-    "watch:worker": "rollup -w -c rollup.config.js --environment PRODUCTION:false",
-    "build:worker:npm": "rollup -c rollup.config.js --environment NPM",
+    "build:worker": "rollup -c rollup.config.mjs --environment PRODUCTION",
+    "build:worker:dev": "rollup -c rollup.config.mjs --environment PRODUCTION:false",
+    "watch:worker": "rollup -w -c rollup.config.mjs --environment PRODUCTION:false",
+    "build:worker:npm": "rollup -c rollup.config.mjs --environment NPM",
     "build:app": "run-s build:react deploy:app",
     "compile": "tsc -p tsconfig.json",
     "build:tsc": "tsc -p tsconfig.build.json",
@@ -194,6 +194,6 @@
     "postcss-normalize": "^10.0.1",
     "prop-types": "^15.8.1",
     "rimraf": "^5.0.0",
-    "rollup": "^2.79.1"
+    "rollup": "^3.21.4"
   }
 }
