@@ -162,7 +162,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<Snack>>();
   const dispatch = useDispatch();
-  const state = useSelector<GuestState>((state) => state);
+  const state: Partial<GuestState> = useSelector<GuestState>((state) => state);
   const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable, authoringBase } = state;
   const refs = useRef({
     contentReady: false,
