@@ -147,7 +147,7 @@
     "highlight.js": "^11.8.0",
     "jabber": "^1.5.3",
     "jquery": "^3.6.4",
-    "js-cookie": "^3.0.1",
+    "js-cookie": "^3.0.5",
     "marked": "^4.3.0",
     "moment-timezone": "^0.5.43",
     "nanoid": "^4.0.2",
@@ -178,7 +178,7 @@
   },
   "devDependencies": {
     "@craco/craco": "7.1.0",
-    "@formatjs/cli": "^5.1.13",
+    "@formatjs/cli": "^6.1.1",
     "@rollup/plugin-typescript": "^8.5.0",
     "@types/jquery": "^3.5.16",
     "@types/js-cookie": "^3.0.3",
