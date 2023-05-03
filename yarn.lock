@@ -1731,7 +1731,7 @@ __metadata:
     "@types/jquery": ^3.5.16
     "@types/js-cookie": ^3.0.3
     "@types/prop-types": ^15.7.5
-    "@types/react-dom": ^18.0.11
+    "@types/react-dom": ^18.2.2
     "@types/react-is": ^17.0.3
     "@types/tinymce": ^4.6.5
     build-if-changed: ^1.5.5
@@ -1849,8 +1849,8 @@ __metadata:
     "@types/js-cookie": ^3.0.3
     "@types/marked": ^4.3.0
     "@types/prettier": ^2.7.2
-    "@types/react": ^18.0.33
-    "@types/react-dom": ^18.0.11
+    "@types/react": ^18.2.1
+    "@types/react-dom": ^18.2.2
     "@types/react-infinite-scroller": ^1.2.3
     "@types/react-swipeable-views": ^0.13.1
     "@types/video.js": ^7.3.51
@@ -4243,12 +4243,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.0.11":
-  version: 18.0.11
-  resolution: "@types/react-dom@npm:18.0.11"
+"@types/react-dom@npm:^18.2.2":
+  version: 18.2.2
+  resolution: "@types/react-dom@npm:18.2.2"
   dependencies:
     "@types/react": "*"
-  checksum: 579691e4d5ec09688087568037c35edf8cfb1ab3e07f6c60029280733ee7b5c06d66df6fcc90786702c93ac8cb13bc7ff16c79ddfc75d082938fbaa36e1cdbf4
+  checksum: 261d8a47c886a1b80b48506fd77d9a4efb5511a603abc9a5c190f64005a2e7904f2b2ec28ee224b120d154c43d55ba7ae8300867bf85e95c1b82831828e04407
   languageName: node
   linkType: hard
 
