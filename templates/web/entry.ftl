@@ -30,7 +30,9 @@
       </script>
     </#if>
 
+    <#outputformat "HTML">
     <script>var CStudioAuthoring = { cookieDomain: "${cookieDomain}" };</script>
+    </#outputformat>
 
     <script>
         window.UIBuildId = "${UIBuildId!.now?string('Mddyyyy')}";
