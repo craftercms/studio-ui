@@ -15,7 +15,7 @@
  */
 
 import { MarketplacePlugin } from '../../models';
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { marked } from 'marked';
 import hljs from '../../env/hljs';
 import Typography from '@mui/material/Typography';
@@ -62,7 +62,7 @@ export function PluginDocumentation(props: PluginDocumentationProps) {
           <FormattedMessage
             id="pluginDetails.markdownError"
             defaultMessage="Unable to render documentation. Visit <a>{link}</a> to view."
-            values={{ link: plugin.documentation, a: (text: string[]) => <a href={text[0]}>{text[0]}</a> }}
+            values={{ link: plugin.documentation, a: (text: ReactNode[]) => <a href={text[0] as string}>{text[0]}</a> }}
           />
         </Typography>
       )}

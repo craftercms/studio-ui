@@ -16,7 +16,7 @@
 
 import Link from '@mui/material/Link';
 import { FormattedMessage, IntlShape } from 'react-intl';
-import React, { useMemo, useState } from 'react';
+import React, { ReactNode, useMemo, useState } from 'react';
 import { Activities, Activity } from '../../models/Activity';
 import GlobalState from '../../models/GlobalState';
 import { asLocalizedDateTime } from '../../utils/datetime';
@@ -49,11 +49,12 @@ export function renderActivity(
   if (messages[systemType]) {
     systemType = formatMessage(messages[systemType]).toLowerCase();
   }
-  const anchor = ([label, systemType, previewUrl, path]) => {
+  const anchor = (chunks: ReactNode[]) => {
+    const [label, systemType, previewUrl, path] = chunks;
     return !isPage(systemType) ? (
       <em title={path}>{label}</em>
     ) : (
-      <Link title={path} sx={{ cursor: 'pointer' }} onClick={(e) => onItemClick(previewUrl, e)}>
+      <Link title={path} sx={{ cursor: 'pointer' }} onClick={(e) => onItemClick(previewUrl as unknown as ActivityItem, e)}>
         {label}
       </Link>
     );

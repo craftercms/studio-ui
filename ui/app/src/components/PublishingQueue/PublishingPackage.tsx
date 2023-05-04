@@ -17,7 +17,7 @@
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import React, { ChangeEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, ReactNode, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import SelectButton from '../ConfirmDropdown';
@@ -336,8 +336,8 @@ export function PublishingPackage(props: PublishingPackageProps) {
             values={{
               schedule: new Date(schedule),
               approver: approver,
-              b: (content: string[]) => (
-                <strong key={content[0]} className={classes.username}>
+              b: (content: ReactNode[]) => (
+                <strong key={content[0] as string} className={classes.username}>
                   {content[0]}
                 </strong>
               )
