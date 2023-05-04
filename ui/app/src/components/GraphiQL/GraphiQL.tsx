@@ -105,7 +105,8 @@ function GraphiQL(props: GraphiQLProps) {
   };
   const explorerPlugin = useExplorerPlugin({
     query,
-    onEdit: onEditQuery
+    onEdit: onEditQuery,
+    showAttribution: false
   });
 
   useEffect(() => {
