@@ -15,9 +15,10 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import GraphiQLComponent, { FetcherOpts, FetcherParams, ToolbarButton } from 'graphiql';
+import GraphiQLComponent from 'graphiql';
 import 'graphiql/graphiql.min.css';
-import GraphiQLExplorer from 'graphiql-explorer';
+import '../../styles/graphiql.scss';
+import { useExplorerPlugin } from '@graphiql/plugin-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
@@ -55,7 +56,6 @@ function GraphiQL(props: GraphiQLProps) {
   const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`) ?? defaultQuery, []);
   const [query, setQuery] = useState(initialQuery);
   const [schema, setSchema] = useState<GraphQLSchema>(null);
-  const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
   const storage = useMemo(
     () =>
       ({
@@ -75,7 +75,7 @@ function GraphiQL(props: GraphiQLProps) {
       }
     };
     if (lowercaseMethod === 'get') {
-      return (graphQLParams: FetcherParams, opts?: FetcherOpts) => {
+      return (graphQLParams, opts?) => {
         return fetch(
           `${url}${toQueryString({
             query: encodeURIComponent(graphQLParams.query),
@@ -88,7 +88,7 @@ function GraphiQL(props: GraphiQLProps) {
         ).then(then);
       };
     } else {
-      return (graphQLParams: FetcherParams, opts?: FetcherOpts) => {
+      return (graphQLParams, opts?) => {
         return fetch(url, {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
@@ -97,13 +97,16 @@ function GraphiQL(props: GraphiQLProps) {
       };
     }
   }, [url, method]);
-  const handleToggleExplorer = () => setExplorerIsOpen(!explorerIsOpen);
   const refs = useUpdateRefs({ onSubmittingAndOrPendingChange, graphiql: null });
   const hasChanges = isBlank(query) ? false : initialQuery !== query;
   const onEditQuery = (newQuery: string) => {
     setQuery(newQuery);
     window.localStorage.setItem(`${storageKey}graphiql:query`, newQuery);
   };
+  const explorerPlugin = useExplorerPlugin({
+    query,
+    onEdit: onEditQuery
+  });
 
   useEffect(() => {
     refs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasChanges });
@@ -144,24 +147,13 @@ function GraphiQL(props: GraphiQLProps) {
           }
         }}
       >
-        <GraphiQLExplorer
-          schema={schema}
-          query={query}
-          onEdit={onEditQuery}
-          onRunOperation={(operationName: any) => refs.current.graphiql.handleRunQuery(operationName)}
-          explorerIsOpen={explorerIsOpen}
-          onToggleExplorer={handleToggleExplorer}
-        />
         <GraphiQLComponent
-          ref={(ref) => (refs.current.graphiql = ref)}
           fetcher={graphQLFetcher}
           schema={schema}
           query={query}
           storage={storage}
           onEditQuery={onEditQuery}
-          toolbar={{
-            additionalContent: <ToolbarButton onClick={handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
-          }}
+          plugins={[explorerPlugin]}
         />
       </Box>
     </Box>
