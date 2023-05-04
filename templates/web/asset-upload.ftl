@@ -15,7 +15,9 @@
   -->
 
 <!-- this is a work-around for YUI opening an iframe to do an upload -->
+<#outputformat "HTML">
 <script>document.domain = "${cookieDomain}";</script>
+</#outputformat>
 
 {   "fileName": "${fileName}",
 	"fileExtension": "${fileExtension}",

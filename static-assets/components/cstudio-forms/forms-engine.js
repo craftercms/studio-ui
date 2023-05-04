@@ -1058,15 +1058,10 @@ var CStudioForms =
       _getPageName: function (content) {
         var _content = content.responseXML ? content.responseXML : content;
         if (_content) {
-          var internalNameArr = '';
           try {
-            internalNameArr = _content.getElementsByTagName('internal-name');
-            return internalNameArr.length <= 0
-              ? ''
-              : YAHOO.env.ua.ie
-              ? internalNameArr[0].text
-              : internalNameArr[0].textContent;
+            return _content?.querySelector?.(':scope > internal-name').textContent;
           } catch (err) {
+            console.error(err);
             return '';
           }
         }

@@ -64,7 +64,9 @@
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
   <script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js?version=${UIBuildId!.now?string('Mddyyyy')}"></script>
 
+  <#outputformat "HTML">
   <script>document.domain = "${cookieDomain}";</script>
+  </#outputformat>
 
 </#if>
 
