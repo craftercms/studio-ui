@@ -26,6 +26,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import { defineMessages, useIntl } from 'react-intl';
+import Box from '@mui/material/Box';
 
 export type PathNavigatorBreadcrumbsClassKey =
   | 'root'
@@ -59,38 +60,10 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const forceSearch = breadcrumb.length <= 1;
 
   return (
-    <section className={clsx(classes.breadcrumbs, classes.widgetSection, props.classes?.root)}>
-      {(showSearch && onSearch) || forceSearch ? (
-        <>
-          <SearchBar
-            autoFocus={!forceSearch}
-            onChange={onChange}
-            keyword={keyword}
-            placeholder={formatMessage(messages.filter, { name: breadcrumb[breadcrumb.length - 1]?.label })}
-            showActionButton={Boolean(keyword)}
-            classes={{
-              root: clsx(classes.searchRoot, props.classes?.searchRoot),
-              inputInput: clsx(classes.searchInput, props.classes?.searchInput),
-              actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
-            }}
-          />
-          {!forceSearch && (
-            <IconButton
-              size="small"
-              onClick={() => {
-                onSearch('');
-                setShowSearch(false);
-              }}
-              className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
-            >
-              <CloseIconRounded />
-            </IconButton>
-          )}
-        </>
-      ) : (
-        <>
+    <>
+      {breadcrumb && breadcrumb.length > 1 && (
+        <section className={clsx(classes.breadcrumbs, classes.widgetSection, props.classes?.root)}>
           <MuiBreadcrumbs
-            maxItems={2}
             aria-label="Breadcrumbs"
             separator={<NavigateNextIcon fontSize="small" />}
             classes={{
@@ -129,9 +102,38 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
               </IconButton>
             )}
           </div>
-        </>
+        </section>
       )}
-    </section>
+      {((showSearch && onSearch) || forceSearch) && (
+        <Box component="section" className={classes.widgetSection} sx={{ display: 'flex' }}>
+          <SearchBar
+            autoFocus={!forceSearch}
+            onChange={onChange}
+            keyword={keyword}
+            placeholder={formatMessage(messages.filter, { name: breadcrumb[breadcrumb.length - 1]?.label })}
+            showActionButton={Boolean(keyword)}
+            classes={{
+              root: clsx(classes.searchRoot, props.classes?.searchRoot),
+              inputInput: clsx(classes.searchInput, props.classes?.searchInput),
+              actionIcon: clsx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+            }}
+          />
+          {!forceSearch && (
+            <IconButton
+              size="small"
+              onClick={() => {
+                onSearch('');
+                setShowSearch(false);
+              }}
+              className={clsx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+              sx={{ marginTop: '5px', marginBottom: '5px' }}
+            >
+              <CloseIconRounded />
+            </IconButton>
+          )}
+        </Box>
+      )}
+    </>
   );
 }
 
