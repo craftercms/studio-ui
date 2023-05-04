@@ -113,7 +113,10 @@ YAHOO.extend(
       YAHOO.util.Event.on(switchCtrl, 'click', switchFn, switchCtrl);
 
       // Update the model with the same value but with the correct format ( see valueToJsonString )
-      updateFn(null, { fieldName: this.fieldName, value: this.valueToJsonString(this.fieldValue) });
+      const newValue = this.valueToJsonString(this.fieldValue);
+      if (value !== newValue) {
+        updateFn(null, { fieldName: this.fieldName, value: newValue });
+      }
     },
 
     createControl: function (label, updateFn) {

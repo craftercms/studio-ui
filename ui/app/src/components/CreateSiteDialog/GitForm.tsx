@@ -176,7 +176,12 @@ function GitForm(props: GitFormProps) {
       </Grid>
       <Grid item xs={12}>
         <div className={classes.formControl}>
-          <GitAuthForm inputs={inputs} setInputs={setInputs} handleInputChange={handleInputChange} />
+          <GitAuthForm
+            inputs={inputs}
+            setInputs={setInputs}
+            handleInputChange={handleInputChange}
+            onKeyPress={onKeyPress}
+          />
         </div>
       </Grid>
       <Grid item xs={12} sx={{ mb: 2 }}>
