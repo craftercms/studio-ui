@@ -293,7 +293,7 @@ function deleteItemFromHierarchyMap(modelId: string) {
 export function updateField(modelId: string, fieldId: string, index: string | number, value: unknown): void {
   const models = getCachedModels();
   const modelIdToEdit = isInheritedField(modelId, fieldId) ? getModelIdFromInheritedField(modelId, fieldId) : modelId;
-  const modelToEdit = { ...models[modelIdToEdit] };
+  const model = { ...models[modelIdToEdit] };
 
   const parentModelId = getParentModelId(modelIdToEdit, models, modelHierarchyMap);
   const modelsToUpdate = collectReferrers(modelIdToEdit);
@@ -309,7 +309,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
     // - field = repeatingGroup_o.nodeSelector_o.textField_s, index = 0.0
     const fieldPieces = fieldId.split('.');
     const indexPieces = `${index}`.split('.');
-    let target = modelToEdit;
+    let target = model;
     for (let i = 0, length = indexPieces.length; i < length; i++) {
       const fieldPiece = fieldPieces[i]; // repeatingGroup_o   textField_s
       const indexPiece = indexPieces[i]; // 0
@@ -323,14 +323,14 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
     const specificFieldId = fieldPieces.pop();
     target[specificFieldId] = value;
   } else {
-    Model.value(modelToEdit, fieldId, value);
+    Model.value(model, fieldId, value);
   }
 
   // Update the model cache
   models$.next({
     ...models,
     ...modelsToUpdate,
-    [modelIdToEdit]: modelToEdit
+    [modelIdToEdit]: model
   });
 
   const action = updateFieldValueOperation({
