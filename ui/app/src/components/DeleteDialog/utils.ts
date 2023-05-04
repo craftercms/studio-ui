@@ -34,6 +34,7 @@ export interface DeleteDialogContentUIProps {
   items: DetailedItem[];
   childItems: string[];
   dependentItems: string[];
+  disabledDependentItems: LookupTable<true>;
   comment: string;
   selectedItems: LookupTable<boolean>;
   isCommentRequired: boolean;

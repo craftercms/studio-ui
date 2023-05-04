@@ -32,6 +32,8 @@ import { createPresenceTable } from '../../utils/array';
 import { DetailedItem } from '../../models/Item';
 import { isBlank } from '../../utils/string';
 import { ApiResponse } from '../../models';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 
 function createCheckedList(selectedItems: LookupTable<boolean>, excludedPaths?: string[]) {
   return Object.entries(selectedItems)
@@ -59,6 +61,12 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   const [submitDisabled, setSubmitDisabled] = useState(true);
   const [confirmChecked, setConfirmChecked] = useState(false);
   const authoringBase = useSelection((state) => state.env.authoringBase);
+  const itemsByPath = useItemsByPath();
+  useFetchSandboxItems(dependentItems ?? []);
+  const disabledDependentItems = createPresenceTable(
+    dependentItems?.filter((path) => !itemsByPath[path]?.availableActionsMap.delete) ?? [],
+    true
+  );
 
   const onSubmit = () => {
     const paths = createCheckedList(selectedItems);
@@ -125,16 +133,18 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
   };
 
   const onSelectAllDependantClicked = () => {
-    const setChecked = Boolean(dependentItems.find((path) => !selectedItems[path]));
+    const selectableDependent = dependentItems.filter((item) => !disabledDependentItems[item]);
+    const setChecked = selectableDependent.some((path) => !selectedItems[path]);
     // Clean up all set to `false` from the selected lookup.
-    const cleanLookup = createPresenceTable(createCheckedList(selectedItems, dependentItems));
+    const cleanLookup = createPresenceTable(createCheckedList(selectedItems, selectableDependent));
     const nextChecked = {
       ...cleanLookup,
       // If "select all" checkbox is working as check all, add all dependant items. If checkbox is working
       // as "uncheck all", then simply don't add anything. All dependant items would have gotten cleaned up
       // on the `cleanLookup` creation above.
-      ...(setChecked && createCheckedLookup(dependentItems, setChecked))
+      ...(setChecked && createCheckedLookup(selectableDependent, setChecked))
     };
+    fetchOrCleanDependencies(nextChecked);
     setSelectedItems(nextChecked);
   };
 
@@ -173,6 +183,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
       items={items}
       childItems={childItems}
       dependentItems={dependentItems}
+      disabledDependentItems={disabledDependentItems}
       selectedItems={selectedItems}
       error={error}
       submitError={submitError}
