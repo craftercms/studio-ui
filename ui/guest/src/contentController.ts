@@ -294,7 +294,6 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   const models = getCachedModels();
   const modelIdToEdit = isInheritedField(modelId, fieldId) ? getModelIdFromInheritedField(modelId, fieldId) : modelId;
   const model = { ...models[modelIdToEdit] };
-
   const parentModelId = getParentModelId(modelIdToEdit, models, modelHierarchyMap);
   const modelsToUpdate = collectReferrers(modelIdToEdit);
 
