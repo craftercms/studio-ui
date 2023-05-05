@@ -16,7 +16,7 @@
 
 import useStyles from './styles';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
-import React from 'react';
+import React, { useState } from 'react';
 import MenuList from '@mui/material/MenuList';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
@@ -38,6 +38,10 @@ import Suspencified from '../Suspencified/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useSelection from '../../hooks/useSelection';
+import useSiteUIConfig from '../../hooks/useSiteUIConfig';
+import { ConfirmDialog } from '../ConfirmDialog';
+import { unblockSiteConfigNavigation } from '../../state/actions/configuration';
+import { useDispatch } from 'react-redux';
 
 export interface Tool {
   title: TranslationOrText;
@@ -90,6 +94,25 @@ export function SiteTools(props: SiteToolsProps) {
   const { formatMessage } = useIntl();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
+  const { blockSiteConfigNavigation } = useSiteUIConfig();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [nextRoute, setNextRoute] = useState('');
+  const dispatch = useDispatch();
+  const onItemClick = (url: string) => {
+    if (blockSiteConfigNavigation) {
+      setNextRoute(url);
+      setShowConfirmDialog(true);
+    } else {
+      onNavItemClick(url);
+    }
+  };
+
+  const onConfirmOk = () => {
+    setShowConfirmDialog(false);
+    dispatch(unblockSiteConfigNavigation());
+    onNavItemClick(nextRoute);
+  };
+
   return (
     <Paper className={clsx(classes.root, props.classes?.root)} elevation={0}>
       <ResizeableDrawer
@@ -114,7 +137,7 @@ export function SiteTools(props: SiteToolsProps) {
             {tools ? (
               tools.map((tool) => (
                 <MenuItem
-                  onClick={() => onNavItemClick(tool.url)}
+                  onClick={() => onItemClick(tool.url)}
                   key={tool.url}
                   selected={`/${tool.url}` === activeToolId}
                 >
@@ -191,6 +214,20 @@ export function SiteTools(props: SiteToolsProps) {
           />
         )}
       </Box>
+      <ConfirmDialog
+        open={showConfirmDialog}
+        title={
+          <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />
+        }
+        body={
+          <FormattedMessage
+            id="siteConfigurationManagement.unsavedChangesSubtitle"
+            defaultMessage="You have unsaved changes, do you want to leave?"
+          />
+        }
+        onOk={onConfirmOk}
+        onCancel={() => setShowConfirmDialog(false)}
+      />
     </Paper>
   );
 }

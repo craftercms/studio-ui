@@ -72,7 +72,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { UNDEFINED } from '../../utils/constants';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { nnou } from '../../utils/object';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { blockSiteConfigNavigation, unblockSiteConfigNavigation } from '../../state/actions/configuration';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -104,10 +104,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const [disabledSaveButton, setDisabledSaveButton] = useState(true);
   const [confirmDialogProps, setConfirmDialogProps] = useState<ConfirmDialogProps>(null);
   const [keyword, setKeyword] = useState('');
-  const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
-  const disableBlocking = useRef(false);
   const functionRefs = useUpdateRefs({
     onSubmittingAndOrPendingChange
   });
@@ -115,35 +112,11 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
     container: null
   });
 
-  // TODO: Pending. Using useBlocker hook from react-router-dom doesn't blocks navigation.
-  // useEffect(() => {
-  //   history?.block((props) => {
-  //     if (!disabledSaveButton && !disableBlocking.current && location.pathname !== props.pathname) {
-  //       setConfirmDialogProps({
-  //         open: true,
-  //         title: (
-  //           <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />
-  //         ),
-  //         body: (
-  //           <FormattedMessage
-  //             id="siteConfigurationManagement.unsavedChangesSubtitle"
-  //             defaultMessage="You have unsaved changes, do you want to leave?"
-  //           />
-  //         ),
-  //         onClosed: () => setConfirmDialogProps(null),
-  //         onOk: () => {
-  //           disableBlocking.current = true;
-  //           history.push(props.pathname, { disableBlocking: true });
-  //           navigate(props.pathname);
-  //         },
-  //         onCancel: () => {
-  //           setConfirmDialogProps({ ...confirmDialogProps, open: false });
-  //         }
-  //       });
-  //       return false;
-  //     }
-  //   });
-  // }, [confirmDialogProps, disabledSaveButton, navigate, location?.pathname]);
+  const disableSaveButton = (disable: boolean) => {
+    setDisabledSaveButton(disable);
+    // When disabling save button, navigation is unblocked, and viceversa.
+    dispatch(disable ? unblockSiteConfigNavigation() : blockSiteConfigNavigation());
+  };
 
   useMount(() => {
     fetchActiveEnvironment().subscribe({
@@ -345,7 +318,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
       setEncrypting(false);
     }
     if (!disabledSaveButton) {
-      setDisabledSaveButton(true);
+      disableSaveButton(true);
     }
     functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false, isSubmitting: false });
   };
@@ -379,10 +352,10 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 
   const onEditorChanges = () => {
     if (selectedConfigFileXml !== editorRef.current.getValue()) {
-      setDisabledSaveButton(false);
+      disableSaveButton(false);
       functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
     } else {
-      setDisabledSaveButton(true);
+      disableSaveButton(true);
       functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
     }
   };
@@ -460,7 +433,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
               })
             );
 
-            setDisabledSaveButton(true);
+            disableSaveButton(true);
             setSelectedConfigFileXml(content);
           },
           error: ({ response: { response } }) => {

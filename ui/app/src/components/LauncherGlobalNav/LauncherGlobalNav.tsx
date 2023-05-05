@@ -18,7 +18,7 @@ import LauncherTile, { LauncherTileProps } from '../LauncherTile';
 import { getSimplifiedVersion } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { LauncherSectionUI, LauncherSectionUIStyles } from '../LauncherSection';
 import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
 import { messages } from '../LauncherSection/utils';
@@ -30,6 +30,9 @@ import Skeleton from '@mui/material/Skeleton';
 import { useEnv } from '../../hooks/useEnv';
 import { useSystemVersion } from '../../hooks/useSystemVersion';
 import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
+import { ConfirmDialog } from '../ConfirmDialog';
+import { batchActions } from '../../state/actions/misc';
+import { unblockGlobalMenuNavigation } from '../../state/actions/system';
 
 export interface LauncherGlobalNavProps {
   title?: TranslationOrText;
@@ -43,9 +46,24 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
   const { formatMessage } = useIntl();
   const { authoringBase } = useEnv();
   const version = useSystemVersion();
-  const onTileClicked = props.onTileClicked ?? (() => dispatch(closeLauncher()));
-  const { items, error } = useGlobalNavigation();
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const { items, error, blockNavigation } = useGlobalNavigation();
+  const [nextRoute, setNextRoute] = useState('');
+  const onTileClicked = blockNavigation
+    ? (e, itemId) => {
+        const link = getLauncherSectionLink(itemId, authoringBase);
+        setNextRoute(link);
+        setShowConfirmDialog(true);
+      }
+    : props.onTileClicked ?? (() => dispatch(closeLauncher()));
   const [activeItemId, setActiveItemId] = useState('');
+
+  const onConfirmOk = () => {
+    setShowConfirmDialog(false);
+    dispatch(batchActions([closeLauncher(), unblockGlobalMenuNavigation()]));
+    window.location.replace(nextRoute);
+  };
+
   useEffect(() => {
     const idLookup = {};
     Object.entries(urlMapping).forEach(([id, hash]) => (idLookup[hash] = id));
@@ -70,26 +88,36 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
     return <ApiResponseErrorState error={error.response ?? error} />;
   }
   return (
-    <LauncherSectionUI styles={props.sectionStyles} title={props.title ?? formatMessage(messages.global)}>
-      {items.map((item) => (
+    <>
+      <LauncherSectionUI styles={props.sectionStyles} title={props.title ?? formatMessage(messages.global)}>
+        {items.map((item) => (
+          <LauncherTile
+            key={item.id}
+            active={activeItemId === item.id}
+            title={globalMenuMessages[item.id] ? formatMessage(globalMenuMessages[item.id]) : item.id}
+            icon={item.icon}
+            link={!blockNavigation ? getLauncherSectionLink(item.id, authoringBase) : null}
+            onClick={(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>) =>
+              onTileClicked(e, item.id, item.label)
+            }
+            styles={props.tileStyles}
+          />
+        ))}
         <LauncherTile
-          key={item.id}
-          active={activeItemId === item.id}
-          title={globalMenuMessages[item.id] ? formatMessage(globalMenuMessages[item.id]) : item.id}
-          icon={item.icon}
-          link={getLauncherSectionLink(item.id, authoringBase)}
-          onClick={(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>) => onTileClicked(e, item.id, item.label)}
+          title={formatMessage(messages.docs)}
+          icon={{ id: 'craftercms.icons.Docs' }}
+          link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
+          target="_blank"
           styles={props.tileStyles}
         />
-      ))}
-      <LauncherTile
-        title={formatMessage(messages.docs)}
-        icon={{ id: 'craftercms.icons.Docs' }}
-        link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
-        target="_blank"
-        styles={props.tileStyles}
+      </LauncherSectionUI>
+      <ConfirmDialog
+        open={showConfirmDialog}
+        title={<FormattedMessage defaultMessage="You have unsaved changes. Discard changes?" />}
+        onOk={onConfirmOk}
+        onCancel={() => setShowConfirmDialog(false)}
       />
-    </LauncherSectionUI>
+    </>
   );
 }
 

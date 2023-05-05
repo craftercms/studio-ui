@@ -17,12 +17,19 @@
 import GlobalState from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { changeSite } from '../actions/sites';
-import { fetchGlobalMenu, fetchGlobalMenuComplete, fetchGlobalMenuFailed } from '../actions/system';
+import {
+  blockGlobalMenuNavigation,
+  fetchGlobalMenu,
+  fetchGlobalMenuComplete,
+  fetchGlobalMenuFailed,
+  unblockGlobalMenuNavigation
+} from '../actions/system';
 
 const initialState: GlobalState['globalNavigation'] = {
   error: null,
   items: null,
-  isFetching: false
+  isFetching: false,
+  blockNavigation: false
 };
 
 // @ts-ignore - TODO: Typing system is complaining about something to be determined.
@@ -40,6 +47,14 @@ const reducer = createReducer<GlobalState['globalNavigation']>(initialState, {
     error: payload,
     items: state.items,
     isFetching: false
+  }),
+  [blockGlobalMenuNavigation.type]: (state) => ({
+    ...state,
+    blockNavigation: true
+  }),
+  [unblockGlobalMenuNavigation.type]: (state) => ({
+    ...state,
+    blockNavigation: false
   })
 });
 
