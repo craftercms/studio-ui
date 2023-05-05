@@ -34,6 +34,7 @@ import {
   getCachedModel,
   getCachedModels,
   getCachedSandboxItem,
+  getModelIdFromInheritedField,
   insertItem,
   modelHierarchyMap,
   sortDownItem,
@@ -188,16 +189,22 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const commonEdit = (e, typeOfEdit) => {
     e.stopPropagation();
     e.preventDefault();
+
     if (recordType === 'node-selector-item') {
       // If it's a node selector item, we transform it into the actual item.
       const parentModelId = getParentModelId(componentId, getCachedModels(), modelHierarchyMap);
       post(requestEdit({ typeOfEdit, modelId: componentId, parentModelId }));
     } else {
-      const parentModelId = getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
+      let modelIdToEdit = modelId;
+      // If inherited field - set correct modelId to edit
+      if (record.inherited) {
+        modelIdToEdit = getModelIdFromInheritedField(modelId, fieldId);
+      }
+      const parentModelId = getParentModelId(modelIdToEdit, getCachedModels(), modelHierarchyMap);
       post(
         requestEdit({
           typeOfEdit,
-          modelId,
+          modelId: modelIdToEdit,
           parentModelId,
           fields: record.fieldId,
           index
