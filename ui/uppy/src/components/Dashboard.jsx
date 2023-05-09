@@ -1,12 +1,31 @@
-const FileList = require('./FileList');
-const AddFiles = require('@uppy/dashboard/lib/components/AddFiles');
-const AddFilesPanel = require('@uppy/dashboard/lib/components/AddFilesPanel');
-const PanelTopBar = require('./PickerPanelTopBar');
-const Slide = require('@uppy/dashboard/lib/components/Slide');
-const classNames = require('classnames');
-const isDragDropSupported = require('@uppy/utils/lib/isDragDropSupported');
-const { h } = require('preact');
-const React = require('react');
+/*
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { h } from 'preact';
+import classNames from 'classnames';
+import isDragDropSupported from '@uppy/utils/lib/isDragDropSupported';
+import FileList from './FileList';
+import AddFiles from '@uppy/dashboard/lib/components/AddFiles';
+import AddFilesPanel from '@uppy/dashboard/lib/components/AddFilesPanel';
+import PickerPanelContent from '@uppy/dashboard/lib/components/PickerPanelContent';
+import EditorPanel from '@uppy/dashboard/lib/components/EditorPanel';
+import PanelTopBar from './PickerPanelTopBar';
+import FileCard from '@uppy/dashboard/lib/components/FileCard/index';
+import Slide from '@uppy/dashboard/lib/components/Slide';
+import React from 'react';
 
 // http://dev.edenspiekermann.com/2016/02/11/introducing-accessible-modal-dialog
 // https://github.com/ghosh/micromodal
@@ -14,11 +33,17 @@ const React = require('react');
 const WIDTH_XL = 900;
 const WIDTH_LG = 700;
 const WIDTH_MD = 576;
-const HEIGHT_MD = 400;
 
-module.exports = function Dashboard(props) {
-  const noFiles = props.totalFileCount === 0;
+const HEIGHT_MD = 330;
+// We might want to enable this in the future
+// const HEIGHT_LG = 400
+// const HEIGHT_XL = 460
+
+export default function Dashboard(props) {
+  const isNoFiles = props.totalFileCount === 0;
+  const isSingleFile = props.totalFileCount === 1;
   const isSizeMD = props.containerWidth > WIDTH_MD;
+  const isSizeHeightMD = props.containerHeight > HEIGHT_MD;
 
   const wrapperClassName = classNames({
     'uppy-Root': props.isTargetDOMEl
@@ -34,14 +59,18 @@ module.exports = function Dashboard(props) {
     'uppy-size--lg': props.containerWidth > WIDTH_LG,
     'uppy-size--xl': props.containerWidth > WIDTH_XL,
     'uppy-size--height-md': props.containerHeight > HEIGHT_MD,
+    // We might want to enable this in the future
+    // 'uppy-size--height-lg': props.containerHeight > HEIGHT_LG,
+    // 'uppy-size--height-xl': props.containerHeight > HEIGHT_XL,
     'uppy-Dashboard--isAddFilesPanelVisible': props.showAddFilesPanel,
-    'uppy-Dashboard--isInnerWrapVisible': props.areInsidesReadyToBeVisible
+    'uppy-Dashboard--isInnerWrapVisible': props.areInsidesReadyToBeVisible,
+    // Only enable “centered single file” mode when Dashboard is tall enough
+    'uppy-Dashboard--singleFile': props.singleFileFullScreen && isSingleFile && isSizeHeightMD
   });
 
-  // Important: keep these in sync with the percent width values in `src/components/FileItem/index.scss`.
   let itemsPerRow = 1;
 
-  const showFileList = props.showSelectedFiles && !noFiles;
+  const showFileList = props.showSelectedFiles && !isNoFiles;
 
   const numberOfFilesForRecovery = props.recoveredState ? Object.keys(props.recoveredState.files).length : null;
   const numberOfGhosts = props.files
@@ -123,7 +152,7 @@ module.exports = function Dashboard(props) {
           )}
 
           {showFileList ? (
-            <FileList {...props} itemsPerRow={itemsPerRow} />
+            <FileList {...props} isSingleFile={isSingleFile} itemsPerRow={itemsPerRow} />
           ) : (
             <div
               style={{
@@ -135,6 +164,7 @@ module.exports = function Dashboard(props) {
               }}
             >
               <div>
+                {/* eslint-disable-next-line react/jsx-props-no-spreading */}
                 <AddFiles {...props} isSizeMD={isSizeMD} />
               </div>
               <div>
@@ -153,16 +183,24 @@ module.exports = function Dashboard(props) {
           )}
 
           <Slide>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             {props.showAddFilesPanel ? <AddFilesPanel key="AddFiles" {...props} isSizeMD={isSizeMD} /> : null}
           </Slide>
 
-          <Slide>{props.fileCardFor ? <FileCard key="FileCard" {...props} /> : null}</Slide>
+          <Slide>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            {props.fileCardFor ? <FileCard key="FileCard" {...props} /> : null}
+          </Slide>
 
-          <Slide>{props.activePickerPanel ? <PickerPanelContent key="Picker" {...props} /> : null}</Slide>
+          <Slide>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            {props.activePickerPanel ? <PickerPanelContent key="Picker" {...props} /> : null}
+          </Slide>
 
-          <Slide>{props.showFileEditor ? <EditorPanel key="Editor" {...props} /> : null}</Slide>
-
-          {showFileList && <PanelTopBar {...props} />}
+          <Slide>
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            {props.showFileEditor ? <EditorPanel key="Editor" {...props} /> : null}
+          </Slide>
 
           <div className="uppy-Dashboard-progressindicators">
             {props.progressindicators.map((target) => {
@@ -223,4 +261,4 @@ module.exports = function Dashboard(props) {
       {dashboard}
     </div>
   );
-};
+}

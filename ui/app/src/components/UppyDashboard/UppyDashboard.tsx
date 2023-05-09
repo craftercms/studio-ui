@@ -425,6 +425,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
     if (uppy.getPlugin('craftercms:Dashboard')) {
       uppy.removePlugin(uppy.getPlugin('craftercms:Dashboard'));
     }
+    console.log('typeof Dashboard', typeof Dashboard);
     uppy.use(Dashboard, {
       ...options,
       inline: true,

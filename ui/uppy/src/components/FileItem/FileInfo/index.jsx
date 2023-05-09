@@ -1,6 +1,22 @@
-const { h } = require('preact');
-const prettierBytes = require('@transloadit/prettier-bytes');
-const truncateString = require('@uppy/utils/lib/truncateString');
+/*
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { h } from 'preact';
+import prettierBytes from '@transloadit/prettier-bytes';
+import truncateString from '@uppy/utils/lib/truncateString';
 
 const renderAcquirerIcon = (acquirer, props) => (
   <span title={props.i18n('fileSource', { name: acquirer.name })}>{acquirer.icon()}</span>
@@ -81,7 +97,7 @@ const renderFileType = (props) =>
   props.file.data.type && <div class="uppy-dashboard-item-statusType">{props.file.data.type}</div>;
 
 const renderFileSize = (props) =>
-  props.file.data.size && <div class="uppy-Dashboard-Item-statusSize">{prettierBytes(props.file.data.size)}</div>;
+  props.file.size && <div className="uppy-Dashboard-Item-statusSize">{prettierBytes(props.file.size)}</div>;
 
 const renderPolicyWarning = (props) => {
   const file = props.file;
@@ -129,12 +145,12 @@ const ErrorButton = ({ file, onClick }) => {
   if (file.error) {
     return (
       <span
-        class="uppy-Dashboard-Item-errorDetails"
+        className="uppy-Dashboard-Item-errorDetails"
         aria-label={file.error}
         data-microtip-position="bottom"
         data-microtip-size="medium"
         role="tooltip"
-        onclick={onClick}
+        onClick={onClick}
       >
         ?
       </span>
@@ -143,12 +159,12 @@ const ErrorButton = ({ file, onClick }) => {
   return null;
 };
 
-module.exports = function FileInfo(props) {
+export default function FileInfo(props) {
   return (
-    <div class="uppy-Dashboard-Item-fileInfo" data-uppy-file-source={props.file.source}>
+    <div className="uppy-Dashboard-Item-fileInfo" data-uppy-file-source={props.file.source}>
       {(props.file.meta.suggestedName || props.file.meta.allowed === false) && renderPolicyWarning(props)}
       {renderFileName(props)}
-      <div class="uppy-Dashboard-Item-status">
+      <div className="uppy-Dashboard-Item-status">
         {renderFileType(props)} @ {renderFileSize(props)}
         {renderFileSource(props)}
         <ErrorButton
@@ -160,4 +176,4 @@ module.exports = function FileInfo(props) {
       </div>
     </div>
   );
-};
+}

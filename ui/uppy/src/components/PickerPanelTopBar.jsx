@@ -1,5 +1,20 @@
-const { h } = require('preact');
-const classNames = require('classnames');
+/*
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import { h } from 'preact';
 
 const uploadStates = {
   STATE_ERROR: 'error',
@@ -27,7 +42,7 @@ function getUploadingState(isAllErrored, isAllComplete, isAllPaused, files = {})
   let state = uploadStates.STATE_WAITING;
   const fileIDs = Object.keys(files);
   for (let i = 0; i < fileIDs.length; i++) {
-    const progress = files[fileIDs[i]].progress;
+    const { progress } = files[fileIDs[i]];
     // If ANY files are being uploaded right now, show the uploading state.
     if (progress.uploadStarted && !progress.uploadComplete) {
       return uploadStates.STATE_UPLOADING;
@@ -46,33 +61,47 @@ function getUploadingState(isAllErrored, isAllComplete, isAllPaused, files = {})
   return state;
 }
 
-function UploadStatus(props) {
-  const uploadingState = getUploadingState(props.isAllErrored, props.isAllComplete, props.isAllPaused, props.files);
+function UploadStatus({
+  files,
+  i18n,
+  isAllComplete,
+  isAllErrored,
+  isAllPaused,
+  inProgressNotPausedFiles,
+  newFiles,
+  processingFiles
+}) {
+  const uploadingState = getUploadingState(isAllErrored, isAllComplete, isAllPaused, files);
 
   switch (uploadingState) {
     case 'uploading':
-      return props.i18n('uploadingXFiles', { smart_count: props.inProgressNotPausedFiles.length });
+      return i18n('uploadingXFiles', { smart_count: inProgressNotPausedFiles.length });
     case 'preprocessing':
     case 'postprocessing':
-      return props.i18n('processingXFiles', { smart_count: props.processingFiles.length });
+      return i18n('processingXFiles', { smart_count: processingFiles.length });
     case 'paused':
-      return props.i18n('uploadPaused');
+      return i18n('uploadPaused');
     case 'waiting':
-      return props.i18n('xFilesSelected', { smart_count: props.newFiles.length });
+      return i18n('xFilesSelected', { smart_count: newFiles.length });
     case 'complete':
-      return props.i18n('uploadComplete');
+      return i18n('uploadComplete');
+    case 'error':
+      return i18n('error');
+    default:
   }
 }
 
 function PanelTopBar(props) {
-  let allowNewUpload = props.allowNewUpload;
-  // TODO maybe this should be done in ../index.js, then just pass that down as `allowNewUpload`
-  if (allowNewUpload && props.maxNumberOfFiles) {
+  const { i18n, isAllComplete, hideCancelButton, maxNumberOfFiles, toggleAddFilesPanel, uppy } = props;
+  let { allowNewUpload } = props;
+  // TODO maybe this should be done in ../Dashboard.jsx, then just pass that down as `allowNewUpload`
+  if (allowNewUpload && maxNumberOfFiles) {
+    // eslint-disable-next-line react/destructuring-assignment
     allowNewUpload = props.totalFileCount < props.maxNumberOfFiles;
   }
 
   return (
-    <div class="uppy-DashboardContent-bar">
+    <div className="uppy-DashboardContent-bar">
       <div className="uppy-dashboard-progress-indicator">
         <div
           role="progressbar"
@@ -118,9 +147,10 @@ function PanelTopBar(props) {
         </div>
       )}
 
-      {/*<div class="uppy-DashboardContent-title" role="heading" aria-level="1">*/}
-      {/*  <UploadStatus {...props} />*/}
-      {/*</div>*/}
+      {/* <div className="uppy-DashboardContent-title" role="heading" aria-level="1"> */}
+      {/*  /!* eslint-disable-next-line react/jsx-props-no-spreading *!/ */}
+      {/*  <UploadStatus {...props} /> */}
+      {/* </div> */}
 
       <div className="uppy-dashboard-right-buttons">
         {allowNewUpload && (
@@ -129,7 +159,7 @@ function PanelTopBar(props) {
             type="button"
             aria-label={props.i18n('addMoreFiles')}
             title={props.i18n('addMoreFiles')}
-            onclick={() => props.toggleAddFilesPanel(true)}
+            onClick={() => props.toggleAddFilesPanel(true)}
           >
             {props.i18n('addMore')}
           </button>
@@ -149,4 +179,4 @@ function PanelTopBar(props) {
   );
 }
 
-module.exports = PanelTopBar;
+export default PanelTopBar;
