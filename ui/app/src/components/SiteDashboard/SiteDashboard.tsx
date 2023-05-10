@@ -32,6 +32,7 @@ import Grid from '@mui/material/Grid';
 import ActivityDashlet from '../ActivityDashlet/ActivityDashlet';
 import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { IconGuideDashlet } from '../IconGuideDashlet';
 
 export interface DashboardProps {
   mountMode?: string;
@@ -143,6 +144,17 @@ export function Dashboard(props: DashboardProps) {
             <DashboardSkeleton />
           )}
         </Suspense>
+        <Grid
+          item
+          xs={12}
+          md={12}
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap'
+          }}
+        >
+          <IconGuideDashlet />
+        </Grid>
       </Grid>
       <ActivityDashlet
         sxs={{
