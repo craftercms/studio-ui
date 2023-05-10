@@ -117,7 +117,7 @@ export function Dashboard(props: DashboardProps) {
                 defaultProps: { contentHeight: height, onMinimize },
                 createMapperFn: (mapper) => (widget, index) =>
                   (
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={6} key={index}>
                       {mapper(widget, index)}
                     </Grid>
                   )
@@ -144,12 +144,12 @@ export function Dashboard(props: DashboardProps) {
             <DashboardSkeleton />
           )}
         </Suspense>
+        {/* Displays on desktop - inside grid, below the last rendered dashlet */}
         <Grid
           item
-          xs={12}
           md={12}
           sx={{
-            display: 'flex',
+            display: desktopScreen ? 'flex' : 'none',
             flexWrap: 'wrap'
           }}
         >
@@ -178,6 +178,10 @@ export function Dashboard(props: DashboardProps) {
         contentHeight={desktopScreen ? null : height}
         onMinimize={onMinimize}
       />
+      {/* Displays on mobile - below Activity Dashlet */}
+      <Box sx={{ display: desktopScreen ? 'none' : 'flex', mt: 2 }}>
+        <IconGuideDashlet />
+      </Box>
     </Box>
   );
 }
