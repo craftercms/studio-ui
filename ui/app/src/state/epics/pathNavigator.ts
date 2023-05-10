@@ -131,13 +131,14 @@ export default [
         ([
           {
             type,
-            payload: { id, path }
+            payload: { id, path, keyword }
           },
           state
         ]) =>
           fetchItemWithChildrenByPath(state.sites.active, path, {
             excludes: state.pathNavigator[id].excludes,
-            limit: state.pathNavigator[id].limit
+            limit: state.pathNavigator[id].limit,
+            ...(keyword && { keyword })
           }).pipe(
             map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
             catchAjaxError(
@@ -156,13 +157,14 @@ export default [
       mergeMap(
         ([
           {
-            payload: { id, path }
+            payload: { id, path, keyword }
           },
           state
         ]) =>
           fetchItemWithChildrenByPath(state.sites.active, path, {
             excludes: state.pathNavigator[id].excludes,
-            limit: state.pathNavigator[id].limit
+            limit: state.pathNavigator[id].limit,
+            ...(keyword && { keyword })
           }).pipe(
             map(({ item, children }) =>
               pathNavigatorConditionallySetPathComplete({ id, path, parent: item, children })
