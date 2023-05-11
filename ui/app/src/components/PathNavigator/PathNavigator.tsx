@@ -233,7 +233,8 @@ export function PathNavigator(props: PathNavigatorProps) {
     dispatch(
       pathNavigatorFetchPath({
         id,
-        path: item.path
+        path: item.path,
+        keyword
       })
     );
   };
@@ -374,7 +375,7 @@ export function PathNavigator(props: PathNavigatorProps) {
 
   const onBreadcrumbSelected = (item: DetailedItem) => {
     if (withoutIndex(item.path) !== withoutIndex(state.currentPath)) {
-      dispatch(pathNavigatorConditionallySetPath({ id, path: item.path }));
+      dispatch(pathNavigatorConditionallySetPath({ id, path: item.path, keyword }));
     }
   };
 

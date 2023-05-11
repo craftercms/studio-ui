@@ -47,9 +47,9 @@ export const pathNavigatorSetCollapsed =
 export const pathNavigatorSetCurrentPath =
   /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_SET_CURRENT_PATH');
 
-export const pathNavigatorConditionallySetPath = /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>(
-  'PATH_NAV_CONDITIONALLY_SET_PATH'
-);
+export const pathNavigatorConditionallySetPath = /*#__PURE__*/ createAction<
+  PayloadWithId<{ path: string; keyword?: string }>
+>('PATH_NAV_CONDITIONALLY_SET_PATH');
 
 export const pathNavigatorConditionallySetPathComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; parent?: DetailedItem; children: GetChildrenResponse }>
@@ -78,7 +78,7 @@ export const pathNavigatorFetchParentItems =
   >('PATH_NAV_FETCH_PARENT_ITEMS');
 
 export const pathNavigatorFetchPath =
-  /*#__PURE__*/ createAction<PayloadWithId<{ path: string }>>('PATH_NAV_FETCH_PATH');
+  /*#__PURE__*/ createAction<PayloadWithId<{ path: string; keyword?: string }>>('PATH_NAV_FETCH_PATH');
 
 export const pathNavigatorFetchPathComplete =
   /*#__PURE__*/ createAction<PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>>(

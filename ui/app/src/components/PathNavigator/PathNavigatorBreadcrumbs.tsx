@@ -104,7 +104,8 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           </div>
         </section>
       )}
-      {((showSearch && onSearch) || forceSearch) && (
+      {/* This way the searchBar will be shown whenever there's a keyword OR when the user clicks on the search icon */}
+      {(((Boolean(keyword) || showSearch) && onSearch) || forceSearch) && (
         <Box component="section" className={classes.widgetSection} sx={{ display: 'flex' }}>
           <SearchBar
             autoFocus={!forceSearch}
