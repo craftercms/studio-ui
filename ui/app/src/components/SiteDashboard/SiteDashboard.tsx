@@ -145,16 +145,11 @@ export function Dashboard(props: DashboardProps) {
           )}
         </Suspense>
         {/* Displays on desktop - inside grid, below the last rendered dashlet */}
-        <Grid
-          item
-          md={12}
-          sx={{
-            display: desktopScreen ? 'flex' : 'none',
-            flexWrap: 'wrap'
-          }}
-        >
-          <IconGuideDashlet />
-        </Grid>
+        {desktopScreen && (
+          <Grid item md={12} sx={{ flexWrap: 'wrap' }}>
+            <IconGuideDashlet />
+          </Grid>
+        )}
       </Grid>
       <ActivityDashlet
         sxs={{
@@ -179,9 +174,11 @@ export function Dashboard(props: DashboardProps) {
         onMinimize={onMinimize}
       />
       {/* Displays on mobile - below Activity Dashlet */}
-      <Box sx={{ display: desktopScreen ? 'none' : 'flex', mt: 2 }}>
-        <IconGuideDashlet />
-      </Box>
+      {!desktopScreen && (
+        <Box sx={{ mt: 2 }}>
+          <IconGuideDashlet />
+        </Box>
+      )}
     </Box>
   );
 }
