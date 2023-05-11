@@ -32,6 +32,7 @@ import Grid from '@mui/material/Grid';
 import ActivityDashlet from '../ActivityDashlet/ActivityDashlet';
 import DevContentOpsDashlet from '../DevContentOpsDashlet/DevContentOpsDashlet';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { IconGuideDashlet } from '../IconGuideDashlet';
 
 export interface DashboardProps {
   mountMode?: string;
@@ -116,7 +117,7 @@ export function Dashboard(props: DashboardProps) {
                 defaultProps: { contentHeight: height, onMinimize },
                 createMapperFn: (mapper) => (widget, index) =>
                   (
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12} md={6} key={index}>
                       {mapper(widget, index)}
                     </Grid>
                   )
@@ -143,6 +144,12 @@ export function Dashboard(props: DashboardProps) {
             <DashboardSkeleton />
           )}
         </Suspense>
+        {/* Displays on desktop - inside grid, below the last rendered dashlet */}
+        {desktopScreen && (
+          <Grid item md={12} sx={{ flexWrap: 'wrap' }}>
+            <IconGuideDashlet />
+          </Grid>
+        )}
       </Grid>
       <ActivityDashlet
         sxs={{
@@ -166,6 +173,12 @@ export function Dashboard(props: DashboardProps) {
         contentHeight={desktopScreen ? null : height}
         onMinimize={onMinimize}
       />
+      {/* Displays on mobile - below Activity Dashlet */}
+      {!desktopScreen && (
+        <Box sx={{ mt: 2 }}>
+          <IconGuideDashlet />
+        </Box>
+      )}
     </Box>
   );
 }
