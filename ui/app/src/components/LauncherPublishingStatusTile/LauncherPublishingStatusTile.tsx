@@ -16,25 +16,56 @@
 
 import React from 'react';
 import PublishingStatusTile from '../PublishingStatusTile';
-import { closeLauncher, showPublishingStatusDialog } from '../../state/actions/dialogs';
+import { closeLauncher, showPublishingStatusDialog, showWidgetDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { batchActions } from '../../state/actions/misc';
 import { Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useSelection } from '../../hooks/useSelection';
 import { publishingStatusMessages } from '../PublishingStatusDisplay';
+import useActiveUser from '../../hooks/useActiveUser';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
 function LauncherPublishingStatusTile() {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const state = useSelection((state) => state.dialogs.publishingStatus);
+  const user = useActiveUser();
+  const site = useActiveSiteId();
+
+  const onShowDialog = () => {
+    const userRoles = user?.rolesBySite[site] ?? [];
+    const userPermissions = user?.permissionsBySite[site] ?? [];
+    dispatch(
+      // If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
+      // Publishing Dashboard. Otherwise, just show the simple status dialog.
+      userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
+        userRoles.some((role) => role === 'developer' || role === 'admin')
+        ? showWidgetDialog({
+            title: formatMessage({
+              id: 'words.publishing',
+              defaultMessage: 'Publishing'
+            }),
+            widget: {
+              id: 'craftercms.components.PublishingDashboard',
+              configuration: {
+                embedded: true
+              }
+            }
+          })
+        : showPublishingStatusDialog({})
+    );
+  };
+
   return (
     <Tooltip title={formatMessage(publishingStatusMessages.publishingStatus)} disableFocusListener disableTouchListener>
       <PublishingStatusTile
         enabled={state.enabled}
         status={state.status}
         isFetching={state.isFetching}
-        onClick={() => dispatch(batchActions([closeLauncher(), showPublishingStatusDialog({})]))}
+        onClick={() => {
+          dispatch(closeLauncher());
+          onShowDialog();
+        }}
       />
     </Tooltip>
   );
