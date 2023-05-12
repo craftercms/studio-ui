@@ -46,7 +46,7 @@ import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import useEnv from '../../hooks/useEnv';
-import { publishEvent, workflowEvent } from '../../state/actions/system';
+import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -178,15 +178,24 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [workflowEvent.type, publishEvent.type];
+    const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      // If there's a workflow, publish or delete event, clear selected items
+      if (type === workflowEvent.type || publishEvent.type || type === deleteContentEvent.type) {
+        setState({
+          selected: {},
+          hasSelected: false,
+          isAllSelected: false,
+          selectedCount: 0
+        });
+      }
       loadPage(0, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [limit, offset, loadPage]);
+  }, [limit, offset, loadPage, setState]);
   // endregion
 
   return (

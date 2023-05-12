@@ -167,12 +167,21 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      // If there's a workflow, publish or delete event, clear selected items
+      if (type === workflowEvent.type || publishEvent.type || type === deleteContentEvent.type) {
+        setState({
+          selected: {},
+          hasSelected: false,
+          isAllSelected: false,
+          selectedCount: 0
+        });
+      }
       loadPage(0, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [loadPage]);
+  }, [loadPage, setState]);
   // endregion
 
   return (
