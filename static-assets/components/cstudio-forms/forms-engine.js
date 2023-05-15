@@ -1508,6 +1508,7 @@ var CStudioForms =
             }
 
             if (me.config.isInclude) {
+              setButtonsEnabled(true);
               sendMessage({
                 type: FORM_UPDATE_REQUEST,
                 editorId: editorId,
