@@ -16,7 +16,7 @@
 
 import InputBase from '@mui/material/InputBase';
 import React, { useEffect, useState } from 'react';
-import { debounceTime, switchMap, tap } from 'rxjs/operators';
+import { catchError, debounceTime, switchMap, tap } from 'rxjs/operators';
 import { search } from '../../services/search';
 import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
@@ -35,6 +35,8 @@ import palette from '../../styles/palette';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useContentTypeList } from '../../hooks/useContentTypeList';
 import { useSubject } from '../../hooks/useSubject';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { of } from 'rxjs';
 
 export interface PagesSearchAheadProps {
   value: string;
@@ -105,6 +107,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
   const [isFetching, setIsFetching] = useState(false);
   const [items, setItems] = useState(null);
   const [dirty, setDirty] = useState(false);
+  const [error, setError] = useState(null);
 
   const { getRootProps, getInputProps, getListboxProps, getOptionProps, groupedOptions, popupOpen } = useAutocomplete({
     freeSolo: true,
@@ -142,17 +145,43 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
       .pipe(
         tap(() => {
           setIsFetching(true);
+          setError(null);
           setDirty(true);
         }),
         debounceTime(400),
-        switchMap((keywords) =>
-          search(site, {
-            keywords,
+        switchMap((keywords) => {
+          let isSearchRoot = false;
+          // Remove query and hashes from possible url
+          let searchKeywords = keywords.replace(/(\?.*)|(#.*)/g, '');
+          if (searchKeywords === '/') {
+            // if the url is '/' (homepage), specifically search for the path `/site/website/index.xml`
+            searchKeywords = '/site/website/index.xml';
+            isSearchRoot = true;
+          } else {
+            searchKeywords = searchKeywords.replaceAll('/', ' ');
+          }
+
+          // Cleaning of searchKeywords is done due to restrictions in backend of characters like '/', '?', '#'.
+          return search(site, {
+            ...(isSearchRoot
+              ? {
+                  path: searchKeywords
+                }
+              : {
+                  keywords: searchKeywords
+                }),
             filters: {
               'content-type': contentTypes.map((contentType) => contentType.id)
             }
-          })
-        )
+          }).pipe(
+            catchError(({ response }) => {
+              setIsFetching(false);
+              setError(response.response);
+              setItems(null);
+              return of({ items: null });
+            })
+          );
+        })
       )
       .subscribe((response) => {
         setIsFetching(false);
@@ -217,6 +246,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
       {popupOpen && dirty && (
         <Paper className={classes.paper}>
           {isFetching && <LoadingState />}
+          {!isFetching && error && <ApiResponseErrorState error={error} imageUrl={null} />}
           {!isFetching && groupedOptions.length > 0 && (
             <List dense className={classes.listBox} {...getListboxProps()}>
               {(groupedOptions as SearchItem[]).map((option, index) => (
@@ -234,7 +264,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
               ))}
             </List>
           )}
-          {!isFetching && groupedOptions.length === 0 && (
+          {!isFetching && !error && groupedOptions.length === 0 && (
             <EmptyState
               title={<FormattedMessage id="searchAhead.noResults" defaultMessage="No Results." />}
               styles={{
