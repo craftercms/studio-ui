@@ -27,7 +27,10 @@ import OpenInFullOutlinedIcon from '@mui/icons-material/OpenInFullOutlined';
 import CloseFullscreenOutlinedIcon from '@mui/icons-material/CloseFullscreenOutlined';
 import IconButton from '@mui/material/IconButton';
 import useSiteDashboardContext from '../SiteDashboard/useSiteDashboardContext';
-
+import useMediaQuery from '@mui/material/useMediaQuery';
+import ExpandLessOutlinedIcon from '@mui/icons-material/ExpandLessOutlined';
+import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
+import { useTheme } from '@mui/material/styles';
 export type DashletCardProps = PropsWithChildren<
   CommonDashletProps & {
     title?: React.ReactNode;
@@ -69,6 +72,10 @@ export function DashletCard(props: DashletCardProps) {
   const renderCardHeader = Boolean(title) || Boolean(headerAction);
   const [isMaximized, setIsMaximized] = useState(false);
   const dashboardState = useSiteDashboardContext();
+  const theme = useTheme();
+  const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
+  const [isExpanded, setIsExpanded] = useState(true);
+  const showCardBody = isExpanded || desktopScreen || isMaximized;
 
   const updateMaximized = () => {
     setIsMaximized(!isMaximized);
@@ -118,59 +125,68 @@ export function DashletCard(props: DashletCardProps) {
                 </IconButton>
               )}
               {headerAction}
+              {!desktopScreen && !isMaximized && (
+                <IconButton onClick={() => setIsExpanded(!isExpanded)}>
+                  {isExpanded ? <ExpandLessOutlinedIcon /> : <ExpandMoreOutlinedIcon />}
+                </IconButton>
+              )}
             </>
           }
           sx={sxs?.header}
         />
       )}
       {/* endregion */}
-      <Divider />
-      {actionsBar && (
-        <Box
-          sx={{
-            display: 'flex',
-            position: 'relative',
-            borderBottom: '1px solid',
-            borderBottomColor: 'divider',
-            pr: 1,
-            pl: 1,
-            ...sxs?.actionsBar
-          }}
-        >
-          {actionsBar}
-        </Box>
+      {showCardBody && (
+        <>
+          <Divider />
+          {actionsBar && (
+            <Box
+              sx={{
+                display: 'flex',
+                position: 'relative',
+                borderBottom: '1px solid',
+                borderBottomColor: 'divider',
+                pr: 1,
+                pl: 1,
+                ...sxs?.actionsBar
+              }}
+            >
+              {actionsBar}
+            </Box>
+          )}
+          {/* region Body */}
+          <CardContent
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              flexGrow: 1,
+              overflow: 'auto',
+              height: parseDashletContentHeight(contentHeight),
+              pt: 0,
+              ...sxs?.content
+            }}
+            {...cardContentProps}
+          >
+            {children}
+          </CardContent>
+          {/* endregion */}
+          {/* region Actions */}
+          {footer && (
+            <CardActions
+              sx={{
+                borderTop: '1px solid',
+                borderColor: 'divider',
+                paddingTop: '4px',
+                paddingBottom: '4px',
+                ...sxs?.footer
+              }}
+            >
+              {footer}
+            </CardActions>
+          )}
+          {/* endregion */}
+        </>
       )}
-      {/* region Body */}
-      <CardContent
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          flexGrow: 1,
-          overflow: 'auto',
-          height: parseDashletContentHeight(contentHeight),
-          pt: 0,
-          ...sxs?.content
-        }}
-        {...cardContentProps}
-      >
-        {children}
-      </CardContent>
-      {/* endregion */}
-      {/* region Actions */}
-      {footer && (
-        <CardActions
-          sx={{
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            paddingTop: '4px',
-            paddingBottom: '4px',
-            ...sxs?.footer
-          }}
-        >
-          {footer}
-        </CardActions>
-      )}
-      {/* endregion */}
     </Card>
   );
 }

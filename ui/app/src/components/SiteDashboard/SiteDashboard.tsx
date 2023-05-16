@@ -87,7 +87,10 @@ export function Dashboard(props: DashboardProps) {
                 height: mountMode === 'dialog' ? '100%' : 'calc(100% - 65px)',
                 overflow: 'hidden'
               }
-            : {})
+            : {
+                height: freezeScroll ? '100%' : 'auto',
+                overflowY: freezeScroll ? 'hidden' : 'auto'
+              })
         }}
       >
         <Grid
