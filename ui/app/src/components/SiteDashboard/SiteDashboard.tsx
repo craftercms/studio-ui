@@ -46,8 +46,7 @@ export function Dashboard(props: DashboardProps) {
   const {
     palette: { mode }
   } = useTheme();
-  const theme = useTheme();
-  const desktopScreen = useMediaQuery(theme.breakpoints.up('md'));
+  const desktopScreen = useMediaQuery('(min-width: 1100px)');
   const site = useActiveSiteId();
   const user = useActiveUser();
   const userRoles = user.rolesBySite[site];
@@ -170,30 +169,29 @@ export function Dashboard(props: DashboardProps) {
           )}
         </Grid>
         {/* region ActivityDashlet */}
-        {showActivityFeed && (
-          <ActivityDashlet
-            sxs={{
-              card: {
-                display: 'flex',
-                flexDirection: 'column',
-                ...(desktopScreen
-                  ? {
-                      width: '30%',
-                      position: 'absolute',
-                      right: 0,
-                      top: 0,
-                      bottom: 0,
-                      borderRadius: 0
-                    }
-                  : {
-                      mt: 2
-                    })
-              }
-            }}
-            contentHeight={desktopScreen ? null : height}
-            onMinimize={onMinimize}
-          />
-        )}
+        <ActivityDashlet
+          sxs={{
+            card: {
+              // Using display prop to hide Dashlet to avoid unmounting component
+              display: showActivityFeed ? 'flex' : 'none',
+              flexDirection: 'column',
+              ...(desktopScreen
+                ? {
+                    width: '30%',
+                    position: 'absolute',
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    borderRadius: 0
+                  }
+                : {
+                    mt: 2
+                  })
+            }
+          }}
+          contentHeight={desktopScreen ? null : height}
+          onMinimize={onMinimize}
+        />
         {/* endregion */}
         {/* Displays on mobile - below Activity Dashlet */}
         {!desktopScreen && (
