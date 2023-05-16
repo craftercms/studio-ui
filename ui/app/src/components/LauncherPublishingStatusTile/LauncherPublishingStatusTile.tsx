@@ -16,45 +16,19 @@
 
 import React from 'react';
 import PublishingStatusTile from '../PublishingStatusTile';
-import { closeLauncher, showPublishingStatusDialog, showWidgetDialog } from '../../state/actions/dialogs';
+import { closeLauncher } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
 import { Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useSelection } from '../../hooks/useSelection';
 import { publishingStatusMessages } from '../PublishingStatusDisplay';
-import useActiveUser from '../../hooks/useActiveUser';
-import useActiveSiteId from '../../hooks/useActiveSiteId';
+import useShowPublishingStatusDialog from '../../hooks/useShowPublishingStatusDialog';
 
 function LauncherPublishingStatusTile() {
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
   const state = useSelection((state) => state.dialogs.publishingStatus);
-  const user = useActiveUser();
-  const site = useActiveSiteId();
-
-  const onShowDialog = () => {
-    const userRoles = user?.rolesBySite[site] ?? [];
-    const userPermissions = user?.permissionsBySite[site] ?? [];
-    dispatch(
-      // If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
-      // Publishing Dashboard. Otherwise, just show the simple status dialog.
-      userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
-        userRoles.some((role) => role === 'developer' || role === 'admin')
-        ? showWidgetDialog({
-            title: formatMessage({
-              id: 'words.publishing',
-              defaultMessage: 'Publishing'
-            }),
-            widget: {
-              id: 'craftercms.components.PublishingDashboard',
-              configuration: {
-                embedded: true
-              }
-            }
-          })
-        : showPublishingStatusDialog({})
-    );
-  };
+  const onShowDialog = useShowPublishingStatusDialog();
+  const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
 
   return (
     <Tooltip title={formatMessage(publishingStatusMessages.publishingStatus)} disableFocusListener disableTouchListener>
