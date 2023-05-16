@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Chip from '@mui/material/Chip';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -40,14 +40,6 @@ export function UsersAutocomplete(props: UsersAutocompleteProps) {
   const [error, setError] = useState(null);
   const keyword$ = useDebouncedInput((k) => setKeyword(k.trim()));
   const { formatMessage } = useIntl();
-  const errorMessage = useMemo(() => {
-    return error
-      ? error?.response.code === 1001
-        ? error.validationErrors[0].message
-        : createErrorStatePropsFromApiResponse(error.response, formatMessage).message
-      : null;
-  }, [error, formatMessage]);
-
   useEffect(() => {
     if (keyword) {
       setLoading(true);
@@ -73,8 +65,12 @@ export function UsersAutocomplete(props: UsersAutocompleteProps) {
       multiple
       noOptionsText={
         keyword ? (
-          errorMessage ? (
-            errorMessage
+          error ? (
+            error?.response.code === 1001 ? (
+              error.validationErrors[0].message
+            ) : (
+              createErrorStatePropsFromApiResponse(error.response, formatMessage).message
+            )
           ) : (
             <FormattedMessage
               id="activityDashlet.noUsersMatchKeywordsMessage"
