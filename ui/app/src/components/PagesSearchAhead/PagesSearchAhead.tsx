@@ -152,7 +152,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
         switchMap((keywords) => {
           let isSearchRoot = false;
           // Remove query and hashes from possible url
-          let searchKeywords = keywords.replace(/(\?.*)|(#.*)/g, '');
+          let searchKeywords = keywords.replace(/(\?|#).*/, '');
           if (searchKeywords === '/') {
             // if the url is '/' (homepage), specifically search for the path `/site/website/index.xml`
             searchKeywords = '/site/website/index.xml';
