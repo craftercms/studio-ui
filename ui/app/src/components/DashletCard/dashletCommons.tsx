@@ -44,6 +44,7 @@ export const actionsToBeShown: AllItemActions[] = [
   'edit',
   'delete',
   'publish',
+  'requestPublish',
   'rejectPublish',
   'dependencies',
   'history'
