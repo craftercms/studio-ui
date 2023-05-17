@@ -344,7 +344,6 @@ export default [
               ) {
                 // Get correct path to fetch (may include index.xml)
                 const fetchPath = path in tree.totalByPath ? path : withIndex(path);
-
                 // If its children are loaded, then re-fetch to get the new
                 tree.childrenByParentPath[fetchPath] &&
                   actions.push(
