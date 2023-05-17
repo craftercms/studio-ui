@@ -47,7 +47,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import { removeStoredPathNavigatorTree, setStoredPathNavigatorTree } from '../../utils/state';
 import { forkJoin, Observable } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
-import { getFileExtension, getIndividualPaths, getParentPath, getRootPath } from '../../utils/path';
+import { getFileExtension, getIndividualPaths, getParentPath, getRootPath, withIndex } from '../../utils/path';
 import { batchActions } from '../actions/misc';
 import {
   contentEvent,
@@ -338,14 +338,19 @@ export default [
             [parentPathOfTargetPath, parentPathOfSourcePath].forEach((path) => {
               if (
                 // If in totalByPath is an item that has been loaded and must update...
-                path in tree.totalByPath
+                // path in totalByPath may be a page, and its path has index.xml, so it needs to be validated too.
+                path in tree.totalByPath ||
+                withIndex(path) in tree.totalByPath
               ) {
+                // Get correct path to fetch (may include index.xml)
+                const fetchPath = path in tree.totalByPath ? path : withIndex(path);
+
                 // If its children are loaded, then re-fetch to get the new
-                tree.childrenByParentPath[path] &&
+                tree.childrenByParentPath[fetchPath] &&
                   actions.push(
                     pathNavigatorTreeFetchPathChildren({
                       id: id,
-                      path: path,
+                      path: fetchPath,
                       expand: false
                     })
                   );

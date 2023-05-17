@@ -23,7 +23,7 @@ import {
   fetchItemsByPath,
   fetchItemWithChildrenByPath
 } from '../../services/content';
-import { getIndividualPaths, getParentPath, getRootPath, withIndex } from '../../utils/path';
+import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
@@ -399,7 +399,10 @@ export default [
             actions.push(pathNavigatorRefresh({ id: navigator.id }));
           } else if (!navigator.isRootPathMissing && navigator.currentPath.startsWith(sourcePath)) {
             actions.push(pathNavigatorSetCurrentPath({ id: navigator.id, path: navigator.rootPath }));
-          } else if (navigator.currentPath === parentOfTargetPath || navigator.currentPath === parentOfSourcePath) {
+          } else if (
+            withoutIndex(navigator.currentPath) === parentOfTargetPath ||
+            withoutIndex(navigator.currentPath) === parentOfSourcePath
+          ) {
             actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
           }
         });

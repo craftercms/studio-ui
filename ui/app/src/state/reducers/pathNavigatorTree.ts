@@ -38,7 +38,7 @@ import { fetchSiteUiConfig } from '../actions/configuration';
 import { reversePluckProps } from '../../utils/object';
 import { SocketEventBase, StandardAction } from '../../models';
 import { fetchSandboxItemComplete, FetchSandboxItemCompletePayload } from '../actions/content';
-import { getIndividualPaths, getParentPath, withoutIndex } from '../../utils/path';
+import { getIndividualPaths, getParentPath, withIndex, withoutIndex } from '../../utils/path';
 import { deleteContentEvent, moveContentEvent, MoveContentEventPayload } from '../actions/system';
 import { createPresenceTable } from '../../utils/array';
 
@@ -69,6 +69,8 @@ const expandPath = (state: LookupTable<PathNavigatorTreeStateProps>, { payload: 
 export function deleteItemFromState(tree: PathNavigatorTreeStateProps, targetPath: string): void {
   let parentPath = getParentPath(targetPath);
   let totalByPath = tree.totalByPath;
+  // path in totalByPath may be a page, and its path has index.xml
+  parentPath = totalByPath[parentPath] ? parentPath : withIndex(parentPath);
   let childrenByParentPath = tree.childrenByParentPath;
 
   // Remove deleted item from the parent path's children
