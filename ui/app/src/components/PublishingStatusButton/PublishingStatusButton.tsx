@@ -16,13 +16,9 @@
 
 import React, { forwardRef } from 'react';
 import { IconButtonProps } from '@mui/material/IconButton';
-import { useDispatch } from 'react-redux';
 import PublishingStatusButtonUI, { PublishingStatusButtonUIProps } from './PublishingStatusButtonUI';
-import { showPublishingStatusDialog, showWidgetDialog } from '../../state/actions/dialogs';
 import { useSelection } from '../../hooks/useSelection';
-import { useIntl } from 'react-intl';
-import useActiveUser from '../../hooks/useActiveUser';
-import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { useShowPublishingStatusDialog } from '../../hooks/useShowPublishingStatusDialog';
 
 export interface PublishingStatusButtonProps extends IconButtonProps {
   variant?: PublishingStatusButtonUIProps['variant'];
@@ -32,35 +28,7 @@ export const PublishingStatusButton = forwardRef<HTMLButtonElement, PublishingSt
   const { enabled, status, isFetching, totalItems, numberOfItems } = useSelection(
     (state) => state.dialogs.publishingStatus
   );
-  const { formatMessage } = useIntl();
-  const dispatch = useDispatch();
-  const user = useActiveUser();
-  const site = useActiveSiteId();
-
-  const onShowDialog = () => {
-    const userRoles = user?.rolesBySite[site] ?? [];
-    const userPermissions = user?.permissionsBySite[site] ?? [];
-    dispatch(
-      // If user has either of these permissions or roles, then he'll see more than one widget, and it's worth showing the
-      // Publishing Dashboard. Otherwise, just show the simple status dialog.
-      userPermissions.some((permission) => permission === 'get_publishing_queue' || permission === 'publish') ||
-        userRoles.some((role) => role === 'developer' || role === 'admin')
-        ? showWidgetDialog({
-            title: formatMessage({
-              id: 'words.publishing',
-              defaultMessage: 'Publishing'
-            }),
-            widget: {
-              id: 'craftercms.components.PublishingDashboard',
-              configuration: {
-                embedded: true
-              }
-            }
-          })
-        : showPublishingStatusDialog({})
-    );
-  };
-
+  const onShowDialog = useShowPublishingStatusDialog();
   return (
     <PublishingStatusButtonUI
       {...props}

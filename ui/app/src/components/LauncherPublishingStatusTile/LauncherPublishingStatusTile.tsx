@@ -16,25 +16,30 @@
 
 import React from 'react';
 import PublishingStatusTile from '../PublishingStatusTile';
-import { closeLauncher, showPublishingStatusDialog } from '../../state/actions/dialogs';
+import { closeLauncher } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { batchActions } from '../../state/actions/misc';
 import { Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useSelection } from '../../hooks/useSelection';
 import { publishingStatusMessages } from '../PublishingStatusDisplay';
+import useShowPublishingStatusDialog from '../../hooks/useShowPublishingStatusDialog';
 
 function LauncherPublishingStatusTile() {
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
   const state = useSelection((state) => state.dialogs.publishingStatus);
+  const onShowDialog = useShowPublishingStatusDialog();
+  const { formatMessage } = useIntl();
+  const dispatch = useDispatch();
+
   return (
     <Tooltip title={formatMessage(publishingStatusMessages.publishingStatus)} disableFocusListener disableTouchListener>
       <PublishingStatusTile
         enabled={state.enabled}
         status={state.status}
         isFetching={state.isFetching}
-        onClick={() => dispatch(batchActions([closeLauncher(), showPublishingStatusDialog({})]))}
+        onClick={() => {
+          dispatch(closeLauncher());
+          onShowDialog();
+        }}
       />
     </Tooltip>
   );
