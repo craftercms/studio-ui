@@ -163,13 +163,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
 
           // Cleaning of searchKeywords is done due to restrictions in backend of characters like '/', '?', '#'.
           return search(site, {
-            ...(isSearchRoot
-              ? {
-                  path: searchKeywords
-                }
-              : {
-                  keywords: searchKeywords
-                }),
+            [isSearchRoot ? 'path' : 'keywords']: searchKeywords,
             filters: {
               'content-type': contentTypes.map((contentType) => contentType.id)
             }
