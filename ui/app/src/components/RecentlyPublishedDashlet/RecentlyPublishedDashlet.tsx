@@ -69,7 +69,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
       items: null,
       total: null,
       loading: false,
-      limit: 10,
+      limit: 50,
       offset: 0,
       openPackageDetailsDialog: false,
       selectedPackageId: null
@@ -140,7 +140,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <IconButton onClick={onRefresh} disabled={loading}>
           <RefreshRounded />
         </IconButton>
       }

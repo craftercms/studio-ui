@@ -285,7 +285,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <IconButton onClick={() => onRefresh()}>
+        <IconButton onClick={() => onRefresh()} disabled={loadingFeed}>
           <RefreshRounded />
         </IconButton>
       }

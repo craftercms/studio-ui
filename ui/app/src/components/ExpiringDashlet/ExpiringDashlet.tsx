@@ -140,7 +140,7 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.expiring" defaultMessage="Expiring" />}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <IconButton onClick={onRefresh} disabled={state.loading}>
           <RefreshRounded />
         </IconButton>
       }

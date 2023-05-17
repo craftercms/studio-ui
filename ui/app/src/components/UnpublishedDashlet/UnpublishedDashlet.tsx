@@ -76,7 +76,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   ] = useSpreadStateWithSelected<UnpublishedDashletState>({
     loading: false,
     total: null,
-    limit: 10,
+    limit: 50,
     offset: 0
   });
   const currentPage = offset / limit;
@@ -190,7 +190,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="unpublishedDashlet.widgetTitle" defaultMessage="Unpublished Work" />}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <IconButton onClick={onRefresh} disabled={loading}>
           <RefreshRounded />
         </IconButton>
       }

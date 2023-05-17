@@ -85,7 +85,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     selected: {},
     isAllSelected: false,
     hasSelected: false,
-    limit: 10,
+    limit: 50,
     offset: 0
   });
   const currentPage = offset / limit;
@@ -204,7 +204,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="scheduledDashlet.widgetTitle" defaultMessage="Scheduled for Publish" />}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <IconButton onClick={onRefresh} disabled={loading}>
           <RefreshRounded />
         </IconButton>
       }

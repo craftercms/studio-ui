@@ -78,7 +78,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     selected: {},
     isAllSelected: false,
     hasSelected: false,
-    limit: 10,
+    limit: 50,
     offset: 0
   });
   const { formatMessage } = useIntl();
@@ -243,7 +243,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         />
       }
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <IconButton onClick={onRefresh} disabled={loading}>
           <RefreshRounded />
         </IconButton>
       }

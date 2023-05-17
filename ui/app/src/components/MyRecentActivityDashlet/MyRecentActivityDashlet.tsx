@@ -73,7 +73,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
       feed: null,
       loading: false,
       total: null,
-      limit: 10,
+      limit: 50,
       offset: 0,
       openPackageDetailsDialog: false,
       selectedPackageId: null
@@ -215,7 +215,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
         footer: { justifyContent: 'space-between' }
       }}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <IconButton onClick={onRefresh} disabled={loading}>
           <RefreshRounded />
         </IconButton>
       }
