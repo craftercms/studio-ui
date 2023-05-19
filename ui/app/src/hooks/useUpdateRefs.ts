@@ -19,7 +19,7 @@ import { MutableRefObject, RefObject, useRef } from 'react';
 export function useUpdateRefs<T>(initialValue: T): MutableRefObject<T>;
 export function useUpdateRefs<T>(initialValue: T | null): RefObject<T>;
 export function useUpdateRefs<T>(latestValues: T): RefObject<T> | MutableRefObject<T> {
-  const ref = useRef({} as T);
+  const ref = useRef(latestValues);
   ref.current = latestValues;
   return ref;
 }
