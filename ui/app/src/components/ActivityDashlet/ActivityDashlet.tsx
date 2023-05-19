@@ -164,7 +164,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     feedType: 'timeline',
     dateFrom: null,
     dateTo: null,
-    limit: 10,
+    limit: 50,
     offset: 0,
     total: null
   });
