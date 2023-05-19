@@ -563,10 +563,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       switch (type) {
         case guestSiteLoad.type:
         case guestCheckIn.type:
-          const { version: guestVersion } = payload;
+          const { version: guestFullVersion } = payload;
           const studioVersion = env.version.slice(0, 5);
-
-          if (type === guestCheckIn.type && guestVersion?.slice(0, 5) !== studioVersion) {
+          const guestVersion = guestFullVersion.slice(0, 5);
+          const isCompatibleVersion =
+            guestVersion === studioVersion || (studioVersion === '4.1.0' && guestVersion === '4.0.3');
+          if (type === guestCheckIn.type && !isCompatibleVersion) {
             const xbOutdatedValidationDate = getOutdatedXBValidationDate(siteId, user.username);
             // If message has not been shown today or not shown at all
             if (!xbOutdatedValidationDate || !isSameDay(xbOutdatedValidationDate, new Date())) {
