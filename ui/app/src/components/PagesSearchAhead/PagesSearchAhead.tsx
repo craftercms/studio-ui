@@ -150,20 +150,9 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
         }),
         debounceTime(400),
         switchMap((keywords) => {
-          let isSearchRoot = false;
-          // Remove query and hashes from possible url
-          let searchKeywords = keywords.replace(/(\?|#).*/, '');
-          if (searchKeywords === '/') {
-            // if the url is '/' (homepage), specifically search for the path `/site/website/index.xml`
-            searchKeywords = '/site/website/index.xml';
-            isSearchRoot = true;
-          } else {
-            searchKeywords = searchKeywords.replaceAll('/', ' ');
-          }
-
-          // Cleaning of searchKeywords is done due to restrictions in backend of characters like '/', '?', '#'.
           return search(site, {
-            [isSearchRoot ? 'path' : 'keywords']: searchKeywords,
+            // Cleaning of searchKeywords due to security validations for characters like '?', '#' in the back.
+            keywords: keywords.replace(/(\?|#).*/, ''),
             filters: {
               'content-type': contentTypes.map((contentType) => contentType.id)
             }
