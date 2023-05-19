@@ -433,15 +433,16 @@ export function GuestProxy() {
         }
         case updateFieldValueOperation.type:
           let { modelId, fieldId, index, value } = op.payload;
-          modelId = getModelIdFromInheritedField(modelId, fieldId);
+          const modelIdToEdit = getModelIdFromInheritedField(modelId, fieldId);
           // TODO: consider index 'path'
           // If index has a value, filter by `data-craftercms-index`
           let updatedField: JQuery<any> = $(
+            // Even though it may be an inherited field, the modelId used in the markup is the one that inherits the field.
             `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]${
               notNullOrUndefined(index) ? `[data-craftercms-index="${index}"]` : ''
             }`
           );
-          const model = getCachedModel(modelId);
+          const model = getCachedModel(modelIdToEdit);
           const contentType = getCachedContentType(model.craftercms.contentTypeId);
           const fieldType = ContentType.getField(contentType, fieldId).type;
 

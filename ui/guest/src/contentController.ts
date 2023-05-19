@@ -341,7 +341,7 @@ export function updateField(modelId: string, fieldId: string, index: string | nu
   });
 
   const action = updateFieldValueOperation({
-    modelId: modelIdToEdit,
+    modelId,
     fieldId,
     index,
     value,
