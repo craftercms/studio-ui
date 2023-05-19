@@ -18,7 +18,7 @@ import { CommonDashletProps, getCurrentPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   DashletEmptyMessage,
   getItemSkeleton,
@@ -79,22 +79,14 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
   const locale = useLocale();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const onRefresh = useMemo(
-    () => () => {
-      setState({ items: null, loading: true });
-      fetchPublishingHistory(site, {
-        limit,
-        offset: 0
-      }).subscribe((packages) => {
-        setState({ items: packages, total: packages.total, offset: 0, loading: false });
-      });
-    },
-    [setState, site, limit]
-  );
+  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
+  // still sets to true so elements can be disabled while fetching.
+  const [isFetching, setIsFetching] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
+      setIsFetching(true);
       if (!backgroundRefresh) {
         setState({ loading: true });
       }
@@ -108,6 +100,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
           offset: newOffset,
           loading: false
         });
+        setIsFetching(false);
       });
     },
     [limit, setState, site]
@@ -117,9 +110,13 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
     setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
   };
 
+  const onRefresh = () => {
+    loadPage(getCurrentPage(offset, limit), true);
+  };
+
   useEffect(() => {
-    onRefresh();
-  }, [onRefresh]);
+    loadPage(0);
+  }, [loadPage]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -140,7 +137,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
       headerAction={
-        <IconButton onClick={onRefresh} disabled={loading}>
+        <IconButton onClick={onRefresh} disabled={isFetching}>
           <RefreshRounded />
         </IconButton>
       }

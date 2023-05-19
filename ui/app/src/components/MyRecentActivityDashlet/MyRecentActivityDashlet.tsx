@@ -14,24 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps, getCurrentPage, useSelectionOptions } from '../SiteDashboard';
+import { CommonDashletProps, getCurrentPage } from '../SiteDashboard';
 import { Activity, Person } from '../../models';
+import palette from '../../styles/palette';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
 import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
-import { DashletEmptyMessage, getItemSkeleton, ListItemIcon, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import { renderActivity, renderActivityTimestamp } from '../ActivityDashlet';
 import useLocale from '../../hooks/useLocale';
-import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
+import { PREVIEW_URL_PATH } from '../../utils/constants';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { getSystemLink } from '../../utils/system';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -40,12 +41,6 @@ import PackageDetailsDialog from '../PackageDetailsDialog';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import Checkbox from '@mui/material/Checkbox';
-import Box from '@mui/material/Box';
-import ActionsBar from '../ActionsBar';
-import useItemsByPath from '../../hooks/useItemsByPath';
-import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
-import { itemActionDispatcher } from '../../utils/itemActions';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -60,7 +55,7 @@ interface MyRecentActivityDashletState {
 }
 
 export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
-  const { borderLeftColor = 'success.main', onMinimize } = props;
+  const { borderLeftColor = palette.blue.tint, onMinimize } = props;
   const locale = useLocale();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
@@ -80,38 +75,14 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const itemsByPath = useItemsByPath();
-  const [selectedPaths, setSelectedPaths] = useState([]);
-  useFetchSandboxItems(selectedPaths);
-  const selectedItems = useMemo(() => {
-    const items = [];
-    if (selectedPaths.length > 0) {
-      selectedPaths.forEach((path) => {
-        if (itemsByPath[path]) {
-          items.push(itemsByPath[path]);
-        }
-      });
-    }
-    return items;
-  }, [itemsByPath, selectedPaths]);
-  const selectedCount = selectedItems.length;
-  const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
-  const onRefresh = useMemo(
-    () => () => {
-      setState({ loading: true, feed: null });
-      fetchActivity(site, {
-        usernames: [username],
-        limit
-      }).subscribe((feed) => {
-        setState({ feed, total: feed.total, offset: 0, loading: false });
-      });
-    },
-    [setState, site, username, limit]
-  );
+  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
+  // still sets to true so elements can be disabled while fetching.
+  const [isFetching, setIsFetching] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
+      setIsFetching(true);
       if (!backgroundRefresh) {
         setState({ loading: true });
       }
@@ -121,6 +92,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
         limit
       }).subscribe((feed) => {
         setState({ feed, total: feed.total, offset: newOffset, loading: false });
+        setIsFetching(false);
       });
     },
     [limit, setState, site, username]
@@ -145,35 +117,13 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
   };
 
-  const handleSelect = (path: string, isSelected: boolean) => {
-    if (isSelected) {
-      setSelectedPaths([...selectedPaths, path]);
-    } else {
-      let selectedItems = [...selectedPaths];
-      let index = selectedItems.indexOf(path);
-      selectedItems.splice(index, 1);
-      setSelectedPaths(selectedItems);
-    }
-  };
-
-  const onOptionClicked = (option) => {
-    if (option === 'clear') {
-      setSelectedPaths([]);
-    } else {
-      return itemActionDispatcher({
-        site,
-        authoringBase,
-        dispatch,
-        formatMessage,
-        option,
-        item: selectedItems.length > 1 ? selectedItems : selectedItems[0]
-      });
-    }
+  const onRefresh = () => {
+    loadPage(getCurrentPage(offset, limit), true);
   };
 
   useEffect(() => {
-    onRefresh();
-  }, [onRefresh]);
+    loadPage(0);
+  }, [loadPage]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -206,16 +156,15 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
               }}
             />
           )}
-          <FormattedMessage defaultMessage="My Activity" />
+          <FormattedMessage defaultMessage="My Recent Activity" />
         </>
       }
       sxs={{
-        actionsBar: { padding: 0 },
         content: { padding: 0 },
         footer: { justifyContent: 'space-between' }
       }}
       headerAction={
-        <IconButton onClick={onRefresh} disabled={loading}>
+        <IconButton onClick={onRefresh} disabled={isFetching}>
           <RefreshRounded />
         </IconButton>
       }
@@ -232,57 +181,12 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
           />
         )
       }
-      actionsBar={
-        <ActionsBar
-          disabled={loading}
-          isChecked={false}
-          isIndeterminate={false}
-          onCheckboxChange={null}
-          onOptionClicked={onOptionClicked}
-          options={selectionOptions?.concat([
-            ...(selectedCount > 0
-              ? [
-                  {
-                    id: 'clear',
-                    label: formatMessage(
-                      {
-                        defaultMessage: 'Clear {count} selected'
-                      },
-                      { count: selectedCount }
-                    )
-                  }
-                ]
-              : [])
-          ])}
-          buttonProps={{ size: 'small' }}
-          showCheckbox={false}
-          sxs={{
-            root: { flexGrow: 1 },
-            container: { bgcolor: selectedCount > 0 ? 'action.selected' : UNDEFINED, minHeight: 34 },
-            checkbox: { padding: '5px', borderRadius: 0 },
-            button: { minWidth: 50 }
-          }}
-        />
-      }
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {feed && (
         <List sx={{ pb: 0 }}>
           {feed.map((activity) => (
             <ListItem key={activity.id} sx={{ pt: 0, pb: 0 }}>
-              <ListItemIcon>
-                {activity.item && activity.item.systemType ? (
-                  <Checkbox
-                    edge="start"
-                    checked={selectedPaths.includes(activity.item.path)}
-                    onChange={(e) => {
-                      handleSelect(activity.item.path, e.target.checked);
-                    }}
-                  />
-                ) : (
-                  <Box sx={{ minWidth: '30px' }} />
-                )}
-              </ListItemIcon>
               <ListItemText
                 primary={renderActivity(activity, {
                   formatMessage,

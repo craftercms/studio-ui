@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CommonDashletProps,
   getItemViewOption,
+  getValidatedSelectionState,
   isPage,
   previewPage,
   useSelectionOptions,
@@ -48,6 +49,7 @@ import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/act
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
+import { forkJoin } from 'rxjs';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -84,49 +86,67 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const { formatMessage } = useIntl();
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const [itemsByPath, setItemsByPath] = useSpreadState<LookupTable<DetailedItem>>({});
-  const selectedItems = Object.values(itemsByPath)?.filter((item) => selected[item.id]) ?? [];
+  const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
+  const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(Object.values(selectedItems), formatMessage, selectedCount);
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const onRefresh = useMemo(
-    () => () => {
-      setState({
-        items: null,
-        selected: {},
-        hasSelected: false,
-        isAllSelected: false,
-        selectedCount: 0,
-        loading: true
-      });
-      fetchPendingApproval(site, { limit, offset: 0 }).subscribe((items) => {
-        setState({ items: items, total: items.total, offset: 0, loading: false });
-      });
-    },
-    [setState, site, limit]
-  );
-  useEffect(() => {
-    onRefresh();
-  }, [onRefresh]);
+  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
+  // still sets to true so elements can be disabled while fetching.
+  const [isFetching, setIsFetching] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
+      setIsFetching(true);
       if (!backgroundRefresh) {
         setState({ loading: true });
       }
       fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
+        setIsFetching(false);
       });
     },
     [limit, setState, site]
   );
 
+  const loadPagesUntil = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      setIsFetching(true);
+      if (!backgroundRefresh) {
+        setState({
+          items: null,
+          loading: true
+        });
+      }
+      setItemsById({});
+      forkJoin(
+        new Array(pageNumber + 1).fill(null).map((arrayItem, index) => {
+          return fetchPendingApproval(site, { limit, offset: index * limit });
+        })
+      ).subscribe((pendingApprovalItemsPages) => {
+        const validatedState = getValidatedSelectionState(pendingApprovalItemsPages, selected, limit);
+        setItemsById(validatedState.itemsById);
+        setState(validatedState.state);
+        setIsFetching(false);
+      });
+    },
+    [limit, selected, setState, site, setItemsById]
+  );
+
+  const onRefresh = () => {
+    loadPagesUntil(currentPage, true);
+  };
+
+  useEffect(() => {
+    loadPage(0);
+  }, [loadPage]);
+
   const onOptionClicked = (option) => {
-    if (option === 'clear') {
-      setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
-    } else {
+    // Clear selection
+    setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
+    if (option !== 'clear') {
       return itemActionDispatcher({
         site,
         authoringBase,
@@ -162,30 +182,21 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       items.forEach((item) => {
         itemsObj[item.id] = item;
       });
-      setItemsByPath(itemsObj);
+      setItemsById(itemsObj);
     }
-  }, [items, setItemsByPath]);
+  }, [items, setItemsById]);
 
   // region Item Updates Propagation
   useEffect(() => {
     const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      // If there's a workflow, publish or delete event, clear selected items
-      if (type === workflowEvent.type || publishEvent.type || type === deleteContentEvent.type) {
-        setState({
-          selected: {},
-          hasSelected: false,
-          isAllSelected: false,
-          selectedCount: 0
-        });
-      }
-      loadPage(0, true);
+      loadPagesUntil(currentPage, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [limit, offset, loadPage, setState]);
+  }, [currentPage, loadPagesUntil]);
   // endregion
 
   return (
@@ -243,7 +254,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         />
       }
       headerAction={
-        <IconButton onClick={onRefresh} disabled={loading}>
+        <IconButton onClick={onRefresh} disabled={isFetching}>
           <RefreshRounded />
         </IconButton>
       }
@@ -283,7 +294,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                   <FormattedMessage
                     defaultMessage="submitted to <render_target>{publishingTarget}</render_target> by {name}"
                     values={{
-                      name: item.sandbox.modifier,
+                      name: item.sandbox?.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (
