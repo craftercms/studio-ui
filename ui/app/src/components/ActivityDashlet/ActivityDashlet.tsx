@@ -15,7 +15,7 @@
  */
 
 import { Activity } from '../../models/Activity';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
@@ -171,6 +171,9 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   const [selectedActivities, setSelectedActivities, activities] = useSelectionLookupState<ActivitiesAndAll>({
     ALL: true
   });
+  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
+  // still sets to true so elements can be disabled while fetching.
+  const [isFetching, setIsFetching] = useState(false);
   // region activityFilterOptions = ...
   const activityFilterOptions = useMemo(
     () =>
@@ -206,7 +209,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   );
   // endregion
   // region onRefresh
-  const onRefresh = useMemo(
+  const onLoad = useMemo(
     () => (backgroundRefresh?: boolean) => {
       if (!backgroundRefresh) {
         setState({ feed: null, total: null, offset: 0, loadingFeed: true });
@@ -244,6 +247,26 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       });
     });
   };
+  const onRefresh = useCallback(
+    (backgroundRefresh?: boolean) => {
+      setIsFetching(true);
+      if (!backgroundRefresh) {
+        setState({ loadingChunk: true });
+      }
+      fetchActivity(site, {
+        actions: activities.filter((key) => key !== 'ALL'),
+        usernames,
+        dateTo,
+        dateFrom,
+        offset: 0,
+        limit: offset + limit
+      }).subscribe((feed) => {
+        setState({ feed, total: feed.total, loadingChunk: false });
+        setIsFetching(false);
+      });
+    },
+    [activities, dateFrom, dateTo, limit, offset, setState, site, usernames]
+  );
   const onItemClick = (previewUrl, e) => {
     const pathname = window.location.pathname;
     if (pathname.includes(PREVIEW_URL_PATH)) {
@@ -263,8 +286,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   };
   const hasMoreItemsToLoad = total > 0 && limit + offset < total;
   useEffect(() => {
-    onRefresh();
-  }, [onRefresh, setState]);
+    onLoad();
+  }, [onLoad, setState]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -285,7 +308,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <IconButton onClick={() => onRefresh()} disabled={loadingFeed}>
+        <IconButton onClick={() => onRefresh(true)} disabled={isFetching}>
           <RefreshRounded />
         </IconButton>
       }
