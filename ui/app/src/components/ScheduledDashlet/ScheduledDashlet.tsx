@@ -87,7 +87,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     selected: {},
     isAllSelected: false,
     hasSelected: false,
-    limit: 5,
+    limit: 50,
     offset: 0
   });
   const currentPage = offset / limit;
