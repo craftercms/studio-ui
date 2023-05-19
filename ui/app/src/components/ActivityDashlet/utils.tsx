@@ -183,7 +183,7 @@ export function renderActivity(
       return (
         <FormattedMessage
           id="activityDashlet.initialPublishActivityMessage"
-          defaultMessage="Performed the site's initial publish"
+          defaultMessage="Performed the project's initial publish"
         />
       );
     case 'PUBLISH_ALL':
