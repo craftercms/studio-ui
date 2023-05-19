@@ -27,8 +27,7 @@ import OpenInFullOutlinedIcon from '@mui/icons-material/OpenInFullOutlined';
 import CloseFullscreenOutlinedIcon from '@mui/icons-material/CloseFullscreenOutlined';
 import IconButton from '@mui/material/IconButton';
 import useSiteDashboardContext from '../SiteDashboard/useSiteDashboardContext';
-import ExpandLessOutlinedIcon from '@mui/icons-material/ExpandLessOutlined';
-import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
+import CardActionArea from '@mui/material/CardActionArea';
 export type DashletCardProps = PropsWithChildren<
   CommonDashletProps & {
     title?: React.ReactNode;
@@ -72,6 +71,9 @@ export function DashletCard(props: DashletCardProps) {
   const dashboardState = useSiteDashboardContext();
   const [isExpanded, setIsExpanded] = useState(true);
   const showCardBody = isExpanded || isMaximized;
+  const HeaderActionArea = isMaximized ? 'div' : CardActionArea;
+  const [disableHeaderActionAreaRipple, setDisableHeaderActionAreaRipple] = useState(false);
+  const cardActionAreaProps = isMaximized ? {} : { component: 'div', disableRipple: disableHeaderActionAreaRipple };
 
   const updateMaximized = () => {
     setIsMaximized(!isMaximized);
@@ -90,6 +92,7 @@ export function DashletCard(props: DashletCardProps) {
       (footer ? footerHeight : 0) +
       (!renderCardHeader ? cardHeaderHeight : 0)
     : UNDEFINED;
+
   return (
     <Card
       sx={{
@@ -110,26 +113,27 @@ export function DashletCard(props: DashletCardProps) {
     >
       {/* region Header */}
       {renderCardHeader && (
-        <CardHeader
-          title={title}
-          titleTypographyProps={{ variant: 'h6', component: 'h2' }}
-          action={
-            <>
-              {maximizable && (
-                <IconButton onClick={() => updateMaximized()}>
-                  {isMaximized ? <CloseFullscreenOutlinedIcon /> : <OpenInFullOutlinedIcon />}
-                </IconButton>
-              )}
-              {headerAction}
-              {!isMaximized && (
-                <IconButton onClick={() => setIsExpanded(!isExpanded)}>
-                  {isExpanded ? <ExpandLessOutlinedIcon /> : <ExpandMoreOutlinedIcon />}
-                </IconButton>
-              )}
-            </>
-          }
-          sx={sxs?.header}
-        />
+        <HeaderActionArea {...cardActionAreaProps} onClick={!isMaximized ? () => setIsExpanded(!isExpanded) : null}>
+          <CardHeader
+            title={title}
+            titleTypographyProps={{ variant: 'h6', component: 'h2' }}
+            action={
+              <div
+                onClick={(e) => e.stopPropagation()}
+                onMouseOver={() => setDisableHeaderActionAreaRipple(true)}
+                onMouseOut={() => setDisableHeaderActionAreaRipple(false)}
+              >
+                {maximizable && (
+                  <IconButton onClick={updateMaximized}>
+                    {isMaximized ? <CloseFullscreenOutlinedIcon /> : <OpenInFullOutlinedIcon />}
+                  </IconButton>
+                )}
+                {headerAction}
+              </div>
+            }
+            sx={sxs?.header}
+          />
+        </HeaderActionArea>
       )}
       {/* endregion */}
       {showCardBody && (
