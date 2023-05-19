@@ -59,7 +59,7 @@ export const ContentType = forwardRef<any, ContentTypeProps>(function (props, re
 
   const Component = model === null ? NotFound : contentTypeMap[model.craftercms.contentTypeId] ?? NotDeveloped;
 
-  const finalProps: any = { ...rest };
+  const finalProps: any = rest;
   if (typeof Component !== 'string') {
     // Avoid <div model="[Object object]">
     finalProps.model = model;

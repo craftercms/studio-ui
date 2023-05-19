@@ -123,7 +123,9 @@ export function DevContentOpsDashlet(props: DevContentOpsDashletProps) {
     >
       <>
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />
+          <Typography variant="h6">
+            <FormattedMessage id="devContentOpsDashlet.widgetTitle" defaultMessage="DevContentOps" />
+          </Typography>
           <DevContentOpsStats stats={stats} sx={{ root: { ml: 2, display: { xs: 'none', lg: 'flex' } } }} />
           <Select
             variant="standard"

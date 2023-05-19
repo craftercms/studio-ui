@@ -55,7 +55,7 @@ interface MyRecentActivityDashletState {
 }
 
 export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
-  const { borderLeftColor = palette.blue.tint, onMinimize } = props;
+  const { borderLeftColor = 'success.main', onMinimize } = props;
   const locale = useLocale();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
