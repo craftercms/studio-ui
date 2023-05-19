@@ -186,15 +186,11 @@ export function renderActivity(
           defaultMessage="Performed the site's initial publish"
         />
       );
-    // @ts-ignore
-    case 'UNKNOWN':
+    case 'PUBLISH_ALL':
+      return <FormattedMessage defaultMessage="Published entire project" />;
+    default:
       console.log('[INFO] An unknown activity was received from the server.', activity);
-      return (
-        <FormattedMessage
-          id="activityDashlet.unknownActivityMessage"
-          defaultMessage="An unknown activity was performed."
-        />
-      );
+      return <FormattedMessage defaultMessage="Unlabelled activity" />;
   }
 }
 
@@ -217,7 +213,8 @@ export const activityNameLookup: Record<Activities | 'ALL', any> = {
   REJECT: <FormattedMessage id="words.reject" defaultMessage="Reject" />,
   REQUEST_PUBLISH: <FormattedMessage id="operations.requestPublish" defaultMessage="Request Publish" />,
   REVERT: <FormattedMessage id="words.revert" defaultMessage="Revert" />,
-  UPDATE: <FormattedMessage id="words.update" defaultMessage="Update" />
+  UPDATE: <FormattedMessage id="words.update" defaultMessage="Update" />,
+  PUBLISH_ALL: <FormattedMessage defaultMessage="Publish All" />
 };
 
 function getSelectedKeys<K extends string>(selection: Partial<Record<K, boolean>>): K[] {

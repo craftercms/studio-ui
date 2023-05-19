@@ -30,7 +30,8 @@ export type Activities =
   // TODO - Change when backend is updated
   //  PUBLISH is what the backend sends for APPROVE & APPROVE_SCHEDULED.
   //  The latter are never sent back currently.
-  | 'PUBLISH';
+  | 'PUBLISH'
+  | 'PUBLISH_ALL';
 
 export interface Activity {
   id: number;
