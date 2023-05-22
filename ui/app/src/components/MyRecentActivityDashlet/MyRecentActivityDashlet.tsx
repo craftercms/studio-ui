@@ -16,7 +16,6 @@
 
 import { CommonDashletProps, getCurrentPage } from '../SiteDashboard';
 import { Activity, Person } from '../../models';
-import palette from '../../styles/palette';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useEnv from '../../hooks/useEnv';
@@ -27,12 +26,12 @@ import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
 import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
-import { DashletEmptyMessage, getItemSkeleton, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
+import { DashletEmptyMessage, getItemSkeleton, ListItemIcon, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import { renderActivity, renderActivityTimestamp } from '../ActivityDashlet';
 import useLocale from '../../hooks/useLocale';
-import { PREVIEW_URL_PATH } from '../../utils/constants';
+import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
 import { changeCurrentUrl } from '../../state/actions/preview';
 import { getSystemLink } from '../../utils/system';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -41,6 +40,9 @@ import PackageDetailsDialog from '../PackageDetailsDialog';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
+import ActionsBar from '../ActionsBar';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -159,10 +161,11 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
               }}
             />
           )}
-          <FormattedMessage defaultMessage="My Recent Activity" />
+          <FormattedMessage defaultMessage="My Activity" />
         </>
       }
       sxs={{
+        actionsBar: { padding: 0 },
         content: { padding: 0 },
         footer: { justifyContent: 'space-between' }
       }}
@@ -184,12 +187,32 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
           />
         )
       }
+      actionsBar={
+        <ActionsBar
+          disabled={false}
+          isChecked={false}
+          isIndeterminate={false}
+          onCheckboxChange={null}
+          onOptionClicked={null}
+          options={[]}
+          buttonProps={{ size: 'small' }}
+          sxs={{
+            root: { flexGrow: 1 },
+            container: { bgcolor: false ? 'action.selected' : UNDEFINED },
+            checkbox: { padding: '5px', borderRadius: 0 },
+            button: { minWidth: 50 }
+          }}
+        />
+      }
     >
       {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {feed && (
         <List sx={{ pb: 0 }}>
           {feed.map((activity) => (
             <ListItem key={activity.id} sx={{ pt: 0, pb: 0 }}>
+              <ListItemIcon>
+                {activity.item ? <Checkbox edge="start" /> : <Box sx={{ minWidth: '30px' }} />}
+              </ListItemIcon>
               <ListItemText
                 primary={renderActivity(activity, {
                   formatMessage,
