@@ -18,7 +18,7 @@ import { CommonDashletProps, getCurrentPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   DashletEmptyMessage,
   getItemSkeleton,
@@ -36,7 +36,6 @@ import useLocale from '../../hooks/useLocale';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistory } from '../../services/dashboard';
 import { DashboardPublishingPackage } from '../../models';
-import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Link from '@mui/material/Link';
 import { PackageDetailsDialog } from '../PackageDetailsDialog';
@@ -44,12 +43,14 @@ import { renderActivityTimestamp } from '../ActivityDashlet';
 import { publishEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface RecentlyPublishedDashletProps extends CommonDashletProps {}
 
 interface RecentlyPublishedDashletState {
   items: DashboardPublishingPackage[];
   loading: boolean;
+  loadingSkeleton: boolean;
   total: number;
   limit: number;
   offset: number;
@@ -64,32 +65,32 @@ const messages = defineMessages({
 
 export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
   const { borderLeftColor = palette.blue.tint } = props;
-  const [{ items, total, loading, limit, offset, openPackageDetailsDialog, selectedPackageId }, setState] =
-    useSpreadState<RecentlyPublishedDashletState>({
-      items: null,
-      total: null,
-      loading: false,
-      limit: 50,
-      offset: 0,
-      openPackageDetailsDialog: false,
-      selectedPackageId: null
-    });
+  const [
+    { items, total, loading, loadingSkeleton, limit, offset, openPackageDetailsDialog, selectedPackageId },
+    setState
+  ] = useSpreadState<RecentlyPublishedDashletState>({
+    items: null,
+    total: null,
+    loading: false,
+    loadingSkeleton: true,
+    limit: 50,
+    offset: 0,
+    openPackageDetailsDialog: false,
+    selectedPackageId: null
+  });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
   const locale = useLocale();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
-  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
-  // still sets to true so elements can be disabled while fetching.
-  const [isFetching, setIsFetching] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchPublishingHistory(site, {
         limit,
         offset: newOffset
@@ -100,7 +101,6 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
           offset: newOffset,
           loading: false
         });
-        setIsFetching(false);
       });
     },
     [limit, setState, site]
@@ -137,9 +137,9 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
       headerAction={
-        <IconButton onClick={onRefresh} disabled={isFetching}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       footer={
         Boolean(items?.length) && (
@@ -177,7 +177,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
         </Box>
       </Stack>
       */}
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: true })}
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item) => (

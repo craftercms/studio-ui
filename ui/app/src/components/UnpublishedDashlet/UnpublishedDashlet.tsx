@@ -28,7 +28,6 @@ import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import useLocale from '../../hooks/useLocale';
 import useEnv from '../../hooks/useEnv';
@@ -51,12 +50,14 @@ import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '.
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
 interface UnpublishedDashletState extends WithSelectedState<SandboxItem> {
   total: number;
   loading: boolean;
+  loadingSkeleton: boolean;
   limit: number;
   offset: number;
 }
@@ -69,13 +70,14 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const [
-    { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
+    { loading, loadingSkeleton, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
     isSelected
   ] = useSpreadStateWithSelected<UnpublishedDashletState>({
     loading: false,
+    loadingSkeleton: true,
     total: null,
     limit: 50,
     offset: 0
@@ -88,20 +90,16 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const isIndeterminate = hasSelected && !isAllSelected;
-  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
-  // still sets to true so elements can be disabled while fetching.
-  const [isFetching, setIsFetching] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchUnpublished(site, { limit, offset: newOffset }).subscribe((items) => {
         setState({ items, offset: newOffset, total: items.total, loading: false });
-        setIsFetching(false);
       });
     },
     [limit, setState, site]
@@ -109,13 +107,11 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
 
   const loadPagesUntil = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({
-          items: null,
-          loading: true
-        });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh,
+        ...(!backgroundRefresh && { items: null })
+      });
       setItemsById({});
       forkJoin(
         new Array(pageNumber + 1).fill(null).map((arrayItem, index) => {
@@ -125,7 +121,6 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         const validatedState = getValidatedSelectionState(unpublishedItemsPages, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
-        setIsFetching(false);
       });
     },
     [limit, selected, setState, site]
@@ -201,9 +196,9 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="unpublishedDashlet.widgetTitle" defaultMessage="Unpublished Work" />}
       headerAction={
-        <IconButton onClick={onRefresh} disabled={isFetching}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       sxs={{
         actionsBar: { padding: 0 },
@@ -257,7 +252,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         )
       }
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (

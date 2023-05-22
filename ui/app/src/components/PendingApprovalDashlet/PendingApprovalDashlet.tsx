@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   CommonDashletProps,
   getItemViewOption,
@@ -36,7 +36,6 @@ import { fetchPendingApproval } from '../../services/dashboard';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { DetailedItem, LookupTable } from '../../models';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
-import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import ItemDisplay from '../ItemDisplay';
 import { ActionsBar } from '../ActionsBar';
@@ -50,11 +49,13 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
 import { forkJoin } from 'rxjs';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
 interface PendingApprovalDashletState extends WithSelectedState<DetailedItem> {
   loading: boolean;
+  loadingSkeleton: boolean;
   total: number;
   limit: number;
   offset: number;
@@ -68,7 +69,7 @@ const messages = defineMessages({
 export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const { borderLeftColor = palette.purple.tint, onMinimize } = props;
   const [
-    { items, total, loading, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
+    { items, total, loading, loadingSkeleton, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
@@ -77,6 +78,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     items: null,
     total: null,
     loading: false,
+    loadingSkeleton: true,
     selected: {},
     isAllSelected: false,
     hasSelected: false,
@@ -92,20 +94,16 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
-  // still sets to true so elements can be disabled while fetching.
-  const [isFetching, setIsFetching] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
-        setIsFetching(false);
       });
     },
     [limit, setState, site]
@@ -113,13 +111,11 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
 
   const loadPagesUntil = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({
-          items: null,
-          loading: true
-        });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh,
+        ...(!backgroundRefresh && { items: null })
+      });
       setItemsById({});
       forkJoin(
         new Array(pageNumber + 1).fill(null).map((arrayItem, index) => {
@@ -129,7 +125,6 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         const validatedState = getValidatedSelectionState(pendingApprovalItemsPages, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
-        setIsFetching(false);
       });
     },
     [limit, selected, setState, site, setItemsById]
@@ -254,9 +249,9 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         />
       }
       headerAction={
-        <IconButton onClick={onRefresh} disabled={isFetching}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       footer={
         Boolean(items?.length) && (
@@ -272,7 +267,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         )
       }
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {Boolean(items?.length) && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (

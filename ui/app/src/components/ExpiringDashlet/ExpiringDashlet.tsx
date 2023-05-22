@@ -27,7 +27,6 @@ import useSpreadState from '../../hooks/useSpreadState';
 import useLocale from '../../hooks/useLocale';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
-import IconButton from '@mui/material/IconButton';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import Divider from '@mui/material/Divider';
 import GlobalState from '../../models/GlobalState';
@@ -37,6 +36,7 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
 import { SandboxItem } from '../../models';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface ExpiringDashletProps extends CommonDashletProps {
   days?: number;
@@ -140,9 +140,13 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.expiring" defaultMessage="Expiring" />}
       headerAction={
-        <IconButton onClick={onRefresh} disabled={state.loading}>
+        <LoadingButton
+          onClick={onRefresh}
+          loading={state.loading}
+          sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}
+        >
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
     >
       {state.loading && <List>{getItemSkeleton({ numOfItems: 5, showAvatar: false, showCheckbox: false })}</List>}

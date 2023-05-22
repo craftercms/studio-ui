@@ -21,11 +21,10 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
-import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { DashletEmptyMessage, getItemSkeleton, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
@@ -41,6 +40,7 @@ import PackageDetailsDialog from '../PackageDetailsDialog';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -48,6 +48,7 @@ interface MyRecentActivityDashletState {
   feed: Activity[];
   total: number;
   loading: boolean;
+  loadingSkeleton: boolean;
   limit: number;
   offset: number;
   openPackageDetailsDialog: boolean;
@@ -63,36 +64,35 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   const { username, firstName, lastName } = useActiveUser();
   const person: Person = { username, firstName, lastName, avatar: null };
   const dispatch = useDispatch();
-  const [{ loading, total, feed, limit, offset, selectedPackageId, openPackageDetailsDialog }, setState] =
-    useSpreadState<MyRecentActivityDashletState>({
-      feed: null,
-      loading: false,
-      total: null,
-      limit: 50,
-      offset: 0,
-      openPackageDetailsDialog: false,
-      selectedPackageId: null
-    });
+  const [
+    { loading, loadingSkeleton, total, feed, limit, offset, selectedPackageId, openPackageDetailsDialog },
+    setState
+  ] = useSpreadState<MyRecentActivityDashletState>({
+    feed: null,
+    loading: false,
+    loadingSkeleton: true,
+    total: null,
+    limit: 50,
+    offset: 0,
+    openPackageDetailsDialog: false,
+    selectedPackageId: null
+  });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
-  // still sets to true so elements can be disabled while fetching.
-  const [isFetching, setIsFetching] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchActivity(site, {
         usernames: [username],
         offset: newOffset,
         limit
       }).subscribe((feed) => {
         setState({ feed, total: feed.total, offset: newOffset, loading: false });
-        setIsFetching(false);
       });
     },
     [limit, setState, site, username]
@@ -164,9 +164,9 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
         footer: { justifyContent: 'space-between' }
       }}
       headerAction={
-        <IconButton onClick={onRefresh} disabled={isFetching}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       footer={
         Boolean(feed?.length) && (
@@ -182,7 +182,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
         )
       }
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {feed && (
         <List sx={{ pb: 0 }}>
           {feed.map((activity) => (

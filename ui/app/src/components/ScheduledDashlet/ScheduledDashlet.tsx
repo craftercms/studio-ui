@@ -27,12 +27,11 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchScheduled } from '../../services/dashboard';
 import { DetailedItem, LookupTable } from '../../models';
-import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
@@ -52,12 +51,14 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
 import { forkJoin } from 'rxjs';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
 interface ScheduledDashletState extends WithSelectedState<DetailedItem> {
   total: number;
   loading: boolean;
+  loadingSkeleton: boolean;
   limit: number;
   offset: number;
 }
@@ -75,13 +76,14 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const [
-    { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
+    { loading, loadingSkeleton, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
     isSelected
   ] = useSpreadStateWithSelected<ScheduledDashletState>({
     loading: false,
+    loadingSkeleton: true,
     items: null,
     total: null,
     selected: {},
@@ -95,23 +97,19 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
-  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
-  // still sets to true so elements can be disabled while fetching.
-  const [isFetching, setIsFetching] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchScheduled(site, {
         limit,
         offset: newOffset
       }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
-        setIsFetching(false);
       });
     },
     [limit, setState, site]
@@ -152,13 +150,11 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
 
   const loadPagesUntil = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({
-          items: null,
-          loading: true
-        });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh,
+        ...(!loadingSkeleton && { items: null })
+      });
       setItemsById({});
       forkJoin(
         new Array(pageNumber + 1).fill(null).map((arrayItem, index) => {
@@ -168,10 +164,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         const validatedState = getValidatedSelectionState(scheduledItemsPages, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
-        setIsFetching(false);
       });
     },
-    [limit, selected, setState, site, setItemsById]
+    [limit, selected, setState, site, setItemsById, loadingSkeleton]
   );
 
   const onRefresh = () => {
@@ -211,9 +206,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="scheduledDashlet.widgetTitle" defaultMessage="Scheduled for Publish" />}
       headerAction={
-        <IconButton onClick={onRefresh} disabled={isFetching}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       actionsBar={
         <ActionsBar
@@ -267,7 +262,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         }
       }}
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (

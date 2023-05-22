@@ -15,7 +15,7 @@
  */
 
 import { Activity } from '../../models/Activity';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
@@ -59,6 +59,7 @@ import Box from '@mui/material/Box';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -149,6 +150,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       total,
       openRangePicker,
       loadingFeed,
+      loadingChunk,
       selectedPackageId,
       openPackageDetailsDialog
     },
@@ -171,9 +173,6 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   const [selectedActivities, setSelectedActivities, activities] = useSelectionLookupState<ActivitiesAndAll>({
     ALL: true
   });
-  // This is used separately from state.loading because the loading state is used to show loaders (skeleton). This one
-  // still sets to true so elements can be disabled while fetching.
-  const [isFetching, setIsFetching] = useState(false);
   // region activityFilterOptions = ...
   const activityFilterOptions = useMemo(
     () =>
@@ -247,26 +246,21 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       });
     });
   };
-  const onRefresh = useCallback(
-    (backgroundRefresh?: boolean) => {
-      setIsFetching(true);
-      if (!backgroundRefresh) {
-        setState({ loadingChunk: true });
-      }
-      fetchActivity(site, {
-        actions: activities.filter((key) => key !== 'ALL'),
-        usernames,
-        dateTo,
-        dateFrom,
-        offset: 0,
-        limit: offset + limit
-      }).subscribe((feed) => {
-        setState({ feed, total: feed.total, loadingChunk: false });
-        setIsFetching(false);
-      });
-    },
-    [activities, dateFrom, dateTo, limit, offset, setState, site, usernames]
-  );
+  const onRefresh = useCallback(() => {
+    setState({
+      loadingChunk: true
+    });
+    fetchActivity(site, {
+      actions: activities.filter((key) => key !== 'ALL'),
+      usernames,
+      dateTo,
+      dateFrom,
+      offset: 0,
+      limit: offset + limit
+    }).subscribe((feed) => {
+      setState({ feed, total: feed.total, loadingChunk: false });
+    });
+  }, [activities, dateFrom, dateTo, limit, offset, setState, site, usernames]);
   const onItemClick = (previewUrl, e) => {
     const pathname = window.location.pathname;
     if (pathname.includes(PREVIEW_URL_PATH)) {
@@ -294,7 +288,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      onRefresh(true);
+      onRefresh();
     });
     return () => {
       subscription.unsubscribe();
@@ -308,9 +302,13 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <IconButton onClick={() => onRefresh(true)} disabled={isFetching}>
+        <LoadingButton
+          onClick={() => onRefresh()}
+          loading={loadingChunk}
+          sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}
+        >
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       actionsBar={
         <>
