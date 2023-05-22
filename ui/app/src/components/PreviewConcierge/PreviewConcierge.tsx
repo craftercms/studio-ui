@@ -953,11 +953,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case updateFieldValueOperation.type: {
           const { fieldId, index, value } = payload;
           let { modelId, parentModelId } = payload;
-          const path = models[parentModelId ? parentModelId : modelId].craftercms.path;
+          let path = models[parentModelId ? parentModelId : modelId].craftercms.path;
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, hierarchyMap, models);
+            path = models[modelId].craftercms.path;
           }
 
           updateField(
