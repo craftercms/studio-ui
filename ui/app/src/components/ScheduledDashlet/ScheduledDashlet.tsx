@@ -50,7 +50,6 @@ import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/act
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
-import { forkJoin } from 'rxjs';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
@@ -156,12 +155,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         ...(!loadingSkeleton && { items: null })
       });
       setItemsById({});
-      forkJoin(
-        new Array(pageNumber + 1).fill(null).map((arrayItem, index) => {
-          return fetchScheduled(site, { limit, offset: index * limit });
-        })
-      ).subscribe((scheduledItemsPages) => {
-        const validatedState = getValidatedSelectionState(scheduledItemsPages, selected, limit);
+      const totalLimit = pageNumber * limit;
+      fetchScheduled(site, { limit: totalLimit + limit, offset: 0 }).subscribe((scheduledItems) => {
+        const validatedState = getValidatedSelectionState(scheduledItems, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
       });

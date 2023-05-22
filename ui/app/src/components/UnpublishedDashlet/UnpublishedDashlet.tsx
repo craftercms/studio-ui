@@ -27,7 +27,7 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import useLocale from '../../hooks/useLocale';
 import useEnv from '../../hooks/useEnv';
@@ -49,7 +49,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { forkJoin } from 'rxjs';
 import LoadingButton from '@mui/lab/LoadingButton';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
@@ -114,19 +113,9 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       });
       setItemsById({});
 
-      const totalOffset = pageNumber * limit;
-      fetchUnpublished(site, { limit: totalOffset + limit, offset: 0 }).subscribe((items) => {
-        console.log('totalOffset', totalOffset);
-        console.log('limit', limit);
-        console.log('items', items);
-      });
-
-      forkJoin(
-        new Array(pageNumber + 1).fill(null).map((arrayItem, index) => {
-          return fetchUnpublished(site, { limit, offset: index * limit });
-        })
-      ).subscribe((unpublishedItemsPages) => {
-        const validatedState = getValidatedSelectionState(unpublishedItemsPages, selected, limit);
+      const totalLimit = pageNumber * limit;
+      fetchUnpublished(site, { limit: totalLimit + limit, offset: 0 }).subscribe((unpublishedItems) => {
+        const validatedState = getValidatedSelectionState(unpublishedItems, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
       });
@@ -179,6 +168,8 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       });
       setItemsById({ ...itemsByPathRef.current, ...itemsObj });
     }
+    // itemsByPathRef is a ref, so it's not part of the dependency array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items, setItemsById]);
 
   useEffect(() => {

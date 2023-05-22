@@ -48,7 +48,6 @@ import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/act
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
-import { forkJoin } from 'rxjs';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
@@ -117,12 +116,9 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         ...(!backgroundRefresh && { items: null })
       });
       setItemsById({});
-      forkJoin(
-        new Array(pageNumber + 1).fill(null).map((arrayItem, index) => {
-          return fetchPendingApproval(site, { limit, offset: index * limit });
-        })
-      ).subscribe((pendingApprovalItemsPages) => {
-        const validatedState = getValidatedSelectionState(pendingApprovalItemsPages, selected, limit);
+      const totalLimit = pageNumber * limit;
+      fetchPendingApproval(site, { limit: totalLimit + limit, offset: 0 }).subscribe((pendingApprovalItems) => {
+        const validatedState = getValidatedSelectionState(pendingApprovalItems, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
       });
