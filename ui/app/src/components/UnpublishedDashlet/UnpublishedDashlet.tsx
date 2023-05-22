@@ -51,6 +51,7 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
 import LoadingButton from '@mui/lab/LoadingButton';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -85,8 +86,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
   const [itemsById, setItemsById] = useState<LookupTable<DetailedItem>>({});
-  const itemsByPathRef = useRef({});
-  itemsByPathRef.current = itemsById;
+  const itemsByPathRef = useUpdateRefs(itemsById);
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const isIndeterminate = hasSelected && !isAllSelected;
@@ -113,6 +113,14 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         ...(!backgroundRefresh && { items: null })
       });
       setItemsById({});
+
+      const totalOffset = pageNumber * limit;
+      fetchUnpublished(site, { limit: totalOffset + limit, offset: 0 }).subscribe((items) => {
+        console.log('totalOffset', totalOffset);
+        console.log('limit', limit);
+        console.log('items', items);
+      });
+
       forkJoin(
         new Array(pageNumber + 1).fill(null).map((arrayItem, index) => {
           return fetchUnpublished(site, { limit, offset: index * limit });
