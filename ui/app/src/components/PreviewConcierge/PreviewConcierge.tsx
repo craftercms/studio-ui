@@ -328,7 +328,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const [dataSourceActionsListState, setDataSourceActionsListState] = useSpreadState<DataSourcesActionsListProps>(
     dataSourceActionsListInitialState
   );
-  const env = useEnv();
   const conditionallyToggleEditMode = (nextHighlightMode?: HighlightMode) => {
     if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
       dispatch(
@@ -426,8 +425,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           }
           break;
       }
-    },
-    env
+    }
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -556,17 +554,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         formatMessage,
         modelIdByPath,
         enqueueSnackbar,
-        env,
         user
       } = upToDateRefs.current;
       const { type, payload } = action;
       switch (type) {
         case guestSiteLoad.type:
         case guestCheckIn.type:
-          const { version: guestVersion } = payload;
-          const studioVersion = env.version.slice(0, 5);
-
-          if (type === guestCheckIn.type && guestVersion?.slice(0, 5) !== studioVersion) {
+          if (type === guestCheckIn.type && !['4.1.0', '4.0.3'].includes(payload.version.slice(0, 5))) {
             const xbOutdatedValidationDate = getOutdatedXBValidationDate(siteId, user.username);
             // If message has not been shown today or not shown at all
             if (!xbOutdatedValidationDate || !isSameDay(xbOutdatedValidationDate, new Date())) {
