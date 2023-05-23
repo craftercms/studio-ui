@@ -115,7 +115,6 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         loadingSkeleton: !backgroundRefresh,
         ...(!backgroundRefresh && { items: null })
       });
-      setItemsById({});
       const totalLimit = pageNumber * limit;
       fetchPendingApproval(site, { limit: totalLimit + limit, offset: 0 }).subscribe((pendingApprovalItems) => {
         const validatedState = getValidatedSelectionState(pendingApprovalItems, selected, limit);

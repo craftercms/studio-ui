@@ -111,8 +111,6 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         loadingSkeleton: !backgroundRefresh,
         ...(!backgroundRefresh && { items: null })
       });
-      setItemsById({});
-
       const totalLimit = pageNumber * limit;
       fetchUnpublished(site, { limit: totalLimit + limit, offset: 0 }).subscribe((unpublishedItems) => {
         const validatedState = getValidatedSelectionState(unpublishedItems, selected, limit);
@@ -168,9 +166,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       });
       setItemsById({ ...itemsByPathRef.current, ...itemsObj });
     }
-    // itemsByPathRef is a ref, so it's not part of the dependency array
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, setItemsById]);
+  }, [items, setItemsById, itemsByPathRef]);
 
   useEffect(() => {
     loadPage(0);

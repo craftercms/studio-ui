@@ -154,7 +154,6 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         loadingSkeleton: !backgroundRefresh,
         ...(!loadingSkeleton && { items: null })
       });
-      setItemsById({});
       const totalLimit = pageNumber * limit;
       fetchScheduled(site, { limit: totalLimit + limit, offset: 0 }).subscribe((scheduledItems) => {
         const validatedState = getValidatedSelectionState(scheduledItems, selected, limit);
