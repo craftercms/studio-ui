@@ -32,30 +32,30 @@ const initialState: GlobalState['globalNavigation'] = {
   blockNavigation: false
 };
 
-// @ts-ignore - TODO: Typing system is complaining about something to be determined.
-const reducer = createReducer<GlobalState['globalNavigation']>(initialState, {
-  [changeSite.type]: (state) => ({ ...initialState, ...state }),
-  [fetchGlobalMenu.type]: (state) => ({ ...state, isFetching: true }),
-  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
-    ...state,
-    error: null,
-    items: payload,
-    isFetching: false
-  }),
-  [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
-    ...state,
-    error: payload,
-    items: state.items,
-    isFetching: false
-  }),
-  [blockGlobalMenuNavigation.type]: (state) => ({
-    ...state,
-    blockNavigation: true
-  }),
-  [unblockGlobalMenuNavigation.type]: (state) => ({
-    ...state,
-    blockNavigation: false
-  })
+const reducer = createReducer<GlobalState['globalNavigation']>(initialState, (builder) => {
+  builder
+    .addCase(changeSite, (state) => ({ ...initialState, ...state }))
+    .addCase(fetchGlobalMenu, (state) => ({ ...state, isFetching: true }))
+    .addCase(fetchGlobalMenuComplete, (state, { payload }) => ({
+      ...state,
+      error: null,
+      items: payload,
+      isFetching: false
+    }))
+    .addCase(fetchGlobalMenuFailed, (state, { payload }) => ({
+      ...state,
+      error: payload,
+      items: state.items,
+      isFetching: false
+    }))
+    .addCase(blockGlobalMenuNavigation, (state) => ({
+      ...state,
+      blockNavigation: true
+    }))
+    .addCase(unblockGlobalMenuNavigation, (state) => ({
+      ...state,
+      blockNavigation: false
+    }));
 });
 
 export default reducer;

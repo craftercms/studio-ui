@@ -107,7 +107,7 @@ export interface GuestData {
 
 export interface Clipboard {
   type: 'CUT' | 'COPY';
-  paths: string[];
+  paths?: string[];
   sourcePath: string;
 }
 

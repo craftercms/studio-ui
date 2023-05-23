@@ -255,7 +255,7 @@ export function setHostSize(dimensions: WidthAndHeight): StandardAction {
 
 export const fetchContentTypes = /*#__PURE__*/ createAction(FETCH_CONTENT_TYPES);
 
-export function fetchContentTypesComplete(contentTypes: ContentType[]): StandardAction {
+export function fetchContentTypesComplete(contentTypes: ContentType[]): StandardAction<ContentType[]> {
   return {
     type: FETCH_CONTENT_TYPES_COMPLETE,
     payload: contentTypes

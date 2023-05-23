@@ -17,12 +17,13 @@
 import { createAction } from '@reduxjs/toolkit';
 import { Credentials } from '../../models/Credentials';
 import { ObtainAuthTokenResponse } from '../../services/auth';
+import { AjaxError } from 'rxjs/ajax';
 
 // region Login
 
 export const login = /*#__PURE__*/ createAction<Credentials>('LOGIN');
 export const loginComplete = /*#__PURE__*/ createAction('LOGIN_COMPLETE');
-export const loginFailed = /*#__PURE__*/ createAction('LOGIN_FAILED');
+export const loginFailed = /*#__PURE__*/ createAction<AjaxError>('LOGIN_FAILED');
 
 // endregion
 
