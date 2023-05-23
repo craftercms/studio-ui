@@ -14,13 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CommonDashletProps, getCurrentPage } from '../SiteDashboard';
+import { CommonDashletProps, getCurrentPage, useSelectionOptions } from '../SiteDashboard';
 import { Activity, Person } from '../../models';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
@@ -43,6 +43,9 @@ import { filter } from 'rxjs/operators';
 import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import ActionsBar from '../ActionsBar';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
+import { itemActionDispatcher } from '../../utils/itemActions';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -77,6 +80,22 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
+  const itemsByPath = useItemsByPath();
+  const [selectedPaths, setSelectedPaths] = useState([]);
+  useFetchSandboxItems(selectedPaths);
+  const selectedItems = useMemo(() => {
+    const items = [];
+    if (selectedPaths.length > 0) {
+      selectedPaths.forEach((path) => {
+        if (itemsByPath[path]) {
+          items.push(itemsByPath[path]);
+        }
+      });
+    }
+    return items;
+  }, [itemsByPath, selectedPaths]);
+  const selectedCount = selectedItems.length;
+  const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const onRefresh = useMemo(
     () => () => {
       setState({ loading: true, feed: null });
@@ -124,6 +143,32 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
 
   const onPackageClick = (pkg) => {
     setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
+  };
+
+  const handleSelect = (path: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedPaths([...selectedPaths, path]);
+    } else {
+      let selectedItems = [...selectedPaths];
+      let index = selectedItems.indexOf(path);
+      selectedItems.splice(index, 1);
+      setSelectedPaths(selectedItems);
+    }
+  };
+
+  const onOptionClicked = (option) => {
+    if (option === 'clear') {
+      setSelectedPaths([]);
+    } else {
+      return itemActionDispatcher({
+        site,
+        authoringBase,
+        dispatch,
+        formatMessage,
+        option,
+        item: selectedItems.length > 1 ? selectedItems : selectedItems[0]
+      });
+    }
   };
 
   useEffect(() => {
@@ -189,16 +234,31 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
       }
       actionsBar={
         <ActionsBar
-          disabled={false}
+          disabled={loading}
           isChecked={false}
           isIndeterminate={false}
           onCheckboxChange={null}
-          onOptionClicked={null}
-          options={[]}
+          onOptionClicked={onOptionClicked}
+          options={selectionOptions?.concat([
+            ...(selectedCount > 0
+              ? [
+                  {
+                    id: 'clear',
+                    label: formatMessage(
+                      {
+                        defaultMessage: 'Clear {count} selected'
+                      },
+                      { count: selectedCount }
+                    )
+                  }
+                ]
+              : [])
+          ])}
           buttonProps={{ size: 'small' }}
+          showCheckbox={false}
           sxs={{
             root: { flexGrow: 1 },
-            container: { bgcolor: false ? 'action.selected' : UNDEFINED },
+            container: { bgcolor: selectedCount > 0 ? 'action.selected' : UNDEFINED, minHeight: 34 },
             checkbox: { padding: '5px', borderRadius: 0 },
             button: { minWidth: 50 }
           }}
@@ -211,7 +271,17 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
           {feed.map((activity) => (
             <ListItem key={activity.id} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
-                {activity.item ? <Checkbox edge="start" /> : <Box sx={{ minWidth: '30px' }} />}
+                {activity.item && activity.item.systemType ? (
+                  <Checkbox
+                    edge="start"
+                    checked={selectedPaths.includes(activity.item.path)}
+                    onChange={(e) => {
+                      handleSelect(activity.item.path, e.target.checked);
+                    }}
+                  />
+                ) : (
+                  <Box sx={{ minWidth: '30px' }} />
+                )}
               </ListItemIcon>
               <ListItemText
                 primary={renderActivity(activity, {
