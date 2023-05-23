@@ -111,7 +111,6 @@ export function initTinyMCE(
   $element.removeClass(emptyFieldClass);
 
   window.tinymce.init({
-    mode: 'none',
     target: rteEl,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',

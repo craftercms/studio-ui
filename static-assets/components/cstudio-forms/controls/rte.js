@@ -368,8 +368,6 @@ CStudioAuthoring.Module.requireModule(
             forced_root_block: forceRootBlockPTag, // comes from control props (not xml config)
             remove_trailing_brs: false,
             media_live_embeds: true,
-            autoresize_on_init: false,
-            autoresize_bottom_margin: 0,
             contextmenu: !this.enableSpellCheck, // comes from control props (not xml config)
             image_uploadtab: this.editorImageDatasources.length > 0, // comes from control props (not xml config)
             craftercms_paste_cleanup: rteConfig?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
