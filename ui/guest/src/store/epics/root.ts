@@ -339,7 +339,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                           const originalSrc = aImg.src;
                           if (allowed) {
                             const readerObs = createReader$(file);
-                            const fileName = modifiedValue ? modifiedValue.replace(path, '') : file.name;
+                            const fileName = modifiedValue
+                              ? modifiedValue.replace(path, '').replace(/^\//, '')
+                              : file.name;
                             return readerObs.pipe(
                               switchMap((event) => {
                                 aImg.src = event.target.result;
