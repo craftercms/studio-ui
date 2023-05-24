@@ -75,7 +75,8 @@ export function DashletCard(props: DashletCardProps) {
   const showCardBody = isExpanded || isMaximized;
   const HeaderActionArea = isMaximized || !collapsible ? 'div' : CardActionArea;
   const [disableHeaderActionAreaRipple, setDisableHeaderActionAreaRipple] = useState(false);
-  const cardActionAreaProps = isMaximized ? {} : { component: 'div', disableRipple: disableHeaderActionAreaRipple };
+  const cardActionAreaProps =
+    isMaximized || !collapsible ? {} : { component: 'div', disableRipple: disableHeaderActionAreaRipple };
 
   const updateMaximized = () => {
     setIsMaximized(!isMaximized);

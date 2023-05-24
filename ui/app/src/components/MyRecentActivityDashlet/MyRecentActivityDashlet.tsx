@@ -46,6 +46,7 @@ import ActionsBar from '../ActionsBar';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { itemActionDispatcher } from '../../utils/itemActions';
+import ListItemButton from '@mui/material/ListItemButton';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -142,8 +143,9 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     loadPage(getCurrentPage(offset, limit), true);
   };
 
-  const handleSelect = (path: string, isSelected: boolean) => {
-    if (isSelected) {
+  const handleSelect = (path: string) => {
+    const isSelected = selectedPaths.includes(path);
+    if (!isSelected) {
       setSelectedPaths([...selectedPaths, path]);
     } else {
       let selectedItems = [...selectedPaths];
@@ -269,31 +271,44 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
       {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {feed && (
         <List sx={{ pb: 0 }}>
-          {feed.map((activity) => (
-            <ListItem key={activity.id} sx={{ pt: 0, pb: 0 }}>
-              <ListItemIcon>
-                {activity.item && activity.item.systemType ? (
-                  <Checkbox
-                    edge="start"
-                    checked={selectedPaths.includes(activity.item.path)}
-                    onChange={(e) => {
-                      handleSelect(activity.item.path, e.target.checked);
-                    }}
-                  />
-                ) : (
-                  <Box sx={{ minWidth: '30px' }} />
-                )}
-              </ListItemIcon>
-              <ListItemText
-                primary={renderActivity(activity, {
-                  formatMessage,
-                  onPackageClick,
-                  onItemClick
-                })}
-                secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
-              />
-            </ListItem>
-          ))}
+          {feed.map((activity) => {
+            const isItemActivity = activity.item && activity.item.systemType;
+            const ListItemComponent = isItemActivity ? ListItemButton : ListItem;
+            const listItemComponentProps = isItemActivity
+              ? {
+                  onClick: () => handleSelect(activity.item.path)
+                }
+              : {};
+
+            return (
+              // Property 'button' is missing in type showing when conditionally rendering ListItemButton or ListItem
+              // and not showing when using ListItemButton or ListItem directly.
+              // @ts-ignore
+              <ListItemComponent key={activity.id} sx={{ pt: 0, pb: 0 }} {...listItemComponentProps}>
+                <ListItemIcon>
+                  {activity.item && activity.item.systemType ? (
+                    <Checkbox
+                      edge="start"
+                      checked={selectedPaths.includes(activity.item.path)}
+                      onChange={(e) => {
+                        handleSelect(activity.item.path);
+                      }}
+                    />
+                  ) : (
+                    <Box sx={{ minWidth: '30px' }} />
+                  )}
+                </ListItemIcon>
+                <ListItemText
+                  primary={renderActivity(activity, {
+                    formatMessage,
+                    onPackageClick,
+                    onItemClick
+                  })}
+                  secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
+                />
+              </ListItemComponent>
+            );
+          })}
         </List>
       )}
       {total === 0 && (
