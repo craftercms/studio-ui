@@ -255,7 +255,11 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
           showCheckbox={false}
           sxs={{
             root: { flexGrow: 1 },
-            container: { bgcolor: selectedCount > 0 ? 'action.selected' : UNDEFINED, minHeight: 34 },
+            container: {
+              bgcolor: selectedCount > 0 ? 'action.selected' : UNDEFINED,
+              minHeight: 33,
+              paddingLeft: '5px'
+            },
             checkbox: { padding: '5px', borderRadius: 0 },
             button: { minWidth: 50 }
           }}
