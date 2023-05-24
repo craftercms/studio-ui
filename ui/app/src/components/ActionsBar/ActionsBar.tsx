@@ -34,6 +34,7 @@ interface ActionsBarProps {
   numOfSkeletonItems?: number;
   isLoading?: boolean;
   isIndeterminate: boolean;
+  showCheckbox?: boolean;
   isChecked: boolean;
   classes?: Partial<Record<'root' | 'container' | 'checkbox' | 'button', string>>;
   onOptionClicked(optionId: string): void;
@@ -55,6 +56,7 @@ export function ActionsBar(props: ActionsBarProps) {
     onOptionClicked,
     isIndeterminate,
     onCheckboxChange,
+    showCheckbox = true,
     isChecked,
     isLoading = false,
     numOfSkeletonItems = 5,
@@ -65,15 +67,17 @@ export function ActionsBar(props: ActionsBarProps) {
   return (
     <Box className={props.classes?.root} sx={{ bgcolor: 'background.paper', ...sxs?.root }}>
       <Box sx={{ bgcolor: 'action.selected', ...sxs?.container }}>
-        <Checkbox
-          disabled={disabled}
-          sx={{ width: 48, ...sxs?.checkbox }}
-          color="primary"
-          indeterminate={isIndeterminate}
-          checked={isChecked}
-          className={props.classes?.checkbox}
-          onChange={onCheckboxChange}
-        />
+        {showCheckbox && (
+          <Checkbox
+            disabled={disabled}
+            sx={{ width: 48, ...sxs?.checkbox }}
+            color="primary"
+            indeterminate={isIndeterminate}
+            checked={isChecked}
+            className={props.classes?.checkbox}
+            onChange={onCheckboxChange}
+          />
+        )}
         {isLoading
           ? new Array(numOfSkeletonItems).fill(null).map((nothing, index) => (
               <Button

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchPublishingHistoryPackageItems } from '../../services/dashboard';
@@ -24,11 +24,19 @@ import { LoadingState } from '../LoadingState';
 import Typography from '@mui/material/Typography';
 import { EmptyState } from '../EmptyState';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ItemDisplay from '../ItemDisplay';
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { Pager } from '../DashletCard/dashletCommons';
 import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import { useDispatch } from 'react-redux';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import { getNumOfMenuOptionsForItem, parseSandBoxItemToDetailedItem } from '../../utils/content';
+import { SandboxItem } from '../../models';
+import ListItemButton from '@mui/material/ListItemButton';
 
 const dialogContentHeight = 420;
 
@@ -49,6 +57,8 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
   });
   const currentPage = state.offset / state.limit;
   const totalPages = state.total ? Math.ceil(state.total / state.limit) : 0;
+  const dispatch = useDispatch();
+  const [over, setOver] = useState(null);
 
   useEffect(() => {
     if (packageId) {
@@ -63,6 +73,20 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
       });
     }
   }, [packageId, site, setState, state.limit]);
+
+  const onOpenMenu = (element: Element, item: SandboxItem) => {
+    const anchorRect = element.getBoundingClientRect();
+    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+    dispatch(
+      showItemMegaMenu({
+        path: item.path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top, left },
+        loaderItems: getNumOfMenuOptionsForItem(parseSandBoxItemToDetailedItem(item))
+      })
+    );
+  };
 
   const loadPage = (pageNumber: number) => {
     const newOffset = pageNumber * state.limit;
@@ -124,9 +148,31 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
             <>
               <List sx={{ height: dialogContentHeight, overflowY: 'auto' }}>
                 {state.items.map((item) => (
-                  <ListItem key={item.id}>
+                  <ListItemButton
+                    key={item.id}
+                    onMouseOver={() => setOver(item.path)}
+                    onMouseOut={() => setOver(null)}
+                    sx={{
+                      cursor: 'default',
+                      justifyContent: 'space-between'
+                    }}
+                  >
                     <ItemDisplay item={item} showNavigableAsLinks={false} />
-                  </ListItem>
+
+                    {over === item.path && (
+                      <Tooltip title={<FormattedMessage defaultMessage="Options" />}>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            onOpenMenu(e.currentTarget, item);
+                          }}
+                          sx={{ padding: 0 }}
+                        >
+                          <MoreVertRoundedIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </ListItemButton>
                 ))}
               </List>
               <Box display="flex" justifyContent="space-between">
