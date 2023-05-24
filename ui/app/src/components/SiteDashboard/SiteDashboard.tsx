@@ -194,6 +194,7 @@ export function Dashboard(props: DashboardProps) {
           }}
           contentHeight={desktopScreen ? null : height}
           onMinimize={onMinimize}
+          collapsible={!desktopScreen}
         />
         {/* endregion */}
         {/* Displays on mobile - below Activity Dashlet */}

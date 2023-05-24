@@ -17,6 +17,7 @@
 import {
   CommonDashletProps,
   getItemViewOption,
+  getValidatedSelectionState,
   isPage,
   previewPage,
   useSelectionOptions,
@@ -26,12 +27,11 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchScheduled } from '../../services/dashboard';
 import { DetailedItem, LookupTable } from '../../models';
-import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
@@ -46,16 +46,18 @@ import { UNDEFINED } from '../../utils/constants';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import { useDispatch } from 'react-redux';
 import useEnv from '../../hooks/useEnv';
-import { publishEvent, workflowEvent } from '../../state/actions/system';
+import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
 interface ScheduledDashletState extends WithSelectedState<DetailedItem> {
   total: number;
   loading: boolean;
+  loadingSkeleton: boolean;
   limit: number;
   offset: number;
 }
@@ -73,52 +75,35 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const [
-    { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
+    { loading, loadingSkeleton, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
     isSelected
   ] = useSpreadStateWithSelected<ScheduledDashletState>({
     loading: false,
+    loadingSkeleton: true,
     items: null,
     total: null,
     selected: {},
     isAllSelected: false,
     hasSelected: false,
-    limit: 10,
+    limit: 50,
     offset: 0
   });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const [itemsByPath, setItemsByPath] = useSpreadState<LookupTable<DetailedItem>>({});
-  const selectedItems = Object.values(itemsByPath)?.filter((item) => selected[item.id]) ?? [];
+  const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
+  const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
-  const onRefresh = useMemo(
-    () => () => {
-      setState({
-        items: null,
-        selected: {},
-        hasSelected: false,
-        isAllSelected: false,
-        selectedCount: 0,
-        loading: true
-      });
-      fetchScheduled(site, {
-        limit,
-        offset: 0
-      }).subscribe((items) => {
-        setState({ loading: false, items, total: items.total, offset: 0 });
-      });
-    },
-    [setState, site, limit]
-  );
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchScheduled(site, {
         limit,
         offset: newOffset
@@ -130,9 +115,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   );
 
   const onOptionClicked = (option) => {
-    if (option === 'clear') {
-      setState({ isAllSelected: false, selectedCount: 0, selected: {}, hasSelected: false });
-    } else {
+    // Clear selection
+    setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
+    if (option !== 'clear') {
       return itemActionDispatcher({
         site,
         authoringBase,
@@ -162,9 +147,26 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     }
   };
 
-  useEffect(() => {
-    onRefresh();
-  }, [onRefresh]);
+  const loadPagesUntil = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh,
+        ...(!loadingSkeleton && { items: null })
+      });
+      const totalLimit = pageNumber * limit;
+      fetchScheduled(site, { limit: totalLimit + limit, offset: 0 }).subscribe((scheduledItems) => {
+        const validatedState = getValidatedSelectionState(scheduledItems, selected, limit);
+        setItemsById(validatedState.itemsById);
+        setState(validatedState.state);
+      });
+    },
+    [limit, selected, setState, site, setItemsById, loadingSkeleton]
+  );
+
+  const onRefresh = () => {
+    loadPagesUntil(currentPage, true);
+  };
 
   useEffect(() => {
     if (items) {
@@ -172,21 +174,25 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       items.forEach((item) => {
         itemsObj[item.id] = item;
       });
-      setItemsByPath(itemsObj);
+      setItemsById(itemsObj);
     }
-  }, [items, setItemsByPath]);
+  }, [items, setItemsById]);
+
+  useEffect(() => {
+    loadPage(0);
+  }, [loadPage]);
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [workflowEvent.type, publishEvent.type];
+    const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      loadPage(0, true);
+      loadPagesUntil(currentPage, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [limit, offset, loadPage]);
+  }, [currentPage, loadPagesUntil]);
   // endregion
 
   return (
@@ -195,9 +201,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="scheduledDashlet.widgetTitle" defaultMessage="Scheduled for Publish" />}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       actionsBar={
         <ActionsBar
@@ -251,7 +257,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         }
       }}
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
@@ -273,7 +279,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                   <FormattedMessage
                     defaultMessage="Approved by {name} to <render_target>{publishingTarget}</render_target> on {date}"
                     values={{
-                      name: item.sandbox.modifier,
+                      name: item.sandbox?.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (
@@ -282,11 +288,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                           </Typography>
                         );
                       },
-                      date: asLocalizedDateTime(
-                        item.sandbox.dateModified,
-                        locale.localeCode,
-                        locale.dateTimeFormatOptions
-                      )
+                      date:
+                        item.sandbox?.dateModified &&
+                        asLocalizedDateTime(item.sandbox.dateModified, locale.localeCode, locale.dateTimeFormatOptions)
                     }}
                   />
                 }

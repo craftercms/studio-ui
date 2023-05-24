@@ -15,7 +15,7 @@
  */
 
 import { Activity } from '../../models/Activity';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
@@ -59,6 +59,7 @@ import Box from '@mui/material/Box';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -149,6 +150,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       total,
       openRangePicker,
       loadingFeed,
+      loadingChunk,
       selectedPackageId,
       openPackageDetailsDialog
     },
@@ -164,7 +166,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     feedType: 'timeline',
     dateFrom: null,
     dateTo: null,
-    limit: 10,
+    limit: 50,
     offset: 0,
     total: null
   });
@@ -206,7 +208,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   );
   // endregion
   // region onRefresh
-  const onRefresh = useMemo(
+  const onLoad = useMemo(
     () => (backgroundRefresh?: boolean) => {
       if (!backgroundRefresh) {
         setState({ feed: null, total: null, offset: 0, loadingFeed: true });
@@ -244,6 +246,21 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       });
     });
   };
+  const onRefresh = useCallback(() => {
+    setState({
+      loadingChunk: true
+    });
+    fetchActivity(site, {
+      actions: activities.filter((key) => key !== 'ALL'),
+      usernames,
+      dateTo,
+      dateFrom,
+      offset: 0,
+      limit: offset + limit
+    }).subscribe((feed) => {
+      setState({ feed, total: feed.total, loadingChunk: false });
+    });
+  }, [activities, dateFrom, dateTo, limit, offset, setState, site, usernames]);
   const onItemClick = (previewUrl, e) => {
     const pathname = window.location.pathname;
     if (pathname.includes(PREVIEW_URL_PATH)) {
@@ -263,15 +280,15 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   };
   const hasMoreItemsToLoad = total > 0 && limit + offset < total;
   useEffect(() => {
-    onRefresh();
-  }, [onRefresh, setState]);
+    onLoad();
+  }, [onLoad, setState]);
 
   // region Item Updates Propagation
   useEffect(() => {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      onRefresh(true);
+      onRefresh();
     });
     return () => {
       subscription.unsubscribe();
@@ -285,9 +302,13 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <IconButton onClick={() => onRefresh()}>
+        <LoadingButton
+          onClick={() => onRefresh()}
+          loading={loadingChunk}
+          sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}
+        >
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       actionsBar={
         <>

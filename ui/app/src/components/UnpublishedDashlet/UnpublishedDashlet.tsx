@@ -17,6 +17,7 @@
 import {
   CommonDashletProps,
   getItemViewOption,
+  getValidatedSelectionState,
   isPage,
   previewPage,
   useSelectionOptions,
@@ -26,8 +27,7 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import IconButton from '@mui/material/IconButton';
+import React, { useCallback, useEffect, useState } from 'react';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import useLocale from '../../hooks/useLocale';
 import useEnv from '../../hooks/useEnv';
@@ -49,13 +49,15 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import useSpreadState from '../../hooks/useSpreadState';
+import LoadingButton from '@mui/lab/LoadingButton';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
 interface UnpublishedDashletState extends WithSelectedState<SandboxItem> {
   total: number;
   loading: boolean;
+  loadingSkeleton: boolean;
   limit: number;
   offset: number;
 }
@@ -68,46 +70,33 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const [
-    { loading, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
+    { loading, loadingSkeleton, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
     isSelected
   ] = useSpreadStateWithSelected<UnpublishedDashletState>({
     loading: false,
+    loadingSkeleton: true,
     total: null,
-    limit: 10,
+    limit: 50,
     offset: 0
   });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const [itemsByPath, setItemsByPath] = useSpreadState<LookupTable<DetailedItem>>({});
-  const selectedItems = Object.values(itemsByPath)?.filter((item) => selected[item.id]) ?? [];
+  const [itemsById, setItemsById] = useState<LookupTable<DetailedItem>>({});
+  const itemsByPathRef = useUpdateRefs(itemsById);
+  const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const isIndeterminate = hasSelected && !isAllSelected;
-  const onRefresh = useMemo(
-    () => () => {
-      setState({
-        items: null,
-        selected: {},
-        hasSelected: false,
-        isAllSelected: false,
-        selectedCount: 0,
-        loading: true
-      });
-      fetchUnpublished(site, { limit, offset: 0 }).subscribe((items) => {
-        setState({ loading: false, items, offset: 0, total: items.total });
-      });
-    },
-    [setState, site, limit]
-  );
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchUnpublished(site, { limit, offset: newOffset }).subscribe((items) => {
         setState({ items, offset: newOffset, total: items.total, loading: false });
       });
@@ -115,10 +104,31 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     [limit, setState, site]
   );
 
+  const loadPagesUntil = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh,
+        ...(!backgroundRefresh && { items: null })
+      });
+      const totalLimit = pageNumber * limit;
+      fetchUnpublished(site, { limit: totalLimit + limit, offset: 0 }).subscribe((unpublishedItems) => {
+        const validatedState = getValidatedSelectionState(unpublishedItems, selected, limit);
+        setItemsById(validatedState.itemsById);
+        setState(validatedState.state);
+      });
+    },
+    [limit, selected, setState, site]
+  );
+
+  const onRefresh = () => {
+    loadPagesUntil(currentPage, true);
+  };
+
   const onOptionClicked = (option) => {
-    if (option === 'clear') {
-      setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
-    } else {
+    // Clear selection
+    setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
+    if (option !== 'clear') {
       return itemActionDispatcher({
         site,
         authoringBase,
@@ -154,25 +164,25 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       items.forEach((item) => {
         itemsObj[item.id] = parseSandBoxItemToDetailedItem(item);
       });
-      setItemsByPath(itemsObj);
+      setItemsById({ ...itemsByPathRef.current, ...itemsObj });
     }
-  }, [items, setItemsByPath]);
+  }, [items, setItemsById, itemsByPathRef]);
 
   useEffect(() => {
-    onRefresh();
-  }, [onRefresh]);
+    loadPage(0);
+  }, [loadPage]);
 
   // region Item Updates Propagation
   useEffect(() => {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      loadPage(0, true);
+      loadPagesUntil(currentPage, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [loadPage]);
+  }, [currentPage, loadPagesUntil]);
   // endregion
 
   return (
@@ -181,9 +191,9 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="unpublishedDashlet.widgetTitle" defaultMessage="Unpublished Work" />}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       sxs={{
         actionsBar: { padding: 0 },
@@ -237,7 +247,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         )
       }
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (

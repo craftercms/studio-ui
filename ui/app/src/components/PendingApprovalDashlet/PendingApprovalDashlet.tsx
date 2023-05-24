@@ -14,10 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   CommonDashletProps,
   getItemViewOption,
+  getValidatedSelectionState,
   isPage,
   previewPage,
   useSelectionOptions,
@@ -35,7 +36,6 @@ import { fetchPendingApproval } from '../../services/dashboard';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { DetailedItem, LookupTable } from '../../models';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
-import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import ItemDisplay from '../ItemDisplay';
 import { ActionsBar } from '../ActionsBar';
@@ -44,15 +44,17 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
 import ListItemButton from '@mui/material/ListItemButton';
-import { publishEvent, workflowEvent } from '../../state/actions/system';
+import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
 interface PendingApprovalDashletState extends WithSelectedState<DetailedItem> {
   loading: boolean;
+  loadingSkeleton: boolean;
   total: number;
   limit: number;
   offset: number;
@@ -66,7 +68,7 @@ const messages = defineMessages({
 export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const { borderLeftColor = palette.purple.tint, onMinimize } = props;
   const [
-    { items, total, loading, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
+    { items, total, loading, loadingSkeleton, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
     setState,
     onSelectItem,
     onSelectAll,
@@ -75,47 +77,30 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     items: null,
     total: null,
     loading: false,
+    loadingSkeleton: true,
     selected: {},
     isAllSelected: false,
     hasSelected: false,
-    limit: 10,
+    limit: 50,
     offset: 0
   });
   const { formatMessage } = useIntl();
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
-  const [itemsByPath, setItemsByPath] = useSpreadState<LookupTable<DetailedItem>>({});
-  const selectedItems = Object.values(itemsByPath)?.filter((item) => selected[item.id]) ?? [];
+  const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
+  const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(Object.values(selectedItems), formatMessage, selectedCount);
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const onRefresh = useMemo(
-    () => () => {
-      setState({
-        items: null,
-        selected: {},
-        hasSelected: false,
-        isAllSelected: false,
-        selectedCount: 0,
-        loading: true
-      });
-      fetchPendingApproval(site, { limit, offset: 0 }).subscribe((items) => {
-        setState({ items: items, total: items.total, offset: 0, loading: false });
-      });
-    },
-    [setState, site, limit]
-  );
-  useEffect(() => {
-    onRefresh();
-  }, [onRefresh]);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
       });
@@ -123,10 +108,35 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     [limit, setState, site]
   );
 
+  const loadPagesUntil = useCallback(
+    (pageNumber: number, backgroundRefresh?: boolean) => {
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh,
+        ...(!backgroundRefresh && { items: null })
+      });
+      const totalLimit = pageNumber * limit;
+      fetchPendingApproval(site, { limit: totalLimit + limit, offset: 0 }).subscribe((pendingApprovalItems) => {
+        const validatedState = getValidatedSelectionState(pendingApprovalItems, selected, limit);
+        setItemsById(validatedState.itemsById);
+        setState(validatedState.state);
+      });
+    },
+    [limit, selected, setState, site, setItemsById]
+  );
+
+  const onRefresh = () => {
+    loadPagesUntil(currentPage, true);
+  };
+
+  useEffect(() => {
+    loadPage(0);
+  }, [loadPage]);
+
   const onOptionClicked = (option) => {
-    if (option === 'clear') {
-      setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
-    } else {
+    // Clear selection
+    setState({ selectedCount: 0, isAllSelected: false, selected: {}, hasSelected: false });
+    if (option !== 'clear') {
       return itemActionDispatcher({
         site,
         authoringBase,
@@ -162,21 +172,21 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       items.forEach((item) => {
         itemsObj[item.id] = item;
       });
-      setItemsByPath(itemsObj);
+      setItemsById(itemsObj);
     }
-  }, [items, setItemsByPath]);
+  }, [items, setItemsById]);
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [workflowEvent.type, publishEvent.type];
+    const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      loadPage(0, true);
+      loadPagesUntil(currentPage, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [limit, offset, loadPage]);
+  }, [currentPage, loadPagesUntil]);
   // endregion
 
   return (
@@ -234,9 +244,9 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         />
       }
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       footer={
         Boolean(items?.length) && (
@@ -252,7 +262,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         )
       }
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {Boolean(items?.length) && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
@@ -274,7 +284,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                   <FormattedMessage
                     defaultMessage="submitted to <render_target>{publishingTarget}</render_target> by {name}"
                     values={{
-                      name: item.sandbox.modifier,
+                      name: item.sandbox?.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (

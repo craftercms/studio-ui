@@ -172,3 +172,38 @@ export function getItemViewOption(item) {
 export function getCurrentPage(offset: number, limit: number) {
   return Math.ceil(offset / limit);
 }
+
+export function getValidatedSelectionState(items, selected, limit) {
+  let newItemsById = {};
+  // Verify if the number of pages changed
+  const lastPageWithItems = items.length ? Math.ceil(items.length / limit) - 1 : 0;
+  // Update the itemsById lookup.
+  items.forEach((item) => {
+    newItemsById[item.id] = item;
+  });
+
+  // Update selected items (remove items that no longer exist in the dashlet
+  const newSelected = {};
+  Object.keys(selected).forEach((selectedKey) => {
+    if (newItemsById[selectedKey]) {
+      newSelected[selectedKey] = true;
+    }
+  });
+  const newSelectedArray = Object.keys(newSelected);
+
+  // Get the items that belong to the current page
+  const currentPageItems = items.slice(lastPageWithItems * limit, lastPageWithItems * limit + limit);
+  return {
+    itemsById: newItemsById,
+    state: {
+      items: currentPageItems,
+      offset: limit * lastPageWithItems,
+      total: items.total,
+      loading: false,
+      selected: newSelected,
+      hasSelected: Boolean(newSelectedArray.length),
+      selectedCount: newSelectedArray.length,
+      isAllSelected: newSelectedArray.length === items.total
+    }
+  };
+}

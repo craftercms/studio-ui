@@ -24,7 +24,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
-import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { DashletEmptyMessage, getItemSkeleton, ListItemIcon, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
@@ -40,12 +39,14 @@ import PackageDetailsDialog from '../PackageDetailsDialog';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import ActionsBar from '../ActionsBar';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { itemActionDispatcher } from '../../utils/itemActions';
+import ListItemButton from '@mui/material/ListItemButton';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -53,6 +54,7 @@ interface MyRecentActivityDashletState {
   feed: Activity[];
   total: number;
   loading: boolean;
+  loadingSkeleton: boolean;
   limit: number;
   offset: number;
   openPackageDetailsDialog: boolean;
@@ -68,16 +70,19 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   const { username, firstName, lastName } = useActiveUser();
   const person: Person = { username, firstName, lastName, avatar: null };
   const dispatch = useDispatch();
-  const [{ loading, total, feed, limit, offset, selectedPackageId, openPackageDetailsDialog }, setState] =
-    useSpreadState<MyRecentActivityDashletState>({
-      feed: null,
-      loading: false,
-      total: null,
-      limit: 10,
-      offset: 0,
-      openPackageDetailsDialog: false,
-      selectedPackageId: null
-    });
+  const [
+    { loading, loadingSkeleton, total, feed, limit, offset, selectedPackageId, openPackageDetailsDialog },
+    setState
+  ] = useSpreadState<MyRecentActivityDashletState>({
+    feed: null,
+    loading: false,
+    loadingSkeleton: true,
+    total: null,
+    limit: 50,
+    offset: 0,
+    openPackageDetailsDialog: false,
+    selectedPackageId: null
+  });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
   const itemsByPath = useItemsByPath();
@@ -96,25 +101,14 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   }, [itemsByPath, selectedPaths]);
   const selectedCount = selectedItems.length;
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
-  const onRefresh = useMemo(
-    () => () => {
-      setState({ loading: true, feed: null });
-      fetchActivity(site, {
-        usernames: [username],
-        limit
-      }).subscribe((feed) => {
-        setState({ feed, total: feed.total, offset: 0, loading: false });
-      });
-    },
-    [setState, site, username, limit]
-  );
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
-      if (!backgroundRefresh) {
-        setState({ loading: true });
-      }
+      setState({
+        loading: true,
+        loadingSkeleton: !backgroundRefresh
+      });
       fetchActivity(site, {
         usernames: [username],
         offset: newOffset,
@@ -145,8 +139,13 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
   };
 
-  const handleSelect = (path: string, isSelected: boolean) => {
-    if (isSelected) {
+  const onRefresh = () => {
+    loadPage(getCurrentPage(offset, limit), true);
+  };
+
+  const handleSelect = (path: string) => {
+    const isSelected = selectedPaths.includes(path);
+    if (!isSelected) {
       setSelectedPaths([...selectedPaths, path]);
     } else {
       let selectedItems = [...selectedPaths];
@@ -172,8 +171,8 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   };
 
   useEffect(() => {
-    onRefresh();
-  }, [onRefresh]);
+    loadPage(0);
+  }, [loadPage]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -215,9 +214,9 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
         footer: { justifyContent: 'space-between' }
       }}
       headerAction={
-        <IconButton onClick={onRefresh}>
+        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
           <RefreshRounded />
-        </IconButton>
+        </LoadingButton>
       }
       footer={
         Boolean(feed?.length) && (
@@ -258,41 +257,58 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
           showCheckbox={false}
           sxs={{
             root: { flexGrow: 1 },
-            container: { bgcolor: selectedCount > 0 ? 'action.selected' : UNDEFINED, minHeight: 34 },
+            container: {
+              bgcolor: selectedCount > 0 ? 'action.selected' : UNDEFINED,
+              minHeight: 33,
+              paddingLeft: '5px'
+            },
             checkbox: { padding: '5px', borderRadius: 0 },
             button: { minWidth: 50 }
           }}
         />
       }
     >
-      {loading && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {feed && (
         <List sx={{ pb: 0 }}>
-          {feed.map((activity) => (
-            <ListItem key={activity.id} sx={{ pt: 0, pb: 0 }}>
-              <ListItemIcon>
-                {activity.item && activity.item.systemType ? (
-                  <Checkbox
-                    edge="start"
-                    checked={selectedPaths.includes(activity.item.path)}
-                    onChange={(e) => {
-                      handleSelect(activity.item.path, e.target.checked);
-                    }}
-                  />
-                ) : (
-                  <Box sx={{ minWidth: '30px' }} />
-                )}
-              </ListItemIcon>
-              <ListItemText
-                primary={renderActivity(activity, {
-                  formatMessage,
-                  onPackageClick,
-                  onItemClick
-                })}
-                secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
-              />
-            </ListItem>
-          ))}
+          {feed.map((activity) => {
+            const isItemActivity = activity.item && activity.item.systemType;
+            const ListItemComponent = isItemActivity ? ListItemButton : ListItem;
+            const listItemComponentProps = isItemActivity
+              ? {
+                  onClick: () => handleSelect(activity.item.path)
+                }
+              : {};
+
+            return (
+              // Property 'button' is missing in type showing when conditionally rendering ListItemButton or ListItem
+              // and not showing when using ListItemButton or ListItem directly.
+              // @ts-ignore
+              <ListItemComponent key={activity.id} sx={{ pt: 0, pb: 0 }} {...listItemComponentProps}>
+                <ListItemIcon>
+                  {activity.item && activity.item.systemType ? (
+                    <Checkbox
+                      edge="start"
+                      checked={selectedPaths.includes(activity.item.path)}
+                      onChange={(e) => {
+                        handleSelect(activity.item.path);
+                      }}
+                    />
+                  ) : (
+                    <Box sx={{ minWidth: '30px' }} />
+                  )}
+                </ListItemIcon>
+                <ListItemText
+                  primary={renderActivity(activity, {
+                    formatMessage,
+                    onPackageClick,
+                    onItemClick
+                  })}
+                  secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
+                />
+              </ListItemComponent>
+            );
+          })}
         </List>
       )}
       {total === 0 && (

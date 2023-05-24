@@ -45,6 +45,7 @@ export type DashletCardProps = PropsWithChildren<
     }>;
     cardContentProps?: CardContentProps;
     maximizable?: boolean;
+    collapsible?: boolean;
   }
 >;
 
@@ -62,7 +63,8 @@ export function DashletCard(props: DashletCardProps) {
     headerAction,
     cardContentProps,
     footer,
-    maximizable = false
+    maximizable = false,
+    collapsible = true
   } = props;
   // endregion
   const cardHeaderHeight = 62;
@@ -71,9 +73,10 @@ export function DashletCard(props: DashletCardProps) {
   const dashboardState = useSiteDashboardContext();
   const [isExpanded, setIsExpanded] = useState(true);
   const showCardBody = isExpanded || isMaximized;
-  const HeaderActionArea = isMaximized ? 'div' : CardActionArea;
+  const HeaderActionArea = isMaximized || !collapsible ? 'div' : CardActionArea;
   const [disableHeaderActionAreaRipple, setDisableHeaderActionAreaRipple] = useState(false);
-  const cardActionAreaProps = isMaximized ? {} : { component: 'div', disableRipple: disableHeaderActionAreaRipple };
+  const cardActionAreaProps =
+    isMaximized || !collapsible ? {} : { component: 'div', disableRipple: disableHeaderActionAreaRipple };
 
   const updateMaximized = () => {
     setIsMaximized(!isMaximized);
@@ -107,13 +110,17 @@ export function DashletCard(props: DashletCardProps) {
           top: 0,
           bottom: 0,
           left: 0,
-          right: 0
+          right: 0,
+          borderRadius: 0
         })
       }}
     >
       {/* region Header */}
       {renderCardHeader && (
-        <HeaderActionArea {...cardActionAreaProps} onClick={!isMaximized ? () => setIsExpanded(!isExpanded) : null}>
+        <HeaderActionArea
+          {...cardActionAreaProps}
+          onClick={!isMaximized && collapsible ? () => setIsExpanded(!isExpanded) : null}
+        >
           <CardHeader
             title={title}
             titleTypographyProps={{ variant: 'h6', component: 'h2' }}
