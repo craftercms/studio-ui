@@ -49,7 +49,14 @@ export function contentAndDeleteEventForEachApplicableTree(
 ): void {
   const parentPathOfTargetPath = getParentPath(targetPath);
   Object.values(state).forEach((tree) => {
-    if (tree.rootPath === targetPath || targetPath in tree.totalByPath || parentPathOfTargetPath in tree.totalByPath) {
+    if (
+      tree.rootPath === targetPath ||
+      tree.rootPath === withIndex(targetPath) ||
+      targetPath in tree.totalByPath ||
+      withIndex(targetPath) in tree.totalByPath ||
+      parentPathOfTargetPath in tree.totalByPath ||
+      withIndex(parentPathOfTargetPath) in tree.totalByPath
+    ) {
       callbackFn(tree, targetPath, parentPathOfTargetPath);
     }
   });

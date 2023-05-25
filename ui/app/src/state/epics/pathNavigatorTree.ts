@@ -276,22 +276,25 @@ export default [
             if (
               // If the path corresponds to the root and the root didn't exist, root now exists
               tree.isRootPathMissing &&
-              targetPath === rootPath
+              (targetPath === rootPath || withIndex(targetPath) === rootPath)
             ) {
               actions.push(pathNavigatorTreeRefresh({ id }));
             } else if (
               // If an entry for the path exists, assume it's an update to an existing item
-              targetPath in tree.totalByPath
+              targetPath in tree.totalByPath ||
+              withIndex(targetPath) in tree.totalByPath
             ) {
               // Reloading the item done by content epics
               // actions.push(fetchSandboxItem({ path }));
             } else if (
               // If an entry for the folder exists, fetch
-              parentPath in tree.totalByPath
+              parentPath in tree.totalByPath ||
+              withIndex(parentPath) in tree.totalByPath
             ) {
+              const pathToUpdate = parentPath in tree.totalByPath ? parentPath : withIndex(parentPath);
               // Show the new child
-              parentPath in tree.childrenByParentPath &&
-                actions.push(pathNavigatorTreeFetchPathChildren({ id, path: parentPath, expand: false }));
+              pathToUpdate in tree.childrenByParentPath &&
+                actions.push(pathNavigatorTreeFetchPathChildren({ id, path: pathToUpdate, expand: false }));
               // Update child count done by content epics.
               // fetchSandboxItem({ path: parentPath })
             }
