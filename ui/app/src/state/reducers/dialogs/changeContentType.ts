@@ -33,18 +33,19 @@ const initialState: ChangeContentTypeDialogStateProps = {
   selectedContentType: null
 };
 
-export default createReducer<ChangeContentTypeDialogStateProps>(initialState, {
-  [showChangeContentTypeDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeChangeContentTypeDialog(),
-    onClosed: changeContentTypeDialogClosed(),
-    onDismiss: closeChangeContentTypeDialog(),
-    ...payload,
-    open: true
-  }),
-  [closeChangeContentTypeDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [changeContentTypeDialogClosed.type]: () => initialState
+export default createReducer<ChangeContentTypeDialogStateProps>(initialState, (builder) => {
+  builder
+    .addCase(showChangeContentTypeDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeChangeContentTypeDialog(),
+      onClosed: changeContentTypeDialogClosed(),
+      onDismiss: closeChangeContentTypeDialog(),
+      ...(payload as object), // TODO: check linter issue
+      open: true
+    }))
+    .addCase(closeChangeContentTypeDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(changeContentTypeDialogClosed, () => initialState);
 });

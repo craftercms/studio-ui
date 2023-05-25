@@ -33,22 +33,23 @@ const initialState: CreateFileStateProps = {
   type: null
 };
 
-export default createReducer<GlobalState['dialogs']['createFile']>(initialState, {
-  [showCreateFileDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeCreateFileDialog(),
-    onClosed: createFileDialogClosed(),
-    onCreated: closeCreateFileDialog(),
-    ...payload,
-    open: true
-  }),
-  [closeCreateFileDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [updateCreateFileDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [createFileDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['createFile']>(initialState, (builder) => {
+  builder
+    .addCase(showCreateFileDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeCreateFileDialog(),
+      onClosed: createFileDialogClosed(),
+      onCreated: closeCreateFileDialog(),
+      ...(payload as object),
+      open: true
+    }))
+    .addCase(closeCreateFileDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(updateCreateFileDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as object)
+    }))
+    .addCase(createFileDialogClosed, () => initialState);
 });

@@ -25,18 +25,19 @@ const initialState: PathSelectionDialogStateProps = {
   showCreateFolderOption: true
 };
 
-export default createReducer<GlobalState['dialogs']['pathSelection']>(initialState, {
-  [showPathSelectionDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closePathSelectionDialog(),
-    onClosed: pathSelectionDialogClosed(),
-    onOk: closePathSelectionDialog(),
-    ...payload,
-    open: true
-  }),
-  [closePathSelectionDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [pathSelectionDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['pathSelection']>(initialState, (builder) => {
+  builder
+    .addCase(showPathSelectionDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closePathSelectionDialog(),
+      onClosed: pathSelectionDialogClosed(),
+      onOk: closePathSelectionDialog(),
+      ...(payload as object),
+      open: true
+    }))
+    .addCase(closePathSelectionDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(pathSelectionDialogClosed, () => initialState);
 });

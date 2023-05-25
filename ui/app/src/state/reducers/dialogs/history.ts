@@ -33,29 +33,18 @@ const initialState: HistoryDialogStateProps = {
   hasPendingChanges: null
 };
 
-export default createReducer<GlobalState['dialogs']['history']>(initialState, {
-  [showHistoryDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeHistoryDialog(),
-    onClosed: historyDialogClosed(),
-    ...payload,
-    open: true
-  }),
-  [closeHistoryDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [historyDialogClosed.type]: () => initialState,
-  [showViewVersionDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [showCompareVersionsDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [historyDialogUpdate.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  })
+export default createReducer<GlobalState['dialogs']['history']>(initialState, (builder) => {
+  builder
+    .addCase(showHistoryDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeHistoryDialog(),
+      onClosed: historyDialogClosed(),
+      ...(payload as object),
+      open: true
+    }))
+    .addCase(closeHistoryDialog, (state) => ({ ...state, open: false }))
+    .addCase(historyDialogClosed, (state) => initialState)
+    .addCase(showViewVersionDialog, (state) => ({ ...state, open: false }))
+    .addCase(showCompareVersionsDialog, (state) => ({ ...state, open: false }))
+    .addCase(historyDialogUpdate, (state, { payload }) => ({ ...state, ...(payload as object) }));
 });

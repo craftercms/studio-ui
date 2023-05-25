@@ -31,25 +31,26 @@ const initialState: PreviewDialogStateProps = {
   content: null
 };
 
-export default createReducer<GlobalState['dialogs']['preview']>(initialState, {
-  [showPreviewDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closePreviewDialog(),
-    onClosed: previewDialogClosed(),
-    onFullScreen: updatePreviewDialog({ isFullScreen: true }),
-    onCancelFullScreen: updatePreviewDialog({ isFullScreen: false }),
-    onMinimize: updatePreviewDialog({ isMinimized: true }),
-    onMaximize: updatePreviewDialog({ isMinimized: false }),
-    ...payload,
-    open: true
-  }),
-  [updatePreviewDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [closePreviewDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [previewDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['preview']>(initialState, (builder) => {
+  builder
+    .addCase(showPreviewDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closePreviewDialog(),
+      onClosed: previewDialogClosed(),
+      onFullScreen: updatePreviewDialog({ isFullScreen: true }),
+      onCancelFullScreen: updatePreviewDialog({ isFullScreen: false }),
+      onMinimize: updatePreviewDialog({ isMinimized: true }),
+      onMaximize: updatePreviewDialog({ isMinimized: false }),
+      ...(payload as object),
+      open: true
+    }))
+    .addCase(updatePreviewDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as object)
+    }))
+    .addCase(closePreviewDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(previewDialogClosed, () => initialState);
 });

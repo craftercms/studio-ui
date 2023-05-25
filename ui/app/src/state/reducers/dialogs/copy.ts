@@ -28,22 +28,23 @@ const initialState: CopyDialogStateProps = {
   item: null
 };
 
-export default createReducer<GlobalState['dialogs']['copy']>(initialState, {
-  [showCopyDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeCopyDialog(),
-    onClosed: copyDialogClosed(),
-    onOk: closeCopyDialog(),
-    ...payload,
-    open: true
-  }),
-  [closeCopyDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [updateCopyDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [copyDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['copy']>(initialState, (builder) => {
+  builder
+    .addCase(showCopyDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeCopyDialog(),
+      onClosed: copyDialogClosed(),
+      onOk: closeCopyDialog(),
+      ...(payload as object),
+      open: true
+    }))
+    .addCase(closeCopyDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(updateCopyDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as object)
+    }))
+    .addCase(copyDialogClosed, () => initialState);
 });

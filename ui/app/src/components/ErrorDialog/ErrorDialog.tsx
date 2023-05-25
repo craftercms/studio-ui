@@ -26,7 +26,7 @@ import { useUnmount } from '../../hooks/useUnmount';
 
 interface ErrorDialogBaseProps {
   open: boolean;
-  error: ApiResponse;
+  error?: ApiResponse;
 }
 
 export type ErrorDialogProps = PropsWithChildren<

@@ -18,20 +18,18 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeConfirmDialog, confirmDialogClosed, showConfirmDialog } from '../../actions/dialogs';
 
-export default createReducer<GlobalState['dialogs']['confirm']>(
-  { open: false },
-  {
-    [showConfirmDialog.type]: (state, { payload }) => ({
+export default createReducer<GlobalState['dialogs']['confirm']>({ open: false }, (builder) => {
+  builder
+    .addCase(showConfirmDialog, (state, { payload }) => ({
       // By default, if no callback is specified, assume an ok button.
       // To not have a "Ok" button, action creator must be called with onOk: null.
       // This allows easily sending information dialogs with a ok button.
       onClose: closeConfirmDialog(),
       onClosed: confirmDialogClosed(),
       onOk: closeConfirmDialog(),
-      ...payload,
+      ...(payload as object),
       open: true
-    }),
-    [closeConfirmDialog.type]: (state) => ({ ...state, open: false }),
-    [confirmDialogClosed.type]: () => ({ open: false })
-  }
-);
+    }))
+    .addCase(closeConfirmDialog, (state) => ({ ...state, open: false }))
+    .addCase(confirmDialogClosed, () => ({ open: false }));
+});

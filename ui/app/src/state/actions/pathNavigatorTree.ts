@@ -32,6 +32,7 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
     limit: number;
     expanded?: string[];
     systemTypes?: SystemType[];
+    keywordByPath?: LookupTable<string>;
   }>
 >('PATH_NAV_TREE_INIT');
 

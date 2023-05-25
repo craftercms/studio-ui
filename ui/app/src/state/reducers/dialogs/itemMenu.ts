@@ -28,14 +28,16 @@ export default createReducer<GlobalState['dialogs']['itemMenu']>(
       left: 0
     }
   },
-  {
-    [showItemMenu.type]: (state, { payload }) => ({
-      onClose: closeItemMenu(),
-      onClosed: itemMenuClosed(),
-      ...payload,
-      open: true
-    }),
-    [closeItemMenu.type]: (state) => ({ ...state, open: false }),
-    [itemMenuClosed.type]: () => ({ open: false })
+  (builder) => {
+    // @ts-ignore
+    builder
+      .addCase(showItemMenu, (state, { payload }) => ({
+        onClose: closeItemMenu(),
+        onClosed: itemMenuClosed(),
+        ...(payload as object),
+        open: true
+      }))
+      .addCase(closeItemMenu, (state) => ({ ...state, open: false }))
+      .addCase(itemMenuClosed, () => ({ open: false }));
   }
 );

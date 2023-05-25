@@ -28,17 +28,18 @@ const initialState: NewContentDialogStateProps = {
   rootPath: '/site/website'
 };
 
-export default createReducer<NewContentDialogStateProps>(initialState, {
-  [showNewContentDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeNewContentDialog(),
-    onClosed: newContentDialogClosed(),
-    ...payload,
-    open: true
-  }),
-  [closeNewContentDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [newContentDialogClosed.type]: () => initialState
+export default createReducer<NewContentDialogStateProps>(initialState, (builder) => {
+  builder
+    .addCase(showNewContentDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeNewContentDialog(),
+      onClosed: newContentDialogClosed(),
+      ...(payload as object),
+      open: true
+    }))
+    .addCase(closeNewContentDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(newContentDialogClosed, () => initialState);
 });

@@ -27,43 +27,46 @@ import {
 import ContentType from '../../models/ContentType';
 import { changeSite } from '../actions/sites';
 
-const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), {
-  [changeSite.type]: () => createEntityState(),
-  [FETCH_CONTENT_TYPES]: (state) => ({
-    ...state,
-    isFetching: true
-  }),
-  [FETCH_CONTENT_TYPES_COMPLETE]: (state, { payload: contentTypes }) => ({
-    ...state,
-    byId: createLookupTable<ContentType>(contentTypes),
-    isFetching: false,
-    error: null
-  }),
-  [FETCH_CONTENT_TYPES_FAILED]: (state, { payload }) => ({
-    ...state,
-    error: payload.response,
-    isFetching: false
-  }),
-  [associateTemplateComplete.type]: (state, { payload }) => ({
-    ...state,
-    byId: {
-      ...state.byId,
-      [payload.contentTypeId]: {
-        ...state.byId[payload.contentTypeId],
-        displayTemplate: payload.displayTemplate
+const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), (builder) => {
+  builder
+    .addCase(changeSite, () => createEntityState())
+    .addCase(FETCH_CONTENT_TYPES, (state) => ({
+      ...state,
+      isFetching: true
+    }))
+    // @ts-ignore
+    .addCase(FETCH_CONTENT_TYPES_COMPLETE, (state, { payload: contentTypes }) => ({
+      ...state,
+      byId: createLookupTable<ContentType>(contentTypes),
+      isFetching: false,
+      error: null
+    }))
+    // @ts-ignore
+    .addCase(FETCH_CONTENT_TYPES_FAILED, (state, { payload }) => ({
+      ...state,
+      error: payload.response,
+      isFetching: false
+    }))
+    .addCase(associateTemplateComplete, (state, { payload }) => ({
+      ...state,
+      byId: {
+        ...state.byId,
+        [payload.contentTypeId]: {
+          ...state.byId[payload.contentTypeId],
+          displayTemplate: payload.displayTemplate
+        }
       }
-    }
-  }),
-  [dissociateTemplateComplete.type]: (state, { payload }) => ({
-    ...state,
-    byId: {
-      ...state.byId,
-      [payload.contentTypeId]: {
-        ...state.byId[payload.contentTypeId],
-        displayTemplate: ''
+    }))
+    .addCase(dissociateTemplateComplete, (state, { payload }) => ({
+      ...state,
+      byId: {
+        ...state.byId,
+        [payload.contentTypeId]: {
+          ...state.byId[payload.contentTypeId],
+          displayTemplate: ''
+        }
       }
-    }
-  })
+    }));
 });
 
 export default reducer;

@@ -28,14 +28,17 @@ export default createReducer<GlobalState['dialogs']['itemMegaMenu']>(
       left: 0
     }
   },
-  {
-    [showItemMegaMenu.type]: (state, { payload }) => ({
-      onClose: closeItemMegaMenu(),
-      onClosed: itemMegaMenuClosed(),
-      ...payload,
-      open: true
-    }),
-    [closeItemMegaMenu.type]: (state) => ({ ...state, open: false }),
-    [itemMegaMenuClosed.type]: () => ({ open: false })
+  (builder) => {
+    // TODO: check issue
+    // @ts-ignore
+    builder
+      .addCase(showItemMegaMenu, (state, { payload }) => ({
+        onClose: closeItemMegaMenu(),
+        onClosed: itemMegaMenuClosed(),
+        ...(payload as object),
+        open: true
+      }))
+      .addCase(closeItemMegaMenu, (state) => ({ ...state, open: false }))
+      .addCase(itemMegaMenuClosed, () => ({ open: false }));
   }
 );
