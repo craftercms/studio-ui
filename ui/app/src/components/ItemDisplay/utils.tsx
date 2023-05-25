@@ -74,12 +74,12 @@ export function getItemStateId(stateMap: ItemStateMap): ItemStates {
   switch (true) {
     case stateMap.deleted:
       return 'deleted';
-    case stateMap.disabled:
-      return 'disabled';
     case stateMap.systemProcessing:
       return 'systemProcessing';
     case stateMap.locked:
       return 'locked';
+    case stateMap.disabled:
+      return 'disabled';
     case stateMap.submittedToLive:
       return 'submittedToLive';
     case stateMap.submittedToStaging:
