@@ -47,6 +47,7 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import ListItemButton from '@mui/material/ListItemButton';
+import { fetchSandboxItems } from '../../state/actions/content';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -179,12 +180,13 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     const events = [deleteContentEvent.type, workflowEvent.type, publishEvent.type, contentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+      dispatch(fetchSandboxItems({ paths: selectedPaths }));
       loadPage(getCurrentPage(offset, limit), true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [limit, offset, loadPage, username]);
+  }, [limit, offset, loadPage, username, dispatch, selectedPaths]);
   // endregion
 
   return (
