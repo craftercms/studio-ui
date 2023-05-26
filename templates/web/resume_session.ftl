@@ -23,7 +23,7 @@
     setTimeout(() => {
       document.querySelector('.banner').style.display = '';
     }, 1000);
-    window.close();
+    (window.opener && window.opener !== window) ? window.close() : (window.location.href = '/');
   </script>
   <style>
     html, body {
@@ -49,7 +49,7 @@
 <section class="banner" style="display: none">
   <h1>Session Renewed</h1>
   <img class="banner__image" src="/studio/static-assets/images/content_creation.svg" alt="">
-  <p>You may now return to your other tab to resume your session.</p>
+  <p><script>document.write(window.opener && window.opener !== window ? 'You may now return to your other tab to resume your session.' : 'You may now <a href="/studio">continue to Crafter Studio</a>.')</script></p>
 </section>
 </body>
 </html>
