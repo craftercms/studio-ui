@@ -40,12 +40,12 @@ export default createReducer<GlobalState['dialogs']['createFolder']>(initialStat
       onClosed: createFolderDialogClosed(),
       onCreated: closeCreateFolderDialog(),
       onRenamed: closeCreateFolderDialog(),
-      ...(payload as object),
+      ...(payload as Partial<CreateFolderStateProps>),
       open: true
     }))
     .addCase(updateCreateFolderDialog, (state, { payload }) => ({
       ...state,
-      ...(payload as object)
+      ...(payload as Partial<CreateFolderStateProps>)
     }))
     .addCase(closeCreateFolderDialog, (state) => ({
       ...state,

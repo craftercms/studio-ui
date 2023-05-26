@@ -45,12 +45,12 @@ export default createReducer<GlobalState['dialogs']['delete']>(initialState, (bu
       ...state,
       onClose: closeDeleteDialog(),
       onClosed: deleteDialogClosed(),
-      ...(payload as object),
+      ...(payload as Partial<DeleteDialogStateProps>),
       open: true
     }))
     .addCase(updateDeleteDialog, (state, { payload }) => ({
       ...state,
-      ...(payload as object)
+      ...(payload as Partial<DeleteDialogStateProps>)
     }))
     .addCase(closeDeleteDialog, (state) => ({ ...state, open: false }))
     .addCase(deleteDialogClosed, () => initialState)

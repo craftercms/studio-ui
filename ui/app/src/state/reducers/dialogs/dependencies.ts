@@ -33,7 +33,7 @@ export default createReducer<GlobalState['dialogs']['dependencies']>(initialStat
       ...state,
       onClose: closeDependenciesDialog(),
       onClosed: dependenciesDialogClosed(),
-      ...(payload as object),
+      ...(payload as Partial<DependenciesDialogStateProps>),
       open: true
     }))
     .addCase(closeDependenciesDialog, (state) => ({ ...state, open: false }))

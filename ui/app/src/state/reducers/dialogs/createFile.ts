@@ -40,7 +40,7 @@ export default createReducer<GlobalState['dialogs']['createFile']>(initialState,
       onClose: closeCreateFileDialog(),
       onClosed: createFileDialogClosed(),
       onCreated: closeCreateFileDialog(),
-      ...(payload as object),
+      ...(payload as Partial<CreateFileStateProps>),
       open: true
     }))
     .addCase(closeCreateFileDialog, (state) => ({
@@ -49,7 +49,7 @@ export default createReducer<GlobalState['dialogs']['createFile']>(initialState,
     }))
     .addCase(updateCreateFileDialog, (state, { payload }) => ({
       ...state,
-      ...(payload as object)
+      ...(payload as Partial<CreateFileStateProps>)
     }))
     .addCase(createFileDialogClosed, () => initialState);
 });

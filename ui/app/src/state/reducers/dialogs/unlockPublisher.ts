@@ -27,9 +27,14 @@ const initialState: UnlockPublisherDialogStateProps = {
   password: void 0
 };
 
-const unlockPublisher = createReducer<GlobalState['dialogs']['unlockPublisher']>(initialState, {
-  [showUnlockPublisherDialog.type]: (state, { payload }) => ({ ...state, ...payload, open: true }),
-  [closeUnlockPublisherDialog.type]: () => initialState
+const unlockPublisher = createReducer<GlobalState['dialogs']['unlockPublisher']>(initialState, (builder) => {
+  builder
+    .addCase(showUnlockPublisherDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<UnlockPublisherDialogStateProps>),
+      open: true
+    }))
+    .addCase(closeUnlockPublisherDialog, () => initialState);
 });
 
 export default unlockPublisher;

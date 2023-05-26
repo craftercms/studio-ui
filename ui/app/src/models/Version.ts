@@ -17,6 +17,7 @@
 import { DetailedItem, LegacyItem } from './Item';
 import ApiResponse from './ApiResponse';
 import ContentInstance from './ContentInstance';
+import LookupTable from './LookupTable';
 
 export interface LegacyVersion {
   lastModifiedDate: string;
@@ -43,7 +44,7 @@ export interface CompareVersionsBranch {
 }
 
 export interface VersionsStateProps {
-  byId: string;
+  byId: LookupTable<LegacyVersion>;
   item: DetailedItem;
   rootPath?: string;
   isConfig?: boolean;

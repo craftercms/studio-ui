@@ -32,7 +32,7 @@ export default createReducer<GlobalState['dialogs']['pathSelection']>(initialSta
       onClose: closePathSelectionDialog(),
       onClosed: pathSelectionDialogClosed(),
       onOk: closePathSelectionDialog(),
-      ...(payload as object),
+      ...(payload as Partial<PathSelectionDialogStateProps>),
       open: true
     }))
     .addCase(closePathSelectionDialog, (state) => ({

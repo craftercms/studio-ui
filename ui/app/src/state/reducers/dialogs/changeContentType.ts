@@ -40,7 +40,7 @@ export default createReducer<ChangeContentTypeDialogStateProps>(initialState, (b
       onClose: closeChangeContentTypeDialog(),
       onClosed: changeContentTypeDialogClosed(),
       onDismiss: closeChangeContentTypeDialog(),
-      ...(payload as object), // TODO: check linter issue
+      ...(payload as Partial<ChangeContentTypeDialogStateProps>),
       open: true
     }))
     .addCase(closeChangeContentTypeDialog, (state) => ({

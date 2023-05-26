@@ -41,12 +41,12 @@ export default createReducer<GlobalState['dialogs']['preview']>(initialState, (b
       onCancelFullScreen: updatePreviewDialog({ isFullScreen: false }),
       onMinimize: updatePreviewDialog({ isMinimized: true }),
       onMaximize: updatePreviewDialog({ isMinimized: false }),
-      ...(payload as object),
+      ...(payload as Partial<PreviewDialogStateProps>),
       open: true
     }))
     .addCase(updatePreviewDialog, (state, { payload }) => ({
       ...state,
-      ...(payload as object)
+      ...(payload as Partial<PreviewDialogStateProps>)
     }))
     .addCase(closePreviewDialog, (state) => ({
       ...state,

@@ -47,13 +47,13 @@ export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState,
             onMaximize: updateCodeEditorDialog({ isMinimized: false }),
             onFullScreen: updateCodeEditorDialog({ isFullScreen: true }),
             onCancelFullScreen: updateCodeEditorDialog({ isFullScreen: false }),
-            ...(payload as object),
+            ...(payload as Partial<CodeEditorDialogStateProps>),
             open: true
           };
     })
     .addCase(updateCodeEditorDialog, (state, { payload }) => ({
       ...state,
-      ...(payload as object)
+      ...(payload as Partial<CodeEditorDialogStateProps>)
     }))
     .addCase(closeCodeEditorDialog, (state) => ({
       ...state,

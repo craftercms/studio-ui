@@ -17,6 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeConfirmDialog, confirmDialogClosed, showConfirmDialog } from '../../actions/dialogs';
+import { ConfirmDialogStateProps } from '../../../components';
 
 export default createReducer<GlobalState['dialogs']['confirm']>({ open: false }, (builder) => {
   builder
@@ -27,7 +28,7 @@ export default createReducer<GlobalState['dialogs']['confirm']>({ open: false },
       onClose: closeConfirmDialog(),
       onClosed: confirmDialogClosed(),
       onOk: closeConfirmDialog(),
-      ...(payload as object),
+      ...(payload as Partial<ConfirmDialogStateProps>),
       open: true
     }))
     .addCase(closeConfirmDialog, (state) => ({ ...state, open: false }))

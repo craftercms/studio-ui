@@ -17,27 +17,27 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeItemMenu, itemMenuClosed, showItemMenu } from '../../actions/dialogs';
+import { ItemMenuStateProps } from '../../../components';
 
-export default createReducer<GlobalState['dialogs']['itemMenu']>(
-  {
-    open: false,
-    path: null,
-    anchorReference: 'anchorPosition',
-    anchorPosition: {
-      top: 0,
-      left: 0
-    }
-  },
-  (builder) => {
-    // @ts-ignore
-    builder
-      .addCase(showItemMenu, (state, { payload }) => ({
-        onClose: closeItemMenu(),
-        onClosed: itemMenuClosed(),
-        ...(payload as object),
-        open: true
-      }))
-      .addCase(closeItemMenu, (state) => ({ ...state, open: false }))
-      .addCase(itemMenuClosed, () => ({ open: false }));
+const initialState: ItemMenuStateProps = {
+  open: false,
+  path: null,
+  anchorReference: 'anchorPosition',
+  anchorPosition: {
+    top: 0,
+    left: 0
   }
-);
+};
+
+export default createReducer<GlobalState['dialogs']['itemMenu']>(initialState, (builder) => {
+  builder
+    .addCase(showItemMenu, (state, { payload }) => ({
+      ...state,
+      onClose: closeItemMenu(),
+      onClosed: itemMenuClosed(),
+      ...(payload as Partial<ItemMenuStateProps>),
+      open: true
+    }))
+    .addCase(closeItemMenu, (state) => ({ ...state, open: false }))
+    .addCase(itemMenuClosed, () => initialState);
+});

@@ -17,7 +17,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
 import { fetchSystemVersionComplete } from '../actions/env';
-import { Version } from '../../models/monitoring/Version';
 import { setSiteSocketStatus, storeInitialized } from '../actions/system';
 
 export const envInitialState: GlobalState['env'] = ((origin: string) => ({
@@ -39,22 +38,23 @@ export const envInitialState: GlobalState['env'] = ((origin: string) => ({
   socketConnected: false
 }))(window.location.origin);
 
-const reducer = createReducer<GlobalState['env']>(envInitialState, {
-  [fetchSystemVersionComplete.type]: (state, { payload }: { payload: Version }) => ({
-    ...state,
-    version: payload.packageVersion.replace('-SNAPSHOT', ''),
-    packageBuild: payload.packageBuild,
-    packageVersion: payload.packageVersion,
-    packageBuildDate: payload.packageBuildDate
-  }),
-  [storeInitialized.type]: (state, { payload }) => ({
-    ...state,
-    activeEnvironment: payload.activeEnvironment
-  }),
-  [setSiteSocketStatus.type]: (state, { payload }) => ({
-    ...state,
-    socketConnected: payload.connected
-  })
+const reducer = createReducer<GlobalState['env']>(envInitialState, (builder) => {
+  builder
+    .addCase(fetchSystemVersionComplete, (state, { payload }) => ({
+      ...state,
+      version: payload.packageVersion.replace('-SNAPSHOT', ''),
+      packageBuild: payload.packageBuild,
+      packageVersion: payload.packageVersion,
+      packageBuildDate: payload.packageBuildDate
+    }))
+    .addCase(storeInitialized, (state, { payload }) => ({
+      ...state,
+      activeEnvironment: payload.activeEnvironment
+    }))
+    .addCase(setSiteSocketStatus, (state, { payload }) => ({
+      ...state,
+      socketConnected: payload.connected
+    }));
 });
 
 export default reducer;

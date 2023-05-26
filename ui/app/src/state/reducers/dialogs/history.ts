@@ -39,12 +39,15 @@ export default createReducer<GlobalState['dialogs']['history']>(initialState, (b
       ...state,
       onClose: closeHistoryDialog(),
       onClosed: historyDialogClosed(),
-      ...(payload as object),
+      ...(payload as Partial<HistoryDialogStateProps>),
       open: true
     }))
     .addCase(closeHistoryDialog, (state) => ({ ...state, open: false }))
     .addCase(historyDialogClosed, (state) => initialState)
     .addCase(showViewVersionDialog, (state) => ({ ...state, open: false }))
     .addCase(showCompareVersionsDialog, (state) => ({ ...state, open: false }))
-    .addCase(historyDialogUpdate, (state, { payload }) => ({ ...state, ...(payload as object) }));
+    .addCase(historyDialogUpdate, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<HistoryDialogStateProps>)
+    }));
 });

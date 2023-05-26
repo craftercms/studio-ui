@@ -35,7 +35,7 @@ const launcher = createReducer<GlobalState['dialogs']['launcher']>(initialState,
   builder
     .addCase(showLauncher, (state, { payload }) => ({
       ...state,
-      ...(payload as object),
+      ...(payload as Partial<LauncherStateProps>),
       open: true
     }))
     .addCase(initLauncherConfig, (state, { payload }) => {

@@ -39,10 +39,13 @@ export default createReducer<GlobalState['dialogs']['editSite']>(initialState, (
       onClose: closeEditSiteDialog(),
       onClosed: editSiteDialogClosed(),
       onSaveSuccess: closeEditSiteDialog(),
-      ...(payload as object),
+      ...(payload as Partial<EditSiteDialogStateProps>),
       open: true
     }))
-    .addCase(updateEditSiteDialog, (state, { payload }) => ({ ...state, ...(payload as object) }))
+    .addCase(updateEditSiteDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<EditSiteDialogStateProps>)
+    }))
     .addCase(closeEditSiteDialog, (state) => ({ ...state, open: false }))
     .addCase(editSiteDialogClosed, (state) => initialState);
 });

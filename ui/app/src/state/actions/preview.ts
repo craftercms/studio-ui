@@ -31,6 +31,7 @@ import { WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
+import { AjaxError } from 'rxjs/ajax';
 
 interface CommonOperationProps {
   modelId: string;
@@ -55,6 +56,7 @@ export const guestCheckIn = /*#__PURE__*/ createAction<{
   site: string;
   documentDomain?: string;
   version?: string;
+  __CRAFTERCMS_GUEST_LANDING__?: boolean;
 }>('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction<{ path: string }>('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
@@ -312,7 +314,9 @@ export const fetchAudiencesPanelModelComplete = /*#__PURE__*/ createAction<Conte
   'FETCH_AUDIENCES_PANEL_MODEL_COMPLETE'
 );
 
-export const fetchAudiencesPanelModelFailed = /*#__PURE__*/ createAction('FETCH_AUDIENCES_PANEL_MODEL_FAILED');
+export const fetchAudiencesPanelModelFailed = /*#__PURE__*/ createAction<AjaxError>(
+  'FETCH_AUDIENCES_PANEL_MODEL_FAILED'
+);
 
 export function updateAudiencesPanelModel(data): StandardAction {
   return {
@@ -357,7 +361,9 @@ export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<C
   'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE'
 );
 
-export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction('FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED');
+export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction<AjaxError>(
+  'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED'
+);
 
 export const clearDropTargets = /*#__PURE__*/ createAction(CLEAR_DROP_TARGETS);
 

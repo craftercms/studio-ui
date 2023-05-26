@@ -113,6 +113,7 @@ export const storeInitialized = /*#__PURE__*/ createAction<{
   sites: Array<Site>;
   properties: LookupTable<any>;
   activeSiteId?: string;
+  activeEnvironment?: string;
 }>('STORE_INITIALIZED');
 
 export const messageSharedWorker = /*#__PURE__*/ createAction<StandardAction>('MESSAGE_SHARED_WORKER');

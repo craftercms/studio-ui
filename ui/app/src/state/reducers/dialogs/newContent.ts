@@ -34,7 +34,7 @@ export default createReducer<NewContentDialogStateProps>(initialState, (builder)
       ...state,
       onClose: closeNewContentDialog(),
       onClosed: newContentDialogClosed(),
-      ...(payload as object),
+      ...(payload as Partial<NewContentDialogStateProps>),
       open: true
     }))
     .addCase(closeNewContentDialog, (state) => ({

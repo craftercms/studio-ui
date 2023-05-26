@@ -35,7 +35,7 @@ export default createReducer<GlobalState['dialogs']['copy']>(initialState, (buil
       onClose: closeCopyDialog(),
       onClosed: copyDialogClosed(),
       onOk: closeCopyDialog(),
-      ...(payload as object),
+      ...(payload as Partial<CopyDialogStateProps>),
       open: true
     }))
     .addCase(closeCopyDialog, (state) => ({
@@ -44,7 +44,7 @@ export default createReducer<GlobalState['dialogs']['copy']>(initialState, (buil
     }))
     .addCase(updateCopyDialog, (state, { payload }) => ({
       ...state,
-      ...(payload as object)
+      ...(payload as Partial<CopyDialogStateProps>)
     }))
     .addCase(copyDialogClosed, () => initialState);
 });

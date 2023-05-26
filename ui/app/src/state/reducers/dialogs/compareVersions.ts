@@ -39,7 +39,7 @@ export default createReducer<GlobalState['dialogs']['compareVersions']>(initialS
       ...state,
       onClose: closeCompareVersionsDialog(),
       onClosed: compareVersionsDialogClosed(),
-      ...(payload as object),
+      ...(payload as Partial<CompareVersionsDialogStateProps>),
       open: true,
       isFetching: true
     }))
