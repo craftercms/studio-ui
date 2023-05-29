@@ -43,7 +43,7 @@ import { renderActivityTimestamp } from '../ActivityDashlet';
 import { publishEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { LoadingIconButton } from '../LoadingIconButton';
 
 interface RecentlyPublishedDashletProps extends CommonDashletProps {}
 
@@ -137,9 +137,9 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="recentlyPublishedDashlet.widgetTitle" defaultMessage="Recently Published" />}
       headerAction={
-        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
+        <LoadingIconButton onClick={onRefresh} loading={loading}>
           <RefreshRounded />
-        </LoadingButton>
+        </LoadingIconButton>
       }
       footer={
         Boolean(items?.length) && (

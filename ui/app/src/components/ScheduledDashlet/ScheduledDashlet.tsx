@@ -49,7 +49,7 @@ import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/act
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { LoadingIconButton } from '../LoadingIconButton';
 import Box from '@mui/material/Box';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
@@ -201,9 +201,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="scheduledDashlet.widgetTitle" defaultMessage="Scheduled for Publish" />}
       headerAction={
-        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
+        <LoadingIconButton onClick={onRefresh} loading={loading}>
           <RefreshRounded />
-        </LoadingButton>
+        </LoadingIconButton>
       }
       actionsBar={
         <ActionsBar

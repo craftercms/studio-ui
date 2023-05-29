@@ -49,8 +49,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import LoadingButton from '@mui/lab/LoadingButton';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { LoadingIconButton } from '../LoadingIconButton';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -191,9 +191,9 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="unpublishedDashlet.widgetTitle" defaultMessage="Unpublished Work" />}
       headerAction={
-        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
+        <LoadingIconButton onClick={onRefresh} loading={loading}>
           <RefreshRounded />
-        </LoadingButton>
+        </LoadingIconButton>
       }
       sxs={{
         actionsBar: { padding: 0 },

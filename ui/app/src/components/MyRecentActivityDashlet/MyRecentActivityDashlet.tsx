@@ -39,7 +39,6 @@ import PackageDetailsDialog from '../PackageDetailsDialog';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import LoadingButton from '@mui/lab/LoadingButton';
 import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import ActionsBar from '../ActionsBar';
@@ -47,7 +46,9 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import ListItemButton from '@mui/material/ListItemButton';
-import { fetchSandboxItems } from '../../state/actions/content';
+import { fetchSandboxItemComplete, fetchSandboxItems } from '../../state/actions/content';
+import { LoadingIconButton } from '../LoadingIconButton';
+import { fetchItemByPath } from '../../services/content';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}
 
@@ -102,6 +103,8 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   }, [itemsByPath, selectedPaths]);
   const selectedCount = selectedItems.length;
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
+  const siteId = useActiveSiteId();
+  const [loadingActionsBar, setLoadingActionsBar] = useState(false);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
@@ -144,9 +147,19 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
     loadPage(getCurrentPage(offset, limit), true);
   };
 
-  const handleSelect = (path: string) => {
+  const handleSelect = (e, path: string) => {
+    e.stopPropagation();
     const isSelected = selectedPaths.includes(path);
     if (!isSelected) {
+      // If item has been already fetched, re-fecth to get the latest version, if not loaded, it'll be fetched with the
+      // useFetchSandboxItems hook
+      if (itemsByPath[path]) {
+        setLoadingActionsBar(true);
+        fetchItemByPath(siteId, path).subscribe((item) => {
+          dispatch(fetchSandboxItemComplete({ item }));
+          setLoadingActionsBar(false);
+        });
+      }
       setSelectedPaths([...selectedPaths, path]);
     } else {
       let selectedItems = [...selectedPaths];
@@ -216,9 +229,9 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
         footer: { justifyContent: 'space-between' }
       }}
       headerAction={
-        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
+        <LoadingIconButton onClick={onRefresh} loading={loading}>
           <RefreshRounded />
-        </LoadingButton>
+        </LoadingIconButton>
       }
       footer={
         Boolean(feed?.length) && (
@@ -236,6 +249,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
       actionsBar={
         <ActionsBar
           disabled={loading}
+          isLoading={loadingActionsBar}
           isChecked={false}
           isIndeterminate={false}
           onCheckboxChange={null}
@@ -278,7 +292,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
             const ListItemComponent = isItemActivity ? ListItemButton : ListItem;
             const listItemComponentProps = isItemActivity
               ? {
-                  onClick: () => handleSelect(activity.item.path)
+                  onClick: (e) => handleSelect(e, activity.item.path)
                 }
               : {};
 
@@ -292,8 +306,8 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
                     <Checkbox
                       edge="start"
                       checked={selectedPaths.includes(activity.item.path)}
-                      onChange={(e) => {
-                        handleSelect(activity.item.path);
+                      onClick={(e) => {
+                        handleSelect(e, activity.item.path);
                       }}
                     />
                   ) : (

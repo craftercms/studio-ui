@@ -59,7 +59,7 @@ import Box from '@mui/material/Box';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { LoadingIconButton } from '../LoadingIconButton';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -302,13 +302,9 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <LoadingButton
-          onClick={() => onRefresh()}
-          loading={loadingChunk}
-          sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}
-        >
+        <LoadingIconButton onClick={() => onRefresh()} loading={loadingChunk}>
           <RefreshRounded />
-        </LoadingButton>
+        </LoadingIconButton>
       }
       actionsBar={
         <>
