@@ -47,7 +47,7 @@ import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { itemActionDispatcher } from '../../utils/itemActions';
 import ListItemButton from '@mui/material/ListItemButton';
 import { fetchSandboxItemComplete, fetchSandboxItems } from '../../state/actions/content';
-import { LoadingIconButton } from '../LoadingIconButton';
+import LoadingIconButton from '../LoadingIconButton';
 import { fetchItemByPath } from '../../services/content';
 
 interface MyRecentActivityDashletProps extends CommonDashletProps {}

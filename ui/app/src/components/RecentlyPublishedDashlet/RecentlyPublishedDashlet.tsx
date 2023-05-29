@@ -43,7 +43,7 @@ import { renderActivityTimestamp } from '../ActivityDashlet';
 import { publishEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { LoadingIconButton } from '../LoadingIconButton';
+import LoadingIconButton from '../LoadingIconButton';
 
 interface RecentlyPublishedDashletProps extends CommonDashletProps {}
 

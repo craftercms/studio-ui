@@ -50,7 +50,7 @@ import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '.
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { LoadingIconButton } from '../LoadingIconButton';
+import LoadingIconButton from '../LoadingIconButton';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 

@@ -59,7 +59,7 @@ import Box from '@mui/material/Box';
 import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { LoadingIconButton } from '../LoadingIconButton';
+import LoadingIconButton from '../LoadingIconButton';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 

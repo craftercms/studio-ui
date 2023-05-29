@@ -36,7 +36,7 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
 import { SandboxItem } from '../../models';
-import { LoadingIconButton } from '../LoadingIconButton';
+import LoadingIconButton from '../LoadingIconButton';
 
 interface ExpiringDashletProps extends CommonDashletProps {
   days?: number;
