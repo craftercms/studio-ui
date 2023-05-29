@@ -17,20 +17,20 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { PagedEntityState } from '../../models/GlobalState';
 import {
-  CLEAR_DROP_TARGETS,
-  CLEAR_SELECT_FOR_EDIT,
+  clearDropTargets,
+  clearSelectForEdit,
   closeToolsPanel,
   contentTypeDropTargetsResponse,
-  FETCH_ASSETS_PANEL_ITEMS,
-  FETCH_ASSETS_PANEL_ITEMS_COMPLETE,
-  FETCH_ASSETS_PANEL_ITEMS_FAILED,
-  FETCH_CONTENT_MODEL_COMPLETE,
+  fetchAssetsPanelItems,
+  fetchAssetsPanelItemsComplete,
+  fetchAssetsPanelItemsFailed,
   fetchAudiencesPanelModel,
   fetchAudiencesPanelModelComplete,
   fetchAudiencesPanelModelFailed,
   fetchComponentsByContentType,
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
+  fetchContentModelComplete,
   fetchGuestModelComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
@@ -46,20 +46,20 @@ import {
   popToolsPanelPage,
   pushIcePanelPage,
   pushToolsPanelPage,
-  SELECT_FOR_EDIT,
-  SET_ACTIVE_TARGETING_MODEL,
-  SET_ACTIVE_TARGETING_MODEL_COMPLETE,
-  SET_ACTIVE_TARGETING_MODEL_FAILED,
-  SET_CONTENT_TYPE_FILTER,
-  SET_HOST_HEIGHT,
-  SET_HOST_SIZE,
-  SET_HOST_WIDTH,
-  SET_ITEM_BEING_DRAGGED,
+  selectForEdit,
+  setActiveTargetingModel,
+  setActiveTargetingModelComplete,
+  setActiveTargetingModelFailed,
+  setContentTypeFilter,
   setEditModePadding,
   setHighlightMode,
+  setHostHeight,
+  setHostSize,
+  setHostWidth,
+  setItemBeingDragged,
   setPreviewEditMode,
   toggleEditModePadding,
-  UPDATE_AUDIENCES_PANEL_MODEL,
+  updateAudiencesPanelModel,
   updateIcePanelWidth,
   updateToolsPanelWidth
 } from '../actions/preview';
@@ -71,7 +71,7 @@ import {
   nou,
   reversePluckProps
 } from '../../utils/object';
-import { ContentInstancePage, ElasticParams, MediaItem, SearchResult } from '../../models/Search';
+import { ComponentsContentTypeParams, ContentInstancePage, ElasticParams, MediaItem } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from '../actions/sites';
 import { deserialize, fromString } from '../../utils/xml';
@@ -189,540 +189,540 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
   }
 };
 
-const reducer = createReducer<GlobalState['preview']>(initialState, {
-  [openToolsPanel.type]: (state) => {
-    return {
+const reducer = createReducer<GlobalState['preview']>(initialState, (builder) => {
+  builder
+    .addCase(openToolsPanel, (state) => ({
       ...state,
       showToolsPanel: true
-    };
-  },
-  [closeToolsPanel.type]: (state) => {
-    return {
+    }))
+    .addCase(closeToolsPanel, (state) => ({
       ...state,
       showToolsPanel: false
-    };
-  },
-  [SET_HOST_SIZE]: (state, { payload }) => {
-    if (isNaN(payload.width)) {
-      payload.width = state.hostSize.width;
-    }
-    if (isNaN(payload.height)) {
-      payload.height = state.hostSize.height;
-    }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        width: minFrameSize(payload.width),
-        height: minFrameSize(payload.height)
+    }))
+    .addCase(setHostSize, (state, { payload }) => {
+      if (isNaN(payload.width)) {
+        payload.width = state.hostSize.width;
       }
-    };
-  },
-  [SET_HOST_WIDTH]: (state, { payload }) => {
-    if (isNaN(payload)) {
-      return state;
-    }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        width: minFrameSize(payload)
+      if (isNaN(payload.height)) {
+        payload.height = state.hostSize.height;
       }
-    };
-  },
-  [SET_HOST_HEIGHT]: (state, { payload }) => {
-    if (isNaN(payload)) {
-      return state;
-    }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        height: minFrameSize(payload)
-      }
-    };
-  },
-  [FETCH_CONTENT_MODEL_COMPLETE]: (state, { payload }) => {
-    return {
-      ...state,
-      currentModels: payload
-    };
-  },
-  [guestCheckIn.type]: (state, { payload }) => {
-    const { location, path } = payload;
-    const href = location.href;
-    const origin = location.origin;
-    const url = href.replace(location.origin, '');
-    return {
-      ...state,
-      guest: {
-        url,
-        origin,
-        modelId: null,
-        path,
-        models: null,
-        hierarchyMap: null,
-        modelIdByPath: null,
-        selected: null,
-        itemBeingDragged: null
-      }
-    };
-  },
-  [guestCheckOut.type]: (state) => {
-    let nextState = state;
-    if (state.guest) {
-      nextState = {
-        ...nextState,
-        guest: null
+      return {
+        ...state,
+        hostSize: {
+          ...state.hostSize,
+          width: minFrameSize(payload.width),
+          height: minFrameSize(payload.height)
+        }
       };
-    }
-    // If guest checks out, doesn't mean site is changing necessarily
-    // hence content types haven't changed
-    // if (state.contentTypes) {
-    //   nextState = { ...nextState, contentTypes: null };
-    // }
-    return nextState;
-  },
-  [fetchPrimaryGuestModelComplete.type]: fetchGuestModelsCompleteHandler,
-  [fetchGuestModelComplete.type]: fetchGuestModelsCompleteHandler,
-  [guestModelUpdated.type]: (state, { payload: { model } }) => ({
-    ...state,
-    guest: {
-      ...state.guest,
-      models: {
-        ...state.guest.models,
-        [model.craftercms.id]: model
+    })
+    .addCase(setHostWidth, (state, { payload }) => {
+      if (isNaN(payload)) {
+        return state;
       }
-    }
-  }),
-  [SELECT_FOR_EDIT]: (state, { payload }) => {
-    if (state.guest === null) {
-      return state;
-    }
-    return {
+      return {
+        ...state,
+        hostSize: {
+          ...state.hostSize,
+          width: minFrameSize(payload)
+        }
+      };
+    })
+    .addCase(setHostHeight, (state, { payload }) => {
+      if (isNaN(payload)) {
+        return state;
+      }
+      return {
+        ...state,
+        hostSize: {
+          ...state.hostSize,
+          height: minFrameSize(payload)
+        }
+      };
+    })
+    .addCase(fetchContentModelComplete, (state, { payload }) => {
+      return {
+        ...state,
+        currentModels: payload
+      };
+    })
+    .addCase(guestCheckIn, (state, { payload }) => {
+      const { location, path } = payload;
+      const href = location.href;
+      const origin = location.origin;
+      const url = href.replace(location.origin, '');
+      return {
+        ...state,
+        guest: {
+          url,
+          origin,
+          modelId: null,
+          path,
+          models: null,
+          hierarchyMap: null,
+          modelIdByPath: null,
+          selected: null,
+          itemBeingDragged: null
+        }
+      };
+    })
+    .addCase(guestCheckOut, (state) => {
+      let nextState = state;
+      if (state.guest) {
+        nextState = {
+          ...nextState,
+          guest: null
+        };
+      }
+      // If guest checks out, doesn't mean site is changing necessarily
+      // hence content types haven't changed
+      // if (state.contentTypes) {
+      //   nextState = { ...nextState, contentTypes: null };
+      // }
+      return nextState;
+    })
+    .addCase(fetchPrimaryGuestModelComplete, fetchGuestModelsCompleteHandler)
+    .addCase(fetchGuestModelComplete, fetchGuestModelsCompleteHandler)
+    .addCase(guestModelUpdated, (state, { payload: { model } }) => ({
       ...state,
       guest: {
         ...state.guest,
-        selected: [payload]
+        models: {
+          ...state.guest.models,
+          [model.craftercms.id]: model
+        }
       }
-    };
-  },
-  [CLEAR_SELECT_FOR_EDIT]: (state, { payload }) => {
-    if (state.guest === null) {
-      return state;
-    }
-    return {
-      ...state,
-      guest: {
-        ...state.guest,
-        selected: null
+    }))
+    .addCase(selectForEdit, (state, { payload }) => {
+      if (state.guest === null) {
+        return state;
       }
-    };
-  },
-  [SET_ITEM_BEING_DRAGGED]: (state, { payload }) => {
-    if (nou(state.guest)) {
-      return state;
-    }
-    return {
-      ...state,
-      guest: {
-        ...state.guest,
-        itemBeingDragged: payload
+      return {
+        ...state,
+        guest: {
+          ...state.guest,
+          selected: [payload]
+        }
+      };
+    })
+    .addCase(clearSelectForEdit, (state, { payload }) => {
+      if (state.guest === null) {
+        return state;
       }
-    };
-  },
-  [fetchAudiencesPanelModel.type]: (state) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      isFetching: true,
-      error: null
-    }
-  }),
-  [fetchAudiencesPanelModelComplete.type]: (state, { payload }) => {
-    return {
+      return {
+        ...state,
+        guest: {
+          ...state.guest,
+          selected: null
+        }
+      };
+    })
+    .addCase(setItemBeingDragged, (state, { payload }) => {
+      if (nou(state.guest)) {
+        return state;
+      }
+      return {
+        ...state,
+        guest: {
+          ...state.guest,
+          itemBeingDragged: payload
+        }
+      };
+    })
+    .addCase(fetchAudiencesPanelModel, (state) => ({
       ...state,
       audiencesPanel: {
         ...state.audiencesPanel,
-        isFetching: false,
-        error: null,
-        model: payload
-      }
-    };
-  },
-  [fetchAudiencesPanelModelFailed.type]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
-  }),
-  [UPDATE_AUDIENCES_PANEL_MODEL]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      applied: false,
-      model: {
-        ...state.audiencesPanel.model,
-        ...payload
-      }
-    }
-  }),
-  [SET_ACTIVE_TARGETING_MODEL]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      isApplying: true
-    }
-  }),
-  [SET_ACTIVE_TARGETING_MODEL_COMPLETE]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      isApplying: false,
-      applied: true
-    }
-  }),
-  [SET_ACTIVE_TARGETING_MODEL_FAILED]: (state, { payload }) => ({
-    ...state,
-    audiencesPanel: {
-      ...state.audiencesPanel,
-      isApplying: false,
-      applied: false,
-      error: payload.response
-    }
-  }),
-  [FETCH_ASSETS_PANEL_ITEMS]: (state, { payload: query }: { payload: ElasticParams }) => {
-    let newQuery = { ...state.assets.query, ...query };
-    return {
-      ...state,
-      assets: {
-        ...state.assets,
         isFetching: true,
-        query: newQuery,
-        pageNumber: Math.ceil(newQuery.offset / newQuery.limit)
-      }
-    };
-  },
-  [FETCH_ASSETS_PANEL_ITEMS_COMPLETE]: (state, { payload: searchResult }: { payload: SearchResult }) => {
-    let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
-    let page = [...state.assets.page];
-    page[state.assets.pageNumber] = searchResult.items.map((item) => item.path);
-    return {
-      ...state,
-      assets: {
-        ...state.assets,
-        byId: { ...state.assets.byId, ...itemsLookupTable },
-        page,
-        count: searchResult.total,
-        isFetching: false,
         error: null
       }
-    };
-  },
-  [FETCH_ASSETS_PANEL_ITEMS_FAILED]: (state, { payload }) => ({
-    ...state,
-    assets: { ...state.assets, error: payload.response, isFetching: false }
-  }),
-  [fetchComponentsByContentType.type]: (state, { payload }) => {
-    return {
+    }))
+    .addCase(fetchAudiencesPanelModelComplete, (state, { payload }) => {
+      return {
+        ...state,
+        audiencesPanel: {
+          ...state.audiencesPanel,
+          isFetching: false,
+          error: null,
+          model: payload
+        }
+      };
+    })
+    .addCase(fetchAudiencesPanelModelFailed, (state, { payload }) => ({
+      ...state,
+      audiencesPanel: { ...state.audiencesPanel, error: payload.response, isFetching: false }
+    }))
+    .addCase(updateAudiencesPanelModel, (state, { payload }) => ({
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        applied: false,
+        model: {
+          ...state.audiencesPanel.model,
+          ...payload
+        }
+      }
+    }))
+    .addCase(setActiveTargetingModel, (state, { payload }) => ({
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        isApplying: true
+      }
+    }))
+    .addCase(setActiveTargetingModelComplete, (state, { payload }) => ({
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        isApplying: false,
+        applied: true
+      }
+    }))
+    .addCase(setActiveTargetingModelFailed, (state, { payload }) => ({
+      ...state,
+      audiencesPanel: {
+        ...state.audiencesPanel,
+        isApplying: false,
+        applied: false,
+        error: payload.response
+      }
+    }))
+    .addCase(fetchAssetsPanelItems, (state, { payload: query }) => {
+      let newQuery = { ...state.assets.query, ...(query as Partial<ElasticParams>) };
+      return {
+        ...state,
+        assets: {
+          ...state.assets,
+          isFetching: true,
+          query: newQuery,
+          pageNumber: Math.ceil(newQuery.offset / newQuery.limit)
+        }
+      };
+    })
+    .addCase(fetchAssetsPanelItemsComplete, (state, { payload: searchResult }) => {
+      let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
+      let page = [...state.assets.page];
+      page[state.assets.pageNumber] = searchResult.items.map((item) => item.path);
+      return {
+        ...state,
+        assets: {
+          ...state.assets,
+          byId: { ...state.assets.byId, ...itemsLookupTable },
+          page,
+          count: searchResult.total,
+          isFetching: false,
+          error: null
+        }
+      };
+    })
+    .addCase(fetchAssetsPanelItemsFailed, (state, { payload }) => ({
+      ...state,
+      assets: { ...state.assets, error: payload.response, isFetching: false }
+    }))
+    .addCase(fetchComponentsByContentType, (state, { payload }) => {
+      return {
+        ...state,
+        components: {
+          ...state.components,
+          isFetching: true,
+          query: { ...state.components.query, ...(payload as Partial<ComponentsContentTypeParams>) },
+          pageNumber: Math.ceil(
+            ((payload as Partial<ComponentsContentTypeParams>).offset ?? state.components.query.offset) /
+              state.components.query.limit
+          )
+        }
+      };
+    })
+    .addCase(fetchComponentsByContentTypeComplete, (state, { payload }: { payload: ContentInstancePage }) => {
+      let page = [...state.components.page];
+      page[state.components.pageNumber] = Object.keys(payload.lookup);
+      return {
+        ...state,
+        components: {
+          ...state.components,
+          byId: { ...state.components.byId, ...payload.lookup },
+          page,
+          count: payload.count,
+          isFetching: false,
+          error: null
+        }
+      };
+    })
+    .addCase(fetchComponentsByContentTypeFailed, (state, { payload }) => ({
+      ...state,
+      components: { ...state.components, error: payload.response, isFetching: false }
+    }))
+    .addCase(contentTypeDropTargetsResponse, (state, { payload }) => ({
+      ...state,
+      dropTargets: {
+        ...state.dropTargets,
+        selectedContentType: payload.contentTypeId,
+        byId: { ...state.dropTargets.byId, ...createLookupTable(payload.dropTargets) }
+      }
+    }))
+    .addCase(clearDropTargets, (state) => ({
+      ...state,
+      dropTargets: {
+        ...state.dropTargets,
+        selectedContentType: null,
+        byId: null
+      }
+    }))
+    .addCase(setContentTypeFilter, (state, { payload }) => ({
       ...state,
       components: {
         ...state.components,
-        isFetching: true,
-        query: { ...state.components.query, ...payload },
-        pageNumber: Math.ceil((payload.offset ?? state.components.query.offset) / state.components.query.limit)
-      }
-    };
-  },
-  [fetchComponentsByContentTypeComplete.type]: (state, { payload }: { payload: ContentInstancePage }) => {
-    let page = [...state.components.page];
-    page[state.components.pageNumber] = Object.keys(payload.lookup);
-    return {
-      ...state,
-      components: {
-        ...state.components,
-        byId: { ...state.components.byId, ...payload.lookup },
-        page,
-        count: payload.count,
-        isFetching: false,
-        error: null
-      }
-    };
-  },
-  [fetchComponentsByContentTypeFailed.type]: (state, { payload }) => ({
-    ...state,
-    components: { ...state.components, error: payload.response, isFetching: false }
-  }),
-  [contentTypeDropTargetsResponse.type]: (state, { payload }) => ({
-    ...state,
-    dropTargets: {
-      ...state.dropTargets,
-      selectedContentType: payload.contentTypeId,
-      byId: { ...state.dropTargets.byId, ...createLookupTable(payload.dropTargets) }
-    }
-  }),
-  [CLEAR_DROP_TARGETS]: (state, { payload }) => ({
-    ...state,
-    dropTargets: {
-      ...state.dropTargets,
-      selectedContentType: null,
-      byId: null
-    }
-  }),
-  [SET_CONTENT_TYPE_FILTER]: (state, { payload }) => ({
-    ...state,
-    components: {
-      ...state.components,
-      isFetching: null,
-      contentTypeFilter: payload,
-      pageNumber: 0,
-      query: {
-        ...state.components.query,
-        offset: 0
-      }
-    }
-  }),
-  [setPreviewEditMode.type]: (state, { payload }) => ({
-    ...state,
-    editMode: payload.editMode,
-    highlightMode: payload.highlightMode ?? state.highlightMode
-  }),
-  [updateToolsPanelWidth.type]: (state, { payload }) => {
-    if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
-      return state;
-    }
-    return {
-      ...state,
-      toolsPanelWidth: payload.width
-    };
-  },
-  [updateIcePanelWidth.type]: (state, { payload }) => {
-    if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
-      return state;
-    }
-    return {
-      ...state,
-      icePanelWidth: payload.width
-    };
-  },
-  [pushToolsPanelPage.type]: (state, { payload }) => {
-    return {
-      ...state,
-      toolsPanelPageStack: [...state.toolsPanelPageStack, payload]
-    };
-  },
-  [popToolsPanelPage.type]: (state) => {
-    let stack = [...state.toolsPanelPageStack];
-    stack.pop();
-    return {
-      ...state,
-      toolsPanelPageStack: stack
-    };
-  },
-  [pushIcePanelPage.type]: (state, { payload }) => {
-    return {
-      ...state,
-      icePanelStack: [...state.icePanelStack, payload]
-    };
-  },
-  [popIcePanelPage.type]: (state) => {
-    let stack = [...state.icePanelStack];
-    stack.pop();
-    return {
-      ...state,
-      icePanelStack: stack
-    };
-  },
-  [guestPathUpdated.type]: (state, { payload }) => ({
-    ...state,
-    guest: {
-      ...state.guest,
-      path: payload.path
-    }
-  }),
-  [setHighlightMode.type]: (state, { payload }) => ({
-    ...state,
-    highlightMode: payload.highlightMode
-  }),
-  [changeSite.type]: (state) => {
-    return {
-      ...state,
-      ...reversePluckProps(
-        initialState,
-        'editMode',
-        'highlightMode',
-        'showToolsPanel',
-        'toolsPanelWidth',
-        'icePanelWidth'
-      )
-    };
-  },
-  [initToolsPanelConfig.type]: (state, { payload }) => {
-    let toolsPanelConfig = {
-      widgets: [
-        {
-          id: 'craftercms.component.EmptyState',
-          uiKey: -1,
-          configuration: {
-            title: messages.noUiConfigMessageTitle,
-            subtitle: messages.noUiConfigMessageSubtitle
-          }
+        isFetching: null,
+        contentTypeFilter: payload,
+        pageNumber: 0,
+        query: {
+          ...state.components.query,
+          offset: 0
         }
-      ]
-    };
-    const arrays = ['widgets', 'permittedRoles', 'excludes'];
-    const lookupTables = ['fields'];
-    const configDOM = fromString(payload.configXml);
-    const toolsPanelPages = configDOM.querySelector(
-      '[id="craftercms.components.ToolsPanel"] > configuration > widgets'
-    );
-    if (toolsPanelPages) {
-      toolsPanelConfig = applyDeserializedXMLTransforms(deserialize(toolsPanelPages), {
-        arrays,
-        lookupTables
-      });
-    }
-
-    const toolsPanelWidth =
-      payload.toolsPanelWidth < minDrawerWidth
-        ? minDrawerWidth
-        : payload.toolsPanelWidth > maxDrawerWidth
-        ? maxDrawerWidth
-        : payload.toolsPanelWidth;
-
-    return {
+      }
+    }))
+    .addCase(setPreviewEditMode, (state, { payload }) => ({
       ...state,
-      ...(payload.storedPage && { toolsPanelPageStack: [payload.storedPage] }),
-      toolsPanel: toolsPanelConfig,
-      toolsPanelWidth: toolsPanelWidth ?? state.toolsPanelWidth
-    };
-  },
-  // After re-fetching site ui config (e.g. when config is modified), we need the tools to be
-  // re-initialized with the latest config. The components checks for whether their property is null before
-  // initializing so props must be nulled when config gets re-fetched in order for the components to re-initialize.
-  [fetchSiteUiConfigComplete.type]: (state) => ({
-    ...state,
-    toolsPanel: initialState.toolsPanel,
-    toolbar: initialState.toolbar,
-    icePanel: initialState.icePanel,
-    richTextEditor: initialState.richTextEditor
-  }),
-  [initToolbarConfig.type]: (state, { payload }) => {
-    let toolbarConfig = {
-      leftSection: { widgets: [] },
-      middleSection: { widgets: [] },
-      rightSection: { widgets: [] }
-    };
-    const arrays = ['widgets'];
-    const configDOM = fromString(payload.configXml);
-    const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
-
-    if (toolbar) {
-      const leftSection = toolbar.querySelector('leftSection > widgets');
-      if (leftSection) {
-        toolbarConfig.leftSection = applyDeserializedXMLTransforms(deserialize(leftSection), {
-          arrays
-        });
+      editMode: payload.editMode,
+      highlightMode: payload.highlightMode ?? state.highlightMode
+    }))
+    .addCase(updateToolsPanelWidth, (state, { payload }) => {
+      if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
+        return state;
       }
-      const middleSection = toolbar.querySelector('middleSection > widgets');
-      if (middleSection) {
-        toolbarConfig.middleSection = applyDeserializedXMLTransforms(deserialize(middleSection), {
-          arrays
-        });
+      return {
+        ...state,
+        toolsPanelWidth: payload.width
+      };
+    })
+    .addCase(updateIcePanelWidth, (state, { payload }) => {
+      if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
+        return state;
       }
-      const rightSection = toolbar.querySelector('rightSection > widgets');
-      if (rightSection) {
-        toolbarConfig.rightSection = applyDeserializedXMLTransforms(deserialize(rightSection), {
-          arrays
-        });
-      }
-    }
-
-    return {
+      return {
+        ...state,
+        icePanelWidth: payload.width
+      };
+    })
+    .addCase(pushToolsPanelPage, (state, { payload }) => {
+      return {
+        ...state,
+        toolsPanelPageStack: [...state.toolsPanelPageStack, payload]
+      };
+    })
+    .addCase(popToolsPanelPage, (state) => {
+      let stack = [...state.toolsPanelPageStack];
+      stack.pop();
+      return {
+        ...state,
+        toolsPanelPageStack: stack
+      };
+    })
+    .addCase(pushIcePanelPage, (state, { payload }) => {
+      return {
+        ...state,
+        icePanelStack: [...state.icePanelStack, payload]
+      };
+    })
+    .addCase(popIcePanelPage, (state) => {
+      let stack = [...state.icePanelStack];
+      stack.pop();
+      return {
+        ...state,
+        icePanelStack: stack
+      };
+    })
+    .addCase(guestPathUpdated, (state, { payload }) => ({
       ...state,
-      toolbar: toolbarConfig
-    };
-  },
-  [initIcePanelConfig.type]: (state, { payload }) => {
-    let icePanelConfig = {
-      widgets: [
-        {
-          id: 'craftercms.component.EmptyState',
-          uiKey: -1,
-          configuration: {
-            title: messages.noUiConfigMessageTitle,
-            subtitle: messages.noUiConfigMessageSubtitle
+      guest: {
+        ...state.guest,
+        path: payload.path
+      }
+    }))
+    .addCase(setHighlightMode, (state, { payload }) => ({
+      ...state,
+      highlightMode: payload.highlightMode
+    }))
+    .addCase(changeSite, (state) => {
+      return {
+        ...state,
+        ...reversePluckProps(
+          initialState,
+          'editMode',
+          'highlightMode',
+          'showToolsPanel',
+          'toolsPanelWidth',
+          'icePanelWidth'
+        )
+      };
+    })
+    .addCase(initToolsPanelConfig, (state, { payload }) => {
+      let toolsPanelConfig = {
+        widgets: [
+          {
+            id: 'craftercms.component.EmptyState',
+            uiKey: -1,
+            configuration: {
+              title: messages.noUiConfigMessageTitle,
+              subtitle: messages.noUiConfigMessageSubtitle
+            }
           }
-        }
-      ]
-    };
-    const arrays = ['widgets', 'devices', 'values'];
-    const configDOM = fromString(payload.configXml);
-    const icePanel = configDOM.querySelector('[id="craftercms.components.ICEToolsPanel"] > configuration > widgets');
-    if (icePanel) {
+        ]
+      };
+      const arrays = ['widgets', 'permittedRoles', 'excludes'];
       const lookupTables = ['fields'];
-      icePanel.querySelectorAll('widget').forEach((e) => {
-        if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
-          let target: ToolsPanelTarget = 'icePanel';
-          e.querySelector(':scope > configuration')?.setAttribute('target', target);
-        }
-      });
-      icePanelConfig = applyDeserializedXMLTransforms(deserialize(icePanel), {
-        arrays,
-        lookupTables
-      });
-    }
-
-    const icePanelWidth =
-      payload.icePanelWidth < minDrawerWidth
-        ? minDrawerWidth
-        : payload.icePanelWidth > maxDrawerWidth
-        ? maxDrawerWidth
-        : payload.icePanelWidth;
-
-    return {
-      ...state,
-      ...(payload.storedPage && { icePanelStack: [payload.storedPage] }),
-      icePanel: icePanelConfig,
-      icePanelWidth: icePanelWidth ?? state.icePanelWidth
-    };
-  },
-  [initRichTextEditorConfig.type]: (state, { payload }) => {
-    let rteConfig = {};
-    const arrays = ['setups'];
-    const renameTable = { '#text': 'data' };
-    const configDOM = fromString(payload.configXml);
-    const rte = configDOM.querySelector('[id="craftercms.components.TinyMCE"] > configuration');
-    if (rte) {
-      try {
-        const conf = applyDeserializedXMLTransforms(deserialize(rte), {
+      const configDOM = fromString(payload.configXml);
+      const toolsPanelPages = configDOM.querySelector(
+        '[id="craftercms.components.ToolsPanel"] > configuration > widgets'
+      );
+      if (toolsPanelPages) {
+        toolsPanelConfig = applyDeserializedXMLTransforms(deserialize(toolsPanelPages), {
           arrays,
-          renameTable
-        }).configuration;
-        let setups: LookupTable = {};
-
-        conf.setups.forEach((setup) => {
-          setup.tinymceOptions = JSON.parse(setup.tinymceOptions.replaceAll('{site}', payload.siteId));
-          setups[setup.id] = setup;
+          lookupTables
         });
-
-        rteConfig = setups;
-      } catch (e) {
-        console.error(e);
       }
-    }
 
-    return {
+      const toolsPanelWidth =
+        payload.toolsPanelWidth < minDrawerWidth
+          ? minDrawerWidth
+          : payload.toolsPanelWidth > maxDrawerWidth
+          ? maxDrawerWidth
+          : payload.toolsPanelWidth;
+
+      return {
+        ...state,
+        ...(payload.storedPage && { toolsPanelPageStack: [payload.storedPage] }),
+        toolsPanel: toolsPanelConfig,
+        toolsPanelWidth: toolsPanelWidth ?? state.toolsPanelWidth
+      };
+    })
+    // After re-fetching site ui config (e.g. when config is modified), we need the tools to be
+    // re-initialized with the latest config. The components checks for whether their property is null before
+    // initializing so props must be nulled when config gets re-fetched in order for the components to re-initialize.
+    .addCase(fetchSiteUiConfigComplete, (state) => ({
       ...state,
-      richTextEditor: rteConfig
-    };
-  },
-  [setEditModePadding.type]: (state, { payload }) => ({
-    ...state,
-    editModePadding: payload.editModePadding
-  }),
-  [toggleEditModePadding.type]: (state) => ({
-    ...state,
-    editModePadding: !state.editModePadding
-  })
+      toolsPanel: initialState.toolsPanel,
+      toolbar: initialState.toolbar,
+      icePanel: initialState.icePanel,
+      richTextEditor: initialState.richTextEditor
+    }))
+    .addCase(initToolbarConfig, (state, { payload }) => {
+      let toolbarConfig = {
+        leftSection: { widgets: [] },
+        middleSection: { widgets: [] },
+        rightSection: { widgets: [] }
+      };
+      const arrays = ['widgets'];
+      const configDOM = fromString(payload.configXml);
+      const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
+
+      if (toolbar) {
+        const leftSection = toolbar.querySelector('leftSection > widgets');
+        if (leftSection) {
+          toolbarConfig.leftSection = applyDeserializedXMLTransforms(deserialize(leftSection), {
+            arrays
+          });
+        }
+        const middleSection = toolbar.querySelector('middleSection > widgets');
+        if (middleSection) {
+          toolbarConfig.middleSection = applyDeserializedXMLTransforms(deserialize(middleSection), {
+            arrays
+          });
+        }
+        const rightSection = toolbar.querySelector('rightSection > widgets');
+        if (rightSection) {
+          toolbarConfig.rightSection = applyDeserializedXMLTransforms(deserialize(rightSection), {
+            arrays
+          });
+        }
+      }
+
+      return {
+        ...state,
+        toolbar: toolbarConfig
+      };
+    })
+    .addCase(initIcePanelConfig, (state, { payload }) => {
+      let icePanelConfig = {
+        widgets: [
+          {
+            id: 'craftercms.component.EmptyState',
+            uiKey: -1,
+            configuration: {
+              title: messages.noUiConfigMessageTitle,
+              subtitle: messages.noUiConfigMessageSubtitle
+            }
+          }
+        ]
+      };
+      const arrays = ['widgets', 'devices', 'values'];
+      const configDOM = fromString(payload.configXml);
+      const icePanel = configDOM.querySelector('[id="craftercms.components.ICEToolsPanel"] > configuration > widgets');
+      if (icePanel) {
+        const lookupTables = ['fields'];
+        icePanel.querySelectorAll('widget').forEach((e) => {
+          if (e.getAttribute('id') === 'craftercms.components.ToolsPanelPageButton') {
+            let target: ToolsPanelTarget = 'icePanel';
+            e.querySelector(':scope > configuration')?.setAttribute('target', target);
+          }
+        });
+        icePanelConfig = applyDeserializedXMLTransforms(deserialize(icePanel), {
+          arrays,
+          lookupTables
+        });
+      }
+
+      const icePanelWidth =
+        payload.icePanelWidth < minDrawerWidth
+          ? minDrawerWidth
+          : payload.icePanelWidth > maxDrawerWidth
+          ? maxDrawerWidth
+          : payload.icePanelWidth;
+
+      return {
+        ...state,
+        ...(payload.storedPage && { icePanelStack: [payload.storedPage] }),
+        icePanel: icePanelConfig,
+        icePanelWidth: icePanelWidth ?? state.icePanelWidth
+      };
+    })
+    .addCase(initRichTextEditorConfig, (state, { payload }) => {
+      let rteConfig = {};
+      const arrays = ['setups'];
+      const renameTable = { '#text': 'data' };
+      const configDOM = fromString(payload.configXml);
+      const rte = configDOM.querySelector('[id="craftercms.components.TinyMCE"] > configuration');
+      if (rte) {
+        try {
+          const conf = applyDeserializedXMLTransforms(deserialize(rte), {
+            arrays,
+            renameTable
+          }).configuration;
+          let setups: LookupTable = {};
+
+          conf.setups.forEach((setup) => {
+            setup.tinymceOptions = JSON.parse(setup.tinymceOptions.replaceAll('{site}', payload.siteId));
+            setups[setup.id] = setup;
+          });
+
+          rteConfig = setups;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      return {
+        ...state,
+        richTextEditor: rteConfig
+      };
+    })
+    .addCase(setEditModePadding, (state, { payload }) => ({
+      ...state,
+      editModePadding: payload.editModePadding
+    }))
+    .addCase(toggleEditModePadding, (state) => ({
+      ...state,
+      editModePadding: !state.editModePadding
+    }));
 });
 
 function minFrameSize(suggestedSize: number): number {

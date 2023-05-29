@@ -93,7 +93,7 @@ export interface GuestData {
   modelId: string;
   path: string;
   selected: EditSelection[];
-  itemBeingDragged: boolean;
+  itemBeingDragged: number;
 }
 
 // TODO:

@@ -27,11 +27,12 @@ import {
   SearchResult
 } from '../../models/Search';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
-import { WidgetDescriptor } from '../../models';
+import { EditSelection, WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
 import { AjaxError } from 'rxjs/ajax';
+import { ActiveTargetingModel } from '../../services/configuration';
 
 interface CommonOperationProps {
   modelId: string;
@@ -233,27 +234,19 @@ export const EMBEDDED_LEGACY_FORM_SAVE_END = 'EMBEDDED_LEGACY_FORM_SAVE_END';
 
 // region Action Creators
 
-export function selectForEdit(data: { modelId: string; fields: string[] }): StandardAction {
-  return {
-    type: SELECT_FOR_EDIT,
-    payload: data
-  };
-}
+export const selectForEdit = /*#__PURE__*/ createAction<EditSelection>(SELECT_FOR_EDIT);
 
-export function clearSelectForEdit() {
-  return { type: CLEAR_SELECT_FOR_EDIT };
-}
+export const clearSelectForEdit = /*#__PURE__*/ createAction(CLEAR_SELECT_FOR_EDIT);
 
 export const openToolsPanel = /*#__PURE__*/ createAction(OPEN_TOOLS);
 
 export const closeToolsPanel = /*#__PURE__*/ createAction(CLOSE_TOOLS);
 
-export function setHostSize(dimensions: WidthAndHeight): StandardAction {
-  return {
-    type: SET_HOST_SIZE,
-    payload: dimensions
-  };
-}
+export const setHostSize = /*#__PURE__*/ createAction<WidthAndHeight>(SET_HOST_SIZE);
+
+export const setHostWidth = /*#__PURE__*/ createAction<number>(SET_HOST_WIDTH);
+
+export const setHostHeight = /*#__PURE__*/ createAction<number>(SET_HOST_HEIGHT);
 
 export const fetchContentTypes = /*#__PURE__*/ createAction(FETCH_CONTENT_TYPES);
 
@@ -271,12 +264,7 @@ export function fetchContentTypesFailed(error): StandardAction {
   };
 }
 
-export function fetchContentModelComplete(contentModels: ContentInstance[]): StandardAction {
-  return {
-    type: FETCH_CONTENT_MODEL_COMPLETE,
-    payload: contentModels
-  };
-}
+export const fetchContentModelComplete = /*#__PURE__*/ createAction<ContentInstance[]>(FETCH_CONTENT_MODEL_COMPLETE);
 
 // This action is meant for the primary Guest model. The reducer
 // should set the guest.modelId of the model that comes in payload.
@@ -299,12 +287,7 @@ export const guestPathUpdated = /*#__PURE__*/ createAction<{ path: string }>('GU
 
 export const changeCurrentUrl = /*#__PURE__*/ createAction<string>(CHANGE_CURRENT_URL);
 
-export function setItemBeingDragged(iceId: number): StandardAction {
-  return {
-    type: SET_ITEM_BEING_DRAGGED,
-    payload: iceId
-  };
-}
+export const setItemBeingDragged = /*#__PURE__*/ createAction<number>(SET_ITEM_BEING_DRAGGED);
 
 export const fetchAudiencesPanelModel = /*#__PURE__*/ createAction<{ fields: LookupTable<ContentTypeField> }>(
   'FETCH_AUDIENCES_PANEL_MODEL'
@@ -318,32 +301,15 @@ export const fetchAudiencesPanelModelFailed = /*#__PURE__*/ createAction<AjaxErr
   'FETCH_AUDIENCES_PANEL_MODEL_FAILED'
 );
 
-export function updateAudiencesPanelModel(data): StandardAction {
-  return {
-    type: UPDATE_AUDIENCES_PANEL_MODEL,
-    payload: data
-  };
-}
+export const updateAudiencesPanelModel = /*#__PURE__*/ createAction<ContentInstance>(UPDATE_AUDIENCES_PANEL_MODEL);
 
-export function setActiveTargetingModel(): StandardAction {
-  return {
-    type: SET_ACTIVE_TARGETING_MODEL
-  };
-}
+export const setActiveTargetingModel = /*#__PURE__*/ createAction(SET_ACTIVE_TARGETING_MODEL);
 
-export function setActiveTargetingModelComplete(data): StandardAction {
-  return {
-    type: SET_ACTIVE_TARGETING_MODEL_COMPLETE,
-    payload: data
-  };
-}
+export const setActiveTargetingModelComplete = /*#__PURE__*/ createAction<ActiveTargetingModel>(
+  SET_ACTIVE_TARGETING_MODEL_COMPLETE
+);
 
-export function setActiveTargetingModelFailed(error): StandardAction {
-  return {
-    type: SET_ACTIVE_TARGETING_MODEL_FAILED,
-    payload: error
-  };
-}
+export const setActiveTargetingModelFailed = /*#__PURE__*/ createAction<AjaxError>(SET_ACTIVE_TARGETING_MODEL_FAILED);
 
 export const fetchAssetsPanelItems = /*#__PURE__*/ createAction<Partial<ElasticParams>>(FETCH_ASSETS_PANEL_ITEMS);
 
@@ -351,7 +317,7 @@ export const fetchAssetsPanelItemsComplete = /*#__PURE__*/ createAction<SearchRe
   FETCH_ASSETS_PANEL_ITEMS_COMPLETE
 );
 
-export const fetchAssetsPanelItemsFailed = /*#__PURE__*/ createAction(FETCH_ASSETS_PANEL_ITEMS_FAILED);
+export const fetchAssetsPanelItemsFailed = /*#__PURE__*/ createAction<AjaxError>(FETCH_ASSETS_PANEL_ITEMS_FAILED);
 
 export const fetchComponentsByContentType = /*#__PURE__*/ createAction<Partial<ComponentsContentTypeParams>>(
   'FETCH_COMPONENTS_BY_CONTENT_TYPE'
