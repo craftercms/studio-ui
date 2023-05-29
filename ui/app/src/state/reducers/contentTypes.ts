@@ -20,9 +20,9 @@ import { createReducer } from '@reduxjs/toolkit';
 import {
   associateTemplateComplete,
   dissociateTemplateComplete,
-  FETCH_CONTENT_TYPES,
-  FETCH_CONTENT_TYPES_COMPLETE,
-  FETCH_CONTENT_TYPES_FAILED
+  fetchContentTypes,
+  fetchContentTypesComplete,
+  fetchContentTypesFailed
 } from '../actions/preview';
 import ContentType from '../../models/ContentType';
 import { changeSite } from '../actions/sites';
@@ -30,19 +30,17 @@ import { changeSite } from '../actions/sites';
 const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), (builder) => {
   builder
     .addCase(changeSite, () => createEntityState())
-    .addCase(FETCH_CONTENT_TYPES, (state) => ({
+    .addCase(fetchContentTypes, (state) => ({
       ...state,
       isFetching: true
     }))
-    // @ts-ignore
-    .addCase(FETCH_CONTENT_TYPES_COMPLETE, (state, { payload: contentTypes }) => ({
+    .addCase(fetchContentTypesComplete, (state, { payload: contentTypes }) => ({
       ...state,
       byId: createLookupTable<ContentType>(contentTypes),
       isFetching: false,
       error: null
     }))
-    // @ts-ignore
-    .addCase(FETCH_CONTENT_TYPES_FAILED, (state, { payload }) => ({
+    .addCase(fetchContentTypesFailed, (state, { payload }) => ({
       ...state,
       error: payload.response,
       isFetching: false

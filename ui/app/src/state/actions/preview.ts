@@ -250,19 +250,9 @@ export const setHostHeight = /*#__PURE__*/ createAction<number>(SET_HOST_HEIGHT)
 
 export const fetchContentTypes = /*#__PURE__*/ createAction(FETCH_CONTENT_TYPES);
 
-export function fetchContentTypesComplete(contentTypes: ContentType[]): StandardAction<ContentType[]> {
-  return {
-    type: FETCH_CONTENT_TYPES_COMPLETE,
-    payload: contentTypes
-  };
-}
+export const fetchContentTypesComplete = /*#__PURE__*/ createAction<ContentType[]>(FETCH_CONTENT_TYPES_COMPLETE);
 
-export function fetchContentTypesFailed(error): StandardAction {
-  return {
-    type: FETCH_CONTENT_TYPES_FAILED,
-    payload: error
-  };
-}
+export const fetchContentTypesFailed = /*#__PURE__*/ createAction<AjaxError>(FETCH_CONTENT_TYPES_FAILED);
 
 export const fetchContentModelComplete = /*#__PURE__*/ createAction<ContentInstance[]>(FETCH_CONTENT_MODEL_COMPLETE);
 
