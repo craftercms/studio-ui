@@ -35,7 +35,6 @@ import { DetailedItem, LookupTable } from '../../models';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
-import Typography from '@mui/material/Typography';
 import { LIVE_COLOUR, STAGING_COLOUR } from '../ItemPublishingTargetIcon/styles';
 import ItemDisplay from '../ItemDisplay';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -51,6 +50,7 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
 import LoadingButton from '@mui/lab/LoadingButton';
+import Box from '@mui/material/Box';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
@@ -283,13 +283,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (
-                          <Typography
-                            component="span"
-                            sx={{ fontSize: 'inherit', lineHeight: 'inherit' }}
-                            color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}
-                          >
+                          <Box component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
-                          </Typography>
+                          </Box>
                         );
                       },
                       date:
