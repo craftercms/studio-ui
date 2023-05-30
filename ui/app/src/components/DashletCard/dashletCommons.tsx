@@ -76,7 +76,7 @@ export function PersonAvatar(props: PersonAvatarProps) {
     <DashletAvatar
       src={person.avatar ?? UNDEFINED}
       children={person.avatar ? UNDEFINED : getInitials(person)}
-      sx={{ backgroundColor, ...sx }}
+      sx={{ backgroundColor: backgroundColor, color: (theme) => theme.palette.getContrastText(backgroundColor), ...sx }}
     />
   );
 }
