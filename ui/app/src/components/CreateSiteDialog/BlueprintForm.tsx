@@ -19,7 +19,7 @@ import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import GitForm from './GitForm';
-import { MarketplacePlugin, SiteState } from '../../models';
+import { LookupTable, MarketplacePlugin, SiteState } from '../../models';
 import { defineMessages, useIntl } from 'react-intl';
 import PluginFormEngine from '../PluginFormBuilder';
 import { fetchAll } from '../../services/sites';
@@ -37,6 +37,7 @@ interface BlueprintFormProps {
   classes?: {
     root?: string;
   };
+  fieldsErrorsLookup: LookupTable<boolean>;
 
   setInputs(state: any): any;
 
@@ -94,7 +95,7 @@ const messages = defineMessages({
 
 function BlueprintForm(props: BlueprintFormProps) {
   const { classes, cx } = useStyles();
-  const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, classes: classesProp } = props;
+  const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, classes: classesProp, fieldsErrorsLookup } = props;
   const [sites, setSites] = useState(null);
   const { formatMessage } = useIntl();
   const maxLength = 4000;
@@ -218,7 +219,7 @@ function BlueprintForm(props: BlueprintFormProps) {
   return (
     <form className={cx(classes.form, classesProp?.root)}>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid item xs={12} data-field-id="siteName">
           <TextField
             id="siteName"
             name="siteName"
@@ -233,7 +234,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteName}
             inputProps={{ maxLength: siteNameMaxLength }}
-            error={(inputs.submitted && !inputs.siteName) || inputs.siteNameExist}
+            error={inputs.submitted && fieldsErrorsLookup['siteName']}
             helperText={
               inputs.submitted && !inputs.siteName
                 ? formatMessage(messages.required, { name: formatMessage(messages.siteName) })
@@ -243,7 +244,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             }
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} data-field-id="siteId">
           <TextField
             id="siteId"
             name="siteId"
@@ -257,7 +258,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             onChange={(event) => handleInputChange(event)}
             value={inputs.siteId}
             inputProps={{ maxLength: siteIdMaxLength }}
-            error={(inputs.submitted && !inputs.siteId) || inputs.siteIdExist || inputs.invalidSiteId}
+            error={inputs.submitted && fieldsErrorsLookup['siteId']}
             helperText={renderHelperText(
               formatMessage(messages.siteId),
               inputs.siteId,
@@ -268,7 +269,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             )}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} data-field-id="description">
           <TextField
             id="description"
             fullWidth
@@ -281,7 +282,7 @@ function BlueprintForm(props: BlueprintFormProps) {
             helperText={formatMessage(messages.fieldMaxLength, { maxLength: maxLength })}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} data-field-id="gitBranch">
           <TextField
             id="sandboxBranch"
             name="gitBranch"

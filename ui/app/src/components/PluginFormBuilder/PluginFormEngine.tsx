@@ -74,7 +74,7 @@ export function PluginFormEngine(props: PluginFormEngineProps) {
   function renderParameters(parameters: [MarketplacePluginParameter]) {
     return parameters.map((parameter, index) => {
       return (
-        <Grid item xs={12} key={index}>
+        <Grid item xs={12} key={index} data-field-id={parameter.name}>
           {parameter.type === 'STRING' ? (
             <TextField
               id={parameter.name}
