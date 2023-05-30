@@ -283,7 +283,11 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (
-                          <Typography component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
+                          <Typography
+                            component="span"
+                            sx={{ fontSize: 'inherit', lineHeight: 'inherit' }}
+                            color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}
+                          >
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Typography>
                         );
