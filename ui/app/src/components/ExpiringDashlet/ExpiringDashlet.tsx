@@ -36,7 +36,7 @@ import { itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
 import { SandboxItem } from '../../models';
-import LoadingButton from '@mui/lab/LoadingButton';
+import LoadingIconButton from '../LoadingIconButton';
 
 interface ExpiringDashletProps extends CommonDashletProps {
   days?: number;
@@ -140,13 +140,9 @@ export function ExpiringDashlet(props: ExpiringDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.expiring" defaultMessage="Expiring" />}
       headerAction={
-        <LoadingButton
-          onClick={onRefresh}
-          loading={state.loading}
-          sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}
-        >
+        <LoadingIconButton onClick={onRefresh} loading={state.loading}>
           <RefreshRounded />
-        </LoadingButton>
+        </LoadingIconButton>
       }
     >
       {state.loading && <List>{getItemSkeleton({ numOfItems: 5, showAvatar: false, showCheckbox: false })}</List>}

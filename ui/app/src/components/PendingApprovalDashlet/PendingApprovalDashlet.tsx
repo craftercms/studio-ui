@@ -47,7 +47,7 @@ import { deleteContentEvent, publishEvent, workflowEvent } from '../../state/act
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
-import LoadingButton from '@mui/lab/LoadingButton';
+import { LoadingIconButton } from '../LoadingIconButton';
 import Box from '@mui/material/Box';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
@@ -244,9 +244,9 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         />
       }
       headerAction={
-        <LoadingButton onClick={onRefresh} loading={loading} sx={{ borderRadius: '50%', padding: '8px', minWidth: 0 }}>
+        <LoadingIconButton onClick={onRefresh} loading={loading}>
           <RefreshRounded />
-        </LoadingButton>
+        </LoadingIconButton>
       }
       footer={
         Boolean(items?.length) && (
