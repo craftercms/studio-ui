@@ -74,7 +74,7 @@ export function Dashboard(props: DashboardProps) {
       dispatch(initDashboardConfig({ configXml: uiConfig.xml }));
     }
   }, [uiConfig.xml, dashboard, dispatch]);
-  const height = 380;
+  const height = 400;
   return (
     <SiteDashboardContext.Provider value={context}>
       <Box
