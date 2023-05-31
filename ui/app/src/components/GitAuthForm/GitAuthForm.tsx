@@ -103,6 +103,7 @@ function AuthFields(props: AuthFieldsProps) {
         <TextField
           id="repoUsername"
           name="repoUsername"
+          data-field-id="repoUsername"
           className={cx(classes.margin, classes.textField)}
           label={formatMessage(messages.userName)}
           required
@@ -124,6 +125,7 @@ function AuthFields(props: AuthFieldsProps) {
         <TextField
           id="repoPassword"
           name="repoPassword"
+          data-field-id="repoPassword"
           className={cx(classes.margin, classes.textField)}
           type={showPassword ? 'text' : 'password'}
           label={formatMessage(messages.password)}
@@ -159,6 +161,7 @@ function AuthFields(props: AuthFieldsProps) {
         <TextField
           id="repoToken"
           name="repoToken"
+          data-field-id="repoToken"
           className={cx(classes.margin, classes.textField)}
           type={showPassword ? 'text' : 'password'}
           label={formatMessage(messages.token)}
@@ -188,6 +191,7 @@ function AuthFields(props: AuthFieldsProps) {
         <TextField
           id="repoKey"
           name="repoKey"
+          data-field-id="repoKey"
           label={formatMessage(messages.privateKey)}
           required
           fullWidth

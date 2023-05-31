@@ -14,11 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import useSpreadState from '../../hooks/useSpreadState';
 import useEnv from '../../hooks/useEnv';
-import { CreateSiteMeta, MarketplacePlugin, MarketplaceSite, SiteState, Views } from '../../models';
+import { CreateSiteMeta, LookupTable, MarketplacePlugin, MarketplaceSite, SiteState, Views } from '../../models';
 import {
   createSite as createSiteFromMarketplace,
   fetchBlueprints as fetchMarketplaceBlueprintsService
@@ -75,6 +75,9 @@ interface CreateSiteDialogContainerProps {
   disableEnforceFocus: boolean;
 }
 
+const baseFormFields = ['siteName', 'siteId', 'description', 'gitBranch'];
+const gitFormFields = ['repoUrl', 'repoRemoteName', 'repoUsername', 'repoPassword', 'repoToken', 'repoKey'];
+
 export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps) {
   const { site, setSite, search, setSearch, handleClose, dialog, setDialog, disableEnforceFocus } = props;
   const { classes, cx } = useStyles();
@@ -109,6 +112,56 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
       title: formatMessage(messages.finish),
       subtitle: formatMessage(messages.reviewSite),
       btnText: formatMessage(messages.createSite)
+    }
+  };
+
+  const fieldsErrorsLookup: LookupTable<boolean> = useMemo(() => {
+    let map: LookupTable<boolean> = {
+      siteName: !site.siteName || site.siteNameExist,
+      siteId: !site.siteId || site.siteIdExist || site.invalidSiteId,
+      description: false,
+      gitBranch: false
+    };
+
+    if (site.blueprint?.parameters) {
+      site.blueprint.parameters.forEach((parameter) => {
+        map[parameter.name] = parameter.required && !site.blueprintFields[parameter.name];
+      });
+    }
+
+    if (site.blueprint?.id === 'GIT') {
+      map['repoUrl'] = !site.repoUrl;
+      map['repoRemoteName'] = false;
+
+      const type = site.repoAuthentication;
+      if (type === 'basic' || type === 'token') {
+        map['repoUsername'] = !site.repoUsername;
+      }
+      if (type === 'basic') {
+        map['repoPassword'] = !site.repoPassword;
+      }
+      if (type === 'token') {
+        map['repoToken'] = !site.repoToken;
+      }
+      if (type === 'key') {
+        map['repoKey'] = !site.repoKey;
+      }
+    }
+
+    return map;
+  }, [site]);
+
+  const scrollToErrorInput = () => {
+    const formFields = [
+      ...baseFormFields,
+      ...(site.blueprint?.parameters?.map((parameter) => parameter.name) ?? []),
+      ...(site.blueprint?.id === 'GIT' ? gitFormFields : [])
+    ];
+
+    const firstFieldWithError = formFields.find((field) => fieldsErrorsLookup[field]);
+    if (firstFieldWithError) {
+      const element = document.querySelector(`[data-field-id="${firstFieldWithError}"]`);
+      element?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -203,10 +256,14 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   function handleFinish(e: MouseEvent) {
     e && e.preventDefault();
     if (site.selectedView === 1) {
-      if (validateForm() && !site.siteIdExist) {
+      const isFormValid = validateForm();
+      if (isFormValid && !site.siteIdExist) {
         setSite({ selectedView: 2 });
       } else {
         setSite({ submitted: true });
+        if (!isFormValid) {
+          scrollToErrorInput();
+        }
       }
     }
     if (site.selectedView === 2) {
@@ -586,6 +643,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                       onSubmit={handleFinish}
                       blueprint={site.blueprint}
                       classes={{ root: classes.blueprintFormRoot }}
+                      fieldsErrorsLookup={fieldsErrorsLookup}
                     />
                   )}
                 </div>
