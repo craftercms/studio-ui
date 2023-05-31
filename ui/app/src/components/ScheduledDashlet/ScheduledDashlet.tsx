@@ -285,7 +285,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                 }
                 secondary={
                   <FormattedMessage
-                    defaultMessage="Approved by {name} to <render_target>{publishingTarget}</render_target> on {date}"
+                    defaultMessage="Approved by {name} for <render_target>{publishingTarget}</render_target> at {date}"
                     values={{
                       name: item.sandbox?.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
@@ -296,9 +296,11 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                           </Box>
                         );
                       },
-                      date:
-                        item.sandbox?.dateModified &&
-                        asLocalizedDateTime(item.sandbox.dateModified, locale.localeCode, locale.dateTimeFormatOptions)
+                      date: asLocalizedDateTime(
+                        item.stateMap.submittedToLive ? item.live.dateScheduled : item.staging.dateScheduled,
+                        locale.localeCode,
+                        locale.dateTimeFormatOptions
+                      )
                     }}
                   />
                 }

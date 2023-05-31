@@ -56,6 +56,8 @@ import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
 import { LoadingIconButton } from '../LoadingIconButton';
 import Box from '@mui/material/Box';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import useLocale from '../../hooks/useLocale';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -98,6 +100,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(Object.values(selectedItems), formatMessage, selectedCount);
   const site = useActiveSiteId();
+  const locale = useLocale();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
 
@@ -290,7 +293,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 }
                 secondary={
                   <FormattedMessage
-                    defaultMessage="submitted to <render_target>{publishingTarget}</render_target> by {name}"
+                    defaultMessage="Submitted by {name} for <render_target>{publishingTarget}</render_target> {requestType, select, scheduled {on} other {}} {date}"
                     values={{
                       name: item.sandbox?.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
@@ -300,7 +303,18 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Box>
                         );
-                      }
+                      },
+                      requestType: item.live.dateScheduled || item.staging.dateScheduled ? 'scheduled' : 'asap',
+                      date:
+                        item.live.dateScheduled || item.staging.dateScheduled ? (
+                          asLocalizedDateTime(
+                            item.stateMap.submittedToLive ? item.live.dateScheduled : item.staging.dateScheduled,
+                            locale.localeCode,
+                            locale.dateTimeFormatOptions
+                          )
+                        ) : (
+                          <FormattedMessage defaultMessage="ASAP" />
+                        )
                     }}
                   />
                 }
