@@ -474,8 +474,8 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
   uploadingDepenedents: 'Updating dependents, please wait...',
 
   newContTypeDialogTitle: 'Crear Tipo de Contenido',
-  newContTypeDialogDisplayLabel: 'Etiqueta a Mostrar',
-  newContTypeDialogContentTypeName: 'Nombre',
+  newContTypeDialogDisplayLabel: 'Etiqueta',
+  newContTypeDialogContentTypeName: 'ID',
   newContTypeDialogType: 'Tipo',
   newContTypeDialogPage: 'Página',
   component: 'Componente',
@@ -483,7 +483,8 @@ CStudioAuthoring.Messages.registerBundle('forms', 'es', {
   newContTypeDialogContentTypeNamelMsg: 'Proporcione un nombre de sistema para este Tipo de Contenido',
   newContTypeDialogTypeMsg: 'Seleccione el tipo de este Tipo de Contenido',
   contentTypeDisplayNameExists: 'La etiqueta ya existe',
-  contentTypeNameExists: 'El nombre ya existe',
+  contentTypeNameExists: 'El ID ya existe',
+  contentTypeNameInvalid: 'ID de tipo de contenido no válido',
 
   adminHelpDialogTitle: 'Contenido del Campo',
 
