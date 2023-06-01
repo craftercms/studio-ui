@@ -232,13 +232,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         response.forEach((item) => {
           dispatch(fetchDetailedItemComplete(item));
         });
-        // if (response.length === 1 && !Boolean(scheduling)) {
-        // if (response.length === 1 && getDateScheduled(response[0])) {
-        //   setState({
-        //     scheduling: 'custom',
-        //     scheduledDateTime: getDateScheduled(response[0])
-        //   });
-        // }
         setIsFetchingItems(false);
       },
       error(error) {
