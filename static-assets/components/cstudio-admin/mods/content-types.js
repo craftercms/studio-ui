@@ -510,7 +510,13 @@
             });
           },
 
-          failure: function () {},
+          failure: function ({ response }) {
+            craftercms.getStore().dispatch({
+              type: 'SHOW_ERROR_DIALOG',
+              payload: { error: response.response }
+            });
+            _self.renderWorkarea();
+          },
 
           context: this
         });

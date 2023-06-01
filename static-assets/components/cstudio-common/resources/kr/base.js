@@ -450,8 +450,8 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
   uploadingDepenedents: '부양 가족 업데이트 중입니다. 잠시만 기다려주십시오.',
 
   newContTypeDialogTitle: '콘텐츠 형식 만들기',
-  newContTypeDialogDisplayLabel: '표시 라벨',
-  newContTypeDialogContentTypeName: '콘텐츠 형식 이름',
+  newContTypeDialogDisplayLabel: '상표',
+  newContTypeDialogContentTypeName: '신분증',
   newContTypeDialogType: '유형',
   newContTypeDialogPage: '페이지',
   component: '구성 요소',
@@ -459,7 +459,8 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
   newContTypeDialogContentTypeNamelMsg: '이 콘텐츠 유형에 대한 시스템 이름을 입력합니다',
   newContTypeDialogTypeMsg: '이 콘텐츠 유형에 대한 유형을 선택',
   contentTypeDisplayNameExists: '라벨이 이미 존재합니다.',
-  contentTypeNameExists: '이름이 이미 존재합니다.',
+  contentTypeNameExists: '아이디가 이미 존재합니다.',
+  contentTypeNameInvalid: '잘못된 콘텐츠 유형 ID',
 
   adminHelpDialogTitle: '필드 내용',
 

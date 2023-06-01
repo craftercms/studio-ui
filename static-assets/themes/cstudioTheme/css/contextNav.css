@@ -709,7 +709,7 @@ div[id*='expandComponentError'].yui-dialog {
 
 .contentTypePopupContent .content label span {
   display: inline-block;
-  width: 40%;
+  width: 30%;
   padding-right: 8px;
 }
 
@@ -724,12 +724,12 @@ div[id*='expandComponentError'].yui-dialog {
   text-align: left !important;
   font-weight: normal;
   color: #ff3b30;
-  padding-left: 40%;
+  padding-left: 30%;
 }
 
 .contentTypePopupContent .content .selectInput label {
   display: inline-block;
-  width: 40%;
+  width: 30%;
   margin-bottom: 10px;
   padding-right: 8px;
 }
