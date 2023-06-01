@@ -83,68 +83,70 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       publishingTarget: null
     };
 
-    let itemsChecked = items.filter((item) => selectedItems[item.path]);
+    if (detailedItems) {
+      let itemsChecked = detailedItems.filter((item) => selectedItems[item.path]);
 
-    if (itemsChecked.length === 0) {
-      state.publishingTarget = '';
-      return state;
-    }
-
-    // region Discover mixed targets and/or schedules and sets the publishingTarget based off the items
-    let target: string;
-    let schedule: string;
-    itemsChecked.some((item, index) => {
-      const computedTarget = getComputedPublishingTarget(itemsChecked[0]);
-      const computedSchedule = getDateScheduled(itemsChecked[0]);
-      if (index === 0) {
-        target = computedTarget;
-        schedule = computedSchedule;
-      } else {
-        if (target !== computedTarget) {
-          // If the computed target is different, we have mixed targets.
-          // Could be any combination of live vs staging vs null that triggers mixed targets.
-          state.mixedPublishingTargets = true;
-        }
-        if (schedule !== computedSchedule) {
-          // If the current item's computed scheduled date is different, we have mixed dates.
-          // Could be any combination of live vs staging vs null that triggers mixed targets.
-          state.mixedPublishingDates = true;
-        }
-      }
-      if (state.publishingTarget === null && computedTarget !== null) {
-        state.publishingTarget = computedTarget;
-      }
-      // First found dateScheduled cached for later
-      if (state.dateScheduled === null && computedSchedule !== null) {
-        state.dateScheduled = computedSchedule;
-      }
-      // Once these things are found to be true, no need to iterate further.
-      return state.mixedPublishingTargets && state.mixedPublishingDates && state.dateScheduled !== null;
-    });
-    // endregion
-
-    // If there aren't any available target (or they haven't loaded), dialog should not have a selected target.
-    if (publishingTargets?.length) {
-      // If there are mixed targets, we want manual user selection of a target.
-      // Otherwise, use what was previously found as the target on the selected items.
-      if (state.mixedPublishingTargets) {
+      if (itemsChecked.length === 0) {
         state.publishingTarget = '';
-      } else {
-        // If we haven't found a target by this point, we wish to default the dialog to
-        // staging (as long as that target is enabled in the system, which is checked next).
-        if (state.publishingTarget === null) {
-          state.publishingTarget = 'staging';
-        }
-        state.publishingTarget = publishingTargets.some((target) => target.name === state.publishingTarget)
-          ? state.publishingTarget
-          : publishingTargets[0].name;
+        return state;
       }
-    } else {
-      state.publishingTarget = '';
+
+      // region Discover mixed targets and/or schedules and sets the publishingTarget based off the items
+      let target: string;
+      let schedule: string;
+      itemsChecked.some((item, index) => {
+        const computedTarget = getComputedPublishingTarget(itemsChecked[0]);
+        const computedSchedule = getDateScheduled(itemsChecked[0]);
+        if (index === 0) {
+          target = computedTarget;
+          schedule = computedSchedule;
+        } else {
+          if (target !== computedTarget) {
+            // If the computed target is different, we have mixed targets.
+            // Could be any combination of live vs staging vs null that triggers mixed targets.
+            state.mixedPublishingTargets = true;
+          }
+          if (schedule !== computedSchedule) {
+            // If the current item's computed scheduled date is different, we have mixed dates.
+            // Could be any combination of live vs staging vs null that triggers mixed targets.
+            state.mixedPublishingDates = true;
+          }
+        }
+        if (state.publishingTarget === null && computedTarget !== null) {
+          state.publishingTarget = computedTarget;
+        }
+        // First found dateScheduled cached for later
+        if (state.dateScheduled === null && computedSchedule !== null) {
+          state.dateScheduled = computedSchedule;
+        }
+        // Once these things are found to be true, no need to iterate further.
+        return state.mixedPublishingTargets && state.mixedPublishingDates && state.dateScheduled !== null;
+      });
+      // endregion
+
+      // If there aren't any available target (or they haven't loaded), dialog should not have a selected target.
+      if (publishingTargets?.length) {
+        // If there are mixed targets, we want manual user selection of a target.
+        // Otherwise, use what was previously found as the target on the selected items.
+        if (state.mixedPublishingTargets) {
+          state.publishingTarget = '';
+        } else {
+          // If we haven't found a target by this point, we wish to default the dialog to
+          // staging (as long as that target is enabled in the system, which is checked next).
+          if (state.publishingTarget === null) {
+            state.publishingTarget = 'staging';
+          }
+          state.publishingTarget = publishingTargets.some((target) => target.name === state.publishingTarget)
+            ? state.publishingTarget
+            : publishingTargets[0].name;
+        }
+      } else {
+        state.publishingTarget = '';
+      }
     }
 
     return state;
-  }, [selectedItems, items, publishingTargets]);
+  }, [selectedItems, publishingTargets, detailedItems]);
 
   const getPublishingChannels = useCallback(
     (success?: (channels) => any, error?: (error) => any) => {
@@ -230,6 +232,13 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         response.forEach((item) => {
           dispatch(fetchDetailedItemComplete(item));
         });
+        // if (response.length === 1 && !Boolean(scheduling)) {
+        // if (response.length === 1 && getDateScheduled(response[0])) {
+        //   setState({
+        //     scheduling: 'custom',
+        //     scheduledDateTime: getDateScheduled(response[0])
+        //   });
+        // }
         setIsFetchingItems(false);
       },
       error(error) {
