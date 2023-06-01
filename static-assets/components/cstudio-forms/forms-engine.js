@@ -2960,7 +2960,9 @@ var CStudioForms =
             // notify
             cb.success(def);
           },
-          failure: function () {}
+          failure: function (e) {
+            cb.failure(e);
+          }
         };
 
         CStudioAuthoring.Service.lookupConfigurtion(
