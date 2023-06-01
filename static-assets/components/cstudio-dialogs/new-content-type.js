@@ -108,8 +108,11 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       '<input style="disabled" title="' +
       CMgs.format(formsLangBundle, 'newContTypeDialogContentTypeNamelMsg') +
       '" id="contentTypeName" type="text">' +
-      '<span class="error-message hidden">' +
+      '<span class="error-message existing hidden">' +
       CMgs.format(formsLangBundle, 'contentTypeNameExists') +
+      '</span>' +
+      '<span class="error-message invalid hidden">' +
+      CMgs.format(formsLangBundle, 'contentTypeNameInvalid') +
       '</span></label>' +
       '<div class="selectInput">' +
       `<label for="contentTypeObjectType">${CMgs.format(formsLangBundle, 'newContTypeDialogType')}:</label>` +
@@ -200,8 +203,6 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
     // 'Display Label' input
     YEvent.on('contentTypeDisplayName', 'keyup', function () {
       value = document.getElementById('contentTypeDisplayName').value;
-
-      value = value.replace(/[^a-z0-9]/gi, '');
       value = value.toLowerCase();
 
       self.onSetDirty(Boolean(value));
@@ -512,9 +513,19 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
           formDefContent
         )
       })
-      .subscribe(() => {
-        CStudioAuthoring.Dialogs.NewContentType.closeDialog(true);
-        CStudioAuthoring.Dialogs.NewContentType.cb.success('/' + type + '/' + name);
+      .subscribe({
+        next: () => {
+          CStudioAuthoring.Dialogs.NewContentType.closeDialog(true);
+          CStudioAuthoring.Dialogs.NewContentType.cb.success('/' + type + '/' + name);
+        },
+        error: ({ response }) => {
+          craftercms.getStore().dispatch({
+            type: 'SHOW_ERROR_DIALOG',
+            payload: {
+              error: response.response
+            }
+          });
+        }
       });
   },
 
@@ -529,12 +540,15 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
   // Returns a boolean indicating if the contentType is valid or not.
   validateContentType() {
     const contentTypeName = document.getElementById('contentTypeName').value;
-    const contentTypeNameErrorMessage = document.querySelector('[for="contentTypeName"] .error-message');
+    const contentTypeNameErrorMessage = document.querySelector('[for="contentTypeName"] .error-message.existing');
+    const contentTypeNameInvalidMessage = document.querySelector('[for="contentTypeName"] .error-message.invalid');
     const contentTypeLabel = document.getElementById('contentTypeDisplayName').value;
     const contentTypeLabelErrorMessage = document.querySelector('[for="contentTypeDisplayName"] .error-message');
     const type = document.getElementById('contentTypeObjectType').value;
     const contentTypes = this.config.contentTypes;
     const newContentType = `/${type}/${contentTypeName}`;
+
+    contentTypeNameInvalidMessage.classList.add('hidden');
 
     const contentTypeIdExists = Boolean(contentTypes.find((contentType) => contentType.name === newContentType));
     if (contentTypeIdExists) {
@@ -550,7 +564,13 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
       contentTypeLabelErrorMessage.classList.add('hidden');
     }
 
-    return !contentTypeIdExists && !contentTypeLabelExists && contentTypeName.trim() !== '';
+    const contentTypeNameRegex = /^([\w\-\/ ]+([.]*[\w\-])+)*(\.[w]+)?\/?$/;
+    const contentTypeNameInvalid = !contentTypeNameRegex.test(contentTypeName);
+    if (contentTypeNameInvalid) {
+      contentTypeNameInvalidMessage.classList.remove('hidden');
+    }
+
+    return !contentTypeIdExists && !contentTypeLabelExists && contentTypeName.trim() !== '' && !contentTypeNameInvalid;
   },
 
   /**
@@ -570,6 +590,15 @@ CStudioAuthoring.Dialogs.NewContentType = CStudioAuthoring.Dialogs.NewContentTyp
 
     var checkButton = function () {
       enableButton = true;
+
+      // Clean content-type id
+      document.getElementById('contentTypeName').value = document
+        .getElementById('contentTypeName')
+        // normalizing to NFD Unicode normal form decomposes combined graphemes into the combination of simple ones
+        .value.normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .replace(/[^a-zA-Z0-9-_\/.]/g, '');
+
       const isValid = me.validateContentType();
 
       controlLoop: for (var inputId in configObj) {

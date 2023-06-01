@@ -3256,9 +3256,9 @@ var nodeOpen = false,
               CStudioAuthoring.Operations.translateContent(previewLangBundle);
             } catch (err) {}
           },
-          () => {
+          (e) => {
             if (callback.failure) {
-              callback.failure();
+              callback.failure(e);
             }
           }
         );

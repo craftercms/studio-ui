@@ -482,14 +482,15 @@ CStudioAuthoring.Messages.registerBundle('forms', 'de', {
 
   newContTypeDialogTitle: 'Neuen Content-Typ anlegen',
   newContTypeDialogDisplayLabel: 'Label',
-  newContTypeDialogContentTypeName: 'Name',
+  newContTypeDialogContentTypeName: 'ID',
   newContTypeDialogType: 'Typ',
   component: 'Komponente',
   newContTypeDialogLabelMsg: 'Vergeben Sie ein Label für den neuen Content-Typ',
   newContTypeDialogContentTypeNamelMsg: 'Vergeben Sie einen System-internen Namen für den neuen Content-Typ',
   newContTypeDialogTypeMsg: 'Wählen Sie den Typ für den neuen Content-Typ',
   contentTypeDisplayNameExists: 'Das Etikett existiert bereits',
-  contentTypeNameExists: 'Der Name existiert bereits',
+  contentTypeNameExists: 'Die ID existiert bereits',
+  contentTypeNameInvalid: 'Ungültige Inhaltstyp-ID',
 
   adminHelpDialogTitle: 'Feld Inhalt',
 
