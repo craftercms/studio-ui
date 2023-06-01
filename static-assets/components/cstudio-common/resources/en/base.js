@@ -478,15 +478,16 @@ CStudioAuthoring.Messages.registerBundle('forms', 'en', {
   uploadingDepenedents: 'Updating dependents, please wait...',
 
   newContTypeDialogTitle: 'Create Content Type',
-  newContTypeDialogDisplayLabel: 'Display Label',
-  newContTypeDialogContentTypeName: 'Content Type Name',
+  newContTypeDialogDisplayLabel: 'Label',
+  newContTypeDialogContentTypeName: 'ID',
   newContTypeDialogType: 'Type',
   component: 'Component',
   newContTypeDialogLabelMsg: 'Provide a display label for this content type',
   newContTypeDialogContentTypeNamelMsg: 'Provide a system name for this content type',
   newContTypeDialogTypeMsg: 'Select the type for this content type',
   contentTypeDisplayNameExists: 'The label already exists',
-  contentTypeNameExists: 'The name already exists',
+  contentTypeNameExists: 'The ID already exists',
+  contentTypeNameInvalid: 'Invalid content type ID',
 
   adminHelpDialogTitle: 'Field Content',
 
