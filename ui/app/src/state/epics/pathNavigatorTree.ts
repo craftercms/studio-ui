@@ -135,7 +135,20 @@ export default [
             createGetChildrenOptions(chunk, pluckProps(payload, true, 'limit', 'excludes'))
           )
         ]).pipe(
-          map(([items, children]) => pathNavigatorTreeRestoreComplete({ id, expanded, collapsed, items, children })),
+          map(([items, children]) => {
+            let updatedExpanded = expanded;
+            if (items.missingItems.length) {
+              // remove items.missingItems from expanded
+              const updatedExpanded = expanded.filter((expandedPath) => !items.missingItems.includes(expandedPath));
+              const uuid = state.sites.byId[state.sites.active].uuid;
+              setStoredPathNavigatorTree(uuid, state.user.username, id, {
+                expanded: updatedExpanded,
+                collapsed: state.pathNavigatorTree[id].collapsed,
+                keywordByPath: state.pathNavigatorTree[id].keywordByPath
+              });
+            }
+            return pathNavigatorTreeRestoreComplete({ id, expanded: updatedExpanded, collapsed, items, children });
+          }),
           catchAjaxError((error) => {
             if (error.status === 404) {
               const uuid = state.sites.byId[state.sites.active].uuid;
