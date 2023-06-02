@@ -43,7 +43,11 @@ CStudioForms.Controls.DateTime =
     this.startDateTimeObj = null; // Object storing the time when the form was loaded; will be used to adjust startTzDateTimeStr before the form is saved
     this.startTzDateTimeStr = null; // Time the form was loaded (adjusted to the site's timezone)
     this.populateDateExp = 'now';
-    this.defaultTimezone = 'UTC';
+    // This value is used when no custom timezone is selected for the control, the defaultTimezone is used for the timezone
+    // this will actually get stored, defaults to user timezone.
+    this.displayTimezone = craftercms.utils.datetime.getUserTimeZone();
+    // this.defaultTimezone = 'UTC';
+    this.defaultTimezone = craftercms.utils.datetime.getUserTimeZone();
     this.defaultTimezones = [
       { key: 'Etc/GMT+12', value: '(GMT-12:00) International Date Line West' },
       { key: 'Etc/GMT+11', value: '(GMT-11:00) Coordinated Universal Time-11' },
@@ -275,7 +279,11 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
 
       if ((this.showDate && Boolean(dateValue)) || (this.showTime && !this.showDate && Boolean(timeValue))) {
-        res = this.convertDateTime(dateVal, timeValue, this.timezone, true, null).split(' ');
+        // Current displayed timezone: if using customTimezone it used the selected one (this.timezone). If not using
+        // customTimezone it uses the displayTimezone.
+        // This section converts the current displayed timezone back to UTC (to store in xml).
+        const sourceTimezone = this.useCustomTimezone ? this.timezone : this.displayTimezone;
+        res = this.convertDateTime(dateVal, timeValue, sourceTimezone, true, null).split(' ');
         return CStudioAuthoring.Utils.formatDateToISO(res[0] + ' ' + res[1]);
       } else {
         return ''; // The date/time fields are empty
@@ -1379,7 +1387,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
           emptyTime = true;
         }
       }
-      this.convertDateTime(dateVal, timeVal, this.timezone, false, cb);
+      const timeZoneToConvert = this.useCustomTimezone ? this.timezone : this.displayTimezone;
+      this.convertDateTime(dateVal, timeVal, timeZoneToConvert, false, cb);
     } else {
       // No value exists yet
       if (this.populate) {
@@ -1490,8 +1499,14 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
           context: this,
 
           success: function (config) {
-            this.context.timezone = config.locale?.dateTimeFormatOptions?.timeZone ?? this.context.defaultTimezone;
-            this.context.setStaticTimezone(value, this.context.timezone);
+            // Retrieve engine's configured timezone, if it doesn't exist, use default timezone.
+            const configTimezone = config.locale?.dateTimeFormatOptions?.timeZone;
+            if (configTimezone) {
+              this.context.displayTimezone = configTimezone;
+            }
+            this.context.timezone = configTimezone ?? this.context.defaultTimezone;
+            // displayTimezone is used to render the value in the UI
+            this.context.setStaticTimezone(value, this.context.displayTimezone);
           },
 
           failure: function () {
@@ -1499,7 +1514,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
           }
         });
       } else {
-        this.setStaticTimezone(value, this.timezone);
+        // displayTimezone is used to render the value in the UI
+        this.setStaticTimezone(value, this.displayTimezone);
       }
     }
   },
