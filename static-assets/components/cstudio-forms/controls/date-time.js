@@ -1035,10 +1035,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         this.textFieldTimeDecrementHelper(decrementControlEl.id, timeEl.id, 'click');
       }
 
+      const zoneWrapper = document.createElement('div');
+      YAHOO.util.Dom.addClass(zoneWrapper, 'zone-container');
       if (this.useCustomTimezone) {
-        var zoneWrapper = document.createElement('div');
-        YAHOO.util.Dom.addClass(zoneWrapper, 'zone-container');
-
         timeWrapper.appendChild(timeEl);
 
         timezoneEl = document.createElement('select');
@@ -1067,10 +1066,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
 
       timezoneEl.id = divPrefix + 'timezoneCode';
 
-      if (this.useCustomTimezone) {
-        zoneWrapper.appendChild(timezoneEl);
-        controlWidgetContainerEl.appendChild(zoneWrapper);
-      }
+      zoneWrapper.appendChild(timezoneEl);
+      controlWidgetContainerEl.appendChild(zoneWrapper);
     }
 
     const controlsContainer = document.createElement('div');
@@ -1476,7 +1473,8 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
   setStaticTimezone: function (value, timezone) {
     var timezoneElt = document.getElementById(this.id + '-timezoneCode');
     if (timezoneElt) {
-      $(timezoneElt).html(timezone);
+      $(timezoneElt).html(this.defaultTimezones.find((tz) => tz.key === timezone)?.value ?? timezone);
+      timezoneElt.classList.add('static-timezone');
     }
     this._setValue(value, timezone);
   },
