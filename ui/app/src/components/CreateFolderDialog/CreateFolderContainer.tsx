@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import { getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
+import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
 import { createFolder, fetchSandboxItem, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
@@ -40,7 +40,7 @@ import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { applyFolderNameRules } from '../../utils/content';
+import { applyFolderNameRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
@@ -63,9 +63,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const itemLookupTable = useItemsByPath();
   const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
   const folderExists = rename
-    ? name !== value &&
-      (itemLookupTable[newFolderPath] !== UNDEFINED || itemLookupTable[withIndex(newFolderPath)] !== UNDEFINED)
-    : itemLookupTable[newFolderPath] !== UNDEFINED || itemLookupTable[withIndex(newFolderPath)] !== UNDEFINED;
+    ? name !== value && lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED
+    : lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED;
   const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
 
   useEffect(() => {
