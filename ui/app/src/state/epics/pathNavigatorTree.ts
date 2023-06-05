@@ -139,7 +139,7 @@ export default [
             let updatedExpanded = expanded;
             if (items.missingItems.length) {
               // remove items.missingItems from expanded
-              const updatedExpanded = expanded.filter((expandedPath) => !items.missingItems.includes(expandedPath));
+              updatedExpanded = expanded.filter((expandedPath) => !items.missingItems.includes(expandedPath));
               const uuid = state.sites.byId[state.sites.active].uuid;
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
                 expanded: updatedExpanded,
