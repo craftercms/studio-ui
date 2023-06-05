@@ -233,6 +233,8 @@ crafterDefine(
 
       // Event on pencil click, publishes ICE_ZONE_ON, which opens the form
       $document.on('click', '.studio-ice-indicator', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
         let pencilClasses = 'fa-pencil icon-yellow';
         let spinnerClases = 'fa-spinner fa-spin icon-default';
 
