@@ -84,7 +84,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     };
 
     if (detailedItems) {
-      let itemsChecked = detailedItems.filter((item) => selectedItems[item.path]);
+      const itemsChecked = detailedItems.flatMap((item) => (selectedItems[item.path] ? [item] : []));
 
       if (itemsChecked.length === 0) {
         state.publishingTarget = '';
