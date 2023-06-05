@@ -41,7 +41,6 @@ CStudioForms.Controls.Time =
     // This value is used when no custom timezone is selected for the control, the defaultTimezone is used for the timezone
     // this will actually get stored, defaults to user timezone.
     this.displayTimezone = craftercms.utils.datetime.getUserTimeZone();
-    // this.defaultTimezone = 'UTC';
     this.defaultTimezone = craftercms.utils.datetime.getUserTimeZone();
     this.defaultTimezones = [
       { key: 'Etc/GMT+12', value: '(GMT-12:00) International Date Line West' },
