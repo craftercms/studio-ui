@@ -39,6 +39,12 @@ import { FormattedMessage } from 'react-intl';
 import { Pagination } from '../Pagination';
 import { AllItemActions } from '../../models';
 import { SxProps } from '@mui/system';
+import { useDispatch } from 'react-redux';
+import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
+import { showItemMegaMenu } from '../../state/actions/dialogs';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
+import Tooltip from '@mui/material/Tooltip';
 
 export const actionsToBeShown: AllItemActions[] = [
   'edit',
@@ -171,5 +177,38 @@ export function Pager(props: {
         mode="table"
       />
     </>
+  );
+}
+
+export function DashletItemOptions(props: { path: string }) {
+  const { path } = props;
+  const dispatch = useDispatch();
+
+  const onOpenItemMegaMenu = (element: Element) => {
+    const anchorRect = element.getBoundingClientRect();
+    const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
+    const left = anchorRect.left + getOffsetLeft(anchorRect, 'left');
+    dispatch(
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top, left }
+      })
+    );
+  };
+
+  return (
+    <Tooltip title={<FormattedMessage defaultMessage="Options" />}>
+      <IconButton
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation();
+          onOpenItemMegaMenu(e.currentTarget);
+        }}
+        sx={{ p: 0 }}
+      >
+        <MoreVertRoundedIcon />
+      </IconButton>
+    </Tooltip>
   );
 }

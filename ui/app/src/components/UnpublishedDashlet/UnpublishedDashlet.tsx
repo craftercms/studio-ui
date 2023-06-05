@@ -33,7 +33,14 @@ import useLocale from '../../hooks/useLocale';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchUnpublished } from '../../services/dashboard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
+import {
+  DashletEmptyMessage,
+  DashletItemOptions,
+  getItemSkeleton,
+  List,
+  ListItemIcon,
+  Pager
+} from '../DashletCard/dashletCommons';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -89,6 +96,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const isIndeterminate = hasSelected && !isAllSelected;
+  const [over, setOver] = useState(null);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
@@ -251,7 +259,13 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
-            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
+            <ListItemButton
+              key={index}
+              onClick={(e) => onSelectItem(e, item)}
+              sx={{ pt: 0, pb: 0 }}
+              onMouseOver={() => setOver(item.path)}
+              onMouseLeave={() => setOver(null)}
+            >
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
@@ -259,6 +273,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                 primary={
                   <ItemDisplay
                     item={item}
+                    titleDisplayProp="path"
                     showPublishingTarget={false}
                     onClick={(e) =>
                       isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
@@ -279,6 +294,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                   </Typography>
                 }
               />
+              {over === item.path && <DashletItemOptions path={item.path} />}
             </ListItemButton>
           ))}
         </List>

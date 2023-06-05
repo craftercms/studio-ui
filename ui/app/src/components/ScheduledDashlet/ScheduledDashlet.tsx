@@ -27,8 +27,15 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect } from 'react';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  DashletEmptyMessage,
+  DashletItemOptions,
+  getItemSkeleton,
+  List,
+  ListItemIcon,
+  Pager
+} from '../DashletCard/dashletCommons';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchScheduled } from '../../services/dashboard';
 import { DetailedItem, LookupTable } from '../../models';
@@ -96,6 +103,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
+  const [over, setOver] = useState(null);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
@@ -261,7 +269,13 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
-            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
+            <ListItemButton
+              key={index}
+              onClick={(e) => onSelectItem(e, item)}
+              sx={{ pt: 0, pb: 0 }}
+              onMouseOver={() => setOver(item.path)}
+              onMouseLeave={() => setOver(null)}
+            >
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
@@ -269,6 +283,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                 primary={
                   <ItemDisplay
                     item={item}
+                    titleDisplayProp="path"
                     onClick={(e) =>
                       isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
                     }
@@ -295,6 +310,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                   />
                 }
               />
+              {over === item.path && <DashletItemOptions path={item.path} />}
             </ListItemButton>
           ))}
         </List>

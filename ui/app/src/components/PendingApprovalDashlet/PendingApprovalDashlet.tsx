@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   CommonDashletProps,
   getItemViewOption,
@@ -26,7 +26,14 @@ import {
   WithSelectedState
 } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
+import {
+  DashletEmptyMessage,
+  DashletItemOptions,
+  getItemSkeleton,
+  List,
+  ListItemIcon,
+  Pager
+} from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import ListItemText from '@mui/material/ListItemText';
@@ -93,6 +100,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
+  const [over, setOver] = useState(null);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
@@ -266,7 +274,13 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       {Boolean(items?.length) && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
-            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
+            <ListItemButton
+              key={index}
+              onClick={(e) => onSelectItem(e, item)}
+              sx={{ pt: 0, pb: 0 }}
+              onMouseOver={() => setOver(item.path)}
+              onMouseLeave={() => setOver(null)}
+            >
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>
@@ -274,6 +288,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 primary={
                   <ItemDisplay
                     item={item}
+                    titleDisplayProp="path"
                     onClick={(e) =>
                       isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
                     }
@@ -297,6 +312,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                   />
                 }
               />
+              {over === item.path && <DashletItemOptions path={item.path} />}
             </ListItemButton>
           ))}
         </List>

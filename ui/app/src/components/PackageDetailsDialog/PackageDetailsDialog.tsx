@@ -157,7 +157,7 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
                       justifyContent: 'space-between'
                     }}
                   >
-                    <ItemDisplay item={item} showNavigableAsLinks={false} />
+                    <ItemDisplay item={item} titleDisplayProp="path" showNavigableAsLinks={false} />
 
                     {over === item.path && (
                       <Tooltip title={<FormattedMessage defaultMessage="Options" />}>

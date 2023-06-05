@@ -25,7 +25,14 @@ import { fetchActivity } from '../../services/dashboard';
 import useActiveUser from '../../hooks/useActiveUser';
 import { DashletCard } from '../DashletCard';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
-import { DashletEmptyMessage, getItemSkeleton, ListItemIcon, Pager, PersonAvatar } from '../DashletCard/dashletCommons';
+import {
+  DashletEmptyMessage,
+  DashletItemOptions,
+  getItemSkeleton,
+  ListItemIcon,
+  Pager,
+  PersonAvatar
+} from '../DashletCard/dashletCommons';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import { renderActivity, renderActivityTimestamp } from '../ActivityDashlet';
@@ -105,6 +112,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const siteId = useActiveSiteId();
   const [loadingActionsBar, setLoadingActionsBar] = useState(false);
+  const [over, setOver] = useState(null);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
@@ -292,7 +300,9 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
             const ListItemComponent = isItemActivity ? ListItemButton : ListItem;
             const listItemComponentProps = isItemActivity
               ? {
-                  onClick: (e) => handleSelect(e, activity.item.path)
+                  onClick: (e) => handleSelect(e, activity.item.path),
+                  onMouseOver: () => setOver(activity.id),
+                  onMouseOut: () => setOver(null)
                 }
               : {};
 
@@ -322,6 +332,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
                   })}
                   secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
                 />
+                {isItemActivity && over === activity.id && <DashletItemOptions path={activity.item.path} />}
               </ListItemComponent>
             );
           })}
