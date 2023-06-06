@@ -40,7 +40,7 @@ import { useEnhancedDialogContext } from '../EnhancedDialog';
 import { fetchSandboxItemComplete } from '../../state/actions/content';
 import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { applyFolderNameRules } from '../../utils/content';
+import { applyFolderNameRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
@@ -63,8 +63,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const itemLookupTable = useItemsByPath();
   const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
   const folderExists = rename
-    ? name !== value && itemLookupTable[newFolderPath] !== UNDEFINED
-    : itemLookupTable[newFolderPath] !== UNDEFINED;
+    ? name !== value && lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED
+    : lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED;
   const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
 
   useEffect(() => {
