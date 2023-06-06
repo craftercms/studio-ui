@@ -21,6 +21,7 @@ import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { Credentials } from '../models/Credentials';
 import { Api2ResponseFormat, ApiResponse } from '../models/ApiResponse';
+import { toQueryString } from '../utils/object';
 
 interface FetchSSOLogoutUrlResponse {
   logoutUrl: string;
@@ -46,7 +47,7 @@ export function login(credentials: Credentials): Observable<boolean> {
         ...getGlobalHeaders()
       },
       redirect: 'manual',
-      body: `username=${credentials.username}&password=${credentials.password}`
+      body: toQueryString({ username: credentials.username, password: credentials.password }, { prefix: '' })
     })
   ).pipe(map(() => true));
 }
