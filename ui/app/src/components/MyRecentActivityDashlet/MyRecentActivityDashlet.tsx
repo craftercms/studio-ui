@@ -112,7 +112,6 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const siteId = useActiveSiteId();
   const [loadingActionsBar, setLoadingActionsBar] = useState(false);
-  const [over, setOver] = useState(null);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
@@ -299,18 +298,18 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
             const isItemActivity = activity.item && activity.item.systemType;
             const ListItemComponent = isItemActivity ? ListItemButton : ListItem;
             const listItemComponentProps = isItemActivity
-              ? {
-                  onClick: (e) => handleSelect(e, activity.item.path),
-                  onMouseOver: () => setOver(activity.id),
-                  onMouseOut: () => setOver(null)
-                }
+              ? { onClick: (e) => handleSelect(e, activity.item.path) }
               : {};
 
             return (
               // Property 'button' is missing in type showing when conditionally rendering ListItemButton or ListItem
               // and not showing when using ListItemButton or ListItem directly.
               // @ts-ignore
-              <ListItemComponent key={activity.id} sx={{ pt: 0, pb: 0 }} {...listItemComponentProps}>
+              <ListItemComponent
+                key={activity.id}
+                sx={{ pt: 0, pb: 0, '&:hover .dashlet-item-options': { display: 'inline-block !important' } }}
+                {...listItemComponentProps}
+              >
                 <ListItemIcon>
                   {activity.item && activity.item.systemType ? (
                     <Checkbox
@@ -332,7 +331,11 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
                   })}
                   secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
                 />
-                {isItemActivity && over === activity.id && <DashletItemOptions path={activity.item.path} />}
+                {isItemActivity && (
+                  <Box className="dashlet-item-options" display="none">
+                    <DashletItemOptions path={activity.item.path} />
+                  </Box>
+                )}
               </ListItemComponent>
             );
           })}

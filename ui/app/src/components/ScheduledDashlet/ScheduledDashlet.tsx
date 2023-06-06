@@ -27,7 +27,7 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   DashletEmptyMessage,
   DashletItemOptions,
@@ -103,7 +103,6 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
-  const [over, setOver] = useState(null);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
@@ -272,9 +271,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
             <ListItemButton
               key={index}
               onClick={(e) => onSelectItem(e, item)}
-              sx={{ pt: 0, pb: 0 }}
-              onMouseOver={() => setOver(item.path)}
-              onMouseLeave={() => setOver(null)}
+              sx={{ pt: 0, pb: 0, '&:hover .dashlet-item-options': { display: 'inline-block !important' } }}
             >
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
@@ -310,7 +307,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                   />
                 }
               />
-              {over === item.path && <DashletItemOptions path={item.path} />}
+              <Box className="dashlet-item-options" display="none">
+                <DashletItemOptions path={item.path} />
+              </Box>
             </ListItemButton>
           ))}
         </List>

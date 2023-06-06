@@ -17,7 +17,14 @@
 import React, { useEffect } from 'react';
 import { CommonDashletProps, getItemViewOption, isPage, previewPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListSubheader } from '../DashletCard/dashletCommons';
+import {
+  DashletEmptyMessage,
+  DashletItemOptions,
+  getItemSkeleton,
+  List,
+  ListItem,
+  ListSubheader
+} from '../DashletCard/dashletCommons';
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
@@ -37,6 +44,7 @@ import useEnv from '../../hooks/useEnv';
 import { useDispatch } from 'react-redux';
 import { SandboxItem } from '../../models';
 import LoadingIconButton from '../LoadingIconButton';
+import Box from '@mui/material/Box';
 
 interface ExpiringDashletProps extends CommonDashletProps {
   days?: number;
@@ -58,7 +66,15 @@ const renderExpiredItems = (
   items.map((item, index) => {
     const isItemPreviewable = isPage(item.sandboxItem.systemType) || item.sandboxItem.availableActionsMap.view;
     return (
-      <ListItem key={index}>
+      <ListItem
+        key={index}
+        sx={{ '&:hover .dashlet-item-options': { display: 'inline-block !important' } }}
+        secondaryAction={
+          <Box className="dashlet-item-options" display="none">
+            <DashletItemOptions path={item.sandboxItem.path} />
+          </Box>
+        }
+      >
         <ListItemText
           primary={
             <ItemDisplay

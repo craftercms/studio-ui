@@ -58,6 +58,7 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import LoadingIconButton from '../LoadingIconButton';
+import Box from '@mui/material/Box';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -96,7 +97,6 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
   const isIndeterminate = hasSelected && !isAllSelected;
-  const [over, setOver] = useState(null);
 
   const loadPage = useCallback(
     (pageNumber: number, backgroundRefresh?: boolean) => {
@@ -262,9 +262,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
             <ListItemButton
               key={index}
               onClick={(e) => onSelectItem(e, item)}
-              sx={{ pt: 0, pb: 0 }}
-              onMouseOver={() => setOver(item.path)}
-              onMouseLeave={() => setOver(null)}
+              sx={{ pt: 0, pb: 0, '&:hover .dashlet-item-options': { display: 'inline-block !important' } }}
             >
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
@@ -294,7 +292,9 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                   </Typography>
                 }
               />
-              {over === item.path && <DashletItemOptions path={item.path} />}
+              <Box className="dashlet-item-options" display="none">
+                <DashletItemOptions path={item.path} />
+              </Box>
             </ListItemButton>
           ))}
         </List>

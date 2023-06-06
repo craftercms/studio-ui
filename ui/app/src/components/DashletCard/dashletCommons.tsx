@@ -42,7 +42,7 @@ import { SxProps } from '@mui/system';
 import { useDispatch } from 'react-redux';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
-import IconButton from '@mui/material/IconButton';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -180,8 +180,8 @@ export function Pager(props: {
   );
 }
 
-export function DashletItemOptions(props: { path: string }) {
-  const { path } = props;
+export function DashletItemOptions(props: { path: string; iconButtonProps?: IconButtonProps }) {
+  const { path, iconButtonProps } = props;
   const dispatch = useDispatch();
 
   const onOpenItemMegaMenu = (element: Element) => {
@@ -205,7 +205,7 @@ export function DashletItemOptions(props: { path: string }) {
           e.stopPropagation();
           onOpenItemMegaMenu(e.currentTarget);
         }}
-        sx={{ p: 0 }}
+        {...iconButtonProps}
       >
         <MoreVertRoundedIcon />
       </IconButton>
