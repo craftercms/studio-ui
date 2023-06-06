@@ -212,11 +212,12 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
     // Assumption: this reducer is a reset. Not suitable for partial updates.
     [pathNavigatorTreeRestoreComplete.type]: (
       state,
-      { payload: { id, children, items } }: { payload: PathNavigatorTreeRestoreCompletePayload }
+      { payload: { id, children, items, expanded } }: { payload: PathNavigatorTreeRestoreCompletePayload }
     ) => {
       const chunk = state[id];
       chunk.childrenByParentPath = {};
       chunk.totalByPath = {};
+      chunk.expanded = expanded;
       const childrenByParentPath = chunk.childrenByParentPath;
       const totalByPath = chunk.totalByPath;
       const offsetByPath = chunk.offsetByPath;
