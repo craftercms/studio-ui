@@ -58,6 +58,7 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import LoadingIconButton from '../LoadingIconButton';
+import DashletFilter from '../ActivityDashlet/DashletFilter';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -231,6 +232,13 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                 ]
               : [])
           ])}
+          noSelectionContent={
+            <DashletFilter
+              onSelectFilter={(types) => {
+                console.log('types', types);
+              }}
+            />
+          }
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },
