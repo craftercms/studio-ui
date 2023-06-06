@@ -1516,6 +1516,12 @@ body.yui-skin-cstudioTheme.masked {
   margin-right: 0;
 }
 
+.date-time-container .static-timezone {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: none;
+}
+
 .date-link {
   margin-right: 5px;
 }
