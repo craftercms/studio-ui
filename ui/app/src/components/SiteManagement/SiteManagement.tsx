@@ -97,7 +97,7 @@ export function SiteManagement() {
   }, [setPublishingStatusLookup, sitesById]);
 
   useMount(() => {
-    hasGlobalPermissions('create-site', 'edit_site', 'site_delete').subscribe(setPermissionsLookup);
+    hasGlobalPermissions('create_site', 'edit_site', 'delete_site').subscribe(setPermissionsLookup);
   });
 
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
@@ -203,7 +203,7 @@ export function SiteManagement() {
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Projects" />}
         leftContent={
-          permissionsLookup['create-site'] && (
+          permissionsLookup['create_site'] && (
             <Button
               startIcon={<AddIcon />}
               variant="outlined"
@@ -238,7 +238,7 @@ export function SiteManagement() {
             resource={resource}
             publishingStatusLookup={publishingStatusLookup}
             onSiteClick={onSiteClick}
-            onDeleteSiteClick={permissionsLookup['site_delete'] && onDeleteSiteClick}
+            onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
             onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
