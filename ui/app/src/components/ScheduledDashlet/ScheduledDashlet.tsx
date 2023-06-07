@@ -31,6 +31,7 @@ import React, { useCallback, useEffect } from 'react';
 import {
   DashletEmptyMessage,
   DashletItemOptions,
+  dashletItemOptionsClasses,
   getItemSkeleton,
   List,
   ListItemIcon,
@@ -271,7 +272,12 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
             <ListItemButton
               key={index}
               onClick={(e) => onSelectItem(e, item)}
-              sx={{ pt: 0, pb: 0, '&:hover .dashlet-item-options': { display: 'inline-block !important' } }}
+              sx={{
+                pt: 0,
+                pb: 0,
+                [`.${dashletItemOptionsClasses.root}`]: { display: 'none' },
+                [`&:hover .${dashletItemOptionsClasses.root}`]: { display: 'inline-block' }
+              }}
             >
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
@@ -307,9 +313,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                   />
                 }
               />
-              <Box className="dashlet-item-options" display="none">
-                <DashletItemOptions path={item.path} />
-              </Box>
+              <DashletItemOptions path={item.path} />
             </ListItemButton>
           ))}
         </List>

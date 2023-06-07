@@ -36,6 +36,7 @@ import { fetchUnpublished } from '../../services/dashboard';
 import {
   DashletEmptyMessage,
   DashletItemOptions,
+  dashletItemOptionsClasses,
   getItemSkeleton,
   List,
   ListItemIcon,
@@ -58,7 +59,6 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import LoadingIconButton from '../LoadingIconButton';
-import Box from '@mui/material/Box';
 
 interface UnpublishedDashletProps extends CommonDashletProps {}
 
@@ -262,7 +262,12 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
             <ListItemButton
               key={index}
               onClick={(e) => onSelectItem(e, item)}
-              sx={{ pt: 0, pb: 0, '&:hover .dashlet-item-options': { display: 'inline-block !important' } }}
+              sx={{
+                pt: 0,
+                pb: 0,
+                [`.${dashletItemOptionsClasses.root}`]: { display: 'none' },
+                [`&:hover .${dashletItemOptionsClasses.root}`]: { display: 'inline-block' }
+              }}
             >
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
@@ -292,9 +297,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                   </Typography>
                 }
               />
-              <Box className="dashlet-item-options" display="none">
-                <DashletItemOptions path={item.path} />
-              </Box>
+              <DashletItemOptions path={item.path} />
             </ListItemButton>
           ))}
         </List>

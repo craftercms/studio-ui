@@ -25,7 +25,8 @@ import {
   ListItem,
   ListSubheader
 } from '../DashletCard/dashletCommons';
-import { listItemClasses } from '@mui/material/ListItem';
+import { listItemSecondaryActionClasses } from '@mui/material/ListItemSecondaryAction';
+
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
@@ -69,8 +70,8 @@ const renderExpiredItems = (
       <ListItem
         key={index}
         sx={{
-          [`.${listItemClasses.secondaryAction}`]: { display: 'none' },
-          [`&:hover ${listItemClasses.secondaryAction}`]: { display: 'inline-block !important' }
+          [`& .${listItemSecondaryActionClasses.root}`]: { display: 'none' },
+          [`&:hover .${listItemSecondaryActionClasses.root}`]: { display: 'inline-block' }
         }}
         secondaryAction={<DashletItemOptions path={item.sandboxItem.path} />}
       >

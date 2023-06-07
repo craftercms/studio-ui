@@ -28,6 +28,7 @@ import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import {
   DashletEmptyMessage,
   DashletItemOptions,
+  dashletItemOptionsClasses,
   getItemSkeleton,
   ListItemIcon,
   Pager,
@@ -307,7 +308,12 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
               // @ts-ignore
               <ListItemComponent
                 key={activity.id}
-                sx={{ pt: 0, pb: 0, '&:hover .dashlet-item-options': { display: 'inline-block !important' } }}
+                sx={{
+                  pt: 0,
+                  pb: 0,
+                  [`.${dashletItemOptionsClasses.root}`]: { display: 'none' },
+                  [`&:hover .${dashletItemOptionsClasses.root}`]: { display: 'inline-block' }
+                }}
                 {...listItemComponentProps}
               >
                 <ListItemIcon>
@@ -331,11 +337,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
                   })}
                   secondary={renderActivityTimestamp(activity.actionTimestamp, locale)}
                 />
-                {isItemActivity && (
-                  <Box className="dashlet-item-options" display="none">
-                    <DashletItemOptions path={activity.item.path} />
-                  </Box>
-                )}
+                {isItemActivity && <DashletItemOptions path={activity.item.path} />}
               </ListItemComponent>
             );
           })}

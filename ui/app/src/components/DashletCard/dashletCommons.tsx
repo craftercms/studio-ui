@@ -180,6 +180,10 @@ export function Pager(props: {
   );
 }
 
+export const dashletItemOptionsClasses = {
+  root: 'DashletItemOptions-root'
+};
+
 export function DashletItemOptions(props: { path: string; iconButtonProps?: IconButtonProps }) {
   const { path, iconButtonProps } = props;
   const dispatch = useDispatch();
@@ -198,17 +202,19 @@ export function DashletItemOptions(props: { path: string; iconButtonProps?: Icon
   };
 
   return (
-    <Tooltip title={<FormattedMessage defaultMessage="Options" />}>
-      <IconButton
-        size="small"
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpenItemMegaMenu(e.currentTarget);
-        }}
-        {...iconButtonProps}
-      >
-        <MoreVertRoundedIcon />
-      </IconButton>
-    </Tooltip>
+    <Box component="span" className={dashletItemOptionsClasses.root}>
+      <Tooltip title={<FormattedMessage defaultMessage="Options" />}>
+        <IconButton
+          size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenItemMegaMenu(e.currentTarget);
+          }}
+          {...iconButtonProps}
+        >
+          <MoreVertRoundedIcon />
+        </IconButton>
+      </Tooltip>
+    </Box>
   );
 }
