@@ -197,11 +197,6 @@ CStudioAuthoring.Module.requireModule(
         getSupportedProperties: function () {
           return [
             {
-              label: this.formatMessage(this.contentTypesMessages.width),
-              name: 'width',
-              type: 'int'
-            },
-            {
               label: this.formatMessage(this.contentTypesMessages.height),
               name: 'height',
               type: 'int'
@@ -284,6 +279,7 @@ CStudioAuthoring.Module.requireModule(
           this.containerEl = containerEl;
           this.fieldConfig = config;
           this.rteId = rteId;
+          this.rteWidth = '100%';
 
           inputEl = this._renderInputMarkup(config, rteId);
 
@@ -297,10 +293,6 @@ CStudioAuthoring.Module.requireModule(
                 break;
               case 'videoManager':
                 this.videoManagerName = prop.value && prop.Value != '' ? prop.value : null;
-                break;
-              case 'width':
-                var value = isNaN(parseInt(prop.value)) ? prop.value : parseInt(prop.value);
-                this.rteWidth = typeof prop.value == 'string' && prop.value ? value : '100%';
                 break;
               case 'fileManager':
                 this.fileManagerName = prop.value && prop.Value != '' ? prop.value : null;
@@ -336,14 +328,6 @@ CStudioAuthoring.Module.requireModule(
           const $editorContainer = $(`#${rteId}`).parent(),
             editorContainerWidth = $editorContainer.width(),
             editorContainerPL = parseFloat($editorContainer.css('padding-left').replace('px', ''));
-
-          if (_thisControl.rteWidth > editorContainerWidth) {
-            $editorContainer.css('padding-left', 0);
-            $editorContainer.css('float', 'right');
-            if (_thisControl.rteWidth > editorContainerWidth + editorContainerPL) {
-              _thisControl.rteWidth = editorContainerWidth + editorContainerPL;
-            }
-          }
 
           const imageDatasources = this.imageManagerName ? this.imageManagerName.split(',') : [];
           const imageUploadDatasources = [
