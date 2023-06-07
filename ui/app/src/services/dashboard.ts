@@ -138,9 +138,10 @@ export function fetchMyActivity(siteId: string, options?: FetchMyActivityOptions
 
 export function fetchPendingApproval(
   siteId: string,
-  options?: PaginationOptions
+  options?: PaginationOptions,
+  itemType?: string // Comma separated string
 ): Observable<PagedArray<DetailedItem>> {
-  const qs = toQueryString({ siteId, ...options });
+  const qs = toQueryString({ siteId, ...options, itemType });
   return get(`/studio/api/2/dashboard/content/pending_approval${qs}`).pipe(
     map(({ response }) =>
       createPagedArray(
@@ -159,8 +160,12 @@ export function fetchPendingApprovalPackageItems(siteId: string, packageId: numb
   );
 }
 
-export function fetchUnpublished(siteId: string, options: PaginationOptions): Observable<PagedArray<SandboxItem>> {
-  const qs = toQueryString({ siteId, ...options });
+export function fetchUnpublished(
+  siteId: string,
+  options: PaginationOptions,
+  itemType?: string // Comma separated string
+): Observable<PagedArray<SandboxItem>> {
+  const qs = toQueryString({ siteId, ...options, itemType });
   return get(`/studio/api/2/dashboard/content/unpublished${qs}`).pipe(
     map(({ response }) =>
       createPagedArray(
@@ -178,8 +183,12 @@ export interface FetchScheduledOptions extends PaginationOptions {
   dateTo?: string;
 }
 
-export function fetchScheduled(siteId: string, options: FetchScheduledOptions): Observable<PagedArray<DetailedItem>> {
-  const qs = toQueryString({ siteId, ...options });
+export function fetchScheduled(
+  siteId: string,
+  options: FetchScheduledOptions,
+  itemType?: string // Comma separated string
+): Observable<PagedArray<DetailedItem>> {
+  const qs = toQueryString({ siteId, ...options, itemType });
   return get(`/studio/api/2/dashboard/publishing/scheduled${qs}`).pipe(
     map(({ response }) =>
       createPagedArray(

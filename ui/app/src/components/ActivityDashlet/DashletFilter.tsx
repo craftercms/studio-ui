@@ -18,7 +18,7 @@ import { LookupTable } from '../../models';
 import SystemType from '../../models/SystemType';
 import { FormattedMessage } from 'react-intl';
 import { DropDownMenu } from '../DropDownMenuButton';
-import React, { ReactElement, useEffect, useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { useSelectionLookupState } from './utils';
 
 const filterOptionsLookup: LookupTable<{
@@ -39,7 +39,7 @@ const filterOptionsLookup: LookupTable<{
   },
   contentType: {
     name: <FormattedMessage defaultMessage="Content Type" />,
-    types: [] // TODO: see what's the one in here
+    types: ['content type']
   },
   template: {
     name: <FormattedMessage defaultMessage="Template" />,
@@ -51,7 +51,7 @@ const filterOptionsLookup: LookupTable<{
   },
   other: {
     name: <FormattedMessage defaultMessage="Other" />,
-    types: ['file', 'folder', 'unknown'] // TODO: should unknown be here?
+    types: ['file', 'folder']
   }
 };
 
@@ -73,19 +73,21 @@ export function DashletFilter(props: DashletFilterProps) {
     [selectedFilters]
   );
 
-  useEffect(() => {
+  const onSetSelectedFilter = (id) => {
+    setSelectedFilters(id);
+    const newFilters = id === 'all' ? [] : filters.includes(id) ? filters.filter((f) => f !== id) : [...filters, id];
     const types = [];
-    filters.forEach((filter) => {
+    newFilters.forEach((filter) => {
       types.push(...filterOptionsLookup[filter].types);
     });
     onSelectFilter?.(types);
-  }, [filters, onSelectFilter]);
+  };
 
   return (
     <DropDownMenu
       size="small"
       variant="text"
-      onMenuItemClick={(e, id) => setSelectedFilters(id)}
+      onMenuItemClick={(e, id) => onSetSelectedFilter(id)}
       options={options}
       closeOnSelection={false}
       menuProps={{ sx: { minWidth: 180 } }}

@@ -58,6 +58,8 @@ import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
 import { LoadingIconButton } from '../LoadingIconButton';
 import Box from '@mui/material/Box';
+import SystemType from '../../models/SystemType';
+import DashletFilter from '../ActivityDashlet/DashletFilter';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
@@ -103,18 +105,16 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
+  const [itemTypes, setItemTypes] = useState<Array<SystemType>>([]);
 
   const loadPage = useCallback(
-    (pageNumber: number, backgroundRefresh?: boolean) => {
+    (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
       setState({
         loading: true,
         loadingSkeleton: !backgroundRefresh
       });
-      fetchScheduled(site, {
-        limit,
-        offset: newOffset
-      }).subscribe((items) => {
+      fetchScheduled(site, { limit, offset: newOffset }, itemTypes?.join(',')).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
       });
     },
@@ -155,24 +155,26 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   };
 
   const loadPagesUntil = useCallback(
-    (pageNumber: number, backgroundRefresh?: boolean) => {
+    (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => {
       setState({
         loading: true,
         loadingSkeleton: !backgroundRefresh,
         ...(!loadingSkeleton && { items: null })
       });
       const totalLimit = pageNumber * limit;
-      fetchScheduled(site, { limit: totalLimit + limit, offset: 0 }).subscribe((scheduledItems) => {
-        const validatedState = getValidatedSelectionState(scheduledItems, selected, limit);
-        setItemsById(validatedState.itemsById);
-        setState(validatedState.state);
-      });
+      fetchScheduled(site, { limit: totalLimit + limit, offset: 0 }, itemTypes?.join(',')).subscribe(
+        (scheduledItems) => {
+          const validatedState = getValidatedSelectionState(scheduledItems, selected, limit);
+          setItemsById(validatedState.itemsById);
+          setState(validatedState.state);
+        }
+      );
     },
     [limit, selected, setState, site, setItemsById, loadingSkeleton]
   );
 
   const onRefresh = () => {
-    loadPagesUntil(currentPage, true);
+    loadPagesUntil(currentPage, itemTypes, true);
   };
 
   useEffect(() => {
@@ -194,12 +196,12 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      loadPagesUntil(currentPage, true);
+      loadPagesUntil(currentPage, itemTypes, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [currentPage, loadPagesUntil]);
+  }, [currentPage, loadPagesUntil, itemTypes]);
   // endregion
 
   return (
@@ -234,6 +236,14 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                 ]
               : [])
           ])}
+          noSelectionContent={
+            <DashletFilter
+              onSelectFilter={(types) => {
+                setItemTypes(types);
+                loadPagesUntil(currentPage, types);
+              }}
+            />
+          }
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },
@@ -250,8 +260,8 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
             totalItems={total}
             currentPage={currentPage}
             rowsPerPage={limit}
-            onPagePickerChange={(page) => loadPage(page)}
-            onPageChange={(page) => loadPage(page)}
+            onPagePickerChange={(page) => loadPage(page, itemTypes)}
+            onPageChange={(page) => loadPage(page, itemTypes)}
             onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
           />
         )

@@ -24,6 +24,7 @@ export type SystemType =
   | 'taxonomy'
   | 'levelDescriptor'
   | 'file'
-  | 'unknown';
+  | 'unknown'
+  | 'content type';
 
 export default SystemType;
