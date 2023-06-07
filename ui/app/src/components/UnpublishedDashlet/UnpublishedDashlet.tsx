@@ -36,7 +36,6 @@ import { fetchUnpublished } from '../../services/dashboard';
 import {
   DashletEmptyMessage,
   DashletItemOptions,
-  dashletItemOptionsClasses,
   getItemSkeleton,
   List,
   ListItemIcon,
@@ -259,16 +258,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
-            <ListItemButton
-              key={index}
-              onClick={(e) => onSelectItem(e, item)}
-              sx={{
-                pt: 0,
-                pb: 0,
-                [`.${dashletItemOptionsClasses.root}`]: { display: 'none' },
-                [`&:hover .${dashletItemOptionsClasses.root}`]: { display: 'inline-block' }
-              }}
-            >
+            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>

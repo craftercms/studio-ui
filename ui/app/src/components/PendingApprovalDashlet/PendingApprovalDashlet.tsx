@@ -29,7 +29,6 @@ import DashletCard from '../DashletCard/DashletCard';
 import {
   DashletEmptyMessage,
   DashletItemOptions,
-  dashletItemOptionsClasses,
   getItemSkeleton,
   List,
   ListItemIcon,
@@ -274,16 +273,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       {Boolean(items?.length) && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (
-            <ListItemButton
-              key={index}
-              onClick={(e) => onSelectItem(e, item)}
-              sx={{
-                pt: 0,
-                pb: 0,
-                [`.${dashletItemOptionsClasses.root}`]: { display: 'none' },
-                [`&:hover .${dashletItemOptionsClasses.root}`]: { display: 'inline-block' }
-              }}
-            >
+            <ListItemButton key={index} onClick={(e) => onSelectItem(e, item)} sx={{ pt: 0, pb: 0 }}>
               <ListItemIcon>
                 <Checkbox edge="start" checked={isSelected(item)} onChange={(e) => onSelectItem(e, item)} />
               </ListItemIcon>

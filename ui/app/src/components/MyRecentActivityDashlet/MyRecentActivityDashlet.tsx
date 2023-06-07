@@ -28,7 +28,6 @@ import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import {
   DashletEmptyMessage,
   DashletItemOptions,
-  dashletItemOptionsClasses,
   getItemSkeleton,
   ListItemIcon,
   Pager,
@@ -306,16 +305,7 @@ export function MyRecentActivityDashlet(props: MyRecentActivityDashletProps) {
               // Property 'button' is missing in type showing when conditionally rendering ListItemButton or ListItem
               // and not showing when using ListItemButton or ListItem directly.
               // @ts-ignore
-              <ListItemComponent
-                key={activity.id}
-                sx={{
-                  pt: 0,
-                  pb: 0,
-                  [`.${dashletItemOptionsClasses.root}`]: { display: 'none' },
-                  [`&:hover .${dashletItemOptionsClasses.root}`]: { display: 'inline-block' }
-                }}
-                {...listItemComponentProps}
-              >
+              <ListItemComponent key={activity.id} sx={{ pt: 0, pb: 0 }} {...listItemComponentProps}>
                 <ListItemIcon>
                   {activity.item && activity.item.systemType ? (
                     <Checkbox
