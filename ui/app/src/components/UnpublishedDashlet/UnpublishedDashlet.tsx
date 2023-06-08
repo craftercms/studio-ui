@@ -33,7 +33,14 @@ import useLocale from '../../hooks/useLocale';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchUnpublished } from '../../services/dashboard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
+import {
+  DashletEmptyMessage,
+  DashletItemOptions,
+  getItemSkeleton,
+  List,
+  ListItemIcon,
+  Pager
+} from '../DashletCard/dashletCommons';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
@@ -259,6 +266,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                 primary={
                   <ItemDisplay
                     item={item}
+                    titleDisplayProp="path"
                     showPublishingTarget={false}
                     onClick={(e) =>
                       isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
@@ -279,6 +287,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                   </Typography>
                 }
               />
+              <DashletItemOptions path={item.path} />
             </ListItemButton>
           ))}
         </List>

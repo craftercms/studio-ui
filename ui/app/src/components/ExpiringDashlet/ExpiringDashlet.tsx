@@ -17,7 +17,14 @@
 import React, { useEffect } from 'react';
 import { CommonDashletProps, getItemViewOption, isPage, previewPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItem, ListSubheader } from '../DashletCard/dashletCommons';
+import {
+  DashletEmptyMessage,
+  DashletItemOptions,
+  getItemSkeleton,
+  List,
+  ListItem,
+  ListSubheader
+} from '../DashletCard/dashletCommons';
 import palette from '../../styles/palette';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
@@ -58,7 +65,7 @@ const renderExpiredItems = (
   items.map((item, index) => {
     const isItemPreviewable = isPage(item.sandboxItem.systemType) || item.sandboxItem.availableActionsMap.view;
     return (
-      <ListItem key={index}>
+      <ListItem key={index} secondaryAction={<DashletItemOptions path={item.sandboxItem.path} />}>
         <ListItemText
           primary={
             <ItemDisplay

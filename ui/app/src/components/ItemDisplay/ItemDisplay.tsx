@@ -42,6 +42,8 @@ export interface ItemDisplayProps<LabelTypographyComponent extends React.Element
   labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
   isNavigableFn?: (item: DetailedItem | SandboxItem) => boolean;
   labelComponent?: ElementType;
+  labelDisplayProp?: 'label' | 'path' | 'previewUrl';
+  titleDisplayProp?: 'label' | 'path' | 'previewUrl';
   stateIconProps?: Partial<ItemStateIconProps>;
   publishingTargetIconProps?: Partial<ItemPublishingTargetIconProps>;
   itemTypeIconProps?: Partial<ItemTypeIconProps>;
@@ -91,6 +93,8 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     isNavigableFn = isPreviewable,
     labelTypographyProps,
     labelComponent = 'span',
+    labelDisplayProp = 'label',
+    titleDisplayProp = 'label',
     stateIconProps,
     publishingTargetIconProps,
     itemTypeIconProps,
@@ -137,8 +141,8 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
           showNavigableAsLinks && isNavigableFn(item) && classes.labelPreviewable,
           labelTypographyProps?.className
         )}
-        title={item.label}
-        children={item.label}
+        title={item[titleDisplayProp]}
+        children={item[labelDisplayProp]}
       />
     </span>
   );

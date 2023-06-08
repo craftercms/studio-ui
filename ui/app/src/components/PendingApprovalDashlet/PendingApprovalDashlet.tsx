@@ -26,7 +26,14 @@ import {
   WithSelectedState
 } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
-import { DashletEmptyMessage, getItemSkeleton, List, ListItemIcon, Pager } from '../DashletCard/dashletCommons';
+import {
+  DashletEmptyMessage,
+  DashletItemOptions,
+  getItemSkeleton,
+  List,
+  ListItemIcon,
+  Pager
+} from '../DashletCard/dashletCommons';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import palette from '../../styles/palette';
 import ListItemText from '@mui/material/ListItemText';
@@ -274,6 +281,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 primary={
                   <ItemDisplay
                     item={item}
+                    titleDisplayProp="path"
                     onClick={(e) =>
                       isPage(item.systemType) || item.availableActionsMap.view ? onItemClick(e, item) : null
                     }
@@ -297,6 +305,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                   />
                 }
               />
+              <DashletItemOptions path={item.path} />
             </ListItemButton>
           ))}
         </List>
