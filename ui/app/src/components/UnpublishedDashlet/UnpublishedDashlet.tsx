@@ -107,7 +107,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         loading: true,
         loadingSkeleton: !backgroundRefresh
       });
-      fetchUnpublished(site, { limit, offset: newOffset }, itemTypes?.join(',')).subscribe((items) => {
+      fetchUnpublished(site, { limit, offset: newOffset, itemType: itemTypes?.join(',') }).subscribe((items) => {
         setState({ items, offset: newOffset, total: items.total, loading: false });
       });
     },
@@ -122,7 +122,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
         ...(!backgroundRefresh && { items: null })
       });
       const totalLimit = pageNumber * limit;
-      fetchUnpublished(site, { limit: totalLimit + limit, offset: 0 }, itemTypes?.join(',')).subscribe(
+      fetchUnpublished(site, { limit: totalLimit + limit, offset: 0, itemType: itemTypes?.join(',') }).subscribe(
         (unpublishedItems) => {
           const validatedState = getValidatedSelectionState(unpublishedItems, selected, limit);
           setItemsById(validatedState.itemsById);

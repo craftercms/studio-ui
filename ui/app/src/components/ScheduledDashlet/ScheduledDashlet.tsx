@@ -69,6 +69,8 @@ interface ScheduledDashletState extends WithSelectedState<DetailedItem> {
   loadingSkeleton: boolean;
   limit: number;
   offset: number;
+  sortBy: string;
+  sortOrder: string;
 }
 
 const messages = defineMessages({
@@ -84,7 +86,20 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
   const [
-    { loading, loadingSkeleton, total, items, isAllSelected, hasSelected, selected, selectedCount, limit, offset },
+    {
+      loading,
+      loadingSkeleton,
+      total,
+      items,
+      isAllSelected,
+      hasSelected,
+      selected,
+      selectedCount,
+      limit,
+      offset,
+      sortOrder,
+      sortBy
+    },
     setState,
     onSelectItem,
     onSelectAll,
@@ -98,7 +113,9 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     isAllSelected: false,
     hasSelected: false,
     limit: 50,
-    offset: 0
+    offset: 0,
+    sortBy: 'dateScheduled',
+    sortOrder: 'asc'
   });
   const currentPage = offset / limit;
   const totalPages = total ? Math.ceil(total / limit) : 0;
@@ -114,11 +131,16 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         loading: true,
         loadingSkeleton: !backgroundRefresh
       });
-      fetchScheduled(site, { limit, offset: newOffset }, itemTypes?.join(',')).subscribe((items) => {
+      fetchScheduled(site, {
+        limit,
+        offset: newOffset,
+        itemType: itemTypes?.join(','),
+        sort: `${sortBy} ${sortOrder}`
+      }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
       });
     },
-    [limit, setState, site]
+    [limit, setState, site, sortBy, sortOrder]
   );
 
   const onOptionClicked = (option) => {
@@ -162,15 +184,18 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         ...(!loadingSkeleton && { items: null })
       });
       const totalLimit = pageNumber * limit;
-      fetchScheduled(site, { limit: totalLimit + limit, offset: 0 }, itemTypes?.join(',')).subscribe(
-        (scheduledItems) => {
-          const validatedState = getValidatedSelectionState(scheduledItems, selected, limit);
-          setItemsById(validatedState.itemsById);
-          setState(validatedState.state);
-        }
-      );
+      fetchScheduled(site, {
+        limit: totalLimit + limit,
+        offset: 0,
+        itemType: itemTypes?.join(','),
+        sort: `${sortBy} ${sortOrder}`
+      }).subscribe((scheduledItems) => {
+        const validatedState = getValidatedSelectionState(scheduledItems, selected, limit);
+        setItemsById(validatedState.itemsById);
+        setState(validatedState.state);
+      });
     },
-    [limit, selected, setState, site, setItemsById, loadingSkeleton]
+    [limit, selected, setState, site, setItemsById, loadingSkeleton, sortBy, sortOrder]
   );
 
   const onRefresh = () => {

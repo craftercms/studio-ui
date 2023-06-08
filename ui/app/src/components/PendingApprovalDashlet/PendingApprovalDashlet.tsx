@@ -114,7 +114,11 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         loading: true,
         loadingSkeleton: !backgroundRefresh
       });
-      fetchPendingApproval(site, { limit, offset: newOffset }, itemTypes?.join(',')).subscribe((items) => {
+      fetchPendingApproval(site, {
+        limit,
+        offset: newOffset,
+        itemType: itemTypes?.join(',')
+      }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
       });
     },
@@ -129,13 +133,15 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
         ...(!backgroundRefresh && { items: null })
       });
       const totalLimit = pageNumber * limit;
-      fetchPendingApproval(site, { limit: totalLimit + limit, offset: 0 }, itemTypes?.join(',')).subscribe(
-        (pendingApprovalItems) => {
-          const validatedState = getValidatedSelectionState(pendingApprovalItems, selected, limit);
-          setItemsById(validatedState.itemsById);
-          setState(validatedState.state);
-        }
-      );
+      fetchPendingApproval(site, {
+        limit: totalLimit + limit,
+        offset: 0,
+        itemType: itemTypes?.join(',')
+      }).subscribe((pendingApprovalItems) => {
+        const validatedState = getValidatedSelectionState(pendingApprovalItems, selected, limit);
+        setItemsById(validatedState.itemsById);
+        setState(validatedState.state);
+      });
     },
     [limit, selected, setState, site, setItemsById]
   );

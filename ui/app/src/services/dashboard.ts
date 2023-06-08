@@ -136,12 +136,16 @@ export function fetchMyActivity(siteId: string, options?: FetchMyActivityOptions
   );
 }
 
+export interface FetchPendingApprovalOptions extends PaginationOptions {
+  itemType?: string;
+  sort?: string;
+}
+
 export function fetchPendingApproval(
   siteId: string,
-  options?: PaginationOptions,
-  itemType?: string // Comma separated string
+  options?: FetchPendingApprovalOptions
 ): Observable<PagedArray<DetailedItem>> {
-  const qs = toQueryString({ siteId, ...options, itemType });
+  const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/content/pending_approval${qs}`).pipe(
     map(({ response }) =>
       createPagedArray(
@@ -160,12 +164,16 @@ export function fetchPendingApprovalPackageItems(siteId: string, packageId: numb
   );
 }
 
+export interface FetchUnpublishedOptions extends PaginationOptions {
+  itemType?: string;
+  sort?: string;
+}
+
 export function fetchUnpublished(
   siteId: string,
-  options: PaginationOptions,
-  itemType?: string // Comma separated string
+  options: FetchUnpublishedOptions
 ): Observable<PagedArray<SandboxItem>> {
-  const qs = toQueryString({ siteId, ...options, itemType });
+  const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/content/unpublished${qs}`).pipe(
     map(({ response }) =>
       createPagedArray(
@@ -181,14 +189,12 @@ export interface FetchScheduledOptions extends PaginationOptions {
   approver?: string;
   dateFrom?: string;
   dateTo?: string;
+  itemType?: string;
+  sort?: string;
 }
 
-export function fetchScheduled(
-  siteId: string,
-  options: FetchScheduledOptions,
-  itemType?: string // Comma separated string
-): Observable<PagedArray<DetailedItem>> {
-  const qs = toQueryString({ siteId, ...options, itemType });
+export function fetchScheduled(siteId: string, options: FetchScheduledOptions): Observable<PagedArray<DetailedItem>> {
+  const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/publishing/scheduled${qs}`).pipe(
     map(({ response }) =>
       createPagedArray(
