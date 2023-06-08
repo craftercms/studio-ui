@@ -27,4 +27,6 @@ export type SystemType =
   | 'unknown'
   | 'content type';
 
+export type FilterSystemTypeGroups = 'all' | 'item' | 'asset' | 'contentType' | 'template' | 'script' | 'other';
+
 export default SystemType;

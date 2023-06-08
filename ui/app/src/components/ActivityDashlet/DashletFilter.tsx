@@ -14,14 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { LookupTable } from '../../models';
+import { FilterSystemTypeGroups, LookupTable } from '../../models';
 import SystemType from '../../models/SystemType';
 import { FormattedMessage } from 'react-intl';
 import { DropDownMenu } from '../DropDownMenuButton';
 import React, { ReactElement, useMemo } from 'react';
-import { useSelectionLookupState } from './utils';
 
-const filterOptionsLookup: LookupTable<{
+export const filterOptionsLookup: LookupTable<{
   name: ReactElement;
   types: Array<SystemType>;
 }> = {
@@ -30,23 +29,23 @@ const filterOptionsLookup: LookupTable<{
     types: []
   },
   item: {
-    name: <FormattedMessage defaultMessage="Item" />,
+    name: <FormattedMessage defaultMessage="Items" />,
     types: ['page', 'component', 'levelDescriptor', 'taxonomy']
   },
   asset: {
-    name: <FormattedMessage defaultMessage="Asset" />,
+    name: <FormattedMessage defaultMessage="Assets" />,
     types: ['asset']
   },
   contentType: {
-    name: <FormattedMessage defaultMessage="Content Type" />,
+    name: <FormattedMessage defaultMessage="Content Types" />,
     types: ['content type']
   },
   template: {
-    name: <FormattedMessage defaultMessage="Template" />,
+    name: <FormattedMessage defaultMessage="Templates" />,
     types: ['renderingTemplate']
   },
   script: {
-    name: <FormattedMessage defaultMessage="Script" />,
+    name: <FormattedMessage defaultMessage="Scripts" />,
     types: ['script']
   },
   other: {
@@ -56,47 +55,37 @@ const filterOptionsLookup: LookupTable<{
 };
 
 export interface DashletFilterProps {
-  onSelectFilter: (types: Array<SystemType>) => void;
+  selectedKeys: FilterSystemTypeGroups[];
+  onChange: (e: Event, key: FilterSystemTypeGroups) => void;
 }
 
 export function DashletFilter(props: DashletFilterProps) {
-  const { onSelectFilter } = props;
-  const [selectedFilters, setSelectedFilters, filters] = useSelectionLookupState({ all: true }, 'all');
+  const { selectedKeys, onChange } = props;
 
   const options = useMemo(
     () =>
       Object.keys(filterOptionsLookup).map((key) => ({
         id: key,
         primaryText: filterOptionsLookup[key].name,
-        selected: selectedFilters[key]
+        selected: selectedKeys.includes(key as FilterSystemTypeGroups)
       })),
-    [selectedFilters]
+    [selectedKeys]
   );
-
-  const onSetSelectedFilter = (id) => {
-    setSelectedFilters(id);
-    const newFilters = id === 'all' ? [] : filters.includes(id) ? filters.filter((f) => f !== id) : [...filters, id];
-    const types = [];
-    newFilters.forEach((filter) => {
-      types.push(...filterOptionsLookup[filter].types);
-    });
-    onSelectFilter?.(types);
-  };
 
   return (
     <DropDownMenu
       size="small"
       variant="text"
-      onMenuItemClick={(e, id) => onSetSelectedFilter(id)}
+      onMenuItemClick={(e, key) => onChange(e, key as FilterSystemTypeGroups)}
       options={options}
       closeOnSelection={false}
       menuProps={{ sx: { minWidth: 180 } }}
       listItemProps={{ dense: true }}
     >
-      {selectedFilters.all ? (
-        <FormattedMessage defaultMessage="Filter By..." />
+      {selectedKeys.includes('all') ? (
+        <FormattedMessage defaultMessage="Show" />
       ) : (
-        <FormattedMessage defaultMessage="Filter Active ({count})" values={{ count: filters.length }} />
+        <FormattedMessage defaultMessage="Filter Active ({count})" values={{ count: selectedKeys.length }} />
       )}
     </DropDownMenu>
   );
