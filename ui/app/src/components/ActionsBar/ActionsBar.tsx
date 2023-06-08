@@ -80,11 +80,7 @@ export function ActionsBar(props: ActionsBarProps) {
             onChange={onCheckboxChange}
           />
         )}
-        {Boolean(noSelectionContent) && (
-          <Box component="span" sx={{ display: !isLoading && !isIndeterminate && !isChecked ? 'initial' : 'none' }}>
-            {noSelectionContent}
-          </Box>
-        )}
+        {Boolean(noSelectionContent) && !isLoading && !isIndeterminate && !isChecked && noSelectionContent}
         {isLoading
           ? new Array(numOfSkeletonItems).fill(null).map((nothing, index) => (
               <Button
