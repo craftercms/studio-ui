@@ -76,16 +76,16 @@ export function DashletFilter(props: DashletFilterProps) {
     <DropDownMenu
       size="small"
       variant="text"
-      onMenuItemClick={(e, key) => onChange(e, key as FilterSystemTypeGroups)}
+      onMenuItemClick={onChange}
       options={options}
       closeOnSelection={false}
       menuProps={{ sx: { minWidth: 180 } }}
       listItemProps={{ dense: true }}
     >
       {selectedKeys.includes('all') ? (
-        <FormattedMessage defaultMessage="Show" />
+        <FormattedMessage defaultMessage="Show all" />
       ) : (
-        <FormattedMessage defaultMessage="Filter Active ({count})" values={{ count: selectedKeys.length }} />
+        <FormattedMessage defaultMessage="Filters active: ({count})" values={{ count: selectedKeys.length }} />
       )}
     </DropDownMenu>
   );

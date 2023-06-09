@@ -253,14 +253,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                 ]
               : [])
           ])}
-          noSelectionContent={
-            <DashletFilter
-              selectedKeys={filterState.selectedKeys}
-              onChange={(e, key) => {
-                filterState.onChange(key);
-              }}
-            />
-          }
+          noSelectionContent={<DashletFilter selectedKeys={filterState.selectedKeys} onChange={filterState.onChange} />}
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },

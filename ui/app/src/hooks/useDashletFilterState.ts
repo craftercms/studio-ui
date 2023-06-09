@@ -17,18 +17,19 @@
 import { FilterSystemTypeGroups } from '../models';
 import SystemType from '../models/SystemType';
 import { useMemo, useState } from 'react';
-import { getDashletFilterTypeGroups, setDashletFilterTypeGroups } from '../utils/state';
+import { getDashletFilterSystemTypeGroups, setDashletFilterSystemTypeGroups } from '../utils/state';
 import { filterOptionsLookup } from '../components/ActivityDashlet/DashletFilter';
 import useActiveSite from './useActiveSite';
 
 export function useDashletFilterState(storageKey: string): {
   selectedKeys: FilterSystemTypeGroups[];
-  onChange(key: FilterSystemTypeGroups): void;
+  onChange(e: Event, key: FilterSystemTypeGroups): void;
   selectedTypes: SystemType[];
 } {
   const { uuid } = useActiveSite();
-  const initialKeys = getDashletFilterTypeGroups(uuid, storageKey) ?? ['all'];
-  const [selectedKeys, setSelectedKeys] = useState<FilterSystemTypeGroups[]>(initialKeys);
+  const [selectedKeys, setSelectedKeys] = useState<FilterSystemTypeGroups[]>(
+    () => getDashletFilterSystemTypeGroups(uuid, storageKey) ?? ['all']
+  );
   const getUpdatedKeys = (key: FilterSystemTypeGroups) => {
     let updatedKeys =
       key === 'all'
@@ -50,10 +51,10 @@ export function useDashletFilterState(storageKey: string): {
     return types;
   }, [selectedKeys]);
 
-  const onChange = (key: FilterSystemTypeGroups) => {
+  const onChange = (e: Event, key: FilterSystemTypeGroups) => {
     const newKeys = getUpdatedKeys(key);
     setSelectedKeys(newKeys);
-    setDashletFilterTypeGroups(uuid, storageKey, newKeys);
+    setDashletFilterSystemTypeGroups(uuid, storageKey, newKeys);
   };
 
   return {

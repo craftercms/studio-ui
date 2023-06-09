@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   CommonDashletProps,
   getItemViewOption,
@@ -60,6 +60,8 @@ import { asLocalizedDateTime } from '../../utils/datetime';
 import useLocale from '../../hooks/useLocale';
 import SystemType from '../../models/SystemType';
 import DashletFilter from '../ActivityDashlet/DashletFilter';
+import useDashletFilterState from '../../hooks/useDashletFilterState';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -105,7 +107,11 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const locale = useLocale();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const [itemTypes, setItemTypes] = useState<Array<SystemType>>([]);
+  const filterState = useDashletFilterState('pendingApprovalDashlet');
+  const refs = useUpdateRefs({
+    currentPage,
+    filterState
+  });
 
   const loadPage = useCallback(
     (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => {
@@ -117,12 +123,12 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       fetchPendingApproval(site, {
         limit,
         offset: newOffset,
-        itemType: itemTypes?.join(',')
+        itemType: refs.current.filterState.selectedTypes
       }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
       });
     },
-    [limit, setState, site]
+    [limit, setState, site, refs]
   );
 
   const loadPagesUntil = useCallback(
@@ -136,23 +142,31 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
       fetchPendingApproval(site, {
         limit: totalLimit + limit,
         offset: 0,
-        itemType: itemTypes?.join(',')
+        itemType: refs.current.filterState.selectedTypes
       }).subscribe((pendingApprovalItems) => {
         const validatedState = getValidatedSelectionState(pendingApprovalItems, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
       });
     },
-    [limit, selected, setState, site, setItemsById]
+    [limit, selected, setState, site, setItemsById, refs]
   );
 
+  const functionRefs = useUpdateRefs({
+    loadPagesUntil
+  });
+
   const onRefresh = () => {
-    loadPagesUntil(currentPage, itemTypes, true);
+    loadPagesUntil(currentPage, filterState.selectedTypes, true);
   };
 
   useEffect(() => {
-    loadPage(0);
-  }, [loadPage]);
+    loadPage(0, refs.current.filterState.selectedTypes);
+  }, [loadPage, refs]);
+
+  useEffect(() => {
+    functionRefs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+  }, [filterState?.selectedTypes, refs, functionRefs]);
 
   const onOptionClicked = (option) => {
     // Clear selection
@@ -202,12 +216,12 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      loadPagesUntil(currentPage, itemTypes, true);
+      loadPagesUntil(currentPage, filterState.selectedTypes, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [currentPage, loadPagesUntil, itemTypes]);
+  }, [currentPage, loadPagesUntil, filterState?.selectedTypes]);
   // endregion
 
   return (
@@ -255,14 +269,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 ]
               : [])
           ])}
-          noSelectionContent={
-            <DashletFilter
-              onSelectFilter={(types) => {
-                setItemTypes(types);
-                loadPagesUntil(currentPage, types);
-              }}
-            />
-          }
+          noSelectionContent={<DashletFilter selectedKeys={filterState.selectedKeys} onChange={filterState.onChange} />}
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },
@@ -284,8 +291,8 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
             totalItems={total}
             currentPage={currentPage}
             rowsPerPage={limit}
-            onPagePickerChange={(page) => loadPage(page, itemTypes)}
-            onPageChange={(page) => loadPage(page, itemTypes)}
+            onPagePickerChange={(page) => loadPage(page, filterState.selectedTypes)}
+            onPageChange={(page) => loadPage(page, filterState.selectedTypes)}
             onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
           />
         )

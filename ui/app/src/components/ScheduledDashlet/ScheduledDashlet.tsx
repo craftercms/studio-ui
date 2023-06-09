@@ -60,6 +60,8 @@ import { LoadingIconButton } from '../LoadingIconButton';
 import Box from '@mui/material/Box';
 import SystemType from '../../models/SystemType';
 import DashletFilter from '../ActivityDashlet/DashletFilter';
+import useDashletFilterState from '../../hooks/useDashletFilterState';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export interface ScheduledDashletProps extends CommonDashletProps {}
 
@@ -70,7 +72,7 @@ interface ScheduledDashletState extends WithSelectedState<DetailedItem> {
   limit: number;
   offset: number;
   sortBy: string;
-  sortOrder: string;
+  sortOrder: 'asc' | 'desc';
 }
 
 const messages = defineMessages({
@@ -122,7 +124,11 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
   const [itemsById, setItemsById] = useSpreadState<LookupTable<DetailedItem>>({});
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(selectedItems, formatMessage, selectedCount);
-  const [itemTypes, setItemTypes] = useState<Array<SystemType>>([]);
+  const filterState = useDashletFilterState('scheduledDashlet');
+  const refs = useUpdateRefs({
+    currentPage,
+    filterState
+  });
 
   const loadPage = useCallback(
     (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => {
@@ -134,13 +140,14 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       fetchScheduled(site, {
         limit,
         offset: newOffset,
-        itemType: itemTypes?.join(','),
-        sort: `${sortBy} ${sortOrder}`
+        itemType: refs.current.filterState.selectedTypes,
+        sortBy,
+        sortOrder
       }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
       });
     },
-    [limit, setState, site, sortBy, sortOrder]
+    [limit, setState, site, sortBy, sortOrder, refs]
   );
 
   const onOptionClicked = (option) => {
@@ -187,19 +194,24 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       fetchScheduled(site, {
         limit: totalLimit + limit,
         offset: 0,
-        itemType: itemTypes?.join(','),
-        sort: `${sortBy} ${sortOrder}`
+        itemType: refs.current.filterState.selectedTypes,
+        sortBy,
+        sortOrder
       }).subscribe((scheduledItems) => {
         const validatedState = getValidatedSelectionState(scheduledItems, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
       });
     },
-    [limit, selected, setState, site, setItemsById, loadingSkeleton, sortBy, sortOrder]
+    [limit, selected, setState, site, setItemsById, loadingSkeleton, sortBy, sortOrder, refs]
   );
 
+  const functionRefs = useUpdateRefs({
+    loadPagesUntil
+  });
+
   const onRefresh = () => {
-    loadPagesUntil(currentPage, itemTypes, true);
+    loadPagesUntil(currentPage, filterState.selectedTypes, true);
   };
 
   useEffect(() => {
@@ -216,17 +228,21 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
     loadPage(0);
   }, [loadPage]);
 
+  useEffect(() => {
+    functionRefs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+  }, [filterState?.selectedTypes, refs, functionRefs]);
+
   // region Item Updates Propagation
   useEffect(() => {
     const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      loadPagesUntil(currentPage, itemTypes, true);
+      loadPagesUntil(currentPage, filterState.selectedTypes, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [currentPage, loadPagesUntil, itemTypes]);
+  }, [currentPage, loadPagesUntil, filterState?.selectedTypes]);
   // endregion
 
   return (
@@ -261,14 +277,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                 ]
               : [])
           ])}
-          noSelectionContent={
-            <DashletFilter
-              onSelectFilter={(types) => {
-                setItemTypes(types);
-                loadPagesUntil(currentPage, types);
-              }}
-            />
-          }
+          noSelectionContent={<DashletFilter selectedKeys={filterState.selectedKeys} onChange={filterState.onChange} />}
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },
@@ -285,8 +294,8 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
             totalItems={total}
             currentPage={currentPage}
             rowsPerPage={limit}
-            onPagePickerChange={(page) => loadPage(page, itemTypes)}
-            onPageChange={(page) => loadPage(page, itemTypes)}
+            onPagePickerChange={(page) => loadPage(page, filterState.selectedTypes)}
+            onPageChange={(page) => loadPage(page, filterState.selectedTypes)}
             onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
           />
         )
@@ -299,7 +308,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
         }
       }}
     >
-      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: true, showCheckbox: true })}
+      {loading && loadingSkeleton && getItemSkeleton({ numOfItems: 3, showAvatar: false, showCheckbox: true })}
       {items && (
         <List sx={{ pb: 0 }}>
           {items.map((item, index) => (

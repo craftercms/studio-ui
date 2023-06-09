@@ -325,7 +325,8 @@ export function setOutdatedXBValidationDate(siteId: string, username: string, da
   localStorage.setItem(`craftermcs.${username}.${siteId}.outdatedXBValidationDate`, dateString);
 }
 
-export function getDashletFilterTypeGroups(
+// Gets the stored list of type groups used by a dashlet (identified by storageKey) for filtering
+export function getDashletFilterSystemTypeGroups(
   siteIdentifier: string,
   storageKey: string
 ): (FilterSystemTypeGroups | 'all')[] {
@@ -333,7 +334,8 @@ export function getDashletFilterTypeGroups(
   return typeGroups?.split(',') as (FilterSystemTypeGroups | 'all')[];
 }
 
-export function setDashletFilterTypeGroups(
+// Stores a list of group types (from where we retrieve the system types) for dashlet filtering.
+export function setDashletFilterSystemTypeGroups(
   siteIdentifier: string,
   storageKey: string,
   typeGroups: FilterSystemTypeGroups[]

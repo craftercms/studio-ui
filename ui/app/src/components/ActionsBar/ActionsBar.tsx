@@ -80,7 +80,7 @@ export function ActionsBar(props: ActionsBarProps) {
             onChange={onCheckboxChange}
           />
         )}
-        {Boolean(noSelectionContent) && !isLoading && !isIndeterminate && !isChecked && noSelectionContent}
+        {!isLoading && !isIndeterminate && !isChecked && noSelectionContent}
         {isLoading
           ? new Array(numOfSkeletonItems).fill(null).map((nothing, index) => (
               <Button
