@@ -51,7 +51,10 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const { formatMessage } = useIntl();
   const itemLookup = useItemsByPath();
   const computedFilePath = `${path}/${getFileNameWithExtensionForItemType(type, name)}`;
-  const fileExists = itemLookup[computedFilePath] !== UNDEFINED;
+  // When calling the validation API, we need to check if the item with the suggested name exists. This is an extra validation for the
+  // fileExists const.
+  const [itemExists, setItemExists] = useState(false);
+  const fileExists = itemLookup[computedFilePath] !== UNDEFINED || itemExists;
   const isValid = !isBlank(name) && !fileExists;
 
   const onCreateFile = (site: string, path: string, fileName: string) => {
@@ -102,14 +105,23 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
         target: `${path}/${name}`
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
-          if (modifiedValue) {
-            setConfirm({
-              body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
-            });
-          } else {
-            const fileName = getFileNameWithExtensionForItemType(type, name);
-            onCreateFile(site, path, fileName);
-          }
+          const fileName = getFileNameWithExtensionForItemType(type, name);
+          const pathToCheckExists = modifiedValue ?? `${path}/${fileName}`;
+          setItemExists(false);
+          fetchSandboxItem(site, pathToCheckExists).subscribe((item) => {
+            if (item) {
+              setItemExists(true);
+              dispatch(updateCreateFileDialog({ isSubmitting: false }));
+            } else {
+              if (modifiedValue) {
+                setConfirm({
+                  body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
+                });
+              } else {
+                onCreateFile(site, path, fileName);
+              }
+            }
+          });
         } else {
           setConfirm({
             error: true,
@@ -141,6 +153,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 
   const onInputChanges = (value: string) => {
     setName(value);
+    setItemExists(false);
     const newHasPending = !isBlank(value);
     hasPendingChanges !== newHasPending &&
       dispatch(
