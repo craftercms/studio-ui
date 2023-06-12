@@ -35,9 +35,6 @@ import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { isBlank } from '../../utils/string';
-import { fetchSandboxItemComplete } from '../../state/actions/content';
-import { switchMap, tap } from 'rxjs';
-import { filter } from 'rxjs/operators';
 import { applyAssetNameRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
 import ApiResponse from '../../models/ApiResponse';
