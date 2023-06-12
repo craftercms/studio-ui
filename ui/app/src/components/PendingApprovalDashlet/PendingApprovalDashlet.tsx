@@ -110,7 +110,8 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const filterState = useDashletFilterState('pendingApprovalDashlet');
   const refs = useUpdateRefs({
     currentPage,
-    filterState
+    filterState,
+    loadPagesUntil: null as (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => void
   });
 
   const loadPage = useCallback(
@@ -151,10 +152,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     },
     [limit, selected, setState, site, setItemsById, refs]
   );
-
-  const functionRefs = useUpdateRefs({
-    loadPagesUntil
-  });
+  refs.current.loadPagesUntil = loadPagesUntil;
 
   const onRefresh = () => {
     loadPagesUntil(currentPage, filterState.selectedTypes, true);
@@ -165,8 +163,8 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   }, [loadPage, refs]);
 
   useEffect(() => {
-    functionRefs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
-  }, [filterState?.selectedTypes, refs, functionRefs]);
+    refs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+  }, [filterState?.selectedTypes, refs]);
 
   const onOptionClicked = (option) => {
     // Clear selection

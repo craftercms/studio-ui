@@ -102,7 +102,8 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const filterState = useDashletFilterState('unpublishedDashlet');
   const refs = useUpdateRefs({
     currentPage,
-    filterState
+    filterState,
+    loadPagesUntil: null as (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => void
   });
 
   const loadPage = useCallback(
@@ -141,10 +142,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
     },
     [limit, selected, setState, site, refs]
   );
-
-  const functionRefs = useUpdateRefs({
-    loadPagesUntil
-  });
+  refs.current.loadPagesUntil = loadPagesUntil;
 
   const onRefresh = () => {
     loadPagesUntil(currentPage, filterState.selectedTypes, true);
@@ -198,8 +196,8 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   }, [loadPage, refs]);
 
   useEffect(() => {
-    functionRefs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
-  }, [filterState?.selectedTypes, refs, functionRefs]);
+    refs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+  }, [filterState?.selectedTypes, refs]);
 
   // region Item Updates Propagation
   useEffect(() => {
