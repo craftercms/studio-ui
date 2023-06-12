@@ -42,6 +42,7 @@ import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { applyFolderNameRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
+import ApiResponse from '../../models/ApiResponse';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
@@ -66,8 +67,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   // folderExists const.
   const [itemExists, setItemExists] = useState(false);
   const folderExists = rename
-    ? name !== value && (lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED || itemExists)
-    : lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED || itemExists;
+    ? name !== value && (itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED)
+    : itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED;
   const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
 
   useEffect(() => {
@@ -76,15 +77,24 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
     }
   }, [item, rename]);
 
+  const onError = (error: ApiResponse) => {
+    dispatch(
+      batchActions([
+        showErrorDialog({ error }),
+        updateCreateFolderDialog({
+          isSubmitting: false
+        })
+      ])
+    );
+  };
+
   const onRenameFolder = (site: string, path: string, name: string) => {
     renameFolder(site, path, name).subscribe({
       next() {
         onRenamed?.({ path, name, rename });
         dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
       },
-      error(response) {
-        dispatch(showErrorDialog({ error: response }));
-      }
+      error: onError
     });
   };
 
@@ -106,50 +116,52 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
           onCreated?.({ path, name, rename });
           dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
         },
-        error(response) {
-          dispatch(
-            batchActions([showErrorDialog({ error: response }), updateCreateFolderDialog({ isSubmitting: false })])
-          );
-        }
+        error: onError
       });
   };
 
-  const onCreate = () => {
+  const onSubmit = () => {
     dispatch(updateCreateFolderDialog({ isSubmitting: true }));
     if (name) {
       const parentPath = rename ? getParentPath(path) : path;
       validateActionPolicy(site, {
         type: rename ? 'RENAME' : 'CREATE',
         target: `${parentPath}/${name}`
-      }).subscribe(({ allowed, modifiedValue }) => {
-        if (allowed) {
-          const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
-          setItemExists(false);
-          fetchSandboxItem(site, pathToCheckExists).subscribe((item) => {
-            if (item) {
-              setItemExists(true);
-              dispatch(updateCreateFolderDialog({ isSubmitting: false }));
-            } else {
-              if (modifiedValue) {
-                setConfirm({
-                  body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
-                });
-              } else {
-                if (rename) {
-                  onRenameFolder(site, path, name);
+      }).subscribe({
+        next: ({ allowed, modifiedValue }) => {
+          if (allowed) {
+            const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
+            setItemExists(false);
+            fetchSandboxItem(site, pathToCheckExists).subscribe({
+              next: (item) => {
+                if (item) {
+                  setItemExists(true);
+                  dispatch(updateCreateFolderDialog({ isSubmitting: false }));
                 } else {
-                  onCreateFolder(site, path, name);
+                  if (modifiedValue) {
+                    setConfirm({
+                      body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
+                    });
+                  } else {
+                    if (rename) {
+                      onRenameFolder(site, path, name);
+                    } else {
+                      onCreateFolder(site, path, name);
+                    }
+                  }
                 }
-              }
-            }
-          });
-        } else {
-          setConfirm({
-            error: true,
-            body: formatMessage(translations.policyError)
-          });
-          dispatch(updateCreateFolderDialog({ isSubmitting: false }));
-        }
+              },
+              error: onError
+            });
+          } else {
+            setConfirm({
+              error: true,
+              body: formatMessage(translations.policyError)
+            });
+            dispatch(updateCreateFolderDialog({ isSubmitting: false }));
+          }
+        },
+        error: onError
       });
     }
   };
@@ -202,7 +214,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
           onSubmit={(e) => {
             e.preventDefault();
             if (isValid) {
-              onCreate();
+              onSubmit();
             }
           }}
         >
@@ -248,7 +260,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
         <SecondaryButton onClick={onCloseButtonClick} disabled={isSubmitting}>
           <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
         </SecondaryButton>
-        <PrimaryButton onClick={onCreate} disabled={isSubmitting || !isValid} loading={isSubmitting}>
+        <PrimaryButton onClick={onSubmit} disabled={isSubmitting || !isValid} loading={isSubmitting}>
           {rename ? (
             <FormattedMessage id="words.rename" defaultMessage="Rename" />
           ) : (

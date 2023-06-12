@@ -40,6 +40,7 @@ import { switchMap, tap } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { applyAssetNameRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
+import ApiResponse from '../../models/ApiResponse';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const { onClose, onCreated, type, path, allowBraces } = props;
@@ -54,8 +55,19 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   // When calling the validation API, we need to check if the item with the suggested name exists. This is an extra validation for the
   // fileExists const.
   const [itemExists, setItemExists] = useState(false);
-  const fileExists = itemLookup[computedFilePath] !== UNDEFINED || itemExists;
+  const fileExists = itemExists || itemLookup[computedFilePath] !== UNDEFINED;
   const isValid = !isBlank(name) && !fileExists;
+
+  const onError = (error: ApiResponse) => {
+    dispatch(
+      batchActions([
+        showErrorDialog({ error }),
+        updateCreateFileDialog({
+          isSubmitting: false
+        })
+      ])
+    );
+  };
 
   const onCreateFile = (site: string, path: string, fileName: string) => {
     fetchSandboxItem(site, `${path}/${fileName}`)
@@ -80,20 +92,11 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
             })
           );
         },
-        error(response) {
-          dispatch(
-            batchActions([
-              showErrorDialog({ error: response }),
-              updateCreateFileDialog({
-                isSubmitting: false
-              })
-            ])
-          );
-        }
+        error: onError
       });
   };
 
-  const onCreate = () => {
+  const onSubmit = () => {
     dispatch(
       updateCreateFileDialog({
         isSubmitting: true
@@ -103,36 +106,42 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
       validateActionPolicy(site, {
         type: 'CREATE',
         target: `${path}/${name}`
-      }).subscribe(({ allowed, modifiedValue }) => {
-        if (allowed) {
-          const fileName = getFileNameWithExtensionForItemType(type, name);
-          const pathToCheckExists = modifiedValue ?? `${path}/${fileName}`;
-          setItemExists(false);
-          fetchSandboxItem(site, pathToCheckExists).subscribe((item) => {
-            if (item) {
-              setItemExists(true);
-              dispatch(updateCreateFileDialog({ isSubmitting: false }));
-            } else {
-              if (modifiedValue) {
-                setConfirm({
-                  body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
-                });
-              } else {
-                onCreateFile(site, path, fileName);
-              }
-            }
-          });
-        } else {
-          setConfirm({
-            error: true,
-            body: formatMessage(translations.policyError)
-          });
-          dispatch(
-            updateCreateFolderDialog({
-              isSubmitting: false
-            })
-          );
-        }
+      }).subscribe({
+        next: ({ allowed, modifiedValue }) => {
+          if (allowed) {
+            const fileName = getFileNameWithExtensionForItemType(type, name);
+            const pathToCheckExists = modifiedValue ?? `${path}/${fileName}`;
+            setItemExists(false);
+            fetchSandboxItem(site, pathToCheckExists).subscribe({
+              next: (item) => {
+                if (item) {
+                  setItemExists(true);
+                  dispatch(updateCreateFileDialog({ isSubmitting: false }));
+                } else {
+                  if (modifiedValue) {
+                    setConfirm({
+                      body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
+                    });
+                  } else {
+                    onCreateFile(site, path, fileName);
+                  }
+                }
+              },
+              error: onError
+            });
+          } else {
+            setConfirm({
+              error: true,
+              body: formatMessage(translations.policyError)
+            });
+            dispatch(
+              updateCreateFolderDialog({
+                isSubmitting: false
+              })
+            );
+          }
+        },
+        error: onError
       });
     }
   };
@@ -170,7 +179,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
           onSubmit={(e) => {
             e.preventDefault();
             if (isValid) {
-              onCreate();
+              onSubmit();
             }
           }}
         >
@@ -210,7 +219,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
         <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>
           <FormattedMessage id="words.close" defaultMessage="Close" />
         </SecondaryButton>
-        <PrimaryButton onClick={onCreate} disabled={isSubmitting || !isValid} loading={isSubmitting}>
+        <PrimaryButton onClick={onSubmit} disabled={isSubmitting || !isValid} loading={isSubmitting}>
           <FormattedMessage id="words.create" defaultMessage="Create" />
         </PrimaryButton>
       </DialogFooter>
