@@ -15,7 +15,7 @@
  */
 
 import { ItemStateMap, LegacyItem } from '../models/Item';
-import { LookupTable, WidgetDescriptor } from '../models';
+import { FilterSystemTypeGroups, LookupTable, WidgetDescriptor } from '../models';
 import { nanoid as uuid } from 'nanoid';
 import TranslationOrText from '../models/TranslationOrText';
 import { LegacyDashboardPreferences } from '../models/Dashboard';
@@ -323,4 +323,19 @@ export function getOutdatedXBValidationDate(siteId: string, username: string): D
 export function setOutdatedXBValidationDate(siteId: string, username: string, date: Date): void {
   const dateString = date.toDateString();
   localStorage.setItem(`craftermcs.${username}.${siteId}.outdatedXBValidationDate`, dateString);
+}
+
+// Gets the stored list of system type groups used by a dashlet (identified by storageKey) for filtering
+export function getDashletFilterSystemTypeGroups(siteIdentifier: string, storageKey: string): FilterSystemTypeGroups[] {
+  const typeGroups = localStorage.getItem(`craftercms.${siteIdentifier}.${storageKey}.dashletFilterTypeGroups`);
+  return typeGroups?.split(',') as FilterSystemTypeGroups[];
+}
+
+// Stores a list of system group types (from where we retrieve the system types) for dashlet filtering.
+export function setDashletFilterSystemTypeGroups(
+  siteIdentifier: string,
+  storageKey: string,
+  typeGroups: FilterSystemTypeGroups[]
+): void {
+  localStorage.setItem(`craftercms.${siteIdentifier}.${storageKey}.dashletFilterTypeGroups`, typeGroups.join(','));
 }

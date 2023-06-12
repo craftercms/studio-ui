@@ -203,7 +203,7 @@ export function getValidatedSelectionState(items, selected, limit) {
       selected: newSelected,
       hasSelected: Boolean(newSelectedArray.length),
       selectedCount: newSelectedArray.length,
-      isAllSelected: newSelectedArray.length === items.total
+      isAllSelected: Boolean(newSelectedArray.length) && newSelectedArray.length === items.total
     }
   };
 }

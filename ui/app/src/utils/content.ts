@@ -177,7 +177,7 @@ export function getSystemTypeFromPath(path: string): SystemType {
   } else if (rootPath.includes('script')) {
     return 'script';
   } else {
-    return 'unknown';
+    return 'file';
   }
 }
 
@@ -209,7 +209,7 @@ function getLegacyItemSystemType(item: LegacyItem): SystemType {
       return 'taxonomy';
     }
     default: {
-      return 'unknown';
+      return 'file';
     }
   }
 }

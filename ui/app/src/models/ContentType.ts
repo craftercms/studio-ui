@@ -103,7 +103,7 @@ export interface DataSource {
   [prop: string]: any;
 }
 
-type LegacyComponentTypes = 'component' | 'page' | 'unknown';
+type LegacyComponentTypes = 'component' | 'page' | 'file';
 
 export interface ContentType {
   id: string;

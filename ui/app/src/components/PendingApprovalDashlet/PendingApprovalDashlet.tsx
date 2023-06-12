@@ -56,6 +56,12 @@ import { filter } from 'rxjs/operators';
 import useSpreadState from '../../hooks/useSpreadState';
 import { LoadingIconButton } from '../LoadingIconButton';
 import Box from '@mui/material/Box';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import useLocale from '../../hooks/useLocale';
+import SystemType from '../../models/SystemType';
+import DashletFilter from '../ActivityDashlet/DashletFilter';
+import useDashletFilterState from '../../hooks/useDashletFilterState';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -98,47 +104,67 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const selectedItems = Object.values(itemsById)?.filter((item) => selected[item.id]) ?? [];
   const selectionOptions = useSelectionOptions(Object.values(selectedItems), formatMessage, selectedCount);
   const site = useActiveSiteId();
+  const locale = useLocale();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
+  const filterState = useDashletFilterState('pendingApprovalDashlet');
+  const refs = useUpdateRefs({
+    currentPage,
+    filterState,
+    loadPagesUntil: null as (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => void
+  });
 
   const loadPage = useCallback(
-    (pageNumber: number, backgroundRefresh?: boolean) => {
+    (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => {
       const newOffset = pageNumber * limit;
       setState({
         loading: true,
         loadingSkeleton: !backgroundRefresh
       });
-      fetchPendingApproval(site, { limit, offset: newOffset }).subscribe((items) => {
+      fetchPendingApproval(site, {
+        limit,
+        offset: newOffset,
+        itemType: refs.current.filterState.selectedTypes
+      }).subscribe((items) => {
         setState({ items, total: items.total, offset: newOffset, loading: false });
       });
     },
-    [limit, setState, site]
+    [limit, setState, site, refs]
   );
 
   const loadPagesUntil = useCallback(
-    (pageNumber: number, backgroundRefresh?: boolean) => {
+    (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => {
       setState({
         loading: true,
         loadingSkeleton: !backgroundRefresh,
         ...(!backgroundRefresh && { items: null })
       });
       const totalLimit = pageNumber * limit;
-      fetchPendingApproval(site, { limit: totalLimit + limit, offset: 0 }).subscribe((pendingApprovalItems) => {
+      fetchPendingApproval(site, {
+        limit: totalLimit + limit,
+        offset: 0,
+        itemType: refs.current.filterState.selectedTypes
+      }).subscribe((pendingApprovalItems) => {
         const validatedState = getValidatedSelectionState(pendingApprovalItems, selected, limit);
         setItemsById(validatedState.itemsById);
         setState(validatedState.state);
       });
     },
-    [limit, selected, setState, site, setItemsById]
+    [limit, selected, setState, site, setItemsById, refs]
   );
+  refs.current.loadPagesUntil = loadPagesUntil;
 
   const onRefresh = () => {
-    loadPagesUntil(currentPage, true);
+    loadPagesUntil(currentPage, filterState.selectedTypes, true);
   };
 
   useEffect(() => {
-    loadPage(0);
-  }, [loadPage]);
+    loadPage(0, refs.current.filterState.selectedTypes);
+  }, [loadPage, refs]);
+
+  useEffect(() => {
+    refs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+  }, [filterState?.selectedTypes, refs]);
 
   const onOptionClicked = (option) => {
     // Clear selection
@@ -188,12 +214,12 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
     const events = [workflowEvent.type, publishEvent.type, deleteContentEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
-      loadPagesUntil(currentPage, true);
+      loadPagesUntil(currentPage, filterState.selectedTypes, true);
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [currentPage, loadPagesUntil]);
+  }, [currentPage, loadPagesUntil, filterState?.selectedTypes]);
   // endregion
 
   return (
@@ -241,6 +267,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 ]
               : [])
           ])}
+          noSelectionContent={<DashletFilter selectedKeys={filterState.selectedKeys} onChange={filterState.onChange} />}
           buttonProps={{ size: 'small' }}
           sxs={{
             root: { flexGrow: 1 },
@@ -262,8 +289,8 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
             totalItems={total}
             currentPage={currentPage}
             rowsPerPage={limit}
-            onPagePickerChange={(page) => loadPage(page)}
-            onPageChange={(page) => loadPage(page)}
+            onPagePickerChange={(page) => loadPage(page, filterState.selectedTypes)}
+            onPageChange={(page) => loadPage(page, filterState.selectedTypes)}
             onRowsPerPageChange={(rowsPerPage) => setState({ limit: rowsPerPage })}
           />
         )
@@ -290,7 +317,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 }
                 secondary={
                   <FormattedMessage
-                    defaultMessage="submitted to <render_target>{publishingTarget}</render_target> by {name}"
+                    defaultMessage="Submitted by {name} for <render_target>{publishingTarget}</render_target> {requestType, select, scheduled {on} other {}} {date}"
                     values={{
                       name: item.sandbox?.modifier,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
@@ -300,7 +327,18 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                             {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
                           </Box>
                         );
-                      }
+                      },
+                      requestType: item.live.dateScheduled || item.staging.dateScheduled ? 'scheduled' : 'asap',
+                      date:
+                        item.live.dateScheduled || item.staging.dateScheduled ? (
+                          asLocalizedDateTime(
+                            item.stateMap.submittedToLive ? item.live.dateScheduled : item.staging.dateScheduled,
+                            locale.localeCode,
+                            locale.dateTimeFormatOptions
+                          )
+                        ) : (
+                          <FormattedMessage defaultMessage="ASAP" />
+                        )
                     }}
                   />
                 }

@@ -16,7 +16,7 @@
 
 import { useIntl } from 'react-intl';
 import Checkbox, { CheckboxProps } from '@mui/material/Checkbox';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { getPossibleTranslation } from '../../utils/i18n';
 import Button, { ButtonProps } from '@mui/material/Button';
 import TranslationOrText from '../../models/TranslationOrText';
@@ -31,6 +31,7 @@ export interface ActionsBarAction {
 
 interface ActionsBarProps {
   options: ActionsBarAction[];
+  noSelectionContent?: ReactElement;
   numOfSkeletonItems?: number;
   isLoading?: boolean;
   isIndeterminate: boolean;
@@ -53,6 +54,7 @@ export function ActionsBar(props: ActionsBarProps) {
   const { formatMessage } = useIntl();
   const {
     options,
+    noSelectionContent,
     onOptionClicked,
     isIndeterminate,
     onCheckboxChange,
@@ -78,6 +80,7 @@ export function ActionsBar(props: ActionsBarProps) {
             onChange={onCheckboxChange}
           />
         )}
+        {!isLoading && !isIndeterminate && !isChecked && noSelectionContent}
         {isLoading
           ? new Array(numOfSkeletonItems).fill(null).map((nothing, index) => (
               <Button

@@ -15,15 +15,18 @@
  */
 
 export type SystemType =
-  | 'renderingTemplate'
-  | 'script'
-  | 'folder'
   | 'asset'
   | 'component'
-  | 'page'
-  | 'taxonomy'
-  | 'levelDescriptor'
+  | 'content type'
+  | 'document'
   | 'file'
-  | 'unknown';
+  | 'folder'
+  | 'levelDescriptor'
+  | 'page'
+  | 'renderingTemplate'
+  | 'script'
+  | 'taxonomy';
+
+export type FilterSystemTypeGroups = 'all' | 'item' | 'asset' | 'contentType' | 'template' | 'script' | 'other';
 
 export default SystemType;
