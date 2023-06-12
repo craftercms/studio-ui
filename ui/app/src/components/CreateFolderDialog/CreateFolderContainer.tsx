@@ -99,25 +99,13 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   };
 
   const onCreateFolder = (site: string, path: string, name: string) => {
-    fetchSandboxItem(site, `${path}/${name}`)
-      .pipe(
-        tap(
-          (item) =>
-            item &&
-            dispatch(
-              batchActions([fetchSandboxItemComplete({ item }), updateCreateFolderDialog({ isSubmitting: false })])
-            )
-        ),
-        filter((item) => !item),
-        switchMap(() => createFolder(site, path, name))
-      )
-      .subscribe({
-        next() {
-          onCreated?.({ path, name, rename });
-          dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
-        },
-        error: onError
-      });
+    createFolder(site, path, name).subscribe({
+      next() {
+        onCreated?.({ path, name, rename });
+        dispatch(updateCreateFolderDialog({ isSubmitting: false, hasPendingChanges: false }));
+      },
+      error: onError
+    });
   };
 
   const onSubmit = () => {
