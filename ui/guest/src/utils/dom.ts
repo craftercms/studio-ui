@@ -326,13 +326,18 @@ export function isElementInView(element: Element | JQuery<Element>, fullyInView?
   }
 }
 
-export function addAnimation($element: JQuery<Element> | JQuery<HTMLElement>, animationClass: string): void {
+export function addAnimation(element: Element | HTMLElement, animationClass: string): void {
   const END_EVENT = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-  $element.addClass(animationClass);
-  // @ts-ignore
-  $element.one(END_EVENT, function () {
-    $element.removeClass(animationClass);
-  });
+  element.classList.add(animationClass);
+  element.addEventListener(
+    END_EVENT,
+    function () {
+      element.classList.remove(animationClass);
+    },
+    {
+      once: true
+    }
+  );
 }
 
 export function scrollToElement(element: Element, scrollElement: string, animate: boolean = false): JQuery<Element> {
@@ -347,11 +352,11 @@ export function scrollToElement(element: Element, scrollElement: string, animate
       },
       300,
       function () {
-        if (animate) addAnimation($element, 'craftercms-content-tree-locate');
+        if (animate) addAnimation(element, 'craftercms-content-tree-locate');
       }
     );
   } else if (animate) {
-    addAnimation($element, 'craftercms-content-tree-locate');
+    addAnimation(element, 'craftercms-content-tree-locate');
   }
 
   return $element;

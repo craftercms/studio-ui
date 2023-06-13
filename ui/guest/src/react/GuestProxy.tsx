@@ -137,7 +137,7 @@ export function GuestProxy() {
           const currentElementIndex = $(el).attr('data-craftercms-index');
           const elementNewIndex = appendIndex(originalNewIndex, i);
           if (type === 'insert' && String(originalNewIndex) === String(elementNewIndex)) {
-            addAnimation($(el), 'craftercms-content-tree-locate');
+            addAnimation(el, 'craftercms-content-tree-locate');
           }
           $(el).attr('data-craftercms-index', elementNewIndex);
 
@@ -171,7 +171,7 @@ export function GuestProxy() {
           updateRepeatGroupsItems(el, fieldId, currentElementIndex, elementNewIndex, childrenToRegister);
 
           if (originalOldIndex === elementNewIndex) {
-            addAnimation($(el), 'craftercms-content-tree-locate');
+            addAnimation(el, 'craftercms-content-tree-locate');
           }
           const elementRecord = ElementRegistry.fromElement(el);
           elementRecord && ElementRegistry.deregister(elementRecord.id);
@@ -310,7 +310,7 @@ export function GuestProxy() {
             $sourceDropZone.addClass(emptyCollectionClass);
           }
 
-          addAnimation($(moveTargetPhyRecord.element), 'craftercms-content-tree-locate');
+          addAnimation(moveTargetPhyRecord.element, 'craftercms-content-tree-locate');
 
           break;
         }
