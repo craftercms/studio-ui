@@ -89,7 +89,6 @@ import {
   setEditingStatus,
   startListening
 } from '../actions';
-import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 import { getParentModelId } from '../../utils/ice';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
@@ -152,7 +151,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             e.dataTransfer.setData('text/plain', `${record.id}`);
             e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
           }
-          $('html').addClass(dragAndDropActiveClass);
+          document.querySelector('html').classList.add(dragAndDropActiveClass);
           return initializeDragSubjects(state$);
         }
         return NEVER;
@@ -612,7 +611,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType(computedDragEnd.type),
       tap(() => {
-        $('html').removeClass(dragAndDropActiveClass);
+        document.querySelector('html').classList.remove(dragAndDropActiveClass);
         destroyDragSubjects();
       }),
       ignoreElements()
@@ -749,7 +748,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               })
             );
           } else {
-            $('html').addClass(dragAndDropActiveClass);
+            document.querySelector('html').classList.add(dragAndDropActiveClass);
             return initializeDragSubjects(state$);
           }
         }
@@ -775,7 +774,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               })
             );
           } else {
-            $('html').addClass(dragAndDropActiveClass);
+            document.querySelector('html').classList.add(dragAndDropActiveClass);
             return initializeDragSubjects(state$);
           }
         }
