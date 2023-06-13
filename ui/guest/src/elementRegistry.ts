@@ -426,13 +426,9 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
 /**
  * Retrieves the parent node (drop target/zone) of an item
  */
-export function getParentElementFromICEProps(
-  modelId: string,
-  fieldId: string,
-  index: string | number
-): JQuery<Element> {
+export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): HTMLElement {
   const recordId = findContainerRecord(modelId, fieldId, index)?.id ?? null;
-  return recordId === null ? null : $(fromICEId(recordId).element);
+  return recordId === null ? null : (fromICEId(recordId).element as HTMLElement);
 }
 
 /**

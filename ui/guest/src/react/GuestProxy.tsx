@@ -113,15 +113,15 @@ export function GuestProxy() {
         element
           .querySelectorAll(`[data-craftercms-field-id^="${fieldId}."][data-craftercms-index^="${index}"]`)
           .forEach((element) => {
-            let position = $(element)
-              .attr('data-craftercms-field-id')
+            let position = element
+              .getAttribute('data-craftercms-field-id')
               .split('.')
               .indexOf(isSimple(fieldId) ? fieldId : popPiece(fieldId));
-            let elementIndex = $(element).attr('data-craftercms-index');
+            let elementIndex = element.getAttribute('data-craftercms-index');
             let splitIndex = elementIndex.split('.');
             splitIndex[position] = isSimple(fieldId) ? newIndex.toString() : popPiece(newIndex.toString());
 
-            $(element).attr('data-craftercms-index', splitIndex.join('.'));
+            element.setAttribute('data-craftercms-index', splitIndex.join('.'));
 
             elements.push(element);
 
@@ -134,12 +134,12 @@ export function GuestProxy() {
         const itemsToReRegister = collection.slice(newIndex);
         const childrenToRegister = [];
         itemsToReRegister.forEach((el, i) => {
-          const currentElementIndex = $(el).attr('data-craftercms-index');
+          const currentElementIndex = el.getAttribute('data-craftercms-index');
           const elementNewIndex = appendIndex(originalNewIndex, i);
           if (type === 'insert' && String(originalNewIndex) === String(elementNewIndex)) {
             addAnimation(el, 'craftercms-content-tree-locate');
           }
-          $(el).attr('data-craftercms-index', elementNewIndex);
+          el.setAttribute('data-craftercms-index', `${elementNewIndex}`);
 
           updateRepeatGroupsItems(el, fieldId, currentElementIndex, elementNewIndex, childrenToRegister);
 
@@ -163,10 +163,10 @@ export function GuestProxy() {
         const itemsToReRegister = collection.slice(from, to);
         const childrenToRegister = [];
         itemsToReRegister.forEach((el, i) => {
-          const currentElementIndex = $(el).attr('data-craftercms-index');
+          const currentElementIndex = el.getAttribute('data-craftercms-index');
           const elementNewIndex = appendIndex(index, i);
 
-          $(el).attr('data-craftercms-index', elementNewIndex);
+          el.setAttribute('data-craftercms-index', `${elementNewIndex}`);
 
           updateRepeatGroupsItems(el, fieldId, currentElementIndex, elementNewIndex, childrenToRegister);
 
@@ -180,13 +180,17 @@ export function GuestProxy() {
       }
     };
 
-    const insertElement = ($element: JQuery<any>, $daddy: JQuery<any>, targetIndex: string | number): void => {
+    const insertElement = (
+      element: Element | HTMLElement,
+      daddy: Element | HTMLElement,
+      targetIndex: string | number
+    ): void => {
       const index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
-      const $siblings = $daddy.find('> *');
-      if ($siblings.length === index) {
-        $daddy.append($element);
+      const siblings = daddy.querySelectorAll('*');
+      if (siblings.length === index) {
+        daddy.appendChild(element);
       } else {
-        $element.insertBefore($siblings.eq(index));
+        daddy.insertBefore(element, daddy.children[index]);
       }
     };
 
@@ -232,17 +236,17 @@ export function GuestProxy() {
           }
 
           const phyRecord = ElementRegistry.fromICEId(iceId);
-          const $el = $(phyRecord.element);
-          const $targetSibling = $el.parent().children().eq(targetIndexParsed);
+          const el = phyRecord.element;
+          const targetSibling = el.parentElement.children[targetIndexParsed];
 
           // Move...
           if (currentIndexParsed < targetIndexParsed) {
-            $el.insertAfter($targetSibling);
+            el.parentElement.insertBefore(el, targetSibling.nextSibling);
           } else {
-            $el.insertBefore($targetSibling);
+            el.parentElement.insertBefore(el, targetSibling);
           }
 
-          updateElementRegistrations(Array.from($el.parent().children()), 'sort', index, newIndex, fieldId);
+          updateElementRegistrations([...el.parentElement.children] as HTMLElement[], 'sort', index, newIndex, fieldId);
           break;
         }
         case moveItemOperation.type: {
@@ -273,13 +277,13 @@ export function GuestProxy() {
           const moveTargetICEId = iceRegistry.exists({ modelId, fieldId, index });
           const moveTargetPhyRecord = ElementRegistry.fromICEId(moveTargetICEId);
 
-          const $sourceDropZone = $(currentDropZonePhyRecord.element);
-          const $targetDropZone = $(targetDropZonePhyRecord.element);
+          const sourceDropZone = currentDropZonePhyRecord.element;
+          const targetDropZone = targetDropZonePhyRecord.element;
 
           if (targetIndexParsed === 0) {
-            $targetDropZone.prepend(moveTargetPhyRecord.element);
-          } else if ($targetDropZone.children().length === targetIndexParsed) {
-            $targetDropZone.append(moveTargetPhyRecord.element);
+            targetDropZone.prepend(moveTargetPhyRecord.element);
+          } else if (targetDropZone.children.length === targetIndexParsed) {
+            targetDropZone.append(moveTargetPhyRecord.element);
           } else {
             const targetIndexOccupantICEId = iceRegistry.exists({
               modelId: targetModelId,
@@ -288,26 +292,28 @@ export function GuestProxy() {
             });
             const targetIndexOccupantPhyRecord = ElementRegistry.fromICEId(targetIndexOccupantICEId);
 
-            $(moveTargetPhyRecord.element).insertBefore(targetIndexOccupantPhyRecord.element);
+            moveTargetPhyRecord.element.parentElement.insertBefore(
+              moveTargetPhyRecord.element,
+              targetIndexOccupantPhyRecord.element
+            );
           }
 
           [currentDropZonePhyRecord, targetDropZonePhyRecord].forEach((record) => {
             let newIndex = record === currentDropZonePhyRecord ? index : targetIndex;
-            $(record.element)
-              .find('> [data-craftercms-index]')
-              .each((i, elem) => {
-                ElementRegistry.deregister(ElementRegistry.fromElement(elem).id);
-                $(elem).attr('data-craftercms-model-id', record.modelId);
-                $(elem).attr('data-craftercms-field-id', record.fieldId);
-                $(elem).attr('data-craftercms-index', generateIndex(newIndex, i));
 
-                registerElement(elem);
-              });
+            record.element.querySelectorAll('[data-craftercms-index]').forEach((elem, i) => {
+              ElementRegistry.deregister(ElementRegistry.fromElement(elem).id);
+              elem.setAttribute('data-craftercms-model-id', record.modelId);
+              elem.setAttribute('data-craftercms-field-id', record.fieldId);
+              elem.setAttribute('data-craftercms-index', `${generateIndex(newIndex, i)}`);
+
+              registerElement(elem as HTMLElement);
+            });
           });
 
-          $targetDropZone.removeClass(emptyCollectionClass);
-          if ($sourceDropZone.children().length === 0) {
-            $sourceDropZone.addClass(emptyCollectionClass);
+          targetDropZone.classList.remove(emptyCollectionClass);
+          if (sourceDropZone.children.length === 0) {
+            sourceDropZone.classList.add(emptyCollectionClass);
           }
 
           addAnimation(moveTargetPhyRecord.element, 'craftercms-content-tree-locate');
@@ -325,12 +331,12 @@ export function GuestProxy() {
           // Immediate removal of the element causes the dragend event not
           // to fire leaving the state corrupt - in a state of "SORTING".
           setTimeout(() => {
-            const $daddy: JQuery<Element> = $(phyRecord.element).parent();
-            $(phyRecord.element).remove();
-            if ($daddy.children().length === 0) {
-              $daddy.addClass(emptyCollectionClass);
+            const daddy: Element = phyRecord.element.parentElement;
+            phyRecord.element.remove();
+            if (daddy.children.length === 0) {
+              daddy.classList.add(emptyCollectionClass);
             }
-            updateElementRegistrations(Array.from($daddy.children()), 'delete', index, null, fieldId);
+            updateElementRegistrations([...daddy.children] as HTMLElement[], 'delete', index, null, fieldId);
           });
 
           break;
@@ -364,41 +370,37 @@ export function GuestProxy() {
         case insertComponentOperation.type: {
           const { modelId, fieldId, targetIndex, instance } = op.payload;
 
-          const $spinner = $(`
-            <div style="text-align: center">
+          let spinner = document.createElement('div');
+          spinner.innerHTML = `<div style="text-align: center">
               <svg class="craftercms-placeholder-spinner" width=50 height=50 viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
                 <circle class="path" fill="none" stroke-width=5 stroke-linecap="round" cx="25" cy="25" r="20"/>
               </svg>
-            </div>
-          `);
+            </div>`;
+          spinner = spinner.firstChild as HTMLDivElement;
 
-          const $daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
+          const daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
 
-          // If $daddy has children, get the closest  one to the one that is being added, and get its width to set it
+          // If daddy has children, get the closest  one to the one that is being added, and get its width to set it
           // to the spinner container.
-          const childrenLength = $daddy.children().length;
+          const childrenLength = daddy.children.length;
           if (childrenLength) {
             const index = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
-            const child = $daddy.children()[index < childrenLength ? index : childrenLength - 1];
-            const daddyDisplay = $daddy.css('display');
+            const child = daddy.children[index < childrenLength ? index : childrenLength - 1] as HTMLElement;
+            const daddyDisplay = daddy.style.display;
             // set spinner styles according to the parent display
-            $spinner.css(
-              daddyDisplay === 'flex'
-                ? {
-                    display: 'flex',
-                    width: `${child.offsetWidth}px`,
-                    'align-items': 'center',
-                    'justify-content': 'center'
-                  }
-                : {
-                    display: 'inline-block',
-                    width: `${child.offsetWidth}px`
-                  }
-            );
+            if (daddyDisplay === 'flex') {
+              spinner.style.display = 'flex';
+              spinner.style.width = `${child.offsetWidth}px`;
+              spinner.style.alignItems = 'center';
+              spinner.style.justifyContent = 'center';
+            } else {
+              spinner.style.display = 'inline-block';
+              spinner.style.width = `${child.offsetWidth}px`;
+            }
           }
 
-          $daddy.removeClass(emptyCollectionClass);
-          insertElement($spinner, $daddy, targetIndex);
+          daddy.classList.remove(emptyCollectionClass);
+          insertElement(spinner, daddy, targetIndex);
 
           message$
             .pipe(
@@ -417,14 +419,18 @@ export function GuestProxy() {
               document.body.appendChild(ifrm);
 
               ifrm.onload = function () {
-                $spinner.remove();
+                spinner.remove();
                 const itemElement = ifrm.contentWindow.document.documentElement.querySelector(
                   `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
                 );
-                const $component = $(itemElement?.outerHTML);
-                insertElement($component, $daddy, targetIndex);
-                updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex, null, fieldId);
-                $component.find('[data-craftercms-model-id]').each((i, el) => registerElement(el));
+                let component = document.createElement('div');
+                component.innerHTML = itemElement?.outerHTML;
+                component = component.firstChild as HTMLDivElement;
+                insertElement(component, daddy, targetIndex);
+                updateElementRegistrations([...daddy.children] as HTMLElement[], 'insert', targetIndex, null, fieldId);
+                component
+                  .querySelectorAll('[data-craftercms-model-id]')
+                  .forEach((el) => registerElement(el as HTMLElement));
                 ifrm.remove();
               };
             });
@@ -436,7 +442,7 @@ export function GuestProxy() {
           const modelIdToEdit = getModelIdFromInheritedField(modelId, fieldId);
           // TODO: consider index 'path'
           // If index has a value, filter by `data-craftercms-index`
-          let updatedField: JQuery<any> = $(
+          let updatedField = document.querySelectorAll(
             // Even though it may be an inherited field, the modelId used in the markup is the one that inherits the field.
             `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"]${
               notNullOrUndefined(index) ? `[data-craftercms-index="${index}"]` : ''
@@ -448,16 +454,22 @@ export function GuestProxy() {
 
           if (fieldType === 'image') {
             // At this time all the items in updatedField have the same tagName, use first item
-            const tagName = updatedField.eq(0).prop('tagName').toLowerCase();
+            const tagName = updatedField[0].tagName.toLowerCase();
             if (tagName === 'img') {
-              updatedField.attr('src', value);
+              updatedField.forEach((field) => {
+                field.setAttribute('src', value);
+              });
             } else {
-              updatedField.css('background-image', `url(${value})`);
+              updatedField.forEach((field) => {
+                (field as HTMLElement).style.backgroundImage = `url(${value})`;
+              });
             }
           } else if (fieldType === 'video-picker') {
-            updatedField.find('source').attr('src', value);
-            updatedField.each((index, element) => {
-              element.load();
+            updatedField.forEach((element) => {
+              element.querySelectorAll('source').forEach((source) => {
+                source.setAttribute('src', value);
+              });
+              (element as HTMLVideoElement).load();
             });
           }
 
@@ -484,7 +496,8 @@ export function GuestProxy() {
   useEffect(() => {
     const persistence = persistenceRef.current;
     if (notNullOrUndefined(persistence.draggableElement)) {
-      $(persistence.draggableElement).attr('draggable', 'false').removeAttr('draggable');
+      persistence.draggableElement.setAttribute('draggable', 'false');
+      persistence.draggableElement.removeAttribute('draggable');
     }
     forEach(Object.entries(draggable), ([elemId, iceId]) => {
       if (iceId !== false) {
@@ -494,7 +507,7 @@ export function GuestProxy() {
         // but the context draggable table hasn't been cleaned up.
         if (record != null) {
           persistence.draggableElement = record.element;
-          $(record.element).attr('draggable', 'true');
+          record.element.setAttribute('draggable', 'true');
         }
       }
     });
