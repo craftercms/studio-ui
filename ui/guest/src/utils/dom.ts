@@ -413,3 +413,17 @@ export function getZoneMarkerStyle(rect: DOMRect, padding: number = 0): CSSPrope
     left: rect.left + $window.scrollLeft() - padding / 2
   };
 }
+
+export function fadeIn(el: HTMLElement) {
+  var op = 0;
+  el.style.opacity = `${op}`;
+  el.style.display = 'inline-block';
+
+  var timer = setInterval(function () {
+    if (op >= 1.0) {
+      clearInterval(timer);
+    }
+    el.style.opacity = `${op}`;
+    op = op + 0.1;
+  }, 50);
+}
