@@ -16,7 +16,6 @@
 
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { Coordinates, DropMarkerPosition, DropMarkerPositionArgs, InRectStats } from '../models/Positioning';
-import $ from 'jquery';
 import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { DropZone } from '../models/InContextEditing';
 import { ValidationResult } from '@craftercms/studio-ui/models/ContentType';
@@ -78,8 +77,6 @@ export function getDropMarkerPosition(args: DropMarkerPositionArgs): DropMarkerP
     } = args,
     horizontal = arrangement === HORIZONTAL,
     before = insertPosition === 'before',
-    // $elementToInsert = $(refElement),
-
     // This vars are just for mental clarity; to work with
     // the right semantics in the code below.
     // If inserting before the element, will be working with
@@ -242,8 +239,8 @@ export function getChildArrangement(children: Element[], childrenRects: DOMRect[
 
   for (let i = 0, l = children.length, topValue, marginTop; i < l; i++) {
     marginTop = parseInt(
-      // jQuery is kind enough to always provide the value in pixels :)
-      $(children[i]).css('margin-top').replace(/px/i, '') || '',
+      // javascript is kind enough to always provide the value in pixels :)
+      getComputedStyle(children[i]).getPropertyValue('margin-top').replace(/px/i, '') || '',
       10
     );
 
@@ -313,11 +310,11 @@ export function getRelativePointerPositionPercentages(mousePosition: Coordinates
   return { x, y };
 }
 
-export function isElementInView(element: Element | JQuery<Element>, fullyInView?: boolean): boolean {
-  const pageTop = $(window).scrollTop();
-  const pageBottom = pageTop + $(window).height();
-  const elementTop = $(element).offset().top;
-  const elementBottom = elementTop + $(element).height();
+export function isElementInView(element: Element, fullyInView?: boolean): boolean {
+  const pageTop = window.scrollY;
+  const pageBottom = pageTop + window.innerHeight;
+  const elementTop = elementOffset(element).top;
+  const elementBottom = elementTop + element.clientHeight;
 
   if (fullyInView === true) {
     return pageTop < elementTop && pageBottom > elementBottom;
@@ -340,26 +337,19 @@ export function addAnimation(element: Element | HTMLElement, animationClass: str
   );
 }
 
-export function scrollToElement(element: Element, scrollElement: string, animate: boolean = false): JQuery<Element> {
-  const $element = $(element);
-
+export function scrollToElement(element: Element, scrollElement: string, animate: boolean = false): Element {
   if (!element) {
     return null;
-  } else if (!isElementInView($element)) {
-    $(scrollElement).animate(
-      {
-        scrollTop: $element.offset().top - 100
-      },
-      300,
-      function () {
-        if (animate) addAnimation(element, 'craftercms-content-tree-locate');
-      }
-    );
+  } else if (!isElementInView(element)) {
+    document.querySelector(scrollElement).scrollTo({
+      top: elementOffset(element).top - 100,
+      behavior: 'smooth'
+    });
+    if (animate) addAnimation(element, 'craftercms-content-tree-locate');
   } else if (animate) {
     addAnimation(element, 'craftercms-content-tree-locate');
   }
-
-  return $element;
+  return element;
 }
 
 export function scrollToDropTargets(
@@ -382,12 +372,10 @@ export function scrollToDropTargets(
   if (!elementInView) {
     // TODO: Do this relative to the scroll position. Don't move if things are already in viewport. Be smarter.
     let element = getElementRegistry(dropTargets[0].id);
-    $(scrollElement).animate(
-      {
-        scrollTop: $(element).offset().top - 100
-      },
-      300
-    );
+    document.querySelector(scrollElement).scrollTo({
+      top: elementOffset(element).top - 100,
+      behavior: 'smooth'
+    });
   }
 }
 
@@ -405,12 +393,11 @@ export function updateDropZoneValidations(
 }
 
 export function getZoneMarkerStyle(rect: DOMRect, padding: number = 0): CSSProperties {
-  const $window = $(window);
   return {
     height: rect.height + padding,
     width: rect.width + padding,
-    top: rect.top + $window.scrollTop() - padding / 2,
-    left: rect.left + $window.scrollLeft() - padding / 2
+    top: rect.top + window.scrollY - padding / 2,
+    left: rect.left + window.scrollX - padding / 2
   };
 }
 
@@ -426,4 +413,12 @@ export function fadeIn(el: HTMLElement) {
     el.style.opacity = `${op}`;
     op = op + 0.1;
   }, 50);
+}
+
+export function elementOffset(element: Element) {
+  // Position of element relative to document = window scrolling position + position of element relative to screen
+  var rec = element.getBoundingClientRect();
+  var top = rec.top + window.scrollY;
+  var left = rec.left + window.scrollX;
+  return { top: top, left: left };
 }

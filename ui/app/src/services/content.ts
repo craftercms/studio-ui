@@ -29,7 +29,6 @@ import {
 import { ContentType } from '../models/ContentType';
 import { createLookupTable, nnou, nou, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
-import $ from 'jquery/dist/jquery.slim';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
 import { AjaxError, AjaxResponse } from 'rxjs/ajax';
@@ -676,17 +675,12 @@ export function deleteItem(
         fieldNode = extractNode(element, fieldId, removeLastPiece(`${indexToDelete}`));
       }
 
-      const $fieldNode = $(fieldNode);
+      fieldNode.children[index as number].remove();
 
-      $fieldNode
-        .children()
-        .eq(index as number)
-        .remove();
-
-      if ($fieldNode.children().length === 0) {
+      if (fieldNode.children.length === 0) {
         // If the node isn't completely blank, the xml formatter won't do it's job in converting to a self-closing tag.
         // Also, later on, when retrieved, some *legacy* functions would impaired as the deserializing into JSON had unexpected content
-        $fieldNode.html('');
+        fieldNode.innerHTML = '';
       }
     },
     modelId
