@@ -63,13 +63,13 @@ import {
   startListening,
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
-  desktopAssetUploadStarted,
+  desktopAssetUploadStarted
 } from '../actions';
 
 export type GuestActionTypes =
   // dom events
   | 'mouseover'
-  | 'mouseleave'
+  | 'mouseout'
   | 'dragstart'
   | 'dragover'
   | 'dragleave'
