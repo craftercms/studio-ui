@@ -422,3 +422,28 @@ export function elementOffset(element: Element) {
   var left = rec.left + window.scrollX;
   return { top: top, left: left };
 }
+
+/* Traverse DOM from event target up to parent, searching for selector */
+function searchSelector(event, selector, stopAt) {
+  let currentNode = event.target;
+  while (true) {
+    if (currentNode.matches?.(selector)) {
+      return currentNode;
+    } else if (currentNode !== stopAt && currentNode !== document.body) {
+      currentNode = currentNode.parentNode;
+    } else {
+      return false;
+    }
+  }
+}
+
+export function delegateEventListener(element, eName, selector, fn) {
+  element.addEventListener(eName, function (event) {
+    const found = searchSelector(event, selector, event.currentTarget);
+    if (found) {
+      // Execute the callback with the context set to the found element
+      // jQuery goes way further, it even has it's own event object
+      fn.call(found, event, found);
+    }
+  });
+}

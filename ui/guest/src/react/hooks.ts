@@ -61,7 +61,7 @@ interface UseModelProps extends Omit<ICEProps, 'modelId'> {
 
 const handlerMap = {
   mouseover: 'onMouseOver',
-  mouseleave: 'onMouseLeave',
+  mouseout: 'onMouseLeave',
   dragstart: 'onDragStart',
   dragover: 'onDragOver',
   dragleave: 'onDragLeave',

@@ -164,7 +164,7 @@ const reducer = createReducer(initialState, {
   },
   // endregion
   // region mouseleave
-  mouseleave: (state) =>
+  mouseout: (state) =>
     state.status === EditingStatus.LISTENING
       ? {
           ...state,

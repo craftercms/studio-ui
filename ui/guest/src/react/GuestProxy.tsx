@@ -19,7 +19,6 @@ import { useGuestContext, useSelector } from './GuestContext';
 import * as ElementRegistry from '../elementRegistry';
 import { getParentElementFromICEProps } from '../elementRegistry';
 import * as iceRegistry from '../iceRegistry';
-import $ from 'jquery';
 import {
   contentTypes$,
   getCachedContentType,
@@ -50,7 +49,7 @@ import { GuestState } from '../store/models/GuestStore';
 import { notNullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { isSimple, popPiece, removeLastPiece } from '@craftercms/studio-ui/utils/string';
-import { addAnimation } from '../utils/dom';
+import { addAnimation, delegateEventListener } from '../utils/dom';
 import { emptyCollectionClass } from '../constants';
 
 export function GuestProxy() {
@@ -200,23 +199,22 @@ export function GuestProxy() {
         document.querySelectorAll<HTMLElement>('[data-craftercms-model-id]').forEach(registerElement);
       });
 
-    const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
-      let record = ElementRegistry.fromElement(e.currentTarget as Element);
+    const handler: JQuery.EventHandlerBase<any, any> = (e: Event, target): void => {
+      let record = ElementRegistry.fromElement(target as Element);
       if (notNullOrUndefined(record)) {
         persistenceRef.current.onEvent(e, record.id);
       }
     };
 
-    $(document)
-      .on('mouseover', '[data-craftercms-model-id]', handler)
-      .on('mouseleave', '[data-craftercms-model-id]', handler)
-      .on('dragstart', '[data-craftercms-model-id]', handler)
-      .on('dragover', '[data-craftercms-model-id]', handler)
-      .on('dragleave', '[data-craftercms-model-id]', handler)
-      .on('drop', '[data-craftercms-model-id]', handler)
-      .on('dragend', '[data-craftercms-model-id]', handler)
-      .on('click', '[data-craftercms-model-id]', handler)
-      .on('dblclick', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'mouseover', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'mouseout', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'dragstart', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'dragover', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'dragleave', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'drop', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'dragend', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'click', '[data-craftercms-model-id]', handler);
+    delegateEventListener(document, 'dblclick', '[data-craftercms-model-id]', handler);
 
     const sub = operations$.subscribe((op: Operation) => {
       switch (op.type) {
@@ -479,16 +477,15 @@ export function GuestProxy() {
 
     return () => {
       sub.unsubscribe();
-      $(document)
-        .off('mouseover', '[data-craftercms-model-id]', handler)
-        .off('mouseleave', '[data-craftercms-model-id]', handler)
-        .off('dragstart', '[data-craftercms-model-id]', handler)
-        .off('dragover', '[data-craftercms-model-id]', handler)
-        .off('dragleave', '[data-craftercms-model-id]', handler)
-        .off('drop', '[data-craftercms-model-id]', handler)
-        .off('dragend', '[data-craftercms-model-id]', handler)
-        .off('click', '[data-craftercms-model-id]', handler)
-        .off('dblclick', '[data-craftercms-model-id]', handler);
+      document.removeEventListener('mouseover', handler);
+      document.removeEventListener('mouseout', handler);
+      document.removeEventListener('dragstart', handler);
+      document.removeEventListener('dragover', handler);
+      document.removeEventListener('dragleave', handler);
+      document.removeEventListener('drop', handler);
+      document.removeEventListener('dragend', handler);
+      document.removeEventListener('click', handler);
+      document.removeEventListener('dblclick', handler);
     };
   }, []);
 
