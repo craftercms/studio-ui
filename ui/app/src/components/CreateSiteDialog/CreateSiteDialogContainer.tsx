@@ -53,6 +53,8 @@ import DialogFooter from '../DialogFooter';
 import PrimaryButton from '../PrimaryButton';
 import { useStyles } from './styles';
 import messages from './translations';
+import useMount from '../../hooks/useMount';
+import { hasGlobalPermission } from '../../services/users';
 
 interface SearchState {
   searchKey: string;
@@ -81,6 +83,7 @@ const gitFormFields = ['repoUrl', 'repoRemoteName', 'repoUsername', 'repoPasswor
 export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps) {
   const { site, setSite, search, setSearch, handleClose, dialog, setDialog, disableEnforceFocus } = props;
   const { classes, cx } = useStyles();
+  const [hasListPluginPermission, setHasListPluginPermission] = useState(false);
 
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
@@ -459,6 +462,10 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
     setDialog({ inProgress: false });
   }
 
+  useMount(() => {
+    hasGlobalPermission('list_plugins').subscribe(setHasListPluginPermission);
+  });
+
   useEffect(() => {
     let subscriptions: Subscription[] = [];
     if (blueprints === null && !apiState.error) {
@@ -503,13 +510,13 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 
   useEffect(() => {
     let subscriptions: Subscription[] = [];
-    if (marketplace === null && !apiState.error) {
+    if (hasListPluginPermission && marketplace === null && !apiState.error) {
       subscriptions.push(fetchMarketplaceBlueprints());
     }
     return () => {
       subscriptions.forEach((sub) => sub.unsubscribe());
     };
-  }, [apiState.error, fetchMarketplaceBlueprints, marketplace]);
+  }, [apiState.error, fetchMarketplaceBlueprints, marketplace, hasListPluginPermission]);
 
   return (
     <>
@@ -535,7 +542,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
             />
           </div>
         )) ||
-        (apiState.error && (
+        (apiState.errorResponse && (
           <ApiResponseErrorState
             classes={{ root: classes.errorPaperRoot }}
             error={apiState.errorResponse}
@@ -567,68 +574,72 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                 <div className={cx(classes.slide, classes.fadeIn)}>
                   <Grid container spacing={3} className={classes.containerGrid}>
                     {renderBlueprints(blueprints)}
-                    <Grid item xs={12}>
-                      <Divider sx={{ ml: -3, mr: -3 }} />
-                    </Grid>
-                    <Grid item xs={12} className={classes.marketplaceActions}>
-                      <Typography color="text.secondary" variant="overline" sx={{ mr: 2 }}>
-                        {formatMessage(messages.publicMarketplaceBlueprints)}
-                      </Typography>
-                      <IconButton size="small" onClick={handleSearchClick}>
-                        <SearchIcon />
-                      </IconButton>
-                      <FormControlLabel
-                        className={classes.showIncompatible}
-                        control={
-                          <Checkbox
-                            checked={site.showIncompatible}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
-                            color="primary"
-                            className={classes.showIncompatibleCheckbox}
-                          />
-                        }
-                        label={
-                          <Typography className={classes.showIncompatibleInput}>
-                            {formatMessage(messages.showIncompatible)}
+                    {hasListPluginPermission && (
+                      <>
+                        <Grid item xs={12}>
+                          <Divider sx={{ ml: -3, mr: -3 }} />
+                        </Grid>
+                        <Grid item xs={12} className={classes.marketplaceActions}>
+                          <Typography color="text.secondary" variant="overline" sx={{ mr: 2 }}>
+                            {formatMessage(messages.publicMarketplaceBlueprints)}
                           </Typography>
-                        }
-                        labelPlacement="start"
-                      />
-                    </Grid>
-                    {search.searchSelected && site.selectedView === 0 && (
-                      <Grid item xs={12}>
-                        <div className={classes.searchContainer}>
-                          <SearchBar
-                            showActionButton={Boolean(search.searchKey)}
-                            onChange={handleOnSearchChange}
-                            keyword={search.searchKey}
-                            autoFocus={true}
+                          <IconButton size="small" onClick={handleSearchClick}>
+                            <SearchIcon />
+                          </IconButton>
+                          <FormControlLabel
+                            className={classes.showIncompatible}
+                            control={
+                              <Checkbox
+                                checked={site.showIncompatible}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
+                                color="primary"
+                                className={classes.showIncompatibleCheckbox}
+                              />
+                            }
+                            label={
+                              <Typography className={classes.showIncompatibleInput}>
+                                {formatMessage(messages.showIncompatible)}
+                              </Typography>
+                            }
+                            labelPlacement="start"
                           />
-                        </div>
-                      </Grid>
-                    )}
-                    {apiState.marketplaceError ? (
-                      <Box className={classes.marketplaceUnavailable}>
-                        <SignalWifiBadRounded className={classes.marketplaceUnavailableIcon} />
-                        <Typography variant="body1" color="text.secondary">
-                          {formatMessage(messages.marketplaceUnavailable)}
-                        </Typography>
-                        <Button variant="text" onClick={fetchMarketplaceBlueprints}>
-                          {formatMessage(messages.retry)}
-                        </Button>
-                      </Box>
-                    ) : apiState?.fetchingMarketplace ? (
-                      <Box sx={{ width: '100%' }}>
-                        <LoadingState />
-                      </Box>
-                    ) : !filteredMarketplace || filteredMarketplace?.length === 0 ? (
-                      <EmptyState
-                        title={formatMessage(messages.noMarketplaceBlueprints)}
-                        subtitle={formatMessage(messages.changeQuery)}
-                        classes={{ root: classes.emptyStateRoot }}
-                      />
-                    ) : (
-                      renderBlueprints(filteredMarketplace, true)
+                        </Grid>
+                        {search.searchSelected && site.selectedView === 0 && (
+                          <Grid item xs={12}>
+                            <div className={classes.searchContainer}>
+                              <SearchBar
+                                showActionButton={Boolean(search.searchKey)}
+                                onChange={handleOnSearchChange}
+                                keyword={search.searchKey}
+                                autoFocus={true}
+                              />
+                            </div>
+                          </Grid>
+                        )}
+                        {apiState.marketplaceError ? (
+                          <Box className={classes.marketplaceUnavailable}>
+                            <SignalWifiBadRounded className={classes.marketplaceUnavailableIcon} />
+                            <Typography variant="body1" color="text.secondary">
+                              {formatMessage(messages.marketplaceUnavailable)}
+                            </Typography>
+                            <Button variant="text" onClick={fetchMarketplaceBlueprints}>
+                              {formatMessage(messages.retry)}
+                            </Button>
+                          </Box>
+                        ) : apiState?.fetchingMarketplace ? (
+                          <Box sx={{ width: '100%' }}>
+                            <LoadingState />
+                          </Box>
+                        ) : !filteredMarketplace || filteredMarketplace?.length === 0 ? (
+                          <EmptyState
+                            title={formatMessage(messages.noMarketplaceBlueprints)}
+                            subtitle={formatMessage(messages.changeQuery)}
+                            classes={{ root: classes.emptyStateRoot }}
+                          />
+                        ) : (
+                          renderBlueprints(filteredMarketplace, true)
+                        )}
+                      </>
                     )}
                   </Grid>
                 </div>
