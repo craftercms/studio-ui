@@ -117,7 +117,7 @@ const createReader$ = (file: File) =>
   });
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
-  // region mouseover, mouseleave
+  // region mouseover, mouseout
   (action$, state$) =>
     action$.pipe(
       ofType('mouseover', 'mouseout'),
