@@ -32,7 +32,7 @@ export const escape$ =
 let active = false;
 
 let dragover$: Subject<{
-  event: DragEvent | SyntheticEvent | JQueryMouseEventObject | Event;
+  event: DragEvent | SyntheticEvent | Event;
   record: ElementRecord;
 }>;
 const getDragOver = () => dragover$;

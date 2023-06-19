@@ -175,6 +175,7 @@ export function splitRect(rect: DOMRect, axis: string = X_AXIS): DOMRect[] {
   return [rect1, rect2];
 }
 
+// TODO: UPDATE to remove JQuery usage
 export function insertDropMarker({
   $dropMarker,
   insertPosition,

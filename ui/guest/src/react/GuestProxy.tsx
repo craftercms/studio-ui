@@ -185,7 +185,7 @@ export function GuestProxy() {
       targetIndex: string | number
     ): void => {
       const index = typeof targetIndex === 'string' ? parseInt(popPiece(targetIndex)) : targetIndex;
-      const siblings = daddy.querySelectorAll('*');
+      const siblings = daddy.children;
       if (siblings.length === index) {
         daddy.appendChild(element);
       } else {
@@ -299,7 +299,7 @@ export function GuestProxy() {
           [currentDropZonePhyRecord, targetDropZonePhyRecord].forEach((record) => {
             let newIndex = record === currentDropZonePhyRecord ? index : targetIndex;
 
-            record.element.querySelectorAll('[data-craftercms-index]').forEach((elem, i) => {
+            record.element.querySelectorAll(':scope > [data-craftercms-index]').forEach((elem, i) => {
               ElementRegistry.deregister(ElementRegistry.fromElement(elem).id);
               elem.setAttribute('data-craftercms-model-id', record.modelId);
               elem.setAttribute('data-craftercms-field-id', record.fieldId);

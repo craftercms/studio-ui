@@ -122,7 +122,7 @@ export type GuestActionTypes =
   | typeof contentReady.type;
 
 export type MouseEventAction = GuestStandardAction<{
-  event: JQueryMouseEventObject | SyntheticEvent<Element, MouseEvent> | MouseEvent;
+  event: SyntheticEvent<Element, MouseEvent> | MouseEvent;
   record: ElementRecord;
 }>;
 
