@@ -199,7 +199,7 @@ export function GuestProxy() {
         document.querySelectorAll<HTMLElement>('[data-craftercms-model-id]').forEach(registerElement);
       });
 
-    const handler: JQuery.EventHandlerBase<any, any> = (e: Event, target): void => {
+    const handler: (this: Document, e: MouseEvent, target?: Element) => void = (e: Event, target): void => {
       let record = ElementRegistry.fromElement(target as Element);
       if (notNullOrUndefined(record)) {
         persistenceRef.current.onEvent(e, record.id);
