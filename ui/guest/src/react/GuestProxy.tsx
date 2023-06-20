@@ -200,7 +200,7 @@ export function GuestProxy() {
       });
 
     const handler: (this: Document, e: MouseEvent, target?: Element) => void = (e: Event, target): void => {
-      let record = ElementRegistry.fromElement(target as Element);
+      const record = ElementRegistry.fromElement(target as Element);
       if (notNullOrUndefined(record)) {
         persistenceRef.current.onEvent(e, record.id);
       }
@@ -289,8 +289,7 @@ export function GuestProxy() {
               index: targetIndex
             });
             const targetIndexOccupantPhyRecord = ElementRegistry.fromICEId(targetIndexOccupantICEId);
-
-            moveTargetPhyRecord.element.parentElement.insertBefore(
+            targetIndexOccupantPhyRecord.element.parentElement.insertBefore(
               moveTargetPhyRecord.element,
               targetIndexOccupantPhyRecord.element
             );

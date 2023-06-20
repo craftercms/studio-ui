@@ -168,10 +168,12 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           payload: { event, record }
         } = action;
         let { element } = record;
+        element = element.closest('[data-craftercms-type="collection"]') ?? element;
+        const collectionRecord = ElementRegistry.fromElement(element) ?? record;
         if (dragOk(state.status) && !state.dragContext?.scrolling && state.dragContext.players.includes(element)) {
           event.preventDefault();
           event.stopPropagation();
-          dragover$().next({ event, record });
+          dragover$().next({ event, record: collectionRecord });
         }
       }),
       ignoreElements()
