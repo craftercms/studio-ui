@@ -44,7 +44,11 @@ export function SystemIcon(props: SystemIconProps) {
     const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
     return IconComponent ? (
       <Suspense fallback={<Skeleton variant="rectangular" width="24px" sx={combinedSx} className={iconClassName} />}>
-        <IconComponent {...props.svgIconProps} sx={combinedSx} className={iconClassName} />
+        <IconComponent
+          {...props.svgIconProps}
+          sx={{ color: (theme) => theme.palette.action.active, ...combinedSx }}
+          className={iconClassName}
+        />
       </Suspense>
     ) : (
       <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
