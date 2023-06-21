@@ -66,7 +66,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { notNullOrUndefined, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../elementRegistry';
 import { get, getElementFromICEProps } from '../../elementRegistry';
@@ -97,7 +97,7 @@ import { validateActionPolicy } from '@craftercms/studio-ui/services/sites';
 import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
-import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
+import { ensureSingleSlash, isSimple } from '@craftercms/studio-ui/utils/string';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -168,12 +168,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           payload: { event, record }
         } = action;
         let { element } = record;
-        element = element.closest('[data-craftercms-type="collection"]') ?? element;
-        const collectionRecord = ElementRegistry.fromElement(element) ?? record;
         if (dragOk(state.status) && !state.dragContext?.scrolling && state.dragContext.players.includes(element)) {
           event.preventDefault();
           event.stopPropagation();
-          dragover$().next({ event, record: collectionRecord });
+          dragover$().next({ event, record });
         }
       }),
       ignoreElements()
