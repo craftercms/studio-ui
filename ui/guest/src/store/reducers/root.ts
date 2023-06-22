@@ -31,7 +31,7 @@ import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord, ICERecord } from '../../models/InContextEditing';
 import { GuestState } from '../models/GuestStore';
-import { notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nou, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { updateDropZoneValidations } from '../../utils/dom';
 import { EditingStatus, HighlightMode } from '../../constants';
 import {
@@ -70,6 +70,8 @@ import {
   desktopAssetUploadFailed
 } from '../actions';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { isSimple } from '@craftercms/studio-ui/utils/string';
+import * as ElementRegistry from '../../elementRegistry';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
@@ -176,9 +178,14 @@ const reducer = createReducer(initialState, {
   // region dragstart
   // TODO: Not pure.
   dragstart: (state, action) => {
-    const { record } = action.payload;
+    let { record } = action.payload;
     // onMouseOver pre-populates the draggable record
-    const iceId = state.draggable?.[record.id];
+    let iceId = state.draggable?.[record.id];
+    if (nou(iceId) && !isSimple(record.fieldId[0])) {
+      const movableElement = record.element.closest('[draggable="true"]');
+      record = ElementRegistry.fromElement(movableElement) ?? record;
+      iceId = state.draggable?.[record.id];
+    }
     // Items that browser make draggable by default (images, etc) may not have an ice id
     if (notNullOrUndefined(iceId)) {
       const dropTargets = iceRegistry.getRecordDropTargets(iceId);
