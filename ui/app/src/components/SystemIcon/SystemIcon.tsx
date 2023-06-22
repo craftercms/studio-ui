@@ -38,21 +38,17 @@ export interface SystemIconProps {
 
 export function SystemIcon(props: SystemIconProps) {
   let { icon, className, style, sx = style } = props;
-  const combinedSx = { ...sx, ...icon.style, ...props.svgIconProps?.sx } as SxProps<Theme>;
+  const combinedSx = { ...sx, ...icon.style, ...style, ...props.svgIconProps?.sx } as SxProps<Theme>;
   if ('id' in icon) {
     const IconComponent = components.get(icon.id) as typeof ErrorRounded;
     const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
     return IconComponent ? (
       <Suspense fallback={<Skeleton variant="rectangular" width="24px" sx={combinedSx} className={iconClassName} />}>
-        <IconComponent
-          {...props.svgIconProps}
-          sx={{ color: (theme) => theme.palette.action.active, ...combinedSx }}
-          className={iconClassName}
-        />
+        <IconComponent {...props.svgIconProps} sx={combinedSx} className={iconClassName} />
       </Suspense>
     ) : (
       <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
-        <ErrorRounded sx={combinedSx} />
+        <ErrorRounded sx={combinedSx} className={iconClassName} />
       </Tooltip>
     );
   } else {

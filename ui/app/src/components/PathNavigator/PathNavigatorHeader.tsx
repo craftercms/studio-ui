@@ -61,6 +61,7 @@ export function PathNavigatorHeader(props: PathNavigatorHeaderProps) {
           <SystemIcon
             icon={icon}
             className={classes.headerIcon}
+            sx={{ color: (theme) => theme.palette.action.active }}
             style={icon[collapsed ? 'collapsedStyle' : 'expandedStyle']}
           />
         )}
