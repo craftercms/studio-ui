@@ -462,10 +462,6 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
     setDialog({ inProgress: false });
   }
 
-  useMount(() => {
-    hasGlobalPermission('list_plugins').subscribe(setHasListPluginPermission);
-  });
-
   useEffect(() => {
     let subscriptions: Subscription[] = [];
     if (blueprints === null && !apiState.error) {
@@ -510,13 +506,16 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 
   useEffect(() => {
     let subscriptions: Subscription[] = [];
-    if (hasListPluginPermission && marketplace === null && !apiState.error) {
-      subscriptions.push(fetchMarketplaceBlueprints());
-    }
+    hasGlobalPermission('list_plugins').subscribe((hasPermission) => {
+      setHasListPluginPermission(hasPermission);
+      if (hasPermission && marketplace === null && !apiState.error) {
+        subscriptions.push(fetchMarketplaceBlueprints());
+      }
+    });
     return () => {
       subscriptions.forEach((sub) => sub.unsubscribe());
     };
-  }, [apiState.error, fetchMarketplaceBlueprints, marketplace, hasListPluginPermission]);
+  }, [apiState.error, fetchMarketplaceBlueprints, marketplace]);
 
   return (
     <>
