@@ -626,7 +626,15 @@ export function moveItem(
           targetParentPath,
           (element) => {
             const item: Element = extractNode(element, targetFieldId, targetIndex);
-            const field: Element = extractNode(element, targetFieldId, removeLastPiece(`${targetIndex}`));
+            let field: Element = extractNode(element, targetFieldId, removeLastPiece(`${targetIndex}`));
+
+            // If field doesn't exist yet in the document, create it
+            if (!field) {
+              const newField = document.createElementNS('', originalFieldId);
+              newField.setAttribute('inline', 'true');
+              element.appendChild(newField);
+              field = newField;
+            }
 
             const auxElement = createElement('hold');
             auxElement.innerHTML = removedItemHTML;
