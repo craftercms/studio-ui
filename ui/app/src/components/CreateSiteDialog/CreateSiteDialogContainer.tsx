@@ -53,7 +53,6 @@ import DialogFooter from '../DialogFooter';
 import PrimaryButton from '../PrimaryButton';
 import { useStyles } from './styles';
 import messages from './translations';
-import useMount from '../../hooks/useMount';
 import { hasGlobalPermission } from '../../services/users';
 
 interface SearchState {
