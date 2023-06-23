@@ -236,9 +236,12 @@ export function GuestProxy() {
           const phyRecord = ElementRegistry.fromICEId(iceId);
           const el = phyRecord.element;
           const targetSibling = el.parentElement.children[targetIndexParsed];
+          const isTargetLastPosition = targetIndexParsed === el.parentElement.children.length - 1;
 
           // Move...
-          if (currentIndexParsed < targetIndexParsed) {
+          if (isTargetLastPosition) {
+            el.parentElement.appendChild(el);
+          } else if (currentIndexParsed < targetIndexParsed) {
             el.parentElement.insertBefore(el, targetSibling.nextSibling);
           } else {
             el.parentElement.insertBefore(el, targetSibling);
