@@ -46,8 +46,7 @@ export function value(model: ContentInstance, fieldId: string, newValue?: unknow
 }
 
 export function extractCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
-  // Defaults to empty array (when there's no value stored in model yet).
-  return extractCollectionPiece(model, fieldId, removeLastPiece(`${index}`)) ?? [];
+  return extractCollectionPiece(model, fieldId, removeLastPiece(`${index}`));
 }
 
 export function extractCollectionItem(model: ContentInstance, fieldId: string, index: string | number) {

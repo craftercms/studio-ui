@@ -419,7 +419,7 @@ export function insertComponent(
   create = false
 ): void {
   const models = getCachedModels();
-  const result = getCollection(models[modelId], fieldId, targetIndex).concat();
+  const result = getCollection(models[modelId], fieldId, targetIndex)?.concat() ?? [];
 
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
@@ -601,7 +601,7 @@ export function moveItem(
 
   const targetModel = models[targetModelId];
   const targetCollection = symmetricTarget
-    ? Model.extractCollection(targetModel, targetFieldId, targetIndex)
+    ? Model.extractCollection(targetModel, targetFieldId, targetIndex) ?? []
     : Model.extractCollectionItem(targetModel, targetFieldId, targetIndex);
   // Insert item in target collection @ the desired position
   const targetResult = targetCollection.slice(0);

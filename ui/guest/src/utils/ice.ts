@@ -81,7 +81,7 @@ export function getCollectionWithoutItemAtIndex(collection: string[], index: str
 
 export function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
   const isStringIndex = typeof index === 'string';
-  return isStringIndex ? Model.extractCollection(model, fieldId, index) : Model.value(model, fieldId) ?? [];
+  return isStringIndex ? Model.extractCollection(model, fieldId, index) : Model.value(model, fieldId);
 }
 
 export function setCollection(model: ContentInstance, fieldId: string, index: number | string, collection: string[]) {
