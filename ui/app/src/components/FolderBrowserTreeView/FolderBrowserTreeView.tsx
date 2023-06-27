@@ -73,13 +73,7 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
                     path: withIndexXml in refs.current.tree.childrenByParentPath ? withIndexXml : p
                   })
                 )
-              : checkPathExistence(siteId, withIndexXml).pipe(
-                  map((exists) =>
-                    exists
-                      ? pathNavigatorTreeFetchPathChildren({ id, path: withIndexXml, expand: true })
-                      : pathNavigatorTreeFetchPathChildren({ id, path: p, expand: true })
-                  )
-                );
+              : of(pathNavigatorTreeFetchPathChildren({ id, path: p, expand: true }));
           })
         ).subscribe((actions) => {
           dispatch(actions.length === 1 ? actions[0] : batchActions(actions));

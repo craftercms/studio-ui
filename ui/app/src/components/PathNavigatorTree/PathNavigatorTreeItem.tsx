@@ -34,6 +34,7 @@ import ArrowRightRoundedIcon from '@mui/icons-material/ArrowRightRounded';
 import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 import { isBlank } from '../../utils/string';
 import ErrorOutlineRounded from '@mui/icons-material/ErrorOutlineRounded';
+import { withIndex } from '../../utils/path';
 
 export interface PathNavigatorTreeItemProps {
   path: string;
@@ -198,7 +199,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
   const [showFilter, setShowFilter] = useState(Boolean(keywordByPath[path]));
   const [keyword, setKeyword] = useState(keywordByPath[path] ?? '');
   const { formatMessage } = useIntl();
-  const children = childrenByParentPath[path] ?? [];
+  const children = childrenByParentPath[path] ?? childrenByParentPath[withIndex(path)] ?? [];
 
   const onMouseOver = (e) => {
     e.stopPropagation();
@@ -332,7 +333,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                   minHeight: '23.5px'
                 }
               }}
-              item={itemsByPath[path]}
+              item={itemsByPath[path] ?? itemsByPath[withIndex(path)]}
               labelTypographyProps={{ variant: 'body2' }}
               showNavigableAsLinks={showNavigableAsLinks}
               showPublishingTarget={showPublishingTarget}
