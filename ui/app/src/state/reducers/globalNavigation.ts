@@ -17,19 +17,12 @@
 import GlobalState from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import { changeSite } from '../actions/sites';
-import {
-  blockGlobalMenuNavigation,
-  fetchGlobalMenu,
-  fetchGlobalMenuComplete,
-  fetchGlobalMenuFailed,
-  unblockGlobalMenuNavigation
-} from '../actions/system';
+import { fetchGlobalMenu, fetchGlobalMenuComplete, fetchGlobalMenuFailed } from '../actions/system';
 
 const initialState: GlobalState['globalNavigation'] = {
   error: null,
   items: null,
-  isFetching: false,
-  blockNavigation: false
+  isFetching: false
 };
 
 const reducer = createReducer<GlobalState['globalNavigation']>(initialState, (builder) => {
@@ -47,14 +40,6 @@ const reducer = createReducer<GlobalState['globalNavigation']>(initialState, (bu
       error: payload,
       items: state.items,
       isFetching: false
-    }))
-    .addCase(blockGlobalMenuNavigation, (state) => ({
-      ...state,
-      blockNavigation: true
-    }))
-    .addCase(unblockGlobalMenuNavigation, (state) => ({
-      ...state,
-      blockNavigation: false
     }));
 });
 

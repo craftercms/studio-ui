@@ -17,13 +17,11 @@
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  blockSiteConfigNavigation,
   fetchSiteConfig,
   fetchSiteConfigComplete,
   fetchSiteUiConfig,
   fetchSiteUiConfigComplete,
-  fetchSiteUiConfigFailed,
-  unblockSiteConfigNavigation
+  fetchSiteUiConfigFailed
 } from '../actions/configuration';
 import { changeSite } from '../actions/sites';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
@@ -67,8 +65,7 @@ const initialState: GlobalState['uiConfig'] = {
     publishEverythingCommentRequired: false,
     submissionCommentMaxLength: 250
   },
-  cdataEscapedFieldPatterns: [],
-  blockSiteConfigNavigation: false
+  cdataEscapedFieldPatterns: []
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) => {
@@ -168,15 +165,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
           ...publishing
         }
       };
-    })
-    .addCase(blockSiteConfigNavigation, (state) => ({
-      ...state,
-      blockSiteConfigNavigation: true
-    }))
-    .addCase(unblockSiteConfigNavigation, (state) => ({
-      ...state,
-      blockSiteConfigNavigation: false
-    }));
+    });
 });
 
 export default reducer;

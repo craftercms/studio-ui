@@ -16,7 +16,7 @@
 
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { fetchConfigurationXML, writeConfiguration } from '../../services/configuration';
 import AceEditor from '../AceEditor/AceEditor';
@@ -28,13 +28,12 @@ import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialog';
 import ConfirmDropdown from '../ConfirmDropdown';
 import { useDispatch } from 'react-redux';
-import {
-  blockGlobalMenuNavigation,
-  showSystemNotification,
-  unblockGlobalMenuNavigation
-} from '../../state/actions/system';
+import { showSystemNotification } from '../../state/actions/system';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
+// https://github.com/remix-run/react-router/tree/dev/examples/navigation-blocking
+import { useNavigate, unstable_useBlocker as useBlocker, useNavigation } from 'react-router-dom';
 
 const translations = defineMessages({
   configSaved: {
@@ -54,16 +53,32 @@ export function GlobalConfigManagement() {
   const [enable, setEnable] = useState(true);
   const [viewSample, setViewSample] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [nextRoute, setNextRoute] = useState<string>();
+  // const history = useHistory();
+  const navigate = useNavigate();
   const { classes } = useStyles();
+  const blocker = useBlocker(true);
 
   const aceEditorRef = useRef<any>();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  const updateHasChanges = (hasChanges: boolean) => {
-    dispatch(hasChanges ? blockGlobalMenuNavigation() : unblockGlobalMenuNavigation());
-    setHasChanges(hasChanges);
-  };
+  // TODO: Pending. Using useBlocker hook from react-router-dom doesn't blocks navigation.
+  // useEffect(() => {
+  //   const historyBlock = history.block;
+  //   history.block((props) => {
+  //     if (hasChanges) {
+  //       history.goBack();
+  //       setNextRoute(props.pathname);
+  //       setShowConfirmDialog(true);
+  //       return false;
+  //     }
+  //   });
+  //   return () => {
+  //     history.block = historyBlock;
+  //   };
+  // }, [hasChanges, history]);
 
   useMount(() => {
     const requests = [
@@ -116,7 +131,7 @@ export function GlobalConfigManagement() {
       writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value).subscribe(
         () => {
           setLastSavedContent(value);
-          updateHasChanges(false);
+          setHasChanges(false);
           dispatch(
             showSystemNotification({
               message: formatMessage(translations.configSaved)
@@ -134,13 +149,22 @@ export function GlobalConfigManagement() {
           );
         }
       );
-      updateHasChanges(false);
+      setHasChanges(false);
     }
   };
 
   const onChange = (e) => {
     const hasChanges = lastSavedContent !== aceEditorRef.current.getValue();
-    updateHasChanges(hasChanges);
+    setHasChanges(hasChanges);
+  };
+
+  const onConfirmOk = () => {
+    setHasChanges(false);
+    setShowConfirmDialog(false);
+    // timeout needed to avoid running the useEffect on line:64 with hasChanges on true
+    setTimeout(() => {
+      navigate(nextRoute);
+    });
   };
 
   return (
@@ -187,6 +211,19 @@ export function GlobalConfigManagement() {
         onClose={() => setViewSample(false)}
         onClosed={() => aceEditorRef.current.focus()}
         content={sample}
+      />
+      <ConfirmDialog
+        open={showConfirmDialog}
+        title={
+          <FormattedMessage
+            id="globalConfigManagement.pendingChanges"
+            defaultMessage="You have unsaved changes. Discard changes?"
+          />
+        }
+        onOk={onConfirmOk}
+        onCancel={() => {
+          setShowConfirmDialog(false);
+        }}
       />
     </Paper>
   );

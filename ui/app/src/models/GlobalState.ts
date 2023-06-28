@@ -66,7 +66,6 @@ import { SingleFileUploadDialogStateProps } from '../components/SingleFileUpload
 import { ModelHierarchyMap } from '../utils/content';
 import { UIBlockerStateProps } from '../components/UIBlocker';
 import { RenameAssetStateProps } from '../components/RenameAssetDialog';
-import { blockSiteConfigNavigation } from '../state/actions/configuration';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -264,7 +263,6 @@ export interface GlobalState {
     };
     cdataEscapedFieldPatterns: string[];
     references: LookupTable;
-    blockSiteConfigNavigation: boolean;
     xml: string;
   };
   pathNavigator: LookupTable<PathNavigatorStateProps>;
@@ -279,7 +277,6 @@ export interface GlobalState {
     error: AjaxError;
     items: Array<{ icon: SystemIconDescriptor; id: string; label: string }>;
     isFetching: boolean;
-    blockNavigation: boolean;
   };
 }
 

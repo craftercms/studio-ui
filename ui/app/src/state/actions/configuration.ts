@@ -24,6 +24,3 @@ export const fetchSiteUiConfigFailed = /*#__PURE__*/ createAction<AjaxError>('FE
 export const fetchSiteConfig = /*#__PURE__*/ createAction('FETCH_SITE_CONFIG');
 export const fetchSiteConfigComplete = /*#__PURE__*/ createAction<any>('FETCH_SITE_CONFIG_COMPLETE');
 export const fetchSiteConfigFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SITE_CONFIG_FAILED');
-
-export const blockSiteConfigNavigation = /*#__PURE__*/ createAction('BLOCK_SITE_CONFIG_NAVIGATION');
-export const unblockSiteConfigNavigation = /*#__PURE__*/ createAction('UNBLOCK_SITE_CONFIG_NAVIGATION');

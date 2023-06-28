@@ -125,9 +125,6 @@ export const fetchGlobalMenuComplete =
 
 export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_MENU_FAILED');
 
-export const blockGlobalMenuNavigation = /*#__PURE__*/ createAction('BLOCK_GLOBAL_MENU_NAVIGATION');
-export const unblockGlobalMenuNavigation = /*#__PURE__*/ createAction('UNBLOCK_GLOBAL_MENU_NAVIGATION');
-
 export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>('BLOCK_UI');
 export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 
