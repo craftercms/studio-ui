@@ -24,8 +24,6 @@ import useActiveUser from '../../hooks/useActiveUser';
 import { useDispatch } from 'react-redux';
 import { pathNavigatorTreeExpandPath, pathNavigatorTreeFetchPathChildren } from '../../state/actions/pathNavigatorTree';
 import { getIndividualPaths, withIndex } from '../../utils/path';
-import { checkPathExistence } from '../../services/content';
-import { map } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { batchActions } from '../../state/actions/misc';
 import useSelection from '../../hooks/useSelection';
