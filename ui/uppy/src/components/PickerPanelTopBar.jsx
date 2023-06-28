@@ -147,11 +147,6 @@ function PanelTopBar(props) {
         </div>
       )}
 
-      {/* <div className="uppy-DashboardContent-title" role="heading" aria-level="1"> */}
-      {/*  /!* eslint-disable-next-line react/jsx-props-no-spreading *!/ */}
-      {/*  <UploadStatus {...props} /> */}
-      {/* </div> */}
-
       <div className="uppy-dashboard-right-buttons">
         {allowNewUpload && (
           <button

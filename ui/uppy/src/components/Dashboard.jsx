@@ -59,9 +59,6 @@ export default function Dashboard(props) {
     'uppy-size--lg': props.containerWidth > WIDTH_LG,
     'uppy-size--xl': props.containerWidth > WIDTH_XL,
     'uppy-size--height-md': props.containerHeight > HEIGHT_MD,
-    // We might want to enable this in the future
-    // 'uppy-size--height-lg': props.containerHeight > HEIGHT_LG,
-    // 'uppy-size--height-xl': props.containerHeight > HEIGHT_XL,
     'uppy-Dashboard--isAddFilesPanelVisible': props.showAddFilesPanel,
     'uppy-Dashboard--isInnerWrapVisible': props.areInsidesReadyToBeVisible,
     // Only enable “centered single file” mode when Dashboard is tall enough
