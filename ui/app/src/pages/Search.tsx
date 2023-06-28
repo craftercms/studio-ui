@@ -14,15 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from 'react';
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route } from 'react-router-dom';
 import URLDrivenSearch from '../components/Search/URLDrivenSearch';
 
 export default function SearchApp(topProps: any) {
   return (
     <HashRouter>
-      <Routes>
-        <Route path="/" element={<URLDrivenSearch {...topProps} />} />
-      </Routes>
+      <Route path="/" render={(routeProps: any) => <URLDrivenSearch {...topProps} {...routeProps} />} />
     </HashRouter>
   );
 }

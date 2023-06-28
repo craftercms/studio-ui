@@ -29,11 +29,10 @@ import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialo
 import ConfirmDropdown from '../ConfirmDropdown';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
+import { useHistory } from 'react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
-// https://github.com/remix-run/react-router/tree/dev/examples/navigation-blocking
-import { useNavigate, unstable_useBlocker as useBlocker, useNavigation } from 'react-router-dom';
 
 const translations = defineMessages({
   configSaved: {
@@ -55,30 +54,27 @@ export function GlobalConfigManagement() {
   const [hasChanges, setHasChanges] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [nextRoute, setNextRoute] = useState<string>();
-  // const history = useHistory();
-  const navigate = useNavigate();
+  const history = useHistory();
   const { classes } = useStyles();
-  const blocker = useBlocker(true);
 
   const aceEditorRef = useRef<any>();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
-  // TODO: Pending. Using useBlocker hook from react-router-dom doesn't blocks navigation.
-  // useEffect(() => {
-  //   const historyBlock = history.block;
-  //   history.block((props) => {
-  //     if (hasChanges) {
-  //       history.goBack();
-  //       setNextRoute(props.pathname);
-  //       setShowConfirmDialog(true);
-  //       return false;
-  //     }
-  //   });
-  //   return () => {
-  //     history.block = historyBlock;
-  //   };
-  // }, [hasChanges, history]);
+  useEffect(() => {
+    const historyBlock = history.block;
+    history.block((props) => {
+      if (hasChanges) {
+        history.goBack();
+        setNextRoute(props.pathname);
+        setShowConfirmDialog(true);
+        return false;
+      }
+    });
+    return () => {
+      history.block = historyBlock;
+    };
+  }, [hasChanges, history]);
 
   useMount(() => {
     const requests = [
@@ -163,7 +159,7 @@ export function GlobalConfigManagement() {
     setShowConfirmDialog(false);
     // timeout needed to avoid running the useEffect on line:64 with hasChanges on true
     setTimeout(() => {
-      navigate(nextRoute);
+      history.push(nextRoute);
     });
   };
 

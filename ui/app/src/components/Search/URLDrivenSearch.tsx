@@ -30,12 +30,9 @@ import {
 } from './utils';
 import SearchUI from '../SearchUI';
 import { UNDEFINED } from '../../utils/constants';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 export function URLDrivenSearch(props: URLDrivenSearchProps) {
-  const { mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { history, location, mode = 'default', onSelect, embedded = false, onAcceptSelection, onClose } = props;
 
   // region hooks
   const refs = useRef({ createQueryString: null });
@@ -85,13 +82,13 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
     const subscription = onSearch$.pipe(debounceTime(400), distinctUntilChanged()).subscribe((keywords: string) => {
       if (!keywords) keywords = undefined;
       let qs = refs.current.createQueryString({ name: 'keywords', value: keywords }, false, { offset: UNDEFINED });
-      navigate({
+      history.push({
         pathname: '/',
         search: qs ? `?${qs}` : ''
       });
     });
     return () => subscription.unsubscribe();
-  }, [navigate, onSearch$]);
+  }, [history, onSearch$]);
 
   useEffect(() => {
     setCheckedFilters(setCheckedParameterFromURL(queryParams));
@@ -105,7 +102,7 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
   function handleFilterChange(filter: Filter, isFilter?: boolean) {
     let qs = createQueryString(filter, isFilter, { offset: UNDEFINED });
     if (qs || location.search) {
-      navigate({
+      history.push({
         pathname: '/',
         search: `?${qs}`
       });
@@ -188,7 +185,7 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
   function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null, newPage: number) {
     let offset = newPage * searchParameters.limit;
     let qs = refs.current.createQueryString({ name: 'offset', value: offset });
-    navigate({
+    history.push({
       pathname: '/',
       search: `?${qs}`
     });
@@ -196,7 +193,7 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
 
   function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     let qs = refs.current.createQueryString({ name: 'limit', value: parseInt(event.target.value, 10) });
-    navigate({
+    history.push({
       pathname: '/',
       search: `?${qs}`
     });

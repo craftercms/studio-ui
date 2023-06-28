@@ -23,11 +23,12 @@ import { changeSite } from '../state/actions/sites';
 import { useActiveSiteId } from './useActiveSiteId';
 import { useEnv } from './useEnv';
 import { usePreviewNavigation } from './usePreviewNavigation';
-import { useNavigate } from 'react-router-dom';
 
-export function usePreviewUrlControl(location) {
-  const { search } = location;
-  const navigate = useNavigate();
+export function usePreviewUrlControl(history) {
+  const {
+    location: { search },
+    push
+  } = history;
 
   const { currentUrlPath } = usePreviewNavigation();
   const { previewLandingBase } = useEnv();
@@ -105,7 +106,7 @@ export function usePreviewUrlControl(location) {
         if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
           const page = currentUrlPath;
           if (page !== previewLandingBase) {
-            navigate({ search: queryString.stringify({ site, page }, { encode: false }) });
+            push({ search: queryString.stringify({ site, page }, { encode: false }) });
           }
         } else if (qsSiteChanged && qsUrlChanged) {
           dispatch(changeSite(qs.site, qs.page));
@@ -124,7 +125,7 @@ export function usePreviewUrlControl(location) {
       prev.qsPage = qs.page;
       prev.qsSite = qs.site;
     }
-  }, [currentUrlPath, dispatch, previewLandingBase, navigate, search, site]);
+  }, [currentUrlPath, dispatch, previewLandingBase, push, search, site]);
 }
 
 export default usePreviewUrlControl;

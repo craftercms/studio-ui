@@ -22,11 +22,9 @@ import PreviewConcierge from '../PreviewConcierge/PreviewConcierge';
 import usePreviewUrlControl from '../../hooks/usePreviewUrlControl';
 import ICEToolsPanel from '../ICEToolsPanel';
 import Box from '@mui/material/Box';
-import { useLocation } from 'react-router-dom';
 
 function Preview(props) {
-  const location = useLocation();
-  usePreviewUrlControl(location);
+  usePreviewUrlControl(props.history);
   return (
     <PreviewConcierge>
       <Box

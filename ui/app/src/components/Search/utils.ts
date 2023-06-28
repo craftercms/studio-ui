@@ -16,6 +16,7 @@
 
 import { ElasticParams, MediaItem, SearchResult } from '../../models/Search';
 import { AllItemActions, DetailedItem } from '../../models/Item';
+import { History, Location } from 'history';
 import { generateMultipleItemOptions, generateSingleItemOptions, itemActionDispatcher } from '../../utils/itemActions';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -63,6 +64,7 @@ export const actionsToBeShown: AllItemActions[] = [
 
 export interface URLDrivenSearchProps {
   history: History;
+  location: Location;
   mode?: 'default' | 'select';
   embedded?: boolean;
   onClose?(): void;

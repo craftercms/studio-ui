@@ -62,6 +62,7 @@ import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
+import { useHistory } from 'react-router';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
@@ -72,7 +73,6 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { UNDEFINED } from '../../utils/constants';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { nnou } from '../../utils/object';
-import { useLocation, useNavigate } from 'react-router-dom';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -104,8 +104,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const [disabledSaveButton, setDisabledSaveButton] = useState(true);
   const [confirmDialogProps, setConfirmDialogProps] = useState<ConfirmDialogProps>(null);
   const [keyword, setKeyword] = useState('');
-  const navigate = useNavigate();
-  const location = useLocation();
+  const history = useHistory();
   const dispatch = useDispatch();
   const disableBlocking = useRef(false);
   const functionRefs = useUpdateRefs({
@@ -115,35 +114,33 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
     container: null
   });
 
-  // TODO: Pending. Using useBlocker hook from react-router-dom doesn't blocks navigation.
-  // useEffect(() => {
-  //   history?.block((props) => {
-  //     if (!disabledSaveButton && !disableBlocking.current && location.pathname !== props.pathname) {
-  //       setConfirmDialogProps({
-  //         open: true,
-  //         title: (
-  //           <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />
-  //         ),
-  //         body: (
-  //           <FormattedMessage
-  //             id="siteConfigurationManagement.unsavedChangesSubtitle"
-  //             defaultMessage="You have unsaved changes, do you want to leave?"
-  //           />
-  //         ),
-  //         onClosed: () => setConfirmDialogProps(null),
-  //         onOk: () => {
-  //           disableBlocking.current = true;
-  //           history.push(props.pathname, { disableBlocking: true });
-  //           navigate(props.pathname);
-  //         },
-  //         onCancel: () => {
-  //           setConfirmDialogProps({ ...confirmDialogProps, open: false });
-  //         }
-  //       });
-  //       return false;
-  //     }
-  //   });
-  // }, [confirmDialogProps, disabledSaveButton, navigate, location?.pathname]);
+  useEffect(() => {
+    history?.block((props) => {
+      if (!disabledSaveButton && !disableBlocking.current && history.location.pathname !== props.pathname) {
+        setConfirmDialogProps({
+          open: true,
+          title: (
+            <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />
+          ),
+          body: (
+            <FormattedMessage
+              id="siteConfigurationManagement.unsavedChangesSubtitle"
+              defaultMessage="You have unsaved changes, do you want to leave?"
+            />
+          ),
+          onClosed: () => setConfirmDialogProps(null),
+          onOk: () => {
+            disableBlocking.current = true;
+            history.push(props.pathname, { disableBlocking: true });
+          },
+          onCancel: () => {
+            setConfirmDialogProps({ ...confirmDialogProps, open: false });
+          }
+        });
+        return false;
+      }
+    });
+  }, [confirmDialogProps, disabledSaveButton, history]);
 
   useMount(() => {
     fetchActiveEnvironment().subscribe({

@@ -20,15 +20,7 @@ import React, { useState, lazy, Suspense, useEffect, useMemo } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { useStyles } from './styles';
-import {
-  createHashRouter,
-  createRoutesFromElements,
-  Navigate,
-  Outlet,
-  Route,
-  RouterProvider,
-  useLocation
-} from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import SiteManagement from '../SiteManagement';
 import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
 import EmptyState from '../EmptyState/EmptyState';
@@ -60,10 +52,11 @@ interface GlobalAppProps {
   footerHtml: string;
 }
 
-function Layout(props: GlobalAppProps) {
+export function GlobalApp(props: GlobalAppProps) {
   const { classes } = useStyles();
-  const { footerHtml } = props;
+  const { passwordRequirementsMinComplexity, footerHtml } = props;
   const [width, setWidth] = useState(240);
+  const globalNavigation = useGlobalNavigation();
   const [{ openSidebar }] = useGlobalAppState();
   const { items } = useGlobalNavigation();
   const { formatMessage } = useIntl();
@@ -76,9 +69,9 @@ function Layout(props: GlobalAppProps) {
       }, {}),
     [items]
   );
-
   useEffect(() => {
-    const id = idByPathLookup?.[location.pathname];
+    const path = location.pathname;
+    const id = idByPathLookup?.[path];
     document.title = `CrafterCMS - ${formatMessage(
       globalMenuMessages[id] ?? {
         id: 'globalApp.routeNotFound',
@@ -86,7 +79,6 @@ function Layout(props: GlobalAppProps) {
       }
     )}`;
   }, [formatMessage, idByPathLookup, location.pathname]);
-
   return (
     <Paper className={classes.root} elevation={0}>
       <ResizeableDrawer
@@ -142,79 +134,65 @@ function Layout(props: GlobalAppProps) {
             </>
           }
         >
-          <Outlet />
+          <Switch>
+            <Route path="/sites" component={SiteManagement} />
+            <Route
+              path="/users"
+              render={() => <UserManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
+            />
+            <Route path="/groups" component={GroupManagement} />
+            <Route path="/audit" component={AuditManagement} />
+            <Route path="/logging" component={LogLevelManagement} />
+            <Route path="/log" component={LogConsole} />
+            <Route path="/global-config" component={GlobalConfigManagement} />
+            <Route path="/encryption-tool" component={EncryptTool} />
+            <Route path="/token-management" component={TokenManagement} />
+            <Route path="/about-us" component={AboutCrafterCMSView} />
+            <Route
+              path="/settings"
+              render={() => <AccountManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
+            />
+            <Route path="/globalMenu/:id" render={(props) => <Redirect to={`/${props.match.params.id}`} />} />
+            <Route exact path="/">
+              {globalNavigation.items ? (
+                <Redirect to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
+              ) : (
+                <LoadingState
+                  styles={{
+                    root: {
+                      height: '100%',
+                      margin: 0
+                    }
+                  }}
+                />
+              )}
+            </Route>
+            <Route
+              render={() => {
+                return (
+                  <Box display="flex" flexDirection="column" height="100%">
+                    <section className={classes.launcher}>
+                      <LauncherOpenerButton />
+                    </section>
+                    <EmptyState
+                      styles={{
+                        root: {
+                          height: '100%',
+                          margin: 0
+                        }
+                      }}
+                      title="404"
+                      subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
+                    />
+                  </Box>
+                );
+              }}
+            />
+          </Switch>
         </Suspense>
       </Box>
     </Paper>
   );
-}
-
-export function GlobalApp(props: GlobalAppProps) {
-  const { classes } = useStyles();
-  const { passwordRequirementsMinComplexity } = props;
-  const globalNavigation = useGlobalNavigation();
-
-  const router = createHashRouter(
-    createRoutesFromElements(
-      <Route element={<Layout {...props} />}>
-        <Route path="/sites" element={<SiteManagement />} />
-        <Route
-          path="/users"
-          element={<UserManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
-        />
-        <Route path="/groups" element={<GroupManagement />} />
-        <Route path="/audit" element={<AuditManagement />} />
-        <Route path="/logging" element={<LogLevelManagement />} />
-        <Route path="/log" element={<LogConsole />} />
-        <Route path="/global-config" element={<GlobalConfigManagement />} />
-        <Route path="/encryption-tool" element={<EncryptTool />} />
-        <Route path="/token-management" element={<TokenManagement />} />
-        <Route path="/about-us" element={<AboutCrafterCMSView />} />
-        <Route
-          path="/settings"
-          element={<AccountManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
-        />
-        <Route
-          path="/"
-          element={
-            globalNavigation.items ? (
-              <Navigate to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
-            ) : (
-              <LoadingState
-                styles={{
-                  root: {
-                    height: '100%',
-                    margin: 0
-                  }
-                }}
-              />
-            )
-          }
-        />
-        <Route
-          element={
-            <Box display="flex" flexDirection="column" height="100%">
-              <section className={classes.launcher}>
-                <LauncherOpenerButton />
-              </section>
-              <EmptyState
-                styles={{
-                  root: {
-                    height: '100%',
-                    margin: 0
-                  }
-                }}
-                title="404"
-                subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
-              />
-            </Box>
-          }
-        />
-      </Route>
-    )
-  );
-
-  return <RouterProvider router={router} />;
 }
 
 export default GlobalApp;
