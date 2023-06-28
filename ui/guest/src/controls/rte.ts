@@ -127,7 +127,7 @@ export function initTinyMCE(
     forced_root_block: type === 'html',
     menubar: false,
     inline: true,
-    base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
+    base_url: '/studio/static-assets/modules/editors/tinymce/v5.10.7/tinymce',
     suffix: '.min',
     external_plugins: external,
     code_editor_inline: false,

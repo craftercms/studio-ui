@@ -448,7 +448,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   useEffect(() => {
     if (hasHost && !window.tinymce) {
       const script = document.createElement('script');
-      script.src = '/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js';
+      script.src = '/studio/static-assets/modules/editors/tinymce/v5.10.7/tinymce/tinymce.min.js';
       // script.onload = () => ...;
       document.head.appendChild(script);
     }

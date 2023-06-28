@@ -39,7 +39,7 @@
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/styles/tinymce-ace.css" />
 
   <script src="/studio/static-assets/libs/ace/ace.js"></script>
-  <script src="/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js"></script>
+  <script src="/studio/static-assets/modules/editors/tinymce/v5.10.7/tinymce/tinymce.min.js"></script>
   <script src="/studio/static-assets/modules/editors/tinymce/v2/tiny_mce/tiny_mce.js"></script>
   <script src="/studio/static-assets/libs/amplify/lib/amplify.core.js"></script>
   <script src="/studio/static-assets/libs/notify/notify.min.js"></script>
