@@ -95,7 +95,7 @@ export interface BaseItem {
   mimeType: string;
   state: number;
   stateMap: ItemStateMap;
-  lockOwner: string;
+  lockOwner: Person;
   disabled: boolean;
   localeCode: string;
   translationSourceId: string;

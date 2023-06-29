@@ -107,7 +107,7 @@ export function EditModeSwitch(props: EditModeSwitchProps) {
       title={
         isLocked
           ? item
-            ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner })
+            ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner.username })
             : ''
           : !write
           ? formatMessage(translations.editNotAvailable)

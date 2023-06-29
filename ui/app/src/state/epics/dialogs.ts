@@ -237,7 +237,7 @@ const dialogEpics: CrafterCMSEpic[] = [
       filter(([, state]) => {
         const username = state.user.username;
         const item = state.content.itemsByPath[state.dialogs.codeEditor.path];
-        return item.stateMap.locked && item.lockOwner === username;
+        return item.stateMap.locked && item.lockOwner.username === username;
       }),
       map(([, state]) => unlockItem({ path: state.dialogs.codeEditor.path }))
     ),

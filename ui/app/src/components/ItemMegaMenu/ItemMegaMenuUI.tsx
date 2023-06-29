@@ -262,7 +262,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
                 <>
                   <ItemStateIcon item={item} className={classes.icon} />
                   <Typography variant="body2" component="span">
-                    {getItemStateText(item?.stateMap, { user: item?.lockOwner })}
+                    {getItemStateText(item?.stateMap, { user: item?.lockOwner?.username })}
                   </Typography>
                 </>
               ) : (

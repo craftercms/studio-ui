@@ -72,7 +72,7 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
           tap(({ payload }) => payload.type !== 'continue' && post(unlockItem({ path }))),
           switchMap(({ payload }) => (payload.type === 'continue' ? continue$ : stop$))
         );
-      } else if (item.commitId !== localItem.commitId && item.lockOwner !== username) {
+      } else if (item.commitId !== localItem.commitId && item.lockOwner?.username !== username) {
         post(snackGuestMessage({ id: 'outOfSyncContent', level: 'suggestion' }));
         post(unlockItem({ path }));
         setTimeout(() => window.location.reload());
