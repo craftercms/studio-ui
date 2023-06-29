@@ -41,8 +41,7 @@ export const useStyles = makeStyles()((theme) => ({
     flexGrow: 1
   },
   headerIcon: {
-    marginRight: 10,
-    color: theme.palette.action.active
+    marginRight: 10
   },
   accordion: {
     background: 'none'
