@@ -195,9 +195,9 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
                 const previewUrl = getPreviewURLFromPath((groupedOptions[0] as SearchItem).path);
                 onEnter(previewUrl);
                 setKeyword(previewUrl);
-                setItems(null);
-                setDirty(false);
               }
+              setItems(null);
+              setDirty(false);
             }
           }}
           onFocus={(e) => {

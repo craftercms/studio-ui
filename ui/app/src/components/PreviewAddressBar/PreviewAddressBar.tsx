@@ -134,7 +134,6 @@ export function PreviewAddressBar(props: AddressBarProps) {
   };
 
   const onUrlChange = (url: string) => {
-    setFocus(false);
     dispatch(changeCurrentUrl(url));
   };
 
