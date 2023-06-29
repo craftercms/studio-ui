@@ -73,7 +73,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 
   const fetchItems = useCallback(
     () =>
-      search(site, { ...searchParameters, path: `${currentPath}/([^/]+|[^/]+/index.xml)` }).subscribe((response) => {
+      search(site, { ...searchParameters, path: `${currentPath}/[^/]+(/index.xml)?` }).subscribe((response) => {
         setTotal(response.total);
         setItems(response.items);
         setSortKeys(response.facets.map((facet) => facet.name));
