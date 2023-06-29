@@ -15,6 +15,7 @@
  */
 
 import { SystemType } from './SystemType';
+import Person from './Person';
 
 // region export type ItemStates =
 export type ItemStates =
@@ -104,9 +105,9 @@ export interface BaseItem {
 }
 
 interface SandboxEnvProps {
-  creator: string;
+  creator: Person;
   dateCreated: string;
-  modifier: string;
+  modifier: Person;
   dateModified: string;
   commitId: string;
   sizeInBytes: number;

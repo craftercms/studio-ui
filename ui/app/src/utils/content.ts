@@ -251,7 +251,12 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     ...parseLegacyItemToBaseItem(item),
     creator: null,
     dateCreated: null,
-    modifier: item.user,
+    modifier: {
+      username: item.user,
+      firstName: item.user,
+      lastName: item.user,
+      avatar: null
+    },
     dateModified: item.lastEditDate,
     commitId: null,
     sizeInBytes: null,
@@ -272,7 +277,12 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
     sandbox: {
       creator: null,
       dateCreated: null,
-      modifier: item.user,
+      modifier: {
+        username: item.user,
+        firstName: item.user,
+        lastName: item.user,
+        avatar: null
+      },
       dateModified: item.lastEditDate,
       commitId: null,
       sizeInBytes: null,

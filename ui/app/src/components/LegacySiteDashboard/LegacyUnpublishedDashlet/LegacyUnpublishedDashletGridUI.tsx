@@ -124,7 +124,7 @@ export function LegacyUnpublishedDashletGridUI(props: LegacyUnpublishedDashletGr
                   {item.path}
                 </Typography>
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width20">{item.modifier}</GlobalAppGridCell>
+              <GlobalAppGridCell className="width20">{item.modifier.username}</GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
                 {item.dateModified &&
                   asLocalizedDateTime(item.dateModified, locale.localeCode, locale.dateTimeFormatOptions)}
