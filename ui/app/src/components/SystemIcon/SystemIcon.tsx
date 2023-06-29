@@ -38,7 +38,7 @@ export interface SystemIconProps {
 
 export function SystemIcon(props: SystemIconProps) {
   let { icon, className, style, sx = style } = props;
-  const combinedSx = { ...sx, ...icon.style, ...props.svgIconProps?.sx } as SxProps<Theme>;
+  const combinedSx = { ...sx, ...icon.style, ...style, ...props.svgIconProps?.sx } as SxProps<Theme>;
   if ('id' in icon) {
     const IconComponent = components.get(icon.id) as typeof ErrorRounded;
     const iconClassName = clsx(icon.class, className, props.svgIconProps?.className);
@@ -48,7 +48,7 @@ export function SystemIcon(props: SystemIconProps) {
       </Suspense>
     ) : (
       <Tooltip title={`Icon ${icon.id} not found. Check config.`}>
-        <ErrorRounded sx={combinedSx} />
+        <ErrorRounded sx={combinedSx} className={iconClassName} />
       </Tooltip>
     );
   } else {
