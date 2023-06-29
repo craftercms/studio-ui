@@ -600,7 +600,7 @@ export function moveItem(
       let targetField = extractNode(targetModelElement, targetFieldId, removeLastPiece(`${targetIndex}`));
       if (!targetField) {
         const newField = createElement(originalFieldId);
-        newField.setAttribute('inline', 'true');
+        newField.setAttribute('item-list', 'true');
         targetModelElement.appendChild(newField);
         targetField = newField;
       }
@@ -636,7 +636,7 @@ export function moveItem(
             // If field doesn't exist yet in the document, create it
             if (!field) {
               const newField = createElement(originalFieldId);
-              newField.setAttribute('inline', 'true');
+              newField.setAttribute('item-list', 'true');
               element.appendChild(newField);
               field = newField;
             }
