@@ -112,6 +112,7 @@ interface SandboxEnvProps {
   commitId: string;
   sizeInBytes: number;
   expiresOn: string;
+  submitter: Person;
 }
 
 interface PublishEnvProps {

@@ -260,7 +260,8 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     dateModified: item.lastEditDate,
     commitId: null,
     sizeInBytes: null,
-    expiresOn: null
+    expiresOn: null,
+    submitter: null
   };
 }
 
@@ -286,7 +287,8 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       dateModified: item.lastEditDate,
       commitId: null,
       sizeInBytes: null,
-      expiresOn: null
+      expiresOn: null,
+      submitter: null
     },
     staging: {
       dateScheduled: item.scheduledDate,
@@ -331,7 +333,8 @@ export function parseSandBoxItemToDetailedItem(
       dateModified: item.dateModified,
       commitId: item.commitId,
       sizeInBytes: item.sizeInBytes,
-      expiresOn: item.expiresOn
+      expiresOn: item.expiresOn,
+      submitter: item.submitter
     },
     staging: (detailedItemComplement?.staging as DetailedItem['staging']) ?? null,
     live: (detailedItemComplement?.live as DetailedItem['live']) ?? null,
