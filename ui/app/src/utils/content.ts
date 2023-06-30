@@ -491,13 +491,22 @@ function parseElementByContentType(
             // TODO: Groovy Controller Issue;
             path = getInnerHtml(item.querySelector(':scope > key'));
           }
-          const instance = parseContentXML(
-            component ? wrapElementInAuxDocument(component) : null,
-            path,
-            contentTypesLookup,
-            instanceLookup
-          );
-          array.push(instance);
+          const itemKey = getInnerHtml(item.querySelector(':scope > key'));
+          const isFile = !itemKey.endsWith('.xml');
+          if (isFile) {
+            array.push({
+              key: itemKey,
+              value: getInnerHtml(item.querySelector(':scope > value'))
+            });
+          } else {
+            const instance = parseContentXML(
+              component ? wrapElementInAuxDocument(component) : null,
+              path,
+              contentTypesLookup,
+              instanceLookup
+            );
+            array.push(instance);
+          }
         });
       }
       return array;
