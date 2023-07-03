@@ -62,6 +62,7 @@ import SystemType from '../../models/SystemType';
 import DashletFilter from '../ActivityDashlet/DashletFilter';
 import useDashletFilterState from '../../hooks/useDashletFilterState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { reversePluckProps } from '../../utils/object';
 
 interface PendingApprovalDashletProps extends CommonDashletProps {}
 
@@ -317,7 +318,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                 }
                 secondary={
                   <FormattedMessage
-                    defaultMessage="Submitted by {name} for <render_target>{publishingTarget}</render_target> {requestType, select, scheduled {on} other {}} {date}"
+                    defaultMessage="Submitted {submittedDate} by {name} to {publishingTarget, select, live {go <render_target>live</render_target>} other {be <render_target>staged</render_target>}} {requestType, select, scheduled {on} other {}} {date}"
                     values={{
                       name: item.sandbox?.submitter.username,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
@@ -338,7 +339,12 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                           )
                         ) : (
                           <FormattedMessage defaultMessage="ASAP" />
-                        )
+                        ),
+                      submittedDate: asLocalizedDateTime(
+                        item.sandbox?.dateSubmitted,
+                        locale.localeCode,
+                        reversePluckProps(locale.dateTimeFormatOptions, 'hour', 'minute', 'second')
+                      )
                     }}
                   />
                 }

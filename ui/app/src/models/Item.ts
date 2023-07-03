@@ -109,6 +109,7 @@ interface SandboxEnvProps {
   dateCreated: string;
   modifier: Person;
   dateModified: string;
+  dateSubmitted: string;
   commitId: string;
   sizeInBytes: number;
   expiresOn: string;

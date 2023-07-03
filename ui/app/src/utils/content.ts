@@ -258,6 +258,7 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
       avatar: null
     },
     dateModified: item.lastEditDate,
+    dateSubmitted: null,
     commitId: null,
     sizeInBytes: null,
     expiresOn: null,
@@ -285,6 +286,7 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
         avatar: null
       },
       dateModified: item.lastEditDate,
+      dateSubmitted: null,
       commitId: null,
       sizeInBytes: null,
       expiresOn: null,
@@ -331,6 +333,7 @@ export function parseSandBoxItemToDetailedItem(
       dateCreated: item.dateCreated,
       modifier: item.modifier,
       dateModified: item.dateModified,
+      dateSubmitted: item.dateSubmitted,
       commitId: item.commitId,
       sizeInBytes: item.sizeInBytes,
       expiresOn: item.expiresOn,
