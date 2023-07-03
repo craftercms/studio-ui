@@ -597,7 +597,13 @@ export function moveItem(
       const targetModelElement =
         parentDocumentModelId === targetModelId ? element : element.querySelector(`[id="${targetModelId}"]`);
       const item = extractNode(sourceModelElement, originalFieldId, originalIndex);
-      const targetField = extractNode(targetModelElement, targetFieldId, removeLastPiece(`${targetIndex}`));
+      let targetField = extractNode(targetModelElement, targetFieldId, removeLastPiece(`${targetIndex}`));
+      if (!targetField) {
+        const newField = createElement(originalFieldId);
+        newField.setAttribute('item-list', 'true');
+        targetModelElement.appendChild(newField);
+        targetField = newField;
+      }
       const targetFieldItems = targetField.querySelectorAll(':scope > item');
       const parsedTargetIndex = parseInt(popPiece(`${targetIndex}`));
       if (targetFieldItems.length === parsedTargetIndex) {
@@ -626,7 +632,14 @@ export function moveItem(
           targetParentPath,
           (element) => {
             const item: Element = extractNode(element, targetFieldId, targetIndex);
-            const field: Element = extractNode(element, targetFieldId, removeLastPiece(`${targetIndex}`));
+            let field: Element = extractNode(element, targetFieldId, removeLastPiece(`${targetIndex}`));
+            // If field doesn't exist yet in the document, create it
+            if (!field) {
+              const newField = createElement(originalFieldId);
+              newField.setAttribute('item-list', 'true');
+              element.appendChild(newField);
+              field = newField;
+            }
 
             const auxElement = createElement('hold');
             auxElement.innerHTML = removedItemHTML;
