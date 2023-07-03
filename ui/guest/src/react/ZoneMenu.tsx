@@ -130,8 +130,17 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
+  const currentItem = collection[elementIndex];
+  const isItemFile = Boolean(collection[elementIndex]?.hasOwnProperty('key'));
   const componentId =
-    recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection[elementIndex] : null;
+    recordType === 'component'
+      ? modelId
+      : recordType === 'node-selector-item'
+      ? !isItemFile
+        ? // @ts-ignore
+          currentItem.craftercms.id
+        : null
+      : null;
   const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
@@ -141,7 +150,8 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const isLastItem = isMovable ? elementIndex === numOfItemsInContainerCollection - 1 : null;
   const isOnlyItem = isMovable ? isFirstItem && isLastItem : null;
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
-  const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode;
+  const showCodeEditOptions =
+    ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode && !isItemFile;
   const showAddItem = recordType === 'field' && field.type === 'repeat';
   const { isTrashable, showDuplicate } = useMemo(() => {
     const actions = {
@@ -162,7 +172,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
 
       actions.isTrashable = trashableValidation && recordType !== 'field' && recordType !== 'page';
       actions.showDuplicate =
-        duplicateValidation && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
+        duplicateValidation && !isItemFile && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
     }
 
     return actions;
@@ -202,7 +212,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     e.stopPropagation();
     e.preventDefault();
 
-    if (recordType === 'node-selector-item') {
+    if (recordType === 'node-selector-item' && !isItemFile) {
       // If it's a node selector item, we transform it into the actual item.
       const parentModelId = getParentModelId(componentId, getCachedModels(), modelHierarchyMap);
       post(requestEdit({ typeOfEdit, modelId: componentId, parentModelId }));

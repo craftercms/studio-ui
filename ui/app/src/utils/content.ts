@@ -492,7 +492,8 @@ function parseElementByContentType(
             path = getInnerHtml(item.querySelector(':scope > key'));
           }
           const itemKey = getInnerHtml(item.querySelector(':scope > key'));
-          const isFile = !itemKey.endsWith('.xml');
+          // Embedded components have no .xml in their key
+          const isFile = Boolean(itemKey) && !itemKey.endsWith('.xml') && Boolean(!item.getAttribute('inline'));
           if (isFile) {
             array.push({
               key: itemKey,

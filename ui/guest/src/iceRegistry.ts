@@ -179,7 +179,7 @@ export function getRecordDropTargets(id: number): ICERecord[] {
     // Can't move something that's not part of a collection.
     // Collection items will always have an index.
     return [];
-  } else if (field.type === 'node-selector') {
+  } else if (field.type === 'node-selector' && typeof model[fieldId] === 'string') {
     // Get content type of item
     const models = contentController.getCachedModels();
     const id = Model.extractCollectionItem(model, fieldId, index);
@@ -202,7 +202,7 @@ export function getRecordDropTargets(id: number): ICERecord[] {
       // move an item deeper inside itself).
       return rec.modelId === id || allChildren.includes(rec.modelId);
     });
-  } else if (field.type === 'repeat') {
+  } else if (field.type === 'repeat' || (field.type === 'node-selector' && typeof model[fieldId] !== 'string')) {
     return getRepeatGroupItemDropTargets(record);
   } else {
     console.error('[ICERegistry/getRecordDropTargets] Unhandled path');
