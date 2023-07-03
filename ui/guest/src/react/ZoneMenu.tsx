@@ -133,7 +133,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
   const collectionContainsFiles = collection ? collection.some((item) => item.hasOwnProperty('key')) : false;
   const componentId =
-    recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection?.[elementIndex] : null;
+    recordType === 'component'
+      ? modelId
+      : recordType === 'node-selector-item'
+      ? !isItemFile
+        ? // @ts-ignore
+          currentItem.craftercms.id
+        : null
+      : null;
   const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
