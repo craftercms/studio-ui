@@ -320,7 +320,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
                   <FormattedMessage
                     defaultMessage="Submitted {submittedDate} by {name} to {publishingTarget, select, live {go <render_target>live</render_target>} other {be <render_target>staged</render_target>}} {requestType, select, scheduled {on} other {}} {date}"
                     values={{
-                      name: item.sandbox?.submitter.username,
+                      name: item.sandbox?.submitter?.username ?? item.sandbox?.modifier?.username,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (

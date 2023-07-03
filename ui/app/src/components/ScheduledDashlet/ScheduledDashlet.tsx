@@ -329,7 +329,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                   <FormattedMessage
                     defaultMessage="Approved by {name} for <render_target>{publishingTarget}</render_target> at {date}"
                     values={{
-                      name: item.sandbox?.submitter?.username,
+                      name: item.sandbox?.submitter?.username ?? item.sandbox?.modifier?.username,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
                       render_target(target: string[]) {
                         return (
