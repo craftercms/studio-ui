@@ -253,8 +253,8 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     dateCreated: null,
     modifier: {
       username: item.user,
-      firstName: item.user,
-      lastName: item.user,
+      firstName: null,
+      lastName: null,
       avatar: null
     },
     dateModified: item.lastEditDate,
@@ -281,8 +281,8 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       dateCreated: null,
       modifier: {
         username: item.user,
-        firstName: item.user,
-        lastName: item.user,
+        firstName: null,
+        lastName: null,
         avatar: null
       },
       dateModified: item.lastEditDate,
