@@ -753,8 +753,8 @@ export function normalizeModel(model: ContentInstance): ContentInstance {
       value.length
     ) {
       const collection: ContentInstance[] = value;
-      const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
-      if (isNodeSelector) {
+      const isComponentsNodeSelector = collection.every((item) => Boolean(item.craftercms?.id));
+      if (isComponentsNodeSelector) {
         normalized[prop] = collection.map((item) => item.craftercms.id);
       } else {
         normalized[prop] = collection.map((item) => normalizeModel(item));
