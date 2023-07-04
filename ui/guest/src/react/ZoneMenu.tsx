@@ -130,8 +130,8 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
-  const currentItem = collection[elementIndex];
-  const isItemFile = Boolean(collection[elementIndex]?.hasOwnProperty('key'));
+  const currentItem = collection?.[elementIndex] ?? null;
+  const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
   const componentId =
     recordType === 'component'
       ? modelId
@@ -176,7 +176,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     }
 
     return actions;
-  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord, permissions]);
+  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord, isItemFile, permissions]);
 
   const store = useStore();
   const getItemData = () => {
