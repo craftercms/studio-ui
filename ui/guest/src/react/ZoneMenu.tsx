@@ -130,17 +130,9 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
-  const currentItem = collection?.[elementIndex] ?? null;
   const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
   const componentId =
-    recordType === 'component'
-      ? modelId
-      : recordType === 'node-selector-item'
-      ? !isItemFile
-        ? // @ts-ignore
-          currentItem.craftercms.id
-        : null
-      : null;
+    recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection?.[elementIndex] : null;
   const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
