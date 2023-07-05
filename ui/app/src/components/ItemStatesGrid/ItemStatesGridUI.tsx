@@ -138,13 +138,13 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                   </Typography>
                 </GlobalAppGridCell>
                 <GlobalAppGridCell>
-                  <Typography variant="body2" className={classes.ellipsis} title={item.lockOwner}>
+                  <Typography variant="body2" className={classes.ellipsis} title={item.lockOwner?.username}>
                     {item.stateMap.locked ? (
                       <FormattedMessage
                         id="itemStates.lockedBy"
                         defaultMessage="By {owner}"
                         values={{
-                          owner: item.lockOwner
+                          owner: item.lockOwner?.username
                         }}
                       />
                     ) : (

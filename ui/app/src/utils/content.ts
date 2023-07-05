@@ -140,7 +140,7 @@ export function isImage(path: string): boolean {
 }
 
 export function isItemLockedForMe(item: DetailedItem | SandboxItem | LegacyItem, username: string): boolean {
-  return item ? isLockedState(item.state) && item.lockOwner !== username : true;
+  return item ? isLockedState(item.state) && item.lockOwner.username !== username : true;
 }
 
 export function isBlobUrl(url: string): boolean {
@@ -251,11 +251,18 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     ...parseLegacyItemToBaseItem(item),
     creator: null,
     dateCreated: null,
-    modifier: item.user,
+    modifier: {
+      username: item.user,
+      firstName: null,
+      lastName: null,
+      avatar: null
+    },
     dateModified: item.lastEditDate,
+    dateSubmitted: null,
     commitId: null,
     sizeInBytes: null,
-    expiresOn: null
+    expiresOn: null,
+    submitter: null
   };
 }
 
@@ -272,11 +279,18 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
     sandbox: {
       creator: null,
       dateCreated: null,
-      modifier: item.user,
+      modifier: {
+        username: item.user,
+        firstName: null,
+        lastName: null,
+        avatar: null
+      },
       dateModified: item.lastEditDate,
+      dateSubmitted: null,
       commitId: null,
       sizeInBytes: null,
-      expiresOn: null
+      expiresOn: null,
+      submitter: null
     },
     staging: {
       dateScheduled: item.scheduledDate,
@@ -319,9 +333,11 @@ export function parseSandBoxItemToDetailedItem(
       dateCreated: item.dateCreated,
       modifier: item.modifier,
       dateModified: item.dateModified,
+      dateSubmitted: item.dateSubmitted,
       commitId: item.commitId,
       sizeInBytes: item.sizeInBytes,
-      expiresOn: item.expiresOn
+      expiresOn: item.expiresOn,
+      submitter: item.submitter
     },
     staging: (detailedItemComplement?.staging as DetailedItem['staging']) ?? null,
     live: (detailedItemComplement?.live as DetailedItem['live']) ?? null,

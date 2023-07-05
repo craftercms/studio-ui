@@ -68,7 +68,7 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
               }}
             />
             <ListItemText disableTypography={true} className={classes.submittedBy}>
-              <Typography>{item.modifier}</Typography>
+              <Typography>{item.modifier?.username}</Typography>
             </ListItemText>
           </ListItem>
         );

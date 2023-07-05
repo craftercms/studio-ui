@@ -15,6 +15,7 @@
  */
 
 import { SystemType } from './SystemType';
+import Person from './Person';
 
 // region export type ItemStates =
 export type ItemStates =
@@ -94,7 +95,7 @@ export interface BaseItem {
   mimeType: string;
   state: number;
   stateMap: ItemStateMap;
-  lockOwner: string;
+  lockOwner: Person;
   disabled: boolean;
   localeCode: string;
   translationSourceId: string;
@@ -104,13 +105,15 @@ export interface BaseItem {
 }
 
 interface SandboxEnvProps {
-  creator: string;
+  creator: Person;
   dateCreated: string;
-  modifier: string;
+  modifier: Person;
   dateModified: string;
+  dateSubmitted: string;
   commitId: string;
   sizeInBytes: number;
   expiresOn: string;
+  submitter: Person;
 }
 
 interface PublishEnvProps {

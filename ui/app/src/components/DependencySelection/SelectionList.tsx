@@ -239,7 +239,7 @@ export function SelectionList(props: SelectionListProps) {
                         }
                       />
                       <Typography variant="body2" color="textSecondary">
-                        {getItemStateText(item.stateMap, { user: item.lockOwner })}
+                        {getItemStateText(item.stateMap, { user: item.lockOwner?.username })}
                       </Typography>
                     </Box>
                   )}

@@ -192,7 +192,7 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     <Icon className={cx(classes.root, propClasses?.root, className, stateSpecificClass)} fontSize={fontSize} />
   ) : (
     <Tooltip
-      title={displayTooltip ? getItemStateText(item.stateMap, { user: item.lockOwner }) : ''}
+      title={displayTooltip ? getItemStateText(item.stateMap, { user: item.lockOwner?.username }) : ''}
       open={displayTooltip ? void 0 : false}
     >
       <Icon className={cx(classes.root, propClasses?.root, className, stateSpecificClass)} fontSize={fontSize} />

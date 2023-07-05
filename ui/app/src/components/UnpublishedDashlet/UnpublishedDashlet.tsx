@@ -301,7 +301,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
                       id="unpublishedDashlet.entrySecondaryText"
                       defaultMessage="Edited by {name} on {date}"
                       values={{
-                        name: item.modifier,
+                        name: item.modifier.username,
                         date: asLocalizedDateTime(item.dateModified, locale.localeCode, locale.dateTimeFormatOptions)
                       }}
                     />
