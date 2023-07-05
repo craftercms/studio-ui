@@ -131,6 +131,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     [modelId, recordType, iceRecord]
   );
   const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
+  const collectionContainsFiles = collection ? collection.some((item) => item.hasOwnProperty('key')) : false;
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection?.[elementIndex] : null;
   const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
@@ -204,7 +205,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     e.stopPropagation();
     e.preventDefault();
 
-    if (recordType === 'node-selector-item' && !isItemFile) {
+    if (recordType === 'node-selector-item' && !collectionContainsFiles) {
       // If it's a node selector item, we transform it into the actual item.
       const parentModelId = getParentModelId(componentId, getCachedModels(), modelHierarchyMap);
       post(requestEdit({ typeOfEdit, modelId: componentId, parentModelId }));
