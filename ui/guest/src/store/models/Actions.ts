@@ -69,7 +69,7 @@ import {
 export type GuestActionTypes =
   // dom events
   | 'mouseover'
-  | 'mouseout'
+  | 'mouseleave'
   | 'dragstart'
   | 'dragover'
   | 'dragleave'

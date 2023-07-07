@@ -8,7 +8,8 @@
     "ui/scss",
     "ui/monaco",
     "ui/ace",
-    "ui/uppy"
+    "ui/uppy",
+    "ui/jquery"
   ],
   "eslintConfig": {
     "extends": [

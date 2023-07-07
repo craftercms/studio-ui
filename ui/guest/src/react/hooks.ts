@@ -30,7 +30,7 @@ import { MutableRef } from '@craftercms/studio-ui/models';
 
 interface ICEHandlers {
   onMouseOver: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
-  onMouseOut: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
+  onMouseLeave: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
   onDragStart: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
   onDragOver: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
   onDragLeave: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
@@ -61,7 +61,7 @@ interface UseModelProps extends Omit<ICEProps, 'modelId'> {
 
 const handlerMap = {
   mouseover: 'onMouseOver',
-  mouseout: 'onMouseout',
+  mouseleave: 'onMouseLeave',
   dragstart: 'onDragStart',
   dragover: 'onDragOver',
   dragleave: 'onDragLeave',
@@ -78,7 +78,7 @@ function bypassICE(props: UseICEProps): ICEMaterials {
       props,
       'ref',
       'onMouseOver',
-      'onMouseOut',
+      'onMouseLeave',
       'onDragStart',
       'onDragOver',
       'onDragLeave',
@@ -151,7 +151,7 @@ export function useICE(props: UseICEProps): ICEMaterials {
               ref,
               ...(isDraggable ? { draggable: true } : {}),
               onMouseOver: handler,
-              onMouseOut: handler,
+              onMouseLeave: handler,
               onDragStart: handler,
               onDragOver: handler,
               onDragLeave: handler,

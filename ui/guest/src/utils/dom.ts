@@ -422,39 +422,3 @@ export function elementOffset(element: Element) {
   var left = rec.left + window.scrollX;
   return { top: top, left: left };
 }
-
-/* Traverse DOM from event target up to parent, searching for selector */
-function searchSelector(event, selector, stopAt) {
-  const nodes = [];
-  let currentNode = event.target;
-  let iterate = true;
-  const propagateEvents = ['dragover'];
-
-  while (iterate) {
-    if (currentNode.matches?.(selector)) {
-      nodes.push(currentNode);
-      currentNode = currentNode.parentNode;
-      if (!propagateEvents.includes(event.type)) {
-        iterate = false;
-      }
-    } else if (currentNode !== stopAt && currentNode !== document.body) {
-      currentNode = currentNode.parentNode;
-    } else {
-      iterate = false;
-    }
-  }
-  return nodes;
-}
-
-export function delegateEventListener(element, eName, selector, fn) {
-  element.addEventListener(eName, function (event) {
-    const nodes = searchSelector(event, selector, event.currentTarget);
-    if (nodes.length) {
-      // Execute the callback with the context set to the found element
-      // jQuery goes way further, it even has its own event object
-      nodes.forEach((node) => {
-        fn.call(node, event, node);
-      });
-    }
-  });
-}

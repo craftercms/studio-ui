@@ -117,10 +117,10 @@ const createReader$ = (file: File) =>
   });
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
-  // region mouseover, mouseout
+  // region mouseover, mouseleave
   (action$, state$) =>
     action$.pipe(
-      ofType('mouseover', 'mouseout'),
+      ofType('mouseover', 'mouseleave'),
       withLatestFrom(state$),
       filter((args) => args[1].status === EditingStatus.LISTENING),
       tap(([action]) => action.payload.event.stopPropagation?.()),
@@ -133,15 +133,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType('dragstart'),
       withLatestFrom(state$),
       switchMap(([action, state]) => {
-        let {
+        const {
           payload: { event, record }
         } = action;
-        let iceId = state.draggable?.[record.id];
-        if (nou(iceId) && !isSimple(record.fieldId[0])) {
-          const movableElement = record.element.closest('[draggable="true"]');
-          record = ElementRegistry.fromElement(movableElement) ?? record;
-          iceId = state.draggable?.[record.id];
-        }
+        const iceId = state.draggable?.[record.id];
         if (nullOrUndefined(iceId)) {
           // When the drag starts on a child element of the item, it passes through here.
           console.error('No ice id found for this drag instance.', record, state.draggable);
