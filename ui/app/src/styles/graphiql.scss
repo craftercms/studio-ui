@@ -15,37 +15,7 @@
  */
 
 // This z-index style is for the graphiql dialog and tooltips to show over the dialog where the GraphiQL is shown.
-[data-reach-dialog-overlay],
+[data-radix-popper-content-wrapper],
 reach-portal [data-reach-tooltip] {
-  z-index: 1301;
-}
-
-// There seems to be some styling issues in the doc explorer plugin. This styles are fixes for those visual problems.
-.graphiql-plugin {
-  .docExplorerWrap {
-    min-width: 273px !important;
-    max-width: 100%;
-  }
-
-  .doc-explorer-title-bar {
-    .doc-explorer-rhs {
-      display: none;
-    }
-  }
-
-  .graphiql-explorer-root {
-    padding: 0 !important;
-
-    & > div:first-child {
-      overflow: auto !important;
-    }
-
-    .graphiql-operation-title-bar span input {
-      width: unset !important;
-    }
-  }
-
-  .doc-explorer-contents {
-    overflow-y: hidden !important;
-  }
+  z-index: 1301 !important;
 }

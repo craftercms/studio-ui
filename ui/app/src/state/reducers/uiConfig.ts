@@ -17,7 +17,6 @@
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  fetchSiteConfig,
   fetchSiteConfigComplete,
   fetchSiteUiConfig,
   fetchSiteUiConfigComplete,

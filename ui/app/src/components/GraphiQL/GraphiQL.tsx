@@ -145,6 +145,27 @@ function GraphiQL(props: GraphiQLProps) {
           },
           '.doc-explorer-title-bar, .history-title-bar': {
             height: 'auto!important'
+          },
+          '.graphiql-plugin': {
+            '.docExplorerWrap': {
+              minWidth: '273px !important',
+              maxWidth: '100%'
+            },
+            '.doc-explorer-title-bar .doc-explorer-rhs': {
+              display: 'none'
+            },
+            '.graphiql-explorer-root': {
+              padding: '0 !important',
+              '& > div:first-child': {
+                overflow: 'auto !important'
+              },
+              '.graphiql-operation-title-bar span input': {
+                width: 'unset !important'
+              }
+            },
+            '.doc-explorer-contents': {
+              overflowY: 'hidden !important'
+            }
           }
         }}
       >
