@@ -144,7 +144,6 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
         error: payload
       }
     }))
-    .addCase(fetchSiteConfig, (state) => ({ ...state }))
     .addCase(fetchSiteConfigComplete, (state, { payload }) => {
       const { cdataEscapedFieldPatterns, locale, publishing, upload } = payload;
       return {
