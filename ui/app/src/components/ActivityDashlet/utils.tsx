@@ -52,9 +52,13 @@ export function renderActivity(
   const anchor = (chunks: ReactNode[]) => {
     const [label, systemType, previewUrl, path] = chunks;
     return !isPage(systemType) ? (
-      <em title={path}>{label}</em>
+      <em title={path as string}>{label}</em>
     ) : (
-      <Link title={path} sx={{ cursor: 'pointer' }} onClick={(e) => onItemClick(previewUrl as unknown as ActivityItem, e)}>
+      <Link
+        title={path as string}
+        sx={{ cursor: 'pointer' }}
+        onClick={(e) => onItemClick(previewUrl as unknown as ActivityItem, e)}
+      >
         {label}
       </Link>
     );
