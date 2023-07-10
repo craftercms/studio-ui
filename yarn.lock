@@ -2046,8 +2046,8 @@ __metadata:
     "@mui/icons-material": ^5.13.7
     "@mui/lab": ^5.0.0-alpha.135
     "@mui/material": ^5.13.7
-    "@mui/x-data-grid": ^6.7.0
-    "@mui/x-date-pickers": ^6.7.0
+    "@mui/x-data-grid": ^6.9.2
+    "@mui/x-date-pickers": ^6.9.2
     "@prettier/plugin-xml": ^2.2.0
     "@reduxjs/toolkit": ^1.9.5
     "@rollup/plugin-typescript": ^11.1.0
@@ -3562,22 +3562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.13.1":
-  version: 5.13.1
-  resolution: "@mui/utils@npm:5.13.1"
-  dependencies:
-    "@babel/runtime": ^7.21.0
-    "@types/prop-types": ^15.7.5
-    "@types/react-is": ^18.2.0
-    prop-types: ^15.8.1
-    react-is: ^18.2.0
-  peerDependencies:
-    react: ^17.0.0 || ^18.0.0
-  checksum: 79cfc91e5a61311ac88680df3ea09f1218d0a5a766b6dadf0c5c9c72a3c36cbd903895ebb0f16497dcffb2e3601cb3b46742ae3c5e2c1f62d5ebf02babfd910f
-  languageName: node
-  linkType: hard
-
-"@mui/utils@npm:^5.13.7":
+"@mui/utils@npm:^5.13.6, @mui/utils@npm:^5.13.7":
   version: 5.13.7
   resolution: "@mui/utils@npm:5.13.7"
   dependencies:
@@ -3592,12 +3577,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-data-grid@npm:^6.7.0":
-  version: 6.7.0
-  resolution: "@mui/x-data-grid@npm:6.7.0"
+"@mui/x-data-grid@npm:^6.9.2":
+  version: 6.9.2
+  resolution: "@mui/x-data-grid@npm:6.9.2"
   dependencies:
-    "@babel/runtime": ^7.21.0
-    "@mui/utils": ^5.13.1
+    "@babel/runtime": ^7.22.5
+    "@mui/utils": ^5.13.6
     clsx: ^1.2.1
     prop-types: ^15.8.1
     reselect: ^4.1.8
@@ -3606,16 +3591,16 @@ __metadata:
     "@mui/system": ^5.4.1
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: f17d7495811dfd34621daa795d1f07f3569dfca8f559ff8e50db7719e9555f1081ec4ab20119f5d336b9d7f6131efb0fe6f1de6844e9d44c1c8fbbf6155b027e
+  checksum: c26aff602c32097729f76729c4c3ad43a7acc1795d68a724713129295270faf16c2458b6ac48d198460fa8ec8969a89dbbc515e4f7d1506de695c47776b31b46
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^6.7.0":
-  version: 6.7.0
-  resolution: "@mui/x-date-pickers@npm:6.7.0"
+"@mui/x-date-pickers@npm:^6.9.2":
+  version: 6.9.2
+  resolution: "@mui/x-date-pickers@npm:6.9.2"
   dependencies:
-    "@babel/runtime": ^7.21.0
-    "@mui/utils": ^5.13.1
+    "@babel/runtime": ^7.22.5
+    "@mui/utils": ^5.13.6
     "@types/react-transition-group": ^4.4.6
     clsx: ^1.2.1
     prop-types: ^15.8.1
@@ -3654,7 +3639,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 7e85846ff5eac2de16ba408d0706141e720ae39290439719fb2e38afc9986d98406f57b002b322896ae7cfa96565bd35666dbb7aa3c0125a9aa0e173e08635bf
+  checksum: 47b0c6ff6010264fd444694c9d1d6e8f09858a5f889e4f3c6ed311416a229102932fbf5f6a22606df750ce1223c0803a9e0204ee30085d30df5bdf49e17e1b5d
   languageName: node
   linkType: hard
 
