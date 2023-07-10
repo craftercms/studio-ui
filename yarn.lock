@@ -1940,7 +1940,7 @@ __metadata:
     "@types/js-cookie": ^3.0.3
     "@types/prop-types": ^15.7.5
     "@types/react-dom": ^18.2.4
-    "@types/react-is": ^18.2.0
+    "@types/react-is": ^18.2.1
     "@types/tinymce": ^4.6.5
     build-if-changed: ^1.5.5
     jquery: ^3.6.4
@@ -2058,11 +2058,11 @@ __metadata:
     "@types/js-cookie": ^3.0.3
     "@types/marked": ^4.3.0
     "@types/prettier": ^2.7.2
-    "@types/react": ^18.2.6
+    "@types/react": ^18.2.14
     "@types/react-dom": ^18.2.4
     "@types/react-infinite-scroller": ^1.2.3
-    "@types/react-swipeable-views": ^0.13.1
-    "@types/video.js": ^7.3.51
+    "@types/react-swipeable-views": ^0.13.2
+    "@types/video.js": ^7.3.52
     "@types/zxcvbn": ^4.4.1
     "@videojs/vhs-utils": ^4.0.0
     autosuggest-highlight: ^3.3.4
@@ -5189,15 +5189,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-is@npm:^18.2.0":
-  version: 18.2.0
-  resolution: "@types/react-is@npm:18.2.0"
-  dependencies:
-    "@types/react": "*"
-  checksum: bceec20a57c91fa9b6b63898a228f6074b8d62dce29b7069a7e986bc7f8cd910ffd197808b559b0a0dd53221e6058db13622a1d1f1faa708557e8c41af1326e4
-  languageName: node
-  linkType: hard
-
 "@types/react-is@npm:^18.2.1":
   version: 18.2.1
   resolution: "@types/react-is@npm:18.2.1"
@@ -5207,12 +5198,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-swipeable-views@npm:^0.13.1":
-  version: 0.13.1
-  resolution: "@types/react-swipeable-views@npm:0.13.1"
+"@types/react-swipeable-views@npm:^0.13.2":
+  version: 0.13.2
+  resolution: "@types/react-swipeable-views@npm:0.13.2"
   dependencies:
     "@types/react": "*"
-  checksum: 47908514a541d40c454b09c3eb47e6bbe55742c37e88181b412052297941191d08b1fc0ec176b6c886bb3f22a8d66aff9bdeb2c26496c6335a7579e9aea02302
+  checksum: 733f700ef6c59dec5e2e36ee534ffd6b4df420e49cc3bb0306bf368358d49af7a3e2b006f93fb6953769d27ad4308bb536c733068a0e3f031a792cbe2c54e916
   languageName: node
   linkType: hard
 
@@ -5365,10 +5356,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/video.js@npm:^7.3.51":
-  version: 7.3.51
-  resolution: "@types/video.js@npm:7.3.51"
-  checksum: 95b8e75da82b401965bd2b31648f7917495b9f2eda3773e1c50f027ed1f457760731912c71cf2c4e8c4b3087b29844bdcc92577bb56ae5c49b771039f7da819e
+"@types/video.js@npm:^7.3.52":
+  version: 7.3.52
+  resolution: "@types/video.js@npm:7.3.52"
+  checksum: 3d1b62a4fa6ba4f29d41d617068fadc88a3cf2a16e4f3eedafba25cb4d72abc332e536f5a2d30fb86bfbba9a7557a97444497bcd397c23b767bff38aa7e51a8c
   languageName: node
   linkType: hard
 
