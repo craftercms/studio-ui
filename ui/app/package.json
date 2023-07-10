@@ -118,8 +118,8 @@
   },
   "dependencies": {
     "@craftercms/uppy": "workspace:^",
-    "@emotion/css": "^11.11.0",
-    "@emotion/react": "^11.11.0",
+    "@emotion/css": "^11.11.2",
+    "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@graphiql/plugin-explorer": "^0.2.0",
     "@mui/icons-material": "^5.11.16",
