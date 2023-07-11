@@ -1891,7 +1891,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@craftercms/ace-adapter@workspace:ui/ace"
   dependencies:
-    ace-builds: ^1.19.0
+    ace-builds: ^1.23.3
     build-if-changed: ^1.5.5
     js-yaml: ^4.1.0
   languageName: unknown
@@ -6463,10 +6463,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ace-builds@npm:^1.19.0":
-  version: 1.19.0
-  resolution: "ace-builds@npm:1.19.0"
-  checksum: 4a4544ac0ab355d877ab21442222106e86eca2a98d441cbdfb023c64cb31b746515e4d49c91ccc82cc87887e00d03c9ab09a8d1b65727353888afad8732f1cac
+"ace-builds@npm:^1.23.3":
+  version: 1.23.3
+  resolution: "ace-builds@npm:1.23.3"
+  checksum: b703efa5353e29fff1e91484ebe36c8ebe401c3dfc32aaa3f3d225809d3b4a892e7ae5a1612f82b5060da14ccfd2d9b7ae2201f0037b75a193ca3da4ff6941c9
   languageName: node
   linkType: hard
 
