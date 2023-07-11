@@ -1,7 +1,8 @@
 {
   "name": "@craftercms/jquery",
   "version": "3.7.0",
-  "main": "src/index.js",
+  "main": "dist/jquery.js",
   "license": "LGPL-3.0-only",
-  "private": true
+  "private": true,
+  "types": "index.d.ts"
 }

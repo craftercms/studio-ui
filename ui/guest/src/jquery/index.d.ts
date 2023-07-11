@@ -14,5 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import './jquery.min.js';
-export default window.jQuery.noConflict(true);
+/// <reference types="jquery" />
+
+export = jQuery;
