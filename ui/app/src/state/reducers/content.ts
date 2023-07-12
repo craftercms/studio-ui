@@ -70,7 +70,7 @@ const initialState: ContentState = {
   itemsBeingFetchedByPath: {}
 };
 
-const updateItemLockState = (state: ContentState, { path, username, locked }) => {
+const updateItemLockState = (state: ContentState, { path, user, locked }) => {
   if (
     !state.itemsByPath[path] ||
     (locked && state.itemsByPath[path].stateMap.locked) ||
@@ -84,7 +84,7 @@ const updateItemLockState = (state: ContentState, { path, username, locked }) =>
       ...state.itemsByPath,
       [path]: {
         ...state.itemsByPath[path],
-        lockOwner: locked ? username : null,
+        lockOwner: locked ? user : null,
         state: locked
           ? state.itemsByPath[path].state + STATE_LOCKED_MASK
           : state.itemsByPath[path].state - STATE_LOCKED_MASK,
@@ -253,7 +253,7 @@ const reducer = createReducer<ContentState>(initialState, {
   [lockContentEvent.type]: (state, { payload }) =>
     updateItemLockState(state, {
       path: payload.targetPath,
-      username: payload.user.username,
+      user: payload.user,
       locked: payload.locked
     }),
   [deleteContentEvent.type]: (state, { payload: { targetPath } }: StandardAction<SocketEventBase>) => {
