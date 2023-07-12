@@ -70,7 +70,10 @@ const initialState: ContentState = {
   itemsBeingFetchedByPath: {}
 };
 
-const updateItemLockState = (state: ContentState, { path, user, locked }) => {
+const updateItemLockState = (
+  state: ContentState,
+  { targetPath: path, user, locked }: Partial<SocketEventBase & { locked: boolean }>
+) => {
   if (
     !state.itemsByPath[path] ||
     (locked && state.itemsByPath[path].stateMap.locked) ||
@@ -78,7 +81,7 @@ const updateItemLockState = (state: ContentState, { path, user, locked }) => {
   ) {
     return state;
   }
-  return {
+  const updatedState: ContentState = {
     ...state,
     itemsByPath: {
       ...state.itemsByPath,
@@ -92,6 +95,7 @@ const updateItemLockState = (state: ContentState, { path, user, locked }) => {
       }
     }
   };
+  return updatedState;
 };
 
 const updateItemByPath = (state: ContentState, { payload: { parent, children } }) => {
@@ -252,7 +256,7 @@ const reducer = createReducer<ContentState>(initialState, {
   [changeSite.type]: () => initialState,
   [lockContentEvent.type]: (state, { payload }) =>
     updateItemLockState(state, {
-      path: payload.targetPath,
+      targetPath: payload.targetPath,
       user: payload.user,
       locked: payload.locked
     }),
