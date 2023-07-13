@@ -20,7 +20,6 @@ import { OptionsObject } from 'notistack';
 import GlobalState from '../../models/GlobalState';
 import { ObtainAuthTokenResponse } from '../../services/auth';
 import User from '../../models/User';
-import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
 import SocketEventBase from '../../models/SocketEvent';
@@ -110,7 +109,6 @@ export const contentTypeDeleted = /*#__PURE__*/ createAction<StandardAction>('CO
 export const storeInitialized = /*#__PURE__*/ createAction<{
   auth: ObtainAuthTokenResponse;
   user: User;
-  sites: Array<Site>;
   properties: LookupTable<any>;
 }>('STORE_INITIALIZED');
 
