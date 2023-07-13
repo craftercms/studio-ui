@@ -104,8 +104,8 @@ import {
   getStoredEditModePadding,
   getStoredHighlightModeChoice,
   removeStoredClipboard,
-  getOutdatedXBValidationDate,
-  setOutdatedXBValidationDate
+  getStoredOutdatedXBValidationDate,
+  setStoredOutdatedXBValidationDate
 } from '../../utils/state';
 import {
   fetchSandboxItem,
@@ -187,6 +187,7 @@ import useEnv from '../../hooks/useEnv';
 import useAuth from '../../hooks/useAuth';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { isSameDay } from '../../utils/datetime';
+import compatibilityList from './compatibilityList';
 
 const originalDocDomain = document.domain;
 
@@ -339,7 +340,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       );
     }
   };
-
+  const env = useEnv();
   const upToDateRefs = useUpdateRefs({
     store,
     item,
@@ -425,7 +426,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           }
           break;
       }
-    }
+    },
+    env,
+    xbCompatConsoleWarningPrinted: false
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -543,6 +546,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       );
     };
     const guestToHostSubscription = guestToHost$.subscribe((action) => {
+      // region const { ... } = upToDateRefs.current
       const {
         siteId,
         models,
@@ -554,21 +558,41 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         formatMessage,
         modelIdByPath,
         enqueueSnackbar,
-        user
+        user,
+        env
       } = upToDateRefs.current;
+      // endregion
       const { type, payload } = action;
       switch (type) {
         case guestSiteLoad.type:
         case guestCheckIn.type:
-          if (type === guestCheckIn.type && !['4.1.0', '4.0.3'].includes(payload.version.slice(0, 5))) {
-            const xbOutdatedValidationDate = getOutdatedXBValidationDate(siteId, user.username);
-            // If message has not been shown today or not shown at all
-            if (!xbOutdatedValidationDate || !isSameDay(xbOutdatedValidationDate, new Date())) {
-              enqueueSnackbar(formatMessage(guestMessages.outdatedExpBuilderVersion));
-              setOutdatedXBValidationDate(siteId, user.username, new Date());
+          if (type === guestCheckIn.type) {
+            const guestVersionStr = payload.version?.slice(0, 5);
+            if (guestVersionStr) {
+              const stdVersionStr = env.version.slice(0, 5);
+              if (
+                // Only show once per tab session (full reload)
+                !upToDateRefs.current.xbCompatConsoleWarningPrinted &&
+                parseInt(stdVersionStr.replaceAll('.', '')) > parseInt(guestVersionStr.replaceAll('.', ''))
+              ) {
+                upToDateRefs.current.xbCompatConsoleWarningPrinted = true;
+                console.log(
+                  `%c(i) Please update your @craftercms/experience-builder package to \`${stdVersionStr}\`.\n` +
+                    `  - yarn add @craftercms/experience-builder@${stdVersionStr}\n` +
+                    `  - npm i @craftercms/experience-builder@${stdVersionStr}`,
+                  'color: #00f'
+                );
+              }
+            }
+            if (!compatibilityList.includes(guestVersionStr)) {
+              const xbOutdatedValidationDate = getStoredOutdatedXBValidationDate(siteId, user.username);
+              // If message has not been shown today or not shown at all
+              if (!xbOutdatedValidationDate || !isSameDay(xbOutdatedValidationDate, new Date())) {
+                enqueueSnackbar(formatMessage(guestMessages.outdatedExpBuilderVersion), { variant: 'warning' });
+                setStoredOutdatedXBValidationDate(siteId, user.username, new Date());
+              }
             }
           }
-
           clearTimeout(guestDetectionTimeoutRef.current);
           setGuestDetectionSnackbarOpen(false);
           break;

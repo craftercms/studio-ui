@@ -315,12 +315,12 @@ export function getStoredBrowseDialogCompactMode(username: string): boolean {
   return JSON.parse(localStorage.getItem(`craftercms.${username}.browseDialog.compactMode`)) ?? false;
 }
 
-export function getOutdatedXBValidationDate(siteId: string, username: string): Date {
+export function getStoredOutdatedXBValidationDate(siteId: string, username: string): Date {
   const dateString = localStorage.getItem(`craftermcs.${username}.${siteId}.outdatedXBValidationDate`);
   return dateString ? new Date(dateString) : null;
 }
 
-export function setOutdatedXBValidationDate(siteId: string, username: string, date: Date): void {
+export function setStoredOutdatedXBValidationDate(siteId: string, username: string, date: Date): void {
   const dateString = date.toDateString();
   localStorage.setItem(`craftermcs.${username}.${siteId}.outdatedXBValidationDate`, dateString);
 }
