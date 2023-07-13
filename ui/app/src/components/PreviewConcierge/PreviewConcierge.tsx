@@ -567,18 +567,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       switch (type) {
         case guestSiteLoad.type:
         case guestCheckIn.type:
-          // These will produce a string like '4.0.'. Omit the last digit to allow for minor version updates.
-          // const studioVersion = env.version.slice(0, 4);
-          // const guestVersion = payload.version?.slice(0, 4);
-          // if (type === guestCheckIn.type && guestVersion !== studioVersion) {
-          //   const xbOutdatedValidationDate = getStoredOutdatedXBValidationDate(siteId, user.username);
-          //   // If message has not been shown today or not shown at all
-          //   if (!xbOutdatedValidationDate || !isSameDay(xbOutdatedValidationDate, new Date())) {
-          //     enqueueSnackbar(formatMessage(guestMessages.outdatedExpBuilderVersion));
-          //     setStoredOutdatedXBValidationDate(siteId, user.username, new Date());
-          //   }
-          // }
-
           if (type === guestCheckIn.type) {
             const guestVersionStr = payload.version?.slice(0, 5);
             if (guestVersionStr) {
