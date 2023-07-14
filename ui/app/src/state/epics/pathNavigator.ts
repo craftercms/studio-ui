@@ -108,7 +108,9 @@ export default [
             keyword: state.pathNavigator[id].keyword,
             limit: state.pathNavigator[id].limit,
             offset: state.pathNavigator[id].offset,
-            excludes: state.pathNavigator[id].excludes
+            excludes: state.pathNavigator[id].excludes,
+            sortStrategy: state.pathNavigator[id].sortStrategy,
+            order: state.pathNavigator[id].order
           }).pipe(
             map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
             catchAjaxError((error: AjaxError) => {
@@ -138,6 +140,8 @@ export default [
           fetchItemWithChildrenByPath(state.sites.active, path, {
             excludes: state.pathNavigator[id].excludes,
             limit: state.pathNavigator[id].limit,
+            sortStrategy: state.pathNavigator[id].sortStrategy,
+            order: state.pathNavigator[id].order,
             ...(keyword && { keyword })
           }).pipe(
             map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
@@ -164,6 +168,8 @@ export default [
           fetchItemWithChildrenByPath(state.sites.active, path, {
             excludes: state.pathNavigator[id].excludes,
             limit: state.pathNavigator[id].limit,
+            sortStrategy: state.pathNavigator[id].sortStrategy,
+            order: state.pathNavigator[id].order,
             ...(keyword && { keyword })
           }).pipe(
             map(({ item, children }) =>
@@ -189,7 +195,10 @@ export default [
           },
           state
         ]) =>
-          fetchItemWithChildrenByPath(state.sites.active, path).pipe(
+          fetchItemWithChildrenByPath(state.sites.active, path, {
+            sortStrategy: state.pathNavigator[id].sortStrategy,
+            order: state.pathNavigator[id].order
+          }).pipe(
             map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
             catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
           )
@@ -211,7 +220,9 @@ export default [
         ]) =>
           fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
             keyword,
-            limit: state.pathNavigator[id].limit
+            limit: state.pathNavigator[id].limit,
+            sortStrategy: state.pathNavigator[id].sortStrategy,
+            order: state.pathNavigator[id].order
           }).pipe(
             map((children) =>
               pathNavigatorFetchPathComplete({
@@ -240,6 +251,8 @@ export default [
         ]) =>
           fetchChildrenByPath(state.sites.active, state.pathNavigator[id].currentPath, {
             limit: state.pathNavigator[id].limit,
+            sortStrategy: state.pathNavigator[id].sortStrategy,
+            order: state.pathNavigator[id].order,
             ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
             offset
           }).pipe(
@@ -271,7 +284,9 @@ export default [
                 excludes,
                 limit,
                 offset,
-                keyword
+                keyword,
+                sortStrategy: state.pathNavigator[id].sortStrategy,
+                order: state.pathNavigator[id].order
               })
             ]).pipe(
               map(([items, children]) => pathNavigatorFetchParentItemsComplete({ id, items, children })),
@@ -284,7 +299,14 @@ export default [
               })
             );
           } else {
-            return fetchItemWithChildrenByPath(site, path, { excludes, limit, offset, keyword }).pipe(
+            return fetchItemWithChildrenByPath(site, path, {
+              excludes,
+              limit,
+              offset,
+              keyword,
+              sortStrategy: state.pathNavigator[id].sortStrategy,
+              order: state.pathNavigator[id].order
+            }).pipe(
               map(({ item, children }) => pathNavigatorFetchPathComplete({ id, parent: item, children })),
               catchAjaxError((error) => pathNavigatorFetchPathFailed({ error, id }))
             );

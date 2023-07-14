@@ -32,6 +32,8 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
     limit: number;
     expanded?: string[];
     systemTypes?: SystemType[];
+    sortStrategy?: GetChildrenOptions['sortStrategy'];
+    order?: GetChildrenOptions['order'];
   }>
 >('PATH_NAV_TREE_INIT');
 
@@ -104,6 +106,8 @@ export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
     collapsed?: boolean;
     items?: DetailedItem[];
     data?: LookupTable<GetChildrenResponse>;
+    sortStrategy?: GetChildrenOptions['sortStrategy'];
+    order?: GetChildrenOptions['order'];
   }>
 >('PATH_NAV_TREE_UPDATE');
 

@@ -61,7 +61,9 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         limit = 10,
         keyword = '',
         offset = 0,
-        excludes
+        excludes,
+        sortStrategy = null,
+        order = null
       } = action.payload;
       state[id] = {
         id,
@@ -82,7 +84,9 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>(
         isFetching: true,
         error: null,
         excludes,
-        isRootPathMissing: false
+        isRootPathMissing: false,
+        sortStrategy,
+        order
       };
     },
     [pathNavigatorSetLocaleCode.type]: (state, { payload: { id, locale } }) => {

@@ -68,7 +68,7 @@ const createGetChildrenOptions: (
   chunk: PathNavigatorTreeStateProps,
   optionOverrides?: Partial<GetChildrenOptions>
 ) => Partial<GetChildrenOptions> = (chunk, optionOverrides) => ({
-  ...pluckProps(chunk, true, 'limit', 'excludes', 'systemTypes'),
+  ...pluckProps(chunk, true, 'limit', 'excludes', 'systemTypes', 'sortStrategy', 'order'),
   ...optionOverrides
 });
 
@@ -276,7 +276,7 @@ export default [
         const actions = [];
         // Content Event Cases:
         // a. New file/folder: fetch parent
-        // b. File/folder updated: fetch item
+        // b. File/folder updated (with no `sortStrategy` or `order` configurations set up): fetch item
         contentAndDeleteEventForEachApplicableTree(
           state.pathNavigatorTree,
           action.payload.targetPath,
@@ -286,6 +286,7 @@ export default [
             const extension = getFileExtension(targetPath);
             const isFile = extension === '';
             const parentPath = isFile ? parentPathOfTargetPath : getParentPath(targetPath);
+            const sortingOptionsSet = Boolean(tree.sortStrategy || tree.order);
             if (
               // If the path corresponds to the root and the root didn't exist, root now exists
               tree.isRootPathMissing &&
@@ -293,9 +294,10 @@ export default [
             ) {
               actions.push(pathNavigatorTreeRefresh({ id }));
             } else if (
-              // If an entry for the path exists, assume it's an update to an existing item
-              targetPath in tree.totalByPath ||
-              withIndex(targetPath) in tree.totalByPath
+              // If an entry for the path exists, assume it's an update to an existing item.
+              // If sorting options are set, the parent paths needs to be updated sort the sort order to be correct.
+              (targetPath in tree.totalByPath || withIndex(targetPath) in tree.totalByPath) &&
+              !sortingOptionsSet
             ) {
               // Reloading the item done by content epics
               // actions.push(fetchSandboxItem({ path }));

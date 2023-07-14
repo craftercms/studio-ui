@@ -34,7 +34,8 @@ import {
   pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode
+  pathNavigatorSetLocaleCode,
+  pathNavigatorUpdate
 } from '../../state/actions/pathNavigator';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import {
@@ -65,6 +66,8 @@ import { getSystemLink } from '../../utils/system';
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
+import { GetChildrenOptions } from '../../models';
+import { batchActions } from '../../state/actions/misc';
 
 interface Menu {
   path?: string;
@@ -81,6 +84,8 @@ export interface PathNavigatorProps {
   id: string;
   label: string;
   rootPath: string;
+  sortStrategy?: GetChildrenOptions['sortStrategy'];
+  order?: GetChildrenOptions['order'];
   excludes?: string[];
   locale?: string;
   limit?: number;
@@ -117,6 +122,8 @@ export interface PathNavigatorStateProps {
   isFetching: boolean;
   error: any;
   isRootPathMissing: boolean;
+  sortStrategy?: GetChildrenOptions['sortStrategy'];
+  order?: GetChildrenOptions['order'];
 }
 
 // @see https://github.com/craftercms/craftercms/issues/5360
@@ -143,7 +150,9 @@ export function PathNavigator(props: PathNavigatorProps) {
     initialCollapsed = true,
     onItemClicked: onItemClickedProp,
     createItemClickedHandler = (defaultHandler) => defaultHandler,
-    computeActiveItems
+    computeActiveItems,
+    sortStrategy,
+    order
   } = props;
   // endregion
   const state = useSelection((state) => state.pathNavigator)[id];
@@ -179,6 +188,8 @@ export function PathNavigator(props: PathNavigatorProps) {
           excludes,
           limit,
           collapsed: initialCollapsed,
+          sortStrategy,
+          order,
           ...storedState
         })
       );
@@ -195,8 +206,14 @@ export function PathNavigator(props: PathNavigatorProps) {
     initialCollapsed,
     uiConfig.currentSite,
     user.username,
-    uuid
+    uuid,
+    sortStrategy,
+    order
   ]);
+
+  useEffect(() => {
+    dispatch(batchActions([pathNavigatorUpdate({ id, sortStrategy, order }), pathNavigatorRefresh({ id })]));
+  }, [dispatch, id, sortStrategy, order]);
 
   useMount(() => {
     if (state) {

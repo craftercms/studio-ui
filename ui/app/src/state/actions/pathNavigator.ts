@@ -19,6 +19,7 @@ import { DetailedItem } from '../../models/Item';
 import { PathNavigatorStateProps } from '../../components/PathNavigator/PathNavigator';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { AjaxError } from 'rxjs/ajax';
+import { GetChildrenOptions } from '../../models';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -31,6 +32,8 @@ export type PathNavInitPayload = PayloadWithId<{
   currentPath?: string;
   keyword?: string;
   offset?: number;
+  sortStrategy?: GetChildrenOptions['sortStrategy'];
+  order?: GetChildrenOptions['order'];
 }>;
 
 export const pathNavigatorInit = /*#__PURE__*/ createAction<PathNavInitPayload>('PATH_NAV_INIT');
