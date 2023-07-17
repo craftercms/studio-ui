@@ -29,15 +29,17 @@ import {
   setContentTypeFilter,
   setPreviewEditMode
 } from '../../state/actions/preview';
-import { nnou, reversePluckProps } from '../../utils/object';
+import { reversePluckProps } from '../../utils/object';
 import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
-import { PropsWithResource, SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import { EntityState } from '../../models/EntityState';
 import { batchActions } from '../../state/actions/misc';
 import { createToolsPanelPage, createWidgetDescriptor } from '../../utils/state';
 import { useSelection } from '../../hooks/useSelection';
-import { useSelectorResource } from '../../hooks/useSelectorResource';
+import { SearchBar } from '../SearchBar';
+import { LoadingState } from '../LoadingState';
+import { ErrorBoundary } from '../ErrorBoundary';
+import { EmptyState } from '../EmptyState';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
@@ -55,51 +57,63 @@ const translations = defineMessages({
   listInPageInstances: {
     id: 'previewComponentsPanel.listInPageInstances',
     defaultMessage: 'Instances on this page'
+  },
+  filter: {
+    id: 'previewComponentsPanel.filter',
+    defaultMessage: 'Filter...'
   }
 });
 
-type ComponentsPanelUIProps = PropsWithResource<ContentType[]>;
+type ComponentsPanelUIProps = { componentTypes: ContentType[] };
 
 export function PreviewComponentsPanel() {
-  const resource = useSelectorResource<ContentType[], EntityState<ContentType>>((state) => state.contentTypes, {
-    shouldRenew: (source, resource) => resource.complete,
-    shouldResolve: (source) => !source.isFetching && nnou(source.byId),
-    shouldReject: (source) => nnou(source.error),
-    errorSelector: (source) => source.error,
-    resultSelector: (source) =>
-      Object.values(reversePluckProps(source.byId, '/component/level-descriptor')).filter(
-        (contentType) => contentType.type === 'component'
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const [keyword, setKeyword] = useState('');
+  const contentTypes = contentTypesBranch.byId
+    ? Object.values(reversePluckProps(contentTypesBranch.byId, '/component/level-descriptor')).filter(
+        (contentType) =>
+          contentType.type === 'component' &&
+          (contentType.name.toLowerCase().includes(keyword.toLowerCase()) ||
+            contentType.id.toLowerCase().includes(keyword.toLowerCase()))
       )
-  });
+    : null;
+  const { formatMessage } = useIntl();
   return (
-    <>
-      <SuspenseWithEmptyState
-        resource={resource}
-        loadingStateProps={{
-          title: <FormattedMessage id="componentsPanel.suspenseStateMessage" defaultMessage="Retrieving Page Model" />
-        }}
-        withEmptyStateProps={{
-          emptyStateProps: {
-            title: <FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />,
-            subtitle: (
-              <FormattedMessage
-                id="componentsPanel.emptyComponentsSubtitle"
-                defaultMessage="Communicate with your developers to create the required components in the system."
-              />
-            )
+    <ErrorBoundary>
+      <Box sx={{ padding: (theme) => `${theme.spacing(1)} ${theme.spacing(1)} 0` }}>
+        <SearchBar
+          placeholder={formatMessage(translations.filter)}
+          showActionButton={Boolean(keyword)}
+          onChange={setKeyword}
+          keyword={keyword}
+          autoFocus
+        />
+      </Box>
+      {contentTypesBranch.isFetching ? (
+        <LoadingState
+          title={<FormattedMessage id="componentsPanel.suspenseStateMessage" defaultMessage="Retrieving Page Model" />}
+        />
+      ) : Object.keys(contentTypesBranch.byId).length === 0 ? (
+        <EmptyState
+          title={<FormattedMessage defaultMessage="No components found" />}
+          subtitle={
+            <FormattedMessage defaultMessage="Communicate with your developers to create the required components in the system." />
           }
-        }}
-      >
-        <ComponentsPanelUI resource={resource} />
-      </SuspenseWithEmptyState>
-    </>
+        />
+      ) : contentTypes.length === 0 ? (
+        <EmptyState
+          title={<FormattedMessage defaultMessage="No components found" />}
+          subtitle={<FormattedMessage defaultMessage="Try changing the keyword." />}
+        />
+      ) : (
+        <ComponentsPanelUI componentTypes={contentTypes} />
+      )}
+    </ErrorBoundary>
   );
 }
 
 export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
-  const { resource } = props;
-
-  const componentTypes = resource.read();
+  const { componentTypes } = props;
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const editMode = useSelection((state) => state.preview.editMode);
