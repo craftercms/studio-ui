@@ -35,6 +35,7 @@ export function renderWidgets(
     ? widgets
         .filter(
           (widget) =>
+            !Array.isArray(widget.permittedRoles) ||
             (widget.permittedRoles ?? []).length === 0 ||
             (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
         )
