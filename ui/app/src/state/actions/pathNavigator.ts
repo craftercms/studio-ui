@@ -75,10 +75,17 @@ export const pathNavigatorItemUnchecked =
 
 export const pathNavigatorClearChecked = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_CLEAR_CHECKED');
 
-export const pathNavigatorFetchParentItems =
-  /*#__PURE__*/ createAction<
-    PayloadWithId<{ path: string; excludes?: string[]; limit: number; offset?: number; keyword?: string }>
-  >('PATH_NAV_FETCH_PARENT_ITEMS');
+export const pathNavigatorFetchParentItems = /*#__PURE__*/ createAction<
+  PayloadWithId<{
+    path: string;
+    excludes?: string[];
+    limit: number;
+    offset?: number;
+    keyword?: string;
+    sortStrategy: string;
+    order: string;
+  }>
+>('PATH_NAV_FETCH_PARENT_ITEMS');
 
 export const pathNavigatorFetchPath =
   /*#__PURE__*/ createAction<PayloadWithId<{ path: string; keyword?: string }>>('PATH_NAV_FETCH_PATH');

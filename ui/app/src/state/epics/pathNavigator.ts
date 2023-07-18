@@ -70,7 +70,7 @@ export default [
       mergeMap(
         ([
           {
-            payload: { id, excludes, rootPath }
+            payload: { id, excludes, rootPath, limit, sortStrategy, order }
           },
           state
         ]) =>
@@ -83,7 +83,9 @@ export default [
                     offset: state.pathNavigator[id].offset,
                     keyword: state.pathNavigator[id].keyword,
                     excludes,
-                    limit: state.pathNavigator[id].limit
+                    limit,
+                    sortStrategy,
+                    order
                   })
                 : pathNavRootPathMissing({ id })
             )
@@ -271,7 +273,7 @@ export default [
         ([
           {
             type,
-            payload: { id, path, excludes, limit, offset, keyword }
+            payload: { id, path, excludes, limit, offset, keyword, sortStrategy, order }
           },
           state
         ]) => {
@@ -285,8 +287,8 @@ export default [
                 limit,
                 offset,
                 keyword,
-                sortStrategy: state.pathNavigator[id].sortStrategy,
-                order: state.pathNavigator[id].order
+                sortStrategy,
+                order
               })
             ]).pipe(
               map(([items, children]) => pathNavigatorFetchParentItemsComplete({ id, items, children })),
