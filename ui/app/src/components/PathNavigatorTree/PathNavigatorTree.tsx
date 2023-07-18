@@ -102,8 +102,8 @@ export interface PathNavigatorTreeStateProps {
   systemTypes: SystemType[];
   error: ApiResponse;
   isRootPathMissing: boolean;
-  sortStrategy?: GetChildrenOptions['sortStrategy'];
-  order?: GetChildrenOptions['order'];
+  sortStrategy: GetChildrenOptions['sortStrategy'];
+  order: GetChildrenOptions['order'];
 }
 
 interface Menu {
@@ -192,10 +192,6 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
       );
     }
   }, [dispatch, id, rootPath, siteId, state?.rootPath, uiConfig.currentSite, user.username, uuid, sortStrategy, order]);
-
-  useEffect(() => {
-    dispatch(batchActions([pathNavigatorTreeUpdate({ id, sortStrategy, order }), pathNavigatorTreeRefresh({ id })]));
-  }, [dispatch, id, sortStrategy, order]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {

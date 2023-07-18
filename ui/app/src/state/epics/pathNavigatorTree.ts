@@ -295,7 +295,7 @@ export default [
               actions.push(pathNavigatorTreeRefresh({ id }));
             } else if (
               // If an entry for the path exists, assume it's an update to an existing item.
-              // If sorting options are set, the parent paths needs to be updated sort the sort order to be correct.
+              // If sorting options are set, the parent path needs to be updated for the sort order to be correct.
               (targetPath in tree.totalByPath || withIndex(targetPath) in tree.totalByPath) &&
               !sortingOptionsSet
             ) {

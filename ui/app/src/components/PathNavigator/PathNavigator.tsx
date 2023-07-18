@@ -122,8 +122,8 @@ export interface PathNavigatorStateProps {
   isFetching: boolean;
   error: any;
   isRootPathMissing: boolean;
-  sortStrategy?: GetChildrenOptions['sortStrategy'];
-  order?: GetChildrenOptions['order'];
+  sortStrategy: GetChildrenOptions['sortStrategy'];
+  order: GetChildrenOptions['order'];
 }
 
 // @see https://github.com/craftercms/craftercms/issues/5360
@@ -210,10 +210,6 @@ export function PathNavigator(props: PathNavigatorProps) {
     sortStrategy,
     order
   ]);
-
-  useEffect(() => {
-    dispatch(batchActions([pathNavigatorUpdate({ id, sortStrategy, order }), pathNavigatorRefresh({ id })]));
-  }, [dispatch, id, sortStrategy, order]);
 
   useMount(() => {
     if (state) {
