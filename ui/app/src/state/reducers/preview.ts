@@ -611,7 +611,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       middleSection: { widgets: [] },
       rightSection: { widgets: [] }
     };
-    const arrays = ['widgets'];
+    const arrays = ['widgets', 'permittedRoles'];
     const configDOM = fromString(payload.configXml);
     const toolbar = configDOM.querySelector('[id="craftercms.components.PreviewToolbar"] > configuration');
 

@@ -24,7 +24,7 @@ export function renderWidgets(
   widgets: WidgetDescriptor[],
   options?: Pick<WidgetProps, 'overrideProps' | 'defaultProps'> & {
     userRoles?: string[];
-    createMapperFn?(originalMapperFn: MapperFn): MapperFn; // <==== OJO
+    createMapperFn?(originalMapperFn: MapperFn): MapperFn;
   }
 ): JSX.Element[] {
   if (!Array.isArray(widgets)) {
@@ -38,6 +38,8 @@ export function renderWidgets(
     ? widgets
         .filter(
           (widget) =>
+            // Incorrect deserialization or content of permittedRoles may cause it to be something other than an array
+            !Array.isArray(widget.permittedRoles) ||
             (widget.permittedRoles ?? []).length === 0 ||
             (userRoles ?? []).some((role) => widget.permittedRoles.includes(role))
         )
