@@ -34,8 +34,7 @@ import {
   pathNavigatorRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetKeyword,
-  pathNavigatorSetLocaleCode,
-  pathNavigatorUpdate
+  pathNavigatorSetLocaleCode
 } from '../../state/actions/pathNavigator';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog } from '../../state/actions/dialogs';
 import {
@@ -67,7 +66,6 @@ import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { GetChildrenOptions } from '../../models';
-import { batchActions } from '../../state/actions/misc';
 
 interface Menu {
   path?: string;
