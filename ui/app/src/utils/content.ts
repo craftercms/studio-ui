@@ -417,7 +417,14 @@ export function parseContentXML(
           }
         }
         const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId]?.fields?.[tagName];
-        if (!field) {
+        // date-time control handles the timezone field using {controlName}_tz format. So if the field without `tz` is
+        // found in the content type, we can ignore the `tz` field (and don't log an error).
+        let isTimezoneField = false;
+        if (tagName.endsWith('_tz')) {
+          const withoutTz = tagName.replace(/_tz$/, '');
+          isTimezoneField = Boolean(contentTypesLookup[sourceContentTypeId ?? contentTypeId]?.fields?.[withoutTz]);
+        }
+        if (!field && !isTimezoneField) {
           console.error(
             `[parseContentXML] Field "${tagName}" was not found on "${
               sourceContentTypeId ?? contentTypeId
