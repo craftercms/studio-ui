@@ -29,16 +29,15 @@ import {
   setContentTypeFilter,
   setPreviewEditMode
 } from '../../state/actions/preview';
-import { reversePluckProps } from '../../utils/object';
 import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
 import { useDispatch } from 'react-redux';
 import { batchActions } from '../../state/actions/misc';
 import { createToolsPanelPage, createWidgetDescriptor } from '../../utils/state';
 import { useSelection } from '../../hooks/useSelection';
-import { SearchBar } from '../SearchBar';
-import { LoadingState } from '../LoadingState';
-import { ErrorBoundary } from '../ErrorBoundary';
-import { EmptyState } from '../EmptyState';
+import SearchBar from '../SearchBar';
+import LoadingState from '../LoadingState';
+import ErrorBoundary from '../ErrorBoundary';
+import EmptyState from '../EmptyState';
 import Box from '@mui/material/Box';
 
 const translations = defineMessages({
@@ -68,14 +67,19 @@ type ComponentsPanelUIProps = { componentTypes: ContentType[] };
 
 export function PreviewComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const contentTypesBranchEntries = Object.entries(contentTypesBranch.byId ?? {});
   const [keyword, setKeyword] = useState('');
-  const contentTypes = contentTypesBranch.byId
-    ? Object.values(reversePluckProps(contentTypesBranch.byId, '/component/level-descriptor')).filter(
-        (contentType) =>
-          contentType.type === 'component' &&
-          (contentType.name.toLowerCase().includes(keyword.toLowerCase()) ||
-            contentType.id.toLowerCase().includes(keyword.toLowerCase()))
-      )
+  const lowerCaseKeyword = keyword.toLowerCase();
+  const filteredContentTypes = contentTypesBranch.byId
+    ? contentTypesBranchEntries
+        .filter(
+          ([id, contentType]) =>
+            id !== '/component/level-descriptor' &&
+            contentType.type === 'component' &&
+            (contentType.name.toLowerCase().includes(lowerCaseKeyword) ||
+              contentType.id.toLowerCase().includes(lowerCaseKeyword))
+        )
+        .map(([, contentType]) => contentType)
     : null;
   const { formatMessage } = useIntl();
   return (
@@ -93,20 +97,23 @@ export function PreviewComponentsPanel() {
         <LoadingState
           title={<FormattedMessage id="componentsPanel.suspenseStateMessage" defaultMessage="Retrieving Page Model" />}
         />
-      ) : Object.keys(contentTypesBranch.byId).length === 0 ? (
+      ) : contentTypesBranchEntries.length === 0 ? (
         <EmptyState
-          title={<FormattedMessage defaultMessage="No components found" />}
+          title={<FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />}
           subtitle={
-            <FormattedMessage defaultMessage="Communicate with your developers to create the required components in the system." />
+            <FormattedMessage
+              id="componentsPanel.emptyComponentsSubtitle"
+              defaultMessage="Communicate with your developers to create the required components in the system."
+            />
           }
         />
-      ) : contentTypes.length === 0 ? (
+      ) : filteredContentTypes.length === 0 ? (
         <EmptyState
-          title={<FormattedMessage defaultMessage="No components found" />}
+          title={<FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />}
           subtitle={<FormattedMessage defaultMessage="Try changing the keyword." />}
         />
       ) : (
-        <ComponentsPanelUI componentTypes={contentTypes} />
+        <ComponentsPanelUI componentTypes={filteredContentTypes} />
       )}
     </ErrorBoundary>
   );
