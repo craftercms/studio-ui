@@ -50,7 +50,7 @@ YAHOO.extend(CStudioForms.Datasources.ImgRepoUpload, CStudioForms.CStudioFormDat
       var searchContext = {
         keywords: '',
         filters: {
-          'mime-type': ['image/jpeg', 'image/png', 'image/gif', 'image/tiff', 'image/bmp']
+          'mime-type': ['image/jpeg', 'image/png', 'image/gif', 'image/tiff', 'image/bmp', 'image/svg+xml']
         },
         sortBy: 'internalName',
         sortOrder: 'asc',
