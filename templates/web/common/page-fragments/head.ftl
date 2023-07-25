@@ -53,7 +53,7 @@
 
   <script src="/studio/static-assets/components/cstudio-common/common-api.js"></script>
   <script src="/studio/static-assets/libs/jquery/dist/jquery-3.4.1.min.js"></script><#--File names have version info & not changed across builds. No need for cache buster.-->
-  <script src="/studio/static-assets/libs/jquery-ui/jquery-ui-1.12.1.min.js"></script>
+  <script src="/studio/static-assets/libs/jquery-ui-1.13.2/jquery-ui.min.js"></script>
   <script src="/studio/static-assets/yui/bubbling.v1.5.0-min.js" type="text/javascript"></script>
   <script src="/studio/static-assets/libs/bootstrap/js/bootstrap.min.js"></script>
   <script src="/studio/static-assets/libs/datetimepicker/jquery.datetimepicker.js"></script>

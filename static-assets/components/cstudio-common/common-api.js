@@ -295,7 +295,7 @@ var nodeOpen = false,
         '/static-assets/themes/cstudioTheme/css/contextNav.css',
         '/static-assets/yui/container/assets/container.css',
         '/static-assets/jquery/jquery-time/jquery.timeentry.css',
-        '/static-assets/libs/jquery-ui/jquery-ui.min.css'
+        '/static-assets/libs/jquery-ui-1.13.2/jquery-ui.min.css'
       ],
       js: [
         '/static-assets/yui/connection/connection-min.js',
