@@ -210,7 +210,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     // dropdownBtn and dropdownMenu
     const $addBtn = $(
-      `<button id="add-item" class="cstudio-button btn btn-transparent dropdown-toggle cstudio-button-disabled" style="border: none !important" type="button" data-toggle="dropdown" disabled="true">${CMgs.format(
+      `<button id="add-item" class="cstudio-button btn btn-transparent dropdown-toggle cstudio-button-disabled" style="border: none !important" type="button" data-bs-toggle="dropdown" disabled="true">${CMgs.format(
         langBundle,
         'add'
       )}<i class="fa fa-plus add-icon" aria-hidden="true"></i></button>`

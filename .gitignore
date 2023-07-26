@@ -91,6 +91,7 @@ build_tsc
 static-assets/next
 static-assets/styles/browse.css
 static-assets/styles/forms-engine.css
+static-assets/styles/bootstrap-5.3.css
 static-assets/styles/graphiql.css
 static-assets/styles/guest.css
 static-assets/styles/main.css
@@ -102,6 +103,7 @@ static-assets/styles/typography.css.map
 static-assets/styles/uppy.css
 static-assets/styles/browse.css.map
 static-assets/styles/forms-engine.css.map
+static-assets/styles/bootstrap-5.3.css.map
 static-assets/styles/graphiql.css.map
 static-assets/styles/guest.css.map
 static-assets/styles/main.css.map

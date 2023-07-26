@@ -319,6 +319,7 @@ var nodeOpen = false,
       loadContextNavCss: function () {
         CSA.Utils.addCss('/static-assets/styles/temp.css');
         CSA.Utils.addCss('/static-assets/styles/forms-engine.css');
+        CSA.Utils.addCss('/static-assets/styles/bootstrap-5.3.css');
       },
 
       /**

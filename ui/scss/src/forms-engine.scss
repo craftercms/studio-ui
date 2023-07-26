@@ -101,6 +101,7 @@ div.xdsoft_datetimepicker {
   z-index: 9999;
 }
 
+// region Bootstrap 3.x
 // Reset and dependencies
 @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/normalize';
 @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/print';
@@ -151,6 +152,7 @@ div.xdsoft_datetimepicker {
 // Utility classes
 @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/utilities';
 @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/responsive-utilities';
+// endregion
 
 html {
   font-size: 16px;
@@ -212,7 +214,8 @@ h6,
 }
 
 // Styles to fix style conflicts between material-ui and bootstrap
-legend[class^="mui-"], hr.MuiDivider-root {
+legend[class^='mui-'],
+hr.MuiDivider-root {
   width: auto;
 }
 
