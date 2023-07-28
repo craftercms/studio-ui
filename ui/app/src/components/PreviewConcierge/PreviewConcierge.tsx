@@ -198,7 +198,16 @@ const startCommunicationDetectionTimeout = (timeoutRef, setShowSnackbar, timeout
 
 // region const issueDescriptorRequest = () => {...}
 const issueDescriptorRequest = (props) => {
-  const { site, path, contentTypes, requestedSourceMapPaths, flatten = true, dispatch, completeAction } = props;
+  const {
+    site,
+    path,
+    contentTypes,
+    requestedSourceMapPaths,
+    flatten = true,
+    dispatch,
+    completeAction,
+    permissions
+  } = props;
   const hostToGuest$ = getHostToGuestBus();
   const guestToHost$ = getGuestToHostBus();
 
@@ -280,7 +289,8 @@ const issueDescriptorRequest = (props) => {
           modelLookup: normalizedModels,
           hierarchyMap,
           modelIdByPath: modelIdByPath,
-          sandboxItems
+          sandboxItems,
+          permissions
         }
       });
     });
@@ -298,6 +308,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const store = useStore<GlobalState>();
   const { id: siteId, uuid } = useActiveSite() ?? {};
   const user = useActiveUser();
+  const permissions = user?.permissionsBySite[siteId];
   const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
     usePreviewState();
   const item = useCurrentPreviewItem();
@@ -609,7 +620,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             contentTypes,
             requestedSourceMapPaths,
             dispatch,
-            completeAction: fetchPrimaryGuestModelComplete
+            completeAction: fetchPrimaryGuestModelComplete,
+            permissions
           });
           break;
         }
@@ -675,7 +687,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchPrimaryGuestModelComplete
+                completeAction: fetchPrimaryGuestModelComplete,
+                permissions
               });
             }
           } /* else if (type === FETCH_GUEST_MODEL) */ else {
@@ -686,7 +699,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchGuestModelComplete
+                completeAction: fetchGuestModelComplete,
+                permissions
               });
             } else {
               return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);
@@ -733,7 +747,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchGuestModelComplete
+                completeAction: fetchGuestModelComplete,
+                permissions
               });
               hostToHost$.next(sortItemOperationComplete(payload));
               updatedModifiedItem(path);
@@ -815,7 +830,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchGuestModelComplete
+                completeAction: fetchGuestModelComplete,
+                permissions
               });
               hostToGuest$.next(
                 insertOperationComplete({
@@ -867,7 +883,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchPrimaryGuestModelComplete
+                completeAction: fetchPrimaryGuestModelComplete,
+                permissions
               });
               hostToGuest$.next(duplicateItemOperationComplete());
               enqueueSnackbar(formatMessage(guestMessages.duplicateItemOperationComplete));
@@ -957,7 +974,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchGuestModelComplete
+                completeAction: fetchGuestModelComplete,
+                permissions
               });
 
               hostToHost$.next(deleteItemOperationComplete(payload));

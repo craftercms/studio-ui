@@ -33,6 +33,7 @@ import {
   duplicateItem,
   getCachedModel,
   getCachedModels,
+  getCachedPermissions,
   getCachedSandboxItem,
   getModelIdFromInheritedField,
   insertItem,
@@ -73,6 +74,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     index
   } = record;
 
+  const permissions = getCachedPermissions();
   const models = getCachedModels();
   const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
   const modelPath = isInheritedField(modelId, fieldId)
@@ -154,7 +156,9 @@ export function ZoneMenu(props: ZoneMenuProps) {
       const maxValidation = validations?.maxCount?.value;
       const minValidation = validations?.minCount?.value;
       const trashableValidation = minValidation ? minValidation < numOfItemsInContainerCollection : true;
-      const duplicateValidation = maxValidation ? maxValidation > numOfItemsInContainerCollection : true;
+      const duplicateValidation =
+        permissions.includes('content_create') &&
+        (maxValidation ? maxValidation > numOfItemsInContainerCollection : true);
 
       actions.isTrashable = trashableValidation && recordType !== 'field' && recordType !== 'page';
       actions.showDuplicate =
@@ -162,7 +166,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     }
 
     return actions;
-  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord]);
+  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord, permissions]);
 
   const store = useStore();
   const getItemData = () => {
