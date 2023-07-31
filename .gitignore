@@ -129,6 +129,7 @@ static-assets/components/cstudio-forms/controls/locale-selector.js
 static-assets/components/cstudio-forms/data-sources/receptacles.js
 static-assets/libs/monaco
 static-assets/libs/ace
+static-assets/libs/tinymce
 static-assets/images/blueprints
 static-assets/libs/js-yaml
 static-assets/components/cstudio-admin/mods/plugin-management.js

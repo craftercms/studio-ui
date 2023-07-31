@@ -2142,6 +2142,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@craftercms/tinymce-adapter@workspace:ui/tinymce":
+  version: 0.0.0-use.local
+  resolution: "@craftercms/tinymce-adapter@workspace:ui/tinymce"
+  dependencies:
+    tinymce: ^6.6.0
+  languageName: unknown
+  linkType: soft
+
 "@craftercms/uppy@workspace:^, @craftercms/uppy@workspace:ui/uppy":
   version: 0.0.0-use.local
   resolution: "@craftercms/uppy@workspace:ui/uppy"
@@ -17843,6 +17851,13 @@ __metadata:
   version: 1.0.3
   resolution: "tiny-warning@npm:1.0.3"
   checksum: da62c4acac565902f0624b123eed6dd3509bc9a8d30c06e017104bedcf5d35810da8ff72864400ad19c5c7806fc0a8323c68baf3e326af7cb7d969f846100d71
+  languageName: node
+  linkType: hard
+
+"tinymce@npm:^6.6.0":
+  version: 6.6.0
+  resolution: "tinymce@npm:6.6.0"
+  checksum: d92421c69c0363c60e758d99566f5a2f51a252fd8ddbf7b56adea7b491098770d6a4500d2676003cda89c1421d16a7ea5e4c5bb5fa1a0834d2fbbf075724b28c
   languageName: node
   linkType: hard
 
