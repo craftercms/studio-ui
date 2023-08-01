@@ -36,7 +36,6 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { contentEvent, deleteContentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { getPreviewURLFromPath } from '../../utils/path';
 import { fetchContentXML } from '../../services/content';
 
 export const drawerWidth = 300;
@@ -364,7 +363,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
           showPreviewDialog({
             type: 'page',
             title,
-            url: `${guestBase}${getPreviewURLFromPath(item.path)}?crafterCMSGuestDisabled=true`
+            url: item.path
           })
         );
         break;

@@ -33,6 +33,7 @@ import { closePreviewDialog, showCodeEditorDialog } from '../../state/actions/di
 import { batchActions } from '../../state/actions/misc';
 import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
+import { getPreviewURLFromPath } from '../../utils/path';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const { title, content, mode, url, onClose, type, mimeType, backgroundModeIndex } = props;
@@ -52,11 +53,12 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
           <AsyncVideoPlayer playerOptions={{ src: url, autoplay: true, ...(mimeType ? { type: mimeType } : {}) }} />
         );
       case 'page':
+        const pagePreviewUrl = `${guestBase}${getPreviewURLFromPath(url)}?crafterCMSGuestDisabled=true`;
         return (
           <>
             {isLoading && <LoadingState />}
             <IFrame
-              url={url}
+              url={pagePreviewUrl}
               title={title}
               width={isLoading ? 0 : 960}
               height={isLoading ? 0 : 600}
