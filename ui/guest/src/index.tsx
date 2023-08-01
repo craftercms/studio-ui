@@ -89,7 +89,7 @@ export function initExperienceBuilder(props: ExperienceBuilderProps) {
   root.render(
     // @ts-ignore - typing system is not playing nice with the {path} | {model} options of GuestProps
     <ExperienceBuilder isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
-      <GuestProxy />
+      {crafterCMSGuestDisabled !== 'true' && <GuestProxy />}
     </ExperienceBuilder>
   );
   return { unmount: () => root.unmount() };
