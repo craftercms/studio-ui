@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/functions';
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/mixins';
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/variables';
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/variables-dark';
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/maps';
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/root';
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/tooltip';
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/popover';
-@import '../../static-assets/libs/bootstrap-5.3.0/scss/modal';
+@import '../../static-assets/libs/bootstrap/scss/functions';
+@import '../../static-assets/libs/bootstrap/scss/mixins';
+@import '../../static-assets/libs/bootstrap/scss/variables';
+@import '../../static-assets/libs/bootstrap/scss/variables-dark';
+@import '../../static-assets/libs/bootstrap/scss/maps';
+@import '../../static-assets/libs/bootstrap/scss/root';
+@import '../../static-assets/libs/bootstrap/scss/tooltip';
+@import '../../static-assets/libs/bootstrap/scss/popover';
+@import '../../static-assets/libs/bootstrap/scss/modal';
 
 .popover {
   &.show {

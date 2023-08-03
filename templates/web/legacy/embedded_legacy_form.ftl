@@ -30,8 +30,8 @@
   <script src="/studio/static-assets/scripts/crafter.js"></script>
   <script src="/studio/static-assets/scripts/animator.js"></script>
   <script src="/studio/static-assets/components/cstudio-components/loader.js"></script>
-  <script src="/studio/static-assets/libs/bootstrap-5.3.0/js/popper-2.11.8.min.js"></script>
-  <script src="/studio/static-assets/libs/bootstrap-5.3.0/js/bootstrap.min.js"></script>
+  <script src="/studio/static-assets/libs/bootstrap/popper.min.js"></script>
+  <script src="/studio/static-assets/libs/bootstrap/bootstrap.min.js"></script>
   <script src="/studio/static-assets/libs/notify/notify.min.js"></script>
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
