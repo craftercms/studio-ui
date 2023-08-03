@@ -290,7 +290,6 @@ var nodeOpen = false,
      */
     OverlayRequiredResources: {
       css: [
-        '/static-assets/yui/treeview/assets/skins/sam/treeview.css',
         '/static-assets/themes/cstudioTheme/yui/assets/skin.css',
         '/static-assets/themes/cstudioTheme/css/contextNav.css',
         '/static-assets/yui/container/assets/container.css',
