@@ -16,10 +16,8 @@
 
 @import '../variables';
 
-$icon-font-path: '../libs/bootstrap-sass-official/assets/fonts/bootstrap/';
-
 // bower:scss
-@import '../../../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/_bootstrap.scss';
+@import '../../../../static-assets/libs/bootstrap-5.3.0/scss/mixins';
 // endbower
 
 @import '../util/util';
