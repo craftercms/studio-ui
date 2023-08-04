@@ -86,6 +86,10 @@
                           <followSymlinks>false</followSymlinks>
                         </fileset>
                         <fileset>
+                            <directory>ui/bootstrap/node_modules</directory>
+                            <followSymlinks>false</followSymlinks>
+                        </fileset>
+                        <fileset>
                             <directory>ui</directory>
                             <includes>
                                 <include>**/.bic_cache</include>
@@ -211,6 +215,17 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <workingDirectory>ui/monaco</workingDirectory>
+                            <arguments>build-if-changed</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Bootstrap: Build</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <workingDirectory>ui/bootstrap</workingDirectory>
                             <arguments>build-if-changed</arguments>
                         </configuration>
                     </execution>
