@@ -47,20 +47,18 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
     }
 
     const openBrowse = () =>
-      CStudioAuthoring.Operations.openBrowse('', _self.processPathsForMacros(_self.repoPath), '-1', 'select', true, {
-        success: function (searchId, selectedTOs) {
-          for (var i = 0; i < selectedTOs.length; i++) {
-            var item = selectedTOs[i];
-            var fileName = item.name;
-            var fileExtension = fileName.split('.').pop();
-            const returnProp = control.returnProp ? control.returnProp : 'uri';
-            control.insertItem(item[returnProp], item.uri, fileExtension, null, _self.id);
-            if (control._renderItems) {
-              control._renderItems();
-            }
+      CStudioAuthoring.Operations.openBrowseFilesDialog({
+        path: _self.processPathsForMacros(_self.repoPath),
+        onSuccess: (item) => {
+          debugger;
+          const fileName = item.name;
+          const fileExtension = fileName.split('.').pop();
+          const returnProp = control.returnProp ? control.returnProp : 'path';
+          control.insertItem(item[returnProp], item.path, fileExtension, null, _self.id);
+          if (control._renderItems) {
+            control._renderItems();
           }
-        },
-        failure: function () {}
+        }
       });
 
     if (onlyAppend) {
