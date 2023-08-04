@@ -123,7 +123,7 @@
     "@emotion/styled": "^11.11.0",
     "@graphiql/plugin-explorer": "^0.2.0",
     "@mui/icons-material": "^5.14.3",
-    "@mui/lab": "^5.0.0-alpha.135",
+    "@mui/lab": "^5.0.0-alpha.138",
     "@mui/material": "^5.14.3",
     "@mui/x-data-grid": "^6.10.2",
     "@mui/x-date-pickers": "^6.10.2",
