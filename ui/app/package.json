@@ -124,7 +124,7 @@
     "@graphiql/plugin-explorer": "^0.2.0",
     "@mui/icons-material": "^5.14.3",
     "@mui/lab": "^5.0.0-alpha.135",
-    "@mui/material": "^5.13.7",
+    "@mui/material": "^5.14.3",
     "@mui/x-data-grid": "^6.10.2",
     "@mui/x-date-pickers": "^6.10.2",
     "@prettier/plugin-xml": "^2.2.0",

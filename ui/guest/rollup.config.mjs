@@ -87,7 +87,11 @@ const external = Object.keys(globals);
 const baseConfig = {
   // TODO: Without @babel/preset-env this error doesn't occur.
   // Addresses rollup's this replaced to undefined
-  context: 'this'
+  context: 'this',
+  onwarn: function (warning, next) {
+    if ( warning.code === 'MODULE_LEVEL_DIRECTIVE' ) return; // you can do this now btw
+    next( warning );
+  },
 };
 
 export default [
