@@ -50,7 +50,6 @@ YAHOO.extend(CStudioForms.Datasources.FileBrowseRepo, CStudioForms.CStudioFormDa
       CStudioAuthoring.Operations.openBrowseFilesDialog({
         path: _self.processPathsForMacros(_self.repoPath),
         onSuccess: (item) => {
-          debugger;
           const fileName = item.name;
           const fileExtension = fileName.split('.').pop();
           const returnProp = control.returnProp ? control.returnProp : 'path';
