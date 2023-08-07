@@ -488,7 +488,6 @@ function parseElementByContentType(
           let path = getInnerHtml(item.querySelector(':scope > include'));
           const component = item.querySelector(':scope > component');
           if (!path && !component) {
-            // TODO: Groovy Controller Issue;
             path = getInnerHtml(item.querySelector(':scope > key'));
           }
           const itemKey = getInnerHtml(item.querySelector(':scope > key'));
