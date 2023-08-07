@@ -212,7 +212,8 @@ h6,
 }
 
 // Styles to fix style conflicts between material-ui and bootstrap
-legend[class^="mui-"], hr.MuiDivider-root {
+legend[class^='mui-'],
+hr.MuiDivider-root {
   width: auto;
 }
 
@@ -221,6 +222,6 @@ legend[class^="mui-"], hr.MuiDivider-root {
 }
 
 .cstudio-dropdown .dropdown-menu {
-  max-height: 500px;
+  max-height: 80vh;
   overflow-y: auto;
 }
