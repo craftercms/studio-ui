@@ -19,6 +19,7 @@ import { DetailedItem } from '../../models/Item';
 import { PathNavigatorStateProps } from '../../components/PathNavigator/PathNavigator';
 import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { AjaxError } from 'rxjs/ajax';
+import { GetChildrenOptions } from '../../models';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -31,6 +32,8 @@ export type PathNavInitPayload = PayloadWithId<{
   currentPath?: string;
   keyword?: string;
   offset?: number;
+  sortStrategy?: GetChildrenOptions['sortStrategy'];
+  order?: GetChildrenOptions['order'];
 }>;
 
 export const pathNavigatorInit = /*#__PURE__*/ createAction<PathNavInitPayload>('PATH_NAV_INIT');
@@ -72,10 +75,17 @@ export const pathNavigatorItemUnchecked =
 
 export const pathNavigatorClearChecked = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_CLEAR_CHECKED');
 
-export const pathNavigatorFetchParentItems =
-  /*#__PURE__*/ createAction<
-    PayloadWithId<{ path: string; excludes?: string[]; limit: number; offset?: number; keyword?: string }>
-  >('PATH_NAV_FETCH_PARENT_ITEMS');
+export const pathNavigatorFetchParentItems = /*#__PURE__*/ createAction<
+  PayloadWithId<{
+    path: string;
+    excludes?: string[];
+    limit: number;
+    offset?: number;
+    keyword?: string;
+    sortStrategy: string;
+    order: string;
+  }>
+>('PATH_NAV_FETCH_PARENT_ITEMS');
 
 export const pathNavigatorFetchPath =
   /*#__PURE__*/ createAction<PayloadWithId<{ path: string; keyword?: string }>>('PATH_NAV_FETCH_PATH');
