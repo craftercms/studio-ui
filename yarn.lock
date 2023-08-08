@@ -1799,6 +1799,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@craftercms/npm-content@workspace:ui/npm-content":
+  version: 0.0.0-use.local
+  resolution: "@craftercms/npm-content@workspace:ui/npm-content"
+  dependencies:
+    "@popperjs/core": ^2.11.8
+    "@types/bootstrap": ^5
+    ace-builds: ^1.15.2
+    bootstrap: ^5.3.1
+    build-if-changed: ^1.5.5
+    js-yaml: ^4.1.0
+  languageName: unknown
+  linkType: soft
+
 "@craftercms/search@npm:^4.1.0":
   version: 4.1.0
   resolution: "@craftercms/search@npm:4.1.0"

@@ -9,7 +9,8 @@
     "ui/monaco",
     "ui/ace",
     "ui/uppy",
-    "ui/bootstrap"
+    "ui/bootstrap",
+    "ui/npm-content"
   ],
   "eslintConfig": {
     "extends": [
