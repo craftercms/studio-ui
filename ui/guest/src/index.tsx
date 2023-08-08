@@ -28,6 +28,7 @@ import queryString from 'query-string';
 import { crafterConf } from '@craftercms/classes';
 import { fetchIsAuthoring, BaseCrafterConfig } from '@craftercms/ice';
 import { xbLoadedEvent } from './constants';
+import { foo } from './utils/util';
 
 export interface ICEAttributes {
   'data-craftercms-model-path': string;
@@ -85,14 +86,18 @@ export function addAuthoringSupport(config?: Partial<BaseCrafterConfig>): Promis
 export function initExperienceBuilder(props: ExperienceBuilderProps) {
   const guestProxyElement = document.createElement('craftercms-guest-proxy');
   const { crafterCMSGuestDisabled } = queryString.parse(window.location.search);
-  const root = createRoot(guestProxyElement);
-  root.render(
-    // @ts-ignore - typing system is not playing nice with the {path} | {model} options of GuestProps
-    <ExperienceBuilder isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
-      {crafterCMSGuestDisabled !== 'true' && <GuestProxy />}
-    </ExperienceBuilder>
-  );
-  return { unmount: () => root.unmount() };
+  if (crafterCMSGuestDisabled !== 'true') {
+    const root = createRoot(guestProxyElement);
+    root.render(
+      // @ts-ignore - typing system is not playing nice with the {path} | {model} options of GuestProps
+      <ExperienceBuilder isAuthoring={crafterCMSGuestDisabled !== 'true'} {...props}>
+        {crafterCMSGuestDisabled !== 'true' && <GuestProxy />}
+      </ExperienceBuilder>
+    );
+    return { unmount: () => root.unmount() };
+  } else {
+    return { unmount: foo };
+  }
 }
 
 /** @deprecated Use `initExperienceBuilder` instead. */
