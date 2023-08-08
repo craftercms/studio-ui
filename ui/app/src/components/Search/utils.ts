@@ -37,6 +37,7 @@ import { contentEvent, deleteContentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { fetchContentXML } from '../../services/content';
+import { getPreviewURLFromPath } from '../../utils/path';
 
 export const drawerWidth = 300;
 
@@ -363,7 +364,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
           showPreviewDialog({
             type: 'page',
             title,
-            url: item.path
+            url: `${guestBase}${getPreviewURLFromPath(url)}?crafterCMSGuestDisabled=true`
           })
         );
         break;
@@ -389,6 +390,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
             type: 'editor',
             title,
             url,
+            path: item.path,
             mode
           })
         );
