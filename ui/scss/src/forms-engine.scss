@@ -212,10 +212,16 @@ h6,
 }
 
 // Styles to fix style conflicts between material-ui and bootstrap
-legend[class^="mui-"], hr.MuiDivider-root {
+legend[class^='mui-'],
+hr.MuiDivider-root {
   width: auto;
 }
 
 .MuiTooltip-popper {
   z-index: 1500 !important;
+}
+
+.cstudio-dropdown .dropdown-menu {
+  max-height: 80vh;
+  overflow-y: auto;
 }

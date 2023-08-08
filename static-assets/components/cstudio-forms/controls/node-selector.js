@@ -215,7 +215,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         'add'
       )}<i class="fa fa-plus add-icon" aria-hidden="true"></i></button>`
     );
-    const $dropdown = $('<div class="dropdown ml-auto"></div>');
+    const $dropdown = $('<div class="dropdown cstudio-dropdown ml-auto"></div>');
     const $dropdownMenu = $('<ul class="dropdown-menu pull-right"></ul>');
     this.$dropdown = $dropdown;
     this.$dropdownMenu = $dropdownMenu;
