@@ -19,32 +19,26 @@
 libsDirectory=../../static-assets/libs
 
 # ace build
-aceVersion=$(cat package.json | grep -o '"ace-builds":\s*"[^"]*"' | grep -o "[0-9]*\.[0-9]*\.[0-9]*")
-
 rm -rf "$libsDirectory/ace"
 cp -r ../../node_modules/ace-builds/src-min-noconflict "$libsDirectory/ace"
 cat src/ace-append.js >> "$libsDirectory/ace/ace.js"
 
 cp src/mode-yaml/* "$libsDirectory/ace"
 
-echo "Ace v${aceVersion} build complete"
+echo "Ace build complete"
 
 # js-yaml build
-jsYamlVersion=$(cat package.json | grep -o '"js-yaml":\s*"[^"]*"' | grep -o "[0-9]*\.[0-9]*\.[0-9]*")
-
 rm -rf "$libsDirectory/js-yaml"
 mkdir "$libsDirectory/js-yaml"
 cp ../../node_modules/js-yaml/dist/js-yaml.min.js "$libsDirectory/js-yaml/js-yaml-4.0.0.min.js"
 
-echo "js-yaml v${jsYamlVersion} build complete"
+echo "js-yaml build complete"
 
 # bootstrap build
-bootstrapVersion=$(cat package.json | grep -o '"bootstrap":\s*"[^"]*"' | grep -o "[0-9]*\.[0-9]*\.[0-9]*")
-
 rm -rf "$libsDirectory/bootstrap"
 mkdir "$libsDirectory/bootstrap"
 cp -r ../../node_modules/bootstrap/scss "$libsDirectory/bootstrap/scss"
 cp ../../node_modules/bootstrap/dist/js/bootstrap.min.js "$libsDirectory/bootstrap/bootstrap.min.js"
 cp ../../node_modules/@popperjs/core/dist/umd/popper.min.js "$libsDirectory/bootstrap/popper.min.js"
 
-echo "Bootstrap v${bootstrapVersion} build complete"
+echo "Bootstrap build complete"
