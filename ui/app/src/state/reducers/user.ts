@@ -24,7 +24,6 @@ const reducer = createReducer<EnhancedUser>(null, {
     ...payload.user,
     rolesBySite: {},
     permissionsBySite: {},
-    sites: payload.sites.map((id) => id),
     preferences: null // TODO: is this needed?
   }),
   [fetchMyRolesInSiteComplete.type]: (state, { payload }) => ({
