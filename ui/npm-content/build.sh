@@ -42,3 +42,11 @@ cp ../../node_modules/bootstrap/dist/js/bootstrap.min.js "$libsDirectory/bootstr
 cp ../../node_modules/@popperjs/core/dist/umd/popper.min.js "$libsDirectory/bootstrap/popper.min.js"
 
 echo "Bootstrap build complete"
+
+# jquery-ui build
+rm -rf "$libsDirectory/jquery-ui"
+cp -r ../../node_modules/jquery-ui/dist "$libsDirectory/jquery-ui"
+cp -r ../../node_modules/jquery-ui-css/jquery-ui.min.css "$libsDirectory/jquery-ui/jquery-ui.min.css"
+sed -i 's/typeof define\&\&define.amd?define/typeof crafterDefine\&\&crafterDefine.amd?crafterDefine/' ../../static-assets/libs/jquery-ui/jquery-ui.min.js
+
+echo "jQuery UI build complete"

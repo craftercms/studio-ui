@@ -134,6 +134,7 @@ static-assets/libs/ace
 static-assets/images/blueprints
 static-assets/libs/js-yaml
 static-assets/libs/bootstrap
+static-assets/libs/jquery-ui
 static-assets/components/cstudio-admin/mods/plugin-management.js
 static-assets/components/cstudio-forms/data-sources/components.js
 
