@@ -23,7 +23,7 @@ aceVersion=$(cat package.json | grep -o '"ace-builds":\s*"[^"]*"' | grep -o "[0-
 
 rm -rf "$libsDirectory/ace"
 cp -r ../../node_modules/ace-builds/src-min-noconflict "$libsDirectory/ace"
-cat src/ace-append.js >> "$libsDirectory/ace/ace-${aceVersion}.js"
+cat src/ace-append.js >> "$libsDirectory/ace/ace.js"
 
 cp src/mode-yaml/* "$libsDirectory/ace"
 
