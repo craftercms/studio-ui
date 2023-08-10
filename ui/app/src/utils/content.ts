@@ -487,9 +487,6 @@ function parseElementByContentType(
         items.forEach((item) => {
           let path = getInnerHtml(item.querySelector(':scope > include'));
           const component = item.querySelector(':scope > component');
-          if (!path && !component) {
-            path = getInnerHtml(item.querySelector(':scope > key'));
-          }
           const itemKey = getInnerHtml(item.querySelector(':scope > key'));
           if (!path && !component) {
             path = itemKey;
@@ -618,7 +615,7 @@ export function createModelHierarchyDescriptorMap(
             source[field.id]
               // Just as controllers are not included in HierarchyDescriptor, files inside a node-selector are not included either.
               // (files and controllers are stored as a key/value object)
-              .filter((component) => typeof component === 'string')
+              .filter((componentId) => typeof componentId === 'string')
               .forEach((componentId, index) => {
                 lookup[currentModelId].children.push(componentId);
                 if (lookup[componentId]) {
