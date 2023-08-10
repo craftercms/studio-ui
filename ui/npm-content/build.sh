@@ -28,7 +28,7 @@ echo "Ace build complete"
 # js-yaml build
 rm -rf "$libsDirectory/js-yaml"
 mkdir "$libsDirectory/js-yaml"
-rsync -ar --delete ../../node_modules/js-yaml/dist/js-yaml.min.js "$libsDirectory/js-yaml/js-yaml-4.0.0.min.js"
+rsync -ar --delete ../../node_modules/js-yaml/dist/js-yaml.min.js "$libsDirectory/js-yaml/js-yaml.min.js"
 echo "js-yaml build complete"
 
 # bootstrap build

@@ -17,7 +17,7 @@
 function yaml_parse(require, exports, module) {
   'use strict';
 
-  const yaml = require(self.location.origin + '/studio/static-assets/libs/js-yaml/js-yaml-4.0.0.min.js');
+  const yaml = require(self.location.origin + '/studio/static-assets/libs/js-yaml/js-yaml.min.js');
 
   return function (source, reviver) {
     try {
