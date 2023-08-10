@@ -1482,6 +1482,14 @@ body.yui-skin-cstudioTheme.masked {
   order: 0;
 }
 
+.cstudio-form-control-input.custom-width {
+  width: unset;
+}
+
+.cstudio-form-control-input.custom-height {
+  height: unset;
+}
+
 .cstudio-form-field-help + .cstudio-form-control-input,
 .date-time-container .cstudio-form-field-help + .date-control,
 .date-time-container .cstudio-form-field-help + .time-control,
