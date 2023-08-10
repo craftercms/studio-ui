@@ -439,7 +439,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       }
     },
     env,
-    xbCompatConsoleWarningPrinted: false
+    xbCompatConsoleWarningPrinted: false,
+    permissions
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -570,7 +571,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         modelIdByPath,
         enqueueSnackbar,
         user,
-        env
+        env,
+        permissions
       } = upToDateRefs.current;
       // endregion
       const { type, payload } = action;
