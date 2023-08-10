@@ -33,29 +33,24 @@ import { batchActions } from '../../state/actions/misc';
 import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 import useItemsByPath from '../../hooks/useItemsByPath';
-import { fetchSandboxItem } from '../../services/content';
-import { DetailedItem, SandboxItem } from '../../models';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { fetchSandboxItem } from '../../state/actions/content';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex } = props;
   const { classes, cx } = useStyles();
   const siteId = useActiveSiteId();
   const items = useItemsByPath();
-  const [item, setItem] = useState<DetailedItem | SandboxItem>();
+  const item = items?.[path];
   const dispatch = useDispatch();
   const guestBase = useSelection<string>((state) => state.env.guestBase);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (type === 'editor' && path) {
-      if (items[path]) {
-        setItem(items[path]);
-      } else {
-        fetchSandboxItem(siteId, path).subscribe((item) => setItem(item));
-      }
+    if (type === 'editor' && path && !items[path]) {
+      dispatch(fetchSandboxItem({ path }));
     }
-  }, [siteId, items, path, type]);
+  }, [siteId, items, path, type, dispatch]);
 
   const renderPreview = () => {
     switch (type) {

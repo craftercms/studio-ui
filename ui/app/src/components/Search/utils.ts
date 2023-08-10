@@ -347,14 +347,14 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   };
 
   const onPreview = (item: MediaItem) => {
-    const { type, name: title, path: url } = item;
+    const { type, name: title, path } = item;
     switch (type) {
       case 'Image': {
         dispatch(
           showPreviewDialog({
             type: 'image',
             title,
-            url
+            url: path
           })
         );
         break;
@@ -364,7 +364,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
           showPreviewDialog({
             type: 'page',
             title,
-            url: `${guestBase}${getPreviewURLFromPath(url)}?crafterCMSGuestDisabled=true`
+            url: `${guestBase}${getPreviewURLFromPath(path)}?crafterCMSGuestDisabled=true`
           })
         );
         break;
@@ -389,13 +389,13 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
           showPreviewDialog({
             type: 'editor',
             title,
-            url,
-            path: item.path,
+            url: path,
+            path: path,
             mode
           })
         );
 
-        fetchContentXML(site, url).subscribe((content) => {
+        fetchContentXML(site, path).subscribe((content) => {
           dispatch(
             updatePreviewDialog({
               content
