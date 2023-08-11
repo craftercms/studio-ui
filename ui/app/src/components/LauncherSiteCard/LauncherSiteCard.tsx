@@ -25,6 +25,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Box from '@mui/material/Box';
+import { Site } from '../../models/Site';
+import SiteStatusButton from '../SiteStatusButton/SiteStatusButton';
 
 export interface LauncherSiteCardOption {
   name: string;
@@ -39,6 +41,7 @@ export interface LauncherSiteCardProps {
   options?: Array<LauncherSiteCardOption>;
   disabled?: boolean;
   selected?: boolean;
+  state?: Site['state'];
   onCardClick(id: string): any;
 }
 
@@ -55,10 +58,11 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 function LauncherSiteCard(props: LauncherSiteCardProps) {
-  const { title, value, onCardClick, options, selected = false } = props;
+  const { title, value, onCardClick, options, selected = false, state } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { classes, cx } = useStyles();
   const hasOptions = Boolean(options && options.length);
+  const isSiteReady = state === 'READY' && false;
 
   const handleClose = (event, action?) => {
     event.stopPropagation();
@@ -75,22 +79,24 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
     <>
       <Box
         // @ts-ignore
-        button
+        button={isSiteReady}
         selected={selected}
         boxShadow={1}
         component={ListItem}
-        onClick={() => onCardClick(value)}
+        onClick={() => isSiteReady && onCardClick(value)}
         className={cx(classes.card, props.classes?.root)}
         title={title}
       >
         <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
-        {hasOptions && (
-          <ListItemSecondaryAction>
+
+        <ListItemSecondaryAction>
+          {!isSiteReady && <SiteStatusButton state={state} />}
+          {hasOptions && (
             <IconButton aria-label="settings" onClick={handleOptions} size="large">
               <MoreVertIcon />
             </IconButton>
-          </ListItemSecondaryAction>
-        )}
+          )}
+        </ListItemSecondaryAction>
       </Box>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {hasOptions &&

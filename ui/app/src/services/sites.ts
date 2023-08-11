@@ -58,7 +58,8 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
           uuid: site.uuid,
           name: site.name ?? site.siteId,
           description: site.desc,
-          imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
+          imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`,
+          state: site.state
         })),
         {
           limit: response.limit,
