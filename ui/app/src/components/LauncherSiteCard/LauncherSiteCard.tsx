@@ -62,7 +62,7 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { classes, cx } = useStyles();
   const hasOptions = Boolean(options && options.length);
-  const isSiteReady = state === 'READY' && false;
+  const isSiteReady = state === 'READY';
 
   const handleClose = (event, action?) => {
     event.stopPropagation();

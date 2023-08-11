@@ -60,15 +60,17 @@ export function usePreviewUrlControl(history) {
 
   const validateSite = useCallback(
     (siteId: string) => {
-      const siteExists = sites[siteId];
+      if (siteId) {
+        const siteExists = sites[siteId];
 
-      // If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
-      if (!siteExists) {
-        alert(formatMessage(messages.siteNotFound));
-        window.location.href = `${authoringBase}#/sites`;
-      } else if (sites[siteId].state !== 'READY') {
-        alert(formatMessage(messages.siteNotReady));
-        window.location.href = `${authoringBase}#/sites`;
+        // If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
+        if (!siteExists) {
+          alert(formatMessage(messages.siteNotFound));
+          window.location.href = `${authoringBase}#/sites`;
+        } else if (sites[siteId].state !== 'READY') {
+          alert(formatMessage(messages.siteNotReady));
+          window.location.href = `${authoringBase}#/sites`;
+        }
       }
     },
     [sites, authoringBase, formatMessage]

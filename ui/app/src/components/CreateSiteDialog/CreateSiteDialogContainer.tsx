@@ -15,7 +15,7 @@
  */
 
 import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import useSpreadState from '../../hooks/useSpreadState';
 import useEnv from '../../hooks/useEnv';
 import { CreateSiteMeta, LookupTable, MarketplacePlugin, MarketplaceSite, SiteState, Views } from '../../models';
@@ -100,6 +100,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
   const { authoringBase, useBaseDomain } = useEnv();
+  let [siteCreationSubscription, setSiteCreationSubscription] = useState<Subscription>();
 
   const views: Views = {
     0: {
@@ -402,11 +403,13 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
         }
       }
     };
+    let subscription: Subscription;
     if (fromMarketplace) {
-      createSiteFromMarketplace(site as MarketplaceSite).subscribe(success, error);
+      subscription = createSiteFromMarketplace(site as MarketplaceSite).subscribe(success, error);
     } else {
-      create(site as CreateSiteMeta).subscribe(success, error);
+      subscription = create(site as CreateSiteMeta).subscribe(success, error);
     }
+    setSiteCreationSubscription(subscription);
   }
 
   function createNewSiteFromMarketplace(site: MarketplaceSite) {
@@ -459,6 +462,11 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 
   function onConfirmCancel() {
     setDialog({ inProgress: false });
+  }
+
+  function onBackgroundCreateClick() {
+    siteCreationSubscription.unsubscribe();
+    handleClose();
   }
 
   useEffect(() => {
@@ -538,6 +546,14 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                 graphic: classes.loadingStateGraphic
               }}
             />
+            <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+              <Button variant="contained" sx={{ mb: 1 }} onClick={() => onBackgroundCreateClick()}>
+                <FormattedMessage id="words.close" defaultMessage="Close" />
+              </Button>
+              <Typography variant="body2" color="textSecondary">
+                <FormattedMessage defaultMessage="The site creation will continue in the background" />
+              </Typography>
+            </Box>
           </div>
         )) ||
         (apiState.errorResponse && (
