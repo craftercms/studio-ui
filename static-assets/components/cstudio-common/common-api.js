@@ -290,11 +290,9 @@ var nodeOpen = false,
      */
     OverlayRequiredResources: {
       css: [
-        '/static-assets/yui/treeview/assets/skins/sam/treeview.css',
         '/static-assets/themes/cstudioTheme/yui/assets/skin.css',
         '/static-assets/themes/cstudioTheme/css/contextNav.css',
         '/static-assets/yui/container/assets/container.css',
-        '/static-assets/jquery/jquery-time/jquery.timeentry.css',
         '/static-assets/libs/jquery-ui/jquery-ui.min.css'
       ],
       js: [
@@ -319,6 +317,7 @@ var nodeOpen = false,
       loadContextNavCss: function () {
         CSA.Utils.addCss('/static-assets/styles/temp.css');
         CSA.Utils.addCss('/static-assets/styles/forms-engine.css');
+        CSA.Utils.addCss('/static-assets/styles/bootstrap-5.3.css');
       },
 
       /**

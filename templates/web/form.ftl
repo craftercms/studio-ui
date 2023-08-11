@@ -26,6 +26,7 @@
 
   <link rel="stylesheet" href="/studio/static-assets/themes/cstudioTheme/css/forms-default.css"/>
   <link rel="stylesheet" href="/studio/static-assets/styles/forms-engine.css"/>
+  <link rel="stylesheet" href="/studio/static-assets/styles/bootstrap-5.3.css"/>
 
   <#include "/templates/web/common/page-fragments/head.ftl" />
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />

@@ -1679,16 +1679,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@craftercms/ace-adapter@workspace:ui/ace":
-  version: 0.0.0-use.local
-  resolution: "@craftercms/ace-adapter@workspace:ui/ace"
-  dependencies:
-    ace-builds: ^1.15.2
-    build-if-changed: ^1.5.5
-    js-yaml: ^4.1.0
-  languageName: unknown
-  linkType: soft
-
 "@craftercms/classes@npm:4.1.0, @craftercms/classes@npm:^4.1.0":
   version: 4.1.0
   resolution: "@craftercms/classes@npm:4.1.0"
@@ -1785,6 +1775,21 @@ __metadata:
     rimraf: ^3.0.2
     webpack: ^5.64.4
     webpack-cli: ^5.0.1
+  languageName: unknown
+  linkType: soft
+
+"@craftercms/npm-content@workspace:ui/npm-content":
+  version: 0.0.0-use.local
+  resolution: "@craftercms/npm-content@workspace:ui/npm-content"
+  dependencies:
+    "@popperjs/core": ^2.11.8
+    "@types/bootstrap": ^5
+    ace-builds: ^1.15.2
+    bootstrap: ^5.3.1
+    build-if-changed: ^1.5.5
+    jquery-ui: ^1.13.2
+    jquery-ui-css: ^1.11.5
+    js-yaml: ^4.1.0
   languageName: unknown
   linkType: soft
 
@@ -3486,6 +3491,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@popperjs/core@npm:^2.11.8, @popperjs/core@npm:^2.9.2":
+  version: 2.11.8
+  resolution: "@popperjs/core@npm:2.11.8"
+  checksum: e5c69fdebf52a4012f6a1f14817ca8e9599cb1be73dd1387e1785e2ed5e5f0862ff817f420a87c7fc532add1f88a12e25aeb010ffcbdc98eace3d55ce2139cf0
+  languageName: node
+  linkType: hard
+
 "@prettier/plugin-xml@npm:^2.2.0":
   version: 2.2.0
   resolution: "@prettier/plugin-xml@npm:2.2.0"
@@ -3976,6 +3988,15 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: bfcadb042a41b124c4e3de4925e3be6d35b78f93f27c4535d5ff86980dc0f8bc407ed99b9b54528952dc62834d5a779392f7a12c2947dd19330eb05a6bcae15a
+  languageName: node
+  linkType: hard
+
+"@types/bootstrap@npm:^5":
+  version: 5.2.6
+  resolution: "@types/bootstrap@npm:5.2.6"
+  dependencies:
+    "@popperjs/core": ^2.9.2
+  checksum: e8e161fcaa193bf0bfb70be37f887e7111ac0c3d562a52e0ebc9ed6dfefecfc7bfe662f69409ab22cbf15be9cedc9457a147916899a7d41eca093511da708216
   languageName: node
   linkType: hard
 
@@ -6347,6 +6368,15 @@ __metadata:
   version: 1.0.0
   resolution: "boolbase@npm:1.0.0"
   checksum: 3e25c80ef626c3a3487c73dbfc70ac322ec830666c9ad915d11b701142fab25ec1e63eff2c450c74347acfd2de854ccde865cd79ef4db1683f7c7b046ea43bb0
+  languageName: node
+  linkType: hard
+
+"bootstrap@npm:^5.3.1":
+  version: 5.3.1
+  resolution: "bootstrap@npm:5.3.1"
+  peerDependencies:
+    "@popperjs/core": ^2.11.8
+  checksum: f8176376aa6c6d8947d58a67f0c57fa0b6b7dcd087ff83454e0d727c07cf33e8107e56aa298045d652f84b53b24ac72457af73e41c5631c9ebdc1909039c5dac
   languageName: node
   linkType: hard
 
@@ -11198,6 +11228,29 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: 96f1d69042b3c6dfc695f2a4e4b0db38af6fb78582ad1a02beaa57cfcd77cbd31567d7d865c1c85709b7c3e176eefa3b2035ffecd646005f15d8ef528eccf205
+  languageName: node
+  linkType: hard
+
+"jquery-ui-css@npm:^1.11.5":
+  version: 1.11.5
+  resolution: "jquery-ui-css@npm:1.11.5"
+  checksum: 60372e7f23ead7a27da3163bfbba0425a22b942c23c917b8b5db50356f5a71ed70c6a5b689dfc62ca1cb49134543c2fe15bbf8a6cda3dac9516fea0ff7fd0098
+  languageName: node
+  linkType: hard
+
+"jquery-ui@npm:^1.13.2":
+  version: 1.13.2
+  resolution: "jquery-ui@npm:1.13.2"
+  dependencies:
+    jquery: ">=1.8.0 <4.0.0"
+  checksum: 0d04a4b86e703d6ff71bcc37335f99be137b03fa24fa22f00f61f5aac132e7143b7d6dd9973ad4f72366e102826e417bc3d88c1640f7dd824961a7131bd3966a
+  languageName: node
+  linkType: hard
+
+"jquery@npm:>=1.8.0 <4.0.0":
+  version: 3.7.0
+  resolution: "jquery@npm:3.7.0"
+  checksum: 907785e133afc427650a131af5fccef66a404885037513b3d4d7d63aee6409bcc32a39836868c60e59b05aa0fb8ace8961c18b2ee3ffdf6ffdb571d6d7cd88ff
   languageName: node
   linkType: hard
 

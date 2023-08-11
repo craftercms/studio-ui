@@ -1,5 +1,4 @@
-@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/variables';
-@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/mixins';
+@import '../../static-assets/libs/bootstrap/scss/mixins';
 
 @import 'variables';
 @import 'common';
@@ -3543,4 +3542,8 @@ body.iewarning .studio-preview {
 .cstudio-search-result .cstudio-search-select-container,
 .cstudio-search-result .cstudio-search-result-body {
   float: left;
+}
+
+.quick-create-help__insert-btn {
+  color: #333 !important;
 }

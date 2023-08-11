@@ -7,8 +7,8 @@
     "ui/legacy",
     "ui/scss",
     "ui/monaco",
-    "ui/ace",
-    "ui/uppy"
+    "ui/uppy",
+    "ui/npm-content"
   ],
   "eslintConfig": {
     "extends": [
