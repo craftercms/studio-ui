@@ -308,7 +308,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const store = useStore<GlobalState>();
   const { id: siteId, uuid } = useActiveSite() ?? {};
   const user = useActiveUser();
-  const permissions = user?.permissionsBySite[siteId];
   const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
     usePreviewState();
   const item = useCurrentPreviewItem();
@@ -439,8 +438,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       }
     },
     env,
-    xbCompatConsoleWarningPrinted: false,
-    permissions
+    xbCompatConsoleWarningPrinted: false
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -571,11 +569,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         modelIdByPath,
         enqueueSnackbar,
         user,
-        env,
-        permissions
+        env
       } = upToDateRefs.current;
       // endregion
       const { type, payload } = action;
+      const permissions = user?.permissionsBySite[siteId];
       switch (type) {
         case guestSiteLoad.type:
         case guestCheckIn.type:
