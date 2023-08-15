@@ -91,13 +91,14 @@ const systemEpics: CrafterCMSEpic[] = [
                 startPublishingStatusFetcher(),
                 fetchSiteConfig(),
                 messageSharedWorker(openSiteSocket({ site: state.sites.active, xsrfToken: getXSRFToken() })),
+                messageSharedWorker(openSiteSocket({ xsrfToken: getXSRFToken() })),
                 showToolsPanel === null || state.preview.showToolsPanel === showToolsPanel
                   ? false
                   : state.preview.showToolsPanel
                   ? closeToolsPanel()
                   : openToolsPanel()
               ].filter(Boolean)
-            : [])
+            : [messageSharedWorker(openSiteSocket({ xsrfToken: getXSRFToken() }))])
         ];
       })
     ),

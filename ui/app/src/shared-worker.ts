@@ -32,7 +32,8 @@ let current: ObtainAuthTokenResponse = {
 let refreshInterval;
 let isRetrieving = false;
 let isProduction = process.env.PRODUCTION !== 'development';
-let socketClient: Client;
+let siteSocketClient: Client;
+let rootSocketClient: Client;
 
 const log = !isProduction
   ? (message, ...args) => console.log(`%c[SharedWorker] ${message}.`, 'color: #0071A4', ...args)
@@ -107,7 +108,8 @@ function unauthenticated(excludeClient?: MessagePort) {
   log(`Auth has expired.`);
   clearTimeout(timeout);
   status = 'expired';
-  socketClient?.deactivate();
+  siteSocketClient?.deactivate();
+  rootSocketClient?.deactivate();
   broadcast(sharedWorkerUnauthenticated(), excludeClient);
 }
 
@@ -162,6 +164,7 @@ function broadcast(message: StandardAction, excludedClient?: MessagePort) {
 }
 
 function openSocket({ site, xsrfToken }) {
+  let socketClient = site ? siteSocketClient : rootSocketClient;
   if (socketClient) {
     // noinspection JSIgnoredPromiseFromCall
     socketClient.deactivate();
@@ -174,7 +177,8 @@ function openSocket({ site, xsrfToken }) {
     connectHeaders: { [XSRF_TOKEN_HEADER_NAME]: xsrfToken },
     onConnect() {
       broadcast(setSiteSocketStatus({ connected: true }));
-      subscription = socketClient.subscribe(`/topic/studio/${site}`, (message) => {
+      const topicUrl = site ? `/topic/studio/${site}` : '/topic/studio';
+      subscription = socketClient.subscribe(topicUrl, (message) => {
         if (message.body) {
           if (message.headers['content-type'] === 'application/json') {
             const payload = JSON.parse(message.body);

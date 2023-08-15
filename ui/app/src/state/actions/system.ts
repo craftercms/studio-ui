@@ -23,7 +23,7 @@ import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
-import SocketEventBase from '../../models/SocketEvent';
+import SocketEventBase, { SocketRootEventBase } from '../../models/SocketEvent';
 import { MarketplacePlugin } from '../../models';
 
 // region Item Events
@@ -126,5 +126,10 @@ export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_ME
 export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>('BLOCK_UI');
 export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 
-export const openSiteSocket = /*#__PURE__*/ createAction<{ site: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
+export const openSiteSocket = /*#__PURE__*/ createAction<{ site?: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
 export const setSiteSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('SET_SITE_SOCKET_STATUS');
+
+// region sites events
+export const siteReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_READY_EVENT');
+export const siteDeleting = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_DELETING_EVENT');
+// endregion
