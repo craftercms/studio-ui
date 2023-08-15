@@ -35,22 +35,24 @@ import { useSelection } from '../../hooks/useSelection';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchSandboxItem } from '../../state/actions/content';
+import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex } = props;
   const { classes, cx } = useStyles();
   const siteId = useActiveSiteId();
   const items = useItemsByPath();
+  const itemsBeingFetchedByPath = useItemsBeingFetchedByPath();
   const item = items?.[path];
   const dispatch = useDispatch();
   const guestBase = useSelection<string>((state) => state.env.guestBase);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (type === 'editor' && path && !items[path]) {
+    if (type === 'editor' && path && !items[path] && !itemsBeingFetchedByPath[path]) {
       dispatch(fetchSandboxItem({ path }));
     }
-  }, [siteId, items, path, type, dispatch]);
+  }, [siteId, items, path, type, dispatch, itemsBeingFetchedByPath]);
 
   const renderPreview = () => {
     switch (type) {
