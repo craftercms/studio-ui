@@ -41,6 +41,11 @@ const messages = defineMessages({
   }
 });
 
+const notValidSiteRedirect = (message: string, url: string) => {
+  alert(message);
+  window.location.href = url;
+};
+
 export function usePreviewUrlControl(history) {
   const {
     location: { search },
@@ -71,11 +76,9 @@ export function usePreviewUrlControl(history) {
 
         // If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
         if (!siteExists) {
-          alert(formatMessage(messages.siteNotFound));
-          window.location.href = `${authoringBase}#/sites`;
+          notValidSiteRedirect(formatMessage(messages.siteNotFound), `${authoringBase}#/sites`);
         } else if (sites[siteId].state !== 'READY') {
-          alert(formatMessage(messages.siteNotReady));
-          window.location.href = `${authoringBase}#/sites`;
+          notValidSiteRedirect(formatMessage(messages.siteNotReady), `${authoringBase}#/sites`);
         }
       }
     },
@@ -86,8 +89,7 @@ export function usePreviewUrlControl(history) {
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => e.type === siteDeleting.type)).subscribe(({ payload }) => {
       if (payload.siteId === site) {
-        alert(formatMessage(messages.siteDeleted));
-        window.location.href = `${authoringBase}#/sites`;
+        notValidSiteRedirect(formatMessage(messages.siteDeleted), `${authoringBase}#/sites`);
         dispatch(popSite({ siteId: payload.siteId }));
       }
     });

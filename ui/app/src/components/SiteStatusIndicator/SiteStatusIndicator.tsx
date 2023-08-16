@@ -20,11 +20,11 @@ import Tooltip from '@mui/material/Tooltip';
 import { CircularProgress, CircularProgressProps } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-export interface SiteStatusButtonProps extends CircularProgressProps {
+export interface SiteStatusIndicatorProps extends CircularProgressProps {
   state: Site['state'];
 }
 
-export const SiteStatusButton = (props: SiteStatusButtonProps) => {
+export const SiteStatusIndicator = (props: SiteStatusIndicatorProps) => {
   const { state, size = 30, sx, color } = props;
 
   const stateMessage =
@@ -44,4 +44,4 @@ export const SiteStatusButton = (props: SiteStatusButtonProps) => {
   );
 };
 
-export default SiteStatusButton;
+export default SiteStatusIndicator;

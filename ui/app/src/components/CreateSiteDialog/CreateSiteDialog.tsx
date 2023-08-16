@@ -156,6 +156,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       maxWidth="lg"
       classes={{ paperScrollPaper: classes.paperScrollPaper }}
       disableEnforceFocus={disableEnforceFocus}
+      data-dialog-id="create-site-dialog"
     >
       <CreateSiteDialogContainer
         site={site}

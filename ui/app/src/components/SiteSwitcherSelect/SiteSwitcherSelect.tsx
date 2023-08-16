@@ -28,7 +28,7 @@ import { useSiteList } from '../../hooks/useSiteList';
 import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
-import SiteStatusButton from '../SiteStatusButton/SiteStatusButton';
+import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;
@@ -81,7 +81,7 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
       {sites.map(({ id, name, state }) => (
         <MenuItem key={id} value={id} className={classes.menuItem} disabled={state !== 'READY'}>
           {name}
-          {state !== 'READY' && <SiteStatusButton state={state} size={16} sx={{ float: 'right', ml: 1 }} />}
+          {state !== 'READY' && <SiteStatusIndicator state={state} size={16} sx={{ float: 'right', ml: 1 }} />}
         </MenuItem>
       ))}
     </Select>

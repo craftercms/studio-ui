@@ -120,7 +120,8 @@ function GlobalDialogManager() {
           enqueueSnackbar(payload.message, payload.options);
           break;
         case siteReady.type:
-          if (username === payload.user.username) {
+          const isCreateSiteDialogOpen = Boolean(document.querySelector('[data-dialog-id="create-site-dialog"]'));
+          if (!isCreateSiteDialogOpen && username === payload.user.username) {
             enqueueSnackbar(
               <FormattedMessage
                 defaultMessage={`Site "{siteId}" has been created.`}
@@ -138,9 +139,8 @@ function GlobalDialogManager() {
                         page: '/'
                       });
                     }}
-                    sx={{ color: (theme) => `common.${theme.palette.mode === 'light' ? 'white' : 'black'}` }}
                   >
-                    <FormattedMessage id="words.go" defaultMessage="Go" />
+                    <FormattedMessage id="words.view" defaultMessage="View" />
                   </Button>
                 )
               }

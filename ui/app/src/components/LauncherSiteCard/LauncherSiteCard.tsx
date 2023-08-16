@@ -26,7 +26,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Box from '@mui/material/Box';
 import { Site } from '../../models/Site';
-import SiteStatusButton from '../SiteStatusButton/SiteStatusButton';
+import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 
 export interface LauncherSiteCardOption {
   name: string;
@@ -85,18 +85,23 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         component={ListItem}
         onClick={() => isSiteReady && onCardClick(value)}
         className={cx(classes.card, props.classes?.root)}
+        sx={{ position: 'relative' }}
         title={title}
       >
-        <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
+        <ListItemText
+          primary={title}
+          primaryTypographyProps={{ className: classes.siteName, noWrap: true }}
+          sx={{ paddingRight: isSiteReady ? 0 : '35px' }}
+        />
 
         <ListItemSecondaryAction>
-          {!isSiteReady && <SiteStatusButton state={state} />}
           {hasOptions && (
             <IconButton aria-label="settings" onClick={handleOptions} size="large">
               <MoreVertIcon />
             </IconButton>
           )}
         </ListItemSecondaryAction>
+        {!isSiteReady && <SiteStatusIndicator state={state} sx={{ position: 'absolute', top: 22, right: 15 }} />}
       </Box>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {hasOptions &&

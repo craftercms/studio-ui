@@ -31,7 +31,7 @@ import ConfirmDropdown from '../ConfirmDropdown';
 import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
-import SiteStatusButton from '../SiteStatusButton/SiteStatusButton';
+import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 
 interface SiteCardProps {
   site: Site;
@@ -75,8 +75,13 @@ export function SiteCard(props: SiteCardProps) {
   const isSiteReady = site.state === 'READY';
 
   return (
-    <Card className={clsx(classes.card, compact && 'compact')}>
-      <CardActionArea onClick={() => onSiteClick(site)} component="div" disabled={!isSiteReady}>
+    <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
+      <CardActionArea
+        onClick={() => onSiteClick(site)}
+        component="div"
+        disabled={!isSiteReady}
+        sx={{ paddingRight: isSiteReady ? 0 : '35px' }}
+      >
         <CardHeader
           title={site.name}
           className={classes.cardHeader}
@@ -98,7 +103,6 @@ export function SiteCard(props: SiteCardProps) {
             component: 'h2',
             className: 'cardTitle'
           }}
-          action={!compact && !isSiteReady && <SiteStatusButton state={site.state} />}
           sx={{
             '& .MuiCardHeader-action': {
               alignSelf: 'center'
@@ -116,7 +120,6 @@ export function SiteCard(props: SiteCardProps) {
         )}
       </CardActionArea>
       <CardActions className={classes.cardActions} sx={{ ...(!compact && { minHeight: '64px' }) }} disableSpacing>
-        {!isSiteReady && compact && <SiteStatusButton state={site.state} />}
         {isSiteReady && publishingStatus !== false && (
           <PublishingStatusButtonUI
             isFetching={!publishingStatus}
@@ -150,6 +153,7 @@ export function SiteCard(props: SiteCardProps) {
           />
         )}
       </CardActions>
+      {!isSiteReady && <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: 22, right: 10 }} />}
     </Card>
   );
 }
