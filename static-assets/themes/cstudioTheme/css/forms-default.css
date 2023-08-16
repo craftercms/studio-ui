@@ -1482,10 +1482,6 @@ body.yui-skin-cstudioTheme.masked {
   order: 0;
 }
 
-.cstudio-form-control-input.custom-width {
-  width: unset;
-}
-
 .cstudio-form-control-input.custom-height {
   height: unset;
 }
