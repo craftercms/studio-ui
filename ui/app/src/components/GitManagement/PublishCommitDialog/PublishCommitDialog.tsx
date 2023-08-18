@@ -95,8 +95,9 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
       next({ publishingTargets }) {
         const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
         // Set pre-selected publishing target.
-        if (publishingTargets.length === 1) {
-          newData.publishingTarget = publishingTargets[0].name;
+        if (publishingTargets.length > 0) {
+          const stagingEnv = publishingTargets.find((target) => target.name === 'staging');
+          newData.publishingTarget = stagingEnv?.name ?? publishingTargets[0].name;
         }
         setState(newData);
       }
@@ -143,11 +144,11 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
               mode="git"
               formData={data}
               setFormData={(newData) => setState(newData)}
-              publishingTargets={publishingTargets}
+              publishingTargets={state.publishingTargets}
               publishingTargetsError={null}
               bulkPublishCommentRequired={false}
               publishByCommitCommentRequired={publishByCommitCommentRequired}
-              disabled={!publishingTargets || isSubmitting}
+              disabled={!state.publishingTargets || isSubmitting}
             />
           </DialogBody>
           <DialogFooter>
