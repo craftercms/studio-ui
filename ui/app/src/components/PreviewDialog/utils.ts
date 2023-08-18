@@ -24,6 +24,7 @@ export interface PreviewDialogBaseProps {
   subtitle?: string;
   mode?: string;
   url?: string;
+  path?: string;
   content?: string;
   mimeType?: string;
   backgroundModeIndex?: number;

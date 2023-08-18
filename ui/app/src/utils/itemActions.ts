@@ -865,6 +865,7 @@ export const itemActionDispatcher = ({
             type: 'editor',
             title: item.label,
             url: item.path,
+            path: item.path,
             mode
           })
         );

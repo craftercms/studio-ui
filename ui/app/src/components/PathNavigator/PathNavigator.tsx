@@ -268,6 +268,7 @@ export function PathNavigator(props: PathNavigatorProps) {
           type: 'editor',
           title: item.label,
           url: item.path,
+          path: item.path,
           mode
         })
       );

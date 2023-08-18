@@ -324,6 +324,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
           type: 'editor',
           title: item.label,
           url: item.path,
+          path: item.path,
           mode
         })
       );
