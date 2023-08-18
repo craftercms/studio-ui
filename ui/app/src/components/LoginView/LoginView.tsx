@@ -27,7 +27,7 @@ import {
   setPassword as setPasswordService,
   validatePasswordResetToken
 } from '../../services/auth';
-import { isBlank } from '../../utils/string';
+import { isBlank, unescapeHTML } from '../../utils/string';
 import Typography from '@mui/material/Typography';
 import LogInForm from '../LoginForm/LoginForm';
 import MenuItem from '@mui/material/MenuItem';
@@ -48,6 +48,9 @@ import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 import { USER_USERNAME_MAX_LENGTH } from '../UserManagement/utils';
+import useTimer from '../../hooks/useTimer';
+import { nnou } from '../../utils/object';
+import moment from 'moment-timezone';
 
 export interface SystemLang {
   id: string;
@@ -64,6 +67,8 @@ export interface LoginViewProps {
   xsrfToken: string;
   xsrfParamName: string;
   passwordRequirementsMinComplexity: number;
+  lockedErrorMessage?: string;
+  lockedTimeSeconds?: number;
 }
 
 type Modes = 'login' | 'recover' | 'reset';
@@ -83,6 +88,8 @@ type SubViewProps = React.PropsWithChildren<{
   onRecover: Function;
   xsrfParamName: string;
   xsrfToken: string;
+  lockedErrorMessage?: string;
+  lockedTimeSeconds?: number;
 }>;
 
 const translations = defineMessages({
@@ -125,6 +132,9 @@ const translations = defineMessages({
   resetPasswordInvalidToken: {
     id: 'resetView.resetPasswordInvalidToken',
     defaultMessage: 'Token validation failed.'
+  },
+  lockedAccountTryAgain: {
+    defaultMessage: 'Try again {fullTime, select, true {{time}} other {in {time} seconds}}'
   }
 });
 
@@ -189,11 +199,14 @@ function LoginView(props: SubViewProps) {
     formatMessage,
     xsrfParamName,
     xsrfToken,
-    language
+    language,
+    lockedErrorMessage,
+    lockedTimeSeconds
   } = props;
   const [username, setUsername] = useState(() => localStorage.getItem('username') ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const lockedTimer = useTimer(lockedTimeSeconds);
   const username$ = useDebouncedInput(
     useCallback(
       (user: string) => {
@@ -211,14 +224,25 @@ function LoginView(props: SubViewProps) {
   });
   const qsError = parse(window.location.search).error;
   useEffect(() => {
-    if (qsError) {
+    if (lockedErrorMessage && nnou(lockedTimer)) {
+      if (lockedTimer === 0) {
+        setError(null);
+      } else {
+        setError(
+          `${unescapeHTML(lockedErrorMessage)}. ${formatMessage(translations.lockedAccountTryAgain, {
+            fullTime: lockedTimer > 60,
+            time: lockedTimer > 60 ? moment().add(lockedTimer, 'seconds').fromNow() : lockedTimer
+          })}`
+        );
+      }
+    } else if (qsError) {
       setError(formatMessage(translations.incorrectCredentialsMessage));
       // This avoids keeping a stored language for a username that is incorrect.
       // e.g. wrong username submitted.
       localStorage.removeItem(buildStoredLanguageKey(username));
       localStorage.removeItem('username');
     }
-  }, [formatMessage, qsError, username]);
+  }, [formatMessage, qsError, username, lockedErrorMessage, lockedTimeSeconds, lockedTimer]);
   const handleSubmit = (e: any) => {
     if (isBlank(password) || isBlank(username)) {
       e.preventDefault();
@@ -508,7 +532,7 @@ export function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
   const { classes, cx } = useStyles();
   const token = parse(window.location.search).token as string;
-  const { xsrfToken, xsrfParamName, passwordRequirementsMinComplexity } = props;
+  const { xsrfToken, xsrfParamName, passwordRequirementsMinComplexity, lockedErrorMessage, lockedTimeSeconds } = props;
 
   const [mode, setMode] = useState<Modes>(token ? 'reset' : 'login');
   const [language, setLanguage] = useState(() => getCurrentLocale());
@@ -534,7 +558,9 @@ export function LoginViewContainer(props: LoginViewProps) {
     onRecover: () => setMode('recover'),
     xsrfToken,
     xsrfParamName,
-    children: null
+    children: null,
+    lockedErrorMessage,
+    lockedTimeSeconds
   };
 
   // Retrieve Platform Languages.
