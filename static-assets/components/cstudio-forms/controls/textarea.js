@@ -178,12 +178,9 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
     for (var i = 0; i < config.properties.length; i++) {
       var prop = config.properties[i];
 
-      if (prop.name == 'cols') {
-        inputEl.cols = prop.value;
-      }
-
-      if (prop.name == 'rows') {
+      if (prop.name === 'rows' && Boolean(prop.value)) {
         inputEl.rows = prop.value;
+        inputEl.classList.add('custom-height');
       }
 
       if (prop.name == 'maxlength') {
@@ -234,7 +231,6 @@ YAHOO.extend(CStudioForms.Controls.Textarea, CStudioForms.CStudioFormField, {
 
   getSupportedProperties: function () {
     return [
-      { label: CMgs.format(langBundle, 'columns'), name: 'cols', type: 'int', defaultValue: '50' },
       { label: CMgs.format(langBundle, 'rows'), name: 'rows', type: 'int', defaultValue: '5' },
       {
         label: CMgs.format(langBundle, 'maxLength'),
