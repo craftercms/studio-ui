@@ -279,7 +279,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   const refreshSearch = useCallback(() => {
     setError(null);
     setIsFetchingResults(true);
-    search(site, searchParameters).subscribe({
+    search(site, { ...searchParameters, keywords: encodeURIComponent(searchParameters.keywords) }).subscribe({
       next(result) {
         setSearchResults(result);
         setIsFetchingResults(false);
