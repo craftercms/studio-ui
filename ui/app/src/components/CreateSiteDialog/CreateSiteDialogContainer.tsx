@@ -54,6 +54,8 @@ import PrimaryButton from '../PrimaryButton';
 import { useStyles } from './styles';
 import messages from './translations';
 import { hasGlobalPermission } from '../../services/users';
+import SecondaryButton from '../SecondaryButton';
+import useMount from '../../hooks/useMount';
 
 interface SearchState {
   searchKey: string;
@@ -100,7 +102,14 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
   const { authoringBase, useBaseDomain } = useEnv();
-  let [siteCreationSubscription, setSiteCreationSubscription] = useState<Subscription>();
+  const siteCreateSubscription = useRef<Subscription>();
+
+  useMount(() => {
+    setRequestForgeryToken();
+    return () => {
+      siteCreateSubscription.current?.unsubscribe();
+    };
+  });
 
   const views: Views = {
     0: {
@@ -198,8 +207,6 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
       }
     });
   }, [setApiState, site?.showIncompatible]);
-
-  setRequestForgeryToken();
 
   function handleCloseDetails() {
     setSite({ details: { blueprint: null, index: null } });
@@ -371,6 +378,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 
   function createSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
     const success = () => {
+      siteCreateSubscription.current = null;
       setApiState({ creatingSite: false });
       handleClose();
       // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
@@ -403,13 +411,11 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
         }
       }
     };
-    let subscription: Subscription;
     if (fromMarketplace) {
-      subscription = createSiteFromMarketplace(site as MarketplaceSite).subscribe(success, error);
+      siteCreateSubscription.current = createSiteFromMarketplace(site as MarketplaceSite).subscribe(success, error);
     } else {
-      subscription = create(site as CreateSiteMeta).subscribe(success, error);
+      siteCreateSubscription.current = create(site as CreateSiteMeta).subscribe(success, error);
     }
-    setSiteCreationSubscription(subscription);
   }
 
   function createNewSiteFromMarketplace(site: MarketplaceSite) {
@@ -465,7 +471,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   }
 
   function onBackgroundCreateClick() {
-    siteCreationSubscription.unsubscribe();
+    siteCreateSubscription.current?.unsubscribe();
     handleClose();
   }
 
@@ -547,11 +553,11 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
               }}
             />
             <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-              <Button variant="contained" sx={{ mb: 1 }} onClick={() => onBackgroundCreateClick()}>
+              <SecondaryButton sx={{ mb: 1 }} onClick={onBackgroundCreateClick}>
                 <FormattedMessage id="words.close" defaultMessage="Close" />
-              </Button>
+              </SecondaryButton>
               <Typography variant="body2" color="textSecondary">
-                <FormattedMessage defaultMessage="The site creation will continue in the background" />
+                <FormattedMessage defaultMessage="Project creation will continue in the background" />
               </Typography>
             </Box>
           </div>
