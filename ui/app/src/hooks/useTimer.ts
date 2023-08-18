@@ -15,22 +15,27 @@
  */
 
 import { useEffect, useState } from 'react';
+import useUpdateRefs from './useUpdateRefs';
 
-export const useIntCountdown = (number: number) => {
-  const [countdown, setCountdown] = useState(number);
+export const useTimer = (seconds: number, onComplete?: () => void) => {
+  const [countdown, setCountdown] = useState(seconds);
+  const onCompleteRef = useUpdateRefs(onComplete);
 
   useEffect(() => {
-    if (countdown) {
-      const timer =
-        countdown > 0 &&
-        setInterval(() => {
-          setCountdown(countdown - 1);
-        }, 1000);
+    if (seconds > 0) {
+      let num = seconds;
+      const timer = setInterval(() => {
+        setCountdown(--num);
+        if (num === 0) {
+          clearInterval(timer);
+          onCompleteRef.current?.();
+        }
+      }, 1000);
       return () => clearInterval(timer);
     }
-  }, [countdown]);
+  }, [seconds, onCompleteRef]);
 
   return countdown;
 };
 
-export default useIntCountdown;
+export default useTimer;

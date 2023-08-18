@@ -48,7 +48,7 @@ import { useMount } from '../../hooks/useMount';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
 import { USER_USERNAME_MAX_LENGTH } from '../UserManagement/utils';
-import useIntCountdown from '../../hooks/useIntCountdown';
+import useTimer from '../../hooks/useTimer';
 import { nnou } from '../../utils/object';
 import moment from 'moment-timezone';
 
@@ -134,12 +134,7 @@ const translations = defineMessages({
     defaultMessage: 'Token validation failed.'
   },
   lockedAccountTryAgain: {
-    id: 'loginView.lockedAccountTryAgain',
-    defaultMessage: 'Try again {time}'
-  },
-  lockedAccountTryAgainSeconds: {
-    id: 'loginView.lockedAccountTryAgainSeconds',
-    defaultMessage: 'in {seconds} seconds'
+    defaultMessage: 'Try again {fullTime, select, true {{time}} other {in {time} seconds}}'
   }
 });
 
@@ -211,7 +206,7 @@ function LoginView(props: SubViewProps) {
   const [username, setUsername] = useState(() => localStorage.getItem('username') ?? '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const lockedCountdown = useIntCountdown(lockedTimeSeconds);
+  const lockedTimer = useTimer(lockedTimeSeconds);
   const username$ = useDebouncedInput(
     useCallback(
       (user: string) => {
@@ -229,19 +224,14 @@ function LoginView(props: SubViewProps) {
   });
   const qsError = parse(window.location.search).error;
   useEffect(() => {
-    if (lockedErrorMessage && nnou(lockedCountdown)) {
-      if (lockedCountdown === 0) {
+    if (lockedErrorMessage && nnou(lockedTimer)) {
+      if (lockedTimer === 0) {
         setError(null);
       } else {
-        // If the countdown is less than 60 seconds, show the actual seconds (moment.js displays "in a few seconds").
-        const tryAgainTimeMessage =
-          lockedCountdown < 60
-            ? formatMessage(translations.lockedAccountTryAgainSeconds, { seconds: lockedCountdown })
-            : moment().add(lockedCountdown, 'seconds').fromNow();
-
         setError(
           `${unescapeHTML(lockedErrorMessage)}. ${formatMessage(translations.lockedAccountTryAgain, {
-            time: tryAgainTimeMessage
+            fullTime: lockedTimer > 60,
+            time: lockedTimer > 60 ? moment().add(lockedTimer, 'seconds').fromNow() : lockedTimer
           })}`
         );
       }
@@ -252,7 +242,7 @@ function LoginView(props: SubViewProps) {
       localStorage.removeItem(buildStoredLanguageKey(username));
       localStorage.removeItem('username');
     }
-  }, [formatMessage, qsError, username, lockedErrorMessage, lockedTimeSeconds, lockedCountdown]);
+  }, [formatMessage, qsError, username, lockedErrorMessage, lockedTimeSeconds, lockedTimer]);
   const handleSubmit = (e: any) => {
     if (isBlank(password) || isBlank(username)) {
       e.preventDefault();
