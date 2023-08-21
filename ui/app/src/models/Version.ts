@@ -17,6 +17,7 @@
 import { DetailedItem, LegacyItem } from './Item';
 import ApiResponse from './ApiResponse';
 import ContentInstance from './ContentInstance';
+import Person from './Person';
 
 export interface LegacyVersion {
   lastModifiedDate: string;
@@ -27,7 +28,7 @@ export interface LegacyVersion {
 }
 
 export interface ItemVersion {
-  author: string; // TODO: this will change to Person (object)
+  author: Person;
   committer: string;
   comment: string;
   modifiedDate: string;

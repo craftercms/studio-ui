@@ -59,6 +59,7 @@ import { historyStyles } from './HistoryDialog';
 import useSelection from '../../hooks/useSelection';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { UNDEFINED } from '../../utils/constants';
+import { ensureSingleSlash } from '../../utils/string';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
@@ -113,7 +114,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             ]);
           }
         }
-        if (!item.stateMap.locked && (item.availableActionsMap.revert || isConfig)) {
+        if (!item.stateMap.locked && (item.availableActionsMap.revert || isConfig) && version.revertible) {
           sections.push([isCurrent ? contextMenuOptions.revertToPrevious : contextMenuOptions.revertToThisVersion]);
         }
       }
@@ -150,12 +151,13 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 
   const handleViewItem = (version: ItemVersion) => {
     const supportsDiff = ['page', 'component', 'taxonomy'].includes(item.systemType);
+    const versionPath = Boolean(version.path) && path !== version.path ? version.path : path;
 
     if (supportsDiff) {
       dispatch(
         batchActions([
           fetchContentTypes(),
-          fetchContentVersion({ path, versionNumber: version.versionNumber }),
+          fetchContentVersion({ path: versionPath, versionNumber: version.versionNumber }),
           showViewVersionDialog({
             rightActions: [
               {
@@ -168,7 +170,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         ])
       );
     } else if (isItemPreviewable) {
-      fetchContentByCommitId(site, item.path, version.versionNumber).subscribe((content) => {
+      fetchContentByCommitId(site, ensureSingleSlash(`/${versionPath}`), version.versionNumber).subscribe((content) => {
         const image = isImage(item);
         const video = isVideo(item);
         const pdf = isPdfDocument(item.mimeType);

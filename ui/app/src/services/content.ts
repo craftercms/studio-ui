@@ -38,7 +38,7 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
 import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
-import { LegacyVersionsResponse, VersionsResponse } from '../models/Version';
+import { ItemVersion, LegacyVersionsResponse, VersionsResponse } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import {
   generateComponentPath,
@@ -1159,21 +1159,19 @@ export function fetchItemVersion(site: string, path: string, versionNumber: stri
 
 export function fetchVersions(
   site: string,
-  path: string,
-  versionNumbers: [string, string],
-  contentTypes: LookupTable<ContentType>
+  versions: ItemVersion[]
 ): Observable<[VersionDescriptor, VersionDescriptor]> {
   return of([
     {
       site,
-      path,
-      versionNumber: versionNumbers[0],
+      path: versions[0].path,
+      versionNumber: versions[0].versionNumber,
       content: null
     },
     {
       site,
-      path,
-      versionNumber: versionNumbers[1],
+      path: versions[1].path,
+      versionNumber: versions[1].versionNumber,
       content: null
     }
   ]);
