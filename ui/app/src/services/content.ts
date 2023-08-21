@@ -38,7 +38,7 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import { getRequestForgeryToken } from '../utils/auth';
 import { DetailedItem, LegacyItem, SandboxItem } from '../models/Item';
-import { VersionsResponse } from '../models/Version';
+import { LegacyVersionsResponse, VersionsResponse } from '../models/Version';
 import { GetChildrenOptions } from '../models/GetChildrenOptions';
 import {
   generateComponentPath,
@@ -1112,11 +1112,15 @@ export function fetchQuickCreateList(site: string): Observable<QuickCreateItem[]
   );
 }
 
-export function fetchItemHistory(site: string, path: string): Observable<VersionsResponse> {
+export function fetchItemHistoryLegacy(site: string, path: string): Observable<LegacyVersionsResponse> {
   return get(`/studio/api/1/services/api/1/content/get-item-versions.json${toQueryString({ site, path })}`).pipe(
     pluck('response'),
     catchError(errorSelectorApi1)
   );
+}
+
+export function fetchItemHistory(site: string, path: string): Observable<VersionsResponse> {
+  return get(`/studio/api/2/content/item_history${toQueryString({ siteId: site, path })}`).pipe(pluck('response'));
 }
 
 export function revertTo(site: string, path: string, versionNumber: string): Observable<Boolean> {

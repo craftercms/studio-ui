@@ -19,7 +19,7 @@ import { FormattedMessage } from 'react-intl';
 import React, { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLogicResource } from '../../hooks/useLogicResource';
-import { CompareVersionsBranch, LegacyVersion, VersionsStateProps } from '../../models/Version';
+import { CompareVersionsBranch, ItemVersion, VersionsStateProps } from '../../models/Version';
 import { CompareVersions, CompareVersionsResource } from './CompareVersions';
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
@@ -63,7 +63,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const dispatch = useDispatch();
   const compareMode = selectedA && selectedB;
 
-  const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
+  const versionsResource = useLogicResource<ItemVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (_versionsBranch) => Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
     shouldReject: (_versionsBranch) => Boolean(_versionsBranch.error),
     shouldRenew: (_versionsBranch, resource) => resource.complete,
@@ -100,7 +100,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       compareVersionsBranch.error || contentTypesBranch.error
   });
 
-  const handleItemClick = (version: LegacyVersion) => {
+  const handleItemClick = (version: ItemVersion) => {
     if (!selected[0]) {
       dispatch(compareVersion({ id: version.versionNumber }));
     } else if (selected[0] !== version.versionNumber) {

@@ -202,7 +202,21 @@ export function fetchHistory(
 
   return get(
     `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
-  ).pipe(pluck('response', 'history'));
+  ).pipe(
+    pluck('response', 'history'),
+    map(({ versions }) => ({
+      items: versions.map((version) => ({
+        modifiedDate: version.lastModifiedDate,
+        author: version.lastModifier,
+        versionNumber: version.versionNumber,
+        comment: version.comment,
+        committer: null,
+        oldPath: null,
+        path: null,
+        revertible: null
+      }))
+    }))
+  );
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {

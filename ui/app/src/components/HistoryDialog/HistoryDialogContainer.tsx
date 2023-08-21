@@ -21,7 +21,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { HistoryDialogContainerProps, Menu, menuInitialState, menuOptions } from './utils';
 import { useLogicResource } from '../../hooks/useLogicResource';
-import { LegacyVersion, VersionsStateProps } from '../../models/Version';
+import { ItemVersion, VersionsStateProps } from '../../models/Version';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import {
   closeConfirmDialog,
@@ -77,7 +77,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
-  const versionsResource = useLogicResource<LegacyVersion[], VersionsStateProps>(versionsBranch, {
+  const versionsResource = useLogicResource<ItemVersion[], VersionsStateProps>(versionsBranch, {
     shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
     shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
     shouldRenew: (versionsBranch, resource) => resource.complete,
@@ -148,7 +148,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
       ]
     });
 
-  const handleViewItem = (version: LegacyVersion) => {
+  const handleViewItem = (version: ItemVersion) => {
     const supportsDiff = ['page', 'component', 'taxonomy'].includes(item.systemType);
 
     if (supportsDiff) {
@@ -213,14 +213,14 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     );
   };
 
-  const revertToPrevious = (activeItem: LegacyVersion) => {
+  const revertToPrevious = (activeItem: ItemVersion) => {
     const previousBranch = getPreviousBranch(activeItem);
 
     dispatch(
       showConfirmDialog({
         title: formatMessage(translations.confirmRevertTitle),
         body: formatMessage(translations.confirmRevertBody, {
-          versionTitle: asDayMonthDateTime(previousBranch.lastModifiedDate)
+          versionTitle: asDayMonthDateTime(previousBranch.modifiedDate)
         }),
         onCancel: closeConfirmDialog(),
         onOk: batchActions([closeConfirmDialog(), revertToPreviousVersion({ id: activeItem.versionNumber })])
@@ -228,18 +228,18 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     );
   };
 
-  const getPreviousBranch = (currentBranch: LegacyVersion) => {
+  const getPreviousBranch = (currentBranch: ItemVersion) => {
     const versions = versionsBranch.versions;
     const currentIndex = versions.findIndex((branch) => branch.versionNumber === currentBranch.versionNumber);
     return versions[currentIndex + 1] ?? null;
   };
 
-  const revertTo = (activeItem: LegacyVersion) => {
+  const revertTo = (activeItem: ItemVersion) => {
     dispatch(
       showConfirmDialog({
         title: formatMessage(translations.confirmRevertTitle),
         body: formatMessage(translations.confirmRevertBody, {
-          versionTitle: asDayMonthDateTime(activeItem.lastModifiedDate)
+          versionTitle: asDayMonthDateTime(activeItem.modifiedDate)
         }),
         onCancel: closeConfirmDialog(),
         onOk: batchActions([closeConfirmDialog(), revertContent({ path, versionNumber: activeItem.versionNumber })])

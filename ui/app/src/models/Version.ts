@@ -26,7 +26,22 @@ export interface LegacyVersion {
   contentItem: any;
 }
 
+export interface ItemVersion {
+  author: string; // TODO: this will change to Person (object)
+  committer: string;
+  comment: string;
+  modifiedDate: string;
+  oldPath: string;
+  path: string;
+  revertible: boolean; // TODO: this will change to reversible
+  versionNumber: string;
+}
+
 export interface VersionsResponse {
+  items: ItemVersion[];
+}
+
+export interface LegacyVersionsResponse {
   item: LegacyItem;
   versions: LegacyVersion[];
 }
@@ -52,8 +67,8 @@ export interface VersionsStateProps {
   error: ApiResponse;
   isFetching: Boolean;
   current: string;
-  versions: LegacyVersion[];
-  allVersions: LegacyVersion[];
+  versions: ItemVersion[];
+  allVersions: ItemVersion[];
   count: number;
   page: number;
   limit: number;

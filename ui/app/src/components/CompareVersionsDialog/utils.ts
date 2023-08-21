@@ -17,7 +17,7 @@
 import { DialogHeaderStateAction } from '../DialogHeader';
 import StandardAction from '../../models/StandardAction';
 import ApiResponse from '../../models/ApiResponse';
-import { LegacyVersion, VersionsStateProps } from '../../models/Version';
+import { ItemVersion, VersionsStateProps } from '../../models/Version';
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
 import { EnhancedDialogProps } from '../EnhancedDialog';
@@ -32,8 +32,8 @@ export interface CompareVersionsDialogBaseProps {
 
 export interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps, EnhancedDialogProps {
   versionsBranch: VersionsStateProps;
-  selectedA: LegacyVersion;
-  selectedB: LegacyVersion;
+  selectedA: ItemVersion;
+  selectedB: ItemVersion;
   contentTypesBranch?: EntityState<ContentType>;
   rightActions?: DialogHeaderActionProps[];
 }

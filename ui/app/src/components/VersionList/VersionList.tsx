@@ -25,7 +25,7 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import { Resource } from '../../models/Resource';
-import { LegacyVersion } from '../../models/Version';
+import { ItemVersion } from '../../models/Version';
 import palette from '../../styles/palette';
 import GlobalState from '../../models/GlobalState';
 import { useSelection } from '../../hooks/useSelection';
@@ -90,11 +90,11 @@ export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
 }
 
 interface VersionListProps {
-  versions: Resource<LegacyVersion[]>;
+  versions: Resource<ItemVersion[]>;
   selected?: string[];
   current?: string;
-  onItemClick(version: LegacyVersion): void;
-  onOpenMenu?(anchorEl: Element, version: LegacyVersion, isCurrent: boolean, lastOne: boolean): void;
+  onItemClick(version: ItemVersion): void;
+  onOpenMenu?(anchorEl: Element, version: ItemVersion, isCurrent: boolean, lastOne: boolean): void;
 }
 
 export function VersionList(props: VersionListProps) {
@@ -105,7 +105,7 @@ export function VersionList(props: VersionListProps) {
 
   return (
     <List component="div" className={classes.list} disablePadding>
-      {versions.map((version: LegacyVersion, i: number) => {
+      {versions.map((version: ItemVersion, i: number) => {
         return (
           <ListItem
             key={version.versionNumber}
@@ -122,7 +122,7 @@ export function VersionList(props: VersionListProps) {
               }}
               primary={
                 <>
-                  <AsDayMonthDateTime date={version.lastModifiedDate} locale={locale} />
+                  <AsDayMonthDateTime date={version.modifiedDate} locale={locale} />
                   {current === version.versionNumber && (
                     <Chip
                       label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
