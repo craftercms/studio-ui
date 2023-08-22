@@ -26,7 +26,6 @@ import { PublishFormData, PublishingTarget } from '../../../models';
 import { fetchPublishingTargets, publishByCommits } from '../../../services/publishing';
 import useSpreadState from '../../../hooks/useSpreadState';
 import useSelection from '../../../hooks/useSelection';
-import useMount from '../../../hooks/useMount';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { showSystemNotification } from '../../../state/actions/system';
 import { useDispatch } from 'react-redux';
@@ -78,7 +77,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
           setState({ isSubmitting: false, publishSuccessful: true });
         },
         error({ response }) {
-          setState({ isSubmitting: true });
+          setState({ isSubmitting: false });
           dispatch(
             showSystemNotification({
               message: response.message,
@@ -89,23 +88,26 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
       });
     }
   };
-  useMount(() => {
-    setState({ loadingPublishingTargets: true });
-    const sub = fetchPublishingTargets(site).subscribe({
-      next({ publishingTargets }) {
-        const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
-        // Set pre-selected publishing target.
-        if (publishingTargets.length > 0) {
-          const stagingEnv = publishingTargets.find((target) => target.name === 'staging');
-          newData.publishingTarget = stagingEnv?.name ?? publishingTargets[0].name;
+  useEffect(() => {
+    let sub;
+    if (dialogProps?.open) {
+      setState({ loadingPublishingTargets: true });
+      sub = fetchPublishingTargets(site).subscribe({
+        next({ publishingTargets }) {
+          const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
+          // Set pre-selected publishing target.
+          if (publishingTargets.length > 0) {
+            const stagingEnv = publishingTargets.find((target) => target.name === 'staging');
+            newData.publishingTarget = stagingEnv?.name ?? publishingTargets[0].name;
+          }
+          setState(newData);
         }
-        setState(newData);
-      }
-    });
+      });
+    }
     return () => {
-      sub.unsubscribe();
+      sub?.unsubscribe();
     };
-  });
+  }, [setState, site, dialogProps?.open]);
   useEffect(() => {
     setState({ commitIds: commitId });
   }, [commitId, setState]);
