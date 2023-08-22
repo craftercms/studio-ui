@@ -24,16 +24,7 @@ export function search(site: string, parameters: any = {}): Observable<SearchRes
   const qs = toQueryString({
     siteId: site
   });
-  const encodedParameters = {};
-  Object.entries(parameters).forEach(([key, value]) => {
-    // values in parameters may be objects (filters)
-    if (key !== 'filters' && typeof value === 'string') {
-      encodedParameters[key] = encodeURIComponent(value);
-    } else {
-      encodedParameters[key] = value;
-    }
-  });
-  return post(`/studio/api/2/search/search.json${qs}`, encodedParameters, {
+  return post(`/studio/api/2/search/search.json${qs}`, parameters, {
     'Content-Type': 'application/json'
   }).pipe(pluck('response', 'result'));
 }
