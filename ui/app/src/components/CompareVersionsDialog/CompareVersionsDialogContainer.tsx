@@ -19,7 +19,7 @@ import { FormattedMessage } from 'react-intl';
 import React, { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLogicResource } from '../../hooks/useLogicResource';
-import { CompareVersionsBranch, ItemVersion, VersionsStateProps } from '../../models/Version';
+import { CompareVersionsBranch, ItemVersion } from '../../models/Version';
 import { CompareVersions, CompareVersionsResource } from './CompareVersions';
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
@@ -38,6 +38,8 @@ import Typography from '@mui/material/Typography';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from '../HistoryDialog';
 import { makeStyles } from 'tss-react/mui';
+import { ErrorBoundary } from '../ErrorBoundary';
+import { LoadingState } from '../LoadingState';
 
 const useStyles = makeStyles()(() => ({
   dialogBody: {
@@ -62,14 +64,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
   const compareMode = selectedA && selectedB;
-
-  const versionsResource = useLogicResource<ItemVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (_versionsBranch) => Boolean(_versionsBranch.versions) && !_versionsBranch.isFetching,
-    shouldReject: (_versionsBranch) => Boolean(_versionsBranch.error),
-    shouldRenew: (_versionsBranch, resource) => resource.complete,
-    resultSelector: (_versionsBranch) => _versionsBranch.versions,
-    errorSelector: (_versionsBranch) => _versionsBranch.error
-  });
 
   const compareVersionsData = useMemo(
     () => ({
@@ -138,14 +132,20 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
             <CompareVersions resource={compareVersionsResource} />
           </SuspenseWithEmptyState>
         ) : item ? (
-          <SuspenseWithEmptyState resource={versionsResource}>
-            <VersionList
-              selected={selected}
-              versions={versionsResource}
-              current={current}
-              onItemClick={handleItemClick}
-            />
-          </SuspenseWithEmptyState>
+          <ErrorBoundary>
+            {versionsBranch.isFetching ? (
+              <LoadingState />
+            ) : (
+              versionsBranch.versions && (
+                <VersionList
+                  selected={selected}
+                  versions={versionsBranch.versions}
+                  current={current}
+                  onItemClick={handleItemClick}
+                />
+              )
+            )}
+          </ErrorBoundary>
         ) : (
           <EmptyState
             title={

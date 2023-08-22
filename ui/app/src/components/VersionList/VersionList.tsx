@@ -24,7 +24,6 @@ import Chip from '@mui/material/Chip';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
-import { Resource } from '../../models/Resource';
 import { ItemVersion } from '../../models/Version';
 import palette from '../../styles/palette';
 import GlobalState from '../../models/GlobalState';
@@ -90,7 +89,7 @@ export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
 }
 
 interface VersionListProps {
-  versions: Resource<ItemVersion[]>;
+  versions: ItemVersion[];
   selected?: string[];
   current?: string;
   onItemClick(version: ItemVersion): void;
@@ -99,8 +98,7 @@ interface VersionListProps {
 
 export function VersionList(props: VersionListProps) {
   const { classes, cx } = versionListStyles();
-  const { versions: versionsResource, onOpenMenu, onItemClick, current, selected } = props;
-  const versions = versionsResource.read();
+  const { versions, onOpenMenu, onItemClick, current, selected } = props;
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   return (

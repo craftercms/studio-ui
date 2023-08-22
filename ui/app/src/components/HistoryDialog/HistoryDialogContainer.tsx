@@ -20,8 +20,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { HistoryDialogContainerProps, Menu, menuInitialState, menuOptions } from './utils';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import { ItemVersion, VersionsStateProps } from '../../models/Version';
+import { ItemVersion } from '../../models/Version';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import {
   closeConfirmDialog,
@@ -51,7 +50,6 @@ import {
 import { asDayMonthDateTime } from '../../utils/datetime';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import VersionList from '../VersionList';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from './HistoryDialogPagination';
@@ -60,6 +58,8 @@ import useSelection from '../../hooks/useSelection';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { UNDEFINED } from '../../utils/constants';
 import { ensureSingleSlash } from '../../utils/string';
+import { ErrorBoundary } from '../ErrorBoundary';
+import { LoadingState } from '../LoadingState';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
@@ -77,14 +77,6 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const isItemPreviewable = isPreviewable(item);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
-
-  const versionsResource = useLogicResource<ItemVersion[], VersionsStateProps>(versionsBranch, {
-    shouldResolve: (versionsBranch) => Boolean(versionsBranch.versions) && !versionsBranch.isFetching,
-    shouldReject: (versionsBranch) => Boolean(versionsBranch.error),
-    shouldRenew: (versionsBranch, resource) => resource.complete,
-    resultSelector: (versionsBranch) => versionsBranch.versions,
-    errorSelector: (versionsBranch) => versionsBranch.error
-  });
 
   const handleOpenMenu = useCallback(
     (anchorEl, version, isCurrent = false, initialCommit) => {
@@ -328,14 +320,20 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             dispatch(versionsChangeItem({ item }));
           }}
         />
-        <SuspenseWithEmptyState resource={versionsResource}>
-          <VersionList
-            versions={versionsResource}
-            onOpenMenu={hasMenuOptions ? handleOpenMenu : null}
-            onItemClick={handleViewItem}
-            current={current}
-          />
-        </SuspenseWithEmptyState>
+        <ErrorBoundary>
+          {versionsBranch.isFetching ? (
+            <LoadingState />
+          ) : (
+            versionsBranch.versions && (
+              <VersionList
+                versions={versionsBranch.versions}
+                onOpenMenu={hasMenuOptions ? handleOpenMenu : null}
+                onItemClick={handleViewItem}
+                current={current}
+              />
+            )
+          )}
+        </ErrorBoundary>
       </DialogBody>
       <DialogFooter classes={{ root: classes.dialogFooter }}>
         {count > 0 && (
