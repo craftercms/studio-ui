@@ -18,9 +18,22 @@ import { post } from '../utils/ajax';
 import { Observable } from 'rxjs';
 import { pluck } from 'rxjs/operators';
 import { SearchResult } from '../models/Search';
+import { toQueryString } from '../utils/object';
 
 export function search(site: string, parameters: any = {}): Observable<SearchResult> {
-  return post(`/studio/api/2/search/search.json?siteId=${site}`, parameters, {
+  const qs = toQueryString({
+    siteId: site
+  });
+  const encodedParameters = {};
+  Object.entries(parameters).forEach(([key, value]) => {
+    // values in parameters may be objects (filters)
+    if (key !== 'filters' && typeof value === 'string') {
+      encodedParameters[key] = encodeURIComponent(value);
+    } else {
+      encodedParameters[key] = value;
+    }
+  });
+  return post(`/studio/api/2/search/search.json${qs}`, encodedParameters, {
     'Content-Type': 'application/json'
   }).pipe(pluck('response', 'result'));
 }
