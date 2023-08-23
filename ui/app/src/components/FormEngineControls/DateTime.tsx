@@ -30,7 +30,7 @@ export function DateTime(props: DateTimeControl) {
 
   return (
     <FormControl variant="outlined" className={classes.formControl} fullWidth>
-      <InputLabel className={classes.inputLabel} htmlFor={field.id}>
+      <InputLabel className={classes.inputLabel} sx={{ position: 'relative', transform: 'none' }} htmlFor={field.id}>
         {field.name}
       </InputLabel>
       <DateTimePicker

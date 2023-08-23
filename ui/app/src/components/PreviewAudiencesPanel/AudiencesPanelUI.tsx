@@ -30,10 +30,11 @@ import CheckboxGroup from '../FormEngineControls/CheckboxGroup';
 import DateTime from '../FormEngineControls/DateTime';
 import LookupTable from '../../models/LookupTable';
 import { Alert } from '@mui/material';
+import { create8601String, get8601Pieces } from '../../utils/datetime';
 
 interface AudiencesPanelUIProps {
   model: ContentInstance;
-  fields: LookupTable<ContentTypeField>;
+  fields: LookupTable<ContentTypeField & { timeZone?: string }>;
   modelApplying: boolean;
   modelApplied: boolean;
   onChange: Function;
@@ -67,14 +68,26 @@ const messages = defineMessages({
   }
 });
 
-const getDefaultModel = (fields: LookupTable<ContentTypeField>) => {
+const getDateTimeString = (date: Date): string => {
+  const pieces = get8601Pieces(date);
+  return create8601String(pieces[0], pieces[1], pieces[2]);
+};
+
+const getDefaultModel = (fields: AudiencesPanelUIProps['fields']) => {
   const props = {};
 
   Object.keys(fields).forEach((fieldId: string) => {
     const propValue = fields[fieldId].defaultValue;
     props[fieldId] = propValue;
-  });
 
+    if (fields[fieldId].type === 'date-time') {
+      // If there is no default value set for date-time, set it to the current date/time
+      if (!propValue) {
+        props[fieldId] = getDateTimeString(new Date());
+      }
+      props[`${fieldId}_tz`] = fields[fieldId].timeZone;
+    }
+  });
   return props;
 };
 
@@ -91,8 +104,8 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     let props;
 
     if (type === 'date-time') {
-      const timezone = value.tz();
-      value = value.toISOString();
+      const timezone = value.timeZoneName;
+      value = value.dateString;
 
       props = {
         ...model,
@@ -123,8 +136,15 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 onChange: onFieldChange(fieldId, type),
                 disabled: modelApplying
               };
-              if (controlProps.field.type === 'date-time' && model[`${fieldId}_tz`]) {
-                controlProps['timezone'] = model[`${fieldId}_tz`];
+              if (controlProps.field.type === 'date-time') {
+                if (!controlProps.value) {
+                  controlProps.value = fields[fieldId].defaultValue ?? getDateTimeString(new Date());
+                }
+                if (model[`${fieldId}_tz`]) {
+                  controlProps['timeZone'] = model[`${fieldId}_tz`];
+                } else {
+                  controlProps['timeZone'] = fields[fieldId].timeZone;
+                }
               }
               return (
                 <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
