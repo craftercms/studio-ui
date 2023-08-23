@@ -204,18 +204,7 @@ export function fetchHistory(
     `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
   ).pipe(
     pluck('response', 'history'),
-    map(({ versions }) => ({
-      items: versions.map((version) => ({
-        modifiedDate: version.lastModifiedDate,
-        author: version.lastModifier,
-        versionNumber: version.versionNumber,
-        comment: version.comment,
-        committer: null,
-        oldPath: null,
-        path: null,
-        revertible: null
-      }))
-    }))
+    map(({ versions }) => ({ items: versions }))
   );
 }
 
