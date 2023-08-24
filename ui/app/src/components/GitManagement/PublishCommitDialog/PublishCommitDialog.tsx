@@ -63,6 +63,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   const { loadingPublishingTargets, isSubmitting, publishingTargets, publishSuccessful, ...data } = state;
   const { publishByCommitCommentRequired } = useSelection((state) => state.uiConfig.publishing);
   const isInvalid = (publishByCommitCommentRequired && isBlank(data.comment)) || isBlank(data.commitIds);
+  const open = dialogProps?.open;
   const onCancel = (e) => dialogProps.onClose(e, null);
   const onPublish = () => {
     if (!isInvalid) {
@@ -90,7 +91,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   };
   useEffect(() => {
     let sub;
-    if (dialogProps?.open) {
+    if (open) {
       setState({ loadingPublishingTargets: true });
       sub = fetchPublishingTargets(site).subscribe({
         next({ publishingTargets }) {
@@ -103,11 +104,12 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
           setState(newData);
         }
       });
+
+      return () => {
+        sub.unsubscribe();
+      };
     }
-    return () => {
-      sub?.unsubscribe();
-    };
-  }, [setState, site, dialogProps?.open]);
+  }, [setState, site, open]);
   useEffect(() => {
     setState({ commitIds: commitId });
   }, [commitId, setState]);
