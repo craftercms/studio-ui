@@ -53,7 +53,7 @@
           passwordRequirementsMinComplexity: ${passwordRequirementsMinComplexity},
           <#if errorMessage?? && lockedTimeSeconds??>
           lockedErrorMessage: '${errorMessage}',
-          lockedTimeSeconds: ${lockedTimeSeconds}
+          lockedTimeSeconds: ${lockedTimeSeconds?c}
           </#if>
           </#outputformat>
         })
