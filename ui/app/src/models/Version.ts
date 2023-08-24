@@ -14,18 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem, LegacyItem } from './Item';
+import { DetailedItem } from './Item';
 import ApiResponse from './ApiResponse';
 import ContentInstance from './ContentInstance';
 import Person from './Person';
-
-export interface LegacyVersion {
-  lastModifiedDate: string;
-  lastModifier: string;
-  versionNumber: string;
-  comment: string;
-  contentItem: any;
-}
 
 export interface ItemVersion {
   author: Person;
@@ -34,17 +26,12 @@ export interface ItemVersion {
   modifiedDate: string;
   oldPath: string;
   path: string;
-  revertible: boolean; // TODO: this will change to reversible
+  revertible: boolean;
   versionNumber: string;
 }
 
 export interface VersionsResponse {
   items: ItemVersion[];
-}
-
-export interface LegacyVersionsResponse {
-  item: LegacyItem;
-  versions: LegacyVersion[];
 }
 
 export interface FetchContentVersion {
