@@ -130,10 +130,8 @@ export const openSiteSocket = /*#__PURE__*/ createAction<{ site?: string; xsrfTo
 export const setSiteSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('SET_SITE_SOCKET_STATUS');
 
 // region projects events
-export const newProjectReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
-  'NEW_PROJECT_READY'
-);
+export const newProjectReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_READY_EVENT');
 export const projectBeingDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
-  'PROJECT_BEING_DELETED'
+  'SITE_DELETING_EVENT'
 );
 // endregion
