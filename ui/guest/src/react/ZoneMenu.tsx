@@ -33,9 +33,11 @@ import {
   duplicateItem,
   getCachedModel,
   getCachedModels,
+  getCachedPermissions,
   getCachedSandboxItem,
   getModelIdFromInheritedField,
   insertItem,
+  isInheritedField,
   modelHierarchyMap,
   sortDownItem,
   sortUpItem
@@ -71,6 +73,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
     fieldId: [fieldId],
     index
   } = record;
+
+  const permissions = getCachedPermissions();
+  const models = getCachedModels();
+  const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+  const modelPath = isInheritedField(modelId, fieldId)
+    ? models[getModelIdFromInheritedField(modelId, fieldId)].craftercms.path
+    : models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
+  const itemAvailableActions = getCachedSandboxItem(modelPath).availableActionsMap;
 
   const trashButtonRef = React.useRef();
   const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
@@ -146,7 +156,9 @@ export function ZoneMenu(props: ZoneMenuProps) {
       const maxValidation = validations?.maxCount?.value;
       const minValidation = validations?.minCount?.value;
       const trashableValidation = minValidation ? minValidation < numOfItemsInContainerCollection : true;
-      const duplicateValidation = maxValidation ? maxValidation > numOfItemsInContainerCollection : true;
+      const duplicateValidation =
+        permissions.includes('content_create') &&
+        (maxValidation ? maxValidation > numOfItemsInContainerCollection : true);
 
       actions.isTrashable = trashableValidation && recordType !== 'field' && recordType !== 'page';
       actions.showDuplicate =
@@ -154,7 +166,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     }
 
     return actions;
-  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord]);
+  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord, permissions]);
 
   const store = useStore();
   const getItemData = () => {
@@ -363,16 +375,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
       </Tooltip>
       {showCodeEditOptions && (
         <>
-          <Tooltip title="Edit template" key="editTemplate">
-            <UltraStyledIconButton size="small" onClick={onEditTemplate}>
-              <FreemarkerIcon />
-            </UltraStyledIconButton>
-          </Tooltip>
-          <Tooltip title="Edit controller" key="editController">
-            <UltraStyledIconButton size="small" onClick={onEditController}>
-              <GroovyIcon />
-            </UltraStyledIconButton>
-          </Tooltip>
+          {itemAvailableActions.editTemplate && (
+            <Tooltip title="Edit template" key="editTemplate">
+              <UltraStyledIconButton size="small" onClick={onEditTemplate}>
+                <FreemarkerIcon />
+              </UltraStyledIconButton>
+            </Tooltip>
+          )}
+          {itemAvailableActions.editController && (
+            <Tooltip title="Edit controller" key="editController">
+              <UltraStyledIconButton size="small" onClick={onEditController}>
+                <GroovyIcon />
+              </UltraStyledIconButton>
+            </Tooltip>
+          )}
         </>
       )}
       {showAddItem && (
