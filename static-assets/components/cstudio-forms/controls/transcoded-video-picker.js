@@ -29,14 +29,11 @@ CStudioForms.Controls.TranscodedVideoPicker =
     this.id = id;
     this.datasources = null;
     this.upload_dialog = null;
-    this.validExtensions = ['MOV', 'mov', 'MP4', 'mp4', 'wmv', 'WMV', 'webm'];
     this.readonly = readonly;
     this.external = null;
     this.supportedPostFixes = ['_o'];
-
     this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
     this.messages = CrafterCMSNext.i18n.messages.transcodedVideoPickerControlMessages;
-
     return this;
   };
 
