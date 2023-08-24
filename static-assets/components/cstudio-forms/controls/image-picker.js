@@ -30,27 +30,7 @@ CStudioForms.Controls.ImagePicker =
     this.datasources = null;
     this.upload_dialog = null;
     this.crop_dialog = null;
-    this.validExtensions = [
-      'jpg',
-      'jpeg',
-      'gif',
-      'png',
-      'tiff',
-      'tif',
-      'bmp',
-      'svg',
-      'JPG',
-      'JPEG',
-      'GIF',
-      'PNG',
-      'TIFF',
-      'TIF',
-      'BMP',
-      'SVG',
-      'jp2',
-      'jxr',
-      'webp'
-    ];
+    this.validExtensions = ['jpg', 'jpeg', 'gif', 'png', 'tiff', 'tif', 'bmp', 'svg', 'jp2', 'jxr', 'webp'];
     this.readonly = readonly;
     this.originalWidth = null;
     this.originalHeight = null;
@@ -243,7 +223,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
             message = '',
             repoImage;
 
-          if (this.imagePicker.validExtensions.indexOf(imageData.fileExtension) !== -1) {
+          if (this.imagePicker.validExtensions.includes(imageData.fileExtension?.toLowerCase().trim())) {
             valid = true;
           } else {
             message = 'The uploaded file is not of type image';

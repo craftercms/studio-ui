@@ -110,7 +110,7 @@ YAHOO.extend(
 
               var valid = false,
                 message = '';
-              if (validExtensions.indexOf(to.fileExtension) != -1) {
+              if (validExtensions.includes(to.fileExtension?.toLowerCase().trim())) {
                 valid = true;
               } else {
                 message = CMgs.format(langBundle, 'fileNotImage');

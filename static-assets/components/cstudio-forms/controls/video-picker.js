@@ -29,11 +29,10 @@ CStudioForms.Controls.VideoPicker =
     this.id = id;
     this.datasources = null;
     this.upload_dialog = null;
-    this.validExtensions = ['MOV', 'mov', 'MP4', 'mp4', 'wmv', 'WMV', 'webm'];
+    this.validExtensions = ['mov', 'mp4', 'wmv', 'webm', 'm4v', 'avi', 'qt'];
     this.readonly = readonly;
     this.external = null;
     this.supportedPostFixes = ['_s'];
-
     return this;
   };
 
@@ -248,7 +247,7 @@ YAHOO.extend(CStudioForms.Controls.VideoPicker, CStudioForms.CStudioFormField, {
             var valid = false;
             var message = '';
 
-            if (this.videoPicker.validExtensions.indexOf(videoData.fileExtension) != -1) {
+            if (this.videoPicker.validExtensions.includes(videoData.fileExtension?.toLowerCase().trim())) {
               valid = true;
             } else {
               message = 'The uploaded file is not of type video';
