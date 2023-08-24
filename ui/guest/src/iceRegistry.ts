@@ -177,7 +177,7 @@ export function getRecordDropTargets(id: number): ICERecord[] {
   const { index, field, fieldId, model } = getReferentialEntries(record);
   // With components, the model lookup contains ids of each of the components, in cases like repeat groups and files,
   // the model lookup contains the actual model of the file/repeat group.
-  const isModelId = model[fieldId].every((id) => typeof id === 'string');
+  const isModelId = model[fieldId]?.every((id) => typeof id === 'string');
   if (nullOrUndefined(index)) {
     // Can't move something that's not part of a collection.
     // Collection items will always have an index.
