@@ -21,7 +21,7 @@ import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
 import { reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
-import { VersionsResponse } from '../models/Version';
+import { ItemVersion } from '../models/Version';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
@@ -197,15 +197,12 @@ export function fetchHistory(
   path: string,
   environment: string,
   module: string
-): Observable<VersionsResponse> {
+): Observable<ItemVersion[]> {
   const parsedPath = encodeURIComponent(path.replace(/(\/config\/)(studio|engine)/g, ''));
 
   return get(
     `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
-  ).pipe(
-    pluck('response', 'history'),
-    map(({ versions }) => ({ items: versions }))
-  );
+  ).pipe(pluck('response', 'history', 'versions'));
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {

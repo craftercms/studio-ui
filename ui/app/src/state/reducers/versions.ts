@@ -64,7 +64,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, {
     ...payload,
     isFetching: true
   }),
-  [fetchItemVersionsComplete.type]: (state, { payload: { items } }) => ({
+  [fetchItemVersionsComplete.type]: (state, { payload: items }) => ({
     ...state,
     byId: createLookupTable(items, 'versionNumber'),
     count: items.length,

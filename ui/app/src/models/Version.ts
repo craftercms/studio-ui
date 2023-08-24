@@ -30,10 +30,6 @@ export interface ItemVersion {
   versionNumber: string;
 }
 
-export interface VersionsResponse {
-  items: ItemVersion[];
-}
-
 export interface FetchContentVersion {
   path: string;
   versionNumber: string;
