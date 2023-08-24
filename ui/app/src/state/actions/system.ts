@@ -129,7 +129,11 @@ export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 export const openSiteSocket = /*#__PURE__*/ createAction<{ site?: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
 export const setSiteSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('SET_SITE_SOCKET_STATUS');
 
-// region sites events
-export const siteReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_READY_EVENT');
-export const siteDeleting = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_DELETING_EVENT');
+// region projects events
+export const newProjectReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
+  'NEW_PROJECT_READY'
+);
+export const projectBeingDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
+  'PROJECT_BEING_DELETED'
+);
 // endregion
