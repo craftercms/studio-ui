@@ -16,7 +16,7 @@
 
 import React from 'react';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
+import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -80,7 +80,7 @@ export function SiteCard(props: SiteCardProps) {
         onClick={() => onSiteClick(site)}
         component="div"
         disabled={!isSiteReady}
-        sx={{ paddingRight: isSiteReady ? 0 : '35px' }}
+        sx={{ paddingRight: isSiteReady ? undefined : '35px' }}
       >
         <CardHeader
           title={site.name}
@@ -104,7 +104,7 @@ export function SiteCard(props: SiteCardProps) {
             className: 'cardTitle'
           }}
           sx={{
-            '& .MuiCardHeader-action': {
+            [`.${cardHeaderClasses.action}`]: {
               alignSelf: 'center'
             }
           }}
@@ -119,7 +119,7 @@ export function SiteCard(props: SiteCardProps) {
           />
         )}
       </CardActionArea>
-      <CardActions className={classes.cardActions} sx={{ ...(!compact && { minHeight: '64px' }) }} disableSpacing>
+      <CardActions className={classes.cardActions} sx={compact ? undefined : { minHeight: '64px' }} disableSpacing>
         {isSiteReady && publishingStatus !== false && (
           <PublishingStatusButtonUI
             isFetching={!publishingStatus}
@@ -132,14 +132,14 @@ export function SiteCard(props: SiteCardProps) {
             onClick={(e) => onPublishButtonClick(e, site)}
           />
         )}
-        {onEditSiteClick && isSiteReady && (
+        {isSiteReady && onEditSiteClick && (
           <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
             <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'}>
               <EditRoundedIcon />
             </IconButton>
           </Tooltip>
         )}
-        {onDeleteSiteClick && isSiteReady && (
+        {isSiteReady && onDeleteSiteClick && (
           <ConfirmDropdown
             size={compact ? 'small' : 'medium'}
             cancelText={formatMessage(translations.confirmCancel)}

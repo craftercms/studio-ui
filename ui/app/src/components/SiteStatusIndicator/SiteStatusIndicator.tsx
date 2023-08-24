@@ -25,7 +25,7 @@ export interface SiteStatusIndicatorProps extends CircularProgressProps {
 }
 
 export const SiteStatusIndicator = (props: SiteStatusIndicatorProps) => {
-  const { state, size = 30, sx, color } = props;
+  const { state, size = 30, sx, color, ...rest } = props;
 
   const stateMessage =
     state === 'INITIALIZING' ? (
@@ -39,7 +39,7 @@ export const SiteStatusIndicator = (props: SiteStatusIndicatorProps) => {
 
   return (
     <Tooltip title={stateMessage}>
-      <CircularProgress size={size} sx={sx} color={stateColor} />
+      <CircularProgress size={size} sx={sx} color={stateColor} {...rest} />
     </Tooltip>
   );
 };

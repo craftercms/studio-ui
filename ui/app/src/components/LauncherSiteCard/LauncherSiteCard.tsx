@@ -24,9 +24,9 @@ import Link from '@mui/material/Link';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import Box from '@mui/material/Box';
 import { Site } from '../../models/Site';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
+import ListItemButton from '@mui/material/ListItemButton';
 
 export interface LauncherSiteCardOption {
   name: string;
@@ -77,11 +77,9 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
 
   return (
     <>
-      <Box
-        // @ts-ignore
-        button={isSiteReady}
+      <ListItemButton
+        disabled={!isSiteReady}
         selected={selected}
-        boxShadow={1}
         component={ListItem}
         onClick={() => isSiteReady && onCardClick(value)}
         className={cx(classes.card, props.classes?.root)}
@@ -95,14 +93,17 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         />
 
         <ListItemSecondaryAction>
-          {hasOptions && (
-            <IconButton aria-label="settings" onClick={handleOptions} size="large">
-              <MoreVertIcon />
-            </IconButton>
+          {isSiteReady ? (
+            hasOptions && (
+              <IconButton aria-label="settings" onClick={handleOptions} size="large">
+                <MoreVertIcon />
+              </IconButton>
+            )
+          ) : (
+            <SiteStatusIndicator state={state} />
           )}
         </ListItemSecondaryAction>
-        {!isSiteReady && <SiteStatusIndicator state={state} sx={{ position: 'absolute', top: 22, right: 15 }} />}
-      </Box>
+      </ListItemButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {hasOptions &&
           options.map((action, i) => (

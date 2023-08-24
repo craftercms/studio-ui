@@ -21,7 +21,6 @@ import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
 import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../utils/subjects';
-import { filter } from 'rxjs/operators';
 import { showSystemNotification, siteReady } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
 import useSelection from '../../hooks/useSelection';
@@ -112,9 +111,8 @@ function GlobalDialogManager() {
   const { username } = useActiveUser();
 
   useEffect(() => {
-    const events = [showSystemNotification.type, siteReady.type];
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
+    const subscription = hostToHost$.subscribe(({ type, payload }) => {
       switch (type) {
         case showSystemNotification.type:
           enqueueSnackbar(payload.message, payload.options);

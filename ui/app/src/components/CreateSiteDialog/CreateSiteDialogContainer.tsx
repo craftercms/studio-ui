@@ -470,11 +470,6 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
     setDialog({ inProgress: false });
   }
 
-  function onBackgroundCreateClick() {
-    siteCreateSubscription.current?.unsubscribe();
-    handleClose();
-  }
-
   useEffect(() => {
     let subscriptions: Subscription[] = [];
     if (blueprints === null && !apiState.error) {
@@ -553,7 +548,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
               }}
             />
             <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-              <SecondaryButton sx={{ mb: 1 }} onClick={onBackgroundCreateClick}>
+              <SecondaryButton sx={{ mb: 1 }} onClick={handleClose}>
                 <FormattedMessage id="words.close" defaultMessage="Close" />
               </SecondaryButton>
               <Typography variant="body2" color="textSecondary">
