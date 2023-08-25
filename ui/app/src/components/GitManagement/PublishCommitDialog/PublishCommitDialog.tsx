@@ -33,9 +33,12 @@ import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlin
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { isBlank } from '../../../utils/string';
+import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
+import useUpdateRefs from '../../../hooks/useUpdateRefs';
 
 export interface PublishCommitDialogProps extends EnhancedDialogProps {
   commitId: string;
+  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 interface PublishCommitDialogState extends PublishFormData {
@@ -46,7 +49,7 @@ interface PublishCommitDialogState extends PublishFormData {
 }
 
 export function PublishCommitDialog(props: PublishCommitDialogProps) {
-  const { commitId, ...dialogProps } = props;
+  const { commitId, onSubmittingAndOrPendingChange, ...dialogProps } = props;
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const initialState = {
@@ -64,6 +67,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   const { publishByCommitCommentRequired } = useSelection((state) => state.uiConfig.publishing);
   const isInvalid = (publishByCommitCommentRequired && isBlank(data.comment)) || isBlank(data.commitIds);
   const open = Boolean(dialogProps?.open);
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
   const onCancel = (e) => dialogProps.onClose(e, null);
   const onPublish = () => {
     if (!isInvalid) {
@@ -76,6 +80,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
       ).subscribe({
         next() {
           setState({ isSubmitting: false, publishSuccessful: true });
+          fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: false });
         },
         error({ response }) {
           setState({ isSubmitting: false });
@@ -145,7 +150,10 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
             <PublishOnDemandForm
               mode="git"
               formData={data}
-              setFormData={(newData) => setState(newData)}
+              setFormData={(newData) => {
+                fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: true });
+                setState(newData);
+              }}
               publishingTargets={state.publishingTargets}
               publishingTargetsError={null}
               bulkPublishCommentRequired={false}
