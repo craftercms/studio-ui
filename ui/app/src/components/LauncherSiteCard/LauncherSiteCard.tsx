@@ -92,17 +92,18 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
           sx={{ paddingRight: isSiteReady ? 0 : '35px' }}
         />
 
-        <ListItemSecondaryAction>
-          {isSiteReady ? (
-            hasOptions && (
-              <IconButton aria-label="settings" onClick={handleOptions} size="large">
-                <MoreVertIcon />
-              </IconButton>
-            )
-          ) : (
-            <SiteStatusIndicator state={state} />
-          )}
-        </ListItemSecondaryAction>
+        {!isSiteReady ||
+          (hasOptions && (
+            <ListItemSecondaryAction>
+              {isSiteReady ? (
+                <IconButton aria-label="settings" onClick={handleOptions} size="large">
+                  <MoreVertIcon />
+                </IconButton>
+              ) : (
+                <SiteStatusIndicator state={state} />
+              )}
+            </ListItemSecondaryAction>
+          ))}
       </ListItemButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {hasOptions &&

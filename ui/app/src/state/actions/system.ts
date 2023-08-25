@@ -126,7 +126,7 @@ export const fetchGlobalMenuFailed = /*#__PURE__*/ createAction('FETCH_GLOBAL_ME
 export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>('BLOCK_UI');
 export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 
-export const openSiteSocket = /*#__PURE__*/ createAction<{ site?: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
+export const openSiteSocket = /*#__PURE__*/ createAction<{ site: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
 export const setSiteSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('SET_SITE_SOCKET_STATUS');
 
 // region projects events

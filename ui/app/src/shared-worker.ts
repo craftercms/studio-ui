@@ -57,7 +57,7 @@ function onmessage(event) {
         // Otherwise, the worker may end up staying 'dirty' when one tab expires, dies and
         // another comes in later after having logged in properly.
         clearCurrent();
-        retrieve();
+        retrieve(event.data.payload.xsrfToken);
       }
       break;
     // After login, the app sends this event for the worker to
@@ -65,7 +65,7 @@ function onmessage(event) {
     case refreshAuthToken.type:
       log('App requested token refresh');
       clearCurrent();
-      retrieve();
+      retrieve(event.data.payload.xsrfToken);
       break;
     // The user logged out.
     case logout.type:
@@ -113,7 +113,7 @@ function unauthenticated(excludeClient?: MessagePort) {
   broadcast(sharedWorkerUnauthenticated(), excludeClient);
 }
 
-function retrieve() {
+function retrieve(xsrfToken: string) {
   clearTimeout(timeout);
   if (!isRetrieving) {
     isRetrieving = true;
@@ -124,6 +124,8 @@ function retrieve() {
           log('New token received');
           status = 'active';
           current = response;
+          // Open the root topic socket.
+          openSocket({ site: null, xsrfToken });
           broadcast(sharedWorkerToken(current));
           refreshInterval = Math.floor((current.expiresAt - Date.now()) * refreshAtFactor);
           if (clients.length) {
