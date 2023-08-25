@@ -26,7 +26,6 @@ import { PublishFormData, PublishingTarget } from '../../../models';
 import { fetchPublishingTargets, publishByCommits } from '../../../services/publishing';
 import useSpreadState from '../../../hooks/useSpreadState';
 import useSelection from '../../../hooks/useSelection';
-import useMount from '../../../hooks/useMount';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { showSystemNotification } from '../../../state/actions/system';
 import { useDispatch } from 'react-redux';
@@ -64,6 +63,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   const { loadingPublishingTargets, isSubmitting, publishingTargets, publishSuccessful, ...data } = state;
   const { publishByCommitCommentRequired } = useSelection((state) => state.uiConfig.publishing);
   const isInvalid = (publishByCommitCommentRequired && isBlank(data.comment)) || isBlank(data.commitIds);
+  const open = Boolean(dialogProps?.open);
   const onCancel = (e) => dialogProps.onClose(e, null);
   const onPublish = () => {
     if (!isInvalid) {
@@ -78,7 +78,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
           setState({ isSubmitting: false, publishSuccessful: true });
         },
         error({ response }) {
-          setState({ isSubmitting: true });
+          setState({ isSubmitting: false });
           dispatch(
             showSystemNotification({
               message: response.message,
@@ -89,23 +89,25 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
       });
     }
   };
-  useMount(() => {
-    setState({ loadingPublishingTargets: true });
-    const sub = fetchPublishingTargets(site).subscribe({
-      next({ publishingTargets }) {
-        const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
-        // Set pre-selected publishing target.
-        if (publishingTargets.length > 0) {
-          const stagingEnv = publishingTargets.find((target) => target.name === 'staging');
-          newData.publishingTarget = stagingEnv?.name ?? publishingTargets[0].name;
+  useEffect(() => {
+    if (open) {
+      setState({ loadingPublishingTargets: true });
+      const sub = fetchPublishingTargets(site).subscribe({
+        next({ publishingTargets }) {
+          const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
+          // Set pre-selected publishing target.
+          if (publishingTargets.length > 0) {
+            const stagingEnv = publishingTargets.find((target) => target.name === 'staging');
+            newData.publishingTarget = stagingEnv?.name ?? publishingTargets[0].name;
+          }
+          setState(newData);
         }
-        setState(newData);
-      }
-    });
-    return () => {
-      sub.unsubscribe();
-    };
-  });
+      });
+      return () => {
+        sub.unsubscribe();
+      };
+    }
+  }, [setState, site, open]);
   useEffect(() => {
     setState({ commitIds: commitId });
   }, [commitId, setState]);
