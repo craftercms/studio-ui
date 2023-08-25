@@ -92,7 +92,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   useEffect(() => {
     if (open) {
       setState({ loadingPublishingTargets: true });
-      sub = fetchPublishingTargets(site).subscribe({
+      let sub = fetchPublishingTargets(site).subscribe({
         next({ publishingTargets }) {
           const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
           // Set pre-selected publishing target.
