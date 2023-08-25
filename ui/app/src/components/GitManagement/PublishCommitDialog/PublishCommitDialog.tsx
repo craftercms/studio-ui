@@ -63,7 +63,7 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   const { loadingPublishingTargets, isSubmitting, publishingTargets, publishSuccessful, ...data } = state;
   const { publishByCommitCommentRequired } = useSelection((state) => state.uiConfig.publishing);
   const isInvalid = (publishByCommitCommentRequired && isBlank(data.comment)) || isBlank(data.commitIds);
-  const open = dialogProps?.open;
+  const open = Boolean(dialogProps?.open);
   const onCancel = (e) => dialogProps.onClose(e, null);
   const onPublish = () => {
     if (!isInvalid) {
