@@ -103,7 +103,6 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
           setState(newData);
         }
       });
-
       return () => {
         sub.unsubscribe();
       };
