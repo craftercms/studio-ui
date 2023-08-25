@@ -90,7 +90,6 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
     }
   };
   useEffect(() => {
-    let sub;
     if (open) {
       setState({ loadingPublishingTargets: true });
       sub = fetchPublishingTargets(site).subscribe({
