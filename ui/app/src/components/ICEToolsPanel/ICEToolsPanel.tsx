@@ -41,7 +41,7 @@ import Alert from '@mui/material/Alert';
 export function ICEToolsPanel() {
   const dispatch = useDispatch();
   const uiConfig = useSiteUIConfig();
-  const { icePanel } = usePreviewState();
+  const { icePanel, windowSize } = usePreviewState();
   const { id: site, uuid } = useActiveSite();
   const { rolesBySite, username } = useActiveUser();
   const { icePanelWidth: width, editMode, icePanelStack } = useSelection((state) => state.preview);
@@ -63,7 +63,14 @@ export function ICEToolsPanel() {
   }, [uiConfig.xml, dispatch, icePanel, site, username, uuid]);
 
   return (
-    <ResizeableDrawer open={isOpen} belowToolbar anchor="right" width={width} onWidthChange={onWidthChange}>
+    <ResizeableDrawer
+      open={isOpen}
+      belowToolbar
+      anchor="right"
+      width={width}
+      maxWidth={windowSize}
+      onWidthChange={onWidthChange}
+    >
       <Suspense fallback={<LoadingState />}>
         <ConditionalLoadingState isLoading={!Boolean(icePanel)}>
           {isLockedForMe && (
