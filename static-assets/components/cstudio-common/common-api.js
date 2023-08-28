@@ -3691,7 +3691,7 @@ var nodeOpen = false,
 
         this.getVersionHistory(site, contentTO, {
           success: function (response) {
-            callback.success(response.items[0].versionNumber);
+            callback.success(response[0].versionNumber);
           }
         });
       },

@@ -19,7 +19,7 @@ import { FormattedMessage } from 'react-intl';
 import React, { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useLogicResource } from '../../hooks/useLogicResource';
-import { CompareVersionsBranch, ItemVersion } from '../../models/Version';
+import { CompareVersionsBranch, ItemHistoryEntry } from '../../models/Version';
 import { CompareVersions, CompareVersionsResource } from './CompareVersions';
 import { EntityState } from '../../models/EntityState';
 import ContentType from '../../models/ContentType';
@@ -94,7 +94,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       compareVersionsBranch.error || contentTypesBranch.error
   });
 
-  const handleItemClick = (version: ItemVersion) => {
+  const handleItemClick = (version: ItemHistoryEntry) => {
     if (!selected[0]) {
       dispatch(compareVersion({ id: version.versionNumber }));
     } else if (selected[0] !== version.versionNumber) {

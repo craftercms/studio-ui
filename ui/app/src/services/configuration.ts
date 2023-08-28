@@ -21,7 +21,7 @@ import { deserialize, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
 import { reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
-import { ItemVersion } from '../models/Version';
+import { ItemHistoryEntry } from '../models/Version';
 import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
@@ -197,7 +197,7 @@ export function fetchHistory(
   path: string,
   environment: string,
   module: string
-): Observable<ItemVersion[]> {
+): Observable<ItemHistoryEntry[]> {
   const parsedPath = encodeURIComponent(path.replace(/(\/config\/)(studio|engine)/g, ''));
 
   return get(

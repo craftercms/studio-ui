@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { HistoryDialogContainerProps, Menu, menuInitialState, menuOptions } from './utils';
-import { ItemVersion } from '../../models/Version';
+import { ItemHistoryEntry } from '../../models/Version';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu';
 import {
   closeConfirmDialog,
@@ -141,7 +141,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
       ]
     });
 
-  const handleViewItem = (version: ItemVersion) => {
+  const handleViewItem = (version: ItemHistoryEntry) => {
     const supportsDiff = ['page', 'component', 'taxonomy'].includes(item.systemType);
     const versionPath = Boolean(version.path) && path !== version.path ? version.path : path;
 
@@ -207,7 +207,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     );
   };
 
-  const revertToPrevious = (activeItem: ItemVersion) => {
+  const revertToPrevious = (activeItem: ItemHistoryEntry) => {
     const previousBranch = getPreviousBranch(activeItem);
 
     dispatch(
@@ -222,13 +222,13 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     );
   };
 
-  const getPreviousBranch = (currentBranch: ItemVersion) => {
+  const getPreviousBranch = (currentBranch: ItemHistoryEntry) => {
     const versions = versionsBranch.versions;
     const currentIndex = versions.findIndex((branch) => branch.versionNumber === currentBranch.versionNumber);
     return versions[currentIndex + 1] ?? null;
   };
 
-  const revertTo = (activeItem: ItemVersion) => {
+  const revertTo = (activeItem: ItemHistoryEntry) => {
     dispatch(
       showConfirmDialog({
         title: formatMessage(translations.confirmRevertTitle),

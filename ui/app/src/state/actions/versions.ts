@@ -15,7 +15,7 @@
  */
 
 import { createAction } from '@reduxjs/toolkit';
-import { DetailedItem, FetchContentVersion, ItemVersion } from '../../models';
+import { DetailedItem, FetchContentVersion, ItemHistoryEntry } from '../../models';
 import { AjaxError, AjaxResponse } from 'rxjs/ajax';
 
 export interface HistoryConfigProps {
@@ -27,7 +27,7 @@ export interface HistoryConfigProps {
 }
 
 export const fetchItemVersions = /*#__PURE__*/ createAction<HistoryConfigProps>('FETCH_ITEM_VERSIONS');
-export const fetchItemVersionsComplete = /*#__PURE__*/ createAction<ItemVersion[]>('FETCH_ITEM_VERSIONS_COMPLETE');
+export const fetchItemVersionsComplete = /*#__PURE__*/ createAction<ItemHistoryEntry[]>('FETCH_ITEM_VERSIONS_COMPLETE');
 export const fetchItemVersionsFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_ITEM_VERSIONS_FAILED');
 export const versionsChangePage = /*#__PURE__*/ createAction<{ page: number }>('VERSIONS_CHANGE_PAGE');
 export const versionsChangeLimit = /*#__PURE__*/ createAction<{ limit: number }>('VERSIONS_CHANGE_LIMIT');

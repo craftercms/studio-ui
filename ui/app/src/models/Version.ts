@@ -19,7 +19,7 @@ import ApiResponse from './ApiResponse';
 import ContentInstance from './ContentInstance';
 import Person from './Person';
 
-export interface ItemVersion {
+export interface ItemHistoryEntry {
   author: Person;
   committer: string;
   comment: string;
@@ -51,8 +51,8 @@ export interface VersionsStateProps {
   error: ApiResponse;
   isFetching: Boolean;
   current: string;
-  versions: ItemVersion[];
-  allVersions: ItemVersion[];
+  versions: ItemHistoryEntry[];
+  allVersions: ItemHistoryEntry[];
   count: number;
   page: number;
   limit: number;

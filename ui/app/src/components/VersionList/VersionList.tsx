@@ -24,7 +24,7 @@ import Chip from '@mui/material/Chip';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
-import { ItemVersion } from '../../models/Version';
+import { ItemHistoryEntry } from '../../models/Version';
 import palette from '../../styles/palette';
 import GlobalState from '../../models/GlobalState';
 import { useSelection } from '../../hooks/useSelection';
@@ -89,11 +89,11 @@ export function AsDayMonthDateTime(props: FancyFormattedDateProps) {
 }
 
 interface VersionListProps {
-  versions: ItemVersion[];
+  versions: ItemHistoryEntry[];
   selected?: string[];
   current?: string;
-  onItemClick(version: ItemVersion): void;
-  onOpenMenu?(anchorEl: Element, version: ItemVersion, isCurrent: boolean, lastOne: boolean): void;
+  onItemClick(version: ItemHistoryEntry): void;
+  onOpenMenu?(anchorEl: Element, version: ItemHistoryEntry, isCurrent: boolean, lastOne: boolean): void;
 }
 
 export function VersionList(props: VersionListProps) {
@@ -103,7 +103,7 @@ export function VersionList(props: VersionListProps) {
 
   return (
     <List component="div" className={classes.list} disablePadding>
-      {versions.map((version: ItemVersion, i: number) => {
+      {versions.map((version: ItemHistoryEntry, i: number) => {
         return (
           <ListItem
             key={version.versionNumber}
