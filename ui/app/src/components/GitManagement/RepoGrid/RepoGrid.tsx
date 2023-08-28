@@ -35,7 +35,6 @@ import { copyToClipboard } from '../../../utils/system';
 import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
 import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
-import useWithPendingChangesCloseRequest from '../../../hooks/useWithPendingChangesCloseRequest';
 
 export interface RepoGridProps {
   repositories: Array<Repository>;
@@ -101,9 +100,6 @@ export function RepoGrid(props: RepoGridProps) {
   const pullFromRemoteDialogState = useEnhancedDialogState();
   const { enqueueSnackbar } = useSnackbar();
   const publishCommitDialogState = useEnhancedDialogState();
-  const publishCommitDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(
-    publishCommitDialogState.onClose
-  );
   const [postPullState, setPostPullState] = useSpreadState({
     openPostPullSnack: false,
     mergeCommitId: '',
@@ -265,7 +261,6 @@ export function RepoGrid(props: RepoGridProps) {
         commitId={postPullState.mergeCommitId}
         open={publishCommitDialogState.open}
         hasPendingChanges={publishCommitDialogState.hasPendingChanges}
-        onWithPendingChangesCloseRequest={publishCommitDialogPendingChangesCloseRequest}
         onSubmittingAndOrPendingChange={publishCommitDialogState.onSubmittingAndOrPendingChange}
         onClose={publishCommitDialogState.onClose}
       />

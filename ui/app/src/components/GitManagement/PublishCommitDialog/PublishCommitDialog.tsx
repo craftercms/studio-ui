@@ -35,6 +35,7 @@ import Box from '@mui/material/Box';
 import { isBlank } from '../../../utils/string';
 import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
 import useUpdateRefs from '../../../hooks/useUpdateRefs';
+import useWithPendingChangesCloseRequest from '../../../hooks/useWithPendingChangesCloseRequest';
 
 export interface PublishCommitDialogProps extends EnhancedDialogProps {
   commitId: string;
@@ -67,8 +68,9 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   const { publishByCommitCommentRequired } = useSelection((state) => state.uiConfig.publishing);
   const isInvalid = (publishByCommitCommentRequired && isBlank(data.comment)) || isBlank(data.commitIds);
   const open = Boolean(dialogProps?.open);
+  const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
-  const onCancel = (e) => dialogProps.onClose(e, null);
+  const onCancel = (e) => pendingChangesCloseRequest(e, null);
   const onPublish = () => {
     if (!isInvalid) {
       setState({ isSubmitting: true });
@@ -114,11 +116,15 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
     }
   }, [setState, site, open]);
   useEffect(() => {
+    if (commitId) {
+      fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: true });
+    }
     setState({ commitIds: commitId });
-  }, [commitId, setState]);
+  }, [commitId, setState, fnRefs]);
   return (
     <EnhancedDialog
       {...dialogProps}
+      onWithPendingChangesCloseRequest={pendingChangesCloseRequest}
       onClosed={() => {
         setState({ ...initialState, publishingTarget: state.publishingTarget, publishingTargets: publishingTargets });
       }}
@@ -151,8 +157,13 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
               mode="git"
               formData={data}
               setFormData={(newData) => {
-                fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: true });
                 setState(newData);
+                const mergedData = { ...data, ...newData };
+                if (isBlank(mergedData.comment) && isBlank(mergedData.commitIds)) {
+                  fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: false });
+                } else {
+                  fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: true });
+                }
               }}
               publishingTargets={state.publishingTargets}
               publishingTargetsError={null}
