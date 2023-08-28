@@ -487,17 +487,26 @@ function parseElementByContentType(
         items.forEach((item) => {
           let path = getInnerHtml(item.querySelector(':scope > include'));
           const component = item.querySelector(':scope > component');
+          const itemKey = getInnerHtml(item.querySelector(':scope > key'));
           if (!path && !component) {
-            // TODO: Groovy Controller Issue;
-            path = getInnerHtml(item.querySelector(':scope > key'));
+            path = itemKey;
           }
-          const instance = parseContentXML(
-            component ? wrapElementInAuxDocument(component) : null,
-            path,
-            contentTypesLookup,
-            instanceLookup
-          );
-          array.push(instance);
+          // Embedded components have no .xml in their key
+          const isFile = Boolean(itemKey) && !itemKey.endsWith('.xml') && Boolean(!item.getAttribute('inline'));
+          if (isFile) {
+            array.push({
+              key: itemKey,
+              value: getInnerHtml(item.querySelector(':scope > value'))
+            });
+          } else {
+            const instance = parseContentXML(
+              component ? wrapElementInAuxDocument(component) : null,
+              path,
+              contentTypesLookup,
+              instanceLookup
+            );
+            array.push(instance);
+          }
         });
       }
       return array;
@@ -603,34 +612,38 @@ export function createModelHierarchyDescriptorMap(
         if (field.type === 'node-selector') {
           field.id !== pageControllersFieldId &&
             field.id !== pageControllersLegacyFieldId &&
-            source[field.id].forEach((component, index) => {
-              lookup[currentModelId].children.push(component);
-              if (lookup[component]) {
-                if (lookup[component].parentId !== null && lookup[component].parentId !== model.craftercms.id) {
-                  console.error.apply(
-                    console,
-                    [
-                      `Model ${component} was found in multiple parents (${lookup[component].parentId} and ${model.craftercms.id}). ` +
-                        `Same model twice on a single page may have unexpected behaviours for in-context editing.`,
-                      // @ts-ignore
-                      typeof component !== 'string' && component
-                    ].filter(Boolean)
-                  );
+            source[field.id]
+              // Just as controllers are not included in HierarchyDescriptor, files inside a node-selector are not included either.
+              // (files and controllers are stored as a key/value object)
+              .filter((componentId) => typeof componentId === 'string')
+              .forEach((componentId, index) => {
+                lookup[currentModelId].children.push(componentId);
+                if (lookup[componentId]) {
+                  if (lookup[componentId].parentId !== null && lookup[componentId].parentId !== model.craftercms.id) {
+                    console.error.apply(
+                      console,
+                      [
+                        `Model ${componentId} was found in multiple parents (${lookup[componentId].parentId} and ${model.craftercms.id}). ` +
+                          `Same model twice on a single page may have unexpected behaviours for in-context editing.`,
+                        // @ts-ignore
+                        typeof componentId !== 'string' && componentId
+                      ].filter(Boolean)
+                    );
+                  }
+                } else {
+                  // This assignment it's to avoid having to optionally chain multiple times
+                  // the access to `lookup[component]` below.
+                  lookup[componentId] = lookup[componentId] ?? ({} as any);
                 }
-              } else {
-                // This assignment it's to avoid having to optionally chain multiple times
-                // the access to `lookup[component]` below.
-                lookup[component] = lookup[component] ?? ({} as any);
-              }
-              // Because there's no real warranty that the parent of a model will be processed first
-              lookup[component] = createModelHierarchyDescriptor(
-                component,
-                model.craftercms.id,
-                lookup[component].parentContainerFieldPath ?? cleanCarryOver(`${fieldCarryOver}.${field.id}`),
-                lookup[component].parentContainerFieldIndex ?? cleanCarryOver(`${indexCarryOver}.${index}`),
-                lookup[component].children
-              );
-            });
+                // Because there's no real warranty that the parent of a model will be processed first
+                lookup[componentId] = createModelHierarchyDescriptor(
+                  componentId,
+                  model.craftercms.id,
+                  lookup[componentId].parentContainerFieldPath ?? cleanCarryOver(`${fieldCarryOver}.${field.id}`),
+                  lookup[componentId].parentContainerFieldIndex ?? cleanCarryOver(`${indexCarryOver}.${index}`),
+                  lookup[componentId].children
+                );
+              });
         } else if (field.type === 'repeat') {
           source[field.id].forEach((repeatItem: ContentInstance, index) => {
             process(
@@ -743,8 +756,8 @@ export function normalizeModel(model: ContentInstance): ContentInstance {
       value.length
     ) {
       const collection: ContentInstance[] = value;
-      const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
-      if (isNodeSelector) {
+      const isComponentsNodeSelector = collection.every((item) => Boolean(item.craftercms?.id));
+      if (isComponentsNodeSelector) {
         normalized[prop] = collection.map((item) => item.craftercms.id);
       } else {
         normalized[prop] = collection.map((item) => normalizeModel(item));
