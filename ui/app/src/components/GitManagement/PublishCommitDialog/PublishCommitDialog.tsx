@@ -116,9 +116,8 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
     }
   }, [setState, site, open]);
   useEffect(() => {
-    if (commitId) {
-      fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: true });
-    }
+    // Since the form will have a commitId from the beginning, the 'hasPendingChanges' flag will be true.
+    fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: true });
     setState({ commitIds: commitId });
   }, [commitId, setState, fnRefs]);
   return (
