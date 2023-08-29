@@ -50,6 +50,14 @@ function onmessage(event) {
     // A new app window has connected to the worker.
     case sharedWorkerConnect.type:
       log(`A client has connected. Status is "${status}"`);
+      const xsrfToken = event.data.payload?.xsrfToken;
+      // There's a sharedWorker connection from studio and from XB, we only open the root topic socket when connecting
+      // from studio.
+      if (xsrfToken) {
+        // Open the root topic socket.
+        openSocket({ site: null, xsrfToken: event.data.payload.xsrfToken });
+      }
+
       if (status === 'active') {
         event.target.postMessage(sharedWorkerToken(current));
       } /* else if (status === 'error' || status === 'expired' || status === '') */ else {
@@ -57,15 +65,16 @@ function onmessage(event) {
         // Otherwise, the worker may end up staying 'dirty' when one tab expires, dies and
         // another comes in later after having logged in properly.
         clearCurrent();
-        retrieve(event.data.payload.xsrfToken);
+        retrieve();
       }
       break;
-    // After login, the app sends this event for the worker to
+    // After login (from session timeout), the app sends this event for the worker to
     // get a fresh token and continue session.
     case refreshAuthToken.type:
       log('App requested token refresh');
       clearCurrent();
-      retrieve(event.data.payload.xsrfToken);
+      openSocket({ site: null, xsrfToken: event.data.payload.xsrfToken });
+      retrieve();
       break;
     // The user logged out.
     case logout.type:
@@ -113,7 +122,7 @@ function unauthenticated(excludeClient?: MessagePort) {
   broadcast(sharedWorkerUnauthenticated(), excludeClient);
 }
 
-function retrieve(xsrfToken: string) {
+function retrieve() {
   clearTimeout(timeout);
   if (!isRetrieving) {
     isRetrieving = true;
@@ -124,8 +133,6 @@ function retrieve(xsrfToken: string) {
           log('New token received');
           status = 'active';
           current = response;
-          // Open the root topic socket.
-          openSocket({ site: null, xsrfToken });
           broadcast(sharedWorkerToken(current));
           refreshInterval = Math.floor((current.expiresAt - Date.now()) * refreshAtFactor);
           if (clients.length) {
