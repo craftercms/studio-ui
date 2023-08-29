@@ -908,7 +908,7 @@
   "loginView.loginButtonLabel": "Einloggen",
   "loginView.recoverYourPasswordBackButtonLabel": "Zurück",
   "loginView.recoverYourPasswordIntroText": "Wenn Ihr Benutzername vorhanden ist, wird Ihnen eine E-Mail mit einem Reset-Link gesendet.",
-  "loginView.recoverYourPasswordSuccessMessage": "Wenn \"{username}\" vorhanden ist, wurde eine Wiederherstellungs-E-Mail gesendet",
+  "loginView.recoverYourPasswordSuccessMessage": "Wenn der Benutzer existiert, wurde eine Wiederherstellungs-E-Mail gesendet",
   "loginView.resetYourPasswordIntroText": "Bitte geben Sie Ihr neues Passwort ein",
   "loginView.usernameTextFieldLabel": "Benutzername",
   "M5aDj6": "{count} ausgewählt löschen",
