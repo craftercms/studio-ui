@@ -18,12 +18,11 @@ import { useDispatch } from 'react-redux';
 import { useEffect, useRef } from 'react';
 import { parse, stringify } from 'query-string';
 import { LookupTable } from '../models/LookupTable';
-import { changeCurrentUrl, setWindowSize } from '../state/actions/preview';
+import { changeCurrentUrl } from '../state/actions/preview';
 import { changeSite } from '../state/actions/sites';
 import { useActiveSiteId } from './useActiveSiteId';
 import { useEnv } from './useEnv';
 import { usePreviewNavigation } from './usePreviewNavigation';
-import useMount from './useMount';
 
 export function usePreviewUrlControl(history) {
   const {
@@ -127,19 +126,6 @@ export function usePreviewUrlControl(history) {
       prev.qsSite = qs.site;
     }
   }, [currentUrlPath, dispatch, previewLandingBase, push, search, site]);
-
-  useMount(() => {
-    dispatch(setWindowSize({ size: window.innerWidth }));
-  });
-  useEffect(() => {
-    const handleResize = () => {
-      dispatch(setWindowSize({ size: window.innerWidth }));
-    };
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [dispatch]);
 }
 
 export default usePreviewUrlControl;

@@ -30,11 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import { nnou } from '../../utils/object';
 import { isItemLockedForMe } from '../../utils/content';
 import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
-import {
-  getStoredICEToolsPanelPage,
-  getStoredICEToolsPanelWidth,
-  setStoredICEToolsPanelWidth
-} from '../../utils/state';
+import { getStoredICEToolsPanelPage, getStoredICEToolsPanelWidth } from '../../utils/state';
 import useActiveSite from '../../hooks/useActiveSite';
 import Alert from '@mui/material/Alert';
 
@@ -50,7 +46,6 @@ export function ICEToolsPanel() {
   const isLockedForMe = Boolean(item && isItemLockedForMe(item, username));
 
   const onWidthChange = (width) => {
-    setStoredICEToolsPanelWidth(site, username, width);
     dispatch(updateIcePanelWidth({ width }));
   };
 

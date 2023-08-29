@@ -32,11 +32,7 @@ import { useLogicResource } from '../../hooks/useLogicResource';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
 import LookupTable from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
-import {
-  getStoredPreviewToolsPanelPage,
-  getStoredPreviewToolsPanelWidth,
-  setStoredPreviewToolsPanelWidth
-} from '../../utils/state';
+import { getStoredPreviewToolsPanelPage, getStoredPreviewToolsPanelWidth } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 
 defineMessages({
@@ -90,7 +86,6 @@ export function ToolsPanel() {
   });
 
   const onWidthChange = (width) => {
-    setStoredPreviewToolsPanelWidth(siteId, username, width);
     dispatch(
       updateToolsPanelWidth({
         width

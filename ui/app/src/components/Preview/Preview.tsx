@@ -22,9 +22,11 @@ import PreviewConcierge from '../PreviewConcierge/PreviewConcierge';
 import usePreviewUrlControl from '../../hooks/usePreviewUrlControl';
 import ICEToolsPanel from '../ICEToolsPanel';
 import Box from '@mui/material/Box';
+import { useWindowSizeControl } from '../../hooks/useWindowSizeControl';
 
 function Preview(props) {
   usePreviewUrlControl(props.history);
+  useWindowSizeControl();
   return (
     <PreviewConcierge>
       <Box

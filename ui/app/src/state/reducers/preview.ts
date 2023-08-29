@@ -161,6 +161,7 @@ const initialState: GlobalState['preview'] = {
 };
 
 const minDrawerWidth = 240;
+const minPreviewWidth = 320;
 
 const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
   if (nnou(state.guest)) {
@@ -192,17 +193,19 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 
 const reducer = createReducer<GlobalState['preview']>(initialState, {
   [openToolsPanel.type]: (state) => {
-    const { windowSize, icePanelWidth } = state;
-    let toolsPanelWidth;
-    if (icePanelWidth - windowSize >= 320) {
-      toolsPanelWidth = windowSize - 320 - minDrawerWidth;
-    } else {
-      toolsPanelWidth = minDrawerWidth;
+    const { windowSize, toolsPanelWidth, icePanelWidth } = state;
+    let adjustedToolsPanelWidth = toolsPanelWidth;
+    let adjustedIcePanelWidth = icePanelWidth;
+    if (windowSize - icePanelWidth - toolsPanelWidth < 320) {
+      adjustedToolsPanelWidth = minDrawerWidth;
+      adjustedIcePanelWidth = windowSize - 320 - minDrawerWidth;
     }
+
     return {
       ...state,
       showToolsPanel: true,
-      toolsPanelWidth
+      toolsPanelWidth: adjustedToolsPanelWidth,
+      icePanelWidth: adjustedIcePanelWidth
     };
   },
   [closeToolsPanel.type]: (state) => {
@@ -490,13 +493,14 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     }
   }),
   [setPreviewEditMode.type]: (state, { payload }) => {
-    let icePanelWidth = state.icePanelWidth;
+    const { toolsPanelWidth, icePanelWidth } = state;
+    let adjustedToolsPanelWidth = toolsPanelWidth;
+    let adjustedIcePanelWidth = icePanelWidth;
     if (payload.editMode) {
-      const { windowSize, toolsPanelWidth } = state;
-      if (toolsPanelWidth - windowSize >= 320) {
-        icePanelWidth = windowSize - 320 - minDrawerWidth;
-      } else {
-        icePanelWidth = minDrawerWidth;
+      const { windowSize } = state;
+      if (windowSize - toolsPanelWidth - icePanelWidth < minPreviewWidth) {
+        adjustedIcePanelWidth = minDrawerWidth;
+        adjustedToolsPanelWidth = windowSize - minPreviewWidth - minDrawerWidth;
       }
     }
 
@@ -504,12 +508,13 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       ...state,
       editMode: payload.editMode,
       highlightMode: payload.highlightMode ?? state.highlightMode,
-      icePanelWidth
+      icePanelWidth: adjustedIcePanelWidth,
+      toolsPanelWidth: adjustedToolsPanelWidth
     };
   },
   [updateToolsPanelWidth.type]: (state, { payload }) => {
     const { windowSize, editMode, icePanelWidth } = state;
-    const maxWidth = windowSize - (editMode ? icePanelWidth : 0) - 320;
+    const maxWidth = windowSize - (editMode ? icePanelWidth : 0) - minPreviewWidth;
     // when resizing tools panel, leave at least 320px for preview.
     if (payload.width < minDrawerWidth || payload.width > maxWidth) {
       return state;
@@ -521,7 +526,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
   },
   [updateIcePanelWidth.type]: (state, { payload }) => {
     const { windowSize, showToolsPanel, toolsPanelWidth } = state;
-    const maxWidth = windowSize - (showToolsPanel ? toolsPanelWidth : 0) - 320;
+    const maxWidth = windowSize - (showToolsPanel ? toolsPanelWidth : 0) - minPreviewWidth;
     // When resizing ice panel, leave at least 320px for preview.
     if (payload.width < minDrawerWidth || payload.width > maxWidth) {
       return state;
@@ -743,13 +748,12 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     const result = windowSize - (showToolsPanel ? toolsPanelWidth : 0) - (editMode ? icePanelWidth : 0);
     let adjustedToolsPanelWidth = toolsPanelWidth < minDrawerWidth ? minDrawerWidth : toolsPanelWidth;
     let adjustedIcePanelWidth = icePanelWidth < minDrawerWidth ? minDrawerWidth : icePanelWidth;
-
     // if window size is less than minimum (320), or if both panels are bigger than window size, update tools panel and
     // ice panel accordingly.
     if (result < 0) {
       adjustedToolsPanelWidth = minDrawerWidth;
       adjustedIcePanelWidth = minDrawerWidth;
-    } else if (result < 320) {
+    } else if (result < minPreviewWidth) {
       adjustedToolsPanelWidth =
         toolsPanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : toolsPanelWidth - result / 2;
       adjustedIcePanelWidth = icePanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : icePanelWidth - result / 2;
