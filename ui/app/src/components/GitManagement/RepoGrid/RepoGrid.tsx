@@ -99,8 +99,8 @@ export function RepoGrid(props: RepoGridProps) {
   const pushToRemoteDialogState = useEnhancedDialogState();
   const pullFromRemoteDialogState = useEnhancedDialogState();
   const { enqueueSnackbar } = useSnackbar();
+  const publishCommitDialogState = useEnhancedDialogState();
   const [postPullState, setPostPullState] = useSpreadState({
-    openPublishCommitDialog: false,
     openPostPullSnack: false,
     mergeCommitId: '',
     commitsMerged: 0
@@ -216,7 +216,10 @@ export function RepoGrid(props: RepoGridProps) {
             <>
               <Button
                 size="small"
-                onClick={() => setPostPullState({ openPublishCommitDialog: true, openPostPullSnack: false })}
+                onClick={() => {
+                  publishCommitDialogState.onOpen();
+                  setPostPullState({ openPostPullSnack: false });
+                }}
               >
                 <FormattedMessage id="words.yes" defaultMessage="Yes" />
               </Button>
@@ -256,10 +259,10 @@ export function RepoGrid(props: RepoGridProps) {
       {/* endregion */}
       <PublishCommitDialog
         commitId={postPullState.mergeCommitId}
-        open={postPullState.openPublishCommitDialog}
-        onClose={() => {
-          setPostPullState({ openPublishCommitDialog: false });
-        }}
+        open={publishCommitDialogState.open}
+        hasPendingChanges={publishCommitDialogState.hasPendingChanges}
+        onSubmittingAndOrPendingChange={publishCommitDialogState.onSubmittingAndOrPendingChange}
+        onClose={publishCommitDialogState.onClose}
       />
     </>
   );
