@@ -204,8 +204,8 @@ const onOpenDrawerAdjustWidths = (
     adjustedOppositePanelWidth = windowSize - minPreviewWidth - minDrawerWidth;
   }
   return {
-    currentPanel: adjustedCurrentPanelWidth,
-    oppositePanel: adjustedOppositePanelWidth
+    currentPanel: adjustedCurrentPanelWidth < minDrawerWidth ? minDrawerWidth : adjustedCurrentPanelWidth,
+    oppositePanel: adjustedOppositePanelWidth < minDrawerWidth ? minDrawerWidth : adjustedOppositePanelWidth
   };
 };
 
