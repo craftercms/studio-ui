@@ -158,11 +158,9 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
               setFormData={(newData) => {
                 setState(newData);
                 const mergedData = { ...data, ...newData };
-                if (isBlank(mergedData.comment) && isBlank(mergedData.commitIds)) {
-                  fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: false });
-                } else {
-                  fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: true });
-                }
+                fnRefs.current.onSubmittingAndOrPendingChange({
+                  hasPendingChanges: !isBlank(mergedData.comment) || !isBlank(mergedData.commitIds)
+                });
               }}
               publishingTargets={state.publishingTargets}
               publishingTargetsError={null}
