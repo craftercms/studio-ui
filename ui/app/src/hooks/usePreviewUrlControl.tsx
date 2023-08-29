@@ -27,7 +27,7 @@ import useSiteLookup from './useSiteLookup';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToHostBus } from '../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { projectBeingDeleted } from '../state/actions/system';
+import { projectDeleted } from '../state/actions/system';
 
 const messages = defineMessages({
   siteNotFound: {
@@ -87,14 +87,12 @@ export function usePreviewUrlControl(history) {
 
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$
-      .pipe(filter((e) => e.type === projectBeingDeleted.type))
-      .subscribe(({ payload }) => {
-        if (payload.siteId === site) {
-          notValidSiteRedirect(formatMessage(messages.siteDeleted), `${authoringBase}#/sites`);
-          dispatch(popSite({ siteId: payload.siteId }));
-        }
-      });
+    const subscription = hostToHost$.pipe(filter((e) => e.type === projectDeleted.type)).subscribe(({ payload }) => {
+      if (payload.siteId === site) {
+        notValidSiteRedirect(formatMessage(messages.siteDeleted), `${authoringBase}#/sites`);
+        dispatch(popSite({ siteId: payload.siteId }));
+      }
+    });
     return () => {
       subscription.unsubscribe();
     };

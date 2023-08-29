@@ -217,6 +217,11 @@ function openSocket({ site, xsrfToken }) {
     }
   });
   socketClient.activate();
+  if (site) {
+    siteSocketClient = socketClient;
+  } else {
+    rootSocketClient = socketClient;
+  }
 }
 
 self.onconnect = (e) => {

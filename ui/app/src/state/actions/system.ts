@@ -134,4 +134,7 @@ export const newProjectReady = /*#__PURE__*/ createAction<SocketRootEventBase & 
 export const projectBeingDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
   'SITE_DELETING_EVENT'
 );
+export const projectDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
+  'SITE_DELETED_EVENT'
+);
 // endregion

@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
 import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../utils/subjects';
-import { showSystemNotification, newProjectReady } from '../../state/actions/system';
+import { showSystemNotification, newProjectReady, projectDeleted } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
 import useSelection from '../../hooks/useSelection';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
@@ -144,6 +144,9 @@ function GlobalDialogManager() {
               }
             );
           }
+          dispatch(fetchSites());
+          break;
+        case projectDeleted.type:
           dispatch(fetchSites());
           break;
       }
