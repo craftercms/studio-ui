@@ -908,7 +908,7 @@
   "loginView.loginButtonLabel": "로그인",
   "loginView.recoverYourPasswordBackButtonLabel": "뒤로",
   "loginView.recoverYourPasswordIntroText": "사용자 이름이 존재하면 재설정 링크가 포함 된 이메일이 발송됩니다.",
-  "loginView.recoverYourPasswordSuccessMessage": "\"{username}\"이 있으면 복구 이메일이 전송되었습니다.",
+  "loginView.recoverYourPasswordSuccessMessage": "사용자가 존재하는 경우 복구 이메일이 전송되었습니다.",
   "loginView.resetYourPasswordIntroText": "새 비밀번호를 입력하십시오",
   "loginView.usernameTextFieldLabel": "사용자 이름",
   "M5aDj6": "선택한 {count} 지우기",

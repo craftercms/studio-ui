@@ -111,7 +111,7 @@ const translations = defineMessages({
   },
   recoverYourPasswordSuccessMessage: {
     id: 'loginView.recoverYourPasswordSuccessMessage',
-    defaultMessage: 'If "{username}" exists, a recovery email has been sent'
+    defaultMessage: 'If the user exists, a recovery email has been sent'
   },
   resetPasswordFieldPlaceholderLabel: {
     id: 'resetView.resetPasswordFieldPlaceholderLabel',
@@ -296,7 +296,7 @@ function RecoverView(props: SubViewProps) {
           setMode('login');
           onSnack({
             open: true,
-            message: formatMessage(translations.recoverYourPasswordSuccessMessage, { username })
+            message: formatMessage(translations.recoverYourPasswordSuccessMessage)
           });
         },
         error(error) {
