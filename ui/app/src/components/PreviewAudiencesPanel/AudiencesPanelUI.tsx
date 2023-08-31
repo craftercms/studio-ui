@@ -30,7 +30,6 @@ import CheckboxGroup from '../FormEngineControls/CheckboxGroup';
 import DateTime from '../FormEngineControls/DateTime';
 import LookupTable from '../../models/LookupTable';
 import { Alert } from '@mui/material';
-import { create8601String, get8601Pieces } from '../../utils/datetime';
 
 interface AudiencesPanelUIProps {
   model: ContentInstance;
@@ -75,6 +74,7 @@ const getDefaultModel = (fields: AudiencesPanelUIProps['fields'], setTimeZoneLoo
 
   Object.keys(fields).forEach((fieldId: string) => {
     const propValue = fields[fieldId].defaultValue;
+    props[fieldId] = propValue;
     props[fieldId] = propValue;
 
     if (fields[fieldId].type === 'date-time') {
