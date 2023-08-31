@@ -39,6 +39,8 @@ interface AudiencesPanelUIProps {
   modelApplied: boolean;
   onChange: Function;
   onSaveModel: Function;
+  timeZonesLookup: LookupTable<string>;
+  setTimeZonesLookup(timeZones: LookupTable<string>): void;
 }
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -73,7 +75,7 @@ const getDateTimeString = (date: Date): string => {
   return create8601String(pieces[0], pieces[1], pieces[2]);
 };
 
-const getDefaultModel = (fields: AudiencesPanelUIProps['fields']) => {
+const getDefaultModel = (fields: AudiencesPanelUIProps['fields'], setTimeZoneLookups) => {
   const props = {};
 
   Object.keys(fields).forEach((fieldId: string) => {
@@ -81,11 +83,9 @@ const getDefaultModel = (fields: AudiencesPanelUIProps['fields']) => {
     props[fieldId] = propValue;
 
     if (fields[fieldId].type === 'date-time') {
-      // If there is no default value set for date-time, set it to the current date/time
-      if (!propValue) {
-        props[fieldId] = getDateTimeString(new Date());
-      }
-      props[`${fieldId}_tz`] = fields[fieldId].timeZone;
+      setTimeZoneLookups({
+        [fieldId]: fields[fieldId].timeZone
+      });
     }
   });
   return props;
@@ -98,19 +98,18 @@ const UndefinedControlType = () => {
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   const { classes } = useStyles();
-  const { model, modelApplying, onChange, onSaveModel, fields } = props;
+  const { model, modelApplying, onChange, onSaveModel, fields, timeZonesLookup, setTimeZonesLookup } = props;
 
   const onFieldChange = (fieldId: string, type: string) => (value: any) => {
     let props;
 
     if (type === 'date-time') {
-      const timezone = value.timeZoneName;
-      value = value.dateString;
-
+      setTimeZonesLookup({
+        [fieldId]: value.timeZoneName
+      });
       props = {
         ...model,
-        [fieldId]: value,
-        [`${fieldId}_tz`]: timezone
+        [fieldId]: value.dateString
       };
     } else {
       props = {
@@ -134,17 +133,14 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
                 field: fields[fieldId],
                 value: model[fieldId] ?? undefined,
                 onChange: onFieldChange(fieldId, type),
-                disabled: modelApplying
+                disabled: modelApplying,
+                timeZone: null
               };
               if (controlProps.field.type === 'date-time') {
                 if (!controlProps.value) {
-                  controlProps.value = fields[fieldId].defaultValue ?? getDateTimeString(new Date());
+                  controlProps.value = fields[fieldId].defaultValue;
                 }
-                if (model[`${fieldId}_tz`]) {
-                  controlProps['timeZone'] = model[`${fieldId}_tz`];
-                } else {
-                  controlProps['timeZone'] = fields[fieldId].timeZone;
-                }
+                controlProps.timeZone = timeZonesLookup[fieldId] ?? fields[fieldId].timeZone;
               }
               return (
                 <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
@@ -154,7 +150,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             })}
           </Grid>
           <Grid className={classes.actionButtons}>
-            <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
+            <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields, setTimeZonesLookup))}>
               <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
             </SecondaryButton>
             <PrimaryButton onClick={() => onSaveModel()}>
