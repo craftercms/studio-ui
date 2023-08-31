@@ -144,10 +144,6 @@ function GlobalDialogManager() {
               }
             );
           }
-          dispatch(fetchSites());
-          break;
-        case projectDeleted.type:
-          dispatch(fetchSites());
           break;
       }
     });
