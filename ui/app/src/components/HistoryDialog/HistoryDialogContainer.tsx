@@ -162,7 +162,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         ])
       );
     } else if (isItemPreviewable) {
-      fetchContentByCommitId(site, ensureSingleSlash(`/${versionPath}`), version.versionNumber).subscribe((content) => {
+      fetchContentByCommitId(site, versionPath, version.versionNumber).subscribe((content) => {
         const image = isImage(item);
         const video = isVideo(item);
         const pdf = isPdfDocument(item.mimeType);
