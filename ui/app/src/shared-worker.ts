@@ -57,7 +57,6 @@ function onmessage(event) {
         // Open the root topic socket.
         openSocket({ site: null, xsrfToken: event.data.payload.xsrfToken });
       }
-
       if (status === 'active') {
         event.target.postMessage(sharedWorkerToken(current));
       } /* else if (status === 'error' || status === 'expired' || status === '') */ else {

@@ -81,7 +81,7 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         disabled={!isSiteReady}
         selected={selected}
         component={ListItem}
-        onClick={() => isSiteReady && onCardClick(value)}
+        onClick={isSiteReady ? () => onCardClick(value) : undefined}
         className={cx(classes.card, props.classes?.root)}
         sx={{ position: 'relative' }}
         title={title}
@@ -89,7 +89,7 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         <ListItemText
           primary={title}
           primaryTypographyProps={{ className: classes.siteName, noWrap: true }}
-          sx={{ paddingRight: isSiteReady ? 0 : '35px' }}
+          sx={isSiteReady ? undefined : { paddingRight: '35px' }}
         />
 
         {(!isSiteReady || hasOptions) && (
