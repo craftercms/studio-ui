@@ -264,7 +264,9 @@ function RecoverView(props: SubViewProps) {
     e.stopPropagation();
     setError('');
     onSubmit(true);
-    !isBlank(username) &&
+    if (isBlank(username)) {
+      onSubmit(false);
+    } else {
       sendPasswordRecovery(username).subscribe({
         next() {
           onSubmit(false);
@@ -279,6 +281,7 @@ function RecoverView(props: SubViewProps) {
           setError(error.message);
         }
       });
+    }
   };
   return (
     <form onSubmit={onSubmitRecover}>
@@ -304,7 +307,7 @@ function RecoverView(props: SubViewProps) {
           type="submit"
           color="primary"
           onClick={onSubmitRecover}
-          disabled={isFetching}
+          disabled={isBlank(username) || isFetching}
           variant="contained"
           style={{ marginTop: 15 }}
           fullWidth
