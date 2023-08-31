@@ -142,6 +142,10 @@ function DateTimePicker(props: DateTimePickerProps) {
     // Date/time change handler
     (newMoment: Moment) => {
       let newDate = newMoment.toDate();
+      if (!newMoment.isValid()) {
+        setPickerState({ dateValid: false });
+        onError?.();
+      }
       let changes: DateChangeData;
       const internalDatePieces = get8601Pieces(internalDate ?? newDate);
       const pickerDatePieces = get8601Pieces(newDate);

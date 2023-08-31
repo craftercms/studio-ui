@@ -70,11 +70,6 @@ const messages = defineMessages({
   }
 });
 
-const getDateTimeString = (date: Date): string => {
-  const pieces = get8601Pieces(date);
-  return create8601String(pieces[0], pieces[1], pieces[2]);
-};
-
 const getDefaultModel = (fields: AudiencesPanelUIProps['fields'], setTimeZoneLookups) => {
   const props = {};
 
