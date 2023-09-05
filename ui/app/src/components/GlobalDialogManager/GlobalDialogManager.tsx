@@ -21,13 +21,18 @@ import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
 import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../utils/subjects';
-import { filter } from 'rxjs/operators';
-import { showSystemNotification } from '../../state/actions/system';
+import { showSystemNotification, newProjectReady, projectDeleted } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
 import useSelection from '../../hooks/useSelection';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import MinimizedBar from '../MinimizedBar';
 import { RenameAssetDialog } from '../RenameAssetDialog';
+import { FormattedMessage } from 'react-intl';
+import Button from '@mui/material/Button';
+import { fetchSites } from '../../state/actions/sites';
+import { getSystemLink } from '../../utils/system';
+import useEnv from '../../hooks/useEnv';
+import useActiveUser from '../../hooks/useActiveUser';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
@@ -102,18 +107,50 @@ function GlobalDialogManager() {
   const versionsBranch = useSelection((state) => state.versions);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
+  const { authoringBase } = useEnv();
+  const { username } = useActiveUser();
 
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$
-      .pipe(filter((e) => e.type === showSystemNotification.type))
-      .subscribe(({ payload }) => {
-        enqueueSnackbar(payload.message, payload.options);
-      });
+    const subscription = hostToHost$.subscribe(({ type, payload }) => {
+      switch (type) {
+        case showSystemNotification.type:
+          enqueueSnackbar(payload.message, payload.options);
+          break;
+        case newProjectReady.type:
+          const isCreateSiteDialogOpen = Boolean(document.querySelector('[data-dialog-id="create-site-dialog"]'));
+          if (!isCreateSiteDialogOpen && username === payload.user.username) {
+            enqueueSnackbar(
+              <FormattedMessage
+                defaultMessage={`Site "{siteId}" has been created.`}
+                values={{ siteId: payload.siteId }}
+              />,
+              {
+                action: (
+                  <Button
+                    size="small"
+                    onClick={() => {
+                      window.location.href = getSystemLink({
+                        systemLinkId: 'preview',
+                        authoringBase,
+                        site: payload.siteId,
+                        page: '/'
+                      });
+                    }}
+                  >
+                    <FormattedMessage id="words.view" defaultMessage="View" />
+                  </Button>
+                )
+              }
+            );
+          }
+          break;
+      }
+    });
     return () => {
       subscription.unsubscribe();
     };
-  }, [enqueueSnackbar]);
+  }, [enqueueSnackbar, dispatch, authoringBase, username]);
 
   return (
     <Suspense fallback="">

@@ -23,7 +23,7 @@ import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
-import SocketEventBase from '../../models/SocketEvent';
+import SocketEventBase, { SocketRootEventBase } from '../../models/SocketEvent';
 import { MarketplacePlugin } from '../../models';
 
 // region Item Events
@@ -128,3 +128,13 @@ export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 
 export const openSiteSocket = /*#__PURE__*/ createAction<{ site: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
 export const setSiteSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('SET_SITE_SOCKET_STATUS');
+
+// region projects events
+export const newProjectReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_READY_EVENT');
+export const projectBeingDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
+  'SITE_DELETING_EVENT'
+);
+export const projectDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
+  'SITE_DELETED_EVENT'
+);
+// endregion

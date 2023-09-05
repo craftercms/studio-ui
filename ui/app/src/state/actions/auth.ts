@@ -36,7 +36,7 @@ export const logoutFailed = /*#__PURE__*/ createAction('LOGOUT_FAILED');
 
 // region User Session control
 
-export const refreshAuthToken = /*#__PURE__*/ createAction('REFRESH_AUTH_TOKEN');
+export const refreshAuthToken = /*#__PURE__*/ createAction<{ xsrfToken: string }>('REFRESH_AUTH_TOKEN');
 export const refreshAuthTokenComplete =
   /*#__PURE__*/ createAction<ObtainAuthTokenResponse>('REFRESH_AUTH_TOKEN_COMPLETE');
 export const refreshAuthTokenFailed = /*#__PURE__*/ createAction('REFRESH_AUTH_TOKEN_FAILED');
@@ -47,7 +47,7 @@ export const sharedWorkerUnauthenticated = /*#__PURE__*/ createAction('SHARED_WO
 export const sharedWorkerError = /*#__PURE__*/ createAction<{ status: number; message: string }>('SHARED_WORKER_ERROR');
 
 // Tabs => Worker
-export const sharedWorkerConnect = /*#__PURE__*/ createAction('CONNECT');
+export const sharedWorkerConnect = /*#__PURE__*/ createAction<{ xsrfToken: string }>('CONNECT');
 export const sharedWorkerDisconnect = /*#__PURE__*/ createAction('DISCONNECT');
 export const sharedWorkerTimeout = /*#__PURE__*/ createAction('TIMEOUT');
 

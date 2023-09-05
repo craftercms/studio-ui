@@ -24,7 +24,9 @@ import Link from '@mui/material/Link';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import Box from '@mui/material/Box';
+import { Site } from '../../models/Site';
+import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
+import ListItemButton from '@mui/material/ListItemButton';
 
 export interface LauncherSiteCardOption {
   name: string;
@@ -39,6 +41,7 @@ export interface LauncherSiteCardProps {
   options?: Array<LauncherSiteCardOption>;
   disabled?: boolean;
   selected?: boolean;
+  state?: Site['state'];
   onCardClick(id: string): any;
 }
 
@@ -55,10 +58,11 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 function LauncherSiteCard(props: LauncherSiteCardProps) {
-  const { title, value, onCardClick, options, selected = false } = props;
+  const { title, value, onCardClick, options, selected = false, state } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { classes, cx } = useStyles();
   const hasOptions = Boolean(options && options.length);
+  const isSiteReady = state === 'READY';
 
   const handleClose = (event, action?) => {
     event.stopPropagation();
@@ -73,25 +77,33 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
 
   return (
     <>
-      <Box
-        // @ts-ignore
-        button
+      <ListItemButton
+        disabled={!isSiteReady}
         selected={selected}
-        boxShadow={1}
         component={ListItem}
-        onClick={() => onCardClick(value)}
+        onClick={isSiteReady ? () => onCardClick(value) : undefined}
         className={cx(classes.card, props.classes?.root)}
+        sx={{ position: 'relative' }}
         title={title}
       >
-        <ListItemText primary={title} primaryTypographyProps={{ className: classes.siteName, noWrap: true }} />
-        {hasOptions && (
+        <ListItemText
+          primary={title}
+          primaryTypographyProps={{ className: classes.siteName, noWrap: true }}
+          sx={isSiteReady ? undefined : { paddingRight: '35px' }}
+        />
+
+        {(!isSiteReady || hasOptions) && (
           <ListItemSecondaryAction>
-            <IconButton aria-label="settings" onClick={handleOptions} size="large">
-              <MoreVertIcon />
-            </IconButton>
+            {isSiteReady ? (
+              <IconButton aria-label="settings" onClick={handleOptions} size="large">
+                <MoreVertIcon />
+              </IconButton>
+            ) : (
+              <SiteStatusIndicator state={state} />
+            )}
           </ListItemSecondaryAction>
         )}
-      </Box>
+      </ListItemButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {hasOptions &&
           options.map((action, i) => (

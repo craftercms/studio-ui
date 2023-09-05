@@ -34,7 +34,9 @@ import {
   fetchGlobalMenuComplete,
   fetchGlobalMenuFailed,
   messageSharedWorker,
+  newProjectReady,
   openSiteSocket,
+  projectDeleted,
   showCopyItemSuccessNotification,
   showCreateFolderSuccessNotification,
   showCreateItemSuccessNotification,
@@ -69,7 +71,7 @@ import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
 import { getXSRFToken } from '../../utils/auth';
-import { changeSite } from '../actions/sites';
+import { changeSite, fetchSites } from '../actions/sites';
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
@@ -424,6 +426,13 @@ const systemEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(fetchGlobalMenu.type),
       exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
+    ),
+  // endregion
+  // region project status events
+  (action$) =>
+    action$.pipe(
+      ofType(newProjectReady.type, projectDeleted.type),
+      map(() => fetchSites())
     )
   // endregion
 ];

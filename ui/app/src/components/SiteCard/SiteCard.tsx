@@ -16,7 +16,7 @@
 
 import React from 'react';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
+import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
@@ -31,6 +31,7 @@ import ConfirmDropdown from '../ConfirmDropdown';
 import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
+import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 
 interface SiteCardProps {
   site: Site;
@@ -71,10 +72,16 @@ export function SiteCard(props: SiteCardProps) {
   } = props;
   const { classes, cx: clsx } = useSiteCardStyles();
   const { formatMessage } = useIntl();
+  const isSiteReady = site.state === 'READY';
 
   return (
-    <Card className={clsx(classes.card, compact && 'compact')}>
-      <CardActionArea onClick={() => onSiteClick(site)} component="div">
+    <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
+      <CardActionArea
+        onClick={() => onSiteClick(site)}
+        component="div"
+        disabled={!isSiteReady}
+        sx={{ paddingRight: isSiteReady ? undefined : '35px' }}
+      >
         <CardHeader
           title={site.name}
           className={classes.cardHeader}
@@ -96,6 +103,11 @@ export function SiteCard(props: SiteCardProps) {
             component: 'h2',
             className: 'cardTitle'
           }}
+          sx={{
+            [`.${cardHeaderClasses.action}`]: {
+              alignSelf: 'center'
+            }
+          }}
         />
         {!compact && (
           <CardMedia
@@ -107,8 +119,8 @@ export function SiteCard(props: SiteCardProps) {
           />
         )}
       </CardActionArea>
-      <CardActions className={classes.cardActions} disableSpacing>
-        {publishingStatus !== false && (
+      <CardActions className={classes.cardActions} sx={compact ? undefined : { minHeight: '64px' }} disableSpacing>
+        {isSiteReady && publishingStatus !== false && (
           <PublishingStatusButtonUI
             isFetching={!publishingStatus}
             enabled={publishingStatus?.enabled}
@@ -120,14 +132,14 @@ export function SiteCard(props: SiteCardProps) {
             onClick={(e) => onPublishButtonClick(e, site)}
           />
         )}
-        {onEditSiteClick && (
+        {isSiteReady && onEditSiteClick && (
           <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
             <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'}>
               <EditRoundedIcon />
             </IconButton>
           </Tooltip>
         )}
-        {onDeleteSiteClick && (
+        {isSiteReady && onDeleteSiteClick && (
           <ConfirmDropdown
             size={compact ? 'small' : 'medium'}
             cancelText={formatMessage(translations.confirmCancel)}
@@ -141,6 +153,7 @@ export function SiteCard(props: SiteCardProps) {
           />
         )}
       </CardActions>
+      {!isSiteReady && <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: 22, right: 10 }} />}
     </Card>
   );
 }

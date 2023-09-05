@@ -107,6 +107,7 @@ export interface Site {
   name: string;
   description: string;
   imageUrl: string;
+  state?: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
 }
 
 export interface BackendSite {
@@ -114,6 +115,7 @@ export interface BackendSite {
   uuid: string;
   name: string;
   desc: string;
+  state: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
 }
 
 export interface LegacySite {

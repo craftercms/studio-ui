@@ -297,6 +297,7 @@ const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, optio
                 title={item.name}
                 value={item.id}
                 classes={{ root: classes.titleCard }}
+                state={item.state}
                 onCardClick={() => onSiteCardClick(item.id)}
                 options={options}
               />

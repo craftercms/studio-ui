@@ -23,4 +23,9 @@ export interface SocketEventBase {
   user: Person;
 }
 
+export interface SocketRootEventBase {
+  user: Person;
+  eventType: string;
+}
+
 export default SocketEventBase;

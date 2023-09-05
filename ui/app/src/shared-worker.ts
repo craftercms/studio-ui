@@ -32,7 +32,8 @@ let current: ObtainAuthTokenResponse = {
 let refreshInterval;
 let isRetrieving = false;
 let isProduction = process.env.PRODUCTION !== 'development';
-let socketClient: Client;
+let siteSocketClient: Client;
+let rootSocketClient: Client;
 
 const log = !isProduction
   ? (message, ...args) => console.log(`%c[SharedWorker] ${message}.`, 'color: #0071A4', ...args)
@@ -49,6 +50,13 @@ function onmessage(event) {
     // A new app window has connected to the worker.
     case sharedWorkerConnect.type:
       log(`A client has connected. Status is "${status}"`);
+      const xsrfToken = event.data.payload?.xsrfToken;
+      // There's a sharedWorker connection from studio and from XB, we only open the root topic socket when connecting
+      // from studio.
+      if (xsrfToken) {
+        // Open the root topic socket.
+        openSocket({ site: null, xsrfToken: event.data.payload.xsrfToken });
+      }
       if (status === 'active') {
         event.target.postMessage(sharedWorkerToken(current));
       } /* else if (status === 'error' || status === 'expired' || status === '') */ else {
@@ -59,11 +67,12 @@ function onmessage(event) {
         retrieve();
       }
       break;
-    // After login, the app sends this event for the worker to
+    // After login (from session timeout), the app sends this event for the worker to
     // get a fresh token and continue session.
     case refreshAuthToken.type:
       log('App requested token refresh');
       clearCurrent();
+      openSocket({ site: null, xsrfToken: event.data.payload.xsrfToken });
       retrieve();
       break;
     // The user logged out.
@@ -107,7 +116,8 @@ function unauthenticated(excludeClient?: MessagePort) {
   log(`Auth has expired.`);
   clearTimeout(timeout);
   status = 'expired';
-  socketClient?.deactivate();
+  siteSocketClient?.deactivate();
+  rootSocketClient?.deactivate();
   broadcast(sharedWorkerUnauthenticated(), excludeClient);
 }
 
@@ -162,6 +172,7 @@ function broadcast(message: StandardAction, excludedClient?: MessagePort) {
 }
 
 function openSocket({ site, xsrfToken }) {
+  let socketClient = site ? siteSocketClient : rootSocketClient;
   if (socketClient) {
     // noinspection JSIgnoredPromiseFromCall
     socketClient.deactivate();
@@ -174,7 +185,8 @@ function openSocket({ site, xsrfToken }) {
     connectHeaders: { [XSRF_TOKEN_HEADER_NAME]: xsrfToken },
     onConnect() {
       broadcast(setSiteSocketStatus({ connected: true }));
-      subscription = socketClient.subscribe(`/topic/studio/${site}`, (message) => {
+      const topicUrl = site ? `/topic/studio/${site}` : '/topic/studio';
+      subscription = socketClient.subscribe(topicUrl, (message) => {
         if (message.body) {
           if (message.headers['content-type'] === 'application/json') {
             const payload = JSON.parse(message.body);
@@ -204,6 +216,11 @@ function openSocket({ site, xsrfToken }) {
     }
   });
   socketClient.activate();
+  if (site) {
+    siteSocketClient = socketClient;
+  } else {
+    rootSocketClient = socketClient;
+  }
 }
 
 self.onconnect = (e) => {

@@ -28,7 +28,7 @@ import LookupTable from '../models/LookupTable';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
 import { ObtainAuthTokenResponse } from '../services/auth';
-import { getSiteCookie, removeSiteCookie, setJwt } from '../utils/auth';
+import { getSiteCookie, getXSRFToken, removeSiteCookie, setJwt } from '../utils/auth';
 import { storeInitialized } from './actions/system';
 import User from '../models/User';
 import { Site } from '../models/Site';
@@ -88,7 +88,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
       credentials: 'same-origin'
     });
     worker.port.start();
-    worker.port.postMessage(sharedWorkerConnect());
+    worker.port.postMessage(sharedWorkerConnect({ xsrfToken: getXSRFToken() }));
     window.addEventListener('beforeunload', function () {
       worker.port.postMessage(sharedWorkerDisconnect());
     });
