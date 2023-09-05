@@ -157,7 +157,7 @@ const initialState: GlobalState['preview'] = {
   icePanel: null,
   richTextEditor: null,
   editModePadding: false,
-  windowSize: null
+  windowSize: window.innerWidth
 };
 
 const minDrawerWidth = 240;
@@ -241,18 +241,12 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
   [openToolsPanel.type]: (state) => {
     const { windowSize, editMode, toolsPanelWidth, icePanelWidth } = state;
     const adjustedWidths = onOpenDrawerAdjustWidths(windowSize, true, editMode, toolsPanelWidth, icePanelWidth);
-    return {
-      ...state,
-      showToolsPanel: true,
-      toolsPanelWidth: adjustedWidths.currentPanel,
-      icePanelWidth: adjustedWidths.oppositePanel
-    };
+    state.showToolsPanel = true;
+    state.toolsPanelWidth = adjustedWidths.currentPanel;
+    state.icePanelWidth = adjustedWidths.oppositePanel;
   },
   [closeToolsPanel.type]: (state) => {
-    return {
-      ...state,
-      showToolsPanel: false
-    };
+    state.showToolsPanel = false;
   },
   [SET_HOST_SIZE]: (state, { payload }) => {
     if (isNaN(payload.width)) {
@@ -261,37 +255,28 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     if (isNaN(payload.height)) {
       payload.height = state.hostSize.height;
     }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        width: minFrameSize(payload.width),
-        height: minFrameSize(payload.height)
-      }
+    state.hostSize = {
+      ...state.hostSize,
+      width: minFrameSize(payload.width),
+      height: minFrameSize(payload.height)
     };
   },
   [SET_HOST_WIDTH]: (state, { payload }) => {
     if (isNaN(payload)) {
       return state;
     }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        width: minFrameSize(payload)
-      }
+    state.hostSize = {
+      ...state.hostSize,
+      width: minFrameSize(payload)
     };
   },
   [SET_HOST_HEIGHT]: (state, { payload }) => {
     if (isNaN(payload)) {
       return state;
     }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        height: minFrameSize(payload)
-      }
+    state.hostSize = {
+      ...state.hostSize,
+      height: minFrameSize(payload)
     };
   },
   [FETCH_CONTENT_MODEL_COMPLETE]: (state, { payload }) => {
@@ -305,19 +290,16 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     const href = location.href;
     const origin = location.origin;
     const url = href.replace(location.origin, '');
-    return {
-      ...state,
-      guest: {
-        url,
-        origin,
-        modelId: null,
-        path,
-        models: null,
-        hierarchyMap: null,
-        modelIdByPath: null,
-        selected: null,
-        itemBeingDragged: null
-      }
+    state.guest = {
+      url,
+      origin,
+      modelId: null,
+      path,
+      models: null,
+      hierarchyMap: null,
+      modelIdByPath: null,
+      selected: null,
+      itemBeingDragged: null
     };
   },
   [guestCheckOut.type]: (state) => {
@@ -541,15 +523,12 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       icePanelWidth,
       toolsPanelWidth
     );
-    return {
-      ...state,
-      editMode: payload.editMode,
-      highlightMode: payload.highlightMode ?? state.highlightMode,
-      ...(payload.editMode && {
-        icePanelWidth: adjustedWidths.currentPanel,
-        toolsPanelWidth: adjustedWidths.oppositePanel
-      })
-    };
+    state.editMode = payload.editMode;
+    state.highlightMode = payload.highlightMode ?? state.highlightMode;
+    if (payload.editMode) {
+      state.icePanelWidth = adjustedWidths.currentPanel;
+      state.toolsPanelWidth = adjustedWidths.oppositePanel;
+    }
   },
   [updateToolsPanelWidth.type]: (state, { payload }) => {
     const { windowSize, editMode, icePanelWidth } = state;
@@ -557,10 +536,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     if (isDrawerWidthValid(windowSize, payload.width, icePanelWidth, editMode)) {
       return state;
     }
-    return {
-      ...state,
-      toolsPanelWidth: payload.width
-    };
+    state.toolsPanelWidth = payload.width;
   },
   [updateIcePanelWidth.type]: (state, { payload }) => {
     const { windowSize, showToolsPanel, toolsPanelWidth } = state;
@@ -568,10 +544,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     if (isDrawerWidthValid(windowSize, payload.width, toolsPanelWidth, showToolsPanel)) {
       return state;
     }
-    return {
-      ...state,
-      icePanelWidth: payload.width
-    };
+    state.icePanelWidth = payload.width;
   },
   [pushToolsPanelPage.type]: (state, { payload }) => {
     return {
@@ -795,12 +768,9 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
         toolsPanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : toolsPanelWidth - result / 2;
       adjustedIcePanelWidth = icePanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : icePanelWidth - result / 2;
     }
-    return {
-      ...state,
-      windowSize: windowSize,
-      toolsPanelWidth: adjustedToolsPanelWidth,
-      icePanelWidth: adjustedIcePanelWidth
-    };
+    state.windowSize = windowSize;
+    state.toolsPanelWidth = adjustedToolsPanelWidth;
+    state.icePanelWidth = adjustedIcePanelWidth;
   }
 });
 
