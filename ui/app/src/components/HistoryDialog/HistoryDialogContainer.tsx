@@ -57,7 +57,6 @@ import { historyStyles } from './HistoryDialog';
 import useSelection from '../../hooks/useSelection';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { UNDEFINED } from '../../utils/constants';
-import { ensureSingleSlash } from '../../utils/string';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { LoadingState } from '../LoadingState';
 
