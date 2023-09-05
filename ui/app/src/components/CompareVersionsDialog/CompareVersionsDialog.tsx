@@ -50,7 +50,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
           <FormattedMessage
             id="compareVersionsDialog.headerSubtitleCompareTo"
             defaultMessage="Select a revision to compare to “{selectedA}”"
-            values={{ selectedA: <AsDayMonthDateTime date={selectedA.lastModifiedDate} /> }}
+            values={{ selectedA: <AsDayMonthDateTime date={selectedA.modifiedDate} /> }}
           />
         ) : (
           !isCompareMode && (

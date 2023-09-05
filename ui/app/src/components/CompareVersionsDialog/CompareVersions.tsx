@@ -176,7 +176,7 @@ export function CompareVersions(props: CompareVersionsProps) {
     <iframe
       title="Comparing versions"
       className={classes.iframe}
-      src={`${authoringUrl}/diff?site=${a.site}&path=${a.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
+      src={`${authoringUrl}/diff?site=${a.site}&path=${a.path}&oldPath=${b.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
     />
   );
 }

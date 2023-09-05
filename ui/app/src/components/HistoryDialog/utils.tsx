@@ -18,7 +18,7 @@ import { MessageDescriptor } from 'react-intl';
 import translations from './translations';
 import React from 'react';
 import { ContextMenuOption } from '../ContextMenu';
-import { LegacyVersion, VersionsStateProps } from '../../models/Version';
+import { ItemHistoryEntry, VersionsStateProps } from '../../models/Version';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
@@ -26,7 +26,7 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 export interface Menu {
   sections: ContextMenuOption[][];
   anchorEl: Element;
-  activeItem: LegacyVersion;
+  activeItem: ItemHistoryEntry;
 }
 
 export interface HistoryDialogBaseProps {}
