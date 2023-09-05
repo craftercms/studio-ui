@@ -71,6 +71,7 @@ const messages = defineMessages({
 
 const getDefaultModel = (fields: AudiencesPanelUIProps['fields'], setTimeZoneLookups) => {
   const props = {};
+  const timezones = {};
 
   Object.keys(fields).forEach((fieldId: string) => {
     const propValue = fields[fieldId].defaultValue;
@@ -78,10 +79,9 @@ const getDefaultModel = (fields: AudiencesPanelUIProps['fields'], setTimeZoneLoo
     props[fieldId] = propValue;
 
     if (fields[fieldId].type === 'date-time') {
-      setTimeZoneLookups({
-        [fieldId]: fields[fieldId].timeZone
-      });
+      timezones[fieldId] = fields[fieldId].timeZone;
     }
+    setTimeZoneLookups(timezones);
   });
   return props;
 };

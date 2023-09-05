@@ -118,7 +118,7 @@ function DateTimePicker(props: DateTimePickerProps) {
     if (nou(value)) {
       return null;
     }
-    const date = value ? new Date(value) : null;
+    const date = new Date(value);
     const localOffset = moment().format().slice(-6);
     const dateWithoutOffset = moment(date).tz(timeZone).format().substring(0, 19);
     return new Date(`${dateWithoutOffset}${localOffset}`);

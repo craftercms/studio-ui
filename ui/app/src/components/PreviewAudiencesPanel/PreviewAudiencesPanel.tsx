@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import {
@@ -31,7 +31,6 @@ import { ContentTypeField } from '../../models/ContentType';
 import EmptyState from '../EmptyState/EmptyState';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import useSpreadState from '../../hooks/useSpreadState';
 
 const translations = defineMessages({
   audiencesPanel: {
@@ -55,7 +54,7 @@ export function PreviewAudiencesPanel(props: PreviewAudiencesPanelProps) {
   const { fields } = props;
   const panelState = useSelection<GlobalState['preview']['audiencesPanel']>((state) => state.preview.audiencesPanel);
   const hasNoFields = !fields || Object.values(fields).length === 0;
-  const [timeZonesLookup, setTimeZonesLookup] = useSpreadState({});
+  const [timeZonesLookup, setTimeZonesLookup] = useState({});
 
   useEffect(() => {
     if (site && panelState.isFetching === null && !hasNoFields) {
