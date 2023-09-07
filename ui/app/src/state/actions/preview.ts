@@ -422,6 +422,8 @@ export const requestEdit = /*#__PURE__*/ createAction<{
   index?: string | number;
 }>('REQUEST_EDIT');
 
+export const setWindowSize = /*#__PURE__*/ createAction<{ size: number }>('SET_WINDOW_SIZE');
+
 // endregion
 
 // region toolsPanelPageStack

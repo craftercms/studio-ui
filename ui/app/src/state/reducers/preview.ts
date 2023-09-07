@@ -58,6 +58,7 @@ import {
   setEditModePadding,
   setHighlightMode,
   setPreviewEditMode,
+  setWindowSize,
   toggleEditModePadding,
   UPDATE_AUDIENCES_PANEL_MODEL,
   updateIcePanelWidth,
@@ -155,11 +156,58 @@ const initialState: GlobalState['preview'] = {
   },
   icePanel: null,
   richTextEditor: null,
-  editModePadding: false
+  editModePadding: false,
+  windowSize: window.innerWidth
 };
 
 const minDrawerWidth = 240;
-const maxDrawerWidth = 500;
+const minPreviewWidth = 320;
+
+const isDrawerWidthValid = (
+  windowSize: number,
+  drawerWidth: number,
+  oppositeDrawerWidth: number,
+  showOppositeDrawer: boolean
+) => {
+  const maxWidth = windowSize - (showOppositeDrawer ? oppositeDrawerWidth : 0) - minPreviewWidth;
+  return drawerWidth < minDrawerWidth || drawerWidth > maxWidth;
+};
+
+const previewWidthResult = (
+  windowSize: number,
+  showCurrentPanel: boolean,
+  showOppositePanel: boolean,
+  currentPanelWidth: number,
+  oppositePanelWidth: number
+) => {
+  return windowSize - (showCurrentPanel ? currentPanelWidth : 0) - (showOppositePanel ? oppositePanelWidth : 0);
+};
+
+const onOpenDrawerAdjustWidths = (
+  windowSize: number,
+  showCurrentPanel: boolean,
+  showOppositePanel: boolean,
+  currentPanelWidth: number,
+  oppositePanelWidth: number
+) => {
+  let adjustedCurrentPanelWidth = currentPanelWidth;
+  let adjustedOppositePanelWidth = oppositePanelWidth;
+  const result = previewWidthResult(
+    windowSize,
+    showCurrentPanel,
+    showOppositePanel,
+    currentPanelWidth,
+    oppositePanelWidth
+  );
+  if (result < minPreviewWidth) {
+    adjustedCurrentPanelWidth = minDrawerWidth;
+    adjustedOppositePanelWidth = windowSize - minPreviewWidth - minDrawerWidth;
+  }
+  return {
+    currentPanel: adjustedCurrentPanelWidth < minDrawerWidth ? minDrawerWidth : adjustedCurrentPanelWidth,
+    oppositePanel: adjustedOppositePanelWidth < minDrawerWidth ? minDrawerWidth : adjustedOppositePanelWidth
+  };
+};
 
 const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
   if (nnou(state.guest)) {
@@ -191,16 +239,14 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 
 const reducer = createReducer<GlobalState['preview']>(initialState, {
   [openToolsPanel.type]: (state) => {
-    return {
-      ...state,
-      showToolsPanel: true
-    };
+    const { windowSize, editMode, toolsPanelWidth, icePanelWidth } = state;
+    const adjustedWidths = onOpenDrawerAdjustWidths(windowSize, true, editMode, toolsPanelWidth, icePanelWidth);
+    state.showToolsPanel = true;
+    state.toolsPanelWidth = adjustedWidths.currentPanel;
+    state.icePanelWidth = adjustedWidths.oppositePanel;
   },
   [closeToolsPanel.type]: (state) => {
-    return {
-      ...state,
-      showToolsPanel: false
-    };
+    state.showToolsPanel = false;
   },
   [SET_HOST_SIZE]: (state, { payload }) => {
     if (isNaN(payload.width)) {
@@ -209,37 +255,28 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     if (isNaN(payload.height)) {
       payload.height = state.hostSize.height;
     }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        width: minFrameSize(payload.width),
-        height: minFrameSize(payload.height)
-      }
+    state.hostSize = {
+      ...state.hostSize,
+      width: minFrameSize(payload.width),
+      height: minFrameSize(payload.height)
     };
   },
   [SET_HOST_WIDTH]: (state, { payload }) => {
     if (isNaN(payload)) {
       return state;
     }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        width: minFrameSize(payload)
-      }
+    state.hostSize = {
+      ...state.hostSize,
+      width: minFrameSize(payload)
     };
   },
   [SET_HOST_HEIGHT]: (state, { payload }) => {
     if (isNaN(payload)) {
       return state;
     }
-    return {
-      ...state,
-      hostSize: {
-        ...state.hostSize,
-        height: minFrameSize(payload)
-      }
+    state.hostSize = {
+      ...state.hostSize,
+      height: minFrameSize(payload)
     };
   },
   [FETCH_CONTENT_MODEL_COMPLETE]: (state, { payload }) => {
@@ -253,19 +290,16 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     const href = location.href;
     const origin = location.origin;
     const url = href.replace(location.origin, '');
-    return {
-      ...state,
-      guest: {
-        url,
-        origin,
-        modelId: null,
-        path,
-        models: null,
-        hierarchyMap: null,
-        modelIdByPath: null,
-        selected: null,
-        itemBeingDragged: null
-      }
+    state.guest = {
+      url,
+      origin,
+      modelId: null,
+      path,
+      models: null,
+      hierarchyMap: null,
+      modelIdByPath: null,
+      selected: null,
+      itemBeingDragged: null
     };
   },
   [guestCheckOut.type]: (state) => {
@@ -480,28 +514,37 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       }
     }
   }),
-  [setPreviewEditMode.type]: (state, { payload }) => ({
-    ...state,
-    editMode: payload.editMode,
-    highlightMode: payload.highlightMode ?? state.highlightMode
-  }),
+  [setPreviewEditMode.type]: (state, { payload }) => {
+    const { windowSize, showToolsPanel, toolsPanelWidth, icePanelWidth } = state;
+    const adjustedWidths = onOpenDrawerAdjustWidths(
+      windowSize,
+      payload.editMode,
+      showToolsPanel,
+      icePanelWidth,
+      toolsPanelWidth
+    );
+    state.editMode = payload.editMode;
+    state.highlightMode = payload.highlightMode ?? state.highlightMode;
+    if (payload.editMode) {
+      state.icePanelWidth = adjustedWidths.currentPanel;
+      state.toolsPanelWidth = adjustedWidths.oppositePanel;
+    }
+  },
   [updateToolsPanelWidth.type]: (state, { payload }) => {
-    if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
+    const { windowSize, editMode, icePanelWidth } = state;
+    // when resizing tools panel, leave at least 320px for preview.
+    if (isDrawerWidthValid(windowSize, payload.width, icePanelWidth, editMode)) {
       return state;
     }
-    return {
-      ...state,
-      toolsPanelWidth: payload.width
-    };
+    state.toolsPanelWidth = payload.width;
   },
   [updateIcePanelWidth.type]: (state, { payload }) => {
-    if (payload.width < minDrawerWidth || payload.width > maxDrawerWidth) {
+    const { windowSize, showToolsPanel, toolsPanelWidth } = state;
+    // When resizing ice panel, leave at least 320px for preview.
+    if (isDrawerWidthValid(windowSize, payload.width, toolsPanelWidth, showToolsPanel)) {
       return state;
     }
-    return {
-      ...state,
-      icePanelWidth: payload.width
-    };
+    state.icePanelWidth = payload.width;
   },
   [pushToolsPanelPage.type]: (state, { payload }) => {
     return {
@@ -581,18 +624,11 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       });
     }
 
-    const toolsPanelWidth =
-      payload.toolsPanelWidth < minDrawerWidth
-        ? minDrawerWidth
-        : payload.toolsPanelWidth > maxDrawerWidth
-        ? maxDrawerWidth
-        : payload.toolsPanelWidth;
-
     return {
       ...state,
       ...(payload.storedPage && { toolsPanelPageStack: [payload.storedPage] }),
       toolsPanel: toolsPanelConfig,
-      toolsPanelWidth: toolsPanelWidth ?? state.toolsPanelWidth
+      toolsPanelWidth: payload.toolsPanelWidth ?? state.toolsPanelWidth
     };
   },
   // After re-fetching site ui config (e.g. when config is modified), we need the tools to be
@@ -671,18 +707,11 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       });
     }
 
-    const icePanelWidth =
-      payload.icePanelWidth < minDrawerWidth
-        ? minDrawerWidth
-        : payload.icePanelWidth > maxDrawerWidth
-        ? maxDrawerWidth
-        : payload.icePanelWidth;
-
     return {
       ...state,
       ...(payload.storedPage && { icePanelStack: [payload.storedPage] }),
       icePanel: icePanelConfig,
-      icePanelWidth: icePanelWidth ?? state.icePanelWidth
+      icePanelWidth: payload.icePanelWidth ?? state.icePanelWidth
     };
   },
   [initRichTextEditorConfig.type]: (state, { payload }) => {
@@ -722,7 +751,27 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
   [toggleEditModePadding.type]: (state) => ({
     ...state,
     editModePadding: !state.editModePadding
-  })
+  }),
+  [setWindowSize.type]: (state, { payload }) => {
+    const windowSize = payload.size;
+    const { editMode, icePanelWidth, showToolsPanel, toolsPanelWidth } = state;
+    const result = previewWidthResult(windowSize, showToolsPanel, editMode, toolsPanelWidth, icePanelWidth);
+    let adjustedToolsPanelWidth = toolsPanelWidth < minDrawerWidth ? minDrawerWidth : toolsPanelWidth;
+    let adjustedIcePanelWidth = icePanelWidth < minDrawerWidth ? minDrawerWidth : icePanelWidth;
+    // if window size is less than minimum (320), or if both panels are bigger than window size, update tools panel and
+    // ice panel accordingly.
+    if (result < 0) {
+      adjustedToolsPanelWidth = minDrawerWidth;
+      adjustedIcePanelWidth = minDrawerWidth;
+    } else if (result < minPreviewWidth) {
+      adjustedToolsPanelWidth =
+        toolsPanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : toolsPanelWidth - result / 2;
+      adjustedIcePanelWidth = icePanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : icePanelWidth - result / 2;
+    }
+    state.windowSize = windowSize;
+    state.toolsPanelWidth = adjustedToolsPanelWidth;
+    state.icePanelWidth = adjustedIcePanelWidth;
+  }
 });
 
 function minFrameSize(suggestedSize: number): number {

@@ -192,6 +192,7 @@ export interface GlobalState {
     };
     richTextEditor: LookupTable;
     editModePadding: boolean;
+    windowSize: number;
   };
   previewNavigation: {
     currentUrlPath: string;
