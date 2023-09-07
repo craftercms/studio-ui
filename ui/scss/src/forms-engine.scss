@@ -190,3 +190,16 @@ hr.MuiDivider-root {
   max-height: 80vh;
   overflow-y: auto;
 }
+
+// Dark mode should styles not apply on the .contentTypePopupBtn buttons
+.contentTypePopupBtn {
+  .btn {
+    border-color: rgba(0, 0, 0, 0) !important;
+  }
+  .btn-default {
+    color: #333 !important;
+  }
+  .btn-primary {
+    color: #fff !important;
+  }
+}
