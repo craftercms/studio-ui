@@ -94,7 +94,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
-import { nnou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import RubbishBin from '../RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
@@ -500,7 +500,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     const localEditMode = getStoredEditModeChoice(user.username);
     if (nnou(localEditMode) && editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
-    } else if (!localEditMode && nnou(defaultEditMode) && editMode !== defaultEditMode) {
+    } else if (nou(localEditMode) && nnou(defaultEditMode) && editMode !== defaultEditMode) {
       dispatch(setPreviewEditMode({ editMode: defaultEditMode }));
     }
 
