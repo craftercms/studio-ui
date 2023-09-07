@@ -264,6 +264,7 @@ export interface GlobalState {
     cdataEscapedFieldPatterns: string[];
     references: LookupTable;
     xml: string;
+    defaultEditMode?: boolean;
   };
   pathNavigator: LookupTable<PathNavigatorStateProps>;
   pathNavigatorTree: LookupTable<PathNavigatorTreeStateProps>;

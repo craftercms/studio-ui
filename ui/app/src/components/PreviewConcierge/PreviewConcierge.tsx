@@ -329,7 +329,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const [socketConnectionSnackbarOpen, setSocketConnectionSnackbarOpen] = useState(false);
   const currentItemPath = guest?.path;
   const uiConfig = useSiteUIConfig();
-  const { cdataEscapedFieldPatterns } = uiConfig;
+  const { cdataEscapedFieldPatterns, defaultEditMode } = uiConfig;
   const rteConfig = useRTEConfig();
   const keyboardShortcutsDialogState = useEnhancedDialogState();
   const theme = useTheme();
@@ -500,6 +500,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     const localEditMode = getStoredEditModeChoice(user.username);
     if (nnou(localEditMode) && editMode !== localEditMode) {
       dispatch(setPreviewEditMode({ editMode: localEditMode }));
+    } else if (!localEditMode && nnou(defaultEditMode) && editMode !== defaultEditMode) {
+      dispatch(setPreviewEditMode({ editMode: defaultEditMode }));
     }
 
     const localHighlightMode = getStoredHighlightModeChoice(user.username);
