@@ -38,6 +38,7 @@ import {
   guestModelUpdated,
   guestPathUpdated,
   initIcePanelConfig,
+  initPreviewConfig,
   initRichTextEditorConfig,
   initToolbarConfig,
   initToolsPanelConfig,
@@ -190,6 +191,28 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 };
 
 const reducer = createReducer<GlobalState['preview']>(initialState, {
+  [initPreviewConfig.type]: (state, { payload }) => {
+    const configDOM = fromString(payload.configXml);
+    const initialEditModeOn = configDOM
+      .querySelector('[id="craftercms.components.Preview"]')
+      ?.getAttribute('initialEditModeOn');
+    const initialHighlightMode = configDOM
+      .querySelector('[id="craftercms.components.Preview"]')
+      ?.getAttribute('initialHighlightMode');
+
+    const editMode = payload.storedEditMode ?? (nnou(initialEditModeOn) ? initialEditModeOn === 'true' : null);
+    const highlightMode = payload.storedHighlightMode ?? initialHighlightMode;
+
+    if (nnou(editMode)) {
+      state.editMode = editMode;
+    }
+    if (nnou(highlightMode)) {
+      state.highlightMode = highlightMode;
+    }
+    if (nnou(payload.storedPaddingMode)) {
+      state.editModePadding = payload.storedPaddingMode;
+    }
+  },
   [openToolsPanel.type]: (state) => {
     return {
       ...state,

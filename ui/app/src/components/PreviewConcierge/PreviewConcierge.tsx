@@ -56,8 +56,6 @@ import {
   requestWorkflowCancellationDialogOnResult,
   selectForEdit,
   setContentTypeDropTargets,
-  setEditModePadding,
-  setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
@@ -71,7 +69,8 @@ import {
   updateFieldValueOperationFailed,
   updateRteConfig,
   snackGuestMessage,
-  InsertComponentOperationPayload
+  InsertComponentOperationPayload,
+  initPreviewConfig
 } from '../../state/actions/preview';
 import {
   writeInstance,
@@ -94,7 +93,7 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
-import { nnou, nou } from '../../utils/object';
+import { nnou } from '../../utils/object';
 import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from '../../utils/model';
 import RubbishBin from '../RubbishBin/RubbishBin';
 import { useSnackbar } from 'notistack';
@@ -329,7 +328,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const [socketConnectionSnackbarOpen, setSocketConnectionSnackbarOpen] = useState(false);
   const currentItemPath = guest?.path;
   const uiConfig = useSiteUIConfig();
-  const { cdataEscapedFieldPatterns, defaultEditMode } = uiConfig;
+  const { cdataEscapedFieldPatterns } = uiConfig;
   const rteConfig = useRTEConfig();
   const keyboardShortcutsDialogState = useEnhancedDialogState();
   const theme = useTheme();
@@ -450,6 +449,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   };
 
   useEffect(() => {
+    if (nnou(uiConfig.xml)) {
+      const storedEditMode = getStoredEditModeChoice(user.username, uuid);
+      const storedHighlightMode = getStoredHighlightModeChoice(user.username, uuid);
+      const storedPaddingMode = getStoredEditModePadding(user.username);
+      dispatch(initPreviewConfig({ configXml: uiConfig.xml, storedEditMode, storedHighlightMode, storedPaddingMode }));
+    }
+  }, [uiConfig.xml, user.username, uuid, dispatch]);
+
+  useEffect(() => {
     if (!socketConnected && authActive) {
       startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
     } else {
@@ -494,28 +502,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     }
   }, [rteConfig]);
 
-  // Guest detection, document domain restoring, editMode/highlightMode preference retrieval,
-  // and guest key up/down notifications.
+  // Guest detection, document domain restoring and guest key up/down notifications.
   useMount(() => {
-    const localEditMode = getStoredEditModeChoice(user.username);
-    if (nnou(localEditMode) && editMode !== localEditMode) {
-      dispatch(setPreviewEditMode({ editMode: localEditMode }));
-    } else if (nou(localEditMode) && nnou(defaultEditMode) && editMode !== defaultEditMode) {
-      dispatch(setPreviewEditMode({ editMode: defaultEditMode }));
-    }
-
-    const localHighlightMode = getStoredHighlightModeChoice(user.username);
-    if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
-      dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
-    }
-
-    const localPaddingMode = getStoredEditModePadding(user.username);
-    if (nnou(localPaddingMode) && editModePadding !== localPaddingMode) {
-      dispatch(setEditModePadding({ editModePadding: localPaddingMode }));
-    }
-
     startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
-
     return () => {
       document.domain = originalDocDomain;
     };

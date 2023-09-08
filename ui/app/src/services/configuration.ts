@@ -270,9 +270,6 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
         .filter(Boolean),
       upload: ((node) => (node ? deserialize(node).upload : {}))(dom.querySelector(':scope > upload')),
       locale: ((node) => (node ? deserialize(node).locale : {}))(dom.querySelector(':scope > locale')),
-      defaultEditMode: ((node) => (node ? deserialize(node).defaultEditMode : null))(
-        dom.querySelector(':scope > defaultEditMode')
-      ),
       publishing: ((node) => {
         const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
         return {

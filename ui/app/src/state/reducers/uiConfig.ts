@@ -145,7 +145,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
   }),
   [fetchSiteConfig.type]: (state) => ({ ...state }),
   [fetchSiteConfigComplete.type]: (state, { payload }) => {
-    const { cdataEscapedFieldPatterns, locale, publishing, upload, defaultEditMode } = payload;
+    const { cdataEscapedFieldPatterns, locale, publishing, upload } = payload;
     return {
       ...state,
       upload: {
@@ -162,8 +162,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       publishing: {
         ...state.publishing,
         ...publishing
-      },
-      defaultEditMode
+      }
     };
   }
 });
