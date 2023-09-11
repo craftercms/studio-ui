@@ -14,12 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const { nanoid: cuid } = require('nanoid');
-const EventTracker = require('@uppy/utils/lib/EventTracker');
-const ProgressTimeout = require('@uppy/utils/lib/ProgressTimeout');
-const UppyXHRUpload = require('@uppy/xhr-upload');
-const NetworkError = require('@uppy/utils/lib/NetworkError');
-const isNetworkError = require('@uppy/utils/lib/isNetworkError');
+import { nanoid as cuid } from 'nanoid';
+import EventTracker from '@uppy/utils/lib/EventTracker';
+import ProgressTimeout from '@uppy/utils/lib/ProgressTimeout';
+import UppyXHRUpload from '@uppy/xhr-upload';
+import NetworkError from '@uppy/utils/lib/NetworkError';
+import isNetworkError from '@uppy/utils/lib/isNetworkError';
 
 function buildResponseError(xhr, error) {
   // No error message
@@ -40,7 +40,7 @@ function buildResponseError(xhr, error) {
   return error;
 }
 
-class XHRUpload extends UppyXHRUpload {
+export class XHRUpload extends UppyXHRUpload {
   upload(file, current, total) {
     const opts = this.getOptions(file);
     this.uppy.log(`uploading ${current} of ${total}`);
@@ -171,4 +171,4 @@ class XHRUpload extends UppyXHRUpload {
   }
 }
 
-module.exports = XHRUpload;
+export default XHRUpload;
