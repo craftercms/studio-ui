@@ -307,8 +307,17 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const store = useStore<GlobalState>();
   const { id: siteId, uuid } = useActiveSite() ?? {};
   const user = useActiveUser();
-  const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
-    usePreviewState();
+  const {
+    guest,
+    editMode,
+    highlightMode,
+    editModePadding,
+    icePanelWidth,
+    toolsPanelWidth,
+    hostSize,
+    showToolsPanel,
+    xbDetectionTimeoutMs
+  } = usePreviewState();
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
@@ -437,7 +446,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       }
     },
     env,
-    xbCompatConsoleWarningPrinted: false
+    xbCompatConsoleWarningPrinted: false,
+    xbDetectionTimeoutMs
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -459,12 +469,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   useEffect(() => {
     if (!socketConnected && authActive) {
-      startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
+      startCommunicationDetectionTimeout(
+        socketConnectionTimeoutRef,
+        setSocketConnectionSnackbarOpen,
+        xbDetectionTimeoutMs
+      );
     } else {
       clearTimeout(socketConnectionTimeoutRef.current);
       setSocketConnectionSnackbarOpen(false);
     }
-  }, [socketConnected, authActive]);
+  }, [socketConnected, authActive, xbDetectionTimeoutMs]);
 
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
@@ -504,7 +518,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Guest detection, document domain restoring and guest key up/down notifications.
   useMount(() => {
-    startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+    startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen, xbDetectionTimeoutMs);
     return () => {
       document.domain = originalDocDomain;
     };
@@ -702,7 +716,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
           dispatch(action);
-          startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+          startCommunicationDetectionTimeout(
+            guestDetectionTimeoutRef,
+            setGuestDetectionSnackbarOpen,
+            upToDateRefs.current.xbDetectionTimeoutMs
+          );
           break;
         }
         case sortItemOperation.type: {
@@ -1317,7 +1335,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     if (priorState.current.site !== siteId) {
       priorState.current.site = siteId;
-      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen, xbDetectionTimeoutMs);
       if (guest) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
@@ -1325,7 +1343,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         dispatch(guestCheckOut({ path: guest.path }));
       }
     }
-  }, [siteId, guest, dispatch]);
+  }, [siteId, guest, dispatch, xbDetectionTimeoutMs]);
 
   // Initialize RTE config
   useEffect(() => {

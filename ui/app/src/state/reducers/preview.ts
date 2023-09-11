@@ -156,7 +156,8 @@ const initialState: GlobalState['preview'] = {
   },
   icePanel: null,
   richTextEditor: null,
-  editModePadding: false
+  editModePadding: false,
+  xbDetectionTimeoutMs: 5000
 };
 
 const minDrawerWidth = 240;
@@ -196,12 +197,14 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     const previewConfigEl = configDOM.querySelector('[id="craftercms.components.Preview"]');
     const initialEditModeOn = previewConfigEl?.getAttribute('initialEditModeOn');
     const initialHighlightMode = previewConfigEl?.getAttribute('initialHighlightMode');
+    const xbDetectionTimeoutMs = parseInt(previewConfigEl?.getAttribute('xbDetectionTimeoutMs'));
 
     state.editMode = payload.storedEditMode ?? (initialEditModeOn ? initialEditModeOn === 'true' : state.editMode);
     state.highlightMode =
       payload.storedHighlightMode ??
       (['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
     state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
+    state.xbDetectionTimeoutMs = Boolean(xbDetectionTimeoutMs) ? xbDetectionTimeoutMs : state.xbDetectionTimeoutMs;
   },
   [openToolsPanel.type]: (state) => {
     return {
