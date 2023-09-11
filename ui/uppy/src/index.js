@@ -1,5 +1,2 @@
-const Dashboard = require('./plugins/Dashboard');
-const XHRUpload = require('./plugins/XHRUpload');
-
-exports.Dashboard = Dashboard;
-exports.XHRUpload = XHRUpload;
+export * from './plugins/Dashboard';
+export * from './plugins/XHRUpload';
