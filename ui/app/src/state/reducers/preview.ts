@@ -193,25 +193,15 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 const reducer = createReducer<GlobalState['preview']>(initialState, {
   [initPreviewConfig.type]: (state, { payload }) => {
     const configDOM = fromString(payload.configXml);
-    const initialEditModeOn = configDOM
-      .querySelector('[id="craftercms.components.Preview"]')
-      ?.getAttribute('initialEditModeOn');
-    const initialHighlightMode = configDOM
-      .querySelector('[id="craftercms.components.Preview"]')
-      ?.getAttribute('initialHighlightMode');
+    const previewConfigEl = configDOM.querySelector('[id="craftercms.components.Preview"]');
+    const initialEditModeOn = previewConfigEl?.getAttribute('initialEditModeOn');
+    const initialHighlightMode = previewConfigEl?.getAttribute('initialHighlightMode');
 
-    const editMode = payload.storedEditMode ?? (nnou(initialEditModeOn) ? initialEditModeOn === 'true' : null);
-    const highlightMode = payload.storedHighlightMode ?? initialHighlightMode;
-
-    if (nnou(editMode)) {
-      state.editMode = editMode;
-    }
-    if (nnou(highlightMode)) {
-      state.highlightMode = highlightMode;
-    }
-    if (nnou(payload.storedPaddingMode)) {
-      state.editModePadding = payload.storedPaddingMode;
-    }
+    state.editMode = payload.storedEditMode ?? (initialEditModeOn ? initialEditModeOn === 'true' : state.editMode);
+    state.highlightMode =
+      payload.storedHighlightMode ??
+      (['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
+    state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
   },
   [openToolsPanel.type]: (state) => {
     return {
