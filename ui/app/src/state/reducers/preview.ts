@@ -204,7 +204,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       payload.storedHighlightMode ??
       (['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
     state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
-    state.xbDetectionTimeoutMs = Boolean(xbDetectionTimeoutMs) ? xbDetectionTimeoutMs : state.xbDetectionTimeoutMs;
+    state.xbDetectionTimeoutMs =
+      Boolean(xbDetectionTimeoutMs) && xbDetectionTimeoutMs > 0 ? xbDetectionTimeoutMs : state.xbDetectionTimeoutMs;
   },
   [openToolsPanel.type]: (state) => {
     return {
