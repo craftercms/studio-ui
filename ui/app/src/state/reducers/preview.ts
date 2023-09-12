@@ -159,11 +159,12 @@ const initialState: GlobalState['preview'] = {
   richTextEditor: null,
   editModePadding: false,
   windowSize: window.innerWidth,
-  xbDetectionTimeoutMs: 5000
+  xbDetectionTimeoutMs: null
 };
 
 const minDrawerWidth = 240;
 const minPreviewWidth = 320;
+const defaultXbDetectionTimeoutMs = 5000;
 
 const isDrawerWidthValid = (
   windowSize: number,
@@ -253,7 +254,9 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       (['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
     state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
     state.xbDetectionTimeoutMs =
-      Boolean(xbDetectionTimeoutMs) && xbDetectionTimeoutMs > 0 ? xbDetectionTimeoutMs : state.xbDetectionTimeoutMs;
+      Boolean(xbDetectionTimeoutMs) && xbDetectionTimeoutMs > 0
+        ? xbDetectionTimeoutMs
+        : state.xbDetectionTimeoutMs ?? defaultXbDetectionTimeoutMs;
   },
   [openToolsPanel.type]: (state) => {
     const { windowSize, editMode, toolsPanelWidth, icePanelWidth } = state;

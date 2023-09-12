@@ -468,7 +468,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   }, [uiConfig.xml, user.username, uuid, dispatch]);
 
   useEffect(() => {
-    if (!socketConnected && authActive) {
+    if (!socketConnected && authActive && xbDetectionTimeoutMs) {
       startCommunicationDetectionTimeout(
         socketConnectionTimeoutRef,
         setSocketConnectionSnackbarOpen,
@@ -516,9 +516,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     }
   }, [rteConfig]);
 
+  useEffect(() => {
+    if (xbDetectionTimeoutMs) {
+      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen, xbDetectionTimeoutMs);
+    }
+  }, [xbDetectionTimeoutMs]);
+
   // Guest detection, document domain restoring and guest key up/down notifications.
   useMount(() => {
-    startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen, xbDetectionTimeoutMs);
     return () => {
       document.domain = originalDocDomain;
     };
@@ -1335,7 +1340,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     if (priorState.current.site !== siteId) {
       priorState.current.site = siteId;
-      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen, xbDetectionTimeoutMs);
+      if (xbDetectionTimeoutMs) {
+        startCommunicationDetectionTimeout(
+          guestDetectionTimeoutRef,
+          setGuestDetectionSnackbarOpen,
+          xbDetectionTimeoutMs
+        );
+      }
       if (guest) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
