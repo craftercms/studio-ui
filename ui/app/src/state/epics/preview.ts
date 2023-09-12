@@ -15,7 +15,7 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, tap, withLatestFrom } from 'rxjs/operators';
+import { debounceTime, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
   closeToolsPanel,
   openToolsPanel,
@@ -27,7 +27,10 @@ import {
   setEditModePadding,
   setHighlightMode,
   setPreviewEditMode,
-  toggleEditModePadding
+  setWindowSize,
+  toggleEditModePadding,
+  updateIcePanelWidth,
+  updateToolsPanelWidth
 } from '../actions/preview';
 import { getHostToGuestBus } from '../../utils/subjects';
 import {
@@ -38,15 +41,31 @@ import {
   setStoredEditModePadding,
   setStoredHighlightModeChoice,
   setStoredICEToolsPanelPage,
+  setStoredICEToolsPanelWidth,
   setStoredPreviewToolsPanelPage,
+  setStoredPreviewToolsPanelWidth,
   setStoredShowToolsPanel
 } from '../../utils/state';
 import GlobalState from '../../models/GlobalState';
 import { setClipboard } from '../actions/content';
 import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
+import { storeInitialized } from '../actions/system';
+import { fromEvent } from 'rxjs';
 
 export default [
+  // region storeInitialized
+  (action$, state$) =>
+    action$.pipe(
+      ofType(storeInitialized.type),
+      switchMap(() =>
+        fromEvent(window, 'resize').pipe(
+          debounceTime(200),
+          map((e) => setWindowSize({ size: (e.target as Window).innerWidth }))
+        )
+      )
+    ),
+  // endregion
   // region pushToolsPanelPage
   (action$, state$) =>
     action$.pipe(
@@ -200,6 +219,25 @@ export default [
         } else {
           removeStoredICEToolsPanelPage(uuid, state.user.username);
         }
+      }),
+      ignoreElements()
+    ),
+  // endregion
+  // region store panels width
+  (action$, state$) =>
+    action$.pipe(
+      ofType(
+        openToolsPanel.type,
+        setPreviewEditMode.type,
+        updateIcePanelWidth.type,
+        updateToolsPanelWidth.type,
+        setWindowSize.type
+      ),
+      withLatestFrom(state$),
+      tap(([action, state]) => {
+        const { sites, preview } = state;
+        setStoredICEToolsPanelWidth(sites.active, state.user.username, preview.icePanelWidth);
+        setStoredPreviewToolsPanelWidth(sites.active, state.user.username, preview.toolsPanelWidth);
       }),
       ignoreElements()
     )

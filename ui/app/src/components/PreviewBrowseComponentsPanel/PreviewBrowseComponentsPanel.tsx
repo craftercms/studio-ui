@@ -39,6 +39,7 @@ import translations from './translations';
 import useStyles from './styles';
 import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
 export function PreviewBrowseComponentsPanel() {
   const { classes } = useStyles();
@@ -141,7 +142,9 @@ export function PreviewBrowseComponentsPanel() {
             </Select>
           )}
         </div>
-        {componentsState.isFetching ? (
+        {componentsState.error ? (
+          <ApiResponseErrorState error={componentsState.error} />
+        ) : componentsState.isFetching ? (
           <LoadingState title={formatMessage(translations.loading)} />
         ) : (
           ((nnou(componentsState.pageNumber) && nnou(componentsState.page[componentsState.pageNumber])) ||

@@ -26,6 +26,7 @@ import { popToolsPanelPage } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import TranslationOrText from '../../models/TranslationOrText';
 import { CSSObject } from 'tss-react';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 type ToolPanelProps = PropsWithChildren<{
   title: TranslationOrText;
@@ -81,7 +82,9 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
         BackIcon={BackIcon}
         onBack={onBack}
       />
-      <section className={classes?.body}>{props.children}</section>
+      <ErrorBoundary>
+        <section className={classes?.body}>{props.children}</section>
+      </ErrorBoundary>
     </>
   );
 }
