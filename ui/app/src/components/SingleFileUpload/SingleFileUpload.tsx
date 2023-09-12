@@ -214,7 +214,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 
     return () => {
       // https://uppy.io/docs/uppy/#uppy-close
-      instance.reset();
+      instance.cancelAll();
       instance.close();
     };
   }, [uppy, formTarget, url, upload.timeout]);
