@@ -474,7 +474,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       clearTimeout(socketConnectionTimeoutRef.current);
       setSocketConnectionSnackbarOpen(false);
     }
-  }, [socketConnected, authActive, xbDetectionTimeoutMs]);
+  }, [socketConnected, authActive]);
 
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
