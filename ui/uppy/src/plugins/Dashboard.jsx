@@ -14,22 +14,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const UppyDashboard = require('@uppy/dashboard');
-const DashboardUI = require('../components/Dashboard');
+import DashboardUI from '../components/Dashboard';
+import StatusBar from '@uppy/status-bar/lib/StatusBar';
+import Informer from '@uppy/informer/lib/Informer';
+import ThumbnailGenerator from '@uppy/thumbnail-generator/lib/index';
+import findAllDOMElements from '@uppy/utils/lib/findAllDOMElements';
+import memoize from 'memoize-one';
+import locale from '@uppy/dashboard/lib/locale';
+import UppyDashboard from '@uppy/dashboard';
+import { nanoid } from 'nanoid';
 
-const StatusBar = require('@uppy/status-bar');
-const Informer = require('@uppy/informer');
-const ThumbnailGenerator = require('@uppy/thumbnail-generator');
-const findAllDOMElements = require('@uppy/utils/lib/findAllDOMElements');
-const memoize = require('memoize-one').default || require('memoize-one');
-
-class Dashboard extends UppyDashboard {
+export class Dashboard extends UppyDashboard {
   constructor(uppy, opts) {
     super(uppy, opts);
+    this.id = this.opts.id || 'Dashboard';
+    this.title = 'Dashboard';
+    this.type = 'orchestrator';
+    this.modalName = `uppy-Dashboard-${nanoid()}`;
+
     this.defaultLocale = {
-      ...this.defaultLocale,
+      ...locale,
       strings: {
-        ...this.defaultLocale.strings,
+        ...locale.strings,
         validating: 'Validating',
         validateAndRetry: 'Accept changes',
         rejectAll: 'Reject all changes',
@@ -577,4 +583,4 @@ class Dashboard extends UppyDashboard {
   };
 }
 
-module.exports = Dashboard;
+export default Dashboard;
