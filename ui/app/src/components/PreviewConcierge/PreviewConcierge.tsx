@@ -468,12 +468,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   }, [uiConfig.xml, user.username, uuid, dispatch]);
 
   useEffect(() => {
-    if (!socketConnected && authActive && xbDetectionTimeoutMs) {
-      startCommunicationDetectionTimeout(
-        socketConnectionTimeoutRef,
-        setSocketConnectionSnackbarOpen,
-        xbDetectionTimeoutMs
-      );
+    if (!socketConnected && authActive) {
+      startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
     } else {
       clearTimeout(socketConnectionTimeoutRef.current);
       setSocketConnectionSnackbarOpen(false);
@@ -522,7 +518,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     }
   }, [xbDetectionTimeoutMs]);
 
-  // Guest detection, document domain restoring and guest key up/down notifications.
+  // Document domain restoring.
   useMount(() => {
     return () => {
       document.domain = originalDocDomain;
