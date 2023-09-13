@@ -395,3 +395,11 @@ export function setDashletFilterSystemTypeGroups(
 export function removeDashletFilterSystemTypeGroups(siteIdentifier: string, storageKey: string): void {
   localStorage.removeItem(`craftercms.${siteIdentifier}.${storageKey}.dashletFilterTypeGroups`);
 }
+
+export function removeStoredItems(match: (key: string) => boolean): void {
+  Object.keys(localStorage)
+    .filter((key) => match(key))
+    .forEach((key) => {
+      localStorage.removeItem(key);
+    });
+}

@@ -16,6 +16,8 @@
 
 import { FormattedMessage } from 'react-intl';
 import {
+  removeStoredBrowseDialogCompactMode,
+  removeStoredClipboard,
   removeStoredEditModeChoice,
   removeStoredEditModePadding,
   removeStoredGlobalAppOpenSidebar,
@@ -23,18 +25,22 @@ import {
   removeStoredHighlightModeChoice,
   removeStoredICEToolsPanelPage,
   removeStoredICEToolsPanelWidth,
+  removeStoredItems,
   removeStoredLegacyComponentPanel,
   removeStoredOutdatedXBValidationDate,
+  removeStoredPreviewBackgroundMode,
   removeStoredPreviewToolsPanelPage,
   removeStoredPreviewToolsPanelWidth,
   removeStoredPullBranch,
   removeStoredPullMergeStrategy,
   removeStoredPushBranch,
-  removeStoredSaveButtonSubAction,
   removeStoredShowToolsPanel
 } from '../../utils/state';
 
-export const preferencesGroups = [
+export const preferencesGroups: Array<{
+  label: string | JSX.Element;
+  onClear: (props: { siteId: string; siteUuid: string; username: string }) => void;
+}> = [
   {
     label: <FormattedMessage defaultMessage="Preview sidebar widths" />,
     onClear: (props) => {
@@ -44,7 +50,17 @@ export const preferencesGroups = [
   },
   {
     label: <FormattedMessage defaultMessage="Preview's left sidebar navigator state" />,
-    onClear: (props) => {}
+    onClear: (props) => {
+      const pathNavigatorKeyRegex = new RegExp(
+        `^craftercms.${props.username}.pathNavigator.${props.siteUuid}.[a-zA-Z0-9]+`
+      );
+      removeStoredItems((key) => pathNavigatorKeyRegex.test(key));
+
+      const pathNavigatorTreeKeyRegex = new RegExp(
+        `^craftercms.${props.username}.pathNavigatorTree.${props.siteUuid}.[a-zA-Z0-9]+`
+      );
+      removeStoredItems((key) => pathNavigatorTreeKeyRegex.test(key));
+    }
   },
   {
     label: <FormattedMessage defaultMessage="Preview's left sidebar selected tool" />,
@@ -74,6 +90,20 @@ export const preferencesGroups = [
     }
   },
   {
+    label: <FormattedMessage defaultMessage="Dashboard preferences" />,
+    onClear: (props) => {
+      // new dashlets
+      const newDashletsKeyRegex = new RegExp(`^craftercms.${props.siteUuid}.[a-zA-Z0-9]+.dashletFilterTypeGroups`);
+      removeStoredItems((key) => newDashletsKeyRegex.test(key));
+
+      // Legacy dashlets
+      const legacyDashletsKeyRegex = new RegExp(
+        `^craftercms.dashboard.[a-zA-Z0-9]+.${props.siteUuid}.${props.username}`
+      );
+      removeStoredItems((key) => legacyDashletsKeyRegex.test(key));
+    }
+  },
+  {
     label: <FormattedMessage defaultMessage="Git settings" />,
     onClear: (props) => {
       removeStoredPushBranch(props.siteUuid, props.username);
@@ -84,10 +114,7 @@ export const preferencesGroups = [
   {
     label: <FormattedMessage defaultMessage="Form settings" />,
     onClear: (props) => {
-      // Ids of save buttons are 'codeEditor', 'contentTypeEditor' and 'formEditor'. How can we dynamically get these?
-      removeStoredSaveButtonSubAction(props.username, 'codeEditor');
-      removeStoredSaveButtonSubAction(props.username, 'contentTypeEditor');
-      removeStoredSaveButtonSubAction(props.username, 'formEditor');
+      removeStoredItems((key) => key.includes(`craftercms.${props.username}.saveButtonSubAction.`));
     }
   },
   {
@@ -96,6 +123,9 @@ export const preferencesGroups = [
       removeStoredGlobalAppOpenSidebar(props.username);
       removeStoredGlobalMenuSiteViewPreference(props.username);
       removeStoredOutdatedXBValidationDate(props.siteId, props.username);
+      removeStoredClipboard(props.siteUuid, props.username);
+      removeStoredPreviewBackgroundMode(props.username);
+      removeStoredBrowseDialogCompactMode(props.username);
     }
   }
 ];

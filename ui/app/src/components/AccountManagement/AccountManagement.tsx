@@ -38,7 +38,6 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
-import Grid from '@mui/material/Grid';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
@@ -137,6 +136,13 @@ export function AccountManagement(props: AccountManagementProps) {
         username: user.username
       });
     }
+    if (showNotification) {
+      dispatch(showSystemNotification({ message: formatMessage(translations.preferencesCleared) }));
+    }
+  };
+
+  const onClearEverything = () => {
+    preferencesGroups.forEach((group) => onClearPreference(group, false));
     dispatch(showSystemNotification({ message: formatMessage(translations.preferencesCleared) }));
   };
 
@@ -255,47 +261,38 @@ export function AccountManagement(props: AccountManagementProps) {
           <Typography variant="h5" mb={3}>
             <FormattedMessage defaultMessage="Stored Preferences" />
           </Typography>
-          <Typography mb={2}>
+          <Typography mb={3} variant="body2">
             <FormattedMessage defaultMessage="Studio stores several of your usage preferences. Try cleaning them to restore defaults or troubleshooting seeing the latest changes." />
           </Typography>
-
-          <Grid container spacing={2} mb={3}>
-            <Grid item xs={12} sm={6}>
-              <FormControl>
-                <InputLabel id="demo-simple-select-label">
-                  <FormattedMessage defaultMessage="Project" />
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={selectedSite}
-                  label={<FormattedMessage defaultMessage="Project" />}
-                  onChange={(event) => {
-                    setSelectedSite(event.target.value as string);
-                  }}
-                >
-                  <MenuItem value="all">
-                    <FormattedMessage defaultMessage="All Projects" />
+          <Box display="flex" justifyContent="space-between" mb={3}>
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>
+                <FormattedMessage defaultMessage="Project" />
+              </InputLabel>
+              <Select
+                value={selectedSite}
+                label={<FormattedMessage defaultMessage="Project" />}
+                onChange={(event) => {
+                  setSelectedSite(event.target.value as string);
+                }}
+              >
+                <MenuItem value="all">
+                  <FormattedMessage defaultMessage="All Projects" />
+                </MenuItem>
+                {sitesIds.map((siteId) => (
+                  <MenuItem key={siteId} value={siteId}>
+                    {sitesLookup[siteId].name}
                   </MenuItem>
-                  {sitesIds.map((siteId) => (
-                    <MenuItem key={siteId} value={siteId}>
-                      {sitesLookup[siteId].name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              {/* TODO: implement clear everything */}
-              <Button variant="outlined" color="warning" size="large">
-                <FormattedMessage defaultMessage="Clear everything" />{' '}
-                {selectedSite === 'all' && <FormattedMessage defaultMessage="(All Projects)" />}
-              </Button>
-            </Grid>
-          </Grid>
-
+                ))}
+              </Select>
+            </FormControl>
+            <Button variant="outlined" color="warning" size="large" onClick={() => onClearEverything()}>
+              <FormattedMessage defaultMessage="Clear everything" />{' '}
+              {selectedSite === 'all' && <FormattedMessage defaultMessage="(All Projects)" />}
+            </Button>
+          </Box>
           <TableContainer component={Paper}>
-            <Table>
+            <Table size="small">
               <TableBody>
                 {preferencesGroups.map((group, index) => (
                   <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
