@@ -83,8 +83,8 @@ export const preferencesGroups: Array<{
   {
     label: <FormattedMessage defaultMessage="Preview's editing state" />,
     onClear: (props) => {
-      removeStoredEditModeChoice(props.username); // TODO: this needs an update after https://github.com/craftercms/studio-ui/pull/3411 is merged
-      removeStoredHighlightModeChoice(props.username);
+      removeStoredEditModeChoice(props.username, props.siteUuid);
+      removeStoredHighlightModeChoice(props.username, props.siteUuid);
       removeStoredEditModePadding(props.username);
       removeStoredLegacyComponentPanel(props.username);
     }

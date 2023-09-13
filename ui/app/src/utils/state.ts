@@ -66,8 +66,8 @@ export function getStoredEditModeChoice(user: string, siteIdentifier: string): b
   return value ? value === 'true' : null;
 }
 
-export function removeStoredEditModeChoice(user: string): void {
-  window.localStorage.removeItem(`craftercms.${user}.editModeChoice`);
+export function removeStoredEditModeChoice(user: string, siteIdentifier: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.editModeChoice.${siteIdentifier}`);
 }
 
 export function setStoredHighlightModeChoice(value: HighlightMode, user: string, siteIdentifier: string): void {
@@ -78,8 +78,8 @@ export function getStoredHighlightModeChoice(user: string, siteIdentifier: strin
   return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice.${siteIdentifier}`) as HighlightMode;
 }
 
-export function removeStoredHighlightModeChoice(user: string): void {
-  window.localStorage.removeItem(`craftercms.${user}.highlightModeChoice`);
+export function removeStoredHighlightModeChoice(user: string, siteIdentifier: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.highlightModeChoice.${siteIdentifier}`);
 }
 
 export function setStoredEditModePadding(value: string, user: string): void {
