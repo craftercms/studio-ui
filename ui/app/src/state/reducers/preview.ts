@@ -254,7 +254,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
       (['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
     state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
     state.xbDetectionTimeoutMs =
-      !isNaN(xbDetectionTimeoutMs) && xbDetectionTimeoutMs > 0
+      !isNaN(xbDetectionTimeoutMs) && xbDetectionTimeoutMs >= 0
         ? xbDetectionTimeoutMs
         : state.xbDetectionTimeoutMs ?? defaultXbDetectionTimeoutMs;
   },
