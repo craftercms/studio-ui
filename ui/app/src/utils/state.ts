@@ -57,12 +57,12 @@ export function getStateMapFromLegacyItem(item: LegacyItem): ItemStateMap {
   };
 }
 
-export function setStoredEditModeChoice(value: string, user: string): void {
-  window.localStorage.setItem(`craftercms.${user}.editModeChoice`, value);
+export function setStoredEditModeChoice(value: string, user: string, siteIdentifier: string): void {
+  window.localStorage.setItem(`craftercms.${user}.editModeChoice.${siteIdentifier}`, value);
 }
 
-export function getStoredEditModeChoice(user: string): boolean {
-  const value = window.localStorage.getItem(`craftercms.${user}.editModeChoice`);
+export function getStoredEditModeChoice(user: string, siteIdentifier: string): boolean {
+  const value = window.localStorage.getItem(`craftercms.${user}.editModeChoice.${siteIdentifier}`);
   return value ? value === 'true' : null;
 }
 
@@ -70,12 +70,12 @@ export function removeStoredEditModeChoice(user: string): void {
   window.localStorage.removeItem(`craftercms.${user}.editModeChoice`);
 }
 
-export function setStoredHighlightModeChoice(value: HighlightMode, user: string): void {
-  window.localStorage.setItem(`craftercms.${user}.highlightModeChoice`, value);
+export function setStoredHighlightModeChoice(value: HighlightMode, user: string, siteIdentifier: string): void {
+  window.localStorage.setItem(`craftercms.${user}.highlightModeChoice.${siteIdentifier}`, value);
 }
 
-export function getStoredHighlightModeChoice(user: string): HighlightMode {
-  return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice`) as HighlightMode;
+export function getStoredHighlightModeChoice(user: string, siteIdentifier: string): HighlightMode {
+  return window.localStorage.getItem(`craftercms.${user}.highlightModeChoice.${siteIdentifier}`) as HighlightMode;
 }
 
 export function removeStoredHighlightModeChoice(user: string): void {
