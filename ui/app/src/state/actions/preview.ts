@@ -231,6 +231,13 @@ export const EMBEDDED_LEGACY_FORM_SAVE_END = 'EMBEDDED_LEGACY_FORM_SAVE_END';
 
 // region Action Creators
 
+export const initPreviewConfig = /*#__PURE__*/ createAction<{
+  configXml: string;
+  storedEditMode: boolean;
+  storedHighlightMode: HighlightMode;
+  storedPaddingMode: boolean;
+}>('INIT_PREVIEW_PANEL_CONFIG');
+
 export function selectForEdit(data: { modelId: string; fields: string[] }): StandardAction {
   return {
     type: SELECT_FOR_EDIT,

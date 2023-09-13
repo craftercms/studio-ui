@@ -56,8 +56,6 @@ import {
   requestWorkflowCancellationDialogOnResult,
   selectForEdit,
   setContentTypeDropTargets,
-  setEditModePadding,
-  setHighlightMode,
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
@@ -71,7 +69,8 @@ import {
   updateFieldValueOperationFailed,
   updateRteConfig,
   snackGuestMessage,
-  InsertComponentOperationPayload
+  InsertComponentOperationPayload,
+  initPreviewConfig
 } from '../../state/actions/preview';
 import {
   writeInstance,
@@ -308,8 +307,17 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const store = useStore<GlobalState>();
   const { id: siteId, uuid } = useActiveSite() ?? {};
   const user = useActiveUser();
-  const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
-    usePreviewState();
+  const {
+    guest,
+    editMode,
+    highlightMode,
+    editModePadding,
+    icePanelWidth,
+    toolsPanelWidth,
+    hostSize,
+    showToolsPanel,
+    xbDetectionTimeoutMs
+  } = usePreviewState();
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
@@ -438,7 +446,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       }
     },
     env,
-    xbCompatConsoleWarningPrinted: false
+    xbCompatConsoleWarningPrinted: false,
+    xbDetectionTimeoutMs
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -448,6 +457,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       payload
     });
   };
+
+  useEffect(() => {
+    if (nnou(uiConfig.xml)) {
+      const storedEditMode = getStoredEditModeChoice(user.username, uuid);
+      const storedHighlightMode = getStoredHighlightModeChoice(user.username, uuid);
+      const storedPaddingMode = getStoredEditModePadding(user.username);
+      dispatch(initPreviewConfig({ configXml: uiConfig.xml, storedEditMode, storedHighlightMode, storedPaddingMode }));
+    }
+  }, [uiConfig.xml, user.username, uuid, dispatch]);
 
   useEffect(() => {
     if (!socketConnected && authActive) {
@@ -494,26 +512,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     }
   }, [rteConfig]);
 
-  // Guest detection, document domain restoring, editMode/highlightMode preference retrieval,
-  // and guest key up/down notifications.
+  useEffect(() => {
+    if (xbDetectionTimeoutMs) {
+      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen, xbDetectionTimeoutMs);
+    }
+  }, [xbDetectionTimeoutMs]);
+
+  // Document domain restoring.
   useMount(() => {
-    const localEditMode = getStoredEditModeChoice(user.username);
-    if (nnou(localEditMode) && editMode !== localEditMode) {
-      dispatch(setPreviewEditMode({ editMode: localEditMode }));
-    }
-
-    const localHighlightMode = getStoredHighlightModeChoice(user.username);
-    if (nnou(localHighlightMode) && highlightMode !== localHighlightMode) {
-      dispatch(setHighlightMode({ highlightMode: localHighlightMode }));
-    }
-
-    const localPaddingMode = getStoredEditModePadding(user.username);
-    if (nnou(localPaddingMode) && editModePadding !== localPaddingMode) {
-      dispatch(setEditModePadding({ editModePadding: localPaddingMode }));
-    }
-
-    startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
-
     return () => {
       document.domain = originalDocDomain;
     };
@@ -711,7 +717,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
           dispatch(action);
-          startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+          startCommunicationDetectionTimeout(
+            guestDetectionTimeoutRef,
+            setGuestDetectionSnackbarOpen,
+            upToDateRefs.current.xbDetectionTimeoutMs
+          );
           break;
         }
         case sortItemOperation.type: {
@@ -1326,7 +1336,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     if (priorState.current.site !== siteId) {
       priorState.current.site = siteId;
-      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen);
+      if (xbDetectionTimeoutMs) {
+        startCommunicationDetectionTimeout(
+          guestDetectionTimeoutRef,
+          setGuestDetectionSnackbarOpen,
+          xbDetectionTimeoutMs
+        );
+      }
       if (guest) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
@@ -1334,7 +1350,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         dispatch(guestCheckOut({ path: guest.path }));
       }
     }
-  }, [siteId, guest, dispatch]);
+  }, [siteId, guest, dispatch, xbDetectionTimeoutMs]);
 
   // Initialize RTE config
   useEffect(() => {

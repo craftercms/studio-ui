@@ -106,9 +106,10 @@ export default [
       ofType(setPreviewEditMode.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
-        setStoredEditModeChoice(action.payload.editMode, state.user.username);
+        const uuid = state.sites.byId?.[state.sites.active].uuid;
+        setStoredEditModeChoice(action.payload.editMode, state.user.username, uuid);
         if (action.payload.highlightMode) {
-          setStoredHighlightModeChoice(action.payload.highlightMode, state.user.username);
+          setStoredHighlightModeChoice(action.payload.highlightMode, state.user.username, uuid);
           getHostToGuestBus().next(setHighlightMode(action.payload));
         }
       }),
@@ -121,7 +122,8 @@ export default [
       ofType(setHighlightMode.type),
       withLatestFrom(state$),
       tap(([action, state]) => {
-        setStoredHighlightModeChoice(action.payload.highlightMode, state.user.username);
+        const uuid = state.sites.byId?.[state.sites.active].uuid;
+        setStoredHighlightModeChoice(action.payload.highlightMode, state.user.username, uuid);
         getHostToGuestBus().next(action);
       }),
       ignoreElements()
