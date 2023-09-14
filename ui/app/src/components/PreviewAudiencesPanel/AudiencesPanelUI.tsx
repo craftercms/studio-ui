@@ -118,42 +118,38 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   return (
     <>
-      {
-        <>
-          <Grid className={classes.panelMargin}>
-            {Object.keys(fields).map((fieldId: string) => {
-              const type = fields[fieldId].type;
-              const Control = controlsMap[type] ?? UndefinedControlType;
-              const controlProps = {
-                field: fields[fieldId],
-                value: model[fieldId] ?? undefined,
-                onChange: onFieldChange(fieldId, type),
-                disabled: modelApplying,
-                timeZone: null
-              };
-              if (controlProps.field.type === 'date-time') {
-                if (!controlProps.value) {
-                  controlProps.value = fields[fieldId].defaultValue;
-                }
-                controlProps.timeZone = timeZonesLookup[fieldId] ?? fields[fieldId].timeZone;
-              }
-              return (
-                <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
-                  <Control {...controlProps} />
-                </AudiencesFormSection>
-              );
-            })}
-          </Grid>
-          <Grid className={classes.actionButtons}>
-            <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields, setTimeZonesLookup))}>
-              <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
-            </SecondaryButton>
-            <PrimaryButton onClick={() => onSaveModel()}>
-              <FormattedMessage id="audiencesPanel.apply" defaultMessage="Apply" />
-            </PrimaryButton>
-          </Grid>
-        </>
-      }
+      <Grid className={classes.panelMargin}>
+        {Object.keys(fields).map((fieldId: string) => {
+          const type = fields[fieldId].type;
+          const Control = controlsMap[type] ?? UndefinedControlType;
+          const controlProps = {
+            field: fields[fieldId],
+            value: model[fieldId] ?? undefined,
+            onChange: onFieldChange(fieldId, type),
+            disabled: modelApplying,
+            timeZone: null
+          };
+          if (controlProps.field.type === 'date-time') {
+            if (!controlProps.value) {
+              controlProps.value = fields[fieldId].defaultValue;
+            }
+            controlProps.timeZone = timeZonesLookup[fieldId] ?? fields[fieldId].timeZone;
+          }
+          return (
+            <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
+              <Control {...controlProps} />
+            </AudiencesFormSection>
+          );
+        })}
+      </Grid>
+      <Grid className={classes.actionButtons}>
+        <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields, setTimeZonesLookup))}>
+          <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
+        </SecondaryButton>
+        <PrimaryButton onClick={() => onSaveModel()}>
+          <FormattedMessage id="audiencesPanel.apply" defaultMessage="Apply" />
+        </PrimaryButton>
+      </Grid>
     </>
   );
 }
