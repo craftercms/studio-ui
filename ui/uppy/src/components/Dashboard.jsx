@@ -179,6 +179,8 @@ export default function Dashboard(props) {
             {props.showFileEditor ? <EditorPanel key="Editor" {...props} /> : null}
           </Slide>
 
+          {showFileList && <PanelTopBar {...props} />}
+
           <div className="uppy-Dashboard-progressindicators">
             {props.progressindicators.map((target) => {
               return props.uppy.getPlugin(target.id).render(props.state);
