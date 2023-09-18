@@ -120,7 +120,7 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
       <Box padding={2}>
         <Grid container spacing={2}>
           {status.conflicting.length > 0 && (
-            <Grid item md={12} xl={status.uncommittedChanges.length ? 6 : 12}>
+            <Grid item md={12} xl={status.uncommittedChanges.length ? 12 : 12}>
               <Typography variant="h6" className={cx(classes.sectionLabel, classes.conflictedFilesLabel)}>
                 <FormattedMessage id="repository.conflictedFiles" defaultMessage="Conflicted Files" />
               </Typography>
@@ -162,7 +162,7 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
             </Grid>
           )}
           {status.uncommittedChanges.length > 0 && (
-            <Grid item md={12} xl={status.conflicting.length ? 6 : 12}>
+            <Grid item md={12} xl={status.conflicting.length ? 12 : 12}>
               <Typography variant="h6" className={classes.sectionLabel}>
                 <FormattedMessage id="repository.pendingCommit" defaultMessage="Pending Commit" />
               </Typography>

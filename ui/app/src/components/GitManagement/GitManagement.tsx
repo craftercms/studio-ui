@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
@@ -44,6 +44,7 @@ import useSpreadState from '../../hooks/useSpreadState';
 import { UNDEFINED } from '../../utils/constants';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
+import { RepoStatusConflictDialog } from './RepoStatusConflictDialog';
 
 export interface GitManagementProps {
   embedded?: boolean;
@@ -68,6 +69,9 @@ export function GitManagement(props: GitManagementProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [activeTab, setActiveTab] = useState(0);
+  const repoStatusConflictDialog = useEnhancedDialogState();
+  const repoStatusConflictDialogRef = useRef(null);
+  repoStatusConflictDialogRef.current = repoStatusConflictDialog;
 
   const [{ repositories }, setRepoState] = useSpreadState({
     repositories: null as Array<Repository>,
@@ -118,6 +122,11 @@ export function GitManagement(props: GitManagementProps) {
         hasConflicts: Boolean(repoStatus.conflicting.length),
         hasUncommitted: Boolean(repoStatus.uncommittedChanges.length)
       });
+      if (repoStatus.conflicting.length > 0) {
+        repoStatusConflictDialogRef.current.onOpen();
+      } else if (!repoStatus || !repoStatus.conflicting.length) {
+        repoStatusConflictDialogRef.current.onClose();
+      }
     },
     [setRepoStatusState]
   );
@@ -263,6 +272,14 @@ export function GitManagement(props: GitManagementProps) {
           onClose={newRemoteRepositoryDialogState.onClose}
           onCreateSuccess={onRepoCreatedSuccess}
           onCreateError={onRepoCreateError}
+        />
+        <RepoStatusConflictDialog
+          open={repoStatusConflictDialog.open}
+          onClose={repoStatusConflictDialog.onClose}
+          status={repoStatus}
+          onCommitSuccess={fetchRepoStatusReceiver}
+          onConflictResolved={fetchRepoStatusReceiver}
+          onFailedPullCancelled={fetchRepoStatusReceiver}
         />
       </section>
     </Paper>
