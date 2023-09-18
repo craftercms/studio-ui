@@ -62,9 +62,6 @@ const translations = defineMessages({
   passwordChanged: {
     id: 'accountManagement.passwordChanged',
     defaultMessage: 'Password changed successfully'
-  },
-  preferencesCleared: {
-    defaultMessage: 'Preferences cleared'
   }
 });
 
@@ -137,13 +134,13 @@ export function AccountManagement(props: AccountManagementProps) {
       });
     }
     if (showNotification) {
-      dispatch(showSystemNotification({ message: formatMessage(translations.preferencesCleared) }));
+      dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Preferences cleared' }) }));
     }
   };
 
   const onClearEverything = () => {
     preferencesGroups.forEach((group) => onClearPreference(group, false));
-    dispatch(showSystemNotification({ message: formatMessage(translations.preferencesCleared) }));
+    dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Preferences cleared' }) }));
   };
 
   return (
@@ -286,7 +283,7 @@ export function AccountManagement(props: AccountManagementProps) {
                 ))}
               </Select>
             </FormControl>
-            <Button variant="outlined" color="warning" size="large" onClick={() => onClearEverything()}>
+            <Button variant="outlined" color="warning" size="large" onClick={onClearEverything}>
               <FormattedMessage defaultMessage="Clear everything" />{' '}
               {selectedSite === 'all' && <FormattedMessage defaultMessage="(All Projects)" />}
             </Button>
