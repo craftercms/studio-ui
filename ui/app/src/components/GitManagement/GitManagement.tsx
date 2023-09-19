@@ -199,7 +199,7 @@ export function GitManagement(props: GitManagementProps) {
       event.preventDefault();
       return (event.returnValue = '');
     };
-    if (repoStatus && !repoStatus.clean) {
+    if (repoStatusConflictDialog.open && repoStatus && !repoStatus.clean) {
       window.onbeforeunload = handleBeforeUpload;
     } else {
       window.onbeforeunload = null;
@@ -207,7 +207,7 @@ export function GitManagement(props: GitManagementProps) {
     return () => {
       window.onbeforeunload = null;
     };
-  }, [repoStatus]);
+  }, [repoStatus, repoStatusConflictDialog.open]);
 
   const newRemoteRepositoryDialogState = useEnhancedDialogState();
   const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(

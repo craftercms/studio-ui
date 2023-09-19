@@ -29,9 +29,20 @@ export interface RepoStatusConflictDialogProps extends EnhancedDialogProps {
 }
 
 export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
-  const { status, onCommitSuccess, onConflictResolved, onFailedPullCancelled, ...dialogProps } = props;
+  const {
+    status,
+    onCommitSuccess: onCommitSuccessProp,
+    onConflictResolved,
+    onFailedPullCancelled,
+    ...dialogProps
+  } = props;
   const isRepoClean = status?.clean ?? false;
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+
+  const onCommitSuccess = (status) => {
+    props.onClose?.(null, null);
+    onCommitSuccessProp?.(status);
+  };
 
   const onRevertSuccess = () => {
     setOpenConfirmDialog(false);

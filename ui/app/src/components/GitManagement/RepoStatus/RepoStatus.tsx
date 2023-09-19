@@ -19,7 +19,7 @@ import RepoStatusSkeleton from './RepoStatusSkeleton';
 import { RepositoryStatus } from '../../../models/Repository';
 import RepoStatusUI from './RepoStatusUI';
 import CommitResolutionDialog from '../../CommitResolutionDialog/CommitResolutionDialog';
-import { cancelFailedPull, resolveConflict } from '../../../services/repositories';
+import { bulkResolveConflict, cancelFailedPull, resolveConflict } from '../../../services/repositories';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../../state/actions/system';
 import { showErrorDialog } from '../../../state/reducers/dialogs/error';
@@ -43,7 +43,7 @@ export interface RepoStatusProps {
 export function RepoStatus(props: RepoStatusProps) {
   const {
     status,
-    openConfirmDialog,
+    openConfirmDialog = false,
     onCommitSuccess: onCommitSuccessProp,
     onRevertSuccess,
     onFailedPullCancelled,
@@ -92,16 +92,37 @@ export function RepoStatus(props: RepoStatusProps) {
     );
   };
 
+  const onResolveConflictsSuccess = (status: RepositoryStatus) => {
+    onConflictResolved?.(status);
+    setFetching(false);
+    setOpenRemoteRepositoriesDiffDialog(false);
+  };
+
+  const onResolveConflictsError = (response) => {
+    dispatch(showErrorDialog({ error: response }));
+    setFetching(false);
+  };
+
   const onResolveConflict = (resolution: string, path: string) => {
     setFetching(true);
     resolveConflict(siteId, path, resolution).subscribe({
       next(status) {
-        onConflictResolved?.(status);
-        setFetching(false);
-        setOpenRemoteRepositoriesDiffDialog(false);
+        onResolveConflictsSuccess(status);
       },
       error({ response }) {
-        dispatch(showErrorDialog({ error: response }));
+        onResolveConflictsError(response);
+      }
+    });
+  };
+
+  const onBulkResolveConflict = (resolution: string) => {
+    setFetching(true);
+    bulkResolveConflict(siteId, status.conflicting, resolution).subscribe({
+      next(status) {
+        onResolveConflictsSuccess(status);
+      },
+      error({ response }) {
+        onResolveConflictsError(response);
       }
     });
   };
@@ -115,14 +136,28 @@ export function RepoStatus(props: RepoStatusProps) {
     setOpenRemoteRepositoriesDiffDialog(true);
   };
 
+  const onBulkAction = (e, action) => {
+    switch (action) {
+      case 'acceptAll':
+        onBulkResolveConflict('theirs');
+        break;
+      case 'keepAll':
+        onBulkResolveConflict('ours');
+        break;
+      case 'revertAll':
+        onRevertPull();
+        break;
+    }
+  };
+
   return (
     <>
       <RepoStatusUI
         status={status}
-        onRevertPull={onRevertPull}
         onCommitClick={() => setOpenCommitResolutionDialog(true)}
         onResolveConflict={onResolveConflict}
         onDiffClick={openDiffDialog}
+        onBulkAction={onBulkAction}
       />
       <CommitResolutionDialog
         open={openCommitResolutionDialog}
