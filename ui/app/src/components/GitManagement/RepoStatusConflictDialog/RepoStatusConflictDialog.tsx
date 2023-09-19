@@ -19,6 +19,7 @@ import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import { DialogBody } from '../../DialogBody';
 import { RepoStatus } from '../RepoStatus';
 import { FormattedMessage } from 'react-intl';
+import { useState } from 'react';
 
 export interface RepoStatusConflictDialogProps extends EnhancedDialogProps {
   status: RepositoryStatus;
@@ -29,26 +30,47 @@ export interface RepoStatusConflictDialogProps extends EnhancedDialogProps {
 
 export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
   const { status, onCommitSuccess, onConflictResolved, onFailedPullCancelled, ...dialogProps } = props;
+  const isRepoClean = status?.clean ?? false;
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+
+  const onRevertSuccess = () => {
+    setOpenConfirmDialog(false);
+    props.onClose?.(null, null);
+  };
+
+  const onConfirmDialogOk = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  const onClose = (e) => {
+    if (!isRepoClean) {
+      setOpenConfirmDialog(true);
+    } else {
+      props.onClose?.(e, null);
+    }
+  };
 
   return (
-    <EnhancedDialog
-      {...dialogProps}
-      title={
-        <FormattedMessage
-          defaultMessage="Resolve conflicts ({numConflicts})"
-          values={{ numConflicts: status?.conflicting.length ?? 0 }}
-        />
-      }
-    >
-      <DialogBody>
-        <RepoStatus
-          status={status}
-          onCommitSuccess={onCommitSuccess}
-          onConflictResolved={onConflictResolved}
-          onFailedPullCancelled={onFailedPullCancelled}
-        />
-      </DialogBody>
-    </EnhancedDialog>
+    <>
+      <EnhancedDialog
+        maxWidth="lg"
+        {...dialogProps}
+        onClose={onClose}
+        title={<FormattedMessage defaultMessage="Resolve conflicts" />}
+      >
+        <DialogBody>
+          <RepoStatus
+            status={status}
+            openConfirmDialog={openConfirmDialog}
+            onCommitSuccess={onCommitSuccess}
+            onConflictResolved={onConflictResolved}
+            onFailedPullCancelled={onFailedPullCancelled}
+            onConfirmDialogOk={onConfirmDialogOk}
+            onRevertSuccess={onRevertSuccess}
+          />
+        </DialogBody>
+      </EnhancedDialog>
+    </>
   );
 }
 

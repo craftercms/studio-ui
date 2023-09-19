@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
@@ -22,7 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
-import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
+import { fetchRepositories as fetchRepositoriesService, fetchStatus, PullResponse } from '../../services/repositories';
 import RepoGrid from './RepoGrid';
 import RepoStatus from './RepoStatus/RepoStatus';
 import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
@@ -70,8 +70,6 @@ export function GitManagement(props: GitManagementProps) {
   const { formatMessage } = useIntl();
   const [activeTab, setActiveTab] = useState(0);
   const repoStatusConflictDialog = useEnhancedDialogState();
-  const repoStatusConflictDialogRef = useRef(null);
-  repoStatusConflictDialogRef.current = repoStatusConflictDialog;
 
   const [{ repositories }, setRepoState] = useSpreadState({
     repositories: null as Array<Repository>,
@@ -122,29 +120,48 @@ export function GitManagement(props: GitManagementProps) {
         hasConflicts: Boolean(repoStatus.conflicting.length),
         hasUncommitted: Boolean(repoStatus.uncommittedChanges.length)
       });
-      if (repoStatus.conflicting.length > 0) {
-        repoStatusConflictDialogRef.current.onOpen();
-      } else if (!repoStatus || !repoStatus.conflicting.length) {
-        repoStatusConflictDialogRef.current.onClose();
-      }
     },
     [setRepoStatusState]
   );
-  const fetchRepoStatus = useCallback(() => {
+  const fetchRepoStatus = useCallback((): Promise<RepositoryStatus> => {
     setRepoStatusState({ loadingStatus: true, statusFetchError: null });
-    fetchStatus(siteId).subscribe({
-      next: fetchRepoStatusReceiver,
-      error(response) {
-        setRepoStatusState({ loadingStatus: false, statusFetchError: response });
-        dispatch(
-          showSystemNotification({
-            message: response.response.message,
-            options: { variant: 'error' }
-          })
-        );
-      }
+    return new Promise((resolve, reject) => {
+      fetchStatus(siteId).subscribe({
+        next: (repoStatus) => {
+          fetchRepoStatusReceiver(repoStatus);
+          resolve(repoStatus);
+        },
+        error(response) {
+          setRepoStatusState({ loadingStatus: false, statusFetchError: response });
+          dispatch(
+            showSystemNotification({
+              message: response.response.message,
+              options: { variant: 'error' }
+            })
+          );
+          reject(response);
+        }
+      });
     });
   }, [dispatch, fetchRepoStatusReceiver, setRepoStatusState, siteId]);
+
+  const onPullSuccess = (result: PullResponse) => {
+    fetchRepoStatus();
+  };
+
+  const onPullError = (response) => {
+    fetchRepoStatus().then((repoStatus: RepositoryStatus) => {
+      if (Boolean(repoStatus.conflicting.length)) {
+        repoStatusConflictDialog.onOpen();
+      }
+    });
+    dispatch(
+      showSystemNotification({
+        message: response.message,
+        options: { variant: 'error' }
+      })
+    );
+  };
 
   const onRepoCreatedSuccess = () => {
     fetchRepositories();
@@ -176,6 +193,21 @@ export function GitManagement(props: GitManagementProps) {
   useEffect(() => {
     fetchRepoStatus();
   }, [fetchRepoStatus]);
+
+  useEffect(() => {
+    const handleBeforeUpload = (event) => {
+      event.preventDefault();
+      return (event.returnValue = '');
+    };
+    if (repoStatus && !repoStatus.clean) {
+      window.onbeforeunload = handleBeforeUpload;
+    } else {
+      window.onbeforeunload = null;
+    }
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [repoStatus]);
 
   const newRemoteRepositoryDialogState = useEnhancedDialogState();
   const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
@@ -242,7 +274,8 @@ export function GitManagement(props: GitManagementProps) {
             </Alert>
             <RepoGrid
               repositories={repositories}
-              fetchStatus={fetchRepoStatus}
+              onPullSuccess={onPullSuccess}
+              onPullError={onPullError}
               fetchRepositories={fetchRepositories}
               disableActions={!repoStatus || repoStatus.conflicting.length > 0}
             />
