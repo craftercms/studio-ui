@@ -62,7 +62,11 @@
     "@types/react": "^18.0.28",
     "browserslist": "^4.21.5",
     "caniuse-lite": "^1.0.30001451",
-    "react-is": "^18.2.0"
+    "react-is": "^18.2.0",
+    "ansi-regex": "^5.0.1",
+    "json5": "^2.2.2",
+    "nth-check": "^2.0.1",
+    "semver": "^7.5.2"
   },
   "packageManager": "yarn@3.1.0",
   "scripts": {

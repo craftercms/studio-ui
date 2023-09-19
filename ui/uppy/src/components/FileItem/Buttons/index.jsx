@@ -1,6 +1,22 @@
-const { h } = require('preact');
+/*
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-function RemoveButton({ i18n, onClick }) {
+import { h } from 'preact';
+
+function RemoveButton({ i18n, onClick, file }) {
   return (
     <button
       className="uppy-dashboard-button-base uppy-dashboard-icon-button edgeEnd"
@@ -8,7 +24,7 @@ function RemoveButton({ i18n, onClick }) {
       type="button"
       aria-label={i18n('removeFile')}
       title={i18n('removeFile')}
-      onclick={() => onClick()}
+      onClick={() => onClick()}
     >
       <svg className="uppy-dashboard-svg-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M18.3 5.71a.9959.9959 0 00-1.41 0L12 10.59 7.11 5.7a.9959.9959 0 00-1.41 0c-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"></path>
@@ -61,7 +77,7 @@ function AcceptSuggestedNameIcon({ i18n, onClick }) {
   );
 }
 
-module.exports = function Buttons(props) {
+export default function Buttons(props) {
   const { file, showRemoveButton, i18n, removeFile, error, hideRetryButton, retryUpload, validateAndRetry } = props;
 
   return (
@@ -78,4 +94,4 @@ module.exports = function Buttons(props) {
       )}
     </div>
   );
-};
+}

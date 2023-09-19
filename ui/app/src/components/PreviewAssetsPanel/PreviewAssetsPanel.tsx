@@ -45,6 +45,7 @@ import Pagination from '../Pagination';
 import { LoadingState } from '../LoadingState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { showPreviewDialog } from '../../state/actions/dialogs';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 const translations = defineMessages({
   previewAssetsPanelTitle: {
@@ -243,60 +244,62 @@ export function PreviewAssetsPanel() {
         <div className={classes.search}>
           <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
         </div>
-        {assets.error ? (
-          <ApiResponseErrorState error={assets.error} />
-        ) : assets.isFetching ? (
-          <LoadingState title={formatMessage(translations.retrieveAssets)} />
-        ) : assets.page[assets.pageNumber] ? (
-          <>
-            {dragInProgress && (
-              <div className={classes.uploadOverlay}>
-                <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
-              </div>
-            )}
-            <Pagination
-              count={assets.count}
-              rowsPerPage={assets.query.limit}
-              page={assets.pageNumber}
-              onPageChange={(e, page: number) => onPageChanged(page * assets.query.limit)}
-              onRowsPerPageChange={onRowsPerPageChange}
-            />
-            <div className={classes.assetsPanelWrapper}>
-              {assets.page[assets.pageNumber]?.map((id) => {
-                const item = assets.byId[id];
-                return (
-                  <MediaCard
-                    key={item.path}
-                    item={item}
-                    previewAppBaseUri={guestBase}
-                    avatar={<DragIndicatorRounded />}
-                    classes={{ root: classes.card }}
-                    onDragStart={() => onDragStart(item)}
-                    onDragEnd={() => onDragEnd()}
-                    onPreview={() =>
-                      dispatch(
-                        showPreviewDialog({
-                          // TODO: check if it's image or video
-                          type: 'image',
-                          title: item.name,
-                          url: item.path
-                        })
-                      )
-                    }
-                  />
-                );
-              })}
-              {assets.count === 0 && (
-                <EmptyState
-                  title={formatMessage(translations.noResults)}
-                  classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
-                />
+        <ErrorBoundary>
+          {assets.error ? (
+            <ApiResponseErrorState error={assets.error} />
+          ) : assets.isFetching ? (
+            <LoadingState title={formatMessage(translations.retrieveAssets)} />
+          ) : assets.page[assets.pageNumber] ? (
+            <>
+              {dragInProgress && (
+                <div className={classes.uploadOverlay}>
+                  <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
+                </div>
               )}
-            </div>
-          </>
-        ) : (
-          <></>
-        )}
+              <Pagination
+                count={assets.count}
+                rowsPerPage={assets.query.limit}
+                page={assets.pageNumber}
+                onPageChange={(e, page: number) => onPageChanged(page * assets.query.limit)}
+                onRowsPerPageChange={onRowsPerPageChange}
+              />
+              <div className={classes.assetsPanelWrapper}>
+                {assets.page[assets.pageNumber]?.map((id) => {
+                  const item = assets.byId[id];
+                  return (
+                    <MediaCard
+                      key={item.path}
+                      item={item}
+                      previewAppBaseUri={guestBase}
+                      avatar={<DragIndicatorRounded />}
+                      classes={{ root: classes.card }}
+                      onDragStart={() => onDragStart(item)}
+                      onDragEnd={() => onDragEnd()}
+                      onPreview={() =>
+                        dispatch(
+                          showPreviewDialog({
+                            // TODO: check if it's image or video
+                            type: 'image',
+                            title: item.name,
+                            url: item.path
+                          })
+                        )
+                      }
+                    />
+                  );
+                })}
+                {assets.count === 0 && (
+                  <EmptyState
+                    title={formatMessage(translations.noResults)}
+                    classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+                  />
+                )}
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+        </ErrorBoundary>
       </div>
     </div>
   );

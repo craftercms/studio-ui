@@ -38,6 +38,17 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showSystemNotification } from '../../state/actions/system';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { PasswordStrengthDisplayPopper } from '../PasswordStrengthDisplayPopper';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import useSiteLookup from '../../hooks/useSiteLookup';
+import Button from '@mui/material/Button';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import { preferencesGroups } from './utils';
 
 interface AccountManagementProps {
   passwordRequirementsMinComplexity?: number;
@@ -68,6 +79,9 @@ export function AccountManagement(props: AccountManagementProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [anchorEl, setAnchorEl] = useState(null);
+  const sitesLookup = useSiteLookup();
+  const sitesIds = Object.keys(sitesLookup);
+  const [selectedSite, setSelectedSite] = useState('all');
 
   // Retrieve Platform Languages.
   useEffect(() => {
@@ -101,6 +115,32 @@ export function AccountManagement(props: AccountManagementProps) {
         dispatch(showErrorDialog({ error: response }));
       }
     });
+  };
+
+  const onClearPreference = (group, showNotification = true) => {
+    if (selectedSite === 'all') {
+      sitesIds.forEach((siteId) => {
+        group.onClear({
+          siteId,
+          siteUuid: sitesLookup[siteId].uuid,
+          username: user.username
+        });
+      });
+    } else {
+      group.onClear({
+        siteId: selectedSite,
+        siteUuid: sitesLookup[selectedSite].uuid,
+        username: user.username
+      });
+    }
+    if (showNotification) {
+      dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Preferences cleared' }) }));
+    }
+  };
+
+  const onClearEverything = () => {
+    preferencesGroups.forEach((group) => onClearPreference(group, false));
+    dispatch(showSystemNotification({ message: formatMessage({ defaultMessage: 'Preferences cleared' }) }));
   };
 
   return (
@@ -213,6 +253,59 @@ export function AccountManagement(props: AccountManagementProps) {
               <FormattedMessage id="words.save" defaultMessage="Save" />
             </PrimaryButton>
           </Box>
+        </Paper>
+        <Paper className={classes.paper}>
+          <Typography variant="h5" mb={3}>
+            <FormattedMessage defaultMessage="Stored Preferences" />
+          </Typography>
+          <Typography mb={3} variant="body2">
+            <FormattedMessage defaultMessage="Studio stores several of your usage preferences. Try cleaning them to restore defaults or troubleshooting seeing the latest changes." />
+          </Typography>
+          <Box display="flex" justifyContent="space-between" mb={3}>
+            <FormControl sx={{ minWidth: 200 }}>
+              <InputLabel>
+                <FormattedMessage defaultMessage="Project" />
+              </InputLabel>
+              <Select
+                value={selectedSite}
+                label={<FormattedMessage defaultMessage="Project" />}
+                onChange={(event) => {
+                  setSelectedSite(event.target.value as string);
+                }}
+              >
+                <MenuItem value="all">
+                  <FormattedMessage defaultMessage="All Projects" />
+                </MenuItem>
+                {sitesIds.map((siteId) => (
+                  <MenuItem key={siteId} value={siteId}>
+                    {sitesLookup[siteId].name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button variant="outlined" color="warning" size="large" onClick={onClearEverything}>
+              <FormattedMessage defaultMessage="Clear everything" />{' '}
+              {selectedSite === 'all' && <FormattedMessage defaultMessage="(All Projects)" />}
+            </Button>
+          </Box>
+          <TableContainer component={Paper}>
+            <Table size="small">
+              <TableBody>
+                {preferencesGroups.map((group, index) => (
+                  <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                    <TableCell component="th" scope="row">
+                      {group.label}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Button variant="text" onClick={() => onClearPreference(group)}>
+                        <FormattedMessage defaultMessage="Clear" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Paper>
       </Container>
 

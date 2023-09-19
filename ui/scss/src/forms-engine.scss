@@ -114,6 +114,9 @@ div.xdsoft_datetimepicker {
 @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/dropdowns';
 @import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/panels';
 
+// Utility classes
+@import '../../static-assets/libs/bootstrap-sass-official/assets/stylesheets/bootstrap/utilities';
+
 html {
   font-size: 16px;
 }
@@ -186,4 +189,17 @@ hr.MuiDivider-root {
 .cstudio-dropdown .dropdown-menu {
   max-height: 80vh;
   overflow-y: auto;
+}
+
+// Dark mode styles should not apply on the .contentTypePopupBtn buttons
+.contentTypePopupBtn {
+  .btn {
+    border-color: rgba(0, 0, 0, 0) !important;
+  }
+  .btn-default {
+    color: #333 !important;
+  }
+  .btn-primary {
+    color: #fff !important;
+  }
 }

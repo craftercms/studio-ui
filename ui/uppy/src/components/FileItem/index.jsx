@@ -1,32 +1,32 @@
-const { h, Component } = require('preact');
-const classNames = require('classnames');
-const shallowEqual = require('is-shallow-equal');
-const FilePreviewAndLink = require('@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink');
-const FileProgress = require('./FileProgress');
-const FileInfo = require('./FileInfo');
-const Buttons = require('./Buttons');
+import { h, Component } from 'preact';
+import classNames from 'classnames';
+import shallowEqual from 'is-shallow-equal';
+import FilePreviewAndLink from '@uppy/dashboard/lib/components/FileItem/FilePreviewAndLink';
+import FileProgress from './FileProgress/index';
+import FileInfo from './FileInfo/index';
+import Buttons from './Buttons/index';
 
-module.exports = class FileItem extends Component {
+export default class FileItem extends Component {
   shouldComponentUpdate(nextProps) {
     return !shallowEqual(this.props, nextProps);
   }
 
   componentDidMount() {
-    const file = this.props.file;
+    const { file } = this.props;
     if (!file.preview) {
       this.props.handleRequestThumbnail(file);
     }
   }
 
   componentWillUnmount() {
-    const file = this.props.file;
+    const { file } = this.props;
     if (!file.preview) {
       this.props.handleCancelThumbnail(file);
     }
   }
 
   render() {
-    const file = this.props.file;
+    const { file } = this.props;
 
     const isProcessing = file.progress.preprocess || file.progress.postprocess;
     const isUploaded = file.progress.uploadComplete && !isProcessing && !file.error;
@@ -51,8 +51,8 @@ module.exports = class FileItem extends Component {
     });
 
     return (
-      <div class={dashboardItemClass} id={`uppy_${file.id}`} role={this.props.role}>
-        <div class="uppy-dashboard-item-preview">
+      <div className={dashboardItemClass} id={`uppy_${file.id}`} role={this.props.role}>
+        <div className="uppy-dashboard-item-preview">
           <FilePreviewAndLink file={file} showLinkToFileUploadResult={this.props.showLinkToFileUploadResult} />
         </div>
         <div class="uppy-dashboard-item-fileInfoAndButtons">
@@ -61,7 +61,9 @@ module.exports = class FileItem extends Component {
             id={this.props.id}
             acquirers={this.props.acquirers}
             containerWidth={this.props.containerWidth}
+            containerHeight={this.props.containerHeight}
             i18n={this.props.i18n}
+            isSingleFile={this.props.isSingleFile}
             externalMessages={this.props.externalMessages}
           />
           <Buttons
@@ -79,4 +81,4 @@ module.exports = class FileItem extends Component {
       </div>
     );
   }
-};
+}
