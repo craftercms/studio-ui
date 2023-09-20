@@ -186,6 +186,15 @@ export function GitManagement(props: GitManagementProps) {
     setActiveTab(newValue);
   };
 
+  const onConflictDialogCommitSuccess = (status: RepositoryStatus) => {
+    repoStatusConflictDialog.onClose();
+    fetchRepoStatusReceiver(status);
+  };
+
+  const onConflictDialogRevertSuccess = () => {
+    repoStatusConflictDialog.onClose();
+  };
+
   useEffect(() => {
     fetchRepositories();
   }, [fetchRepositories]);
@@ -310,7 +319,8 @@ export function GitManagement(props: GitManagementProps) {
           open={repoStatusConflictDialog.open}
           onClose={repoStatusConflictDialog.onClose}
           status={repoStatus}
-          onCommitSuccess={fetchRepoStatusReceiver}
+          onCommitSuccess={onConflictDialogCommitSuccess}
+          onRevertSuccess={onConflictDialogRevertSuccess}
           onConflictResolved={fetchRepoStatusReceiver}
           onFailedPullCancelled={fetchRepoStatusReceiver}
         />

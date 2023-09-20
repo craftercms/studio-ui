@@ -24,6 +24,7 @@ import { useState } from 'react';
 export interface RepoStatusConflictDialogProps extends EnhancedDialogProps {
   status: RepositoryStatus;
   onCommitSuccess?(status: RepositoryStatus): void;
+  onRevertSuccess?(): void;
   onConflictResolved?(status: RepositoryStatus): void;
   onFailedPullCancelled?(status: RepositoryStatus): void;
 }
@@ -31,7 +32,8 @@ export interface RepoStatusConflictDialogProps extends EnhancedDialogProps {
 export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
   const {
     status,
-    onCommitSuccess: onCommitSuccessProp,
+    onCommitSuccess,
+    onRevertSuccess: onRevertSuccessProp,
     onConflictResolved,
     onFailedPullCancelled,
     ...dialogProps
@@ -39,14 +41,9 @@ export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
   const isRepoClean = status?.clean ?? false;
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
-  const onCommitSuccess = (status) => {
-    props.onClose?.(null, null);
-    onCommitSuccessProp?.(status);
-  };
-
   const onRevertSuccess = () => {
     setOpenConfirmDialog(false);
-    props.onClose?.(null, null);
+    onRevertSuccessProp?.();
   };
 
   const onConfirmDialogOk = () => {
