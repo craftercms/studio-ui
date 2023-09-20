@@ -19,7 +19,7 @@ import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import { DialogBody } from '../../DialogBody';
 import { RepoStatus } from '../RepoStatus';
 import { FormattedMessage } from 'react-intl';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface RepoStatusConflictDialogProps extends EnhancedDialogProps {
   status: RepositoryStatus;
@@ -40,6 +40,20 @@ export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
   } = props;
   const isRepoClean = status?.clean ?? false;
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+
+  useEffect(() => {
+    if (dialogProps.open) {
+      window.onbeforeunload = (event) => {
+        event.preventDefault();
+        return (event.returnValue = '');
+      };
+    } else {
+      window.onbeforeunload = null;
+    }
+    return () => {
+      window.onbeforeunload = null;
+    };
+  }, [dialogProps.open]);
 
   const onRevertSuccess = () => {
     setOpenConfirmDialog(false);

@@ -203,21 +203,6 @@ export function GitManagement(props: GitManagementProps) {
     fetchRepoStatus();
   }, [fetchRepoStatus]);
 
-  useEffect(() => {
-    const handleBeforeUpload = (event) => {
-      event.preventDefault();
-      return (event.returnValue = '');
-    };
-    if (repoStatusConflictDialog.open && repoStatus && !repoStatus.clean) {
-      window.onbeforeunload = handleBeforeUpload;
-    } else {
-      window.onbeforeunload = null;
-    }
-    return () => {
-      window.onbeforeunload = null;
-    };
-  }, [repoStatus, repoStatusConflictDialog.open]);
-
   const newRemoteRepositoryDialogState = useEnhancedDialogState();
   const newRemoteRepositoryDialogStatePendingChangesCloseRequest = useWithPendingChangesCloseRequest(
     newRemoteRepositoryDialogState.onClose
