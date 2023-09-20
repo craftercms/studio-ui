@@ -133,7 +133,7 @@ const componentsInitialState = createEntityState({
 }) as PagedEntityState<ContentInstance>;
 
 const initialState: GlobalState['preview'] = {
-  editMode: true,
+  editMode: false,
   highlightMode: 'all',
   hostSize: { width: null, height: null },
   toolsPanelPageStack: [],
@@ -248,7 +248,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     const initialHighlightMode = previewConfigEl?.getAttribute('initialHighlightMode');
     const xbDetectionTimeoutMs = parseInt(previewConfigEl?.getAttribute('xbDetectionTimeoutMs'));
 
-    state.editMode = payload.storedEditMode ?? (initialEditModeOn ? initialEditModeOn === 'true' : state.editMode);
+    // If there is no storedEditMode, set it to the value of initialEditModeOn (config value), otherwise, defaults to true
+    state.editMode = payload.storedEditMode ?? (initialEditModeOn ? initialEditModeOn === 'true' : true);
     state.highlightMode =
       payload.storedHighlightMode ??
       (['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
