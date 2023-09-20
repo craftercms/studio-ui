@@ -115,8 +115,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             field: fields[fieldId],
             value: model[fieldId] ?? undefined,
             onChange: onFieldChange(fieldId, type),
-            disabled: modelApplying,
-            timeZone: null
+            disabled: modelApplying
           };
           if (controlProps.field.type === 'date-time') {
             if (!controlProps.value) {
