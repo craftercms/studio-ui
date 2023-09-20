@@ -48,7 +48,6 @@ export interface DateChangeData {
 export interface DateTimePickerProps {
   id?: string;
   value: string | Date | number;
-  timeZone: string;
   disabled?: boolean;
   classes?: any;
   controls?: Array<'date' | 'time' | 'timeZone'>; // options: ['date', 'time', 'timezone'], ['date', 'time'], ['date']
@@ -101,7 +100,6 @@ function DateTimePicker(props: DateTimePickerProps) {
     onTimeZoneChange,
     onError,
     value,
-    timeZone = locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone(),
     disablePast,
     disabled = false,
     showTimeSelector = true,
@@ -109,6 +107,11 @@ function DateTimePicker(props: DateTimePickerProps) {
     localeCode = 'en-US',
     dateTimeFormatOptions
   } = props;
+  const timeZones = getTimezones();
+  const offset = value ? moment.parseZone(value).format().slice(-6) : null;
+  const timeZone = offset
+    ? timeZones.find((tz) => tz.offset === offset).name
+    : locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone();
   // Time picker control seems to always display in function of the time of the
   // browser's time zone but we display things in function of the selected time zone.
   // This causes some discrepancies between the time displayed on the field and the time
@@ -123,7 +126,6 @@ function DateTimePicker(props: DateTimePickerProps) {
     const dateWithoutOffset = moment(date).tz(timeZone).format().substring(0, 19);
     return new Date(`${dateWithoutOffset}${localOffset}`);
   }, [value, timeZone]);
-  const timeZones = getTimezones();
   const { classes } = useStyles();
   const hour12 = dateTimeFormatOptions?.hour12 ?? true;
   const currentTimeZoneDesc = timeZones.find((tz) => tz.name === unescape(timeZone));
@@ -278,9 +280,13 @@ function DateTimePicker(props: DateTimePickerProps) {
       {showTimeZoneSelector && (
         <Autocomplete
           options={timeZones}
-          getOptionLabel={(timezone) =>
-            typeof timezone === 'string' ? timezone : `${timezone.name} (GMT${timezone.offset})`
-          }
+          getOptionLabel={(timezone) => {
+            return currentTimeZoneDesc.name === timezone.name
+              ? `GMT${timezone.offset}`
+              : typeof timezone === 'string'
+              ? timezone
+              : `${timezone.name} (GMT${timezone.offset})`;
+          }}
           value={currentTimeZoneDesc}
           onChange={handleTimezoneChange}
           size="small"
