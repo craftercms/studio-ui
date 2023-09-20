@@ -33,13 +33,11 @@ import { Alert } from '@mui/material';
 
 interface AudiencesPanelUIProps {
   model: ContentInstance;
-  fields: LookupTable<ContentTypeField & { timeZone?: string }>;
+  fields: LookupTable<ContentTypeField>;
   modelApplying: boolean;
   modelApplied: boolean;
   onChange: Function;
   onSaveModel: Function;
-  timeZonesLookup: LookupTable<string>;
-  setTimeZonesLookup(timeZones: LookupTable<string>): void;
 }
 
 const useStyles = makeStyles()((theme: Theme) => ({
@@ -69,19 +67,13 @@ const messages = defineMessages({
   }
 });
 
-const getDefaultModel = (fields: AudiencesPanelUIProps['fields'], setTimeZoneLookups) => {
+const getDefaultModel = (fields: AudiencesPanelUIProps['fields']) => {
   const props = {};
-  const timezones = {};
 
   Object.keys(fields).forEach((fieldId: string) => {
     const propValue = fields[fieldId].defaultValue;
     props[fieldId] = propValue;
     props[fieldId] = propValue;
-
-    if (fields[fieldId].type === 'date-time') {
-      timezones[fieldId] = fields[fieldId].timeZone;
-    }
-    setTimeZoneLookups(timezones);
   });
   return props;
 };
@@ -93,15 +85,12 @@ const UndefinedControlType = () => {
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
   const { classes } = useStyles();
-  const { model, modelApplying, onChange, onSaveModel, fields, timeZonesLookup, setTimeZonesLookup } = props;
+  const { model, modelApplying, onChange, onSaveModel, fields } = props;
 
   const onFieldChange = (fieldId: string, type: string) => (value: any) => {
     let props;
 
     if (type === 'date-time') {
-      setTimeZonesLookup({
-        [fieldId]: value.timeZoneName
-      });
       props = {
         ...model,
         [fieldId]: value.dateString
@@ -133,7 +122,6 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             if (!controlProps.value) {
               controlProps.value = fields[fieldId].defaultValue;
             }
-            controlProps.timeZone = timeZonesLookup[fieldId] ?? fields[fieldId].timeZone;
           }
           return (
             <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
@@ -143,7 +131,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
         })}
       </Grid>
       <Grid className={classes.actionButtons}>
-        <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields, setTimeZonesLookup))}>
+        <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
           <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
         </SecondaryButton>
         <PrimaryButton onClick={() => onSaveModel()}>
