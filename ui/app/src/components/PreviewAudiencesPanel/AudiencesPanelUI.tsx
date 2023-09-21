@@ -117,10 +117,8 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
             onChange: onFieldChange(fieldId, type),
             disabled: modelApplying
           };
-          if (controlProps.field.type === 'date-time') {
-            if (!controlProps.value) {
-              controlProps.value = fields[fieldId].defaultValue;
-            }
+          if (controlProps.field.type === 'date-time' && !controlProps.value) {
+            controlProps.value = fields[fieldId].defaultValue;
           }
           return (
             <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
