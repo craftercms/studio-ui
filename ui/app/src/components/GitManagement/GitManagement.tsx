@@ -187,12 +187,7 @@ export function GitManagement(props: GitManagementProps) {
   };
 
   const onConflictDialogCommitSuccess = (status: RepositoryStatus) => {
-    repoStatusConflictDialog.onClose();
     fetchRepoStatusReceiver(status);
-  };
-
-  const onConflictDialogRevertSuccess = () => {
-    repoStatusConflictDialog.onClose();
   };
 
   useEffect(() => {
@@ -305,7 +300,6 @@ export function GitManagement(props: GitManagementProps) {
           onClose={repoStatusConflictDialog.onClose}
           status={repoStatus}
           onCommitSuccess={onConflictDialogCommitSuccess}
-          onRevertSuccess={onConflictDialogRevertSuccess}
           onConflictResolved={fetchRepoStatusReceiver}
           onFailedPullCancelled={fetchRepoStatusReceiver}
         />

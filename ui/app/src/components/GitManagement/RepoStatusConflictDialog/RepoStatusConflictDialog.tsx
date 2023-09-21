@@ -19,7 +19,8 @@ import { EnhancedDialog, EnhancedDialogProps } from '../../EnhancedDialog';
 import { DialogBody } from '../../DialogBody';
 import { RepoStatus } from '../RepoStatus';
 import { FormattedMessage } from 'react-intl';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import SecondaryButton from '../../SecondaryButton';
 
 export interface RepoStatusConflictDialogProps extends EnhancedDialogProps {
   status: RepositoryStatus;
@@ -42,7 +43,7 @@ export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   useEffect(() => {
-    if (dialogProps.open) {
+    if (dialogProps.open && !isRepoClean) {
       window.onbeforeunload = (event) => {
         event.preventDefault();
         return (event.returnValue = '');
@@ -53,7 +54,7 @@ export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
     return () => {
       window.onbeforeunload = null;
     };
-  }, [dialogProps.open]);
+  }, [dialogProps.open, isRepoClean]);
 
   const onRevertSuccess = () => {
     setOpenConfirmDialog(false);
@@ -80,7 +81,13 @@ export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
         onClose={onClose}
         title={<FormattedMessage defaultMessage="Resolve conflicts" />}
       >
-        <DialogBody>
+        <DialogBody
+          sx={{
+            minHeight: '40vh',
+            justifyContent: isRepoClean ? 'center' : null,
+            alignItems: isRepoClean ? 'center' : null
+          }}
+        >
           <RepoStatus
             status={status}
             openConfirmDialog={openConfirmDialog}
@@ -90,6 +97,11 @@ export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
             onConfirmDialogOk={onConfirmDialogOk}
             onRevertSuccess={onRevertSuccess}
           />
+          {isRepoClean && (
+            <SecondaryButton onClick={onClose}>
+              <FormattedMessage defaultMessage="Close" />
+            </SecondaryButton>
+          )}
         </DialogBody>
       </EnhancedDialog>
     </>

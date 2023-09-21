@@ -99,11 +99,13 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
               options={[
                 {
                   id: 'acceptAll',
-                  primaryText: <FormattedMessage defaultMessage="Accept all Remote" />
+                  primaryText: <FormattedMessage defaultMessage="Accept all Remote" />,
+                  disabled: !hasConflicts
                 },
                 {
                   id: 'keepAll',
-                  primaryText: <FormattedMessage defaultMessage="Keep all Local" />
+                  primaryText: <FormattedMessage defaultMessage="Keep all Local" />,
+                  disabled: !hasConflicts
                 },
                 {
                   id: 'revertAll',
