@@ -30,7 +30,6 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { useSelection } from '../../hooks/useSelection';
-import { getUserTimeZone } from '../../utils/datetime';
 import { CreateTokenContainerProps } from './utils';
 import { createToken } from '../../services/tokens';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -144,7 +143,6 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
               setExpiresAt(changes.date);
             }}
             value={expiresAt}
-            timeZone={locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone()}
             disablePast
             localeCode={locale.localeCode}
             dateTimeFormatOptions={locale.dateTimeFormatOptions}

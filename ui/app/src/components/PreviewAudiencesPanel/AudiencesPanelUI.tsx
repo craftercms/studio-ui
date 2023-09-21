@@ -67,14 +67,14 @@ const messages = defineMessages({
   }
 });
 
-const getDefaultModel = (fields: LookupTable<ContentTypeField>) => {
+const getDefaultModel = (fields: AudiencesPanelUIProps['fields']) => {
   const props = {};
 
   Object.keys(fields).forEach((fieldId: string) => {
     const propValue = fields[fieldId].defaultValue;
     props[fieldId] = propValue;
+    props[fieldId] = propValue;
   });
-
   return props;
 };
 
@@ -91,13 +91,9 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     let props;
 
     if (type === 'date-time') {
-      const timezone = value.tz();
-      value = value.toISOString();
-
       props = {
         ...model,
-        [fieldId]: value,
-        [`${fieldId}_tz`]: timezone
+        [fieldId]: value.dateString
       };
     } else {
       props = {
@@ -111,38 +107,34 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   return (
     <>
-      {
-        <>
-          <Grid className={classes.panelMargin}>
-            {Object.keys(fields).map((fieldId: string) => {
-              const type = fields[fieldId].type;
-              const Control = controlsMap[type] ?? UndefinedControlType;
-              const controlProps = {
-                field: fields[fieldId],
-                value: model[fieldId] ?? undefined,
-                onChange: onFieldChange(fieldId, type),
-                disabled: modelApplying
-              };
-              if (controlProps.field.type === 'date-time' && model[`${fieldId}_tz`]) {
-                controlProps['timezone'] = model[`${fieldId}_tz`];
-              }
-              return (
-                <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
-                  <Control {...controlProps} />
-                </AudiencesFormSection>
-              );
-            })}
-          </Grid>
-          <Grid className={classes.actionButtons}>
-            <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
-              <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
-            </SecondaryButton>
-            <PrimaryButton onClick={() => onSaveModel()}>
-              <FormattedMessage id="audiencesPanel.apply" defaultMessage="Apply" />
-            </PrimaryButton>
-          </Grid>
-        </>
-      }
+      <Grid className={classes.panelMargin}>
+        {Object.keys(fields).map((fieldId: string) => {
+          const type = fields[fieldId].type;
+          const Control = controlsMap[type] ?? UndefinedControlType;
+          const controlProps = {
+            field: fields[fieldId],
+            value: model[fieldId] ?? undefined,
+            onChange: onFieldChange(fieldId, type),
+            disabled: modelApplying
+          };
+          if (controlProps.field.type === 'date-time' && !controlProps.value) {
+            controlProps.value = fields[fieldId].defaultValue;
+          }
+          return (
+            <AudiencesFormSection field={fields[fieldId]} key={fieldId} showDivider>
+              <Control {...controlProps} />
+            </AudiencesFormSection>
+          );
+        })}
+      </Grid>
+      <Grid className={classes.actionButtons}>
+        <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
+          <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
+        </SecondaryButton>
+        <PrimaryButton onClick={() => onSaveModel()}>
+          <FormattedMessage id="audiencesPanel.apply" defaultMessage="Apply" />
+        </PrimaryButton>
+      </Grid>
     </>
   );
 }
