@@ -15,7 +15,7 @@
  */
 
 import { get, postJSON } from '../utils/ajax';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { map, pluck } from 'rxjs/operators';
 import { FileDiff, Remote, Repository, RepositoryStatus } from '../models/Repository';
 
@@ -55,6 +55,13 @@ export function fetchStatus(siteId: string): Observable<RepositoryStatus> {
 export function resolveConflict(siteId: string, path: string, resolution: string): Observable<RepositoryStatus> {
   return postJSON(`${repositoryEndpointUrl}/resolve_conflict`, { siteId, path, resolution }).pipe(
     pluck('response', 'repositoryStatus')
+  );
+}
+
+export function bulkResolveConflict(siteId: string, paths: string[], resolution: string): Observable<RepositoryStatus> {
+  // Return only the status where there are no more conflicts
+  return forkJoin(paths.map((path) => resolveConflict(siteId, path, resolution))).pipe(
+    map((statuses) => statuses.filter((status) => status.conflicting.length === 0)[0])
   );
 }
 

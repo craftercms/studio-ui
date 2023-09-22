@@ -32,13 +32,14 @@ import Alert from '@mui/material/Alert';
 import translations from '../translations';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import { DropDownMenu } from '../../DropDownMenuButton';
 
 export interface RepoStatusUIProps {
   status: RepositoryStatus;
-  onRevertPull(): void;
   onCommitClick(): void;
   onResolveConflict(strategy: string, path: string): void;
   onDiffClick(path: string): void;
+  onBulkAction(e, actionId: string): void;
 }
 
 const useStyles = makeStyles()((theme) => ({
@@ -75,10 +76,11 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 export function RepoStatusUI(props: RepoStatusUIProps) {
-  const { status, onRevertPull, onCommitClick, onResolveConflict, onDiffClick } = props;
+  const { status, onCommitClick, onResolveConflict, onDiffClick, onBulkAction } = props;
   const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
-  const hasConflictsOrUncommitted = status.conflicting.length > 0 || status.uncommittedChanges.length > 0;
+  const hasConflicts = status.conflicting.length > 0;
+  const hasConflictsOrUncommitted = hasConflicts || status.uncommittedChanges.length > 0;
   return hasConflictsOrUncommitted ? (
     <>
       <GlobalAppToolbar
@@ -91,15 +93,32 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
         }
         rightContent={
           <>
-            <ConfirmDropdown
-              classes={{ button: classes.revertAllButton }}
-              text={formatMessage(messages.revertAll)}
-              cancelText={formatMessage(messages.no)}
-              confirmText={formatMessage(messages.yes)}
-              confirmHelperText={formatMessage(messages.confirmHelper)}
-              onConfirm={onRevertPull}
-            />
-            <Button variant="outlined" className={classes.commitButton} onClick={onCommitClick}>
+            <DropDownMenu
+              onMenuItemClick={onBulkAction}
+              variant="outlined"
+              options={[
+                {
+                  id: 'acceptAll',
+                  primaryText: <FormattedMessage defaultMessage="Accept all Remote" />,
+                  disabled: !hasConflicts
+                },
+                {
+                  id: 'keepAll',
+                  primaryText: <FormattedMessage defaultMessage="Keep all Local" />,
+                  disabled: !hasConflicts
+                },
+                {
+                  id: 'revertAll',
+                  primaryText: <FormattedMessage defaultMessage="Revert all" />
+                }
+              ]}
+              menuProps={{ sx: { minWidth: 180 } }}
+              listItemProps={{ dense: true }}
+              sx={{ mr: 2 }}
+            >
+              <FormattedMessage defaultMessage="Bulk actions" />
+            </DropDownMenu>
+            <Button variant="outlined" className={classes.commitButton} onClick={onCommitClick} disabled={hasConflicts}>
               <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
             </Button>
           </>
@@ -120,7 +139,7 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
       <Box padding={2}>
         <Grid container spacing={2}>
           {status.conflicting.length > 0 && (
-            <Grid item md={12} xl={status.uncommittedChanges.length ? 6 : 12}>
+            <Grid item md={12}>
               <Typography variant="h6" className={cx(classes.sectionLabel, classes.conflictedFilesLabel)}>
                 <FormattedMessage id="repository.conflictedFiles" defaultMessage="Conflicted Files" />
               </Typography>
@@ -162,7 +181,7 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
             </Grid>
           )}
           {status.uncommittedChanges.length > 0 && (
-            <Grid item md={12} xl={status.conflicting.length ? 6 : 12}>
+            <Grid item md={12}>
               <Typography variant="h6" className={classes.sectionLabel}>
                 <FormattedMessage id="repository.pendingCommit" defaultMessage="Pending Commit" />
               </Typography>
