@@ -15,25 +15,32 @@
  */
 
 import { MarketplacePlugin } from './MarketplacePlugin';
+import { ReactNode } from 'react';
 
 interface View {
-  title: string;
-  subtitle?: string;
-  btnText?: string;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  btnText?: ReactNode;
 }
 
 export interface Views {
   [key: number]: View;
 }
 
-export interface SiteState {
-  blueprint: MarketplacePlugin;
+export interface SiteBaseState {
   siteId: string;
   siteName: string;
   siteIdExist: boolean;
   siteNameExist: boolean;
   invalidSiteId: boolean;
   description: string;
+  submitted: boolean;
+  selectedView: number;
+  gitBranch: string;
+}
+
+export interface SiteState extends SiteBaseState {
+  blueprint: MarketplacePlugin;
   useRemote: boolean;
   createAsOrphan: boolean;
   repoUrl: string;
@@ -45,8 +52,6 @@ export interface SiteState {
   repoUsername: string;
   repoToken: string;
   repoKey: string;
-  submitted: boolean;
-  selectedView: number;
   details: { blueprint: MarketplacePlugin; index: number };
   blueprintFields?: {
     [key: string]: string;
@@ -59,6 +64,10 @@ export interface SiteState {
   showIncompatible: boolean;
 
   [key: string]: string | boolean | MarketplacePlugin | number | object;
+}
+
+export interface DuplicateSiteState extends SiteBaseState {
+  originalSiteId: string;
 }
 
 export interface CreateSiteMeta {
