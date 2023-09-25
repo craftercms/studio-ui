@@ -531,9 +531,13 @@ function parseElementByContentType(
       return getInnerHtml(element) === 'true';
     case 'numeric-input':
       return getInnerHtmlNumber(element, parseFloat);
+    case 'transcoded-video-picker':
+    case 'taxonomy-selector':
+      return getInnerHtml(element);
     default:
       console.log(
-        `[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
+        `%c[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
+        'color: blue',
         element
       );
       return getInnerHtml(element);
@@ -774,9 +778,9 @@ export function denormalizeModel(
   const model = { ...normalized };
   Object.entries(model).forEach(([prop, value]) => {
     if (prop.endsWith('_o')) {
-      const collection: any[] = value;
+      const collection: unknown = value;
       // Cover cases (collection?.length) where the xml has an empty tag corresponding to the `someField_o` without content.
-      if (collection?.length) {
+      if (Array.isArray(collection) && collection.length) {
         const isNodeSelector = typeof collection[0] === 'string';
         if (isNodeSelector) {
           model[prop] = collection.map((item) => denormalizeModel(modelLookup[item], modelLookup));

@@ -21,12 +21,11 @@ import { FieldProps, Field } from './Field';
 import { nnou, setProperty } from '@craftercms/studio-ui/utils/object';
 import { extractCollectionItem, value as getModelValue } from '@craftercms/studio-ui/utils/model';
 import { getCachedContentType } from '../contentController';
+import ContentInstance from '@craftercms/studio-ui/models/ContentInstance';
 
 export type RenderFieldProps<P, V = any, F = V> = Omit<FieldProps<P>, 'children'> & {
   renderTarget?: string;
-  render?: (value: V, fieldId: string) => F;
-  /** @deprecated Use `render` instead. Prop `format` will be removed in later version. */
-  format?: (value: V, fieldId: string) => F;
+  render?: (value: V, fieldId: string, model: ContentInstance) => F;
 };
 
 export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {}>(props, ref) {
@@ -59,7 +58,7 @@ export const RenderField = forwardRef<any, RenderFieldProps<{}>>(function <P = {
     setProperty(
       passDownProps as {},
       target,
-      render(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId)
+      render(nnou(index) ? extractCollectionItem(model, fieldId, index) : getModelValue(model, fieldId), fieldId, model)
     );
   });
 

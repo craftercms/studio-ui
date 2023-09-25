@@ -25,10 +25,7 @@ export interface RenderComponentsProps<
   RootProps = {},
   ItemProps = {},
   ItemType extends ContentInstance = ContentInstance
-> extends Pick<
-    RenderRepeatProps<RootProps, ItemProps, ItemType>,
-    'model' | 'index' | 'fieldId' | 'component' | 'componentProps' | 'itemComponent' | 'itemProps'
-  > {
+> extends Omit<RenderRepeatProps<RootProps, ItemProps, ItemType>, 'renderItem'> {
   contentTypeMap: Record<string, ElementType>;
   renderItem?: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
   contentTypeProps?: Record<string, any>;
@@ -48,7 +45,16 @@ export const RenderComponents = forwardRef<any, RenderComponentsProps>((props, r
       />
     )
   } = props;
-  return <RenderRepeat {...props} ref={ref} renderItem={renderItem} />;
+  return (
+    <RenderRepeat
+      {...props}
+      // Next like is to avoid compiler complaining about the `itemKeyGenerator` prop differences.
+      // TODO: Is there a way to carry the type correctly?
+      itemKeyGenerator={props.itemKeyGenerator as any}
+      ref={ref}
+      renderItem={renderItem}
+    />
+  );
 });
 
 RenderComponents.propTypes = { ...RenderRepeat.propTypes, renderItem: PropTypes.func };

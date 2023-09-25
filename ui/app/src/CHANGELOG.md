@@ -1,6 +1,8 @@
 ## 4.1.2
 * Update return type of configuration/fetchHistory and content/fetchItemHistory to `ItemHistoryEntry[]`.
 * Update content/fetchItemHistory service to use new `/studio/api/2/content/item_history` API.
+* Removed deprecated `Guest` component. Use `ExperienceBuilder`.
+* Removed deprecated RenderField prop `format`. Use `render`.
 
 ## 4.1.1
 

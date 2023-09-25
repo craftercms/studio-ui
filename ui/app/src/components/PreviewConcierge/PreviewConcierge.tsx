@@ -585,7 +585,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestCheckIn.type:
           if (type === guestCheckIn.type) {
             const guestVersionStr = payload.version?.slice(0, 5);
-            if (guestVersionStr) {
+            if (guestVersionStr && env?.version) {
               const stdVersionStr = env.version.slice(0, 5);
               if (
                 // Only show once per tab session (full reload)
