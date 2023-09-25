@@ -14,14 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { GuestStyleSheetConfig } from './stylesheet';
 import { createTheme, Theme, ThemeOptions } from '@mui/material';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import palette from '@craftercms/studio-ui/styles/palette';
 import { useMemo } from 'react';
-import { ZoneMarkerPartialSx } from '../react';
-
-export interface GuestStyleConfig extends GuestStyleSheetConfig {}
+import { DropMarkerPartialSx, ZoneMarkerPartialSx } from '../react';
+import { SxProps } from '@mui/system';
 
 export function useGuestTheme(styleConfig: ThemeOptions): Theme {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
@@ -56,14 +54,15 @@ export function useGuestTheme(styleConfig: ThemeOptions): Theme {
   }, [prefersDarkMode, styleConfig]);
 }
 
+type GuestStyleSxKeys = 'base' | 'selectModeHighlight' | 'moveModeHighlight';
+
 export interface GuestStylesSx {
-  zoneMarker: Record<
-    'base' | 'selectModeHighlight' | 'moveModeHighlight' | 'errorHighlight' | 'warnHighlight',
-    ZoneMarkerPartialSx
-  >;
+  zoneMarker: Record<GuestStyleSxKeys | 'errorHighlight' | 'warnHighlight', ZoneMarkerPartialSx>;
+  dropMarker: Record<GuestStyleSxKeys, DropMarkerPartialSx>;
+  ghostElement: SxProps<Theme>;
 }
 
-export const styleSxDefaults: GuestStylesSx = {
+export const styleSxDefaults: Partial<GuestStylesSx> = {
   zoneMarker: {
     base: {},
     selectModeHighlight: {
@@ -72,7 +71,7 @@ export const styleSxDefaults: GuestStylesSx = {
         color: 'success.contrastText'
       },
       box: {
-        outlineColor: (theme) => theme.palette.success.light
+        outlineColor: 'success.light'
       },
       icon: {
         color: 'success.contrastText'
@@ -106,5 +105,10 @@ export const styleSxDefaults: GuestStylesSx = {
         outlineColor: (theme) => theme.palette.warning.light
       }
     }
+  },
+  dropMarker: {
+    base: {},
+    selectModeHighlight: {},
+    moveModeHighlight: {}
   }
 };
