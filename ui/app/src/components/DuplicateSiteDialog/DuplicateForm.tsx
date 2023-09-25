@@ -39,7 +39,6 @@ interface DuplicateFormProps {
   fieldsErrorsLookup: LookupTable<boolean>;
   setSite: (site: Partial<DuplicateSiteState>) => void;
   onSubmit: (event) => void;
-  onCheckNameExist(siteId: string): any;
 }
 
 export function DuplicateForm(props: DuplicateFormProps) {

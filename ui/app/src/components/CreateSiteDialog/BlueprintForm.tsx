@@ -19,7 +19,7 @@ import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid';
 import GitForm from './GitForm';
 import { LookupTable, MarketplacePlugin, SiteState } from '../../models';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import PluginFormEngine from '../PluginFormBuilder';
 import { fetchAll } from '../../services/sites';
 import { cleanupGitBranch, cleanupSiteId, getSiteIdFromSiteName, siteIdExist, siteNameExist } from './utils';
@@ -76,7 +76,6 @@ function BlueprintForm(props: BlueprintFormProps) {
   const { classes, cx } = useStyles();
   const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, classes: classesProp, fieldsErrorsLookup } = props;
   const [sites, setSites] = useState(null);
-  const { formatMessage } = useIntl();
 
   useEffect(() => {
     if (sites === null) {

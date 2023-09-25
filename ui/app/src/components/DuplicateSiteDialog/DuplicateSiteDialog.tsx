@@ -16,10 +16,14 @@
 
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { DuplicateSiteState, Views } from '../../models';
 import DuplicateSiteDialogContainer from './DuplicateSiteDialogContainer';
 import useSpreadState from '../../hooks/useSpreadState';
+import { dialogClasses } from '@mui/material/Dialog';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const siteInitialState: DuplicateSiteState = {
   originalSiteId: '',
@@ -36,14 +40,30 @@ const siteInitialState: DuplicateSiteState = {
 
 interface DuplicateSiteDialogProps extends EnhancedDialogProps {
   siteId?: string;
+  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
-  const { ...rest } = props;
+  const { siteId, onSubmittingAndOrPendingChange, ...dialogProps } = props;
   const [site, setSite] = useSpreadState({
     ...siteInitialState,
-    ...(props.siteId && { originalSiteId: props.siteId })
+    ...(siteId && { originalSiteId: siteId })
   });
+  const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+
+  useEffect(() => {
+    if (siteId) {
+      setSite({ originalSiteId: siteId });
+    }
+  }, [siteId, setSite]);
+
+  useEffect(() => {
+    const { originalSiteId, siteId, siteName, description, gitBranch } = site;
+    const dialogHasChanges =
+      Boolean(originalSiteId) || Boolean(siteId) || Boolean(siteName) || Boolean(description) || Boolean(gitBranch);
+    fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: dialogHasChanges });
+  }, [site, fnRefs]);
 
   const views: Views = {
     0: {
@@ -61,9 +81,15 @@ export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
       title={views[site.selectedView].title}
       dialogHeaderProps={{ subtitle: views[site.selectedView].subtitle }}
       maxWidth="lg"
-      {...rest}
+      sx={{
+        [`& .${dialogClasses.paper}`]: { height: 'calc(100% - 100px)', maxHeight: '1200px' }
+      }}
+      data-dialog-id="create-site-dialog"
+      onWithPendingChangesCloseRequest={pendingChangesCloseRequest}
+      onClosed={() => setSite(siteInitialState)}
+      {...dialogProps}
     >
-      <DuplicateSiteDialogContainer site={site} setSite={setSite} />
+      <DuplicateSiteDialogContainer site={site} setSite={setSite} handleClose={props.onClose} />
     </EnhancedDialog>
   );
 }

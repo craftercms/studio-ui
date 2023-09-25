@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ChangeEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ChangeEvent, MouseEvent, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useSpreadState from '../../hooks/useSpreadState';
 import useEnv from '../../hooks/useEnv';
@@ -56,6 +56,7 @@ import messages from './translations';
 import { hasGlobalPermission } from '../../services/users';
 import SecondaryButton from '../SecondaryButton';
 import useMount from '../../hooks/useMount';
+import ContentCopyIcon from '@mui/icons-material/ContentCopyRounded';
 
 interface SearchState {
   searchKey: string;
@@ -76,13 +77,49 @@ interface CreateSiteDialogContainerProps {
   dialog: DialogState;
   setDialog(dialog: Partial<DialogState>): void;
   disableEnforceFocus: boolean;
+  onShowDuplicate(): void;
 }
 
 const baseFormFields = ['siteName', 'siteId', 'description', 'gitBranch'];
 const gitFormFields = ['repoUrl', 'repoRemoteName', 'repoUsername', 'repoPassword', 'repoToken', 'repoKey'];
 
+export interface CreateSiteDialogLoaderProps {
+  title?: ReactNode;
+  subtitle?: ReactNode;
+  handleClose(event?: React.MouseEvent, reason?: string): void;
+}
+
+export function CreateSiteDialogLoader(props: CreateSiteDialogLoaderProps) {
+  const { title, subtitle, handleClose } = props;
+  const { classes } = useStyles();
+  const { formatMessage } = useIntl();
+
+  return (
+    <div className={classes.statePaper}>
+      <LoadingState
+        title={title ?? formatMessage(messages.creatingSite)}
+        subtitle={subtitle ?? formatMessage(messages.pleaseWait)}
+        classes={{
+          root: classes.loadingStateRoot,
+          graphicRoot: classes.loadingStateGraphicRoot,
+          graphic: classes.loadingStateGraphic
+        }}
+      />
+      <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+        <SecondaryButton sx={{ mb: 1 }} onClick={handleClose}>
+          <FormattedMessage id="words.close" defaultMessage="Close" />
+        </SecondaryButton>
+        <Typography variant="body2" color="textSecondary">
+          <FormattedMessage defaultMessage="Project creation will continue in the background" />
+        </Typography>
+      </Box>
+    </div>
+  );
+}
+
 export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps) {
-  const { site, setSite, search, setSearch, handleClose, dialog, setDialog, disableEnforceFocus } = props;
+  const { site, setSite, search, setSearch, handleClose, dialog, setDialog, disableEnforceFocus, onShowDuplicate } =
+    props;
   const { classes, cx } = useStyles();
   const [hasListPluginPermission, setHasListPluginPermission] = useState(false);
 
@@ -243,6 +280,9 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
         createAsOrphan: true,
         details: { blueprint: null, index: null }
       });
+    } else if (blueprint.id === 'DUPLICATE') {
+      handleClose();
+      onShowDuplicate();
     } else {
       setSite({
         selectedView: view,
@@ -448,8 +488,10 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   function renderBlueprints(list: MarketplacePlugin[], isMarketplace: boolean = false) {
     return list.map((item: MarketplacePlugin) => {
       const isGitItem = item.id === 'GIT';
+      const isDuplicateItem = item.id === 'DUPLICATE';
+      const isGitOrDuplicateItem = isGitItem || isDuplicateItem;
       return (
-        <Grid item xs={12} sm={isGitItem ? 12 : 6} md={isGitItem ? 12 : 4} lg={isGitItem ? 12 : 3} key={item.id}>
+        <Grid item xs={12} sm={6} md={isGitOrDuplicateItem ? 6 : 4} lg={isGitOrDuplicateItem ? 6 : 3} key={item.id}>
           <PluginCard
             plugin={item}
             onPluginSelected={handleBlueprintSelected}
@@ -488,6 +530,22 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                       description: '',
                       title: formatMessage(messages.gitBlueprintName),
                       url: gitLogo
+                    }
+                  ],
+                  videos: []
+                }
+              },
+              {
+                id: 'DUPLICATE',
+                name: <FormattedMessage defaultMessage="Duplicate Project" />,
+                description: <FormattedMessage defaultMessage="Create an exact copy of an existing Studio project." />,
+                documentation: null,
+                media: {
+                  screenshots: [
+                    {
+                      description: '',
+                      title: formatMessage(messages.gitBlueprintName),
+                      icon: <ContentCopyIcon />
                     }
                   ],
                   videos: []
@@ -536,27 +594,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
         disableEnforceFocus={disableEnforceFocus}
       />
       {apiState.creatingSite || (apiState.error && apiState.global) || site.details.blueprint ? (
-        (apiState.creatingSite && (
-          <div className={classes.statePaper}>
-            <LoadingState
-              title={formatMessage(messages.creatingSite)}
-              subtitle={formatMessage(messages.pleaseWait)}
-              classes={{
-                root: classes.loadingStateRoot,
-                graphicRoot: classes.loadingStateGraphicRoot,
-                graphic: classes.loadingStateGraphic
-              }}
-            />
-            <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-              <SecondaryButton sx={{ mb: 1 }} onClick={handleClose}>
-                <FormattedMessage id="words.close" defaultMessage="Close" />
-              </SecondaryButton>
-              <Typography variant="body2" color="textSecondary">
-                <FormattedMessage defaultMessage="Project creation will continue in the background" />
-              </Typography>
-            </Box>
-          </div>
-        )) ||
+        (apiState.creatingSite && <CreateSiteDialogLoader handleClose={handleClose} />) ||
         (apiState.errorResponse && (
           <ApiResponseErrorState
             classes={{ root: classes.errorPaperRoot }}

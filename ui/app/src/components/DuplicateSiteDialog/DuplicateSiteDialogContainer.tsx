@@ -28,14 +28,19 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import { keyframes } from 'tss-react';
+import { fadeIn } from 'react-animations';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { CreateSiteDialogLoader } from '../CreateSiteDialog';
 
 interface DuplicateSiteDialogContainerProps {
   site: DuplicateSiteState;
   setSite: (site: Partial<DuplicateSiteState>) => void;
+  handleClose(event?: React.MouseEvent, reason?: string): void;
 }
 
 export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainerProps) {
-  const { site, setSite } = props;
+  const { site, setSite, handleClose } = props;
   const [apiState, setApiState] = useSpreadState({
     duplicatingSite: false,
     error: null
@@ -67,6 +72,10 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     setSite({ selectedView: back });
   };
 
+  const handleErrorBack = () => {
+    setApiState({ error: null });
+  };
+
   const handleFinish = (e: MouseEvent) => {
     e && e.preventDefault();
     if (site.selectedView === 0) {
@@ -85,68 +94,75 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   return (
     <>
       <DialogBody>
-        {/* TODO: fadeIn classes? check in CreateSiteDialogContainer */}
-        <Box
-          sx={{
-            flexWrap: 'wrap',
-            height: '100%',
-            overflow: 'auto',
-            display: 'flex',
-            padding: '25px'
-          }}
-        >
-          {site.selectedView === 0 && (
-            <DuplicateForm
-              site={site}
-              setSite={setSite}
-              fieldsErrorsLookup={fieldsErrorsLookup}
-              onSubmit={() => {}}
-              onCheckNameExist={() => {}}
-            />
+        {(apiState.duplicatingSite && (
+          <CreateSiteDialogLoader
+            title={<FormattedMessage defaultMessage="Duplicating Project" />}
+            handleClose={handleClose}
+          />
+        )) ||
+          (apiState.error && <ApiResponseErrorState error={apiState.error} onButtonClick={handleErrorBack} />) || (
+            <Box
+              sx={{
+                flexWrap: 'wrap',
+                height: '100%',
+                overflow: 'auto',
+                display: 'flex',
+                padding: '25px',
+                animation: `${keyframes`${fadeIn}`} 1s`
+              }}
+            >
+              {site.selectedView === 0 && (
+                <DuplicateForm
+                  site={site}
+                  setSite={setSite}
+                  fieldsErrorsLookup={fieldsErrorsLookup}
+                  onSubmit={handleFinish}
+                />
+              )}
+              {site.selectedView === 1 && (
+                <Grid container sx={{ maxWidth: '600px', margin: 'auto' }}>
+                  <Grid item xs={12}>
+                    <Typography variant="h6" gutterBottom>
+                      <FormattedMessage defaultMessage="Project info" />
+                      <IconButton onClick={() => {}} size="large">
+                        <EditIcon />
+                      </IconButton>
+                    </Typography>
+                    <Typography variant="body2" gutterBottom noWrap>
+                      <span>
+                        <FormattedMessage defaultMessage="Project Name" />:{' '}
+                      </span>
+                      {site.siteName}
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                      <span>
+                        <FormattedMessage defaultMessage="Project ID" />:{' '}
+                      </span>
+                      {site.siteId}
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                      <span>
+                        <FormattedMessage defaultMessage="Description" />:{' '}
+                      </span>
+                      {site.description ? (
+                        site.description
+                      ) : (
+                        <span>
+                          (<FormattedMessage defaultMessage="No description supplied" />)
+                        </span>
+                      )}
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                      <span>
+                        <FormattedMessage defaultMessage="Git Branch" />:
+                      </span>
+                      {` ${site.gitBranch ? site.gitBranch : 'master'}`}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              )}
+            </Box>
           )}
-          {site.selectedView === 1 && (
-            <Grid container sx={{ maxWidth: '600px', margin: 'auto' }}>
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom>
-                  <FormattedMessage defaultMessage="Project info" />
-                  <IconButton onClick={() => {}} size="large">
-                    <EditIcon />
-                  </IconButton>
-                </Typography>
-                <Typography variant="body2" gutterBottom noWrap>
-                  <span>
-                    <FormattedMessage defaultMessage="Project Name" />:{' '}
-                  </span>
-                  {site.siteName}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  <span>
-                    <FormattedMessage defaultMessage="Project ID" />:{' '}
-                  </span>
-                  {site.siteId}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  <span>
-                    <FormattedMessage defaultMessage="Description" />:{' '}
-                  </span>
-                  {site.description ? (
-                    site.description
-                  ) : (
-                    <span>
-                      (<FormattedMessage defaultMessage="No description supplied" />)
-                    </span>
-                  )}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  <span>
-                    <FormattedMessage defaultMessage="Git Branch" />:
-                  </span>
-                  {` ${site.gitBranch ? site.gitBranch : 'master'}`}
-                </Typography>
-              </Grid>
-            </Grid>
-          )}
-        </Box>
       </DialogBody>
       <DialogFooter>
         {site.selectedView === 1 && (

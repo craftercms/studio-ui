@@ -56,6 +56,7 @@ import Paper from '@mui/material/Paper';
 import { getSystemLink } from '../../utils/system';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { createCustomDocumentEventListener } from '../../utils/dom';
+import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -80,6 +81,8 @@ export function SiteManagement() {
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
   const [sitesRefreshCountLookup, setSitesRefreshCountLookup] = useSpreadState<LookupTable<number>>({});
+  const duplicateSiteDialogState = useEnhancedDialogState();
+  const [duplicateSiteId, setDuplicateSiteId] = useState(null);
 
   useEffect(() => {
     merge(
@@ -186,6 +189,11 @@ export function SiteManagement() {
     publishingStatusDialogState.onOpen();
   };
 
+  const onDuplicateSiteClick = (siteId: string) => {
+    setDuplicateSiteId(siteId);
+    duplicateSiteDialogState.onOpen();
+  };
+
   const handleChangeView = () => {
     if (currentView === 'grid') {
       setCurrentView('list');
@@ -242,6 +250,7 @@ export function SiteManagement() {
             onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
+            onDuplicateSiteClick={onDuplicateSiteClick}
           />
         </SuspenseWithEmptyState>
       </ErrorBoundary>
@@ -257,7 +266,18 @@ export function SiteManagement() {
         isFetching={false}
         {...selectedSiteStatus}
       />
-      <CreateSiteDialog open={openCreateSiteDialog} onClose={() => setOpenCreateSiteDialog(false)} />
+      <CreateSiteDialog
+        open={openCreateSiteDialog}
+        onClose={() => setOpenCreateSiteDialog(false)}
+        onShowDuplicate={duplicateSiteDialogState.onOpen}
+      />
+      <DuplicateSiteDialog
+        siteId={duplicateSiteId}
+        open={duplicateSiteDialogState.open}
+        onClose={duplicateSiteDialogState.onClose}
+        hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
+        onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
+      />
     </Paper>
   );
 }
