@@ -179,7 +179,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
             <FormattedMessage defaultMessage="Back" />
           </Button>
         )}
-        <PrimaryButton /* ref={finishRef */ onClick={handleFinish}>
+        <PrimaryButton onClick={handleFinish}>
           {site.selectedView === 0 && <FormattedMessage defaultMessage="Review" />}
           {site.selectedView === 1 && <FormattedMessage defaultMessage="Duplicate Project" />}
         </PrimaryButton>
