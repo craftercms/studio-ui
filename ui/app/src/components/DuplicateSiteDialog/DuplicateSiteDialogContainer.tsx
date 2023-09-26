@@ -124,7 +124,16 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
                   <Grid item xs={12}>
                     <Typography variant="h6" gutterBottom>
                       <FormattedMessage defaultMessage="Project info" />
-                      <IconButton onClick={() => {}} size="large">
+                      <IconButton
+                        onClick={handleBack}
+                        size="large"
+                        sx={{
+                          color: (theme) => theme.palette.primary.main,
+                          '& svg': {
+                            fontSize: '1.2rem'
+                          }
+                        }}
+                      >
                         <EditIcon />
                       </IconButton>
                     </Typography>
