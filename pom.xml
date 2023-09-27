@@ -127,6 +127,17 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>NPM content: build</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <workingDirectory>ui/npm-content</workingDirectory>
+                            <arguments>build-if-changed</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>UI styles: Build sass styles</id>
                         <goals>
                             <goal>yarn</goal>
@@ -189,17 +200,6 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <workingDirectory>ui/guest</workingDirectory>
-                            <arguments>build-if-changed</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>NPM content: build</id>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <workingDirectory>ui/npm-content</workingDirectory>
                             <arguments>build-if-changed</arguments>
                         </configuration>
                     </execution>
