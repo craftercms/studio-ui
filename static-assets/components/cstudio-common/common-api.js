@@ -2338,18 +2338,34 @@ var nodeOpen = false,
           unsubscribe();
         });
 
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe((items) => {
-          if (items && items.length) {
-            const eventIdSuccess = 'workflowCancellationDialogContinue';
-            CrafterCMSNext.system.store.dispatch({
-              type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-              payload: { items }
-            });
-          } else {
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe({
+          next: (items) => {
+            if (items && items.length) {
+              const eventIdSuccess = 'workflowCancellationDialogContinue';
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: { items }
+              });
+            } else {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+              });
+              doEdit();
+            }
+          },
+          error(error) {
             CrafterCMSNext.system.store.dispatch({
               type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
             });
-            doEdit();
+            if (error.status === 404) {
+              // TODO: show confirmation 'remove from control?'
+              console.log('error', error.response.response);
+            } else {
+              craftercms.getStore().dispatch({
+                type: 'SHOW_ERROR_DIALOG',
+                payload: { error: error.response.response }
+              });
+            }
           }
         });
       },

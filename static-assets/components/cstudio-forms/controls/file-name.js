@@ -527,9 +527,44 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       };
 
       YAHOO.util.Event.on(editFileNameBtn, 'click', function () {
+        const React = craftercms.libs.React;
+        const RenameContentDialog = craftercms.components.RenameContentDialog;
+
+        function LegacyRenameContentDialog(props) {
+          const [open, setOpen] = React.useState(true);
+          const [hasPendingChanges, setHasPendingChanges] = React.useState(false);
+
+          const onSubmittingAndOrPendingChange = (state) => {
+            setHasPendingChanges(Boolean(state.hasPendingChanges));
+          };
+
+          return (component = React.createElement(RenameContentDialog, {
+            ...props,
+            open,
+            onClose: () => setOpen(false),
+            hasPendingChanges,
+            onSubmittingAndOrPendingChange,
+            onRenamed: (newName) => {
+              props.onRenamed(newName);
+              setOpen(false);
+            }
+          }));
+        }
+
         _self.form.setFocusedField(_self);
         if (_self.showWarnOnEdit) {
-          createWarningDialog();
+          const fileName = _self.form.model['file-name'];
+          const path = _self.form.path.replace(fileName, '');
+
+          const dialogContainer = document.createElement('div');
+          CrafterCMSNext.render(dialogContainer, LegacyRenameContentDialog, {
+            path: path,
+            value: fileName,
+            onRenamed: (newName) => {
+              _self.setValue(newName);
+            }
+          });
+          containerEl.appendChild(dialogContainer);
         }
       });
     }
@@ -546,7 +581,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       this.inputEl.value = this.defaultValue;
     } else {
       this.value = value;
-      this.inputEl.value = this._getValue();
+      this.inputEl.value = this._getValue(value);
       if (this.inputEl.value == '' && !this.isRootPath() && this.defaultValue != '') {
         this.value = this.defaultValue;
         this.inputEl.value = this.defaultValue;
@@ -559,9 +594,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     this.adjustInputsWidth(this.inputEl, this.pathEl);
   },
 
-  _getValue: function () {
+  _getValue: function (path) {
     var value = '';
-    var path = this.getCurrentPath();
+    var path = path ?? this.getCurrentPath();
     path = path.replace('/site/website', '');
 
     if (path.indexOf('.xml') != -1) {
