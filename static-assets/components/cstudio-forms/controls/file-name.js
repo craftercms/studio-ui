@@ -561,7 +561,14 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
             path: path,
             value: fileName,
             onRenamed: (newName) => {
-              _self.setValue(newName);
+              _self.inputEl.value = _self._getValue(newName);
+              _self.inputEl.title = _self.inputEl.value;
+              _self._onChangeVal(null, _self);
+              _self.adjustInputsWidth(_self.inputEl, _self.pathEl);
+              // enable input
+              _self.inputEl.disabled = false;
+              _self.inputEl.focus();
+              editFileNameEl.style.display = 'none';
             }
           });
           containerEl.appendChild(dialogContainer);

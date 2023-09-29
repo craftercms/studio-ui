@@ -626,12 +626,16 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     return this.items;
   },
 
-  updateEditedItem: function (value, datasource, index) {
-    var item = this.items[index];
-    item.value = value;
+  // updatedItem: { key: string; include: string; value: string }
+  updateEditedItem: function (updatedItem, datasource, index) {
+    let item = this.items[index];
     if (datasource) {
       item.datasource;
     }
+    this.items[index] = {
+      ...item,
+      ...updatedItem
+    };
     this._renderItems();
     this._onChangeVal(this);
   },

@@ -256,7 +256,14 @@
             {
               success: function (contentTO, editorId, name, value, draft, action) {
                 if (control) {
-                  control.updateEditedItem(value, datasource, index);
+                  control.updateEditedItem(
+                    {
+                      ...(name && { key: name, include: name }),
+                      value
+                    },
+                    datasource,
+                    index
+                  );
                 }
               }
             }
@@ -292,7 +299,7 @@
           {
             success: function (contentTO, editorId, name, value) {
               if (control) {
-                control.updateEditedItem(value, datasource, index);
+                control.updateEditedItem({ value }, datasource, index);
               }
             }
           },

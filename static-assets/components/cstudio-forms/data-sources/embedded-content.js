@@ -144,7 +144,7 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         {
           success: function (contentTO, editorId, name, value, draft, action) {
             if (control) {
-              control.updateEditedItem(value, _self.id, index);
+              control.updateEditedItem({ value }, _self.id, index);
             }
           }
         },
