@@ -776,6 +776,12 @@ export const formEngineMessages = defineMessages({
   embeddedComponent: {
     id: 'common.embeddedComponent',
     defaultMessage: 'Embedded component'
+  },
+  removeItemFromNodeSelector: {
+    defaultMessage: 'Remove from control'
+  },
+  keepItemInNodeSelector: {
+    defaultMessage: 'Keep in control'
   }
 });
 
