@@ -67,7 +67,8 @@ export interface SiteState extends SiteBaseState {
 }
 
 export interface DuplicateSiteState extends SiteBaseState {
-  originalSiteId: string;
+  sourceSiteId: string;
+  blobStoresReadOnly?: boolean;
 }
 
 export interface CreateSiteMeta {
@@ -92,6 +93,11 @@ export interface CreateSiteMeta {
     [key: string]: string;
   };
   createAsOrphan: boolean;
+}
+
+export interface DuplicateSiteMeta
+  extends Pick<CreateSiteMeta, 'siteId' | 'siteName' | 'description' | 'sandboxBranch'> {
+  sourceSiteId: string;
 }
 
 export interface MarketplaceSite {
@@ -147,6 +153,16 @@ export interface LegacySite {
   sitePublishedRepoCreated: boolean;
   siteUuid: string;
   state: string;
+  blobStores: Array<{
+    id: string;
+    type: string;
+    pattern: string;
+    mappings: Array<{
+      publishingTarget: string;
+      storeTarget: string;
+      prefix: string;
+    }>;
+  }>;
 }
 
 export interface Action {

@@ -23,7 +23,7 @@ import { DialogFooter } from '../DialogFooter';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
-import React, { MouseEvent, useMemo } from 'react';
+import React, { MouseEvent, useEffect, useMemo, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -32,6 +32,11 @@ import { keyframes } from 'tss-react';
 import { fadeIn } from 'react-animations';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { CreateSiteDialogLoader } from '../CreateSiteDialog';
+import { duplicate, fetchLegacySite } from '../../services/sites';
+import { setSiteCookie } from '../../utils/auth';
+import { getSystemLink } from '../../utils/system';
+import useEnv from '../../hooks/useEnv';
+import { nnou } from '../../utils/object';
 
 interface DuplicateSiteDialogContainerProps {
   site: DuplicateSiteState;
@@ -45,26 +50,52 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     duplicatingSite: false,
     error: null
   });
-
+  const { authoringBase, useBaseDomain } = useEnv();
   const fieldsErrorsLookup: LookupTable<boolean> = useMemo(() => {
     return {
-      originalSiteId: !site.originalSiteId,
+      sourceSiteId: !site.sourceSiteId,
       siteName: !site.siteName || site.siteNameExist,
       siteId: !site.siteId || site.siteIdExist || site.invalidSiteId,
       description: false,
       gitBranch: false
     };
   }, [site]);
+  const [sourceSiteHasBlobStores, setSourceSiteHasBlobStores] = useState(null);
 
   const validateForm = () => {
     return !(
-      !site.originalSiteId ||
+      !site.sourceSiteId ||
       !site.siteId ||
       site.siteIdExist ||
       !site.siteName ||
       site.siteNameExist ||
       site.invalidSiteId
     );
+  };
+
+  const duplicateSite = () => {
+    duplicate({
+      sourceSiteId: site.sourceSiteId,
+      siteId: site.siteId,
+      siteName: site.siteName,
+      description: site.description,
+      sandboxBranch: site.gitBranch,
+      ...(sourceSiteHasBlobStores && { blobStoresReadOnly: site.blobStoresReadOnly })
+    }).subscribe({
+      next: () => {
+        handleClose();
+        setSiteCookie(site.siteId, useBaseDomain);
+        window.location.href = getSystemLink({
+          systemLinkId: 'preview',
+          authoringBase,
+          site: site.siteId,
+          page: '/'
+        });
+      },
+      error: ({ response }) => {
+        setApiState({ error: response.response });
+      }
+    });
   };
 
   const handleBack = () => {
@@ -87,9 +118,22 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
       }
     }
     if (site.selectedView === 1) {
-      // TODO: duplicateProject();
+      duplicateSite();
     }
   };
+
+  useEffect(() => {
+    if (site.sourceSiteId) {
+      fetchLegacySite(site.sourceSiteId).subscribe({
+        next: ({ blobStores }) => {
+          setSourceSiteHasBlobStores(nnou(blobStores) && blobStores.length > 0);
+        },
+        error: ({ response }) => {
+          setApiState({ error: response.response });
+        }
+      });
+    }
+  }, [site?.sourceSiteId, setApiState]);
 
   return (
     <>
@@ -115,6 +159,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
                 <DuplicateForm
                   site={site}
                   setSite={setSite}
+                  sourceSiteHasBlobStores={sourceSiteHasBlobStores}
                   fieldsErrorsLookup={fieldsErrorsLookup}
                   onSubmit={handleFinish}
                 />

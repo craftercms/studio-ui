@@ -26,7 +26,7 @@ import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChanges
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const siteInitialState: DuplicateSiteState = {
-  originalSiteId: '',
+  sourceSiteId: '',
   siteId: '',
   siteName: '',
   siteIdExist: false,
@@ -35,7 +35,8 @@ const siteInitialState: DuplicateSiteState = {
   description: '',
   gitBranch: '',
   submitted: false,
-  selectedView: 0
+  selectedView: 0,
+  blobStoresReadOnly: true
 };
 
 interface DuplicateSiteDialogProps extends EnhancedDialogProps {
@@ -47,21 +48,21 @@ export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
   const { siteId, onSubmittingAndOrPendingChange, ...dialogProps } = props;
   const [site, setSite] = useSpreadState({
     ...siteInitialState,
-    ...(siteId && { originalSiteId: siteId })
+    ...(siteId && { sourceSiteId: siteId })
   });
   const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
 
   useEffect(() => {
     if (siteId) {
-      setSite({ originalSiteId: siteId });
+      setSite({ sourceSiteId: siteId });
     }
   }, [siteId, setSite]);
 
   useEffect(() => {
-    const { originalSiteId, siteId, siteName, description, gitBranch } = site;
+    const { sourceSiteId, siteId, siteName, description, gitBranch } = site;
     const dialogHasChanges =
-      Boolean(originalSiteId) || Boolean(siteId) || Boolean(siteName) || Boolean(description) || Boolean(gitBranch);
+      Boolean(sourceSiteId) || Boolean(siteId) || Boolean(siteName) || Boolean(description) || Boolean(gitBranch);
     fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: dialogHasChanges });
   }, [site, fnRefs]);
 

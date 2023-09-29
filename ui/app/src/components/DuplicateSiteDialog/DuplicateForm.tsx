@@ -33,16 +33,19 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 interface DuplicateFormProps {
   site: DuplicateSiteState;
   fieldsErrorsLookup: LookupTable<boolean>;
+  sourceSiteHasBlobStores: boolean;
   setSite: (site: Partial<DuplicateSiteState>) => void;
   onSubmit: (event) => void;
 }
 
 export function DuplicateForm(props: DuplicateFormProps) {
-  const { site, fieldsErrorsLookup, setSite, onSubmit } = props;
+  const { site, fieldsErrorsLookup, sourceSiteHasBlobStores, setSite, onSubmit } = props;
   const [sites, setSites] = useState(null);
 
   useEffect(() => {
@@ -95,6 +98,8 @@ export function DuplicateForm(props: DuplicateFormProps) {
       }
     } else if (e.target.name === 'gitBranch') {
       setSite({ [e.target.name]: cleanupGitBranch(e.target.value) });
+    } else if (e.target.type === 'checkbox') {
+      setSite({ [e.target.name]: e.target.checked });
     } else {
       setSite({ [e.target.name]: e.target.value });
     }
@@ -103,19 +108,19 @@ export function DuplicateForm(props: DuplicateFormProps) {
   return (
     <Box component="form" sx={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
       <Grid container spacing={3}>
-        <Grid item xs={12} data-field-id="originalSiteId">
+        <Grid item xs={12} data-field-id="sourceSiteId">
           <FormControl fullWidth>
             <InputLabel>
               <FormattedMessage defaultMessage="Project" />
             </InputLabel>
             <Select
-              value={site.originalSiteId}
-              id="originalSiteId"
-              name="originalSiteId"
+              value={site.sourceSiteId}
+              id="sourceSiteId"
+              name="sourceSiteId"
               required
               label={<FormattedMessage defaultMessage="Project" />}
               onChange={handleInputChange}
-              error={site.submitted && fieldsErrorsLookup['originalSiteId']}
+              error={site.submitted && fieldsErrorsLookup['sourceSiteId']}
             >
               <MenuItem value="">Select project</MenuItem>
               {sites?.map((siteObj) => (
@@ -124,7 +129,7 @@ export function DuplicateForm(props: DuplicateFormProps) {
                 </MenuItem>
               ))}
             </Select>
-            {site.submitted && !site.originalSiteId && (
+            {site.submitted && !site.sourceSiteId && (
               <FormHelperText error>
                 <FormattedMessage defaultMessage="Source project is required" />
               </FormHelperText>
@@ -139,6 +144,21 @@ export function DuplicateForm(props: DuplicateFormProps) {
           handleInputChange={handleInputChange}
           onKeyPress={onKeyPress}
         />
+        {sourceSiteHasBlobStores && (
+          <Grid item xs={12} data-field-id="blobStoresReadOnly">
+            <FormControlLabel
+              control={
+                <Switch
+                  name="blobStoresReadOnly"
+                  checked={site.blobStoresReadOnly}
+                  color="primary"
+                  onChange={handleInputChange}
+                />
+              }
+              label={<FormattedMessage defaultMessage="Read-only Blob Stores" />}
+            />
+          </Grid>
+        )}
       </Grid>
     </Box>
   );
