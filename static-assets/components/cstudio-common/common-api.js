@@ -2268,6 +2268,8 @@ var nodeOpen = false,
           uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
 
+        const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
+        const messages = CrafterCMSNext.i18n.messages.formEngineMessages;
         function doEdit() {
           if (uri.indexOf('/site') === 0) {
             CSA.Operations.openContentWebForm(
@@ -2358,8 +2360,15 @@ var nodeOpen = false,
               type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
             });
             if (error.status === 404) {
-              // TODO: show confirmation 'remove from control?'
-              console.log('error', error.response.response);
+              CStudioAuthoring.Utils.showConfirmDialog(
+                null,
+                error.response.response.message,
+                () => {
+                  callback.failure(error);
+                },
+                formatMessage(messages.removeItemFromNodeSelector),
+                formatMessage(messages.keepItemInNodeSelector)
+              );
             } else {
               craftercms.getStore().dispatch({
                 type: 'SHOW_ERROR_DIALOG',
@@ -6400,7 +6409,7 @@ var nodeOpen = false,
         $(document).on('click', `.notifyjs-${styleName}-${id} .yes`, onOk);
       },
 
-      showConfirmDialog: function (title, body, callback) {
+      showConfirmDialog: function (title, body, callback, okButtonText, cancelButtonText) {
         const onOk = 'confirmDialogOnOk';
         const onCancel = 'confirmDialogOnCancel';
         let unsubscribe, cancelUnsubscribe;
@@ -6412,6 +6421,8 @@ var nodeOpen = false,
               open: true,
               title,
               body,
+              okButtonText,
+              cancelButtonText,
               onOk: {
                 type: 'BATCH_ACTIONS',
                 payload: [

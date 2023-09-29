@@ -298,6 +298,9 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
                   }
                 });
               }
+            },
+            failure: function () {
+              control.deleteItem(index);
             }
           }
         );

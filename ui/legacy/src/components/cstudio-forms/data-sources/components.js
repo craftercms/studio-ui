@@ -265,6 +265,9 @@
                     index
                   );
                 }
+              },
+              failure: function () {
+                control.deleteItem(index);
               }
             }
           );
