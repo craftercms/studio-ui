@@ -1021,6 +1021,10 @@ export function applyAssetNameRules(name: string, options?: { allowBraces: boole
   return name.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '').replace(/\.{1,}/g, '.');
 }
 
+export function applyContentNameRules(name: string): string {
+  return name.replace(/[^a-z0-9-_]/g, '');
+}
+
 export const openItemEditor = (
   item: DetailedItem,
   authoringBase: string,

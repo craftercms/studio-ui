@@ -30,6 +30,7 @@ import useDebouncedInput from '../../hooks/useDebouncedInput';
 import { checkPathExistence } from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { applyContentNameRules } from '../../utils/content';
 
 export interface RenameContentDialogContainerProps
   extends Pick<
@@ -95,7 +96,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
       <DialogBody>
         <RenameItemView
           name={name}
-          disabled={false}
+          disabled={renameDisabled}
           newNameExists={itemExists}
           dependantItems={dependantItems}
           isSubmitting={false}
@@ -104,7 +105,14 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
           error={error}
           setConfirmBrokenReferences={setConfirmBrokenReferences}
           onRename={onRename}
-          onInputChanges={(event) => onInputChanges(event.target.value)}
+          onInputChanges={(event) => onInputChanges(applyContentNameRules(event.target.value))}
+          helperText={
+            itemExists ? (
+              <FormattedMessage defaultMessage="An item with that name already exists." />
+            ) : (
+              <FormattedMessage defaultMessage="Consisting of letters, numbers, dash (-) and underscore (_)." />
+            )
+          }
         />
       </DialogBody>
       <DialogFooter>
