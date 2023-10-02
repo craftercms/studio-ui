@@ -588,7 +588,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       this.inputEl.value = this.defaultValue;
     } else {
       this.value = value;
-      this.inputEl.value = this._getValue(value);
+      this.inputEl.value = this._getValue();
       if (this.inputEl.value == '' && !this.isRootPath() && this.defaultValue != '') {
         this.value = this.defaultValue;
         this.inputEl.value = this.defaultValue;
