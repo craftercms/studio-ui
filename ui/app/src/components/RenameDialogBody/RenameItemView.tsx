@@ -102,6 +102,7 @@ export function RenameItemView(props: RenameDialogBodyProps) {
             shrink: true
           }}
           onChange={onInputChanges}
+          autoComplete="off"
         />
       </form>
       {dependantItems.length > 0 ? (
