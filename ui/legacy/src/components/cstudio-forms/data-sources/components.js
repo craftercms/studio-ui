@@ -240,7 +240,7 @@
       );
     },
 
-    _editShared(key, control, datasource, index) {
+    _editShared(key, control, datasource, index, callback) {
       const readonly = control.readonly;
       const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
 
@@ -266,8 +266,8 @@
                   );
                 }
               },
-              failure: function () {
-                control.deleteItem(index);
+              failure: function (error) {
+                callback?.failure(error);
               }
             }
           );

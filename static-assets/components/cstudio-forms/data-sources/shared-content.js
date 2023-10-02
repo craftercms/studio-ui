@@ -265,7 +265,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
   },
 
-  edit: function (key, control, index) {
+  edit: function (key, control, index, callback) {
     var _self = this;
     const readonly = control.readonly;
     const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
@@ -299,8 +299,8 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
                 });
               }
             },
-            failure: function () {
-              control.deleteItem(index);
+            failure: function (error) {
+              callback?.failure(error);
             }
           }
         );

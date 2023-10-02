@@ -2267,9 +2267,6 @@ var nodeOpen = false,
         var CSA = CStudioAuthoring,
           uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
-
-        const formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
-        const messages = CrafterCMSNext.i18n.messages.formEngineMessages;
         function doEdit() {
           if (uri.indexOf('/site') === 0) {
             CSA.Operations.openContentWebForm(
@@ -2359,22 +2356,7 @@ var nodeOpen = false,
             CrafterCMSNext.system.store.dispatch({
               type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
             });
-            if (error.status === 404) {
-              CStudioAuthoring.Utils.showConfirmDialog(
-                null,
-                error.response.response.message,
-                () => {
-                  callback.failure(error);
-                },
-                formatMessage(messages.removeItemFromNodeSelector),
-                formatMessage(messages.keepItemInNodeSelector)
-              );
-            } else {
-              craftercms.getStore().dispatch({
-                type: 'SHOW_ERROR_DIALOG',
-                payload: { error: error.response.response }
-              });
-            }
+            callback.failure(error);
           }
         });
       },

@@ -384,7 +384,30 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             const elIndex = $(this).data('index');
             let selectedDatasource =
               _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
-            selectedDatasource.edit(item.key, _self, elIndex);
+            selectedDatasource.edit(item.key, _self, elIndex, {
+              failure: function (error) {
+                if (error.status === 404) {
+                  CStudioAuthoring.Utils.showConfirmDialog(
+                    null,
+                    _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
+                      internalName: _self.items[elIndex].value
+                    }),
+                    () => {
+                      _self.deleteItem(elIndex);
+                    },
+                    _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
+                      controlLabel: _self.fieldDef.title
+                    }),
+                    _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
+                  );
+                } else {
+                  craftercms.getStore().dispatch({
+                    type: 'SHOW_ERROR_DIALOG',
+                    payload: { error: error.response.response }
+                  });
+                }
+              }
+            });
           });
         }
       }
