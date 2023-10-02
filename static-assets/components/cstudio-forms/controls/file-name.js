@@ -489,8 +489,11 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       YAHOO.util.Event.on(editFileNameBtn, 'click', function () {
         _self.form.setFocusedField(_self);
         if (_self.showWarnOnEdit) {
-          const fileName = _self.form.model['file-name'];
-          const path = _self.form.path.replace(fileName, '');
+          const isPage = _self.form.model['file-name'] === 'index.xml';
+          // example of fileName of a page: 'style/index.xml'
+          // example of fileName of a non-page: 'left-rails-with-latest-articles.xml'
+          const fileName = `${isPage ? `${_self.form.model['folder-name']}/` : ''}${_self.form.model['file-name']}`;
+          const path = _self._getPath();
           window.top.postMessage({ type: 'LEGACY_FORM_DIALOG_RENAME_CONTENT', path, fileName, id }, '*');
         }
       });

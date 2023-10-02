@@ -16,7 +16,7 @@
 
 import { RenameContentDialogProps } from './RenameContentDialog';
 import React, { useCallback, useEffect, useState } from 'react';
-import { isBlank } from '../../utils/string';
+import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { RenameItemView } from '../RenameDialogBody';
 import { DialogFooter } from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
@@ -68,7 +68,10 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
   refs.current.onNameUpdate$ = useDebouncedInput(
     useCallback(
       (name: string) => {
-        checkPathExistence(siteId, `${path}${name}${isPage ? '/index.xml' : '.xml'}`).subscribe((exists) => {
+        checkPathExistence(
+          siteId,
+          `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`
+        ).subscribe((exists) => {
           setItemExists(name !== strippedValue && exists);
         });
       },
