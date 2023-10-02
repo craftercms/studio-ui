@@ -122,7 +122,8 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         onSubmittingAndOrPendingChange={renameContentDialogState.onSubmittingAndOrPendingChange}
         onClose={renameContentDialogState.onClose}
         onRenamed={onContentRenamed}
-        {...renameContentDialogData}
+        path={renameContentDialogData.path}
+        value={renameContentDialogData.value}
       />
     </>
   );

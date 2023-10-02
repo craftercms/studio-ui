@@ -24,6 +24,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import { ensureSingleSlash, isBlank } from '../../utils/string';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
   path: string;
@@ -41,18 +42,20 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
   const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
 
   useEffect(() => {
-    setFetchingDependantItems(true);
-    fetchDependant(siteId, `${path}${value}`).subscribe({
-      next: (response) => {
-        const dependants = parseLegacyItemToDetailedItem(response);
-        setDependantItems(dependants);
-        setFetchingDependantItems(false);
-      },
-      error: ({ response }) => {
-        setError(response);
-        setFetchingDependantItems(false);
-      }
-    });
+    if (!isBlank(value) && !isBlank(path)) {
+      setFetchingDependantItems(true);
+      fetchDependant(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
+        next: (response) => {
+          const dependants = parseLegacyItemToDetailedItem(response);
+          setDependantItems(dependants);
+          setFetchingDependantItems(false);
+        },
+        error: ({ response }) => {
+          setError(response);
+          setFetchingDependantItems(false);
+        }
+      });
+    }
   }, [path, value, siteId]);
 
   return (
