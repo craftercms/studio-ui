@@ -29,7 +29,6 @@ export * from './Model';
 export * from './RenderComponents';
 export * from './RenderField';
 export * from './RenderRepeat';
-export * from './SnackBar';
 export * from './Spinner';
 export * from './UltraStyledIconButton';
 export * from './ZoneMarker';
