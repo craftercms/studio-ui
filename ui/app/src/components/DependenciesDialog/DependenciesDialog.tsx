@@ -46,8 +46,7 @@ export const dependenciesDialogStyles = makeStyles()((theme) => ({
   dependenciesList: {
     backgroundColor: theme.palette.background.paper,
     padding: 0,
-    borderRadius: '5px 5px 0 0',
-    overflowY: 'auto'
+    borderRadius: '5px 5px 0 0'
   },
   dependenciesListItem: {
     padding: 0,
