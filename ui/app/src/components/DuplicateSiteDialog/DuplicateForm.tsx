@@ -70,7 +70,9 @@ export function DuplicateForm(props: DuplicateFormProps) {
 
   const handleInputChange = (e: any) => {
     e.persist?.();
-    if (e.target.name === 'siteId') {
+    if (e.target.name === 'sourceSiteId') {
+      setSite({ [e.target.name]: e.target.value, ...(sourceSiteHasBlobStores && { readOnlyBlobStores: true }) });
+    } else if (e.target.name === 'siteId') {
       const invalidSiteId =
         e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_');
       const siteId = cleanupSiteId(e.target.value);
@@ -145,12 +147,12 @@ export function DuplicateForm(props: DuplicateFormProps) {
           onKeyPress={onKeyPress}
         />
         {sourceSiteHasBlobStores && (
-          <Grid item xs={12} data-field-id="blobStoresReadOnly">
+          <Grid item xs={12} data-field-id="readOnlyBlobStores">
             <FormControlLabel
               control={
                 <Switch
-                  name="blobStoresReadOnly"
-                  checked={site.blobStoresReadOnly}
+                  name="readOnlyBlobStores"
+                  checked={site.readOnlyBlobStores}
                   color="primary"
                   onChange={handleInputChange}
                 />

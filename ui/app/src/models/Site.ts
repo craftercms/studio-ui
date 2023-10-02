@@ -68,7 +68,7 @@ export interface SiteState extends SiteBaseState {
 
 export interface DuplicateSiteState extends SiteBaseState {
   sourceSiteId: string;
-  blobStoresReadOnly?: boolean;
+  readOnlyBlobStores?: boolean;
 }
 
 export interface CreateSiteMeta {

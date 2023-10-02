@@ -80,7 +80,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
       siteName: site.siteName,
       description: site.description,
       sandboxBranch: site.gitBranch,
-      ...(sourceSiteHasBlobStores && { blobStoresReadOnly: site.blobStoresReadOnly })
+      ...(sourceSiteHasBlobStores && { readOnlyBlobStores: site.readOnlyBlobStores })
     }).subscribe({
       next: () => {
         handleClose();

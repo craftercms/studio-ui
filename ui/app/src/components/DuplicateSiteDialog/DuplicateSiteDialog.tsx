@@ -36,7 +36,7 @@ const siteInitialState: DuplicateSiteState = {
   gitBranch: '',
   submitted: false,
   selectedView: 0,
-  blobStoresReadOnly: true
+  readOnlyBlobStores: true
 };
 
 interface DuplicateSiteDialogProps extends EnhancedDialogProps {
