@@ -465,113 +465,33 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       this.inputEl.disabled = true;
       YAHOO.util.Dom.addClass(this.inputContainer, 'disabled');
 
-      var createWarningDialog = function () {
-        var dialog = new YAHOO.widget.SimpleDialog('changeNameWar', {
-          width: '440px',
-          fixedcenter: true,
-          visible: false,
-          draggable: false,
-          close: true,
-          modal: true,
-          icon: YAHOO.widget.SimpleDialog.ICON_WARN,
-          constraintoviewport: true
-        });
-
-        var viewDependenciesLink = document.createElement('a');
-        viewDependenciesLink.innerHTML = 'here';
-        viewDependenciesLink.onclick = function () {
-          window.parent.CStudioAuthoring.Operations.viewDependencies(
-            window.parent.CStudioAuthoringContext.site,
-            window.parent.CStudioAuthoring.SelectedContent.getSelectedContent(),
-            false,
-            'depends-on-me'
-          );
-        };
-
-        dialog.setHeader('Warning');
-        dialog.setBody(CrafterCMSNext.i18n.intl.formatMessage(_self.messages.fileNameControlMessages.urlChangeWaring));
-        // TODO: We removed the 'here' to see depedencies on RC 1.0, on RC 2 the warning should populate the dependencies items
-
-        var myButtons = [
-          {
-            text: 'Cancel',
-            isDefault: true,
-            handler: function () {
-              this.destroy();
-              $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
-            }
-          },
-          {
-            text: 'OK',
-            handler: function () {
-              _self.inputEl.disabled = false;
-              YAHOO.util.Dom.removeClass(_self.inputContainer, 'disabled');
-              _self.inputEl.focus();
-              editFileNameEl.style.display = 'none';
-              this.destroy();
-              $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
-            }
-          }
-        ];
-
-        dialog.cfg.queueProperty('buttons', myButtons);
-        dialog.render(document.body);
-        dialog.show();
-
-        function onEscape(e) {
-          dialog.destroy();
-          $(document).off('CloseFormWithChangesUserWarningDialogShown', onEscape);
-        }
-
-        $(document).on('CloseFormWithChangesUserWarningDialogShown', onEscape);
+      const onRenamed = (newName) => {
+        _self.inputEl.value = _self._getValue(newName);
+        _self.inputEl.title = _self.inputEl.value;
+        _self._onChangeVal(null, _self);
+        _self.adjustInputsWidth(_self.inputEl, _self.pathEl);
+        // enable input
+        _self.inputEl.disabled = false;
+        _self.inputEl.focus();
+        editFileNameEl.style.display = 'none';
       };
 
+      const id = CStudioAuthoring.Utils.generateUUID();
+      const { fromEvent, filter } = CrafterCMSNext.rxjs;
+      fromEvent(window, 'message')
+        .pipe(filter((event) => event.data && event.data.type))
+        .subscribe((event) => {
+          if (event.data.type === 'LEGACY_FORM_DIALOG_RENAMED_CONTENT' && event.data.id === id) {
+            onRenamed(event.data.newName);
+          }
+        });
+
       YAHOO.util.Event.on(editFileNameBtn, 'click', function () {
-        const React = craftercms.libs.React;
-        const RenameContentDialog = craftercms.components.RenameContentDialog;
-
-        function LegacyRenameContentDialog(props) {
-          const [open, setOpen] = React.useState(true);
-          const [hasPendingChanges, setHasPendingChanges] = React.useState(false);
-
-          const onSubmittingAndOrPendingChange = (state) => {
-            setHasPendingChanges(Boolean(state.hasPendingChanges));
-          };
-
-          return (component = React.createElement(RenameContentDialog, {
-            ...props,
-            open,
-            onClose: () => setOpen(false),
-            hasPendingChanges,
-            onSubmittingAndOrPendingChange,
-            onRenamed: (newName) => {
-              props.onRenamed(newName);
-              setOpen(false);
-            }
-          }));
-        }
-
         _self.form.setFocusedField(_self);
         if (_self.showWarnOnEdit) {
           const fileName = _self.form.model['file-name'];
           const path = _self.form.path.replace(fileName, '');
-
-          const dialogContainer = document.createElement('div');
-          CrafterCMSNext.render(dialogContainer, LegacyRenameContentDialog, {
-            path: path,
-            value: fileName,
-            onRenamed: (newName) => {
-              _self.inputEl.value = _self._getValue(newName);
-              _self.inputEl.title = _self.inputEl.value;
-              _self._onChangeVal(null, _self);
-              _self.adjustInputsWidth(_self.inputEl, _self.pathEl);
-              // enable input
-              _self.inputEl.disabled = false;
-              _self.inputEl.focus();
-              editFileNameEl.style.display = 'none';
-            }
-          });
-          containerEl.appendChild(dialogContainer);
+          window.top.postMessage({ type: 'LEGACY_FORM_DIALOG_RENAME_CONTENT', path, fileName, id }, '*');
         }
       });
     }
