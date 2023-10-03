@@ -35,7 +35,7 @@ import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { AjaxError } from 'rxjs/ajax';
 
-export interface RenameDialogBodyProps {
+export interface RenameItemViewProps {
   name: string;
   disabled: boolean;
   newNameExists: boolean;
@@ -50,7 +50,7 @@ export interface RenameDialogBodyProps {
   helperText?: ReactNode;
 }
 
-export function RenameItemView(props: RenameDialogBodyProps) {
+export function RenameItemView(props: RenameItemViewProps) {
   const {
     name,
     disabled,
