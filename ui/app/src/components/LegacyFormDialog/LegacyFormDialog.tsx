@@ -28,16 +28,18 @@ import { RenameContentDialog } from '../RenameContentDialog';
 import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
+const renameContentDialogDataInitialState = {
+  id: '',
+  path: '',
+  value: ''
+};
+
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
   const { classes } = useStyles();
   const { open, inProgress, isSubmitting, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
   const renameContentDialogState = useEnhancedDialogState();
-  const [renameContentDialogData, setRenameContentDialogData] = useState({
-    id: '',
-    path: '',
-    value: ''
-  });
+  const [renameContentDialogData, setRenameContentDialogData] = useState(renameContentDialogDataInitialState);
 
   const iframeRef = useRef<HTMLIFrameElement>();
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
@@ -120,7 +122,10 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         open={renameContentDialogState.open}
         hasPendingChanges={renameContentDialogState.hasPendingChanges}
         onSubmittingAndOrPendingChange={renameContentDialogState.onSubmittingAndOrPendingChange}
-        onClose={renameContentDialogState.onClose}
+        onClose={() => {
+          renameContentDialogState.onClose();
+          setRenameContentDialogData(renameContentDialogDataInitialState);
+        }}
         onRenamed={onContentRenamed}
         path={renameContentDialogData.path}
         value={renameContentDialogData.value}
