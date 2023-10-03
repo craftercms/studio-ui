@@ -495,6 +495,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
           const fileName = `${isPage ? `${_self.form.model['folder-name']}/` : ''}${_self.form.model['file-name']}`;
           const path = _self._getPath();
           window.top.postMessage({ type: 'LEGACY_FORM_DIALOG_RENAME_CONTENT', path, fileName, id }, '*');
+          // There's a timemout in the forms-engine to set the focus on the first input element of the form, this avoids
+          // the timeout code to execute if the rename dialog is opened before the timeout runs out.
+          window.postMessage({ type: 'CLEAR_FORM_INPUT_FOCUS_TIMEOUT' }, '*');
         }
       });
     }
