@@ -15,7 +15,7 @@
  */
 
 import { RenameContentDialogProps } from './RenameContentDialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { RenameItemView } from '../RenameDialogBody';
 import { DialogFooter } from '../DialogFooter';
@@ -65,27 +65,17 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
   const siteId = useActiveSiteId();
   const refs = useUpdateRefs({ onNameUpdate$: null });
 
-  refs.current.onNameUpdate$ = useDebouncedInput(
-    useCallback(
-      (name: string) => {
-        checkPathExistence(
-          siteId,
-          `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`
-        ).subscribe((exists) => {
-          setItemExists(name !== strippedValue && exists);
-        });
-      },
-      [path, siteId, strippedValue, isPage]
-    ),
-    400
-  );
-
-  useEffect(() => {
-    refs.current.onNameUpdate$.next(name);
-  }, [name, refs]);
+  refs.current.onNameUpdate$ = useDebouncedInput((name: string) => {
+    checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
+      (exists) => {
+        setItemExists(name !== strippedValue && exists);
+      }
+    );
+  }, 400);
 
   const onInputChanges = (newValue: string) => {
     setName(newValue);
+    refs.current.onNameUpdate$.next(newValue);
     const newHasPendingChanges = newValue !== strippedValue;
     onSubmittingAndOrPendingChange({ hasPendingChanges: newHasPendingChanges });
   };
