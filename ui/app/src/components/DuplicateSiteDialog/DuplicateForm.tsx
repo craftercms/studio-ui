@@ -35,6 +35,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 
 interface DuplicateFormProps {
   site: DuplicateSiteState;
@@ -159,6 +161,11 @@ export function DuplicateForm(props: DuplicateFormProps) {
               }
               label={<FormattedMessage defaultMessage="Read-only Blob Stores" />}
             />
+            <Alert severity={site.readOnlyBlobStores ? 'info' : 'warning'} icon={false} sx={{ mt: 1 }}>
+              <Typography>
+                <FormattedMessage defaultMessage="Content stored in blob stores is shared between the original site and the copy" />
+              </Typography>
+            </Alert>
           </Grid>
         )}
       </Grid>
