@@ -377,7 +377,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   }
 
   function createSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
-    const success = () => {
+    const next = () => {
       siteCreateSubscription.current = null;
       setApiState({ creatingSite: false });
       handleClose();
@@ -412,9 +412,9 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
       }
     };
     if (fromMarketplace) {
-      siteCreateSubscription.current = createSiteFromMarketplace(site as MarketplaceSite).subscribe(success, error);
+      siteCreateSubscription.current = createSiteFromMarketplace(site as MarketplaceSite).subscribe({ next, error });
     } else {
-      siteCreateSubscription.current = create(site as CreateSiteMeta).subscribe(success, error);
+      siteCreateSubscription.current = create(site as CreateSiteMeta).subscribe({ next, error });
     }
   }
 
