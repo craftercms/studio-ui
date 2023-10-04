@@ -29,7 +29,7 @@ import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
 import { ObtainAuthTokenResponse } from '../services/auth';
 import { getSiteCookie, getXSRFToken, removeSiteCookie, setJwt } from '../utils/auth';
-import { storeInitialized } from './actions/system';
+import { emitSystemEvent, globalSocketStatus, siteSocketStatus, storeInitialized } from './actions/system';
 import User from '../models/User';
 import { Site } from '../models/Site';
 import {
@@ -66,7 +66,23 @@ export function getStore(): Observable<CrafterCMSStore> {
               tap((requirements) => {
                 worker.port.onmessage = (e) => {
                   if (e.data?.type) {
-                    store.dispatch(e.data);
+                    const state = store.getState();
+                    const action = e.data;
+                    // System socket events come wrapped in `emitSystemEvent` action.
+                    const payload = action.type === emitSystemEvent.type ? action.payload.payload : action.payload;
+                    // When a site is switched on a different tab, the socket that powers this tab will switch to that
+                    // socket "topic". Need to avoid widgets refreshing with data that's not relevant to them.
+                    if (
+                      action.type === globalSocketStatus.type ||
+                      // The `siteSocketStatus` event needs to go through for the site switch detection to be successful.
+                      action.type === siteSocketStatus.type ||
+                      // No siteId on the event should be applicable to all sites.
+                      !payload.siteId ||
+                      // The event is for the current site.
+                      payload.siteId === state.sites.active
+                    ) {
+                      store.dispatch(action);
+                    }
                   }
                 };
                 store.dispatch(storeInitialized({ auth, ...requirements }));
