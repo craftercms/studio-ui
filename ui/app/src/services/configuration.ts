@@ -26,7 +26,6 @@ import LookupTable from '../models/LookupTable';
 import GlobalState from '../models/GlobalState';
 import { SiteConfigurationFile } from '../models/SiteConfigurationFile';
 import { asArray } from '../utils/array';
-import { unescapeHTML } from '../utils/string';
 
 export type CrafterCMSModules = 'studio' | 'engine';
 
@@ -106,11 +105,6 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
       const data = reversePluckProps(response.response, 'id');
       const id = response.response.id ?? null;
 
-      const unescapedData = {};
-      Object.keys(data).forEach((key) => {
-        unescapedData[key] = unescapeHTML(data[key]);
-      });
-
       return {
         craftercms: {
           id,
@@ -121,7 +115,7 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
           dateModified: null,
           contentTypeId: null
         },
-        ...unescapedData
+        ...data
       };
     })
   );
@@ -155,8 +149,8 @@ export function deserializeActiveTargetingModelData<T extends Object>(
 
 export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
   const model = reversePluckProps(data, 'craftercms');
-  const qs = toQueryString({ ...model, id: data.craftercms.id });
-  return get(`/api/1/profile/set${qs}`).pipe(pluck('response'));
+  const qs = toQueryString({ id: data.craftercms.id });
+  return postJSON(`/api/1/profile/set${qs}`, model).pipe(pluck('response'));
 }
 
 // endregion
