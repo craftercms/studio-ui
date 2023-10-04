@@ -274,7 +274,10 @@ export function SiteManagement() {
       <DuplicateSiteDialog
         siteId={duplicateSiteId}
         open={duplicateSiteDialogState.open}
-        onClose={duplicateSiteDialogState.onClose}
+        onClose={() => {
+          setDuplicateSiteId(null);
+          duplicateSiteDialogState.onClose();
+        }}
         hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
         onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
       />

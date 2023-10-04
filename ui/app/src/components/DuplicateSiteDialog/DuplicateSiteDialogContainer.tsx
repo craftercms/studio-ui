@@ -23,7 +23,7 @@ import { DialogFooter } from '../DialogFooter';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
-import React, { MouseEvent, useEffect, useMemo, useState } from 'react';
+import React, { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -37,6 +37,8 @@ import { setSiteCookie } from '../../utils/auth';
 import { getSystemLink } from '../../utils/system';
 import useEnv from '../../hooks/useEnv';
 import { nnou } from '../../utils/object';
+import { Subscription } from 'rxjs';
+import useMount from '../../hooks/useMount';
 
 interface DuplicateSiteDialogContainerProps {
   site: DuplicateSiteState;
@@ -61,6 +63,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     };
   }, [site]);
   const [sourceSiteHasBlobStores, setSourceSiteHasBlobStores] = useState(null);
+  const finishRef = useRef(null);
+  const siteDuplicateSubscription = useRef<Subscription>();
 
   const validateForm = () => {
     return !(
@@ -74,7 +78,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   };
 
   const duplicateSite = () => {
-    duplicate({
+    setApiState({ duplicatingSite: true });
+    siteDuplicateSubscription.current = duplicate({
       sourceSiteId: site.sourceSiteId,
       siteId: site.siteId,
       siteName: site.siteName,
@@ -83,6 +88,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
       ...(sourceSiteHasBlobStores && { readOnlyBlobStores: site.readOnlyBlobStores })
     }).subscribe({
       next: () => {
+        siteDuplicateSubscription.current = null;
+        setApiState({ duplicatingSite: false });
         handleClose();
         setSiteCookie(site.siteId, useBaseDomain);
         window.location.href = getSystemLink({
@@ -93,7 +100,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
         });
       },
       error: ({ response }) => {
-        setApiState({ error: response.response });
+        setApiState({ error: response.response, duplicatingSite: false });
       }
     });
   };
@@ -122,6 +129,12 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     }
   };
 
+  useMount(() => {
+    return () => {
+      siteDuplicateSubscription.current?.unsubscribe();
+    };
+  });
+
   useEffect(() => {
     if (site.sourceSiteId) {
       fetchLegacySite(site.sourceSiteId).subscribe({
@@ -135,6 +148,12 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     }
   }, [site?.sourceSiteId, setApiState]);
 
+  useEffect(() => {
+    if (finishRef && finishRef.current && site.selectedView === 1) {
+      finishRef.current.focus();
+    }
+  }, [site.selectedView]);
+
   return (
     <>
       <DialogBody>
@@ -144,7 +163,11 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
             handleClose={handleClose}
           />
         )) ||
-          (apiState.error && <ApiResponseErrorState error={apiState.error} onButtonClick={handleErrorBack} />) || (
+          (apiState.error && (
+            <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
+              <ApiResponseErrorState error={apiState.error} onButtonClick={handleErrorBack} />
+            </Box>
+          )) || (
             <Box
               sx={{
                 flexWrap: 'wrap',
@@ -218,17 +241,19 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
             </Box>
           )}
       </DialogBody>
-      <DialogFooter>
-        {site.selectedView === 1 && (
-          <Button color="primary" variant="outlined" onClick={handleBack}>
-            <FormattedMessage defaultMessage="Back" />
-          </Button>
-        )}
-        <PrimaryButton onClick={handleFinish}>
-          {site.selectedView === 0 && <FormattedMessage defaultMessage="Review" />}
-          {site.selectedView === 1 && <FormattedMessage defaultMessage="Duplicate Project" />}
-        </PrimaryButton>
-      </DialogFooter>
+      {!apiState.duplicatingSite && !apiState.error && (
+        <DialogFooter>
+          {site.selectedView === 1 && (
+            <Button color="primary" variant="outlined" onClick={handleBack}>
+              <FormattedMessage defaultMessage="Back" />
+            </Button>
+          )}
+          <PrimaryButton ref={finishRef} onClick={handleFinish}>
+            {site.selectedView === 0 && <FormattedMessage defaultMessage="Review" />}
+            {site.selectedView === 1 && <FormattedMessage defaultMessage="Duplicate Project" />}
+          </PrimaryButton>
+        </DialogFooter>
+      )}
     </>
   );
 }
