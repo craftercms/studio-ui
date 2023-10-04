@@ -37,6 +37,7 @@ import {
   newProjectReady,
   openSiteSocket,
   projectDeleted,
+  siteSocketStatus,
   showCopyItemSuccessNotification,
   showCreateFolderSuccessNotification,
   showCreateItemSuccessNotification,
@@ -70,8 +71,24 @@ import { fetchGlobalMenuItems } from '../../services/configuration';
 import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
-import { getXSRFToken } from '../../utils/auth';
+import { getXSRFToken, setSiteCookie } from '../../utils/auth';
 import { changeSite, fetchSites } from '../actions/sites';
+import { closeConfirmDialog, showConfirmDialog } from '../actions/dialogs';
+import { defineMessages } from 'react-intl';
+import { createCustomDocumentEventListener } from '../../utils/dom';
+import { batchActions, dispatchDOMEvent } from '../actions/misc';
+
+const msgs = defineMessages({
+  siteSwitchedOnAnotherTab: {
+    defaultMessage: 'The active project was changed from "{currentProject}" to "{newProject}" on another tab.'
+  },
+  siteSwitchedOnAnotherTabPrimaryAction: {
+    defaultMessage: 'Continue on {currentProject}'
+  },
+  siteSwitchedOnAnotherTabSecondaryAction: {
+    defaultMessage: 'Switch to {newProject}'
+  }
+});
 
 const systemEpics: CrafterCMSEpic[] = [
   // region storeInitialized
@@ -428,11 +445,62 @@ const systemEpics: CrafterCMSEpic[] = [
       exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
     ),
   // endregion
-  // region project status events
+  // region newProjectReady, projectDeleted
   (action$) =>
     action$.pipe(
       ofType(newProjectReady.type, projectDeleted.type),
       map(() => fetchSites())
+    ),
+  // endregion
+  // region siteSocketStatus
+  (action$, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(siteSocketStatus.type),
+      withLatestFrom(state$),
+      filter(([action, state]) => action.payload.siteId !== state.sites.active),
+      map(([action, state]) => {
+        const sites = state.sites.byId;
+        const currentProjectId = state.sites.active;
+        const newProjectId = action.payload.siteId;
+        const customEventId = 'site-switched-confirm-dialog';
+        const currentProject = sites[currentProjectId].name;
+        const newProject = sites[newProjectId].name;
+        createCustomDocumentEventListener(customEventId, ({ choice }) => {
+          if (choice === 'ok') {
+            setSiteCookie(currentProjectId);
+          } else {
+            setSiteCookie(newProjectId);
+            setTimeout(() => {
+              const href = window.location.href;
+              if (href.includes(`site=`)) {
+                window.location.href = href.replace(`site=${currentProjectId}`, `site=${newProjectId}`);
+              } else {
+                window.location.reload();
+              }
+            });
+          }
+        });
+        return showConfirmDialog({
+          body: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTab, {
+            newProject,
+            currentProject
+          }),
+          okButtonText: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTabPrimaryAction, {
+            newProject,
+            currentProject
+          }),
+          cancelButtonText: getIntl().formatMessage(msgs.siteSwitchedOnAnotherTabSecondaryAction, {
+            newProject,
+            currentProject
+          }),
+          onOk: batchActions([
+            dispatchDOMEvent({ id: customEventId, choice: 'ok' }),
+            messageSharedWorker(openSiteSocket({ site: currentProjectId, xsrfToken: getXSRFToken() })),
+            closeConfirmDialog()
+          ]),
+          onCancel: batchActions([dispatchDOMEvent({ id: customEventId, choice: 'cancel' }), closeConfirmDialog()])
+        });
+      })
     )
   // endregion
 ];

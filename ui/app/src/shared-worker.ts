@@ -15,7 +15,7 @@ import {
 import { AjaxError } from 'rxjs/ajax';
 import { SHARED_WORKER_NAME, XSRF_TOKEN_HEADER_NAME } from './utils/constants';
 import { Client, StompSubscription } from '@stomp/stompjs';
-import { emitSystemEvent, openSiteSocket, setSiteSocketStatus } from './state/actions/system';
+import { emitSystemEvent, globalSocketStatus, openSiteSocket, siteSocketStatus } from './state/actions/system';
 
 declare const self: SharedWorkerGlobalScope;
 
@@ -35,9 +35,7 @@ let isProduction = process.env.PRODUCTION !== 'development';
 let siteSocketClient: Client;
 let rootSocketClient: Client;
 
-const log = !isProduction
-  ? (message, ...args) => console.log(`%c[SharedWorker] ${message}.`, 'color: #0071A4', ...args)
-  : () => void 0;
+const log = !isProduction ? (message, ...args) => console.log(`%c${message}`, 'color: #0071A4', ...args) : () => void 0;
 
 function onmessage(event) {
   log('Message received from page', event.data);
@@ -172,20 +170,20 @@ function broadcast(message: StandardAction, excludedClient?: MessagePort) {
 }
 
 function openSocket({ site, xsrfToken }) {
-  let socketClient = site ? siteSocketClient : rootSocketClient;
-  if (socketClient) {
-    // noinspection JSIgnoredPromiseFromCall
-    socketClient.deactivate();
-  }
+  let isSiteSocket = !!site;
+  let socketClient = isSiteSocket ? siteSocketClient : rootSocketClient;
+  socketClient?.deactivate();
   let subscription: StompSubscription;
   let protocol = self.location.protocol === 'https:' ? 'wss' : 'ws';
+  let broadcastConnection = (connected: boolean) =>
+    broadcast(isSiteSocket ? siteSocketStatus({ siteId: site, connected }) : globalSocketStatus({ connected }));
   socketClient = new Client({
     brokerURL: `${protocol}://${isProduction ? self.location.host : 'localhost:8080'}/studio/events`,
     ...(!isProduction && { debug: log }),
     connectHeaders: { [XSRF_TOKEN_HEADER_NAME]: xsrfToken },
     onConnect() {
-      broadcast(setSiteSocketStatus({ connected: true }));
-      const topicUrl = site ? `/topic/studio/${site}` : '/topic/studio';
+      broadcastConnection(true);
+      const topicUrl = isSiteSocket ? `/topic/studio/${site}` : '/topic/studio';
       subscription = socketClient.subscribe(topicUrl, (message) => {
         if (message.body) {
           if (message.headers['content-type'] === 'application/json') {
@@ -205,18 +203,18 @@ function openSocket({ site, xsrfToken }) {
     onStompError() {
       // Will be invoked in case of error encountered at Broker
       // Bad login/passcode typically will cause an error
-      broadcast(setSiteSocketStatus({ connected: false }));
+      broadcastConnection(false);
     },
     onWebSocketError() {
-      broadcast(setSiteSocketStatus({ connected: false }));
+      broadcastConnection(false);
     },
     onDisconnect() {
-      // TODO: When site is changed, subscription is terminated?
       subscription?.unsubscribe();
+      log(isSiteSocket ? `Site socket for "${site}" disconnected` : 'Global socket disconnected');
     }
   });
   socketClient.activate();
-  if (site) {
+  if (isSiteSocket) {
     siteSocketClient = socketClient;
   } else {
     rootSocketClient = socketClient;

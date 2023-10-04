@@ -213,6 +213,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     dispatch(clearContentTreeFieldSelected());
   });
 
+  // Connect to shared worker & socket
   useEffect(() => {
     if (hasHost && authoringBase) {
       const worker = new SharedWorker(`${authoringBase}/static-assets/next/shared-worker.js`, {
@@ -223,7 +224,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       worker.port.postMessage(sharedWorkerConnect());
       const unload = () => worker.port.postMessage(sharedWorkerDisconnect());
       window.addEventListener('beforeunload', unload);
-
       const subscription = fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
         const { type, payload } = event.data;
         switch (type) {
@@ -282,6 +282,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // endregion
 
+  // Add/remove edit mode highlight mode classes
   useEffect(() => {
     const $html = $('html');
     const cls = highlightMode === HighlightMode.MOVE_TARGETS ? moveModeClass : editModeClass;
@@ -293,6 +294,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     }
   }, [editMode, highlightMode]);
 
+  // Add/remove edit mode padding mode classes
   useEffect(() => {
     const $html = $('html');
     if (editMode && editModePadding) {

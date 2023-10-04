@@ -127,7 +127,10 @@ export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>(
 export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 
 export const openSiteSocket = /*#__PURE__*/ createAction<{ site: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
-export const setSiteSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('SET_SITE_SOCKET_STATUS');
+export const siteSocketStatus = /*#__PURE__*/ createAction<{ siteId: string; connected: boolean }>(
+  'SITE_SOCKET_STATUS'
+);
+export const globalSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('GLOBAL_SOCKET_STATUS');
 
 // region projects events
 export const newProjectReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_READY_EVENT');
