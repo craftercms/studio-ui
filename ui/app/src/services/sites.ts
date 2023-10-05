@@ -100,7 +100,7 @@ export function create(site: CreateSiteMeta): Observable<Site> {
   );
 }
 
-export function duplicate(site: DuplicateSiteMeta) {
+export function duplicate(site: DuplicateSiteMeta): Observable<Site> {
   return postJSON('/studio/api/2/sites/duplicate', site).pipe(
     pluck('response'),
     map(() => ({
