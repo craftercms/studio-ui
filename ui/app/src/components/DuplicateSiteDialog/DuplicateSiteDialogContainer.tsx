@@ -63,7 +63,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     };
   }, [site]);
   const [sourceSiteHasBlobStores, setSourceSiteHasBlobStores] = useState(null);
-  const finishRef = useRef(null);
+  const primaryButtonRef = useRef(null);
   const siteDuplicateSubscription = useRef<Subscription>();
 
   const validateForm = () => {
@@ -149,8 +149,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   }, [site?.sourceSiteId, setApiState]);
 
   useEffect(() => {
-    if (finishRef && finishRef.current && site.selectedView === 1) {
-      finishRef.current.focus();
+    if (primaryButtonRef && primaryButtonRef.current && site.selectedView === 1) {
+      primaryButtonRef.current.focus();
     }
   }, [site.selectedView]);
 
@@ -248,7 +248,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
               <FormattedMessage defaultMessage="Back" />
             </Button>
           )}
-          <PrimaryButton ref={finishRef} onClick={handleFinish}>
+          <PrimaryButton ref={primaryButtonRef} onClick={handleFinish}>
             {site.selectedView === 0 && <FormattedMessage defaultMessage="Review" />}
             {site.selectedView === 1 && <FormattedMessage defaultMessage="Duplicate Project" />}
           </PrimaryButton>
