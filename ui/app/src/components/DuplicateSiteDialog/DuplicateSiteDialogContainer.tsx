@@ -17,7 +17,6 @@
 import { DuplicateSiteState, LookupTable } from '../../models';
 import { DialogBody } from '../DialogBody';
 import Box from '@mui/material/Box';
-import DuplicateForm from './DuplicateForm';
 import { DialogFooter } from '../DialogFooter';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
@@ -31,7 +30,7 @@ import { keyframes } from 'tss-react';
 import { fadeIn } from 'react-animations';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { CreateSiteDialogLoader } from '../CreateSiteDialog';
-import { duplicate, fetchLegacySite } from '../../services/sites';
+import { duplicate, fetchAll, fetchLegacySite } from '../../services/sites';
 import { setSiteCookie } from '../../utils/auth';
 import { getSystemLink } from '../../utils/system';
 import useEnv from '../../hooks/useEnv';
@@ -39,6 +38,22 @@ import { nnou } from '../../utils/object';
 import { Subscription } from 'rxjs';
 import useMount from '../../hooks/useMount';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
+import {
+  cleanupGitBranch,
+  cleanupSiteId,
+  getSiteIdFromSiteName,
+  siteIdExist,
+  siteNameExist
+} from '../CreateSiteDialog/utils';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import BaseSiteForm from '../CreateSiteDialog/BaseSiteForm';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Alert from '@mui/material/Alert';
 
 interface DuplicateSiteDialogContainerProps {
   site: DuplicateSiteState;
@@ -64,6 +79,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   const [sourceSiteHasBlobStores, setSourceSiteHasBlobStores] = useState(null);
   const primaryButtonRef = useRef(null);
   const siteDuplicateSubscription = useRef<Subscription>();
+  const [sites, setSites] = useState(null);
 
   const validateForm = () => {
     return !(
@@ -129,7 +145,63 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     }
   };
 
+  const onKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleFinish(null);
+    }
+  };
+
+  function checkSites(event: any) {
+    setSite({ siteIdExist: siteIdExist(sites, event.target.value) });
+  }
+
+  function checkSiteNames(event: any) {
+    setSite({ siteNameExist: siteNameExist(sites, event.target.value) });
+  }
+
+  const handleInputChange = (e: any) => {
+    e.persist?.();
+    if (e.target.name === 'sourceSiteId') {
+      setSite({ [e.target.name]: e.target.value, ...(sourceSiteHasBlobStores && { readOnlyBlobStores: true }) });
+    } else if (e.target.name === 'siteId') {
+      const invalidSiteId =
+        e.target.value.startsWith('0') || e.target.value.startsWith('-') || e.target.value.startsWith('_');
+      const siteId = cleanupSiteId(e.target.value);
+      setSite({
+        [e.target.name]: siteId,
+        invalidSiteId: invalidSiteId
+      });
+    } else if (e.target.name === 'siteName') {
+      const currentSiteNameParsed = getSiteIdFromSiteName(site.siteName);
+
+      // if current siteId has been edited directly (different to siteName processed)
+      // or if siteId is empty -> do not change it.
+      if (site.siteId === currentSiteNameParsed || site.siteId === '') {
+        const siteId = getSiteIdFromSiteName(e.target.value);
+        const invalidSiteId = siteId.startsWith('0') || siteId.startsWith('-') || siteId.startsWith('_');
+        const siteIdExist = Boolean(sites.find((site: any) => site.id === siteId));
+        setSite({
+          [e.target.name]: e.target.value,
+          siteId,
+          invalidSiteId,
+          siteIdExist
+        });
+      } else {
+        setSite({ [e.target.name]: e.target.value });
+      }
+    } else if (e.target.name === 'gitBranch') {
+      setSite({ [e.target.name]: cleanupGitBranch(e.target.value) });
+    } else if (e.target.type === 'checkbox') {
+      setSite({ [e.target.name]: e.target.checked });
+    } else {
+      setSite({ [e.target.name]: e.target.value });
+    }
+  };
+
   useMount(() => {
+    if (sites === null) {
+      fetchAll({ limit: 1000, offset: 0 }).subscribe(setSites);
+    }
     return () => {
       siteDuplicateSubscription.current?.unsubscribe();
     };
@@ -179,13 +251,66 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
               }}
             >
               {site.selectedView === 0 && (
-                <DuplicateForm
-                  site={site}
-                  setSite={setSite}
-                  sourceSiteHasBlobStores={sourceSiteHasBlobStores}
-                  fieldsErrorsLookup={fieldsErrorsLookup}
-                  onSubmit={handleFinish}
-                />
+                <Box component="form" sx={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} data-field-id="sourceSiteId">
+                      <FormControl fullWidth>
+                        <InputLabel>
+                          <FormattedMessage defaultMessage="Project" />
+                        </InputLabel>
+                        <Select
+                          value={site.sourceSiteId}
+                          id="sourceSiteId"
+                          name="sourceSiteId"
+                          required
+                          label={<FormattedMessage defaultMessage="Project" />}
+                          onChange={handleInputChange}
+                          error={site.submitted && fieldsErrorsLookup['sourceSiteId']}
+                        >
+                          <MenuItem value="">Select project</MenuItem>
+                          {sites?.map((siteObj) => (
+                            <MenuItem key={siteObj.uuid} value={siteObj.id}>
+                              {siteObj.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        {site.submitted && !site.sourceSiteId && (
+                          <FormHelperText error>
+                            <FormattedMessage defaultMessage="Source project is required" />
+                          </FormHelperText>
+                        )}
+                      </FormControl>
+                    </Grid>
+                    <BaseSiteForm
+                      inputs={site}
+                      fieldsErrorsLookup={fieldsErrorsLookup}
+                      checkSites={checkSites}
+                      checkSiteNames={checkSiteNames}
+                      handleInputChange={handleInputChange}
+                      onKeyPress={onKeyPress}
+                    />
+                    {sourceSiteHasBlobStores && (
+                      <Grid item xs={12} data-field-id="readOnlyBlobStores">
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              name="readOnlyBlobStores"
+                              checked={site.readOnlyBlobStores}
+                              color="primary"
+                              onChange={handleInputChange}
+                            />
+                          }
+                          label={<FormattedMessage defaultMessage="Read-only Blob Stores" />}
+                        />
+                        <Alert severity={site.readOnlyBlobStores ? 'info' : 'warning'} icon={false} sx={{ mt: 1 }}>
+                          <Typography>
+                            <FormattedMessage defaultMessage="Content stored in blob stores is shared between the original site and the copy" />
+                          </Typography>
+                        </Alert>
+                      </Grid>
+                    )}
+                  </Grid>
+                </Box>
               )}
               {site.selectedView === 1 && (
                 <Grid container sx={{ maxWidth: '600px', margin: 'auto' }}>

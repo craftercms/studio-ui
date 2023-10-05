@@ -19,5 +19,3 @@ export { default } from './DuplicateSiteDialog';
 export * from './DuplicateSiteDialog';
 
 export * from './DuplicateSiteDialogContainer';
-
-export * from './DuplicateForm';
