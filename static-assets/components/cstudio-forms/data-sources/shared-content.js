@@ -265,7 +265,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     }
   },
 
-  edit: function (key, control, index) {
+  edit: function (key, control, index, callback) {
     var _self = this;
     const readonly = control.readonly;
     const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
@@ -282,7 +282,14 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
           {
             success: function (contentTO, editorId, name, value, draft, action) {
               if (control) {
-                control.updateEditedItem(value, _self.id, index);
+                control.updateEditedItem(
+                  {
+                    ...(name && { key: name, include: name }),
+                    value
+                  },
+                  _self.id,
+                  index
+                );
                 CStudioForms.communication.sendMessage({
                   type: 'CHILD_FORM_SUCCESS',
                   payload: {
@@ -291,6 +298,9 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
                   }
                 });
               }
+            },
+            failure: function (error) {
+              callback?.failure(error);
             }
           }
         );

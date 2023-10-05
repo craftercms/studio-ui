@@ -2267,7 +2267,6 @@ var nodeOpen = false,
         var CSA = CStudioAuthoring,
           uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
-
         function doEdit() {
           if (uri.indexOf('/site') === 0) {
             CSA.Operations.openContentWebForm(
@@ -2338,18 +2337,26 @@ var nodeOpen = false,
           unsubscribe();
         });
 
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe((items) => {
-          if (items && items.length) {
-            const eventIdSuccess = 'workflowCancellationDialogContinue';
-            CrafterCMSNext.system.store.dispatch({
-              type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-              payload: { items }
-            });
-          } else {
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe({
+          next: (items) => {
+            if (items && items.length) {
+              const eventIdSuccess = 'workflowCancellationDialogContinue';
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: { items }
+              });
+            } else {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+              });
+              doEdit();
+            }
+          },
+          error(error) {
             CrafterCMSNext.system.store.dispatch({
               type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
             });
-            doEdit();
+            callback.failure(error);
           }
         });
       },
@@ -6384,7 +6391,7 @@ var nodeOpen = false,
         $(document).on('click', `.notifyjs-${styleName}-${id} .yes`, onOk);
       },
 
-      showConfirmDialog: function (title, body, callback) {
+      showConfirmDialog: function (title, body, callback, okButtonText, cancelButtonText) {
         const onOk = 'confirmDialogOnOk';
         const onCancel = 'confirmDialogOnCancel';
         let unsubscribe, cancelUnsubscribe;
@@ -6396,6 +6403,8 @@ var nodeOpen = false,
               open: true,
               title,
               body,
+              okButtonText,
+              cancelButtonText,
               onOk: {
                 type: 'BATCH_ACTIONS',
                 payload: [
