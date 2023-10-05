@@ -2590,7 +2590,7 @@ var CStudioForms =
               formField.fieldDef = this.fieldDef;
               try {
                 if (lastTwo) {
-                  setTimeout(function (lastTwo) {
+                  const focusTimeout = setTimeout(function (lastTwo) {
                     for (var k = 0; k < formField.form.sections[0].fields.length; k++) {
                       var elt = formField.form.sections[0].fields[k].inputEl;
                       if (elt && !elt.disabled) {
@@ -2605,6 +2605,14 @@ var CStudioForms =
                       }
                     }
                   }, 1900);
+
+                  fromEvent(window, 'message')
+                    .pipe(filter((event) => event.data && event.data.type))
+                    .subscribe((event) => {
+                      if (event.data.type === 'CLEAR_FORM_INPUT_FOCUS_TIMEOUT') {
+                        clearTimeout(focusTimeout);
+                      }
+                    });
                 }
               } catch (err) {
                 console.error(err);
