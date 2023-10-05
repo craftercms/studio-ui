@@ -29,7 +29,6 @@ import { AjaxError } from 'rxjs/ajax';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
 import { checkPathExistence } from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { applyContentNameRules } from '../../utils/content';
 
 export interface RenameContentDialogContainerProps
@@ -63,9 +62,8 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
   const renameDisabled =
     isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
   const siteId = useActiveSiteId();
-  const refs = useUpdateRefs({ onNameUpdate$: null });
 
-  refs.current.onNameUpdate$ = useDebouncedInput((name: string) => {
+  const onNameUpdate$ = useDebouncedInput((name: string) => {
     checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
       (exists) => {
         setItemExists(name !== strippedValue && exists);
@@ -75,7 +73,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
 
   const onInputChanges = (newValue: string) => {
     setName(newValue);
-    refs.current.onNameUpdate$.next(newValue);
+    onNameUpdate$.next(newValue);
     const newHasPendingChanges = newValue !== strippedValue;
     onSubmittingAndOrPendingChange({ hasPendingChanges: newHasPendingChanges });
   };
