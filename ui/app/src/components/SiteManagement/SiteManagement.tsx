@@ -100,7 +100,7 @@ export function SiteManagement() {
   }, [setPublishingStatusLookup, sitesById]);
 
   useMount(() => {
-    hasGlobalPermissions('create_site', 'edit_site', 'delete_site').subscribe(setPermissionsLookup);
+    hasGlobalPermissions('create_site', 'edit_site', 'delete_site', 'duplicate_site').subscribe(setPermissionsLookup);
   });
 
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
@@ -250,7 +250,7 @@ export function SiteManagement() {
             onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
-            onDuplicateSiteClick={onDuplicateSiteClick}
+            onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
           />
         </SuspenseWithEmptyState>
       </ErrorBoundary>

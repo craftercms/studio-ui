@@ -53,7 +53,7 @@ import DialogFooter from '../DialogFooter';
 import PrimaryButton from '../PrimaryButton';
 import { useStyles } from './styles';
 import messages from './translations';
-import { hasGlobalPermission } from '../../services/users';
+import { hasGlobalPermissions } from '../../services/users';
 import SecondaryButton from '../SecondaryButton';
 import useMount from '../../hooks/useMount';
 import ContentCopyIcon from '@mui/icons-material/ContentCopyRounded';
@@ -121,7 +121,8 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   const { site, setSite, search, setSearch, handleClose, dialog, setDialog, disableEnforceFocus, onShowDuplicate } =
     props;
   const { classes, cx } = useStyles();
-  const [hasListPluginPermission, setHasListPluginPermission] = useState(false);
+  const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>({});
+  const hasListPluginPermission = permissionsLookup['list_plugins'];
 
   const [blueprints, setBlueprints] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
@@ -490,6 +491,8 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
       const isGitItem = item.id === 'GIT';
       const isDuplicateItem = item.id === 'DUPLICATE';
       const isGitOrDuplicateItem = isGitItem || isDuplicateItem;
+      const disableCard = isDuplicateItem && !permissionsLookup['duplicate_site'];
+
       return (
         <Grid item xs={12} sm={6} md={isGitOrDuplicateItem ? 6 : 4} lg={isGitOrDuplicateItem ? 6 : 3} key={item.id}>
           <PluginCard
@@ -498,6 +501,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
             changeImageSlideInterval={5000}
             isMarketplacePlugin={isMarketplace}
             onDetails={onDetails}
+            disableCardActionClick={disableCard}
           />
         </Grid>
       );
@@ -572,9 +576,9 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
 
   useEffect(() => {
     let subscriptions: Subscription[] = [];
-    hasGlobalPermission('list_plugins').subscribe((hasPermission) => {
-      setHasListPluginPermission(hasPermission);
-      if (hasPermission && marketplace === null && !apiState.error) {
+    hasGlobalPermissions('list_plugins', 'duplicate_site').subscribe((permissions) => {
+      setPermissionsLookup(permissions);
+      if (permissions['list_plugins'] && marketplace === null && !apiState.error) {
         subscriptions.push(fetchMarketplaceBlueprints());
       }
     });

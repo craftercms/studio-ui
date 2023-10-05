@@ -142,8 +142,7 @@ export function SiteCard(props: SiteCardProps) {
             </IconButton>
           </Tooltip>
         )}
-        {/* TODO: add duplicateSite permissions validation */}
-        {isSiteReady && (
+        {isSiteReady && onDuplicateSiteClick && (
           <Tooltip title={<FormattedMessage defaultMessage="Duplicate" />}>
             <IconButton onClick={() => onDuplicateSiteClick(site.id)} size={compact ? 'small' : 'medium'}>
               <ContentCopyIcon />
