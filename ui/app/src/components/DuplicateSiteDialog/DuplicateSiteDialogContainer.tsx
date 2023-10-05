@@ -15,7 +15,6 @@
  */
 
 import { DuplicateSiteState, LookupTable } from '../../models';
-import useSpreadState from '../../hooks/useSpreadState';
 import { DialogBody } from '../DialogBody';
 import Box from '@mui/material/Box';
 import DuplicateForm from './DuplicateForm';
@@ -39,19 +38,19 @@ import useEnv from '../../hooks/useEnv';
 import { nnou } from '../../utils/object';
 import { Subscription } from 'rxjs';
 import useMount from '../../hooks/useMount';
+import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 
 interface DuplicateSiteDialogContainerProps {
   site: DuplicateSiteState;
   setSite: (site: Partial<DuplicateSiteState>) => void;
   handleClose(event?: React.MouseEvent, reason?: string): void;
+  isSubmitting: boolean;
+  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainerProps) {
-  const { site, setSite, handleClose } = props;
-  const [apiState, setApiState] = useSpreadState({
-    duplicatingSite: false,
-    error: null
-  });
+  const { site, setSite, handleClose, isSubmitting, onSubmittingAndOrPendingChange } = props;
+  const [error, setError] = useState(null);
   const { authoringBase, useBaseDomain } = useEnv();
   const fieldsErrorsLookup: LookupTable<boolean> = useMemo(() => {
     return {
@@ -78,7 +77,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   };
 
   const duplicateSite = () => {
-    setApiState({ duplicatingSite: true });
+    onSubmittingAndOrPendingChange({ isSubmitting: true });
     siteDuplicateSubscription.current = duplicate({
       sourceSiteId: site.sourceSiteId,
       siteId: site.siteId,
@@ -89,7 +88,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     }).subscribe({
       next: () => {
         siteDuplicateSubscription.current = null;
-        setApiState({ duplicatingSite: false });
+        onSubmittingAndOrPendingChange({ isSubmitting: false });
         handleClose();
         setSiteCookie(site.siteId, useBaseDomain);
         window.location.href = getSystemLink({
@@ -100,7 +99,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
         });
       },
       error: ({ response }) => {
-        setApiState({ error: response.response, duplicatingSite: false });
+        setError(response.response);
+        onSubmittingAndOrPendingChange({ isSubmitting: false });
       }
     });
   };
@@ -111,7 +111,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   };
 
   const handleErrorBack = () => {
-    setApiState({ error: null });
+    setError(null);
   };
 
   const handleFinish = (e: MouseEvent) => {
@@ -142,11 +142,11 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
           setSourceSiteHasBlobStores(nnou(blobStores) && blobStores.length > 0);
         },
         error: ({ response }) => {
-          setApiState({ error: response.response });
+          setError(response.response);
         }
       });
     }
-  }, [site?.sourceSiteId, setApiState]);
+  }, [site?.sourceSiteId, setError]);
 
   useEffect(() => {
     if (primaryButtonRef && primaryButtonRef.current && site.selectedView === 1) {
@@ -157,15 +157,15 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   return (
     <>
       <DialogBody>
-        {(apiState.duplicatingSite && (
+        {(isSubmitting && (
           <CreateSiteDialogLoader
             title={<FormattedMessage defaultMessage="Duplicating Project" />}
             handleClose={handleClose}
           />
         )) ||
-          (apiState.error && (
+          (error && (
             <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
-              <ApiResponseErrorState error={apiState.error} onButtonClick={handleErrorBack} />
+              <ApiResponseErrorState error={error} onButtonClick={handleErrorBack} />
             </Box>
           )) || (
             <Box
@@ -241,7 +241,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
             </Box>
           )}
       </DialogBody>
-      {!apiState.duplicatingSite && !apiState.error && (
+      {!isSubmitting && !error && (
         <DialogFooter>
           {site.selectedView === 1 && (
             <Button color="primary" variant="outlined" onClick={handleBack}>

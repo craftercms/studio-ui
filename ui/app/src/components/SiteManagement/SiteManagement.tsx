@@ -279,6 +279,7 @@ export function SiteManagement() {
           duplicateSiteDialogState.onClose();
         }}
         hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
+        isSubmitting={duplicateSiteDialogState.isSubmitting}
         onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
       />
     </Paper>

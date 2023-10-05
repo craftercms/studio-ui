@@ -24,6 +24,7 @@ import { dialogClasses } from '@mui/material/Dialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import useOnClose from '../../hooks/useOnClose';
 
 const siteInitialState: DuplicateSiteState = {
   sourceSiteId: '',
@@ -45,12 +46,17 @@ interface DuplicateSiteDialogProps extends EnhancedDialogProps {
 }
 
 export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
-  const { siteId, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+  const { siteId, onSubmittingAndOrPendingChange, onClose, ...dialogProps } = props;
   const [site, setSite] = useSpreadState({
     ...siteInitialState,
     ...(siteId && { sourceSiteId: siteId })
   });
-  const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
+  const onCloseHandler = useOnClose({
+    onClose: !dialogProps.isSubmitting && onClose,
+    disableBackdropClick: dialogProps.isSubmitting,
+    disableEscapeKeyDown: dialogProps.isSubmitting
+  });
+  const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(onCloseHandler);
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
 
   useEffect(() => {
@@ -89,8 +95,15 @@ export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
       onWithPendingChangesCloseRequest={pendingChangesCloseRequest}
       onClosed={() => setSite(siteInitialState)}
       {...dialogProps}
+      onClose={onCloseHandler}
     >
-      <DuplicateSiteDialogContainer site={site} setSite={setSite} handleClose={props.onClose} />
+      <DuplicateSiteDialogContainer
+        site={site}
+        setSite={setSite}
+        handleClose={onClose}
+        isSubmitting={dialogProps.isSubmitting}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+      />
     </EnhancedDialog>
   );
 }
