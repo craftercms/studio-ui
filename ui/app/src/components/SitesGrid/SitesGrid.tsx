@@ -29,6 +29,7 @@ interface SitesGridProps {
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
   onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
+  onDuplicateSiteClick(siteId: string): void;
   currentView: 'grid' | 'list';
   publishingStatusLookup: LookupTable<PublishingStatus>;
 }
@@ -39,6 +40,7 @@ export function SitesGrid(props: SitesGridProps) {
     onSiteClick,
     onDeleteSiteClick,
     onEditSiteClick,
+    onDuplicateSiteClick,
     currentView,
     publishingStatusLookup,
     onPublishButtonClick
@@ -56,6 +58,7 @@ export function SitesGrid(props: SitesGridProps) {
               onSiteClick={onSiteClick}
               onDeleteSiteClick={onDeleteSiteClick}
               onEditSiteClick={onEditSiteClick}
+              onDuplicateSiteClick={onDuplicateSiteClick}
               onPublishButtonClick={onPublishButtonClick}
               compact={currentView === 'list'}
             />
