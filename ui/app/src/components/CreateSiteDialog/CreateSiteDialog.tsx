@@ -63,6 +63,7 @@ const searchInitialState = {
 interface CreateSiteDialogProps {
   open: boolean;
   onClose?(): any;
+  onShowDuplicate(): void;
 }
 
 function CreateSiteDialog(props: CreateSiteDialogProps) {
@@ -167,6 +168,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         dialog={dialog}
         setDialog={setDialog}
         disableEnforceFocus={disableEnforceFocus}
+        onShowDuplicate={props.onShowDuplicate}
       />
     </Dialog>
   );

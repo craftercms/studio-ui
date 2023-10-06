@@ -20,6 +20,7 @@ import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import ContentCopyIcon from '@mui/icons-material/ContentCopyRounded';
 import { Site } from '../../models/Site';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
@@ -38,6 +39,7 @@ interface SiteCardProps {
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
+  onDuplicateSiteClick(siteId: string): void;
   onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
   fallbackImageSrc?: string;
   compact?: boolean;
@@ -65,6 +67,7 @@ export function SiteCard(props: SiteCardProps) {
     onSiteClick,
     onDeleteSiteClick,
     onEditSiteClick,
+    onDuplicateSiteClick,
     fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg',
     compact = false,
     publishingStatus,
@@ -136,6 +139,13 @@ export function SiteCard(props: SiteCardProps) {
           <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
             <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'}>
               <EditRoundedIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        {isSiteReady && onDuplicateSiteClick && (
+          <Tooltip title={<FormattedMessage defaultMessage="Duplicate" />}>
+            <IconButton onClick={() => onDuplicateSiteClick(site.id)} size={compact ? 'small' : 'medium'}>
+              <ContentCopyIcon />
             </IconButton>
           </Tooltip>
         )}

@@ -56,6 +56,7 @@ import Paper from '@mui/material/Paper';
 import { getSystemLink } from '../../utils/system';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { createCustomDocumentEventListener } from '../../utils/dom';
+import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -80,6 +81,8 @@ export function SiteManagement() {
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
   const [sitesRefreshCountLookup, setSitesRefreshCountLookup] = useSpreadState<LookupTable<number>>({});
+  const duplicateSiteDialogState = useEnhancedDialogState();
+  const [duplicateSiteId, setDuplicateSiteId] = useState(null);
 
   useEffect(() => {
     merge(
@@ -97,7 +100,7 @@ export function SiteManagement() {
   }, [setPublishingStatusLookup, sitesById]);
 
   useMount(() => {
-    hasGlobalPermissions('create_site', 'edit_site', 'delete_site').subscribe(setPermissionsLookup);
+    hasGlobalPermissions('create_site', 'edit_site', 'delete_site', 'duplicate_site').subscribe(setPermissionsLookup);
   });
 
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
@@ -186,6 +189,11 @@ export function SiteManagement() {
     publishingStatusDialogState.onOpen();
   };
 
+  const onDuplicateSiteClick = (siteId: string) => {
+    setDuplicateSiteId(siteId);
+    duplicateSiteDialogState.onOpen();
+  };
+
   const handleChangeView = () => {
     if (currentView === 'grid') {
       setCurrentView('list');
@@ -242,6 +250,7 @@ export function SiteManagement() {
             onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
+            onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
           />
         </SuspenseWithEmptyState>
       </ErrorBoundary>
@@ -257,7 +266,22 @@ export function SiteManagement() {
         isFetching={false}
         {...selectedSiteStatus}
       />
-      <CreateSiteDialog open={openCreateSiteDialog} onClose={() => setOpenCreateSiteDialog(false)} />
+      <CreateSiteDialog
+        open={openCreateSiteDialog}
+        onClose={() => setOpenCreateSiteDialog(false)}
+        onShowDuplicate={duplicateSiteDialogState.onOpen}
+      />
+      <DuplicateSiteDialog
+        siteId={duplicateSiteId}
+        open={duplicateSiteDialogState.open}
+        onClose={() => {
+          setDuplicateSiteId(null);
+          duplicateSiteDialogState.onClose();
+        }}
+        hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
+        isSubmitting={duplicateSiteDialogState.isSubmitting}
+        onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
+      />
     </Paper>
   );
 }

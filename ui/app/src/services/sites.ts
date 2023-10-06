@@ -15,7 +15,15 @@
  */
 
 import { get, postJSON } from '../utils/ajax';
-import { Action, BackendSite, ContentValidationResult, CreateSiteMeta, LegacySite, Site } from '../models/Site';
+import {
+  Action,
+  BackendSite,
+  ContentValidationResult,
+  CreateSiteMeta,
+  DuplicateSiteMeta,
+  LegacySite,
+  Site
+} from '../models/Site';
 import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
@@ -81,6 +89,19 @@ export function create(site: CreateSiteMeta): Observable<Site> {
     }
   });
   return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
+    pluck('response'),
+    map(() => ({
+      id: site.siteId,
+      name: site.siteName,
+      description: site.description ?? '',
+      uuid: null,
+      imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
+    }))
+  );
+}
+
+export function duplicate(site: DuplicateSiteMeta): Observable<Site> {
+  return postJSON('/studio/api/2/sites/duplicate', site).pipe(
     pluck('response'),
     map(() => ({
       id: site.siteId,
