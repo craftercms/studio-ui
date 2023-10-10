@@ -67,7 +67,7 @@ export const messages = defineMessages({
   },
   gitBlueprintDescription: {
     id: 'createSiteDialog.gitBlueprintDescription',
-    defaultMessage: 'Create a new project based on a CrafterCMS project in an existing, remote git repository.'
+    defaultMessage: 'Create a new project from a remote git repository'
   },
   createSite: {
     id: 'createSiteDialog.createSite',
