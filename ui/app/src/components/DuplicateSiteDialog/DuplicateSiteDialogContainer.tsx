@@ -60,11 +60,12 @@ interface DuplicateSiteDialogContainerProps {
   setSite: (site: Partial<DuplicateSiteState>) => void;
   handleClose(event?: React.MouseEvent, reason?: string): void;
   isSubmitting: boolean;
+  onGoBack?(): void;
   onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainerProps) {
-  const { site, setSite, handleClose, isSubmitting, onSubmittingAndOrPendingChange } = props;
+  const { site, setSite, handleClose, onGoBack, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const [error, setError] = useState(null);
   const { authoringBase, useBaseDomain } = useEnv();
   const fieldsErrorsLookup: LookupTable<boolean> = useMemo(() => {
@@ -357,6 +358,18 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
                       </span>
                       {` ${site.gitBranch ? site.gitBranch : 'master'}`}
                     </Typography>
+                    {sourceSiteHasBlobStores && (
+                      <Typography variant="body2" gutterBottom>
+                        <span>
+                          <FormattedMessage defaultMessage="Blob Stores mode" />:{' '}
+                        </span>
+                        {site.readOnlyBlobStores ? (
+                          <FormattedMessage defaultMessage="Read-only" />
+                        ) : (
+                          <FormattedMessage defaultMessage="Read-write" />
+                        )}
+                      </Typography>
+                    )}
                   </Grid>
                 </Grid>
               )}
@@ -365,8 +378,18 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
       </DialogBody>
       {!isSubmitting && !error && (
         <DialogFooter>
-          {site.selectedView === 1 && (
-            <Button color="primary" variant="outlined" onClick={handleBack}>
+          {(site.selectedView === 1 || onGoBack) && (
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={(e) => {
+                if (onGoBack && site.selectedView === 0) {
+                  onGoBack();
+                } else {
+                  handleBack();
+                }
+              }}
+            >
               <FormattedMessage defaultMessage="Back" />
             </Button>
           )}

@@ -42,11 +42,12 @@ const siteInitialState: DuplicateSiteState = {
 
 interface DuplicateSiteDialogProps extends EnhancedDialogProps {
   siteId?: string;
+  onGoBack?(): void;
   onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
-  const { siteId, onSubmittingAndOrPendingChange, onClose, ...dialogProps } = props;
+  const { siteId, onSubmittingAndOrPendingChange, onClose, onGoBack, ...dialogProps } = props;
   const [site, setSite] = useSpreadState({
     ...siteInitialState,
     ...(siteId && { sourceSiteId: siteId })
@@ -101,6 +102,7 @@ export function DuplicateSiteDialog(props: DuplicateSiteDialogProps) {
         site={site}
         setSite={setSite}
         handleClose={onClose}
+        onGoBack={onGoBack}
         isSubmitting={dialogProps.isSubmitting}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
       />
