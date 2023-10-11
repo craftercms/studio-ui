@@ -219,7 +219,7 @@ export function SiteManagement() {
       titleTypographyProps={{ variant: 'h6' }}
       subheader={
         hasCreateSitePermission ? (
-          <FormattedMessage defaultMessage="Create your first project" />
+          <FormattedMessage defaultMessage="Create your first project." />
         ) : (
           <FormattedMessage defaultMessage="Contact your administrator to gain access to existing projects." />
         )
