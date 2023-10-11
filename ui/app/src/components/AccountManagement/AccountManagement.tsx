@@ -144,9 +144,9 @@ export function AccountManagement(props: AccountManagementProps) {
   };
 
   return (
-    <Paper elevation={0}>
+    <Paper elevation={0} sx={{ mb: 2 }}>
       <GlobalAppToolbar title={<FormattedMessage id="words.account" defaultMessage="Account" />} />
-      <Container maxWidth="md">
+      <Container maxWidth="md" sx={{ mb: 2, pb: 2 }}>
         <Paper className={clsx(classes.paper, 'mt20')}>
           <Box display="flex" alignItems="center">
             <Avatar className={classes.avatar}>
@@ -259,7 +259,7 @@ export function AccountManagement(props: AccountManagementProps) {
             <FormattedMessage defaultMessage="Stored Preferences" />
           </Typography>
           <Typography mb={3} variant="body2">
-            <FormattedMessage defaultMessage="Studio stores several of your usage preferences. Try cleaning them to restore defaults or troubleshooting seeing the latest changes." />
+            <FormattedMessage defaultMessage="Clear your user preferences and reset to defaults per project or for all projects." />
           </Typography>
           <Box display="flex" justifyContent="space-between" mb={3}>
             <FormControl sx={{ minWidth: 200 }}>

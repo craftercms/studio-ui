@@ -70,7 +70,7 @@ async function createIntlInstance(localeCode: string): Promise<IntlShape> {
   if (
     !fetchedLocales[localeCode] &&
     // Nothing to fetch point if we don't have the locale
-    ['de', 'es', 'kr'].includes(localeCode)
+    ['de', 'es', 'ko'].includes(localeCode)
   ) {
     let fetchedTranslations = await fetchLocale(localeCode as BundledLocaleCodes);
     // Plugins may have added translations to a locale that hasn't been fetched.
