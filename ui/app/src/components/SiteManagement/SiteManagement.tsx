@@ -57,6 +57,9 @@ import { getSystemLink } from '../../utils/system';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
+import Card from '@mui/material/Card';
+import CardActionArea from '@mui/material/CardActionArea';
+import CardHeader from '@mui/material/CardHeader';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -206,18 +209,31 @@ export function SiteManagement() {
 
   const publishingStatusDialogState = useEnhancedDialogState();
 
+  const handleCreateSiteClick = () => setOpenCreateSiteDialog(true);
+
+  const hasCreateSitePermission = permissionsLookup['create_site'];
+
+  const cardHeaderBlock = (
+    <CardHeader
+      title={<FormattedMessage defaultMessage="Getting Started" />}
+      titleTypographyProps={{ variant: 'h6' }}
+      subheader={
+        hasCreateSitePermission ? (
+          <FormattedMessage defaultMessage="Create your first project." />
+        ) : (
+          <FormattedMessage defaultMessage="Contact your administrator to gain access to existing projects." />
+        )
+      }
+    />
+  );
+
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
         title={<FormattedMessage id="GlobalMenu.Sites" defaultMessage="Projects" />}
         leftContent={
-          permissionsLookup['create_site'] && (
-            <Button
-              startIcon={<AddIcon />}
-              variant="outlined"
-              color="primary"
-              onClick={() => setOpenCreateSiteDialog(true)}
-            >
+          hasCreateSitePermission && (
+            <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={handleCreateSiteClick}>
               <FormattedMessage id="sites.createSite" defaultMessage="Create Project" />
             </Button>
           )
@@ -238,7 +254,38 @@ export function SiteManagement() {
           }}
           withEmptyStateProps={{
             emptyStateProps: {
-              title: <FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />
+              title: <FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />,
+              styles: { root: { margin: undefined } },
+              sxs: {
+                root: {
+                  p: 5,
+                  bgcolor: 'background.default',
+                  borderRadius: 1,
+                  maxWidth: '550px',
+                  marginTop: '50px',
+                  marginLeft: 'auto',
+                  marginRight: 'auto'
+                }
+              },
+              children: (
+                <Card
+                  elevation={hasCreateSitePermission ? 2 : 0}
+                  sx={{
+                    mt: 1,
+                    textAlign: 'center',
+                    ...(!hasCreateSitePermission && {
+                      border: '1px solid',
+                      borderColor: 'divider'
+                    })
+                  }}
+                >
+                  {hasCreateSitePermission ? (
+                    <CardActionArea onClick={handleCreateSiteClick}>{cardHeaderBlock}</CardActionArea>
+                  ) : (
+                    cardHeaderBlock
+                  )}
+                </Card>
+              )
             }
           }}
         >
