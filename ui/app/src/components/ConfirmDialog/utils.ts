@@ -49,4 +49,6 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps, Pick<Di
   onCancel?: StandardAction;
   onClose?: StandardAction;
   onClosed?: StandardAction;
+  okButtonText?: string;
+  cancelButtonText?: string;
 }
