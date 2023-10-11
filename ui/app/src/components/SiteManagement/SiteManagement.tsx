@@ -86,6 +86,7 @@ export function SiteManagement() {
   const [sitesRefreshCountLookup, setSitesRefreshCountLookup] = useSpreadState<LookupTable<number>>({});
   const duplicateSiteDialogState = useEnhancedDialogState();
   const [duplicateSiteId, setDuplicateSiteId] = useState(null);
+  const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);
 
   useEffect(() => {
     merge(
@@ -194,6 +195,7 @@ export function SiteManagement() {
 
   const onDuplicateSiteClick = (siteId: string) => {
     setDuplicateSiteId(siteId);
+    setIsDuplicateDialogFromCreateDialog(false);
     duplicateSiteDialogState.onOpen();
   };
 
@@ -205,6 +207,11 @@ export function SiteManagement() {
       setCurrentView('grid');
       setStoredGlobalMenuSiteViewPreference('grid', user.username);
     }
+  };
+
+  const createSiteDialogGoBackFromDuplicate = () => {
+    duplicateSiteDialogState.onClose();
+    setOpenCreateSiteDialog(true);
   };
 
   const publishingStatusDialogState = useEnhancedDialogState();
@@ -316,7 +323,10 @@ export function SiteManagement() {
       <CreateSiteDialog
         open={openCreateSiteDialog}
         onClose={() => setOpenCreateSiteDialog(false)}
-        onShowDuplicate={duplicateSiteDialogState.onOpen}
+        onShowDuplicate={() => {
+          setIsDuplicateDialogFromCreateDialog(true);
+          duplicateSiteDialogState.onOpen();
+        }}
       />
       <DuplicateSiteDialog
         siteId={duplicateSiteId}
@@ -325,6 +335,7 @@ export function SiteManagement() {
           setDuplicateSiteId(null);
           duplicateSiteDialogState.onClose();
         }}
+        onGoBack={isDuplicateDialogFromCreateDialog ? createSiteDialogGoBackFromDuplicate : null}
         hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
         isSubmitting={duplicateSiteDialogState.isSubmitting}
         onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
