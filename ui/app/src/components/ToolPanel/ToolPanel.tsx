@@ -15,7 +15,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement } from 'react';
+import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement, Suspense } from 'react';
 import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
@@ -82,9 +82,11 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
         BackIcon={BackIcon}
         onBack={onBack}
       />
-      <ErrorBoundary>
-        <section className={classes?.body}>{props.children}</section>
-      </ErrorBoundary>
+      <Suspense>
+        <ErrorBoundary>
+          <section className={classes?.body}>{props.children}</section>
+        </ErrorBoundary>
+      </Suspense>
     </>
   );
 }
