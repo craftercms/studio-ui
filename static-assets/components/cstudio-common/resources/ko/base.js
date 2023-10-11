@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CStudioAuthoring.Messages.registerBundle('siteDashboard', 'kr', {
+CStudioAuthoring.Messages.registerBundle('siteDashboard', 'ko', {
   dashboardTitle: '대시 보드',
 
   dashboardCollapseAll: '모든 축소',
@@ -114,7 +114,7 @@ CStudioAuthoring.Messages.registerBundle('siteDashboard', 'kr', {
   dashletIconGuideOtherFiles: '다른 파일들'
 });
 
-CStudioAuthoring.Messages.registerBundle('contextnav', 'kr', {
+CStudioAuthoring.Messages.registerBundle('contextnav', 'ko', {
   siteContent: '사이트 콘텐츠',
   sideBar: '사이드 바',
 
@@ -158,7 +158,7 @@ CStudioAuthoring.Messages.registerBundle('contextnav', 'kr', {
     '빠른 작성을위한 아무 것도 구성되어 있지 않습니다. 시스템 관리자에게 문의하여 원하는 빠른 작성 컨텐츠 유형을 구성하십시오.'
 });
 
-CStudioAuthoring.Messages.registerBundle('previewTools', 'kr', {
+CStudioAuthoring.Messages.registerBundle('previewTools', 'ko', {
   previewToolsTitle: '미리보기 도구',
   inContextEditing: '상황에 맞는 편집',
   pageComponents: '페이지 구성 요소',
@@ -239,7 +239,7 @@ CStudioAuthoring.Messages.registerBundle('previewTools', 'kr', {
   inContextEdit: '인 - 컨텍스트 편집'
 });
 
-CStudioAuthoring.Messages.registerBundle('siteDropdown', 'kr', {
+CStudioAuthoring.Messages.registerBundle('siteDropdown', 'ko', {
   pages: '페이지',
   Pages: '페이지',
   page: '페이지',
@@ -315,7 +315,7 @@ CStudioAuthoring.Messages.registerBundle('siteDropdown', 'kr', {
   cancel: '취소'
 });
 
-CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
+CStudioAuthoring.Messages.registerBundle('forms', 'ko', {
   styleFormatsParseError:
     'RTE `styleFormats` 구성이 잘못되었습니다: {0}. RTE 구성 styleFormats를 확인하고 유효한 JSON인지 확인하십시오. 아래에 첨부된 구성 내용:',
   new: '새로운',
@@ -525,7 +525,7 @@ CStudioAuthoring.Messages.registerBundle('forms', 'kr', {
   propertiesMessage: '속성이 없습니다'
 });
 
-CStudioAuthoring.Messages.registerBundle('search', 'kr', {
+CStudioAuthoring.Messages.registerBundle('search', 'ko', {
   searchInput: '수색',
   numResults: '결과 수',
   selectAll: '모두 선택',
@@ -566,7 +566,7 @@ CStudioAuthoring.Messages.registerBundle('search', 'kr', {
   apply: '대다'
 });
 
-CStudioAuthoring.Messages.registerBundle('browse', 'kr', {
+CStudioAuthoring.Messages.registerBundle('browse', 'ko', {
   labelUrl: 'URL',
   labelType: '유형',
   labelAddClose: '추가 및 닫기',
@@ -590,7 +590,7 @@ CStudioAuthoring.Messages.registerBundle('browse', 'kr', {
   503: 'CMIS를 사용할 수 없습니다.'
 });
 
-CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
+CStudioAuthoring.Messages.registerBundle('contentTypes', 'ko', {
   contenttypes: '콘텐츠 형식',
   bulkoperations: '대량 작업',
   workflowjobs: '워크 플로 작업',
@@ -966,7 +966,7 @@ CStudioAuthoring.Messages.registerBundle('contentTypes', 'kr', {
   ddPattern: '현재 날짜 (2 자리 날짜)를 삽입합니다.'
 });
 
-CStudioAuthoring.Messages.registerBundle('targeting', 'kr', {
+CStudioAuthoring.Messages.registerBundle('targeting', 'ko', {
   targeting: '타겟팅',
   clear: '명확한',
   apply: '대다',
@@ -974,7 +974,7 @@ CStudioAuthoring.Messages.registerBundle('targeting', 'kr', {
   userProps: '사용자 속성'
 });
 
-CStudioAuthoring.Messages.registerBundle('dialogs', 'kr', {
+CStudioAuthoring.Messages.registerBundle('dialogs', 'ko', {
   upload: '업로드',
   uploadSelect: '업로드 할 파일을 선택하십시오.',
   file: '파일',
