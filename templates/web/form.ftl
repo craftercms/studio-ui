@@ -32,7 +32,7 @@
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
   <script src="/studio/static-assets/components/cstudio-common/resources/en/base.js"></script>
-  <script src="/studio/static-assets/components/cstudio-common/resources/kr/base.js"></script>
+  <script src="/studio/static-assets/components/cstudio-common/resources/ko/base.js"></script>
   <script src="/studio/static-assets/components/cstudio-common/resources/es/base.js"></script>
   <script src="/studio/static-assets/components/cstudio-common/resources/de/base.js"></script>
 

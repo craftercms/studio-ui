@@ -43,14 +43,14 @@ export const preferencesGroups: Array<{
   onClear: (props: { siteId: string; siteUuid: string; username: string }) => void;
 }> = [
   {
-    label: <FormattedMessage defaultMessage="Preview sidebar widths" />,
+    label: <FormattedMessage defaultMessage="Sidebars Width" />,
     onClear: (props) => {
       removeStoredPreviewToolsPanelWidth(props.siteId, props.username);
       removeStoredICEToolsPanelWidth(props.siteId, props.username);
     }
   },
   {
-    label: <FormattedMessage defaultMessage="Preview's left sidebar navigator state" />,
+    label: <FormattedMessage defaultMessage="Left Sidebar Navigation State" />,
     onClear: (props) => {
       const pathNavigatorKeyRegex = new RegExp(
         `^craftercms.${props.username}.pathNavigator.${props.siteUuid}.[a-zA-Z0-9]+`
@@ -64,25 +64,25 @@ export const preferencesGroups: Array<{
     }
   },
   {
-    label: <FormattedMessage defaultMessage="Preview's left sidebar selected tool" />,
+    label: <FormattedMessage defaultMessage="Left Sidebar Selected Tool" />,
     onClear: (props) => {
       removeStoredPreviewToolsPanelPage(props.siteUuid, props.username);
     }
   },
   {
-    label: <FormattedMessage defaultMessage="Preview's right sidebar selected tool" />,
+    label: <FormattedMessage defaultMessage="Right Sidebar Selected Tool" />,
     onClear: (props) => {
       removeStoredICEToolsPanelPage(props.siteUuid, props.username);
     }
   },
   {
-    label: <FormattedMessage defaultMessage="Preview's left sidebar open/collapsed" />,
+    label: <FormattedMessage defaultMessage="Left Sidebar Open/Closed" />,
     onClear: (props) => {
       removeStoredShowToolsPanel(props.siteUuid, props.username);
     }
   },
   {
-    label: <FormattedMessage defaultMessage="Preview's editing state" />,
+    label: <FormattedMessage defaultMessage="Edit Mode" />,
     onClear: (props) => {
       removeStoredEditModeChoice(props.username, props.siteUuid);
       removeStoredHighlightModeChoice(props.username, props.siteUuid);
@@ -91,7 +91,7 @@ export const preferencesGroups: Array<{
     }
   },
   {
-    label: <FormattedMessage defaultMessage="Dashboard preferences" />,
+    label: <FormattedMessage defaultMessage="Dashboard Preferences" />,
     onClear: (props) => {
       // new dashlets
       const newDashletsKeyRegex = new RegExp(`^craftercms.${props.siteUuid}.[a-zA-Z0-9]+.dashletFilterTypeGroups`);
@@ -105,7 +105,7 @@ export const preferencesGroups: Array<{
     }
   },
   {
-    label: <FormattedMessage defaultMessage="Git settings" />,
+    label: <FormattedMessage defaultMessage="Git Settings" />,
     onClear: (props) => {
       removeStoredPushBranch(props.siteUuid, props.username);
       removeStoredPullBranch(props.siteUuid, props.username);
@@ -113,7 +113,7 @@ export const preferencesGroups: Array<{
     }
   },
   {
-    label: <FormattedMessage defaultMessage="Form settings" />,
+    label: <FormattedMessage defaultMessage="Form Settings" />,
     onClear: (props) => {
       removeStoredItems((key) => key.includes(`craftercms.${props.username}.saveButtonSubAction.`));
     }

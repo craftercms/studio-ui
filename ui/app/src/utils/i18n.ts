@@ -65,12 +65,10 @@ async function fetchLocale(locale: string): Promise<LookupTable<string>> {
 }
 
 async function createIntlInstance(localeCode: string): Promise<IntlShape> {
-  // TODO: Currently old studio UI uses the wrong code for korean
-  localeCode = localeCode.replace('kr', 'ko');
   if (
     !fetchedLocales[localeCode] &&
     // Nothing to fetch point if we don't have the locale
-    ['de', 'es', 'kr'].includes(localeCode)
+    ['de', 'es', 'ko'].includes(localeCode)
   ) {
     let fetchedTranslations = await fetchLocale(localeCode as BundledLocaleCodes);
     // Plugins may have added translations to a locale that hasn't been fetched.

@@ -141,11 +141,13 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   const { formatMessage } = useIntl();
   const { authoringBase, useBaseDomain } = useEnv();
   const siteCreateSubscription = useRef<Subscription>();
+  const mounted = useRef(false);
 
   useMount(() => {
     setRequestForgeryToken();
+    mounted.current = true;
     return () => {
-      siteCreateSubscription.current?.unsubscribe();
+      mounted.current = false;
     };
   });
 
@@ -420,16 +422,18 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   function createSite(site: CreateSiteMeta | MarketplaceSite, fromMarketplace = false) {
     const next = () => {
       siteCreateSubscription.current = null;
-      setApiState({ creatingSite: false });
-      handleClose();
-      // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
-      setSiteCookie(site.siteId, useBaseDomain);
-      window.location.href = getSystemLink({
-        systemLinkId: 'preview',
-        authoringBase,
-        site: site.siteId,
-        page: '/'
-      });
+      if (mounted.current === true) {
+        setApiState({ creatingSite: false });
+        handleClose();
+        // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
+        setSiteCookie(site.siteId, useBaseDomain);
+        window.location.href = getSystemLink({
+          systemLinkId: 'preview',
+          authoringBase,
+          site: site.siteId,
+          page: '/'
+        });
+      }
     };
     const error = ({ response }) => {
       if (response) {

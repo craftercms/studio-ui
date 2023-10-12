@@ -29,7 +29,15 @@ import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
 import { ObtainAuthTokenResponse } from '../services/auth';
 import { getSiteCookie, getXSRFToken, removeSiteCookie, setJwt } from '../utils/auth';
-import { emitSystemEvent, globalSocketStatus, siteSocketStatus, storeInitialized } from './actions/system';
+import {
+  emitSystemEvent,
+  globalSocketStatus,
+  newProjectReady,
+  projectBeingDeleted,
+  projectDeleted,
+  siteSocketStatus,
+  storeInitialized
+} from './actions/system';
 import User from '../models/User';
 import { Site } from '../models/Site';
 import {
@@ -76,6 +84,10 @@ export function getStore(): Observable<CrafterCMSStore> {
                       action.type === globalSocketStatus.type ||
                       // The `siteSocketStatus` event needs to go through for the site switch detection to be successful.
                       action.type === siteSocketStatus.type ||
+                      // projects events
+                      payload.eventType === newProjectReady.type ||
+                      payload.eventType === projectBeingDeleted.type ||
+                      payload.eventType === projectDeleted.type ||
                       // No siteId on the event should be applicable to all sites.
                       !payload.siteId ||
                       // The event is for the current site.
