@@ -23,7 +23,7 @@ import SecondaryButton from '../SecondaryButton';
 import translations from './translations';
 
 export function ConfirmDialog(props: ConfirmDialogProps) {
-  const { onOk, onCancel, disableOkButton, disableCancelButton, ...rest } = props;
+  const { onOk, onCancel, disableOkButton, disableCancelButton, okButtonText, cancelButtonText, ...rest } = props;
   const { formatMessage } = useIntl();
   return (
     <AlertDialog
@@ -32,12 +32,12 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
         <>
           {onOk && (
             <PrimaryButton onClick={onOk} autoFocus fullWidth size="large" disabled={disableOkButton}>
-              {formatMessage(translations.accept)}
+              {okButtonText ?? formatMessage(translations.accept)}
             </PrimaryButton>
           )}
           {onCancel && (
             <SecondaryButton onClick={onCancel} fullWidth size="large" disabled={disableCancelButton}>
-              {formatMessage(translations.cancel)}
+              {cancelButtonText ?? formatMessage(translations.cancel)}
             </SecondaryButton>
           )}
         </>

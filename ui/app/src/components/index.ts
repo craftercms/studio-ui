@@ -218,6 +218,8 @@ export * from './QuickCreate';
 export * from './RecentlyPublishedDashlet';
 export * from './RejectDialog';
 export * from './RenameAssetDialog';
+export * from './RenameContentDialog';
+export * from './RenameItemView';
 export * from './ResetPasswordDialog';
 export * from './ResizeBar';
 export * from './ResizeableDrawer';
