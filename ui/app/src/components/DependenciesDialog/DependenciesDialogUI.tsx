@@ -33,6 +33,8 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
 import { getRootPath } from '../../utils/path';
+import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
+import IconButton from '@mui/material/IconButton';
 
 export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
   const {
@@ -125,7 +127,20 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
               dependencies={dependencies}
               compactView={compactView}
               showTypes={showTypes}
-              handleContextMenuClick={handleContextMenuClick}
+              renderAction={(dependency) =>
+                isEditableItem(dependency.path) ? (
+                  <IconButton
+                    aria-haspopup="true"
+                    onClick={(e) => {
+                      handleContextMenuClick(e, dependency);
+                    }}
+                    className={classes.listEllipsis}
+                    size="large"
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                ) : null
+              }
             />
             <Menu anchorEl={contextMenu.el} keepMounted open={Boolean(contextMenu.el)} onClose={handleContextMenuClose}>
               {contextMenu.dependency && isEditableItem(contextMenu.dependency.path) && (

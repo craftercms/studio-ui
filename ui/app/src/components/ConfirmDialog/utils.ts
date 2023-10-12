@@ -37,6 +37,8 @@ export interface ConfirmDialogProps extends ConfirmDialogBaseProps, Omit<DialogP
   classes?: Partial<Record<ConfirmDialogStateClassKey, string>>;
   disableOkButton?: boolean;
   disableCancelButton?: boolean;
+  okButtonText?: ReactNode;
+  cancelButtonText?: ReactNode;
   onOk?(): void;
   onCancel?(): void;
   onClosed?(): void;
@@ -47,4 +49,6 @@ export interface ConfirmDialogStateProps extends ConfirmDialogBaseProps, Pick<Di
   onCancel?: StandardAction;
   onClose?: StandardAction;
   onClosed?: StandardAction;
+  okButtonText?: string;
+  cancelButtonText?: string;
 }

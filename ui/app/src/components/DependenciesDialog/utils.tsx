@@ -17,7 +17,7 @@
 import { FormattedMessage } from 'react-intl';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { isAsset, isCode } from '../../utils/content';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
@@ -42,8 +42,7 @@ export interface DependenciesListProps {
   dependencies: DetailedItem[];
   compactView: boolean;
   showTypes: string;
-
-  handleContextMenuClick(event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem): void;
+  renderAction?(dependency: DetailedItem): ReactNode;
 }
 
 export interface DependenciesDialogUIProps {
