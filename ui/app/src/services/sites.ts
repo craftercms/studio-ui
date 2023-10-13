@@ -32,6 +32,7 @@ import { MarketplacePlugin } from '../models/MarketplacePlugin';
 import { underscore } from '../utils/string';
 import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 import { FetchPublishingTargetsResponse } from './publishing';
+import { reversePluckProps } from '../utils/object';
 
 interface BuiltInBlueprint {
   descriptorVersion: string;
@@ -101,7 +102,7 @@ export function create(site: CreateSiteMeta): Observable<Site> {
 }
 
 export function duplicate(site: DuplicateSiteMeta): Observable<Site> {
-  return postJSON('/studio/api/2/sites/duplicate', site).pipe(
+  return postJSON(`/studio/api/2/sites/${site.sourceSiteId}/duplicate`, reversePluckProps(site, 'sourceSiteId')).pipe(
     pluck('response'),
     map(() => ({
       id: site.siteId,
