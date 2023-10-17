@@ -26,7 +26,6 @@ import {
 import { setRequestForgeryToken, setSiteCookie } from '../../utils/auth';
 import { Subscription } from 'rxjs';
 import { create, exists, fetchBlueprints as fetchBuiltInBlueprints } from '../../services/sites';
-import gitLogo from '../../assets/git-logo.svg';
 import { getSystemLink } from '../../utils/system';
 import Grid from '@mui/material/Grid';
 import PluginCard from '../PluginCard';
@@ -57,6 +56,7 @@ import { hasGlobalPermissions } from '../../services/users';
 import SecondaryButton from '../SecondaryButton';
 import useMount from '../../hooks/useMount';
 import ContentCopyIcon from '@mui/icons-material/ContentCopyRounded';
+import GitFilled from '../../icons/GitFilled';
 
 interface SearchState {
   searchKey: string;
@@ -537,7 +537,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                     {
                       description: '',
                       title: formatMessage(messages.gitBlueprintName),
-                      url: gitLogo
+                      icon: <GitFilled fontSize="large" color="error" />
                     }
                   ],
                   videos: []
@@ -553,7 +553,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                     {
                       description: '',
                       title: formatMessage(messages.gitBlueprintName),
-                      icon: <ContentCopyIcon />
+                      icon: <ContentCopyIcon fontSize="large" color="success" />
                     }
                   ],
                   videos: []
