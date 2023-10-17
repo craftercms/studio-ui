@@ -345,8 +345,6 @@ function PluginCard(props: PluginCardProps) {
             }
           }}
         >
-          {/*
-          // @ts-ignore */}
           <CardHeader
             title={name}
             subheader={!isGitOrDuplicateCard ? renderSubtitle() : ''}
