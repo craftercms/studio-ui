@@ -16,13 +16,10 @@
 
 import { CompareVersionsDialogContainerProps } from './utils';
 import { FormattedMessage } from 'react-intl';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import { CompareVersionsBranch, ItemHistoryEntry } from '../../models/Version';
-import { CompareVersions, CompareVersionsResource } from './CompareVersions';
-import { EntityState } from '../../models/EntityState';
-import ContentType from '../../models/ContentType';
+import { ItemHistoryEntry } from '../../models/Version';
+import { CompareVersions } from './CompareVersions';
 import {
   compareBothVersions,
   compareVersion,
@@ -32,7 +29,6 @@ import {
 import VersionList from '../VersionList';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import EmptyState from '../EmptyState/EmptyState';
 import Typography from '@mui/material/Typography';
 import DialogFooter from '../DialogFooter/DialogFooter';
@@ -40,6 +36,13 @@ import { HistoryDialogPagination } from '../HistoryDialog';
 import { makeStyles } from 'tss-react/mui';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { LoadingState } from '../LoadingState';
+import useSpreadState from '../../hooks/useSpreadState';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { forkJoin } from 'rxjs';
+import { fetchContentByCommitId } from '../../services/content';
+import { fromString } from '../../utils/xml';
+import { parseContentXML } from '../../utils/content';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
 const useStyles = makeStyles()(() => ({
   dialogBody: {
@@ -64,35 +67,26 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
   const compareMode = selectedA && selectedB;
+  const [selectionContent, setSelectionContent] = useSpreadState({ contentA: null, contentB: null });
+  const siteId = useActiveSiteId();
+  const isCompareDataReady =
+    compareVersionsBranch?.compareVersions &&
+    contentTypesBranch?.byId &&
+    item?.contentTypeId &&
+    selectionContent.contentA &&
+    selectionContent.contentB;
 
-  const compareVersionsData = useMemo(
-    () => ({
-      compareVersionsBranch,
-      contentTypesBranch
-    }),
-    [compareVersionsBranch, contentTypesBranch]
-  );
-
-  const compareVersionsResource = useLogicResource<
-    CompareVersionsResource,
-    { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }
-  >(compareVersionsData, {
-    shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
-      compareVersionsBranch.compareVersions &&
-      contentTypesBranch.byId &&
-      !compareVersionsBranch.isFetching &&
-      !contentTypesBranch.isFetching,
-    shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
-      Boolean(compareVersionsBranch.error || contentTypesBranch.error),
-    shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) => resource.complete,
-    resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
-      a: compareVersionsBranch.compareVersions?.[0],
-      b: compareVersionsBranch.compareVersions?.[1],
-      contentTypes: contentTypesBranch.byId
-    }),
-    errorSelector: ({ compareVersionsBranch, contentTypesBranch }) =>
-      compareVersionsBranch.error || contentTypesBranch.error
-  });
+  useEffect(() => {
+    forkJoin([
+      fetchContentByCommitId(siteId, selectedA.path, selectedA.versionNumber),
+      fetchContentByCommitId(siteId, selectedB.path, selectedB.versionNumber)
+    ]).subscribe(([contentA, contentB]) => {
+      setSelectionContent({
+        contentA: parseContentXML(fromString(contentA as string), selectedA.path, contentTypesBranch.byId, {}),
+        contentB: parseContentXML(fromString(contentB as string), selectedB.path, contentTypesBranch.byId, {})
+      });
+    });
+  }, [selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch.byId]);
 
   const handleItemClick = (version: ItemHistoryEntry) => {
     if (!selected[0]) {
@@ -128,9 +122,28 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
           />
         )}
         {compareMode ? (
-          <SuspenseWithEmptyState resource={compareVersionsResource}>
-            <CompareVersions resource={compareVersionsResource} />
-          </SuspenseWithEmptyState>
+          <>
+            {!isCompareDataReady ? (
+              <LoadingState />
+            ) : compareVersionsBranch.error || contentTypesBranch.error ? (
+              <ApiResponseErrorState error={compareVersionsBranch.error ?? contentTypesBranch.error} />
+            ) : (
+              <CompareVersions
+                a={{
+                  ...selectedA,
+                  ...compareVersionsBranch.compareVersions?.[0],
+                  content: selectionContent.contentA
+                }}
+                b={{
+                  ...selectedB,
+                  ...compareVersionsBranch.compareVersions?.[1],
+                  content: selectionContent.contentB
+                }}
+                contentTypeId={item.contentTypeId}
+                contentTypes={contentTypesBranch.byId}
+              />
+            )}
+          </>
         ) : item ? (
           <ErrorBoundary>
             {versionsBranch.isFetching ? (
