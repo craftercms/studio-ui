@@ -353,7 +353,7 @@ export function parseSandBoxItemToDetailedItem(
   };
 }
 
-const systemPropsList = [
+export const systemPropsList = [
   'orderDefault_f',
   'savedAsDraft',
   'content-type',

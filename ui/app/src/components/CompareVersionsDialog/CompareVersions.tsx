@@ -34,6 +34,7 @@ import { EmptyState } from '../EmptyState';
 import { withMonaco } from '../../utils/system';
 import Box from '@mui/material/Box';
 import { systemPropsList } from '../../utils/content';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const translations = defineMessages({
   changed: {
@@ -213,19 +214,8 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
             sx={{
               marginLeft: 'auto',
               height: '26px',
-              color: palette.gray.medium4,
-              backgroundColor: palette.gray.light1
-            }}
-          />
-        )}
-        {field.type === 'node-selector' && !contentA?.length && !contentB?.length && (
-          <Chip
-            label={formatMessage(translations.empty)}
-            sx={{
-              marginLeft: 'auto',
-              height: '26px',
-              color: palette.gray.medium4,
-              backgroundColor: palette.gray.light1
+              color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+              backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1)
             }}
           />
         )}
@@ -317,11 +307,11 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
         mergeContent.map((item, index) => (
           <Box
             sx={{
-              padding: '10px',
+              padding: '4px 15px',
               marginBottom: '12px',
               display: 'flex',
               justifyContent: 'space-between',
-              borderRadius: '5px',
+              borderRadius: '10px',
               alignItems: 'center',
               '&.unchanged': {
                 color: palette.gray.medium4,
@@ -350,14 +340,9 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
             className={status[index] ?? ''}
             key={item.craftercms.id}
           >
-            <Typography> {item.craftercms.label ?? item.craftercms.id}</Typography>
+            <Typography sx={{ fontSize: '14px' }}> {item.craftercms.label ?? item.craftercms.id}</Typography>
             {status[index] && status[index] !== 'new' && (
-              <Typography
-                sx={{
-                  fontSize: '0.8125rem',
-                  color: palette.gray.medium4
-                }}
-              >
+              <Typography sx={{ fontSize: '14px', color: palette.gray.medium4 }}>
                 {formatMessage(translations[status[index]])}
               </Typography>
             )}
@@ -378,6 +363,7 @@ interface MonacoWrapperProps {
 function MonacoWrapper(props: MonacoWrapperProps) {
   const { contentA, contentB } = props;
   const ref = useRef();
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   useEffect(() => {
     if (ref.current) {
@@ -389,13 +375,14 @@ function MonacoWrapper(props: MonacoWrapperProps) {
             alwaysConsumeMouseWheel: false
           }
         });
+        monaco.editor.setTheme(prefersDarkMode ? 'vs-dark' : 'vs');
         diffEditor.setModel({
           original: originalModel,
           modified: modifiedModel
         });
       });
     }
-  }, [contentA, contentB]);
+  }, [contentA, contentB, prefersDarkMode]);
 
   return (
     <Box

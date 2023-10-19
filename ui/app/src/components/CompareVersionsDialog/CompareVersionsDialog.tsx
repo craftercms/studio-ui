@@ -71,7 +71,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
           : null,
         rightActions
       }}
-      maxWidth={isCompareMode ? 'xl' : 'md'}
+      maxWidth={isCompareMode ? 'lg' : 'md'}
       {...rest}
     >
       <CompareVersionsDialogContainer
