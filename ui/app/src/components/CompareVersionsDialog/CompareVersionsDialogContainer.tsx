@@ -33,7 +33,6 @@ import EmptyState from '../EmptyState/EmptyState';
 import Typography from '@mui/material/Typography';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from '../HistoryDialog';
-import { makeStyles } from 'tss-react/mui';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { LoadingState } from '../LoadingState';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -44,26 +43,9 @@ import { fromString } from '../../utils/xml';
 import { parseContentXML } from '../../utils/content';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
-const useStyles = makeStyles()(() => ({
-  dialogBody: {
-    overflow: 'auto',
-    minHeight: '50vh'
-  },
-  noPadding: {
-    padding: 0
-  },
-  singleItemSelector: {
-    marginBottom: '10px'
-  },
-  typography: {
-    lineHeight: '1.5'
-  }
-}));
-
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const { selectedA, selectedB, versionsBranch, disableItemSwitching = false, contentTypesBranch } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
-  const { classes, cx } = useStyles();
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
   const compareMode = selectedA && selectedB;
@@ -77,15 +59,17 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     selectionContent.contentB;
 
   useEffect(() => {
-    forkJoin([
-      fetchContentByCommitId(siteId, selectedA.path, selectedA.versionNumber),
-      fetchContentByCommitId(siteId, selectedB.path, selectedB.versionNumber)
-    ]).subscribe(([contentA, contentB]) => {
-      setSelectionContent({
-        contentA: parseContentXML(fromString(contentA as string), selectedA.path, contentTypesBranch.byId, {}),
-        contentB: parseContentXML(fromString(contentB as string), selectedB.path, contentTypesBranch.byId, {})
+    if (selectedA && selectedB) {
+      forkJoin([
+        fetchContentByCommitId(siteId, selectedA.path, selectedA.versionNumber),
+        fetchContentByCommitId(siteId, selectedB.path, selectedB.versionNumber)
+      ]).subscribe(([contentA, contentB]) => {
+        setSelectionContent({
+          contentA: parseContentXML(fromString(contentA as string), selectedA.path, contentTypesBranch.byId, {}),
+          contentB: parseContentXML(fromString(contentB as string), selectedB.path, contentTypesBranch.byId, {})
+        });
       });
-    });
+    }
   }, [selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch.byId]);
 
   const handleItemClick = (version: ItemHistoryEntry) => {
@@ -104,10 +88,16 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 
   return (
     <>
-      <DialogBody className={cx(classes.dialogBody, compareMode && classes.noPadding)}>
+      <DialogBody
+        sx={{
+          overflow: 'auto',
+          minHeight: '50vh',
+          ...(compareMode && { padding: 0 })
+        }}
+      >
         {!compareMode && (
           <SingleItemSelector
-            classes={{ root: classes.singleItemSelector }}
+            sxs={{ root: { marginBottom: '10px' } }}
             label={<FormattedMessage id="words.item" defaultMessage="Item" />}
             disabled={disableItemSwitching}
             open={openSelector}
@@ -166,7 +156,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
             }
           >
             <section>
-              <Typography variant="subtitle1" color="textSecondary" className={classes.typography}>
+              <Typography variant="subtitle1" color="textSecondary" sx={{ lineHeight: '1.5' }}>
                 1. Select item <br />
                 2. Select revision “A” <br />
                 3. Select revision “B” <br />
