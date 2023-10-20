@@ -43,5 +43,12 @@ echo "Bootstrap build complete"
 rm -rf "$libsDirectory/jquery-ui"
 rsync -ar --delete ../../node_modules/jquery-ui/dist/ "$libsDirectory/jquery-ui"
 rsync -ar --delete ../../node_modules/jquery-ui-css/jquery-ui.min.css "$libsDirectory/jquery-ui/jquery-ui.min.css"
-sed -i 's/typeof define\&\&define.amd?define/typeof crafterDefine\&\&crafterDefine.amd?crafterDefine/' ../../static-assets/libs/jquery-ui/jquery-ui.min.js
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # Mac OS sed command needs a prefix for the backup file, if '' (empty) it won't create a backup file
+  sed -i '' 's/typeof define\&\&define.amd?define/typeof crafterDefine\&\&crafterDefine.amd?crafterDefine/' ../../static-assets/libs/jquery-ui/jquery-ui.min.js
+else
+  sed -i 's/typeof define\&\&define.amd?define/typeof crafterDefine\&\&crafterDefine.amd?crafterDefine/' ../../static-assets/libs/jquery-ui/jquery-ui.min.js
+fi
+
 echo "jQuery UI build complete"
