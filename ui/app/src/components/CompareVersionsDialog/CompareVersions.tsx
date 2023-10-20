@@ -35,6 +35,14 @@ import { withMonaco } from '../../utils/system';
 import Box from '@mui/material/Box';
 import { systemPropsList } from '../../utils/content';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import { batchActions } from '../../state/actions/misc';
+import { compareVersion } from '../../state/actions/versions';
+import { showCompareVersionsDialog, showHistoryDialog } from '../../state/actions/dialogs';
+import { useDispatch } from 'react-redux';
 
 const translations = defineMessages({
   changed: {
@@ -69,6 +77,23 @@ interface CompareVersionsProps {
 export function CompareVersions(props: CompareVersionsProps) {
   const { a, b, contentTypes, contentTypeId } = props;
   const values = Object.values(contentTypes[contentTypeId].fields) as ContentTypeField[];
+  const dispatch = useDispatch();
+
+  const compareVersionDialogWithActions = () =>
+    showCompareVersionsDialog({
+      disableItemSwitching: true,
+      rightActions: [
+        {
+          icon: { id: '@mui/icons-material/HistoryRounded' },
+          onClick: showHistoryDialog({}),
+          'aria-label': <FormattedMessage defaultMessage="Back to history list" />
+        }
+      ]
+    });
+
+  const compareTo = (versionNumber: string) => {
+    dispatch(batchActions([compareVersion({ id: versionNumber }), compareVersionDialogWithActions()]));
+  };
 
   return (
     <Box
@@ -95,7 +120,16 @@ export function CompareVersions(props: CompareVersionsProps) {
           }}
         >
           <ListItemText
-            primary={<AsDayMonthDateTime date={a.dateModified} />}
+            primary={
+              <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
+                <AsDayMonthDateTime date={a.dateModified} />
+                <Tooltip title={<FormattedMessage defaultMessage="Edit" />}>
+                  <IconButton onClick={() => compareTo(a.versionNumber)} sx={{ ml: 1 }}>
+                    <EditRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            }
             secondary={
               <FormattedMessage
                 id="historyDialog.versionNumber"
@@ -118,7 +152,16 @@ export function CompareVersions(props: CompareVersionsProps) {
           }}
         >
           <ListItemText
-            primary={<AsDayMonthDateTime date={b.dateModified} />}
+            primary={
+              <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
+                <AsDayMonthDateTime date={b.dateModified} />
+                <Tooltip title={<FormattedMessage defaultMessage="Edit" />}>
+                  <IconButton onClick={() => compareTo(b.versionNumber)} sx={{ ml: 1 }}>
+                    <EditRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            }
             secondary={
               <FormattedMessage
                 id="historyDialog.versionNumber"
@@ -270,6 +313,11 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const [mergeContent, setMergeContent] = useState([]);
   const [status, setStatus] = useState<any>({});
   const { formatMessage } = useIntl();
+  const itemsByPath = useItemsByPath();
+
+  const getItemLabel = (item) => {
+    return item.craftercms.label ?? itemsByPath?.[item.craftercms.path]?.label ?? item.craftercms.id;
+  };
 
   useEffect(() => {
     let itemStatus = {};
@@ -340,7 +388,7 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
             className={status[index] ?? ''}
             key={item.craftercms.id}
           >
-            <Typography sx={{ fontSize: '14px' }}> {item.craftercms.label ?? item.craftercms.id}</Typography>
+            <Typography sx={{ fontSize: '14px' }}> {getItemLabel(item)}</Typography>
             {status[index] && status[index] !== 'new' && (
               <Typography sx={{ fontSize: '14px', color: palette.gray.medium4 }}>
                 {formatMessage(translations[status[index]])}

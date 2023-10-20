@@ -44,7 +44,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
 
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="compareVersionsDialog.headerTitle" defaultMessage="Compare item versions" />}
+      title={<FormattedMessage defaultMessage="Comparing revisions" />}
       dialogHeaderProps={{
         subtitle: isSelectMode ? (
           <FormattedMessage
