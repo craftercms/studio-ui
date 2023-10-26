@@ -43,6 +43,7 @@ import { Site } from '../models/Site';
 import {
   sharedWorkerConnect,
   sharedWorkerDisconnect,
+  sharedWorkerError,
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from './actions/auth';
@@ -77,14 +78,23 @@ export function getStore(): Observable<CrafterCMSStore> {
                     const state = store.getState();
                     const action = e.data;
                     // System socket events come wrapped in `emitSystemEvent` action.
-                    const payload = action.type === emitSystemEvent.type ? action.payload.payload : action.payload;
+                    const payload =
+                      (action.type === emitSystemEvent.type ? action.payload.payload : action.payload) ?? {};
                     // When a site is switched on a different tab, the socket that powers this tab will switch to that
                     // socket "topic". Need to avoid widgets refreshing with data that's not relevant to them.
                     if (
-                      action.type === globalSocketStatus.type ||
-                      // The `siteSocketStatus` event needs to go through for the site switch detection to be successful.
-                      action.type === siteSocketStatus.type ||
-                      // projects events
+                      [
+                        // * * * *
+                        // Events sent by the worker for global purposes should always go through
+                        // * * * *
+                        sharedWorkerToken.type,
+                        sharedWorkerUnauthenticated.type,
+                        sharedWorkerError.type,
+                        sharedWorkerUnauthenticated.type,
+                        globalSocketStatus.type,
+                        siteSocketStatus.type
+                      ].includes(action.type) ||
+                      // Projects lifecycle events (created, deleted, etc.) should always go through.
                       payload.eventType === newProjectReady.type ||
                       payload.eventType === projectBeingDeleted.type ||
                       payload.eventType === projectDeleted.type ||
