@@ -317,7 +317,37 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
                 </Box>
               )}
               {site.selectedView === 1 && (
-                <Grid container sx={{ maxWidth: '600px', margin: 'auto' }}>
+                <Grid container spacing={3} sx={{ maxWidth: '600px', margin: 'auto' }}>
+                  <Grid item xs={12}>
+                    <Typography variant="h6" gutterBottom sx={{ mb: onGoBack ? 0 : null }}>
+                      <FormattedMessage defaultMessage="Creation Strategy" />
+                      {onGoBack && (
+                        <IconButton
+                          onClick={onGoBack}
+                          size="large"
+                          sx={{
+                            color: (theme) => theme.palette.primary.main,
+                            '& svg': {
+                              fontSize: '1.2rem'
+                            }
+                          }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      )}
+                    </Typography>
+                    <div>
+                      <Typography variant="body2" gutterBottom>
+                        <FormattedMessage defaultMessage="Duplicate Project" />
+                      </Typography>
+                      <Typography variant="body2" gutterBottom>
+                        <span>
+                          <FormattedMessage defaultMessage="Source project" />:{' '}
+                        </span>{' '}
+                        {site.sourceSiteId}
+                      </Typography>
+                    </div>
+                  </Grid>
                   <Grid item xs={12}>
                     <Typography variant="h6" gutterBottom>
                       <FormattedMessage defaultMessage="Project info" />
