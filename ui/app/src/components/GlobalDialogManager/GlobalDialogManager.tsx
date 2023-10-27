@@ -121,7 +121,7 @@ function GlobalDialogManager() {
           if (!isCreateSiteDialogOpen && username === payload.user.username) {
             enqueueSnackbar(
               <FormattedMessage
-                defaultMessage={`Site "{siteId}" has been created.`}
+                defaultMessage={`Project "{siteId}" has been created.`}
                 values={{ siteId: payload.siteId }}
               />,
               {
