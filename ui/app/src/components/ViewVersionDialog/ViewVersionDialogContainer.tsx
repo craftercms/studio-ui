@@ -35,13 +35,11 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   });
 
   return (
-    <>
-      <DialogBody>
-        <SuspenseWithEmptyState resource={resource}>
-          <LegacyVersionDialog resource={resource} />
-        </SuspenseWithEmptyState>
-      </DialogBody>
-    </>
+    <DialogBody sx={{ p: 0 }}>
+      <SuspenseWithEmptyState resource={resource}>
+        <LegacyVersionDialog resource={resource} />
+      </SuspenseWithEmptyState>
+    </DialogBody>
   );
 }
 
