@@ -32,11 +32,7 @@ import { useLogicResource } from '../../hooks/useLogicResource';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
 import LookupTable from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
-import {
-  getStoredPreviewToolsPanelPage,
-  getStoredPreviewToolsPanelWidth,
-  setStoredPreviewToolsPanelWidth
-} from '../../utils/state';
+import { getStoredPreviewToolsPanelPage, getStoredPreviewToolsPanelWidth } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 
 defineMessages({
@@ -67,8 +63,7 @@ export function ToolsPanel() {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const { classes } = useStyles();
-  const { showToolsPanel, toolsPanel } = usePreviewState();
-  const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
+  const { showToolsPanel, toolsPanel, toolsPanelWidth, windowSize } = usePreviewState();
   const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
@@ -91,7 +86,6 @@ export function ToolsPanel() {
   });
 
   const onWidthChange = (width) => {
-    setStoredPreviewToolsPanelWidth(siteId, username, width);
     dispatch(
       updateToolsPanelWidth({
         width
@@ -104,6 +98,7 @@ export function ToolsPanel() {
       belowToolbar
       open={showToolsPanel}
       width={toolsPanelWidth}
+      maxWidth={windowSize}
       classes={{ drawerBody: classes.drawerBody }}
       onWidthChange={onWidthChange}
     >

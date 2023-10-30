@@ -418,11 +418,20 @@ export function parseContentXML(
         }
         const field = contentTypesLookup[sourceContentTypeId ?? contentTypeId]?.fields?.[tagName];
         if (!field) {
-          console.error(
-            `[parseContentXML] Field "${tagName}" was not found on "${
-              sourceContentTypeId ?? contentTypeId
-            }" content type. "${source ?? path}" may have stale/outdated content properties.`
-          );
+          // date-time control handles the timezone field using {controlName}_tz format. So if the field without `tz` is
+          // found in the content type, we can ignore the `tz` field (and don't log an error).
+          let isTimezoneField = false;
+          if (tagName.endsWith('_tz')) {
+            const withoutTz = tagName.replace(/_tz$/, '');
+            isTimezoneField = Boolean(contentTypesLookup[sourceContentTypeId ?? contentTypeId]?.fields?.[withoutTz]);
+          }
+          if (!isTimezoneField) {
+            console.error(
+              `[parseContentXML] Field "${tagName}" was not found on "${
+                sourceContentTypeId ?? contentTypeId
+              }" content type. "${source ?? path}" may have stale/outdated content properties.`
+            );
+          }
         }
         current[tagName] = parseElementByContentType(element, field, contentTypesLookup, instanceLookup);
       }
@@ -478,17 +487,26 @@ function parseElementByContentType(
         items.forEach((item) => {
           let path = getInnerHtml(item.querySelector(':scope > include'));
           const component = item.querySelector(':scope > component');
+          const itemKey = getInnerHtml(item.querySelector(':scope > key'));
           if (!path && !component) {
-            // TODO: Groovy Controller Issue;
-            path = getInnerHtml(item.querySelector(':scope > key'));
+            path = itemKey;
           }
-          const instance = parseContentXML(
-            component ? wrapElementInAuxDocument(component) : null,
-            path,
-            contentTypesLookup,
-            instanceLookup
-          );
-          array.push(instance);
+          // Embedded components have no .xml in their key
+          const isFile = Boolean(itemKey) && !itemKey.endsWith('.xml') && Boolean(!item.getAttribute('inline'));
+          if (isFile) {
+            array.push({
+              key: itemKey,
+              value: getInnerHtml(item.querySelector(':scope > value'))
+            });
+          } else {
+            const instance = parseContentXML(
+              component ? wrapElementInAuxDocument(component) : null,
+              path,
+              contentTypesLookup,
+              instanceLookup
+            );
+            array.push(instance);
+          }
         });
       }
       return array;
@@ -513,9 +531,13 @@ function parseElementByContentType(
       return getInnerHtml(element) === 'true';
     case 'numeric-input':
       return getInnerHtmlNumber(element, parseFloat);
+    case 'transcoded-video-picker':
+    case 'taxonomy-selector':
+      return getInnerHtml(element);
     default:
       console.log(
-        `[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
+        `%c[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
+        'color: blue',
         element
       );
       return getInnerHtml(element);
@@ -594,34 +616,38 @@ export function createModelHierarchyDescriptorMap(
         if (field.type === 'node-selector') {
           field.id !== pageControllersFieldId &&
             field.id !== pageControllersLegacyFieldId &&
-            source[field.id].forEach((component, index) => {
-              lookup[currentModelId].children.push(component);
-              if (lookup[component]) {
-                if (lookup[component].parentId !== null && lookup[component].parentId !== model.craftercms.id) {
-                  console.error.apply(
-                    console,
-                    [
-                      `Model ${component} was found in multiple parents (${lookup[component].parentId} and ${model.craftercms.id}). ` +
-                        `Same model twice on a single page may have unexpected behaviours for in-context editing.`,
-                      // @ts-ignore
-                      typeof component !== 'string' && component
-                    ].filter(Boolean)
-                  );
+            source[field.id]
+              // Just as controllers are not included in HierarchyDescriptor, files inside a node-selector are not included either.
+              // (files and controllers are stored as a key/value object)
+              .filter((componentId) => typeof componentId === 'string')
+              .forEach((componentId, index) => {
+                lookup[currentModelId].children.push(componentId);
+                if (lookup[componentId]) {
+                  if (lookup[componentId].parentId !== null && lookup[componentId].parentId !== model.craftercms.id) {
+                    console.error.apply(
+                      console,
+                      [
+                        `Model ${componentId} was found in multiple parents (${lookup[componentId].parentId} and ${model.craftercms.id}). ` +
+                          `Same model twice on a single page may have unexpected behaviours for in-context editing.`,
+                        // @ts-ignore
+                        typeof componentId !== 'string' && componentId
+                      ].filter(Boolean)
+                    );
+                  }
+                } else {
+                  // This assignment it's to avoid having to optionally chain multiple times
+                  // the access to `lookup[component]` below.
+                  lookup[componentId] = lookup[componentId] ?? ({} as any);
                 }
-              } else {
-                // This assignment it's to avoid having to optionally chain multiple times
-                // the access to `lookup[component]` below.
-                lookup[component] = lookup[component] ?? ({} as any);
-              }
-              // Because there's no real warranty that the parent of a model will be processed first
-              lookup[component] = createModelHierarchyDescriptor(
-                component,
-                model.craftercms.id,
-                lookup[component].parentContainerFieldPath ?? cleanCarryOver(`${fieldCarryOver}.${field.id}`),
-                lookup[component].parentContainerFieldIndex ?? cleanCarryOver(`${indexCarryOver}.${index}`),
-                lookup[component].children
-              );
-            });
+                // Because there's no real warranty that the parent of a model will be processed first
+                lookup[componentId] = createModelHierarchyDescriptor(
+                  componentId,
+                  model.craftercms.id,
+                  lookup[componentId].parentContainerFieldPath ?? cleanCarryOver(`${fieldCarryOver}.${field.id}`),
+                  lookup[componentId].parentContainerFieldIndex ?? cleanCarryOver(`${indexCarryOver}.${index}`),
+                  lookup[componentId].children
+                );
+              });
         } else if (field.type === 'repeat') {
           source[field.id].forEach((repeatItem: ContentInstance, index) => {
             process(
@@ -734,8 +760,8 @@ export function normalizeModel(model: ContentInstance): ContentInstance {
       value.length
     ) {
       const collection: ContentInstance[] = value;
-      const isNodeSelector = Boolean(collection[0]?.craftercms?.id);
-      if (isNodeSelector) {
+      const isComponentsNodeSelector = collection.every((item) => Boolean(item.craftercms?.id));
+      if (isComponentsNodeSelector) {
         normalized[prop] = collection.map((item) => item.craftercms.id);
       } else {
         normalized[prop] = collection.map((item) => normalizeModel(item));
@@ -752,9 +778,9 @@ export function denormalizeModel(
   const model = { ...normalized };
   Object.entries(model).forEach(([prop, value]) => {
     if (prop.endsWith('_o')) {
-      const collection: any[] = value;
+      const collection: unknown = value;
       // Cover cases (collection?.length) where the xml has an empty tag corresponding to the `someField_o` without content.
-      if (collection?.length) {
+      if (Array.isArray(collection) && collection.length) {
         const isNodeSelector = typeof collection[0] === 'string';
         if (isNodeSelector) {
           model[prop] = collection.map((item) => denormalizeModel(modelLookup[item], modelLookup));
@@ -993,6 +1019,14 @@ export function applyFolderNameRules(name: string, options?: { allowBraces: bool
 
 export function applyAssetNameRules(name: string, options?: { allowBraces: boolean }): string {
   return name.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '').replace(/\.{1,}/g, '.');
+}
+
+/**
+ * Utility to clean up a content name (pages/components/taxonomies). It removes any character that is not a lowercase
+ * letter, number, dash or underscore.
+ */
+export function applyContentNameRules(name: string): string {
+  return name.replace(/[^a-z0-9-_]/g, '');
 }
 
 export const openItemEditor = (

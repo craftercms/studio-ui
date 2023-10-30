@@ -70,7 +70,7 @@
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                         <fileset>
-                            <directory>ui/ace/node_modules</directory>
+                            <directory>ui/npm-content/node_modules</directory>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                         <fileset>
@@ -128,6 +128,17 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>NPM content: build</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <workingDirectory>ui/npm-content</workingDirectory>
+                            <arguments>build-if-changed</arguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -193,17 +204,6 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <workingDirectory>ui/guest</workingDirectory>
-                            <arguments>build-if-changed</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Ace editor: build</id>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <workingDirectory>ui/ace</workingDirectory>
                             <arguments>build-if-changed</arguments>
                         </configuration>
                     </execution>

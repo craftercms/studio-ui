@@ -36,8 +36,8 @@ import { ApiResponse } from '../../models/ApiResponse';
 import { contentEvent, deleteContentEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
-import { getPreviewURLFromPath } from '../../utils/path';
 import { fetchContentXML } from '../../services/content';
+import { getPreviewURLFromPath } from '../../utils/path';
 
 export const drawerWidth = 300;
 
@@ -347,14 +347,14 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   };
 
   const onPreview = (item: MediaItem) => {
-    const { type, name: title, path: url } = item;
+    const { type, name: title, path } = item;
     switch (type) {
       case 'Image': {
         dispatch(
           showPreviewDialog({
             type: 'image',
             title,
-            url
+            url: path
           })
         );
         break;
@@ -364,7 +364,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
           showPreviewDialog({
             type: 'page',
             title,
-            url: `${guestBase}${getPreviewURLFromPath(item.path)}?crafterCMSGuestDisabled=true`
+            url: `${guestBase}${getPreviewURLFromPath(path)}?crafterCMSGuestDisabled=true`
           })
         );
         break;
@@ -389,12 +389,13 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
           showPreviewDialog({
             type: 'editor',
             title,
-            url,
+            url: path,
+            path: path,
             mode
           })
         );
 
-        fetchContentXML(site, url).subscribe((content) => {
+        fetchContentXML(site, path).subscribe((content) => {
           dispatch(
             updatePreviewDialog({
               content

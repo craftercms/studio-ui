@@ -18,13 +18,14 @@ import React, { useContext, useMemo } from 'react';
 import { GuestState } from '../store/models/GuestStore';
 import { createDispatchHook, createSelectorHook, createStoreHook, ReactReduxContextValue } from 'react-redux';
 import { Dispatch, Store } from 'redux';
-import { StandardAction } from '@craftercms/studio-ui/models';
+import { HighlightMode, StandardAction } from '@craftercms/studio-ui/models';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
 
 export type GuestContextProps = {
   hasHost: boolean;
   editMode: boolean;
   draggable: GuestState['draggable'];
+  highlightMode: HighlightMode;
   // onEvent: EventHandler<SyntheticEvent<HTMLElement, MouseEvent>>;
   onEvent: (event, elementRegistryId?: number) => any;
 };

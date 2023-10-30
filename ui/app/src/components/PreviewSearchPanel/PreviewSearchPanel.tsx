@@ -49,6 +49,7 @@ import { makeStyles } from 'tss-react/mui';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -264,17 +265,19 @@ export function PreviewSearchPanel() {
           onRowsPerPageChange={onRowsPerPageChange}
         />
       )}
-      {error ? (
-        <ApiResponseErrorState error={error} />
-      ) : state.isFetching ? (
-        <LoadingState />
-      ) : state.items && state.items.length ? (
-        <SearchResults items={state.items} onDragStart={onDragStart} onDragEnd={onDragEnd} />
-      ) : state.items && state.items.length === 0 ? (
-        <EmptyState title={formatMessage(translations.noResults)} />
-      ) : (
-        <></>
-      )}
+      <ErrorBoundary>
+        {error ? (
+          <ApiResponseErrorState error={error} />
+        ) : state.isFetching ? (
+          <LoadingState />
+        ) : state.items && state.items.length ? (
+          <SearchResults items={state.items} onDragStart={onDragStart} onDragEnd={onDragEnd} />
+        ) : state.items && state.items.length === 0 ? (
+          <EmptyState title={formatMessage(translations.noResults)} />
+        ) : (
+          <></>
+        )}
+      </ErrorBoundary>
     </>
   );
 }

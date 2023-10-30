@@ -111,18 +111,18 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       '<div class="cropMethods">' +
       '<div class="btn-group">' +
       '<button type="button" class="btn btn-primary" data-method="zoom" data-option="0.1" title="Zoom In" id="zoomIn">' +
-      '<span class="docs-tooltip" data-toggle="tooltip" title="Zoom In" data-original-title="Zoom In">' +
+      '<span class="docs-tooltip" data-bs-toggle="tooltip" title="Zoom In" data-original-title="Zoom In">' +
       '<span class="status-icon fa fa-search-plus"></span>' +
       '</span>' +
       '</button>' +
       '<button type="button" class="btn btn-primary" data-method="zoom" data-option="-0.1" title="Zoom Out" id="zoomOut">' +
-      '<span class="docs-tooltip" data-toggle="tooltip" title="Zoom Out" data-original-title="Zoom Out)">' +
+      '<span class="docs-tooltip" data-bs-toggle="tooltip" title="Zoom Out" data-original-title="Zoom Out)">' +
       '<span class="status-icon fa fa-search-minus"></span>' +
       '</span>' +
       '</button>' +
       '</div>' +
       '<button type="button" class="btn btn-primary refresh" data-method="getContainerData" data-option="" id="refresh">' +
-      '<span class="docs-tooltip" data-toggle="tooltip" title="Refresh" data-original-title="Refresh">' +
+      '<span class="docs-tooltip" data-bs-toggle="tooltip" title="Refresh" data-original-title="Refresh">' +
       '<span class="status-icon fa fa-refresh"></span>' +
       '</span>' +
       '</button>' +

@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 3 as published by
- * the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 import { h } from 'preact';
 import classNames from 'classnames';
 import isDragDropSupported from '@uppy/utils/lib/isDragDropSupported';
@@ -35,9 +19,6 @@ const WIDTH_LG = 700;
 const WIDTH_MD = 576;
 
 const HEIGHT_MD = 330;
-// We might want to enable this in the future
-// const HEIGHT_LG = 400
-// const HEIGHT_XL = 460
 
 export default function Dashboard(props) {
   const isNoFiles = props.totalFileCount === 0;
@@ -61,7 +42,6 @@ export default function Dashboard(props) {
     'uppy-size--height-md': props.containerHeight > HEIGHT_MD,
     'uppy-Dashboard--isAddFilesPanelVisible': props.showAddFilesPanel,
     'uppy-Dashboard--isInnerWrapVisible': props.areInsidesReadyToBeVisible,
-    // Only enable “centered single file” mode when Dashboard is tall enough
     'uppy-Dashboard--singleFile': props.singleFileFullScreen && isSingleFile && isSizeHeightMD
   });
 
@@ -198,6 +178,8 @@ export default function Dashboard(props) {
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             {props.showFileEditor ? <EditorPanel key="Editor" {...props} /> : null}
           </Slide>
+
+          {showFileList && <PanelTopBar {...props} />}
 
           <div className="uppy-Dashboard-progressindicators">
             {props.progressindicators.map((target) => {

@@ -78,7 +78,8 @@ export const useStyles = makeStyles()((theme) => ({
     height: '100%'
   },
   loadingStateRoot: {
-    height: '100%',
+    minHeight: 'calc(100% - 85px)',
+    height: 'calc(100% - 85px)',
     margin: 0
   },
   loadingStateGraphicRoot: {

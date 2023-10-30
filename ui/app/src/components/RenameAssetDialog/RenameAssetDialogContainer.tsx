@@ -17,14 +17,10 @@
 import { RenameAssetContainerProps } from './utils';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
 import React, { useEffect, useState } from 'react';
-import { DialogBody } from '../DialogBody';
-import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { fetchRenameAssetDependants, updateRenameAssetDialog } from '../../state/actions/dialogs';
-import { applyAssetNameRules, isEditableAsset, openItemEditor } from '../../utils/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { DependenciesList } from '../DependenciesDialog';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { getFileNameWithExtensionForItemType, getParentPath } from '../../utils/path';
 import { UNDEFINED } from '../../utils/constants';
@@ -37,19 +33,9 @@ import { ConfirmDialog } from '../ConfirmDialog';
 import { renameContent } from '../../services/content';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from '../CreateFileDialog/translations';
-import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import useSpreadState from '../../hooks/useSpreadState';
-import { DetailedItem } from '../../models';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Alert from '@mui/material/Alert';
-import { LoadingState } from '../LoadingState';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import getStyles from './styles';
-import useEnv from '../../hooks/useEnv';
-import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { RenameItemView } from '../RenameDialogBody';
+import { applyAssetNameRules } from '../../utils/content';
+import { DialogBody } from '../DialogBody';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const {
@@ -77,9 +63,6 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const { formatMessage } = useIntl();
   const renameDisabled =
     isSubmitting || !isValid || fetchingDependantItems || (dependantItems?.length > 0 && !confirmBrokenReferences);
-  const { authoringBase } = useEnv();
-  const [contextMenu, setContextMenu] = useSpreadState({ el: null, dependency: null });
-  const sx = getStyles();
 
   useEffect(() => {
     dispatch(fetchRenameAssetDependants());
@@ -134,123 +117,37 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
     }
   };
 
-  const handleContextMenuClick = (event: React.MouseEvent<HTMLButtonElement>, dependency: DetailedItem) => {
-    setContextMenu({
-      el: event.currentTarget,
-      dependency
-    });
-  };
-
-  const handleContextMenuClose = () => {
-    setContextMenu({
-      el: null,
-      dependency: null
-    });
-  };
-
-  const handleEditorDisplay = (item: DetailedItem) => {
-    openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
-  };
-
   return (
     <>
       <DialogBody>
-        {fetchingDependantItems ? (
-          <LoadingState
-            title={formatMessage(translations.fetchingDependentItems)}
-            styles={{ title: { marginTop: 0 } }}
-          />
-        ) : dependantItems ? (
-          <>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!renameDisabled) {
-                  onRename();
-                }
-              }}
-            >
-              <TextField
-                fullWidth
-                label={<FormattedMessage id="renameAsset.rename" defaultMessage="Provide a new asset name" />}
-                value={name}
-                autoFocus
-                required
-                error={assetExists}
-                helperText={
-                  assetExists ? (
-                    <FormattedMessage
-                      id="renameAsset.assetAlreadyExists"
-                      defaultMessage="An asset with that name already exists."
-                    />
-                  ) : !name && isSubmitting ? (
-                    <FormattedMessage id="renameAsset.assetNameRequired" defaultMessage="Asset name is required." />
-                  ) : (
-                    <FormattedMessage
-                      id="renameAsset.helperText"
-                      defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
-                    />
-                  )
-                }
-                disabled={isSubmitting}
-                margin="normal"
-                InputLabelProps={{
-                  shrink: true
-                }}
-                onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
+        <RenameItemView
+          name={name}
+          disabled={renameDisabled}
+          newNameExists={assetExists}
+          dependantItems={dependantItems}
+          isSubmitting={isSubmitting}
+          confirmBrokenReferences={confirmBrokenReferences}
+          fetchingDependantItems={fetchingDependantItems}
+          error={error}
+          setConfirmBrokenReferences={setConfirmBrokenReferences}
+          onRename={onRename}
+          onInputChanges={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
+          helperText={
+            assetExists ? (
+              <FormattedMessage
+                id="renameAsset.assetAlreadyExists"
+                defaultMessage="An asset with that name already exists."
               />
-            </form>
-            {dependantItems.length > 0 ? (
-              <>
-                <Typography variant="subtitle2" sx={{ mt: 1, mb: 1 }}>
-                  <FormattedMessage id="renameAsset.dependentItems" defaultMessage="Dependent Items" />
-                </Typography>
-                <DependenciesList
-                  dependencies={dependantItems}
-                  compactView={false}
-                  showTypes="all-deps"
-                  handleContextMenuClick={handleContextMenuClick}
-                />
-                <Menu
-                  open={Boolean(contextMenu.el)}
-                  anchorEl={contextMenu.el}
-                  keepMounted
-                  onClose={handleContextMenuClose}
-                >
-                  {contextMenu.dependency && isEditableAsset(contextMenu.dependency.path) && (
-                    <MenuItem onClick={() => handleEditorDisplay(contextMenu.dependency)}>
-                      <FormattedMessage id="words.edit" defaultMessage="Edit" />
-                    </MenuItem>
-                  )}
-                </Menu>
-                <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={confirmBrokenReferences}
-                        onChange={() => setConfirmBrokenReferences(!confirmBrokenReferences)}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                      />
-                    }
-                    label={
-                      <FormattedMessage
-                        id="renameAsset.confirmBrokenReferences"
-                        defaultMessage="I understand that there will be broken references"
-                      />
-                    }
-                  />
-                </Alert>
-              </>
+            ) : !name && isSubmitting ? (
+              <FormattedMessage id="renameAsset.assetNameRequired" defaultMessage="Asset name is required." />
             ) : (
-              <Typography variant="body1" sx={sx.emptyMessage}>
-                <InfoOutlinedIcon sx={sx.emptyMessageIcon} />
-                <FormattedMessage id="renameAsset.noDependentItems" defaultMessage="No dependent items" />
-              </Typography>
-            )}
-          </>
-        ) : (
-          error && <ApiResponseErrorState error={error.response} />
-        )}
+              <FormattedMessage
+                id="renameAsset.helperText"
+                defaultMessage="Consisting of letters, numbers, dot (.), dash (-) and underscore (_)."
+              />
+            )
+          }
+        />
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={(e) => onClose(e, null)} disabled={isSubmitting}>

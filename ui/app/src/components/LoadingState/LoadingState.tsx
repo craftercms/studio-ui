@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, PropsWithChildren } from 'react';
+import React, { ElementType, PropsWithChildren, ReactNode } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import Gears from '../Gears/Gears';
@@ -58,8 +58,8 @@ const useStyles = makeStyles<LoadingStateStyles, LoadingStateClassKey>()(
 );
 
 export interface LoadingStateProps {
-  title?: string | JSX.Element;
-  subtitle?: string;
+  title?: ReactNode;
+  subtitle?: ReactNode;
   graphic?: ElementType;
   graphicProps?: any;
   classes?: Partial<Record<LoadingStateClassKey, string>>;

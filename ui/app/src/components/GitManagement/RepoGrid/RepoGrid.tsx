@@ -35,11 +35,13 @@ import { copyToClipboard } from '../../../utils/system';
 import PublishCommitDialog from '../PublishCommitDialog/PublishCommitDialog';
 import useSpreadState from '../../../hooks/useSpreadState';
 import RepoGridSkeleton from './RepoGridSkeleton';
+import { ApiResponse } from '../../../models';
 
 export interface RepoGridProps {
   repositories: Array<Repository>;
   disableActions: boolean;
-  fetchStatus(): void;
+  onPullSuccess(result: PullResponse): void;
+  onPullError(response: ApiResponse): void;
   fetchRepositories(): void;
 }
 
@@ -75,7 +77,13 @@ const messages = defineMessages({
 });
 
 export function RepoGrid(props: RepoGridProps) {
-  const { repositories, disableActions, fetchStatus, fetchRepositories } = props;
+  const {
+    repositories,
+    disableActions,
+    onPullSuccess: onPullSuccessProp,
+    onPullError: onPullErrorProp,
+    fetchRepositories
+  } = props;
   const [repositoriesPushDialogBranches, setRepositoriesPushDialogBranches] = useState([]);
   const [pullRemoteName, setPullRemoteName] = useState(null);
   const [pushRemoteName, setPushRemoteName] = useState(null);
@@ -99,8 +107,8 @@ export function RepoGrid(props: RepoGridProps) {
   const pushToRemoteDialogState = useEnhancedDialogState();
   const pullFromRemoteDialogState = useEnhancedDialogState();
   const { enqueueSnackbar } = useSnackbar();
+  const publishCommitDialogState = useEnhancedDialogState();
   const [postPullState, setPostPullState] = useSpreadState({
-    openPublishCommitDialog: false,
     openPostPullSnack: false,
     mergeCommitId: '',
     commitsMerged: 0
@@ -118,7 +126,7 @@ export function RepoGrid(props: RepoGridProps) {
   };
 
   const onPullSuccess = (result: PullResponse) => {
-    fetchStatus();
+    onPullSuccessProp(result);
     pullFromRemoteDialogState.onClose();
     if (result.mergeCommitId) {
       setPostPullState({ openPostPullSnack: true, ...result });
@@ -132,14 +140,8 @@ export function RepoGrid(props: RepoGridProps) {
   };
 
   const onPullError = (response) => {
-    fetchStatus();
+    onPullErrorProp(response);
     pullFromRemoteDialogState.onClose();
-    dispatch(
-      showSystemNotification({
-        message: response.message,
-        options: { variant: 'error' }
-      })
-    );
   };
 
   const onPushSuccess = () => {
@@ -216,7 +218,10 @@ export function RepoGrid(props: RepoGridProps) {
             <>
               <Button
                 size="small"
-                onClick={() => setPostPullState({ openPublishCommitDialog: true, openPostPullSnack: false })}
+                onClick={() => {
+                  publishCommitDialogState.onOpen();
+                  setPostPullState({ openPostPullSnack: false });
+                }}
               >
                 <FormattedMessage id="words.yes" defaultMessage="Yes" />
               </Button>
@@ -256,10 +261,10 @@ export function RepoGrid(props: RepoGridProps) {
       {/* endregion */}
       <PublishCommitDialog
         commitId={postPullState.mergeCommitId}
-        open={postPullState.openPublishCommitDialog}
-        onClose={() => {
-          setPostPullState({ openPublishCommitDialog: false });
-        }}
+        open={publishCommitDialogState.open}
+        hasPendingChanges={publishCommitDialogState.hasPendingChanges}
+        onSubmittingAndOrPendingChange={publishCommitDialogState.onSubmittingAndOrPendingChange}
+        onClose={publishCommitDialogState.onClose}
       />
     </>
   );

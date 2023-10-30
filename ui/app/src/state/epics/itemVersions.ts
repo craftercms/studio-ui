@@ -65,12 +65,10 @@ export default [
       ofType(compareBothVersions.type, compareToPreviousVersion.type),
       withLatestFrom(state$),
       switchMap(([{ payload }, state]) =>
-        fetchVersions(
-          state.sites.active,
-          state.versions.item.path,
-          [state.versions.selected[0], state.versions.selected[1]],
-          state.contentTypes.byId
-        ).pipe(map(compareBothVersionsComplete), catchAjaxError(compareBothVersionsFailed))
+        fetchVersions(state.sites.active, [
+          state.versions.byId[state.versions.selected[0]],
+          state.versions.byId[state.versions.selected[1]]
+        ]).pipe(map(compareBothVersionsComplete), catchAjaxError(compareBothVersionsFailed))
       )
     ),
   (action$, state$: StateObservable<GlobalState>) =>

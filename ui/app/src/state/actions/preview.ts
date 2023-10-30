@@ -14,6 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { StandardAction } from '../../models/StandardAction';
 import ContentType, { ContentTypeField, ValidationResult } from '../../models/ContentType';
 import ContentInstance, { InstanceRecord } from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
@@ -26,12 +27,10 @@ import {
   SearchResult
 } from '../../models/Search';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
-import { EditSelection, WidgetDescriptor } from '../../models';
+import { WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
-import { AjaxError } from 'rxjs/ajax';
-import { ActiveTargetingModel } from '../../services/configuration';
 
 interface CommonOperationProps {
   modelId: string;
@@ -56,7 +55,6 @@ export const guestCheckIn = /*#__PURE__*/ createAction<{
   site: string;
   documentDomain?: string;
   version?: string;
-  __CRAFTERCMS_GUEST_LANDING__?: boolean;
 }>('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction<{ path: string }>('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
@@ -233,6 +231,13 @@ export const EMBEDDED_LEGACY_FORM_SAVE_END = 'EMBEDDED_LEGACY_FORM_SAVE_END';
 
 // region Action Creators
 
+export const initPreviewConfig = /*#__PURE__*/ createAction<{
+  configXml: string;
+  storedEditMode: boolean;
+  storedHighlightMode: HighlightMode;
+  storedPaddingMode: boolean;
+}>('INIT_PREVIEW_PANEL_CONFIG');
+
 export const selectForEdit = /*#__PURE__*/ createAction<EditSelection>(SELECT_FOR_EDIT);
 
 export const clearSelectForEdit = /*#__PURE__*/ createAction(CLEAR_SELECT_FOR_EDIT);
@@ -382,6 +387,8 @@ export const requestEdit = /*#__PURE__*/ createAction<{
   parentModelId?: string;
   index?: string | number;
 }>('REQUEST_EDIT');
+
+export const setWindowSize = /*#__PURE__*/ createAction<{ size: number }>('SET_WINDOW_SIZE');
 
 // endregion
 

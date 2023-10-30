@@ -119,7 +119,9 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (bui
           expanded = [],
           keywordByPath = {},
           excludes = null,
-          systemTypes = null
+          systemTypes = null,
+          sortStrategy = null,
+          order = null
         }
       } = action;
       state[id] = {
@@ -135,7 +137,9 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (bui
         excludes,
         error: null,
         isRootPathMissing: false,
-        systemTypes
+        systemTypes,
+        sortStrategy,
+        order
       };
     })
     // endregion

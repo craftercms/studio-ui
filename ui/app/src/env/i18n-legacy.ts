@@ -776,6 +776,15 @@ export const formEngineMessages = defineMessages({
   embeddedComponent: {
     id: 'common.embeddedComponent',
     defaultMessage: 'Embedded component'
+  },
+  nodeSelectorItemNotFound: {
+    defaultMessage: 'Item "{internalName}" doesn\'t exist'
+  },
+  removeItemFromNodeSelector: {
+    defaultMessage: 'Remove from {controlLabel}'
+  },
+  keepItemInNodeSelector: {
+    defaultMessage: 'Ignore'
   }
 });
 

@@ -63,6 +63,7 @@ const searchInitialState = {
 interface CreateSiteDialogProps {
   open: boolean;
   onClose?(): any;
+  onShowDuplicate(): void;
 }
 
 function CreateSiteDialog(props: CreateSiteDialogProps) {
@@ -156,6 +157,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       maxWidth="lg"
       classes={{ paperScrollPaper: classes.paperScrollPaper }}
       disableEnforceFocus={disableEnforceFocus}
+      data-dialog-id="create-site-dialog"
     >
       <CreateSiteDialogContainer
         site={site}
@@ -166,6 +168,7 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
         dialog={dialog}
         setDialog={setDialog}
         disableEnforceFocus={disableEnforceFocus}
+        onShowDuplicate={props.onShowDuplicate}
       />
     </Dialog>
   );

@@ -108,6 +108,9 @@ $dark-mode-input-border-focus: #007aff;
       border: 0;
       box-shadow: none;
     }
+    .cstudio-form-control-dropdown {
+      background-color: $dark-mode-background-paper;
+    }
   }
 
   header .page-header {

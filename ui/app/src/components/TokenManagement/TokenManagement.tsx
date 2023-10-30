@@ -131,10 +131,6 @@ const translations = defineMessages({
   clearSelected: {
     id: 'tokenManagement.clearSelected',
     defaultMessage: 'Clear Selected ({count})'
-  },
-  emptyTokens: {
-    id: 'tokenManagement.emptyTokens',
-    defaultMessage: 'There are no tokens, click on Create Token to add a new one'
   }
 });
 
@@ -443,7 +439,10 @@ export function TokenManagement() {
             </Table>
           </TableContainer>
         ) : (
-          <EmptyState title={formatMessage(translations.emptyTokens)} />
+          <EmptyState
+            title={<FormattedMessage defaultMessage="No Tokens Found" />}
+            subtitle={<FormattedMessage defaultMessage="Click Create Token above to create one." />}
+          />
         )}
       </ConditionalLoadingState>
       <CreateTokenDialog

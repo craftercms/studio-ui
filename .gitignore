@@ -6,6 +6,7 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
+.idea/jarRepositories.xml
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
@@ -91,6 +92,7 @@ build_tsc
 static-assets/next
 static-assets/styles/browse.css
 static-assets/styles/forms-engine.css
+static-assets/styles/bootstrap-5.3.css
 static-assets/styles/graphiql.css
 static-assets/styles/guest.css
 static-assets/styles/main.css
@@ -102,6 +104,7 @@ static-assets/styles/typography.css.map
 static-assets/styles/uppy.css
 static-assets/styles/browse.css.map
 static-assets/styles/forms-engine.css.map
+static-assets/styles/bootstrap-5.3.css.map
 static-assets/styles/graphiql.css.map
 static-assets/styles/guest.css.map
 static-assets/styles/main.css.map
@@ -132,6 +135,8 @@ static-assets/libs/ace
 static-assets/libs/tinymce
 static-assets/images/blueprints
 static-assets/libs/js-yaml
+static-assets/libs/bootstrap
+static-assets/libs/jquery-ui
 static-assets/components/cstudio-admin/mods/plugin-management.js
 static-assets/components/cstudio-forms/data-sources/components.js
 

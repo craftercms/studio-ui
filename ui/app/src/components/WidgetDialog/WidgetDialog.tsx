@@ -56,7 +56,7 @@ export function WidgetDialog(props: WidgetDialogProps) {
     >
       <WidgetDialogContext.Provider value={context}>
         <section {...(fullHeight && { className: classes.widgetDialogBody })}>
-          <Suspencified>
+          <Suspencified loadingStateProps={{ styles: { graphicRoot: { minWidth: '350px', minHeight: '150px' } } }}>
             <Widget
               {...widget}
               overrideProps={{ onSubmittingAndOrPendingChange, isSubmitting, mountMode: 'dialog', ...extraProps }}

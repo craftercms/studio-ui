@@ -21,6 +21,9 @@ import Typography from '@mui/material/Typography';
 import emptyImage from '../../assets/desert.svg';
 import { MessageDescriptor, useIntl } from 'react-intl';
 import { nou } from '../../utils/object';
+import Box from '@mui/material/Box';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material';
 
 type EmptyStateClassKey = 'root' | 'title' | 'subtitle' | 'image';
 
@@ -58,6 +61,7 @@ export type EmptyStateProps = React.PropsWithChildren<{
   subtitle?: ReactNode | MessageDescriptor;
   classes?: Partial<Record<EmptyStateClassKey, string>>;
   styles?: EmptyStateStyles;
+  sxs?: Partial<Record<EmptyStateClassKey, SxProps<Theme>>>;
 }>;
 
 function isValidElement(target: any): boolean {
@@ -88,6 +92,7 @@ export function getEmptyStateStyleSet(setName: 'horizontal' | 'image-sm'): Empty
 }
 
 export function EmptyState(props: EmptyStateProps) {
+  const { sxs } = props;
   const { classes, cx } = useStyles(props.styles);
   const { formatMessage } = useIntl();
   const { image = emptyImage, classes: propClasses, children } = props;
@@ -96,14 +101,17 @@ export function EmptyState(props: EmptyStateProps) {
     ? (props.subtitle as string)
     : formatMessage(props.subtitle as MessageDescriptor);
   return (
-    <div className={cx(classes.root, propClasses?.root)}>
-      {image && <img className={cx(classes.image, propClasses?.image)} src={image} alt="" />}
+    <Box className={cx(classes.root, propClasses?.root)} sx={sxs?.root}>
+      {image && (
+        <Box component="img" className={cx(classes.image, propClasses?.image)} src={image} alt="" sx={sxs?.image} />
+      )}
       {title && (
         <Typography
           variant="body1"
           component="h3"
           className={cx(classes.title, propClasses?.title)}
           color="textSecondary"
+          sx={sxs?.title}
         >
           {title}
         </Typography>
@@ -114,12 +122,13 @@ export function EmptyState(props: EmptyStateProps) {
           component="p"
           className={cx(classes.subtitle, propClasses?.subtitle)}
           color="textSecondary"
+          sx={sxs?.subtitle}
         >
           {subtitle}
         </Typography>
       )}
       {children}
-    </div>
+    </Box>
   );
 }
 

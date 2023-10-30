@@ -72,7 +72,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
       </li>`
     );
 
-    create.find('a').on('click', function () {
+    const showUploadAsset = () => {
       CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, {
         success: function (fileData) {
           if (control) {
@@ -90,9 +90,14 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
         },
         context: this
       });
-    });
+    };
+    create.find('a').on('click', showUploadAsset);
 
-    control.$dropdownMenu.append(create);
+    if (control.$dropdownMenu) {
+      control.$dropdownMenu.append(create);
+    } else {
+      showUploadAsset();
+    }
   },
 
   edit: function (key, control) {

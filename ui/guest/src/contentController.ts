@@ -79,6 +79,8 @@ const items$ = new BehaviorSubject<LookupTable<SandboxItem>>({
   /* 'path': { ...sandboxItem } */
 });
 
+const permissions$ = new BehaviorSubject<string[]>([]);
+
 const contentTypes$ = new BehaviorSubject<LookupTable<ContentType>>({
   /* 'contentTypeId': { ...contentTypeData } */
 });
@@ -121,6 +123,10 @@ export function getCachedSandboxItems(): LookupTable<SandboxItem> {
 
 export function getCachedSandboxItem(path: string): SandboxItem {
   return items$.value[path];
+}
+
+export function getCachedPermissions(): string[] {
+  return permissions$.value;
 }
 
 export function fetchById(id: string): Observable<LookupTable<ContentInstance>> {
@@ -747,19 +753,23 @@ interface FetchGuestModelCompletePayload {
   modelIdByPath: LookupTable<string>;
   hierarchyMap: ModelHierarchyMap;
   sandboxItems: SandboxItem[];
+  permissions: string[];
 }
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   .pipe(pluck('payload'))
-  .subscribe(({ modelLookup, hierarchyMap, modelIdByPath, sandboxItems }: FetchGuestModelCompletePayload) => {
-    Object.keys(modelIdByPath).forEach((path) => {
-      requestedPaths[path] = true;
-    });
-    Object.assign(modelHierarchyMap, hierarchyMap);
-    models$.next({ ...models$.value, ...modelLookup });
-    paths$.next({ ...paths$.value, ...modelIdByPath });
-    items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
-  });
+  .subscribe(
+    ({ modelLookup, hierarchyMap, modelIdByPath, sandboxItems, permissions }: FetchGuestModelCompletePayload) => {
+      Object.keys(modelIdByPath).forEach((path) => {
+        requestedPaths[path] = true;
+      });
+      Object.assign(modelHierarchyMap, hierarchyMap);
+      models$.next({ ...models$.value, ...modelLookup });
+      paths$.next({ ...paths$.value, ...modelIdByPath });
+      items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
+      permissions$.next(permissions);
+    }
+  );
 
 fromTopic(updateFieldValueOperationComplete.type)
   .pipe(pluck('payload'))

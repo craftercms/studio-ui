@@ -28,13 +28,22 @@ import LookupTable from '../models/LookupTable';
 import { getCurrentIntl } from '../utils/i18n';
 import { IntlShape } from 'react-intl';
 import { ObtainAuthTokenResponse } from '../services/auth';
-import { getSiteCookie, removeSiteCookie, setJwt } from '../utils/auth';
-import { storeInitialized } from './actions/system';
+import { getSiteCookie, getXSRFToken, removeSiteCookie, setJwt } from '../utils/auth';
+import {
+  emitSystemEvent,
+  globalSocketStatus,
+  newProjectReady,
+  projectBeingDeleted,
+  projectDeleted,
+  siteSocketStatus,
+  storeInitialized
+} from './actions/system';
 import User from '../models/User';
 import { Site } from '../models/Site';
 import {
   sharedWorkerConnect,
   sharedWorkerDisconnect,
+  sharedWorkerError,
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from './actions/auth';
@@ -66,7 +75,36 @@ export function getStore(): Observable<CrafterCMSStore> {
               tap((requirements) => {
                 worker.port.onmessage = (e) => {
                   if (e.data?.type) {
-                    store.dispatch(e.data);
+                    const state = store.getState();
+                    const action = e.data;
+                    // System socket events come wrapped in `emitSystemEvent` action.
+                    const payload =
+                      (action.type === emitSystemEvent.type ? action.payload.payload : action.payload) ?? {};
+                    // When a site is switched on a different tab, the socket that powers this tab will switch to that
+                    // socket "topic". Need to avoid widgets refreshing with data that's not relevant to them.
+                    if (
+                      [
+                        // * * * *
+                        // Events sent by the worker for global purposes should always go through
+                        // * * * *
+                        sharedWorkerToken.type,
+                        sharedWorkerUnauthenticated.type,
+                        sharedWorkerError.type,
+                        sharedWorkerUnauthenticated.type,
+                        globalSocketStatus.type,
+                        siteSocketStatus.type
+                      ].includes(action.type) ||
+                      // Projects lifecycle events (created, deleted, etc.) should always go through.
+                      payload.eventType === newProjectReady.type ||
+                      payload.eventType === projectBeingDeleted.type ||
+                      payload.eventType === projectDeleted.type ||
+                      // No siteId on the event should be applicable to all sites.
+                      !payload.siteId ||
+                      // The event is for the current site.
+                      payload.siteId === state.sites.active
+                    ) {
+                      store.dispatch(action);
+                    }
                   }
                 };
                 store.dispatch(storeInitialized({ auth, ...requirements }));
@@ -88,7 +126,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
       credentials: 'same-origin'
     });
     worker.port.start();
-    worker.port.postMessage(sharedWorkerConnect());
+    worker.port.postMessage(sharedWorkerConnect({ xsrfToken: getXSRFToken() }));
     window.addEventListener('beforeunload', function () {
       worker.port.postMessage(sharedWorkerDisconnect());
     });

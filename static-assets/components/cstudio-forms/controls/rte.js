@@ -711,7 +711,6 @@ CStudioAuthoring.Module.requireModule(
           if (datasource && datasource.add) {
             datasource.add(
               {
-                returnProp: 'browserUri', // to return proper item link (browserUri)
                 insertItem: function (fileData) {
                   cb(fileData, {});
                 },

@@ -138,6 +138,7 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
       ...state,
       quickCreate: {
         ...state.quickCreate,
+        items: payload,
         isFetching: true
       }
     }))
@@ -254,13 +255,31 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
       return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
     })
     .addCase(changeSite, () => initialState)
-    .addCase(lockContentEvent, (state, { payload }) =>
-      updateItemLockState(state, {
-        path: payload.targetPath,
-        username: payload.user.username,
-        locked: payload.locked
-      })
-    )
+    .addCase(lockContentEvent, (state, { payload }: { payload: SocketEventBase & { locked: boolean } }) => {
+      const { targetPath: path, user, locked } = payload;
+      if (
+        !state.itemsByPath[path] ||
+        (locked && state.itemsByPath[path].stateMap.locked) ||
+        (!locked && !state.itemsByPath[path].stateMap.locked)
+      ) {
+        return state;
+      }
+      const updatedState: ContentState = {
+        ...state,
+        itemsByPath: {
+          ...state.itemsByPath,
+          [path]: {
+            ...state.itemsByPath[path],
+            lockOwner: locked ? user : null,
+            state: locked
+              ? state.itemsByPath[path].state + STATE_LOCKED_MASK
+              : state.itemsByPath[path].state - STATE_LOCKED_MASK,
+            stateMap: { ...state.itemsByPath[path].stateMap, locked }
+          }
+        }
+      };
+      return updatedState;
+    })
     .addCase(deleteContentEvent, (state, { payload: { targetPath } }: StandardAction<SocketEventBase>) => {
       delete state.itemsByPath[targetPath];
       delete state.itemsBeingFetchedByPath[targetPath];

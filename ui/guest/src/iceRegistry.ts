@@ -175,11 +175,14 @@ export function getMediaDropTargets(type: string): ICERecord[] {
 export function getRecordDropTargets(id: number): ICERecord[] {
   const record = getById(id);
   const { index, field, fieldId, model } = getReferentialEntries(record);
+  // With components, the model lookup contains ids of each of the components, in cases like repeat groups and files,
+  // the model lookup contains the actual model of the file/repeat group.
+  const isModelId = model[fieldId]?.every((id) => typeof id === 'string');
   if (nullOrUndefined(index)) {
     // Can't move something that's not part of a collection.
     // Collection items will always have an index.
     return [];
-  } else if (field.type === 'node-selector') {
+  } else if (field.type === 'node-selector' && isModelId) {
     // Get content type of item
     const models = contentController.getCachedModels();
     const id = Model.extractCollectionItem(model, fieldId, index);
@@ -202,7 +205,7 @@ export function getRecordDropTargets(id: number): ICERecord[] {
       // move an item deeper inside itself).
       return rec.modelId === id || allChildren.includes(rec.modelId);
     });
-  } else if (field.type === 'repeat') {
+  } else if (field.type === 'repeat' || (field.type === 'node-selector' && !isModelId)) {
     return getRepeatGroupItemDropTargets(record);
   } else {
     console.error('[ICERegistry/getRecordDropTargets] Unhandled path');

@@ -22,7 +22,7 @@ import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import { Repository, RepositoryStatus } from '../../models/Repository';
 import ApiResponse from '../../models/ApiResponse';
-import { fetchRepositories as fetchRepositoriesService, fetchStatus } from '../../services/repositories';
+import { fetchRepositories as fetchRepositoriesService, fetchStatus, PullResponse } from '../../services/repositories';
 import RepoGrid from './RepoGrid';
 import RepoStatus from './RepoStatus/RepoStatus';
 import NewRemoteRepositoryDialog from '../NewRemoteRepositoryDialog';
@@ -44,6 +44,7 @@ import useSpreadState from '../../hooks/useSpreadState';
 import { UNDEFINED } from '../../utils/constants';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import Tooltip from '@mui/material/Tooltip';
+import { RepoStatusConflictDialog } from './RepoStatusConflictDialog';
 
 export interface GitManagementProps {
   embedded?: boolean;
@@ -68,6 +69,7 @@ export function GitManagement(props: GitManagementProps) {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [activeTab, setActiveTab] = useState(0);
+  const repoStatusConflictDialog = useEnhancedDialogState();
 
   const [{ repositories }, setRepoState] = useSpreadState({
     repositories: null as Array<Repository>,
@@ -121,21 +123,45 @@ export function GitManagement(props: GitManagementProps) {
     },
     [setRepoStatusState]
   );
-  const fetchRepoStatus = useCallback(() => {
+  const fetchRepoStatus = useCallback((): Promise<RepositoryStatus> => {
     setRepoStatusState({ loadingStatus: true, statusFetchError: null });
-    fetchStatus(siteId).subscribe({
-      next: fetchRepoStatusReceiver,
-      error(response) {
-        setRepoStatusState({ loadingStatus: false, statusFetchError: response });
-        dispatch(
-          showSystemNotification({
-            message: response.response.message,
-            options: { variant: 'error' }
-          })
-        );
-      }
+    return new Promise((resolve, reject) => {
+      fetchStatus(siteId).subscribe({
+        next: (repoStatus) => {
+          fetchRepoStatusReceiver(repoStatus);
+          resolve(repoStatus);
+        },
+        error(response) {
+          setRepoStatusState({ loadingStatus: false, statusFetchError: response });
+          dispatch(
+            showSystemNotification({
+              message: response.response.message,
+              options: { variant: 'error' }
+            })
+          );
+          reject(response);
+        }
+      });
     });
   }, [dispatch, fetchRepoStatusReceiver, setRepoStatusState, siteId]);
+
+  const onPullSuccess = (result: PullResponse) => {
+    fetchRepoStatus();
+  };
+
+  const onPullError = (response) => {
+    fetchRepoStatus().then((repoStatus: RepositoryStatus) => {
+      if (Boolean(repoStatus.conflicting.length)) {
+        repoStatusConflictDialog.onOpen();
+      }
+    });
+    dispatch(
+      showSystemNotification({
+        message: response.message,
+        options: { variant: 'error' }
+      })
+    );
+  };
 
   const onRepoCreatedSuccess = () => {
     fetchRepositories();
@@ -158,6 +184,10 @@ export function GitManagement(props: GitManagementProps) {
 
   const onTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
+  };
+
+  const onConflictDialogCommitSuccess = (status: RepositoryStatus) => {
+    fetchRepoStatusReceiver(status);
   };
 
   useEffect(() => {
@@ -233,7 +263,8 @@ export function GitManagement(props: GitManagementProps) {
             </Alert>
             <RepoGrid
               repositories={repositories}
-              fetchStatus={fetchRepoStatus}
+              onPullSuccess={onPullSuccess}
+              onPullError={onPullError}
               fetchRepositories={fetchRepositories}
               disableActions={!repoStatus || repoStatus.conflicting.length > 0}
             />
@@ -263,6 +294,14 @@ export function GitManagement(props: GitManagementProps) {
           onClose={newRemoteRepositoryDialogState.onClose}
           onCreateSuccess={onRepoCreatedSuccess}
           onCreateError={onRepoCreateError}
+        />
+        <RepoStatusConflictDialog
+          open={repoStatusConflictDialog.open}
+          onClose={repoStatusConflictDialog.onClose}
+          status={repoStatus}
+          onCommitSuccess={onConflictDialogCommitSuccess}
+          onConflictResolved={fetchRepoStatusReceiver}
+          onFailedPullCancelled={fetchRepoStatusReceiver}
         />
       </section>
     </Paper>

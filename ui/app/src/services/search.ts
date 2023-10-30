@@ -18,9 +18,13 @@ import { post } from '../utils/ajax';
 import { Observable } from 'rxjs';
 import { pluck } from 'rxjs/operators';
 import { SearchResult } from '../models/Search';
+import { toQueryString } from '../utils/object';
 
 export function search(site: string, parameters: any = {}): Observable<SearchResult> {
-  return post(`/studio/api/2/search/search.json?siteId=${site}`, parameters, {
+  const qs = toQueryString({
+    siteId: site
+  });
+  return post(`/studio/api/2/search/search.json${qs}`, parameters, {
     'Content-Type': 'application/json'
   }).pipe(pluck('response', 'result'));
 }

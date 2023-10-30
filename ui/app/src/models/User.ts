@@ -15,7 +15,6 @@
  */
 
 import { LookupTable } from './LookupTable';
-import { Site } from './Site';
 
 export interface User {
   id: number;
@@ -31,7 +30,6 @@ export interface User {
 export interface EnhancedUser extends User {
   rolesBySite: LookupTable<string[]>;
   permissionsBySite: LookupTable<string[]>;
-  sites: Array<Site>;
   preferences: LookupTable;
 }
 

@@ -97,7 +97,7 @@ export function DropMarker(props: DropMarkerProps) {
     next,
     dropZone,
     coordinates,
-    onDropPosition
+    onDropPosition = foo
   } = props;
   const refs = useRef({ targetIndex: null });
   const [style, setStyle] = useState({});
@@ -213,6 +213,7 @@ export function DropMarker(props: DropMarkerProps) {
 
   return (
     <Box
+      className="craftercms-drop-marker"
       sx={{
         ...sx.root,
         ...style,
@@ -223,9 +224,5 @@ export function DropMarker(props: DropMarkerProps) {
     />
   );
 }
-
-DropMarker.defaultProps = {
-  onDropPosition: foo
-};
 
 export default DropMarker;

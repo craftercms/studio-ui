@@ -65,6 +65,7 @@ import { getSystemLink } from '../../utils/system';
 import { getStoredPathNavigator } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { useActiveUser } from '../../hooks/useActiveUser';
+import { GetChildrenOptions } from '../../models';
 
 interface Menu {
   path?: string;
@@ -81,6 +82,8 @@ export interface PathNavigatorProps {
   id: string;
   label: string;
   rootPath: string;
+  sortStrategy?: GetChildrenOptions['sortStrategy'];
+  order?: GetChildrenOptions['order'];
   excludes?: string[];
   locale?: string;
   limit?: number;
@@ -117,6 +120,8 @@ export interface PathNavigatorStateProps {
   isFetching: boolean;
   error: any;
   isRootPathMissing: boolean;
+  sortStrategy: GetChildrenOptions['sortStrategy'];
+  order: GetChildrenOptions['order'];
 }
 
 // @see https://github.com/craftercms/craftercms/issues/5360
@@ -143,7 +148,9 @@ export function PathNavigator(props: PathNavigatorProps) {
     initialCollapsed = true,
     onItemClicked: onItemClickedProp,
     createItemClickedHandler = (defaultHandler) => defaultHandler,
-    computeActiveItems
+    computeActiveItems,
+    sortStrategy,
+    order
   } = props;
   // endregion
   const state = useSelection((state) => state.pathNavigator)[id];
@@ -179,6 +186,8 @@ export function PathNavigator(props: PathNavigatorProps) {
           excludes,
           limit,
           collapsed: initialCollapsed,
+          sortStrategy,
+          order,
           ...storedState
         })
       );
@@ -195,7 +204,9 @@ export function PathNavigator(props: PathNavigatorProps) {
     initialCollapsed,
     uiConfig.currentSite,
     user.username,
-    uuid
+    uuid,
+    sortStrategy,
+    order
   ]);
 
   useMount(() => {
@@ -257,6 +268,7 @@ export function PathNavigator(props: PathNavigatorProps) {
           type: 'editor',
           title: item.label,
           url: item.path,
+          path: item.path,
           mode
         })
       );

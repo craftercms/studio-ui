@@ -30,12 +30,14 @@ import {
   create8601String,
   get8601Pieces,
   getTimezones,
+  getUserTimeZone,
   TimezoneDescriptor
 } from '../../utils/datetime';
 import FormControl from '@mui/material/FormControl';
-import { nnou } from '../../utils/object';
+import { nnou, nou } from '../../utils/object';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { UNDEFINED } from '../../utils/constants';
+import useLocale from '../../hooks/useLocale';
 
 export interface DateChangeData {
   date: Date;
@@ -46,10 +48,11 @@ export interface DateChangeData {
 export interface DateTimePickerProps {
   id?: string;
   value: string | Date | number;
-  timeZone: string;
   disabled?: boolean;
   classes?: any;
   controls?: Array<'date' | 'time' | 'timeZone'>; // options: ['date', 'time', 'timezone'], ['date', 'time'], ['date']
+  showTimeSelector?: boolean;
+  showTimeZoneSelector?: boolean;
   disablePast?: boolean;
   localeCode: string;
   dateTimeFormatOptions: Intl.DateTimeFormatOptions;
@@ -88,6 +91,7 @@ const useStyles = makeStyles()(() => ({
 }));
 
 function DateTimePicker(props: DateTimePickerProps) {
+  const locale = useLocale();
   const {
     id,
     onChange,
@@ -96,25 +100,32 @@ function DateTimePicker(props: DateTimePickerProps) {
     onTimeZoneChange,
     onError,
     value,
-    timeZone,
     disablePast,
     disabled = false,
-    controls = ['date', 'time', 'timeZone'],
+    showTimeSelector = true,
+    showTimeZoneSelector = true,
     localeCode = 'en-US',
     dateTimeFormatOptions
   } = props;
+  const timeZones = getTimezones();
+  const offset = value ? moment.parseZone(value).format().slice(-6) : null;
+  const timeZone = offset
+    ? timeZones.find((tz) => tz.offset === offset).name
+    : locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone();
   // Time picker control seems to always display in function of the time of the
   // browser's time zone but we display things in function of the selected time zone.
   // This causes some discrepancies between the time displayed on the field and the time
   // displayed when the time picker is opened. `internalDate` is a transposed date/time
   // used to sync the timepicker with what's displayed to the user.
   const internalDate = useMemo(() => {
-    const date = value ? new Date(value) : new Date();
-    const localOffset = moment().format().substr(-6);
-    const dateWithoutOffset = moment(date).tz(timeZone).format().substr(0, 19);
+    if (nou(value)) {
+      return null;
+    }
+    const date = new Date(value);
+    const localOffset = moment().format().slice(-6);
+    const dateWithoutOffset = moment(date).tz(timeZone).format().substring(0, 19);
     return new Date(`${dateWithoutOffset}${localOffset}`);
   }, [value, timeZone]);
-  const timeZones = getTimezones();
   const { classes } = useStyles();
   const hour12 = dateTimeFormatOptions?.hour12 ?? true;
   const currentTimeZoneDesc = timeZones.find((tz) => tz.name === unescape(timeZone));
@@ -133,12 +144,12 @@ function DateTimePicker(props: DateTimePickerProps) {
     // Date/time change handler
     (newMoment: Moment) => {
       let newDate = newMoment.toDate();
-      if (newDate === null) {
+      if (!newMoment.isValid()) {
         setPickerState({ dateValid: false });
         onError?.();
       }
       let changes: DateChangeData;
-      const internalDatePieces = get8601Pieces(internalDate);
+      const internalDatePieces = get8601Pieces(internalDate ?? newDate);
       const pickerDatePieces = get8601Pieces(newDate);
       switch (name) {
         case 'date': {
@@ -156,7 +167,6 @@ function DateTimePicker(props: DateTimePickerProps) {
           break;
         }
       }
-      setPickerState({ dateValid: true });
       onChange?.(changes);
     };
 
@@ -164,7 +174,7 @@ function DateTimePicker(props: DateTimePickerProps) {
   // date to the new timezone but that you can select, date, time and timezone
   // individually without one changing the other fields.
   const handleTimezoneChange = (event, value: TimezoneDescriptor) => {
-    const pieces = get8601Pieces(internalDate);
+    const pieces = get8601Pieces(internalDate ?? new Date());
     // Keep date/time we had and apply new offset
     const dateString = create8601String(pieces[0], pieces[1], value.offset);
     const changes: DateChangeData = { date: new Date(dateString), dateString, timeZoneName: value.name };
@@ -186,44 +196,40 @@ function DateTimePicker(props: DateTimePickerProps) {
   return (
     <FormControl {...formControlProps} fullWidth>
       <LocalizationProvider dateAdapter={DateAdapter}>
-        {controls.includes('date') && (
-          <>
-            <DatePicker
-              open={datePickerOpen}
-              views={['year', 'month', 'day']}
-              slotProps={{
-                textField: {
-                  size: 'small',
-                  margin: 'normal',
-                  placeholder: formatMessage(translations.datePlaceholder),
-                  error: !pickerState.dateValid,
-                  helperText: pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage),
-                  onClick: disabled
-                    ? null
-                    : () => {
-                        setDatePickerOpen(true);
-                      },
-                  inputProps: {
-                    value: asLocalizedDateTime(internalDate, localeCode),
-                    onChange: handlePopupOnlyInputChange
-                  }
-                }
-              }}
-              value={moment(internalDate)}
-              onChange={createOnDateChange('date')}
-              disabled={disabled}
-              disablePast={disablePast}
-              onAccept={() => {
-                setDatePickerOpen(false);
-              }}
-              // Both clicking cancel and outside the calendar trigger onClose
-              onClose={() => {
-                setDatePickerOpen(false);
-              }}
-            />
-          </>
-        )}
-        {controls.includes('time') && (
+        <DatePicker
+          open={datePickerOpen}
+          views={['year', 'month', 'day']}
+          slotProps={{
+            textField: {
+              size: 'small',
+              margin: 'normal',
+              placeholder: formatMessage(translations.datePlaceholder),
+              error: !pickerState.dateValid,
+              helperText: pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage),
+              onClick: disabled
+                ? null
+                : () => {
+                  setDatePickerOpen(true);
+                },
+              inputProps: {
+                value: internalDate ? asLocalizedDateTime(internalDate, localeCode) : '',
+                onChange: handlePopupOnlyInputChange
+              }
+            }
+          }}
+          value={internalDate}
+          onChange={createOnDateChange('date')}
+          disabled={disabled}
+          disablePast={disablePast}
+          onAccept={() => {
+            setDatePickerOpen(false);
+          }}
+          // Both clicking cancel and outside the calendar trigger onClose
+          onClose={() => {
+            setDatePickerOpen(false);
+          }}
+        />
+        {showTimeSelector && (
           <TimePicker
             open={timePickerOpen}
             value={moment(internalDate)}
@@ -242,8 +248,8 @@ function DateTimePicker(props: DateTimePickerProps) {
                 onClick: disabled
                   ? null
                   : () => {
-                      setTimePickerOpen(true);
-                    },
+                    setTimePickerOpen(true);
+                  },
                 inputProps: {
                   onChange: handlePopupOnlyInputChange,
                   value: asLocalizedDateTime(internalDate, localeCode, {
@@ -261,12 +267,16 @@ function DateTimePicker(props: DateTimePickerProps) {
           />
         )}
       </LocalizationProvider>
-      {controls.includes('timeZone') && (
+      {showTimeZoneSelector && (
         <Autocomplete
           options={timeZones}
-          getOptionLabel={(timezone) =>
-            typeof timezone === 'string' ? timezone : `${timezone.name} (GMT${timezone.offset})`
-          }
+          getOptionLabel={(timezone) => {
+            return currentTimeZoneDesc.name === timezone.name
+              ? `GMT${timezone.offset}`
+              : typeof timezone === 'string'
+              ? timezone
+              : `${timezone.name} (GMT${timezone.offset})`;
+          }}
           value={currentTimeZoneDesc}
           onChange={handleTimezoneChange}
           size="small"

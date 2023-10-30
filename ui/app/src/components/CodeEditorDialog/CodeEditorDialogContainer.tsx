@@ -241,7 +241,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             onClick={onAddSnippet}
             endIcon={<ExpandMoreRoundedIcon />}
             className={classes.addSnippet}
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLockedForMe}
           >
             <FormattedMessage id="codeEditor.insertCode" defaultMessage="Insert Code" />
           </Button>

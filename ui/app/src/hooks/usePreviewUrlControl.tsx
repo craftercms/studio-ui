@@ -15,14 +15,36 @@
  */
 
 import { useDispatch } from 'react-redux';
-import { useEffect, useRef } from 'react';
-import queryString from 'query-string';
+import { useCallback, useEffect, useRef } from 'react';
+import { parse, stringify } from 'query-string';
 import { LookupTable } from '../models/LookupTable';
 import { changeCurrentUrl } from '../state/actions/preview';
-import { changeSite } from '../state/actions/sites';
+import { changeSite, popSite } from '../state/actions/sites';
 import { useActiveSiteId } from './useActiveSiteId';
 import { useEnv } from './useEnv';
 import { usePreviewNavigation } from './usePreviewNavigation';
+import useSiteLookup from './useSiteLookup';
+import { defineMessages, useIntl } from 'react-intl';
+import { getHostToHostBus } from '../utils/subjects';
+import { filter } from 'rxjs/operators';
+import { projectDeleted } from '../state/actions/system';
+
+const messages = defineMessages({
+  siteNotFound: {
+    defaultMessage: 'Project not found. Redirecting to projects list.'
+  },
+  siteNotReady: {
+    defaultMessage: 'Project not initialized yet. Redirecting to projects list.'
+  },
+  siteDeleted: {
+    defaultMessage: "This project has been deleted, you'll be redirected to projects list."
+  }
+});
+
+const notValidSiteRedirect = (message: string, url: string) => {
+  alert(message);
+  window.location.href = url;
+};
 
 export function usePreviewUrlControl(history) {
   const {
@@ -32,6 +54,8 @@ export function usePreviewUrlControl(history) {
 
   const { currentUrlPath } = usePreviewNavigation();
   const { previewLandingBase } = useEnv();
+  const { authoringBase } = useEnv();
+  const sites = useSiteLookup();
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const priorState = useRef({
@@ -43,6 +67,36 @@ export function usePreviewUrlControl(history) {
     search: search,
     mounted: false
   });
+  const { formatMessage } = useIntl();
+
+  const validateSite = useCallback(
+    (siteId: string) => {
+      if (siteId) {
+        const siteExists = sites[siteId];
+
+        // If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
+        if (!siteExists) {
+          notValidSiteRedirect(formatMessage(messages.siteNotFound), `${authoringBase}#/sites`);
+        } else if (sites[siteId].state !== 'READY') {
+          notValidSiteRedirect(formatMessage(messages.siteNotReady), `${authoringBase}#/sites`);
+        }
+      }
+    },
+    [sites, authoringBase, formatMessage]
+  );
+
+  useEffect(() => {
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => e.type === projectDeleted.type)).subscribe(({ payload }) => {
+      if (payload.siteId === site) {
+        notValidSiteRedirect(formatMessage(messages.siteDeleted), `${authoringBase}#/sites`);
+        dispatch(popSite({ siteId: payload.siteId }));
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [authoringBase, formatMessage, site, dispatch]);
 
   useEffect(() => {
     const prev = priorState.current;
@@ -52,7 +106,7 @@ export function usePreviewUrlControl(history) {
     // If nothing is stored or the search portion has changed...
     if (!qs || prev.search !== search) {
       // Parse the current QS
-      qs = queryString.parse(search) as LookupTable<string>;
+      qs = parse(search) as LookupTable<string>;
       // In case somehow 2 site or page arguments ended on the
       // URL, only use the first one and issue a warning on the console
       if (Array.isArray(qs.site)) {
@@ -73,6 +127,7 @@ export function usePreviewUrlControl(history) {
 
       // If there is a site or page on the URL, sync the state to the URL.
       if (qs.site || qs.page) {
+        validateSite(qs.site);
         // Check if QS site differs from the one stored in the
         // state (e.g. state may have been restored from a previous session)
         if (qs.site && qs.site !== site) {
@@ -101,12 +156,13 @@ export function usePreviewUrlControl(history) {
       const urlChanged = currentUrlPath !== prev.currentUrlPath;
       const somethingDidChanged = qsSiteChanged || siteChanged || qsUrlChanged || urlChanged;
 
+      validateSite(qs.site);
       // If nothing changed, skip...
       if (somethingDidChanged) {
         if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
           const page = currentUrlPath;
           if (page !== previewLandingBase) {
-            push({ search: queryString.stringify({ site, page }, { encode: false }) });
+            push({ search: stringify({ site, page }, { encode: false }) });
           }
         } else if (qsSiteChanged && qsUrlChanged) {
           dispatch(changeSite(qs.site, qs.page));
@@ -125,7 +181,7 @@ export function usePreviewUrlControl(history) {
       prev.qsPage = qs.page;
       prev.qsSite = qs.site;
     }
-  }, [currentUrlPath, dispatch, previewLandingBase, push, search, site]);
+  }, [currentUrlPath, dispatch, previewLandingBase, push, search, site, sites, validateSite]);
 }
 
 export default usePreviewUrlControl;

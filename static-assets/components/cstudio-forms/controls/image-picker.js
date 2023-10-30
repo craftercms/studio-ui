@@ -30,27 +30,7 @@ CStudioForms.Controls.ImagePicker =
     this.datasources = null;
     this.upload_dialog = null;
     this.crop_dialog = null;
-    this.validExtensions = [
-      'jpg',
-      'jpeg',
-      'gif',
-      'png',
-      'tiff',
-      'tif',
-      'bmp',
-      'svg',
-      'JPG',
-      'JPEG',
-      'GIF',
-      'PNG',
-      'TIFF',
-      'TIF',
-      'BMP',
-      'SVG',
-      'jp2',
-      'jxr',
-      'webp'
-    ];
+    this.validExtensions = ['jpg', 'jpeg', 'gif', 'png', 'tiff', 'tif', 'bmp', 'svg', 'jp2', 'jxr', 'webp'];
     this.readonly = readonly;
     this.originalWidth = null;
     this.originalHeight = null;
@@ -243,7 +223,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
             message = '',
             repoImage;
 
-          if (this.imagePicker.validExtensions.indexOf(imageData.fileExtension) !== -1) {
+          if (this.imagePicker.validExtensions.includes(imageData.fileExtension?.toLowerCase().trim())) {
             valid = true;
           } else {
             message = 'The uploaded file is not of type image';
@@ -475,9 +455,9 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
 
     // dropdownBtn and dropdownMenu
     const $addBtn = $(
-      `<button id="add-image" class="cstudio-button btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown">${dropdownLabel}</button>`
+      `<button id="add-image" class="cstudio-button btn btn-default btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">${dropdownLabel}</button>`
     );
-    const $dropdown = $('<div class="dropdown"></div>');
+    const $dropdown = $('<div class="dropdown cstudio-dropdown"></div>');
     const $dropdownMenu = $('<ul class="dropdown-menu pull-left"></ul>');
     this.$dropdown = $dropdown;
     this.$dropdownMenu = $dropdownMenu;

@@ -24,7 +24,7 @@ import { getStoredPreviewBackgroundMode, setStoredPreviewBackgroundMode } from '
 import useActiveUser from '../../hooks/useActiveUser';
 
 export function PreviewDialog(props: PreviewDialogProps) {
-  const { title, subtitle = props.url, type, url, content, mode, mimeType, ...rest } = props;
+  const { title, subtitle = props.url, type, url, path, content, mode, mimeType, ...rest } = props;
   const { username } = useActiveUser();
   const [backgroundModeIndex, setBackgroundModeIndex] = useState(getStoredPreviewBackgroundMode(username) ?? 0);
   const { formatMessage } = useIntl();
@@ -61,6 +61,7 @@ export function PreviewDialog(props: PreviewDialogProps) {
         type={type}
         title={title}
         url={url}
+        path={path}
         content={content}
         mode={mode}
         mimeType={mimeType}

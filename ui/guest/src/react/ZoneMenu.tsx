@@ -33,9 +33,11 @@ import {
   duplicateItem,
   getCachedModel,
   getCachedModels,
+  getCachedPermissions,
   getCachedSandboxItem,
   getModelIdFromInheritedField,
   insertItem,
+  isInheritedField,
   modelHierarchyMap,
   sortDownItem,
   sortUpItem
@@ -71,6 +73,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
     fieldId: [fieldId],
     index
   } = record;
+
+  const permissions = getCachedPermissions();
+  const models = getCachedModels();
+  const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+  const modelPath = isInheritedField(modelId, fieldId)
+    ? models[getModelIdFromInheritedField(modelId, fieldId)].craftercms.path
+    : models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
+  const itemAvailableActions = getCachedSandboxItem(modelPath).availableActionsMap;
 
   const trashButtonRef = React.useRef();
   const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
@@ -120,8 +130,10 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
+  const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
+  const collectionContainsFiles = collection ? collection.some((item) => item.hasOwnProperty('key')) : false;
   const componentId =
-    recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection[elementIndex] : null;
+    recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection?.[elementIndex] : null;
   const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
   const isMovable =
     ['node-selector-item', 'repeat-item'].includes(recordType) ||
@@ -131,7 +143,8 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const isLastItem = isMovable ? elementIndex === numOfItemsInContainerCollection - 1 : null;
   const isOnlyItem = isMovable ? isFirstItem && isLastItem : null;
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
-  const showCodeEditOptions = ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode;
+  const showCodeEditOptions =
+    ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode && !isItemFile;
   const showAddItem = recordType === 'field' && field.type === 'repeat';
   const { isTrashable, showDuplicate } = useMemo(() => {
     const actions = {
@@ -146,15 +159,17 @@ export function ZoneMenu(props: ZoneMenuProps) {
       const maxValidation = validations?.maxCount?.value;
       const minValidation = validations?.minCount?.value;
       const trashableValidation = minValidation ? minValidation < numOfItemsInContainerCollection : true;
-      const duplicateValidation = maxValidation ? maxValidation > numOfItemsInContainerCollection : true;
+      const duplicateValidation =
+        permissions.includes('content_create') &&
+        (maxValidation ? maxValidation > numOfItemsInContainerCollection : true);
 
       actions.isTrashable = trashableValidation && recordType !== 'field' && recordType !== 'page';
       actions.showDuplicate =
-        duplicateValidation && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
+        duplicateValidation && !isItemFile && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
     }
 
     return actions;
-  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord]);
+  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord, isItemFile, permissions]);
 
   const store = useStore();
   const getItemData = () => {
@@ -190,7 +205,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     e.stopPropagation();
     e.preventDefault();
 
-    if (recordType === 'node-selector-item') {
+    if (recordType === 'node-selector-item' && !collectionContainsFiles) {
       // If it's a node selector item, we transform it into the actual item.
       const parentModelId = getParentModelId(componentId, getCachedModels(), modelHierarchyMap);
       post(requestEdit({ typeOfEdit, modelId: componentId, parentModelId }));
@@ -363,16 +378,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
       </Tooltip>
       {showCodeEditOptions && (
         <>
-          <Tooltip title="Edit template" key="editTemplate">
-            <UltraStyledIconButton size="small" onClick={onEditTemplate}>
-              <FreemarkerIcon />
-            </UltraStyledIconButton>
-          </Tooltip>
-          <Tooltip title="Edit controller" key="editController">
-            <UltraStyledIconButton size="small" onClick={onEditController}>
-              <GroovyIcon />
-            </UltraStyledIconButton>
-          </Tooltip>
+          {itemAvailableActions.editTemplate && (
+            <Tooltip title="Edit template" key="editTemplate">
+              <UltraStyledIconButton size="small" onClick={onEditTemplate}>
+                <FreemarkerIcon />
+              </UltraStyledIconButton>
+            </Tooltip>
+          )}
+          {itemAvailableActions.editController && (
+            <Tooltip title="Edit controller" key="editController">
+              <UltraStyledIconButton size="small" onClick={onEditController}>
+                <GroovyIcon />
+              </UltraStyledIconButton>
+            </Tooltip>
+          )}
         </>
       )}
       {showAddItem && (

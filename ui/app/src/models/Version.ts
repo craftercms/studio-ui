@@ -14,22 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { DetailedItem, LegacyItem } from './Item';
+import { DetailedItem } from './Item';
 import ApiResponse from './ApiResponse';
 import ContentInstance from './ContentInstance';
-import LookupTable from './LookupTable';
+import Person from './Person';
 
-export interface LegacyVersion {
-  lastModifiedDate: string;
-  lastModifier: string;
-  versionNumber: string;
+export interface ItemHistoryEntry {
+  author: Person;
+  committer: string;
   comment: string;
-  contentItem: any;
-}
-
-export interface VersionsResponse {
-  item: LegacyItem;
-  versions: LegacyVersion[];
+  modifiedDate: string;
+  oldPath: string;
+  path: string;
+  revertible: boolean;
+  versionNumber: string;
 }
 
 export interface FetchContentVersion {
@@ -44,7 +42,7 @@ export interface CompareVersionsBranch {
 }
 
 export interface VersionsStateProps {
-  byId: LookupTable<LegacyVersion>;
+  byId: string;
   item: DetailedItem;
   rootPath?: string;
   isConfig?: boolean;
@@ -53,8 +51,8 @@ export interface VersionsStateProps {
   error: ApiResponse;
   isFetching: Boolean;
   current: string;
-  versions: LegacyVersion[];
-  allVersions: LegacyVersion[];
+  versions: ItemHistoryEntry[];
+  allVersions: ItemHistoryEntry[];
   count: number;
   page: number;
   limit: number;

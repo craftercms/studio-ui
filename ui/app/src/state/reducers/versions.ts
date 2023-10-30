@@ -65,13 +65,13 @@ const reducer = createReducer<GlobalState['versions']>(initialState, (builder) =
       ...(payload as Partial<VersionsStateProps>),
       isFetching: true
     }))
-    .addCase(fetchItemVersionsComplete, (state, { payload: { versions } }) => ({
+    .addCase(fetchItemVersionsComplete, (state, { payload: items }) => ({
       ...state,
-      byId: createLookupTable(versions, 'versionNumber'),
-      count: versions.length,
-      current: versions.length ? versions[0].versionNumber : null,
-      allVersions: versions,
-      versions: versions.slice(state.page * state.limit, (state.page + 1) * state.limit),
+      byId: createLookupTable(items, 'versionNumber'),
+      count: items.length,
+      current: items.length ? items[0].versionNumber : null,
+      allVersions: items,
+      versions: items.slice(state.page * state.limit, (state.page + 1) * state.limit),
       isFetching: false,
       error: null
     }))
@@ -140,7 +140,7 @@ const reducer = createReducer<GlobalState['versions']>(initialState, (builder) =
         isFetching: true
       };
     })
-    .addCase(revertContent, (state, { payload }) => ({
+    .addCase(revertContent, (state) => ({
       ...state,
       isFetching: true
     }))

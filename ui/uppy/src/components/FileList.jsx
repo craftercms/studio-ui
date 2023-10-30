@@ -17,7 +17,7 @@
 import { h } from 'preact';
 import { useMemo } from 'preact/hooks';
 import FileItem from './FileItem/index';
-import VirtualList from '@uppy/dashboard/lib/components/VirtualList';
+import VirtualList from '@uppy/utils/lib/VirtualList';
 
 function chunks(list, size) {
   const chunked = [];
@@ -91,10 +91,8 @@ export default ({
           key={fileID}
           log={log}
           info={info}
-          // FIXME This is confusing, it's actually the Dashboard's plugin ID
           id={id}
           error={error}
-          // TODO move this to context
           i18n={i18n}
           externalMessages={externalMessages}
           // features
