@@ -362,8 +362,8 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
               borderRadius: '10px',
               alignItems: 'center',
               '&.unchanged': {
-                color: palette.gray.medium4,
-                backgroundColor: palette.gray.light1
+                color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+                backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1)
               },
               '&.new': {
                 color: palette.green.shade,
@@ -390,7 +390,12 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
           >
             <Typography sx={{ fontSize: '14px' }}> {getItemLabel(item)}</Typography>
             {status[index] && status[index] !== 'new' && (
-              <Typography sx={{ fontSize: '14px', color: palette.gray.medium4 }}>
+              <Typography
+                sx={{
+                  fontSize: '14px',
+                  color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4)
+                }}
+              >
                 {formatMessage(translations[status[index]])}
               </Typography>
             )}
