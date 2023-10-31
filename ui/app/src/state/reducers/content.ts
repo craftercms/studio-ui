@@ -70,30 +70,6 @@ const initialState: ContentState = {
   itemsBeingFetchedByPath: {}
 };
 
-const updateItemLockState = (state: ContentState, { path, username, locked }) => {
-  if (
-    !state.itemsByPath[path] ||
-    (locked && state.itemsByPath[path].stateMap.locked) ||
-    (!locked && !state.itemsByPath[path].stateMap.locked)
-  ) {
-    return state;
-  }
-  return {
-    ...state,
-    itemsByPath: {
-      ...state.itemsByPath,
-      [path]: {
-        ...state.itemsByPath[path],
-        lockOwner: locked ? username : null,
-        state: locked
-          ? state.itemsByPath[path].state + STATE_LOCKED_MASK
-          : state.itemsByPath[path].state - STATE_LOCKED_MASK,
-        stateMap: { ...state.itemsByPath[path].stateMap, locked }
-      }
-    }
-  };
-};
-
 const updateItemByPath = (state: ContentState, { payload }) => {
   const { parent, children } = payload;
   const nextByPath = {
@@ -139,7 +115,7 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
       quickCreate: {
         ...state.quickCreate,
         items: payload,
-        isFetching: true
+        isFetching: false
       }
     }))
     .addCase(fetchQuickCreateListFailed, (state, error: StandardAction<AjaxError>) => ({
