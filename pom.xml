@@ -86,10 +86,6 @@
                           <followSymlinks>false</followSymlinks>
                         </fileset>
                         <fileset>
-                            <directory>ui/tinymce/node_modules</directory>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                        <fileset>
                             <directory>ui</directory>
                             <includes>
                                 <include>**/.bic_cache</include>
@@ -215,17 +211,6 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <workingDirectory>ui/monaco</workingDirectory>
-                            <arguments>build-if-changed</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Tinymce editor: build</id>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <workingDirectory>ui/tinymce</workingDirectory>
                             <arguments>build-if-changed</arguments>
                         </configuration>
                     </execution>
