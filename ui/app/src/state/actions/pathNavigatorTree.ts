@@ -34,6 +34,7 @@ export const pathNavigatorTreeInit = /*#__PURE__*/ createAction<
     systemTypes?: SystemType[];
     sortStrategy?: GetChildrenOptions['sortStrategy'];
     order?: GetChildrenOptions['order'];
+    keywordByPath: LookupTable<string>;
   }>
 >('PATH_NAV_TREE_INIT');
 

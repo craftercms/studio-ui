@@ -52,3 +52,9 @@ else
 fi
 
 echo "jQuery UI build complete"
+
+# tinymce build
+rm -rf "$libsDirectory/tinymce"
+cp -r ../../node_modules/tinymce "$libsDirectory/tinymce"
+
+echo "TinyMCE build complete"

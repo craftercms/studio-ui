@@ -209,15 +209,15 @@ function DateTimePicker(props: DateTimePickerProps) {
               onClick: disabled
                 ? null
                 : () => {
-                  setDatePickerOpen(true);
-                },
+                    setDatePickerOpen(true);
+                  },
               inputProps: {
                 value: internalDate ? asLocalizedDateTime(internalDate, localeCode) : '',
                 onChange: handlePopupOnlyInputChange
               }
             }
           }}
-          value={internalDate}
+          value={moment(internalDate)}
           onChange={createOnDateChange('date')}
           disabled={disabled}
           disablePast={disablePast}
@@ -248,8 +248,8 @@ function DateTimePicker(props: DateTimePickerProps) {
                 onClick: disabled
                   ? null
                   : () => {
-                    setTimePickerOpen(true);
-                  },
+                      setTimePickerOpen(true);
+                    },
                 inputProps: {
                   onChange: handlePopupOnlyInputChange,
                   value: asLocalizedDateTime(internalDate, localeCode, {
@@ -259,7 +259,7 @@ function DateTimePicker(props: DateTimePickerProps) {
                     // If the timezone control isn't displayed, the time displayed may
                     // be misleading/unexpected to the user, so if timezone isn't displayed,
                     // display timezone here.
-                    timeZoneName: controls.includes('timeZone') ? UNDEFINED : 'short'
+                    timeZoneName: showTimeZoneSelector ? UNDEFINED : 'short'
                   })
                 }
               }

@@ -27,10 +27,12 @@ import {
   SearchResult
 } from '../../models/Search';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
-import { WidgetDescriptor } from '../../models';
+import { EditSelection, WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
+import { AjaxError } from 'rxjs/ajax';
+import { ActiveTargetingModel } from '../../services/configuration';
 
 interface CommonOperationProps {
   modelId: string;
@@ -55,6 +57,7 @@ export const guestCheckIn = /*#__PURE__*/ createAction<{
   site: string;
   documentDomain?: string;
   version?: string;
+  __CRAFTERCMS_GUEST_LANDING__?: string;
 }>('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction<{ path: string }>('GUEST_CHECK_OUT');
 export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');

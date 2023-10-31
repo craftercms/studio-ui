@@ -15,7 +15,7 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import GlobalState, { PagedEntityState } from '../../models/GlobalState';
+import GlobalState, { HighlightMode, PagedEntityState } from '../../models/GlobalState';
 import {
   clearDropTargets,
   clearSelectForEdit,
@@ -73,7 +73,13 @@ import {
   nou,
   reversePluckProps
 } from '../../utils/object';
-import { ContentInstancePage, ElasticParams, MediaItem, SearchResult } from '../../models/Search';
+import {
+  ComponentsContentTypeParams,
+  ContentInstancePage,
+  ElasticParams,
+  MediaItem,
+  SearchResult
+} from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
 import { changeSite } from '../actions/sites';
 import { deserialize, fromString } from '../../utils/xml';
@@ -242,11 +248,11 @@ const fetchGuestModelsCompleteHandler = (state, { type, payload }) => {
 
 const reducer = createReducer<GlobalState['preview']>(initialState, (builder) => {
   builder
-    .addCase(initPreviewConfig.type, (state, { payload }) => {
+    .addCase(initPreviewConfig, (state, { payload }) => {
       const configDOM = fromString(payload.configXml);
       const previewConfigEl = configDOM.querySelector('[id="craftercms.components.Preview"]');
       const initialEditModeOn = previewConfigEl?.getAttribute('initialEditModeOn');
-      const initialHighlightMode = previewConfigEl?.getAttribute('initialHighlightMode');
+      const initialHighlightMode = previewConfigEl?.getAttribute('initialHighlightMode') as HighlightMode;
       const xbDetectionTimeoutMs = parseInt(previewConfigEl?.getAttribute('xbDetectionTimeoutMs'));
 
       // If there is no storedEditMode, set it to the value of initialEditModeOn (config value), otherwise, defaults to true
@@ -457,7 +463,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
         }
       };
     })
-    .addCase(fetchAssetsPanelItemsComplete, (state, { payload: searchResult }) => {
+    .addCase(fetchAssetsPanelItemsComplete, (state, { payload: searchResult }: { payload: SearchResult }) => {
       let itemsLookupTable = createLookupTable<MediaItem>(searchResult.items, 'path');
       let page = [...state.assets.page];
       page[state.assets.pageNumber] = searchResult.items.map((item) => item.path);
@@ -477,7 +483,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       ...state,
       assets: { ...state.assets, error: payload.response, isFetching: false }
     }))
-    .addCase(fetchComponentsByContentType, (state, { payload }) => {
+    .addCase(fetchComponentsByContentType, (state, { payload }: { payload: ComponentsContentTypeParams }) => {
       return {
         ...state,
         components: {
@@ -788,12 +794,13 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       } else if (result < minPreviewWidth) {
         adjustedToolsPanelWidth =
           toolsPanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : toolsPanelWidth - result / 2;
-        adjustedIcePanelWidth = icePanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : icePanelWidth - result / 2;
+        adjustedIcePanelWidth =
+          icePanelWidth - result / 2 < minDrawerWidth ? minDrawerWidth : icePanelWidth - result / 2;
       }
       state.windowSize = windowSize;
       state.toolsPanelWidth = adjustedToolsPanelWidth;
       state.icePanelWidth = adjustedIcePanelWidth;
-    })
+    });
 });
 
 function minFrameSize(suggestedSize: number): number {

@@ -16,7 +16,7 @@
 
 import { useDispatch } from 'react-redux';
 import { useCallback, useEffect, useRef } from 'react';
-import { parse, stringify } from 'query-string';
+import queryString from 'query-string';
 import { LookupTable } from '../models/LookupTable';
 import { changeCurrentUrl } from '../state/actions/preview';
 import { changeSite, popSite } from '../state/actions/sites';
@@ -106,7 +106,7 @@ export function usePreviewUrlControl(history) {
     // If nothing is stored or the search portion has changed...
     if (!qs || prev.search !== search) {
       // Parse the current QS
-      qs = parse(search) as LookupTable<string>;
+      qs = queryString.parse(search) as LookupTable<string>;
       // In case somehow 2 site or page arguments ended on the
       // URL, only use the first one and issue a warning on the console
       if (Array.isArray(qs.site)) {
@@ -162,7 +162,7 @@ export function usePreviewUrlControl(history) {
         if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
           const page = currentUrlPath;
           if (page !== previewLandingBase) {
-            push({ search: stringify({ site, page }, { encode: false }) });
+            push({ search: queryString.stringify({ site, page }, { encode: false }) });
           }
         } else if (qsSiteChanged && qsUrlChanged) {
           dispatch(changeSite(qs.site, qs.page));
