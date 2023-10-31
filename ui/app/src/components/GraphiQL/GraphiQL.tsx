@@ -17,7 +17,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import GraphiQLComponent from 'graphiql';
 import 'graphiql/graphiql.min.css';
-import { useExplorerPlugin } from '@graphiql/plugin-explorer';
+import { explorerPlugin } from '@graphiql/plugin-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
@@ -103,7 +103,7 @@ function GraphiQL(props: GraphiQLProps) {
     setQuery(newQuery);
     window.localStorage.setItem(`${storageKey}graphiql:query`, newQuery);
   };
-  const explorerPlugin = useExplorerPlugin({
+  const explorer = explorerPlugin({
     query,
     onEdit: onEditQuery,
     showAttribution: false
@@ -183,7 +183,7 @@ function GraphiQL(props: GraphiQLProps) {
             query={query}
             storage={storage}
             onEditQuery={onEditQuery}
-            plugins={[explorerPlugin]}
+            plugins={[explorer]}
           />
         </Box>
       </Box>

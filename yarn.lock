@@ -2055,7 +2055,7 @@ __metadata:
     "@emotion/react": ^11.11.1
     "@emotion/styled": ^11.11.0
     "@formatjs/cli": ^6.1.1
-    "@graphiql/plugin-explorer": ^0.2.0
+    "@graphiql/plugin-explorer": ^1.0.1
     "@mui/icons-material": ^5.14.3
     "@mui/lab": ^5.0.0-alpha.138
     "@mui/material": ^5.14.3
@@ -2085,9 +2085,9 @@ __metadata:
     clsx: ^1.2.1
     eslint: ^8.3.0
     fast-xml-parser: ^4.2.2
-    graphiql: ^3.0.0
-    graphql: ^16.7.1
-    graphql-ws: ^5.14.0
+    graphiql: ^3.0.8
+    graphql: ^16.8.1
+    graphql-ws: ^5.14.2
     highlight.js: ^11.8.0
     jabber: ^1.5.3
     jquery: ^3.6.4
@@ -2866,25 +2866,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphiql/plugin-explorer@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@graphiql/plugin-explorer@npm:0.2.0"
+"@graphiql/plugin-explorer@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@graphiql/plugin-explorer@npm:1.0.1"
   dependencies:
     graphiql-explorer: ^0.9.0
   peerDependencies:
-    "@graphiql/react": ^0.18.0
+    "@graphiql/react": ^0.20.1
     graphql: ^15.5.0 || ^16.0.0
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
-  checksum: 5959ff9295b17e2edbe6df3679cd43a99101b5bebc6e07362daabc4b4d5bc9c85ca1d896b3970bd7b3fc9756e06664358c446f69e902fdeb4eef52c8283770c4
+  checksum: 24335b672e9577f1c002aa9a4d6a37feb70b36063c3c781815bbc4f166be89dda9d3f83bfcb0220b13445c53768648ebe5753db3eae2054bd78665e4c54351fc
   languageName: node
   linkType: hard
 
-"@graphiql/react@npm:^0.18.0":
-  version: 0.18.0
-  resolution: "@graphiql/react@npm:0.18.0"
+"@graphiql/react@npm:^0.20.1":
+  version: 0.20.1
+  resolution: "@graphiql/react@npm:0.20.1"
   dependencies:
-    "@graphiql/toolkit": ^0.8.4
+    "@graphiql/toolkit": ^0.9.1
     "@headlessui/react": ^1.7.15
     "@radix-ui/react-dialog": ^1.0.4
     "@radix-ui/react-dropdown-menu": ^2.0.5
@@ -2893,23 +2893,23 @@ __metadata:
     "@types/codemirror": ^5.60.8
     clsx: ^1.2.1
     codemirror: ^5.65.3
-    codemirror-graphql: ^2.0.9
+    codemirror-graphql: ^2.0.10
     copy-to-clipboard: ^3.2.0
     framer-motion: ^6.5.1
-    graphql-language-service: ^5.1.7
+    graphql-language-service: ^5.2.0
     markdown-it: ^12.2.0
     set-value: ^4.1.0
   peerDependencies:
     graphql: ^15.5.0 || ^16.0.0
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
-  checksum: a12e8ac3cecdcceaa3a333218ad5f6a1a0ddfb267dcaabb7bd60ed417d517344ceef20083b3fba471d0bb3199c8e93e2cfb99b70451084563ae6ce19d3258d92
+  checksum: 2cf8bd962fd1521422da4d9ff333f3a69c5d7ac7e7dea11bf049a375a2cc8c4e2c448cbe388a3678c14a563d6fdc00a0d54c0b5ecec5545615c9c1eeba368f03
   languageName: node
   linkType: hard
 
-"@graphiql/toolkit@npm:^0.8.4":
-  version: 0.8.4
-  resolution: "@graphiql/toolkit@npm:0.8.4"
+"@graphiql/toolkit@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "@graphiql/toolkit@npm:0.9.1"
   dependencies:
     "@n1ru4l/push-pull-async-iterable-iterator": ^3.1.0
     meros: ^1.1.4
@@ -2919,7 +2919,7 @@ __metadata:
   peerDependenciesMeta:
     graphql-ws:
       optional: true
-  checksum: 3587521ef64d867930375d746e28ab8373f3f034c6878a99d67e262074d28bf1102b9207db3cb34ae7b80cee8aa4b139fe865dae22a3bcc58f5909294d4a20b3
+  checksum: 5328426051b7f9a9ffbd569c950d1a103ce0e2ee7b5d7a57f3d899488ad43d1a5101e8aeced7416e106c7687d67bb7981aa7e87dea5b0f17b77569aa738bf3b5
   languageName: node
   linkType: hard
 
@@ -4924,6 +4924,15 @@ __metadata:
   dependencies:
     "@popperjs/core": ^2.9.2
   checksum: c61aa007b4bcda8a10a764c3e53c608cc5bcf1b1a822b6bb628aa248bb0cbb398b4bc70d671c5eb0a3348c8218fa39c0d0340e71534b92ce785cb47817867dab
+  languageName: node
+  linkType: hard
+
+"@types/codemirror@npm:^0.0.90":
+  version: 0.0.90
+  resolution: "@types/codemirror@npm:0.0.90"
+  dependencies:
+    "@types/tern": "*"
+  checksum: f4594b9bc95306bbbe24d967e0749e28fe7b1e461c41621429b8c8bc295bda1704d99c1d7d5496efd987ee80d24f055155ddd742fa0c975cd69f279ccdaa0af9
   languageName: node
   linkType: hard
 
@@ -7840,16 +7849,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"codemirror-graphql@npm:^2.0.9":
-  version: 2.0.9
-  resolution: "codemirror-graphql@npm:2.0.9"
+"codemirror-graphql@npm:^2.0.10":
+  version: 2.0.10
+  resolution: "codemirror-graphql@npm:2.0.10"
   dependencies:
-    graphql-language-service: 5.1.7
+    "@types/codemirror": ^0.0.90
+    graphql-language-service: 5.2.0
   peerDependencies:
     "@codemirror/language": 6.0.0
     codemirror: ^5.65.3
     graphql: ^15.5.0 || ^16.0.0
-  checksum: 89a67d6f67b9a33a780c75025ceea68f1d8e12073524a09ff5a946933c9c35dfd398b428a9811a41b57fcc91799c3e3e4fca835c2618ca9e631a75f697967a62
+  checksum: d14e680168f407fd3d6ab09d88ea33640dd39f84d9ceb1ce605d9687d459fd08787109800a9847bbce72122e3318e975b255f65ddb19725d7a12781f4bf26506
   languageName: node
   linkType: hard
 
@@ -10728,25 +10738,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphiql@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "graphiql@npm:3.0.0"
+"graphiql@npm:^3.0.8":
+  version: 3.0.8
+  resolution: "graphiql@npm:3.0.8"
   dependencies:
-    "@graphiql/react": ^0.18.0
-    "@graphiql/toolkit": ^0.8.4
-    graphql-language-service: ^5.1.7
+    "@graphiql/react": ^0.20.1
+    "@graphiql/toolkit": ^0.9.1
+    graphql-language-service: ^5.2.0
     markdown-it: ^12.2.0
   peerDependencies:
     graphql: ^15.5.0 || ^16.0.0
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
-  checksum: b60e8aa53c043f7e223245a7c06063db6819edd8ac8e8f61521ff513daede28bdbfe509de4322d05a50d08dc6f8661a7852f8ff8e8d5d27669faad9f450ffc62
+  checksum: a7de7155452cb03d3f80c9443aabf10c7b0da8614402ca05889199634948f7e90afa78415984369fc37d4190256739fd8cc91d4803426f42c76f27c694d652e6
   languageName: node
   linkType: hard
 
-"graphql-language-service@npm:5.1.7, graphql-language-service@npm:^5.1.7":
-  version: 5.1.7
-  resolution: "graphql-language-service@npm:5.1.7"
+"graphql-language-service@npm:5.2.0, graphql-language-service@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "graphql-language-service@npm:5.2.0"
   dependencies:
     nullthrows: ^1.0.0
     vscode-languageserver-types: ^3.17.1
@@ -10754,16 +10764,16 @@ __metadata:
     graphql: ^15.5.0 || ^16.0.0
   bin:
     graphql: dist/temp-bin.js
-  checksum: eca00df3a136f687fa96c10c458817082c7ee427552969beeac0871d565e697faf93f677fdad15ee8bb3011fa5a47fe861bde71c88db9b8b4d67704928406fae
+  checksum: b053c6b7158d0ee7a3e55391bfd8be956fc5380211ca586b3a252007845e119540fb40efcc438975eaebc5ef25f46973f7ff4d9543c66e14ebd992957e0299b7
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^5.14.0":
-  version: 5.14.0
-  resolution: "graphql-ws@npm:5.14.0"
+"graphql-ws@npm:^5.14.2":
+  version: 5.14.2
+  resolution: "graphql-ws@npm:5.14.2"
   peerDependencies:
     graphql: ">=0.11 <=16"
-  checksum: 7b622944823fa12a77ea490656121a77e1a1daf08114a6a0b027922113f4481d95f4fe380a5de369a51657ef777d35757dc31f63e41071c21f3e97ca47e4205a
+  checksum: ee9affa2478b9d262405986f07616267b4db10ae45cf32fffb551572fb5bf5e1e3aa6652375511b3ff640d382c74c1327ce75ff1ee2fa8b964b3ef3d55d97f75
   languageName: node
   linkType: hard
 
@@ -10774,10 +10784,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^16.7.1":
-  version: 16.7.1
-  resolution: "graphql@npm:16.7.1"
-  checksum: c924d8428daf0e96a5ea43e9bc3cd1b6802899907d284478ac8f705c8fd233a0a51eef915f7569fb5de8acb2e85b802ccc6c85c2b157ad805c1e9adba5a299bd
+"graphql@npm:^16.8.1":
+  version: 16.8.1
+  resolution: "graphql@npm:16.8.1"
+  checksum: 8d304b7b6f708c8c5cc164b06e92467dfe36aff6d4f2cf31dd19c4c2905a0e7b89edac4b7e225871131fd24e21460836b369de0c06532644d15b461d55b1ccc0
   languageName: node
   linkType: hard
 

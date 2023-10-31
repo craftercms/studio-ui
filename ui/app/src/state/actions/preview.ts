@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { StandardAction } from '../../models/StandardAction';
 import ContentType, { ContentTypeField, ValidationResult } from '../../models/ContentType';
 import ContentInstance, { InstanceRecord } from '../../models/ContentInstance';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
