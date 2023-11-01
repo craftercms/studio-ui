@@ -157,7 +157,7 @@
     "react": "18.2.0",
     "react-animations": "^1.0.0",
     "react-dom": "18.2.0",
-    "react-hotkeys-hook": "^4.4.0",
+    "react-hotkeys-hook": "^4.4.1",
     "react-infinite-scroller": "^1.2.6",
     "react-intl": "^6.4.2",
     "react-redux": "^8.0.5",
@@ -173,7 +173,7 @@
     "typescript": "^4.9.5",
     "uppy": "^3.18.1",
     "video.js": "^8.6.1",
-    "web-vitals": "^3.3.1",
+    "web-vitals": "^3.5.0",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {

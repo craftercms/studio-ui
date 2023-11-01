@@ -1946,7 +1946,7 @@ __metadata:
     prop-types: ^15.8.1
     react: 18.2.0
     react-dom: 18.2.0
-    react-hotkeys-hook: ^4.4.0
+    react-hotkeys-hook: ^4.4.1
     react-is: ^18.2.0
     react-redux: ^8.0.5
     redux: ^4.2.1
@@ -1984,7 +1984,7 @@ __metadata:
   dependencies:
     "@types/rimraf": ^4.0.5
     build-if-changed: ^1.5.5
-    css-loader: ^6.7.3
+    css-loader: ^6.8.1
     file-loader: ^6.2.0
     monaco-editor: 0.38.0
     monaco-editor-webpack-plugin: ^7.0.1
@@ -2001,7 +2001,7 @@ __metadata:
   resolution: "@craftercms/npm-content@workspace:ui/npm-content"
   dependencies:
     "@popperjs/core": ^2.11.8
-    "@types/bootstrap": ^5
+    "@types/bootstrap": ^5.2.8
     ace-builds: ^1.31.1
     bootstrap: ^5.3.2
     build-if-changed: ^1.5.5
@@ -2105,7 +2105,7 @@ __metadata:
     react: 18.2.0
     react-animations: ^1.0.0
     react-dom: 18.2.0
-    react-hotkeys-hook: ^4.4.0
+    react-hotkeys-hook: ^4.4.1
     react-infinite-scroller: ^1.2.6
     react-intl: ^6.4.2
     react-redux: ^8.0.5
@@ -2123,7 +2123,7 @@ __metadata:
     typescript: ^4.9.5
     uppy: ^3.18.1
     video.js: ^8.6.1
-    web-vitals: ^3.3.1
+    web-vitals: ^3.5.0
     zxcvbn: ^4.4.2
   languageName: unknown
   linkType: soft
@@ -2139,14 +2139,14 @@ __metadata:
     "@types/rimraf": ^4.0.5
     build-if-changed: ^1.5.5
     eslint: ^8.3.0
-    eslint-config-prettier: ^8.8.0
+    eslint-config-prettier: ^8.10.0
     eslint-plugin-prettier: ^4.2.1
     glob-gitignore: ^1.0.14
     npm-run-all: ^4.1.5
     rimraf: ^5.0.5
     rollup: ^3.21.6
     rollup-plugin-babel: ^4.4.0
-    rollup-plugin-copy: ^3.4.0
+    rollup-plugin-copy: ^3.5.0
     rollup-plugin-terser: ^7.0.2
     rollup-plugin-ts-treeshaking: ^1.0.2
     yargs: ^17.7.2
@@ -4980,7 +4980,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bootstrap@npm:^5":
+"@types/bootstrap@npm:^5.2.8":
   version: 5.2.8
   resolution: "@types/bootstrap@npm:5.2.8"
   dependencies:
@@ -8384,7 +8384,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"css-loader@npm:^6.5.1, css-loader@npm:^6.7.3":
+"css-loader@npm:^6.5.1":
   version: 6.7.3
   resolution: "css-loader@npm:6.7.3"
   dependencies:
@@ -8399,6 +8399,24 @@ __metadata:
   peerDependencies:
     webpack: ^5.0.0
   checksum: 473cc32b6c837c2848e2051ad1ba331c1457449f47442e75a8c480d9891451434ada241f7e3de2347e57de17fcd84610b3bcfc4a9da41102cdaedd1e17902d31
+  languageName: node
+  linkType: hard
+
+"css-loader@npm:^6.8.1":
+  version: 6.8.1
+  resolution: "css-loader@npm:6.8.1"
+  dependencies:
+    icss-utils: ^5.1.0
+    postcss: ^8.4.21
+    postcss-modules-extract-imports: ^3.0.0
+    postcss-modules-local-by-default: ^4.0.3
+    postcss-modules-scope: ^3.0.0
+    postcss-modules-values: ^4.0.0
+    postcss-value-parser: ^4.2.0
+    semver: ^7.3.8
+  peerDependencies:
+    webpack: ^5.0.0
+  checksum: 7c1784247bdbe76dc5c55fb1ac84f1d4177a74c47259942c9cfdb7a8e6baef11967a0bc85ac285f26bd26d5059decb848af8154a03fdb4f4894f41212f45eef3
   languageName: node
   linkType: hard
 
@@ -9435,14 +9453,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^8.8.0":
-  version: 8.8.0
-  resolution: "eslint-config-prettier@npm:8.8.0"
+"eslint-config-prettier@npm:^8.10.0":
+  version: 8.10.0
+  resolution: "eslint-config-prettier@npm:8.10.0"
   peerDependencies:
     eslint: ">=7.0.0"
   bin:
     eslint-config-prettier: bin/cli.js
-  checksum: 1e94c3882c4d5e41e1dcfa2c368dbccbfe3134f6ac7d40101644d3bfbe3eb2f2ffac757f3145910b5eacf20c0e85e02b91293d3126d770cbf3dc390b3564681c
+  checksum: 153266badd477e49b0759816246b2132f1dbdb6c7f313ca60a9af5822fd1071c2bc5684a3720d78b725452bbac04bb130878b2513aea5e72b1b792de5a69fec8
   languageName: node
   linkType: hard
 
@@ -13839,6 +13857,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^3.3.6":
+  version: 3.3.6
+  resolution: "nanoid@npm:3.3.6"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: 7d0eda657002738aa5206107bd0580aead6c95c460ef1bdd0b1a87a9c7ae6277ac2e9b945306aaa5b32c6dcb7feaf462d0f552e7f8b5718abfc6ead5c94a71b3
+  languageName: node
+  linkType: hard
+
 "nanoid@npm:^4.0.0":
   version: 4.0.2
   resolution: "nanoid@npm:4.0.2"
@@ -15123,6 +15150,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-modules-local-by-default@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "postcss-modules-local-by-default@npm:4.0.3"
+  dependencies:
+    icss-utils: ^5.0.0
+    postcss-selector-parser: ^6.0.2
+    postcss-value-parser: ^4.1.0
+  peerDependencies:
+    postcss: ^8.1.0
+  checksum: 2f8083687f3d6067885f8863dd32dbbb4f779cfcc7e52c17abede9311d84faf6d3ed8760e7c54c6380281732ae1f78e5e56a28baf3c271b33f450a11c9e30485
+  languageName: node
+  linkType: hard
+
 "postcss-modules-scope@npm:^3.0.0":
   version: 3.0.0
   resolution: "postcss-modules-scope@npm:3.0.0"
@@ -15504,6 +15544,17 @@ __metadata:
     picocolors: ^1.0.0
     source-map-js: ^1.0.2
   checksum: e39ac60ccd1542d4f9d93d894048aac0d686b3bb38e927d8386005718e6793dbbb46930f0a523fe382f1bbd843c6d980aaea791252bf5e176180e5a4336d9679
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.21":
+  version: 8.4.31
+  resolution: "postcss@npm:8.4.31"
+  dependencies:
+    nanoid: ^3.3.6
+    picocolors: ^1.0.0
+    source-map-js: ^1.0.2
+  checksum: 1d8611341b073143ad90486fcdfeab49edd243377b1f51834dc4f6d028e82ce5190e4f11bb2633276864503654fb7cab28e67abdc0fbf9d1f88cad4a0ff0beea
   languageName: node
   linkType: hard
 
@@ -15898,13 +15949,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hotkeys-hook@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "react-hotkeys-hook@npm:4.4.0"
+"react-hotkeys-hook@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "react-hotkeys-hook@npm:4.4.1"
   peerDependencies:
     react: ">=16.8.1"
     react-dom: ">=16.8.1"
-  checksum: 1c39bbcbb29bea15fec225facee27fb2b24bc84b385f4492d0eebdafa70a2eb0835454d9ba14d81eb9930cf469600b86e21113cd0899e15d8d5163b26819c5dd
+  checksum: c03d5d013ec41f3a63a3dd7d704d2fc98fba227811f7a1222af8651705f1cef983b7ccc4325f9910fec920156b14b4f05101882dc7d0bde1601ba56c01d5f162
   languageName: node
   linkType: hard
 
@@ -16696,16 +16747,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup-plugin-copy@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "rollup-plugin-copy@npm:3.4.0"
+"rollup-plugin-copy@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "rollup-plugin-copy@npm:3.5.0"
   dependencies:
     "@types/fs-extra": ^8.0.1
     colorette: ^1.1.0
     fs-extra: ^8.1.0
     globby: 10.0.1
     is-plain-object: ^3.0.0
-  checksum: 6eed5b2498fbe44d694f65ae9a9287b13a606b98a232b5a144a94140e8631efae5f5953b573ba68bf2dc59ab11c223ad3ea6f6cd15b51f42287f4bcc234f0e8b
+  checksum: 706ba6bd2052b95d1037f12963ff4b50749730f18aefad10544f9574aff7c035c88c5dd9ae1f0c0408cf09862e595a0ea4d68e13c2717addaea2bda3ade0d0e0
   languageName: node
   linkType: hard
 
@@ -19045,10 +19096,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-vitals@npm:^3.3.1":
-  version: 3.3.1
-  resolution: "web-vitals@npm:3.3.1"
-  checksum: ff417dec2d77f57bc5130767f47aad6f93173e5d0e24a179082c7dca423850106ba1d66c737f91400a6bed6585a7295531d9e54354d1cb31d1a3e68596bb2000
+"web-vitals@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "web-vitals@npm:3.5.0"
+  checksum: d8d760772a7ac33c9569f1d92619a0d2582ffe61bb667b0a2f9de9749ae861842b8a0d83c5126226afb792e63eb57bc461a0cb2e568dce03c81cf6b46677f442
   languageName: node
   linkType: hard
 

@@ -9,7 +9,7 @@
     "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
-    "css-loader": "^6.7.3",
+    "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
     "monaco-editor": "0.38.0",
     "style-loader": "^3.3.3"
