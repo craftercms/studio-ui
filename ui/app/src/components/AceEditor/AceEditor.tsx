@@ -274,26 +274,27 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     if (!window.ace) {
       const aceScript = document.createElement('script');
       aceScript.src = '/studio/static-assets/libs/ace/ace.js';
+
+      // Language tools
+      const languageToolsScript = document.createElement('script');
+      languageToolsScript.src = '/studio/static-assets/libs/ace/ext-language_tools.js';
+      languageToolsScript.onload = () => {
+        deps.emmet = true;
+        init();
+      };
       aceScript.onload = () => {
         deps.ace = true;
         // Emmet
         const emmetScript = document.createElement('script');
-        emmetScript.src = '/studio/static-assets/libs/ace/ext-language_tools.js';
+        emmetScript.src = '/studio/static-assets/libs/ace/ext-emmet.js';
         emmetScript.onload = () => {
           deps.languageTools = true;
           init();
         };
-        // Language tools
-        const languageToolsScript = document.createElement('script');
-        languageToolsScript.src = '/studio/static-assets/libs/ace/ext-emmet.js';
-        languageToolsScript.onload = () => {
-          deps.emmet = true;
-          init();
-        };
         document.head.appendChild(emmetScript);
-        document.head.appendChild(languageToolsScript);
       };
       document.head.appendChild(aceScript);
+      document.head.appendChild(languageToolsScript);
     } else {
       deps.ace = true;
       deps.emmet = true;
