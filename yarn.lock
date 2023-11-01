@@ -1987,7 +1987,7 @@ __metadata:
     css-loader: ^6.8.1
     file-loader: ^6.2.0
     monaco-editor: 0.44.0
-    monaco-editor-webpack-plugin: ^7.0.1
+    monaco-editor-webpack-plugin: ^7.1.0
     npm-run-all: ^4.1.5
     rimraf: ^5.0.5
     style-loader: ^3.3.3
@@ -2070,7 +2070,7 @@ __metadata:
     "@types/jquery": ^3.5.25
     "@types/js-cookie": ^3.0.5
     "@types/marked": ^4.3.2
-    "@types/prettier": ^2.7.2
+    "@types/prettier": ^2.7.3
     "@types/react": ^18.2.33
     "@types/react-dom": ^18.2.14
     "@types/react-infinite-scroller": ^1.2.4
@@ -2119,7 +2119,7 @@ __metadata:
     rollup: ^3.21.6
     rxjs: ^7.0.0
     slugify: ^1.6.6
-    tss-react: ^4.8.3
+    tss-react: ^4.9.3
     typescript: ^4.9.5
     uppy: ^3.18.1
     video.js: ^8.6.1
@@ -5349,10 +5349,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.1.5, @types/prettier@npm:^2.7.2":
+"@types/prettier@npm:^2.1.5":
   version: 2.7.2
   resolution: "@types/prettier@npm:2.7.2"
   checksum: b47d76a5252265f8d25dd2fe2a5a61dc43ba0e6a96ffdd00c594cb4fd74c1982c2e346497e3472805d97915407a09423804cc2110a0b8e1b22cffcab246479b7
+  languageName: node
+  linkType: hard
+
+"@types/prettier@npm:^2.7.3":
+  version: 2.7.3
+  resolution: "@types/prettier@npm:2.7.3"
+  checksum: 705384209cea6d1433ff6c187c80dcc0b95d99d5c5ce21a46a9a58060c527973506822e428789d842761e0280d25e3359300f017fbe77b9755bc772ab3dc2f83
   languageName: node
   linkType: hard
 
@@ -13804,15 +13811,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor-webpack-plugin@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "monaco-editor-webpack-plugin@npm:7.0.1"
+"monaco-editor-webpack-plugin@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "monaco-editor-webpack-plugin@npm:7.1.0"
   dependencies:
     loader-utils: ^2.0.2
   peerDependencies:
     monaco-editor: ">= 0.31.0"
     webpack: ^4.5.0 || 5.x
-  checksum: 436814c724d5033254519ef8203f0df600d15c6bf0a3bf48a42ea678086becb56ed5685df2bca4cd4107855ecf8cea73722e52b63573edba5c020ff51b4f2d31
+  checksum: e77cf5230c1b886fe0f1be3ecd8baea57795b93681783c5554bdf3aa256317a570bf546bbf17439f4c547182c9e70d8cb31d76715b3af0a8ec88e9cff054e4bd
   languageName: node
   linkType: hard
 
@@ -18472,9 +18479,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tss-react@npm:^4.8.3":
-  version: 4.8.3
-  resolution: "tss-react@npm:4.8.3"
+"tss-react@npm:^4.9.3":
+  version: 4.9.3
+  resolution: "tss-react@npm:4.9.3"
   dependencies:
     "@emotion/cache": "*"
     "@emotion/serialize": "*"
@@ -18482,11 +18489,14 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.4.1
     "@emotion/server": ^11.4.0
+    "@mui/material": ^5.0.0
     react: ^16.8.0 || ^17.0.2 || ^18.0.0
   peerDependenciesMeta:
     "@emotion/server":
       optional: true
-  checksum: bed0850b2625458758989c6b961d614753ffe2fb0b8a650ddda1a0ea750adfaf5be73ba7f9dfe3be1e0974e7149bf696da6265a2cbaeb39c284664374a1bb110
+    "@mui/material":
+      optional: true
+  checksum: 40445f156d4d74bae18bf697dbe4e9e7a46c7056976c6312e95dc3949d637eb5e1b1dd1a4ca244c53114d9bf525a756767b33b7d59b210730c52c0e5a8524f31
   languageName: node
   linkType: hard
 
