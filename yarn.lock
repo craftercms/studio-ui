@@ -1990,7 +1990,7 @@ __metadata:
     monaco-editor-webpack-plugin: ^7.0.1
     npm-run-all: ^4.1.5
     rimraf: ^5.0.5
-    style-loader: ^3.3.2
+    style-loader: ^3.3.3
     webpack: ^5.82.0
     webpack-cli: ^5.1.1
   languageName: unknown
@@ -2003,7 +2003,7 @@ __metadata:
     "@popperjs/core": ^2.11.8
     "@types/bootstrap": ^5
     ace-builds: ^1.31.1
-    bootstrap: ^5.3.1
+    bootstrap: ^5.3.2
     build-if-changed: ^1.5.5
     jquery-ui: ^1.13.2
     jquery-ui-css: ^1.11.5
@@ -2084,11 +2084,11 @@ __metadata:
     build-if-changed: ^1.5.5
     clsx: ^1.2.1
     eslint: ^8.3.0
-    fast-xml-parser: ^4.2.2
+    fast-xml-parser: ^4.3.2
     graphiql: ^3.0.8
     graphql: ^16.8.1
     graphql-ws: ^5.14.2
-    highlight.js: ^11.8.0
+    highlight.js: ^11.9.0
     jabber: ^1.5.3
     jquery: ^3.7.1
     js-cookie: ^3.0.5
@@ -7537,7 +7537,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:^5.3.1":
+"bootstrap@npm:^5.3.2":
   version: 5.3.2
   resolution: "bootstrap@npm:5.3.2"
   peerDependencies:
@@ -10071,14 +10071,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.2.2":
-  version: 4.2.5
-  resolution: "fast-xml-parser@npm:4.2.5"
+"fast-xml-parser@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "fast-xml-parser@npm:4.3.2"
   dependencies:
     strnum: ^1.0.5
   bin:
     fxparser: src/cli/cli.js
-  checksum: d32b22005504eeb207249bf40dc82d0994b5bb9ca9dcc731d335a1f425e47fe085b3cace3cf9d32172dd1a5544193c49e8615ca95b4bf95a4a4920a226b06d80
+  checksum: d507ce2efa5fd13d0a5ba28bd76dd68f2fc30ad8748357c37b70f360d19417866d79e35a688af067d5bceaaa796033fa985206aef9692f7a421e1326b6e73309
   languageName: node
   linkType: hard
 
@@ -11033,10 +11033,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"highlight.js@npm:^11.8.0":
-  version: 11.8.0
-  resolution: "highlight.js@npm:11.8.0"
-  checksum: d2578a57aee7315946ff19379053fd0a28b127baabf7617ab1d28d62cdc4eaf3d75053569cb8479a5afdc7a68f1ba9a6c1d612d8ae399b4b9aa43093b4fb6831
+"highlight.js@npm:^11.9.0":
+  version: 11.9.0
+  resolution: "highlight.js@npm:11.9.0"
+  checksum: 4043d31c5de9d27d13387d9a9e5e1939557254b7b85f0fab85d9cae0e420e131a3456ebf6148552020a1d8a216d671d583f2433d6c4de6179b8a66487a8325cb
   languageName: node
   linkType: hard
 
@@ -17798,12 +17798,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"style-loader@npm:^3.3.2":
-  version: 3.3.2
-  resolution: "style-loader@npm:3.3.2"
+"style-loader@npm:^3.3.3":
+  version: 3.3.3
+  resolution: "style-loader@npm:3.3.3"
   peerDependencies:
     webpack: ^5.0.0
-  checksum: 5ee5ce2dc885369eccb55d429376e83d02570d473ac5edeb69fd65ee894847f1e51429cf078351f617bd04516ece8a1dd967f9f40464bd8fa76d903c6b2a6f08
+  checksum: f59c953f56f6a935bd6a1dfa409f1128fed2b66b48ce4a7a75b85862a7156e5e90ab163878962762f528ec4d510903d828da645e143fbffd26f055dc1c094078
   languageName: node
   linkType: hard
 
