@@ -2121,7 +2121,7 @@ __metadata:
     slugify: ^1.6.6
     tss-react: ^4.8.3
     typescript: ^4.9.5
-    uppy: ^3.15.0
+    uppy: ^3.18.1
     video.js: ^8.6.1
     web-vitals: ^3.3.1
     zxcvbn: ^4.4.2
@@ -18659,7 +18659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uppy@npm:^3.15.0":
+"uppy@npm:^3.18.1":
   version: 3.18.1
   resolution: "uppy@npm:3.18.1"
   dependencies:
