@@ -1934,11 +1934,11 @@ __metadata:
     "@mui/material": ^5.14.16
     "@reduxjs/toolkit": ^1.9.5
     "@types/jquery": ^3.5.25
-    "@types/js-cookie": ^3.0.3
+    "@types/js-cookie": ^3.0.5
     "@types/prop-types": ^15.7.5
-    "@types/react-dom": ^18.2.4
-    "@types/react-is": ^18.2.1
-    "@types/tinymce": ^4.6.5
+    "@types/react-dom": ^18.2.14
+    "@types/react-is": ^18.2.3
+    "@types/tinymce": ^4.6.7
     build-if-changed: ^1.5.5
     jquery: ^3.7.1
     js-cookie: ^3.0.5
@@ -2008,7 +2008,7 @@ __metadata:
     jquery-ui: ^1.13.2
     jquery-ui-css: ^1.11.5
     js-yaml: ^4.1.0
-    tinymce: ^6.6.0
+    tinymce: ^6.7.2
   languageName: unknown
   linkType: soft
 
@@ -2068,15 +2068,15 @@ __metadata:
     "@types/ace": ^0.0.50
     "@types/graphql": ^14.5.0
     "@types/jquery": ^3.5.25
-    "@types/js-cookie": ^3.0.3
-    "@types/marked": ^4.3.0
+    "@types/js-cookie": ^3.0.5
+    "@types/marked": ^4.3.2
     "@types/prettier": ^2.7.2
-    "@types/react": ^18.2.14
-    "@types/react-dom": ^18.2.4
-    "@types/react-infinite-scroller": ^1.2.3
-    "@types/react-swipeable-views": ^0.13.2
+    "@types/react": ^18.2.33
+    "@types/react-dom": ^18.2.14
+    "@types/react-infinite-scroller": ^1.2.4
+    "@types/react-swipeable-views": ^0.13.4
     "@types/video.js": ^7.3.55
-    "@types/zxcvbn": ^4.4.1
+    "@types/zxcvbn": ^4.4.3
     "@videojs/vhs-utils": ^4.0.0
     autosuggest-highlight: ^3.3.4
     babel-plugin-formatjs: ^10.5.1
@@ -5223,10 +5223,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/js-cookie@npm:^3.0.3":
-  version: 3.0.3
-  resolution: "@types/js-cookie@npm:3.0.3"
-  checksum: 927254ec37ce4fbe4d9d54f53a446b4351259799d9933db5808ddb7c430396aa2496bdd0a4e47e1b56048ffbec98645cbd4daa9e3ed9a6fff55e25eb640fcb15
+"@types/js-cookie@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@types/js-cookie@npm:3.0.5"
+  checksum: 4d91ae26445499fdde283928aac9ad149be3561ef9b4d959f77e44694608accd5939c8c68ba42c50c2cfc007ccd442cc566a41077d7f2766390088fa91b612ce
   languageName: node
   linkType: hard
 
@@ -5258,10 +5258,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/marked@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@types/marked@npm:4.3.0"
-  checksum: 953e19c20a917f40386ea835536ca722439fbd004dfacd8db768c8151dbadc125c464b0c221a990ffea43524475864fafe1568101c4a6d05c54fbfd81029f58f
+"@types/marked@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "@types/marked@npm:4.3.2"
+  checksum: c1107079d6c368dd60a668a41aa2101d006cad404b6eb4af6723d419dc869b278928fb769825f11d0d311a8cf437428992729c8a47253b6a3894a6326b1ee4d9
   languageName: node
   linkType: hard
 
@@ -5356,21 +5356,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.2.4":
-  version: 18.2.4
-  resolution: "@types/react-dom@npm:18.2.4"
+"@types/react-dom@npm:^18.2.14":
+  version: 18.2.14
+  resolution: "@types/react-dom@npm:18.2.14"
   dependencies:
     "@types/react": "*"
-  checksum: 8301f35cf1cbfec8c723e9477aecf87774e3c168bd457d353b23c45064737213d3e8008b067c6767b7b08e4f2b3823ee239242a6c225fc91e7f8725ef8734124
+  checksum: 890289c70d1966c168037637c09cacefe6205bdd27a33252144a6b432595a2943775ac1a1accac0beddaeb67f8fdf721e076acb1adc990b08e51c3d9fd4e780c
   languageName: node
   linkType: hard
 
-"@types/react-infinite-scroller@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "@types/react-infinite-scroller@npm:1.2.3"
+"@types/react-infinite-scroller@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "@types/react-infinite-scroller@npm:1.2.4"
   dependencies:
     "@types/react": "*"
-  checksum: ae11063b5e114bff1f06e9d3d2ca0948a3a224f13b4a30fbfe56f84e535ee6232de9667456695bbbb409de51887d701f8558fd28c36a2ea172e8593346de85d1
+  checksum: 3fa8c9ea96efd880b98935f7e24a122c59aa46bc1522d38a66c542a6e74c3ed726e2e96613a92a5a541d2c9d438b50fdf4ead31ac0991faed81777bf55b0e766
   languageName: node
   linkType: hard
 
@@ -5383,12 +5383,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-swipeable-views@npm:^0.13.2":
-  version: 0.13.2
-  resolution: "@types/react-swipeable-views@npm:0.13.2"
+"@types/react-is@npm:^18.2.3":
+  version: 18.2.3
+  resolution: "@types/react-is@npm:18.2.3"
   dependencies:
     "@types/react": "*"
-  checksum: 733f700ef6c59dec5e2e36ee534ffd6b4df420e49cc3bb0306bf368358d49af7a3e2b006f93fb6953769d27ad4308bb536c733068a0e3f031a792cbe2c54e916
+  checksum: 14d3b659bee8c7444faae3c3d8f04e30dad555a203f2c255a9eef027f71dd55f5d50b05eca0ec2097acfe5da4632bdb8816993f9c3e4ca3c0e3d1a6ad1f07993
+  languageName: node
+  linkType: hard
+
+"@types/react-swipeable-views@npm:^0.13.4":
+  version: 0.13.4
+  resolution: "@types/react-swipeable-views@npm:0.13.4"
+  dependencies:
+    "@types/react": "*"
+  checksum: 7026b057866204dacbb69950017d725665144e33f7bf6da2af2600a3b7d9662fcb9ea8847bb5debf9d3172f70581b2f2db4722e8b42da6fea48721e51b3e6a1d
   languageName: node
   linkType: hard
 
@@ -5527,12 +5536,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/tinymce@npm:^4.6.5":
-  version: 4.6.5
-  resolution: "@types/tinymce@npm:4.6.5"
+"@types/tinymce@npm:^4.6.7":
+  version: 4.6.7
+  resolution: "@types/tinymce@npm:4.6.7"
   dependencies:
     "@types/jquery": "*"
-  checksum: 5db7fe352f664d48c7ed83a422bc7f743acea0e6d5756dee7d1a4faeb5dfaaa3114b6e6345699ea25cf49e1f0e7150c527dd31415e16153bc42e61a56f38686a
+  checksum: 94febf4cee8e4f2c616244d1bc6019c9f1dff504c972777ed1e946f65b792fd2e991f34fb69ba20f6661c6dc7cf40e5a04667b4009b523e7607670618f42822b
   languageName: node
   linkType: hard
 
@@ -5591,10 +5600,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/zxcvbn@npm:^4.4.1":
-  version: 4.4.1
-  resolution: "@types/zxcvbn@npm:4.4.1"
-  checksum: 71c484f1aa049921997ee6471604725a7fb00b9899e7753c6e94275a2b135e1088ed3f2f2ba77d189715d1ec61bed65b06899ba03e061b07ffc32c2a9296501b
+"@types/zxcvbn@npm:^4.4.3":
+  version: 4.4.3
+  resolution: "@types/zxcvbn@npm:4.4.3"
+  checksum: 3ce59276568fcdf9e109ca9ad4b2cb617cada17bb1c752d38ee5a6bb884e660659e96b70d17d6736d613b48d96e3034d16c7d885a7c3aa3b957dc969d1ce611b
   languageName: node
   linkType: hard
 
@@ -18179,7 +18188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinymce@npm:^6.6.0":
+"tinymce@npm:^6.7.2":
   version: 6.7.2
   resolution: "tinymce@npm:6.7.2"
   checksum: 46d90d4d807e295fda277e542e8877a39db089bca90df51f6fa2950c979dd3447cf430364c45efd631b2df923001fbdb1955eb50f4c8c6e759395552461fe461

@@ -15,7 +15,7 @@
     "jquery-ui": "^1.13.2",
     "jquery-ui-css": "^1.11.5",
     "js-yaml": "^4.1.0",
-    "tinymce": "^6.6.0"
+    "tinymce": "^6.7.2"
   },
   "devDependencies": {
     "@types/bootstrap": "^5",
