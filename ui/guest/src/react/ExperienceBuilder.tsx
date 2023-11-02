@@ -248,7 +248,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // This requires maintenance as key shortcuts evolve/change.
   useHotkeys(
-    'a,r,m,e,p,shift+/,shift+e',
+    'a,r,m,e,p,shift+/,shift,/,shift+e',
     (e) => {
       post(hotKey({ key: e.key, type: 'keyup', shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, metaKey: e.metaKey }));
     },
