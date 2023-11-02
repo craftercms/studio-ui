@@ -179,7 +179,8 @@ export function initTinyMCE(
 
       function save() {
         const content = getContent();
-        if (changed) {
+        // 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
+        if (changed || content !== originalContent) {
           contentController.updateField(record.modelId, record.fieldId[0], record.index, content);
         }
       }
