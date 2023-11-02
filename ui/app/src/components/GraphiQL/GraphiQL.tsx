@@ -125,7 +125,7 @@ function GraphiQL(props: GraphiQLProps) {
     <>
       <GlobalStyles
         styles={{
-          '[data-radix-popper-content-wrapper], react-portal [data-reach-tooltip]': {
+          '[data-radix-popper-content-wrapper], react-portal [data-reach-tooltip], .graphiql-dialog': {
             zIndex: '1301 !important'
           }
         }}
