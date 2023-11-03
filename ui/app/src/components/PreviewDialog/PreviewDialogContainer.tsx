@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AsyncVideoPlayer from '../AsyncVideoPlayer/AsyncVideoPlayer';
 import LoadingState, { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import IFrame from '../IFrame/IFrame';
@@ -26,22 +26,33 @@ import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
-import useDetailedItem from '../../hooks/useDetailedItem';
 import { DialogBody } from '../DialogBody';
 import { useDispatch } from 'react-redux';
 import { closePreviewDialog, showCodeEditorDialog } from '../../state/actions/dialogs';
 import { batchActions } from '../../state/actions/misc';
 import { hasEditAction, isBlobUrl } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { fetchSandboxItem } from '../../state/actions/content';
+import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
-  const { title, content, mode, url, onClose, type, mimeType, backgroundModeIndex } = props;
+  const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex } = props;
   const { classes, cx } = useStyles();
-  const item = useDetailedItem(url);
+  const siteId = useActiveSiteId();
+  const items = useItemsByPath();
+  const itemsBeingFetchedByPath = useItemsBeingFetchedByPath();
+  const item = items?.[path];
   const dispatch = useDispatch();
   const guestBase = useSelection<string>((state) => state.env.guestBase);
-
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (type === 'editor' && path && !items[path] && !itemsBeingFetchedByPath[path]) {
+      dispatch(fetchSandboxItem({ path }));
+    }
+  }, [siteId, items, path, type, dispatch, itemsBeingFetchedByPath]);
 
   const renderPreview = () => {
     switch (type) {

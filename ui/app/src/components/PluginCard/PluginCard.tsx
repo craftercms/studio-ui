@@ -33,6 +33,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
 import SecondaryButton from '../SecondaryButton';
+import Box from '@mui/material/Box';
 
 interface PluginCardProps {
   plugin: MarketplacePlugin;
@@ -221,6 +222,8 @@ function PluginCard(props: PluginCardProps) {
   const { media, name, license, id, developer } = plugin;
   const { formatMessage } = useIntl();
   const isGitCard = id === 'GIT';
+  const isDuplicateCard = id === 'DUPLICATE';
+  const isGitOrDuplicateCard = isGitCard || isDuplicateCard;
 
   function handleChangeIndex(value: number) {
     setIndex(value);
@@ -240,7 +243,7 @@ function PluginCard(props: PluginCardProps) {
   }
 
   function onImageClick(e: any, index: number = 0) {
-    if (plugin.id === 'GIT') return false;
+    if (isGitOrDuplicateCard) return false;
     e.stopPropagation();
     e.preventDefault();
     onDetails(plugin, index);
@@ -292,10 +295,18 @@ function PluginCard(props: PluginCardProps) {
         return (
           <div
             key={index}
-            className={cx(classes.background, id === 'GIT' && 'git')}
+            className={cx(classes.background, isGitOrDuplicateCard && 'git')}
             onClick={(event) => onImageClick(event, index)}
           >
-            <img className={cx(classes.carouselImg, id === 'GIT' && 'git')} src={item.url} alt={item.description} />
+            {item.icon ? (
+              <Box sx={{ pl: '20px', pr: '5px', color: (theme) => theme.palette.text.secondary }}>{item.icon}</Box>
+            ) : (
+              <img
+                className={cx(classes.carouselImg, isGitOrDuplicateCard && 'git')}
+                src={item.url}
+                alt={item.description}
+              />
+            )}
           </div>
         );
       } else {
@@ -322,8 +333,8 @@ function PluginCard(props: PluginCardProps) {
   plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
   return (
-    <Card className={cx(classes.card, id === 'GIT' ? classes.gitCard : null)}>
-      {id !== 'GIT' && (
+    <Card className={cx(classes.card, isGitOrDuplicateCard ? classes.gitCard : null)}>
+      {!isGitOrDuplicateCard && (
         <CardActionArea
           disabled={disableCardActionClick}
           onClick={(e) => {
@@ -334,11 +345,9 @@ function PluginCard(props: PluginCardProps) {
             }
           }}
         >
-          {/*
-          // @ts-ignore */}
           <CardHeader
             title={name}
-            subheader={id !== 'GIT' ? renderSubtitle() : ''}
+            subheader={!isGitOrDuplicateCard ? renderSubtitle() : ''}
             titleTypographyProps={{
               variant: 'subtitle2',
               component: 'h2',
@@ -357,7 +366,7 @@ function PluginCard(props: PluginCardProps) {
         onClick={() => {
           onPluginSelected(plugin, 1);
         }}
-        className={isGitCard ? classes.gitCardActionArea : null}
+        className={isGitOrDuplicateCard ? classes.gitCardActionArea : null}
       >
         <AutoPlaySwipeableViews
           index={index}
@@ -368,8 +377,8 @@ function PluginCard(props: PluginCardProps) {
         >
           {renderMedias(id)}
         </AutoPlaySwipeableViews>
-        {id === 'GIT' && (
-          <CardContent className={cx('cardContent', isGitCard ? classes.gitCardContent : null)}>
+        {isGitOrDuplicateCard && (
+          <CardContent className={cx('cardContent', isGitOrDuplicateCard ? classes.gitCardContent : null)}>
             <Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">
               {name}
             </Typography>
@@ -379,7 +388,7 @@ function PluginCard(props: PluginCardProps) {
           </CardContent>
         )}
       </CardActionArea>
-      {steps > 0 && id !== 'GIT' && (
+      {steps > 0 && !isGitOrDuplicateCard && (
         <MobileStepper
           variant="dots"
           steps={steps}
@@ -389,7 +398,7 @@ function PluginCard(props: PluginCardProps) {
           activeStep={index}
         />
       )}
-      {id !== 'GIT' && (
+      {!isGitOrDuplicateCard && (
         <CardActions className={'cardActions'}>
           {((isMarketplacePlugin && plugin.compatible) || !isMarketplacePlugin) && ( // if it's from marketplace and compatible, or not from marketplace (private bps)
             <SecondaryButton

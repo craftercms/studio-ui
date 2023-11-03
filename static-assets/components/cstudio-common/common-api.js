@@ -221,25 +221,7 @@ var nodeOpen = false,
       CONFIG_FILES_PATH: '/config/studio',
       CONFIG_FILES_PATH_ADMIN: '/config',
       CONFIG_SAMPLE_FILES_PATH_ADMIN: '/configuration/samples',
-      IMAGE_VALID_EXTENSIONS: [
-        'jpg',
-        'jpeg',
-        'gif',
-        'png',
-        'tiff',
-        'tif',
-        'bmp',
-        'svg',
-        'JPG',
-        'JPEG',
-        'GIF',
-        'PNG',
-        'TIFF',
-        'TIF',
-        'BMP',
-        'SVG',
-        'webp'
-      ],
+      IMAGE_VALID_EXTENSIONS: ['jpg', 'jpeg', 'gif', 'png', 'tiff', 'tif', 'bmp', 'svg', 'webp'],
       MAX_INT_VALUE: 2147483647,
       CACHE_TIME_CONFIGURATION: 900000,
       CACHE_TIME_PERMISSION: 900000,
@@ -290,11 +272,9 @@ var nodeOpen = false,
      */
     OverlayRequiredResources: {
       css: [
-        '/static-assets/yui/treeview/assets/skins/sam/treeview.css',
         '/static-assets/themes/cstudioTheme/yui/assets/skin.css',
         '/static-assets/themes/cstudioTheme/css/contextNav.css',
         '/static-assets/yui/container/assets/container.css',
-        '/static-assets/jquery/jquery-time/jquery.timeentry.css',
         '/static-assets/libs/jquery-ui/jquery-ui.min.css'
       ],
       js: [
@@ -319,6 +299,7 @@ var nodeOpen = false,
       loadContextNavCss: function () {
         CSA.Utils.addCss('/static-assets/styles/temp.css');
         CSA.Utils.addCss('/static-assets/styles/forms-engine.css');
+        CSA.Utils.addCss('/static-assets/styles/bootstrap-5.3.css');
       },
 
       /**
@@ -2286,7 +2267,6 @@ var nodeOpen = false,
         var CSA = CStudioAuthoring,
           uri = path.replace('//', '/'),
           params = { site: site || CStudioAuthoringContext.site, path: path };
-
         function doEdit() {
           if (uri.indexOf('/site') === 0) {
             CSA.Operations.openContentWebForm(
@@ -2357,18 +2337,26 @@ var nodeOpen = false,
           unsubscribe();
         });
 
-        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe((items) => {
-          if (items && items.length) {
-            const eventIdSuccess = 'workflowCancellationDialogContinue';
-            CrafterCMSNext.system.store.dispatch({
-              type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-              payload: { items }
-            });
-          } else {
+        CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe({
+          next: (items) => {
+            if (items && items.length) {
+              const eventIdSuccess = 'workflowCancellationDialogContinue';
+              CrafterCMSNext.system.store.dispatch({
+                type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
+                payload: { items }
+              });
+            } else {
+              CrafterCMSNext.system.store.dispatch({
+                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
+              });
+              doEdit();
+            }
+          },
+          error(error) {
             CrafterCMSNext.system.store.dispatch({
               type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
             });
-            doEdit();
+            callback.failure(error);
           }
         });
       },
@@ -3692,7 +3680,7 @@ var nodeOpen = false,
 
         this.getVersionHistory(site, contentTO, {
           success: function (response) {
-            callback.success(response.versions[0].versionNumber);
+            callback.success(response[0].versionNumber);
           }
         });
       },
@@ -6403,7 +6391,7 @@ var nodeOpen = false,
         $(document).on('click', `.notifyjs-${styleName}-${id} .yes`, onOk);
       },
 
-      showConfirmDialog: function (title, body, callback) {
+      showConfirmDialog: function (title, body, callback, okButtonText, cancelButtonText) {
         const onOk = 'confirmDialogOnOk';
         const onCancel = 'confirmDialogOnCancel';
         let unsubscribe, cancelUnsubscribe;
@@ -6415,6 +6403,8 @@ var nodeOpen = false,
               open: true,
               title,
               body,
+              okButtonText,
+              cancelButtonText,
               onOk: {
                 type: 'BATCH_ACTIONS',
                 payload: [

@@ -15,7 +15,15 @@
  */
 
 import { get, postJSON } from '../utils/ajax';
-import { Action, BackendSite, ContentValidationResult, CreateSiteMeta, LegacySite, Site } from '../models/Site';
+import {
+  Action,
+  BackendSite,
+  ContentValidationResult,
+  CreateSiteMeta,
+  DuplicateSiteMeta,
+  LegacySite,
+  Site
+} from '../models/Site';
 import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PagedArray } from '../models/PagedArray';
@@ -24,6 +32,7 @@ import { MarketplacePlugin } from '../models/MarketplacePlugin';
 import { underscore } from '../utils/string';
 import { Api2BulkResponseFormat, Api2ResponseFormat } from '../models/ApiResponse';
 import { FetchPublishingTargetsResponse } from './publishing';
+import { reversePluckProps } from '../utils/object';
 
 interface BuiltInBlueprint {
   descriptorVersion: string;
@@ -58,7 +67,8 @@ export function fetchAll(paginationOptions?: PaginationOptions): Observable<Page
           uuid: site.uuid,
           name: site.name ?? site.siteId,
           description: site.desc,
-          imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
+          imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`,
+          state: site.state
         })),
         {
           limit: response.limit,
@@ -80,6 +90,19 @@ export function create(site: CreateSiteMeta): Observable<Site> {
     }
   });
   return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
+    pluck('response'),
+    map(() => ({
+      id: site.siteId,
+      name: site.siteName,
+      description: site.description ?? '',
+      uuid: null,
+      imageUrl: `/.crafter/screenshots/default.png?crafterSite=${site.siteId}`
+    }))
+  );
+}
+
+export function duplicate(site: DuplicateSiteMeta): Observable<Site> {
+  return postJSON(`/studio/api/2/sites/${site.sourceSiteId}/duplicate`, reversePluckProps(site, 'sourceSiteId')).pipe(
     pluck('response'),
     map(() => ({
       id: site.siteId,

@@ -26,7 +26,6 @@ import { PublishFormData, PublishingTarget } from '../../../models';
 import { fetchPublishingTargets, publishByCommits } from '../../../services/publishing';
 import useSpreadState from '../../../hooks/useSpreadState';
 import useSelection from '../../../hooks/useSelection';
-import useMount from '../../../hooks/useMount';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import { showSystemNotification } from '../../../state/actions/system';
 import { useDispatch } from 'react-redux';
@@ -34,9 +33,13 @@ import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlin
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { isBlank } from '../../../utils/string';
+import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
+import useUpdateRefs from '../../../hooks/useUpdateRefs';
+import useWithPendingChangesCloseRequest from '../../../hooks/useWithPendingChangesCloseRequest';
 
 export interface PublishCommitDialogProps extends EnhancedDialogProps {
   commitId: string;
+  onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 interface PublishCommitDialogState extends PublishFormData {
@@ -47,7 +50,7 @@ interface PublishCommitDialogState extends PublishFormData {
 }
 
 export function PublishCommitDialog(props: PublishCommitDialogProps) {
-  const { commitId, ...dialogProps } = props;
+  const { commitId, onSubmittingAndOrPendingChange, ...dialogProps } = props;
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const initialState = {
@@ -64,7 +67,10 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   const { loadingPublishingTargets, isSubmitting, publishingTargets, publishSuccessful, ...data } = state;
   const { publishByCommitCommentRequired } = useSelection((state) => state.uiConfig.publishing);
   const isInvalid = (publishByCommitCommentRequired && isBlank(data.comment)) || isBlank(data.commitIds);
-  const onCancel = (e) => dialogProps.onClose(e, null);
+  const open = Boolean(dialogProps?.open);
+  const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const onCancel = (e) => pendingChangesCloseRequest(e, null);
   const onPublish = () => {
     if (!isInvalid) {
       setState({ isSubmitting: true });
@@ -76,9 +82,10 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
       ).subscribe({
         next() {
           setState({ isSubmitting: false, publishSuccessful: true });
+          fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: false });
         },
         error({ response }) {
-          setState({ isSubmitting: true });
+          setState({ isSubmitting: false });
           dispatch(
             showSystemNotification({
               message: response.message,
@@ -89,28 +96,34 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
       });
     }
   };
-  useMount(() => {
-    setState({ loadingPublishingTargets: true });
-    const sub = fetchPublishingTargets(site).subscribe({
-      next({ publishingTargets }) {
-        const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
-        // Set pre-selected publishing target.
-        if (publishingTargets.length === 1) {
-          newData.publishingTarget = publishingTargets[0].name;
-        }
-        setState(newData);
-      }
-    });
-    return () => {
-      sub.unsubscribe();
-    };
-  });
   useEffect(() => {
+    if (open) {
+      setState({ loadingPublishingTargets: true });
+      const sub = fetchPublishingTargets(site).subscribe({
+        next({ publishingTargets }) {
+          const newData: Partial<PublishCommitDialogState> = { publishingTargets, loadingPublishingTargets: false };
+          // Set pre-selected publishing target.
+          if (publishingTargets.length > 0) {
+            const stagingEnv = publishingTargets.find((target) => target.name === 'staging');
+            newData.publishingTarget = stagingEnv?.name ?? publishingTargets[0].name;
+          }
+          setState(newData);
+        }
+      });
+      return () => {
+        sub.unsubscribe();
+      };
+    }
+  }, [setState, site, open]);
+  useEffect(() => {
+    // Since the form will have a commitId from the beginning, the 'hasPendingChanges' flag will be true.
+    fnRefs.current.onSubmittingAndOrPendingChange({ hasPendingChanges: true });
     setState({ commitIds: commitId });
-  }, [commitId, setState]);
+  }, [commitId, setState, fnRefs]);
   return (
     <EnhancedDialog
       {...dialogProps}
+      onWithPendingChangesCloseRequest={pendingChangesCloseRequest}
       onClosed={() => {
         setState({ ...initialState, publishingTarget: state.publishingTarget, publishingTargets: publishingTargets });
       }}
@@ -142,12 +155,18 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
             <PublishOnDemandForm
               mode="git"
               formData={data}
-              setFormData={(newData) => setState(newData)}
-              publishingTargets={publishingTargets}
+              setFormData={(newData) => {
+                setState(newData);
+                const mergedData = { ...data, ...newData };
+                fnRefs.current.onSubmittingAndOrPendingChange({
+                  hasPendingChanges: !isBlank(mergedData.comment) || !isBlank(mergedData.commitIds)
+                });
+              }}
+              publishingTargets={state.publishingTargets}
               publishingTargetsError={null}
               bulkPublishCommentRequired={false}
               publishByCommitCommentRequired={publishByCommitCommentRequired}
-              disabled={!publishingTargets || isSubmitting}
+              disabled={!state.publishingTargets || isSubmitting}
             />
           </DialogBody>
           <DialogFooter>

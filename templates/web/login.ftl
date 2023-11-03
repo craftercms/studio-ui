@@ -50,7 +50,11 @@
           xsrfToken: '${_csrf.token}',
           xsrfParamName: '${_csrf.parameterName}',
           xsrfHeaderName: '${_csrf.headerName}',
-          passwordRequirementsMinComplexity: ${passwordRequirementsMinComplexity}
+          passwordRequirementsMinComplexity: ${passwordRequirementsMinComplexity},
+          <#if errorMessage?? && lockedTimeSeconds??>
+          lockedErrorMessage: '${errorMessage}',
+          lockedTimeSeconds: ${lockedTimeSeconds?c}
+          </#if>
           </#outputformat>
         })
       ),

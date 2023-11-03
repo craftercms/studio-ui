@@ -92,15 +92,20 @@ export function ZoneMarker(props: ZoneMarkerProps) {
   }, [rect]);
   return (
     <>
-      <Box ref={elRef} style={zoneStyle} sx={sx.box} className={classes?.box} />
+      <Box
+        ref={elRef}
+        style={zoneStyle}
+        sx={sx.box}
+        className={['craftercms-zone-marker', classes?.box].filter(Boolean).join(' ')}
+      />
       {showZoneTooltip && elRef.current && (
-        <Box
+        <Popper
           open
-          component={Popper}
           anchorEl={elRef.current}
           placement="top-start"
           onClick={onPopperClick}
           sx={sx.tooltip}
+          className="craftercms-zone-marker-tooltip"
           modifiers={[
             {
               name: 'offset',
@@ -119,7 +124,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
             </div>
             <div>{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}</div>
           </Paper>
-        </Box>
+        </Popper>
       )}
     </>
   );

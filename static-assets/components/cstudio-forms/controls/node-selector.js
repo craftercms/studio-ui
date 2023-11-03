@@ -210,12 +210,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
     // dropdownBtn and dropdownMenu
     const $addBtn = $(
-      `<button id="add-item" class="cstudio-button btn btn-transparent dropdown-toggle cstudio-button-disabled" style="border: none !important" type="button" data-toggle="dropdown" disabled="true">${CMgs.format(
+      `<button id="add-item" class="cstudio-button btn btn-transparent dropdown-toggle cstudio-button-disabled" style="border: none !important" type="button" data-bs-toggle="dropdown" disabled="true">${CMgs.format(
         langBundle,
         'add'
       )}<i class="fa fa-plus add-icon" aria-hidden="true"></i></button>`
     );
-    const $dropdown = $('<div class="dropdown ml-auto"></div>');
+    const $dropdown = $('<div class="dropdown cstudio-dropdown ml-auto"></div>');
     const $dropdownMenu = $('<ul class="dropdown-menu pull-right"></ul>');
     this.$dropdown = $dropdown;
     this.$dropdownMenu = $dropdownMenu;
@@ -384,7 +384,30 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             const elIndex = $(this).data('index');
             let selectedDatasource =
               _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
-            selectedDatasource.edit(item.key, _self, elIndex);
+            selectedDatasource.edit(item.key, _self, elIndex, {
+              failure: function (error) {
+                if (error.status === 404) {
+                  CStudioAuthoring.Utils.showConfirmDialog(
+                    null,
+                    _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
+                      internalName: _self.items[elIndex].value
+                    }),
+                    () => {
+                      _self.deleteItem(elIndex);
+                    },
+                    _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
+                      controlLabel: _self.fieldDef.title
+                    }),
+                    _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
+                  );
+                } else {
+                  craftercms.getStore().dispatch({
+                    type: 'SHOW_ERROR_DIALOG',
+                    payload: { error: error.response.response }
+                  });
+                }
+              }
+            });
           });
         }
       }
@@ -626,12 +649,16 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     return this.items;
   },
 
-  updateEditedItem: function (value, datasource, index) {
-    var item = this.items[index];
-    item.value = value;
+  // updatedItem: { key: string; include: string; value: string }
+  updateEditedItem: function (updatedItem, datasource, index) {
+    let item = this.items[index];
     if (datasource) {
       item.datasource;
     }
+    this.items[index] = {
+      ...item,
+      ...updatedItem
+    };
     this._renderItems();
     this._onChangeVal(this);
   },

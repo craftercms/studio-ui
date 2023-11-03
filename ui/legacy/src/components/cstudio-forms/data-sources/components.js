@@ -240,7 +240,7 @@
       );
     },
 
-    _editShared(key, control, datasource, index) {
+    _editShared(key, control, datasource, index, callback) {
       const readonly = control.readonly;
       const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
 
@@ -256,8 +256,18 @@
             {
               success: function (contentTO, editorId, name, value, draft, action) {
                 if (control) {
-                  control.updateEditedItem(value, datasource, index);
+                  control.updateEditedItem(
+                    {
+                      ...(name && { key: name, include: name }),
+                      value
+                    },
+                    datasource,
+                    index
+                  );
                 }
+              },
+              failure: function (error) {
+                callback?.failure(error);
               }
             }
           );
@@ -292,7 +302,7 @@
           {
             success: function (contentTO, editorId, name, value) {
               if (control) {
-                control.updateEditedItem(value, datasource, index);
+                control.updateEditedItem({ value }, datasource, index);
               }
             }
           },

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
 import { LegacyFormDialogProps } from './utils';
@@ -23,13 +23,26 @@ import MinimizedBar from '../MinimizedBar';
 import Dialog from '@mui/material/Dialog';
 import { useStyles } from './styles';
 import { translations } from './translations';
+import useEnhancedDialogState from '../../hooks/useEnhancedDialogState';
+import { RenameContentDialog } from '../RenameContentDialog';
+import { fromEvent } from 'rxjs';
+import { filter } from 'rxjs/operators';
+
+const renameContentDialogDataInitialState = {
+  id: '',
+  path: '',
+  value: ''
+};
 
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { formatMessage } = useIntl();
   const { classes } = useStyles();
   const { open, inProgress, isSubmitting, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
+  const renameContentDialogState = useEnhancedDialogState();
+  const [renameContentDialogData, setRenameContentDialogData] = useState(renameContentDialogDataInitialState);
 
   const iframeRef = useRef<HTMLIFrameElement>();
+  const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
   const title = formatMessage(translations.title);
 
@@ -47,6 +60,37 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const onCloseButtonClick = (e) => {
     onClose(e);
   };
+
+  const onContentRenamed = (newName) => {
+    renameContentDialogState.onClose();
+    iframeRef.current.contentWindow
+      // @ts-ignore - Defined in common-api.js
+      .getTopLegacyWindow()
+      .CStudioAuthoring.InContextEdit.messageDialogs(
+        { type: 'LEGACY_FORM_DIALOG_RENAMED_CONTENT', newName, id: renameContentDialogData.id },
+        '*'
+      );
+  };
+
+  useEffect(() => {
+    const messagesSubscription = messages.subscribe((e: any) => {
+      switch (e.data.type) {
+        case 'LEGACY_FORM_DIALOG_RENAME_CONTENT':
+          const { path, fileName, id } = e.data;
+          setRenameContentDialogData({
+            id,
+            path,
+            value: fileName
+          });
+          renameContentDialogState.onOpen();
+          break;
+      }
+    });
+
+    return () => {
+      messagesSubscription.unsubscribe();
+    };
+  }, [messages, renameContentDialogState]);
 
   return (
     <>
@@ -74,6 +118,18 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         <EmbeddedLegacyContainer ref={iframeRef} inProgress={inProgress} onMinimize={onMinimize} {...rest} />
       </Dialog>
       <MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />
+      <RenameContentDialog
+        open={renameContentDialogState.open}
+        hasPendingChanges={renameContentDialogState.hasPendingChanges}
+        onSubmittingAndOrPendingChange={renameContentDialogState.onSubmittingAndOrPendingChange}
+        onClose={() => {
+          renameContentDialogState.onClose();
+          setRenameContentDialogData(renameContentDialogDataInitialState);
+        }}
+        onRenamed={onContentRenamed}
+        path={renameContentDialogData.path}
+        value={renameContentDialogData.value}
+      />
     </>
   );
 }

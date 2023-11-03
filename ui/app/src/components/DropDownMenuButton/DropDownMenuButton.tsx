@@ -17,9 +17,10 @@
 import Button, { ButtonProps } from '@mui/material/Button';
 import React, { useRef, useState } from 'react';
 import Menu, { MenuProps } from '@mui/material/Menu';
-import { ListItem, ListItemProps, ListItemText, ListItemTextProps } from '@mui/material';
+import { ListItemProps, ListItemText, ListItemTextProps } from '@mui/material';
 import { CheckRounded, KeyboardArrowDownRounded } from '@mui/icons-material';
 import { UNDEFINED } from '../../utils/constants';
+import ListItemButton from '@mui/material/ListItemButton';
 
 interface DropDownMenuProps extends ButtonProps {
   onMenuItemClick(e, optionId: string): void;
@@ -29,6 +30,7 @@ interface DropDownMenuProps extends ButtonProps {
     selected?: boolean;
     primaryText: React.ReactNode;
     secondaryText?: React.ReactNode;
+    disabled?: boolean;
   }>;
   menuProps?: Partial<Omit<MenuProps, 'open' | 'anchorEl' | 'onClose'>>;
   listItemProps?: Partial<Omit<ListItemProps, 'button'>>;
@@ -68,17 +70,17 @@ export function DropDownMenu(props: DropDownMenuProps) {
       />
       <Menu {...menuProps} open={open} anchorEl={buttonRef.current} onClose={onClose}>
         {options?.map((option) => (
-          <ListItem
-            button
+          <ListItemButton
             key={option.id}
             component="li"
             selected={option.selected}
             secondaryAction={option.selected ? <CheckRounded /> : UNDEFINED}
             {...listItemProps}
             onClick={(e) => onMenuItemClick(e, option)}
+            disabled={option.disabled}
           >
             <ListItemText primary={option.primaryText} secondary={option.secondaryText} {...listItemTextProps} />
-          </ListItem>
+          </ListItemButton>
         ))}
       </Menu>
     </>

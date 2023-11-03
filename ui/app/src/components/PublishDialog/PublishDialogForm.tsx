@@ -291,7 +291,6 @@ export function PublishDialogForm(props: PublishFormProps) {
             value={state.scheduledDateTime}
             localeCode={locale.localeCode}
             dateTimeFormatOptions={locale.dateTimeFormatOptions}
-            timeZone={state.scheduledTimeZone}
             disablePast
             disabled={disabled}
           />

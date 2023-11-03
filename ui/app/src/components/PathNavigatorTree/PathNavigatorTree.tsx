@@ -56,7 +56,7 @@ import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { ApiResponse } from '../../models';
+import { ApiResponse, GetChildrenOptions } from '../../models';
 import { batchActions } from '../../state/actions/misc';
 import SystemType from '../../models/SystemType';
 import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
@@ -70,6 +70,8 @@ export interface PathNavigatorTreeProps
   id: string;
   label: string;
   rootPath: string;
+  sortStrategy?: GetChildrenOptions['sortStrategy'];
+  order?: GetChildrenOptions['order'];
   excludes?: string[];
   limit?: number;
   icon?: SystemIconDescriptor;
@@ -99,6 +101,8 @@ export interface PathNavigatorTreeStateProps {
   systemTypes: SystemType[];
   error: ApiResponse;
   isRootPathMissing: boolean;
+  sortStrategy: GetChildrenOptions['sortStrategy'];
+  order: GetChildrenOptions['order'];
 }
 
 interface Menu {
@@ -145,7 +149,9 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     showNavigableAsLinks,
     showPublishingTarget,
     showWorkflowState,
-    showItemMenu
+    showItemMenu,
+    sortStrategy,
+    order
   } = props;
   // endregion
   const state = useSelection((state) => state.pathNavigatorTree[id]);
@@ -178,11 +184,13 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
           collapsed: initialCollapsed,
           systemTypes: initialSystemTypes,
           expanded: initialExpanded,
+          sortStrategy,
+          order,
           ...storedState
         })
       );
     }
-  }, [dispatch, id, rootPath, siteId, state?.rootPath, uiConfig.currentSite, user.username, uuid]);
+  }, [dispatch, id, rootPath, siteId, state?.rootPath, uiConfig.currentSite, user.username, uuid, sortStrategy, order]);
 
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
@@ -316,6 +324,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
           type: 'editor',
           title: item.label,
           url: item.path,
+          path: item.path,
           mode
         })
       );

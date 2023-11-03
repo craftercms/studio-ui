@@ -70,30 +70,6 @@ const initialState: ContentState = {
   itemsBeingFetchedByPath: {}
 };
 
-const updateItemLockState = (state: ContentState, { path, username, locked }) => {
-  if (
-    !state.itemsByPath[path] ||
-    (locked && state.itemsByPath[path].stateMap.locked) ||
-    (!locked && !state.itemsByPath[path].stateMap.locked)
-  ) {
-    return state;
-  }
-  return {
-    ...state,
-    itemsByPath: {
-      ...state.itemsByPath,
-      [path]: {
-        ...state.itemsByPath[path],
-        lockOwner: locked ? username : null,
-        state: locked
-          ? state.itemsByPath[path].state + STATE_LOCKED_MASK
-          : state.itemsByPath[path].state - STATE_LOCKED_MASK,
-        stateMap: { ...state.itemsByPath[path].stateMap, locked }
-      }
-    }
-  };
-};
-
 const updateItemByPath = (state: ContentState, { payload: { parent, children } }) => {
   const nextByPath = {
     ...state.itemsByPath,
@@ -250,12 +226,31 @@ const reducer = createReducer<ContentState>(initialState, {
     return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
   },
   [changeSite.type]: () => initialState,
-  [lockContentEvent.type]: (state, { payload }) =>
-    updateItemLockState(state, {
-      path: payload.targetPath,
-      username: payload.user.username,
-      locked: payload.locked
-    }),
+  [lockContentEvent.type]: (state, { payload }: { payload: SocketEventBase & { locked: boolean } }) => {
+    const { targetPath: path, user, locked } = payload;
+    if (
+      !state.itemsByPath[path] ||
+      (locked && state.itemsByPath[path].stateMap.locked) ||
+      (!locked && !state.itemsByPath[path].stateMap.locked)
+    ) {
+      return state;
+    }
+    const updatedState: ContentState = {
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        [path]: {
+          ...state.itemsByPath[path],
+          lockOwner: locked ? user : null,
+          state: locked
+            ? state.itemsByPath[path].state + STATE_LOCKED_MASK
+            : state.itemsByPath[path].state - STATE_LOCKED_MASK,
+          stateMap: { ...state.itemsByPath[path].stateMap, locked }
+        }
+      }
+    };
+    return updatedState;
+  },
   [deleteContentEvent.type]: (state, { payload: { targetPath } }: StandardAction<SocketEventBase>) => {
     delete state.itemsByPath[targetPath];
     delete state.itemsBeingFetchedByPath[targetPath];

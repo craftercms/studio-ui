@@ -29,7 +29,8 @@ const fs = require('fs'),
     { input: 'guest/guest', output: 'guest' },
     { input: 'base', output: '../themes/cstudioTheme/base' },
     { input: 'global', output: '../themes/cstudioTheme/css/global' },
-    'typography'
+    'typography',
+    'bootstrap-5.3'
   ];
 
 function processFile(data, devMode = false) {

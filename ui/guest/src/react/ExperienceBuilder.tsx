@@ -73,17 +73,18 @@ import { GuestState } from '../store/models/GuestStore';
 import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { dragOk } from '../store/util';
-import SnackBar, { Snack } from './SnackBar';
 import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
-import { ThemeOptions, ThemeProvider } from '@mui/material';
+import { Snackbar, SnackbarProps, ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from 'redux';
 import ZoneMenu from './ZoneMenu';
 import {
   contentReady,
   desktopAssetDragStarted,
+  desktopAssetUploadComplete,
+  desktopAssetUploadProgress,
   documentDragEnd,
   documentDragLeave,
   documentDragOver,
@@ -91,12 +92,10 @@ import {
   dropzoneEnter,
   dropzoneLeave,
   setDropPosition,
-  startListening,
-  desktopAssetUploadComplete,
-  desktopAssetUploadProgress
+  startListening
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
-import GuestGlobalStyles from './GuestGlobalStyles';
+import GuestGlobalStyles, { GuestGlobalStylesProps } from './GuestGlobalStyles';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { ContentInstance } from '@craftercms/studio-ui/models';
 import { prop } from '@craftercms/studio-ui/utils/model';
@@ -114,6 +113,7 @@ interface BaseXBProps {
   documentDomain?: string;
   themeOptions?: ThemeOptions;
   sxOverrides?: DeepPartial<GuestStylesSx>;
+  globalStyleOverrides?: GuestGlobalStylesProps['styles'];
   isAuthoring: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;
   isHeadlessMode?: boolean; // Templates & controllers become irrelevant
@@ -147,7 +147,6 @@ function bypassKeyStroke(e, refs) {
 }
 
 function ExperienceBuilderInternal(props: InternalGuestProps) {
-  // TODO: support path driven Guest.
   // TODO: consider supporting developer to provide the data source (promise/observable?)
   const {
     path,
@@ -156,11 +155,12 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     children,
     documentDomain,
     scrollElement = 'html, body',
-    isHeadlessMode = false
+    isHeadlessMode = false,
+    globalStyleOverrides
   } = props;
 
   const theme = useGuestTheme(themeOptions);
-  const [snack, setSnack] = useState<Partial<Snack>>();
+  const [snack, setSnack] = useState<Partial<SnackbarProps>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState>((state) => state);
   const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable, authoringBase } = state;
@@ -213,6 +213,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     dispatch(clearContentTreeFieldSelected());
   });
 
+  // Connect to shared worker & socket
   useEffect(() => {
     if (hasHost && authoringBase) {
       const worker = new SharedWorker(`${authoringBase}/static-assets/next/shared-worker.js`, {
@@ -223,7 +224,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       worker.port.postMessage(sharedWorkerConnect());
       const unload = () => worker.port.postMessage(sharedWorkerDisconnect());
       window.addEventListener('beforeunload', unload);
-
       const subscription = fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
         const { type, payload } = event.data;
         switch (type) {
@@ -242,9 +242,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     }
   }, [authoringBase, hasHost]);
 
-  const sxStylesConfig = useMemo(() => {
-    return deepmerge(styleSxDefaults, sxOverrides);
-  }, [sxOverrides]);
+  const sxStylesConfig = useMemo(() => deepmerge(styleSxDefaults, sxOverrides), [sxOverrides]);
 
   // region Hotkeys
 
@@ -284,6 +282,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // endregion
 
+  // Add/remove edit mode highlight mode classes
   useEffect(() => {
     const html = document.querySelector('html');
     const cls = highlightMode === HighlightMode.MOVE_TARGETS ? moveModeClass : editModeClass;
@@ -295,6 +294,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     }
   }, [editMode, highlightMode]);
 
+  // Add/remove edit mode padding mode classes
   useEffect(() => {
     const html = document.querySelector('html');
     if (editMode && editModePadding) {
@@ -439,7 +439,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         ),
         take(1)
       ).subscribe(() => setSnack({
-        duration: 8000,
+        autoHideDuration: 8000,
         message: 'In-context editing is disabled: page running out of CrafterCMS frame.'
       }));
     }
@@ -584,6 +584,9 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     state.dragContext.inZone &&
     !state.dragContext.invalidDrop;
 
+  const isMoveMode = HighlightMode.MOVE_TARGETS === highlightMode;
+  const isFieldSelectedMode = status === EditingStatus.FIELD_SELECTED;
+
   return (
     <GuestContextProvider value={context}>
       {children}
@@ -592,7 +595,10 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           <CrafterCMSPortal>
             {/* region DraggedElementGhost */}
             {draggableItemElemRecId && (
-              <DragGhostElement label={elementRegistry.get(parseInt(draggableItemElemRecId))?.label} />
+              <DragGhostElement
+                sx={sxStylesConfig.ghostElement}
+                label={elementRegistry.get(parseInt(draggableItemElemRecId))?.label}
+              />
             )}
             {/* endregion */}
             {/* region AssetUploaderMask */}
@@ -612,8 +618,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
             {/* endregion */}
             {/* region ZoneMarker */}
             {Object.values(state.highlighted).map((highlight: HighlightData) => {
-              const isMove = HighlightMode.MOVE_TARGETS === highlightMode;
-              const isFieldSelectedMode = status === EditingStatus.FIELD_SELECTED;
               const validations = Object.values(highlight.validations);
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
@@ -625,7 +629,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                   rect={highlight.rect}
                   inherited={highlight.inherited}
                   onPopperClick={
-                    isMove && isFieldSelectedMode
+                    isMoveMode && isFieldSelectedMode
                       ? (e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -641,16 +645,18 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                   }
                   sx={deepmerge(
                     deepmerge(
-                      { ...sxStylesConfig.zoneMarker.base },
-                      isMove
-                        ? styleSxDefaults.zoneMarker.moveModeHighlight
-                        : styleSxDefaults.zoneMarker.selectModeHighlight
+                      sxStylesConfig.zoneMarker.base,
+                      isMoveMode
+                        ? sxStylesConfig.zoneMarker.moveModeHighlight
+                        : sxStylesConfig.zoneMarker.selectModeHighlight,
+                      { clone: true }
                     ),
                     hasValidations
                       ? hasFailedRequired
-                        ? styleSxDefaults.zoneMarker.errorHighlight
-                        : styleSxDefaults.zoneMarker.warnHighlight
-                      : null
+                        ? sxStylesConfig.zoneMarker.errorHighlight
+                        : sxStylesConfig.zoneMarker.warnHighlight
+                      : null,
+                    { clone: true }
                   )}
                 />
               );
@@ -665,25 +671,28 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                 prev={state.dragContext.prev}
                 next={state.dragContext.next}
                 coordinates={state.dragContext.coordinates}
+                sx={deepmerge(
+                  sxStylesConfig.dropMarker.base,
+                  isMoveMode
+                    ? sxStylesConfig.dropMarker.moveModeHighlight
+                    : sxStylesConfig.dropMarker.selectModeHighlight,
+                  { clone: true }
+                )}
               />
             )}
             {/* endregion */}
           </CrafterCMSPortal>
         )}
-        {snack && (
-          <SnackBar open onClose={() => setSnack(null)} {...snack}>
-            {snack.message}
-          </SnackBar>
-        )}
-        <GuestGlobalStyles />
+        <Snackbar open={Boolean(snack)} onClose={() => setSnack(null)} {...snack} />
+        <GuestGlobalStyles styles={globalStyleOverrides} />
       </ThemeProvider>
     </GuestContextProvider>
   );
 }
 
-export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>);
-export function ExperienceBuilder(props: GenericXBProps<{ path: string }>);
-export function ExperienceBuilder(props: ExperienceBuilderProps) {
+export function ExperienceBuilder(props: GenericXBProps<{ model: ContentInstance }>): JSX.Element;
+export function ExperienceBuilder(props: GenericXBProps<{ path: string }>): JSX.Element;
+export function ExperienceBuilder(props: ExperienceBuilderProps): JSX.Element {
   let { children, isAuthoring = false, path, model } = props as CompleteGuestProps;
   let store = useMemo(() => isAuthoring && createGuestStore(), [isAuthoring]);
   path = path || prop(model, 'path');
@@ -695,8 +704,5 @@ export function ExperienceBuilder(props: ExperienceBuilderProps) {
     (children as JSX.Element)
   );
 }
-
-/** @deprecated Use "ExperienceBuilder" instead. */
-export const Guest = ExperienceBuilder;
 
 export default ExperienceBuilder;

@@ -15,7 +15,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement } from 'react';
+import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement, Suspense } from 'react';
 import { Theme } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
@@ -26,6 +26,7 @@ import { popToolsPanelPage } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import TranslationOrText from '../../models/TranslationOrText';
 import { CSSObject } from 'tss-react';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 type ToolPanelProps = PropsWithChildren<{
   title: TranslationOrText;
@@ -81,7 +82,11 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
         BackIcon={BackIcon}
         onBack={onBack}
       />
-      <section className={classes?.body}>{props.children}</section>
+      <Suspense>
+        <ErrorBoundary>
+          <section className={classes?.body}>{props.children}</section>
+        </ErrorBoundary>
+      </Suspense>
     </>
   );
 }

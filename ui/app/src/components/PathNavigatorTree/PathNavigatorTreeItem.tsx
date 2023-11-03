@@ -199,6 +199,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
   const [showFilter, setShowFilter] = useState(Boolean(keywordByPath[path]));
   const [keyword, setKeyword] = useState(keywordByPath[path] ?? '');
   const { formatMessage } = useIntl();
+  const item = lookupItemByPath(path, itemsByPath);
   const children = lookupItemByPath(path, childrenByParentPath) ?? [];
 
   const onMouseOver = (e) => {
@@ -333,7 +334,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                   minHeight: '23.5px'
                 }
               }}
-              item={lookupItemByPath(path, itemsByPath)}
+              item={item}
               labelTypographyProps={{ variant: 'body2' }}
               showNavigableAsLinks={showNavigableAsLinks}
               showPublishingTarget={showPublishingTarget}
@@ -355,7 +356,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                 </IconButton>
               </Tooltip>
             )}
-            {over && (showFilter || Boolean(children.length)) && (
+            {over && (showFilter || Boolean(item.childrenCount)) && (
               <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
                 <IconButton
                   size="small"

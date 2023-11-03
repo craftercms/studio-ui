@@ -28,11 +28,8 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       'craftercms-zone-marker': CrafterCMSCustomElementProps;
-      'craftercms-zone-marker-label': CrafterCMSCustomElementProps;
       'craftercms-asset-uploader-mask-container': CrafterCMSCustomElementProps;
       'craftercms-asset-uploader-mask': CrafterCMSCustomElementProps;
-      'craftercms-snackbar': CrafterCMSCustomElementProps;
-      'craftercms-dragged-element': CrafterCMSCustomElementProps;
       'craftercms-field-instance-switcher': CrafterCMSCustomElementProps;
     }
   }

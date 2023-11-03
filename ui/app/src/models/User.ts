@@ -30,7 +30,6 @@ export interface User {
 export interface EnhancedUser extends User {
   rolesBySite: LookupTable<string[]>;
   permissionsBySite: LookupTable<string[]>;
-  sites: string[];
   preferences: LookupTable;
 }
 

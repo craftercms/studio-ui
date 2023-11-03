@@ -19,14 +19,12 @@ import { isImage } from '../../utils/content';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import React from 'react';
 import { dependenciesDialogStyles } from './DependenciesDialog';
 import { assetsTypes, DependenciesListProps } from './utils';
 
 export function DependenciesList(props: DependenciesListProps) {
-  const { dependencies, compactView, showTypes, handleContextMenuClick } = props;
+  const { dependencies, compactView, showTypes, renderAction } = props;
   const { classes, cx } = dependenciesDialogStyles();
 
   return (
@@ -52,18 +50,7 @@ export function DependenciesList(props: DependenciesListProps) {
               secondary={!compactView ? dependency.path : null}
             />
             {/* TODO: Improve logic to show/not-show menu when ready. */}
-            {!dependency.path.startsWith('/config/studio/content-types') && (
-              <IconButton
-                aria-haspopup="true"
-                onClick={(e) => {
-                  handleContextMenuClick(e, dependency);
-                }}
-                className={classes.listEllipsis}
-                size="large"
-              >
-                <MoreVertIcon />
-              </IconButton>
-            )}
+            {!dependency.path.startsWith('/config/studio/content-types') && renderAction(dependency)}
           </ListItem>
         ))}
     </List>
