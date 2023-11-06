@@ -27,14 +27,15 @@ const initialState: DependenciesDialogStateProps = {
   rootPath: '/site/website'
 };
 
-export default createReducer<GlobalState['dialogs']['dependencies']>(initialState, {
-  [showDependenciesDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeDependenciesDialog(),
-    onClosed: dependenciesDialogClosed(),
-    ...payload,
-    open: true
-  }),
-  [closeDependenciesDialog.type]: (state) => ({ ...state, open: false }),
-  [dependenciesDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['dependencies']>(initialState, (builder) => {
+  builder
+    .addCase(showDependenciesDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeDependenciesDialog(),
+      onClosed: dependenciesDialogClosed(),
+      ...(payload as Partial<DependenciesDialogStateProps>),
+      open: true
+    }))
+    .addCase(closeDependenciesDialog, (state) => ({ ...state, open: false }))
+    .addCase(dependenciesDialogClosed, () => initialState);
 });

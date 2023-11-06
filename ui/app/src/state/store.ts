@@ -183,6 +183,8 @@ export function fetchStateInitialization(): Observable<{
   user: User;
   sites: Site[];
   properties: LookupTable<any>;
+  activeSiteId: string;
+  activeEnvironment: string;
 }> {
   const siteCookieValue = getSiteCookie();
   return forkJoin({

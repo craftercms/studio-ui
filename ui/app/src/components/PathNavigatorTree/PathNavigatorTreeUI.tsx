@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import TreeView from '@mui/lab/TreeView';
+import { TreeView } from '@mui/x-tree-view/TreeView';
 import { makeStyles } from 'tss-react/mui';
 import Accordion from '@mui/material/Accordion';
 import Header from '../PathNavigator/PathNavigatorHeader';

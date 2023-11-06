@@ -19,6 +19,8 @@ import { h } from 'preact';
 function RemoveButton({ i18n, onClick, file }) {
   return (
     <button
+      // TODO: check classes
+      // className="uppy-u-reset uppy-Dashboard-Item-action uppy-Dashboard-Item-action--remove"
       className="uppy-dashboard-button-base uppy-dashboard-icon-button edgeEnd"
       tabIndex="0"
       type="button"

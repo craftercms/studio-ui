@@ -92,7 +92,7 @@ export function writeConfiguration(
 
 // region AudiencesPanelConfig
 
-interface ActiveTargetingModel {
+export interface ActiveTargetingModel {
   id: string;
 
   [prop: string]: string;

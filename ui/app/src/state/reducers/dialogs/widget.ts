@@ -28,20 +28,24 @@ const initialState: WidgetDialogStateProps = {
   widget: null
 };
 
-export default createReducer<GlobalState['dialogs']['widget']>(initialState, {
-  [showWidgetDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeWidgetDialog(),
-    onClosed: widgetDialogClosed(),
-    onMinimize: updateWidgetDialog({ isMinimized: true }),
-    onMaximize: updateWidgetDialog({ isMinimized: false }),
-    ...payload,
-    open: true
-  }),
-  [updateWidgetDialog.type]: (state, { payload }) => ({ ...state, ...payload }),
-  [closeWidgetDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [widgetDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['widget']>(initialState, (builder) => {
+  builder
+    .addCase(showWidgetDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeWidgetDialog(),
+      onClosed: widgetDialogClosed(),
+      onMinimize: updateWidgetDialog({ isMinimized: true }),
+      onMaximize: updateWidgetDialog({ isMinimized: false }),
+      ...(payload as Partial<WidgetDialogStateProps>),
+      open: true
+    }))
+    .addCase(updateWidgetDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<WidgetDialogStateProps>)
+    }))
+    .addCase(closeWidgetDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(widgetDialogClosed, () => initialState);
 });

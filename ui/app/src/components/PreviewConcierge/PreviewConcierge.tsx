@@ -1361,7 +1361,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Host hotkeys
   useHotkeys(
-    'a,r,e,m,p,shift+/,shift+e',
+    'a,r,e,m,p,shift+/,shift,/,shift+e',
     (e) => {
       upToDateRefs.current.onShortCutKeypress(e);
     },

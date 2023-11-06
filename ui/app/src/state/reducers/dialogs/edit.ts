@@ -31,31 +31,32 @@ const initialState: LegacyFormDialogStateProps = {
   isSubmitting: false
 };
 
-export default createReducer<GlobalState['dialogs']['edit']>(initialState, {
-  [showEditDialog.type]: (state, { payload }) => {
-    // Should the dialog be opened already, 1. we don't need to reopen 2. if it's opened with a different form, we
-    // don't want to override and possibly lose form edits that are unsaved. Currently, the epic validates and shows
-    // a message to the user stating to please close the other form before opening a new one.
-    return state.open || nnou(state.path)
-      ? state
-      : {
-          ...state,
-          onClose: closeEditDialog(),
-          onClosed: editDialogClosed(),
-          onMinimize: updateEditConfig({ isMinimized: true }),
-          onMaximize: updateEditConfig({ isMinimized: false }),
-          ...payload,
-          open: true
-        };
-  },
-  [updateEditConfig.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [closeEditDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [editDialogClosed.type]: () => initialState,
-  [changeSite.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['edit']>(initialState, (builder) => {
+  builder
+    .addCase(showEditDialog, (state, { payload }) => {
+      // Should the dialog be opened already, 1. we don't need to reopen 2. if it's opened with a different form, we
+      // don't want to override and possibly lose form edits that are unsaved. Currently, the epic validates and shows
+      // a message to the user stating to please close the other form before opening a new one.
+      return state.open || nnou(state.path)
+        ? state
+        : {
+            ...state,
+            onClose: closeEditDialog(),
+            onClosed: editDialogClosed(),
+            onMinimize: updateEditConfig({ isMinimized: true }),
+            onMaximize: updateEditConfig({ isMinimized: false }),
+            ...payload,
+            open: true
+          };
+    })
+    .addCase(updateEditConfig, (state, { payload }) => ({
+      ...state,
+      ...payload
+    }))
+    .addCase(closeEditDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(editDialogClosed, () => initialState)
+    .addCase(changeSite, () => initialState);
 });

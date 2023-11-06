@@ -30,14 +30,15 @@ const initialState: WorkflowCancellationDialogStateProps = {
   hasPendingChanges: null
 };
 
-export default createReducer<GlobalState['dialogs']['workflowCancellation']>(initialState, {
-  [showWorkflowCancellationDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeWorkflowCancellationDialog(),
-    onClosed: workflowCancellationDialogClosed(),
-    ...payload,
-    open: true
-  }),
-  [closeWorkflowCancellationDialog.type]: (state) => ({ ...state, open: false }),
-  [workflowCancellationDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['workflowCancellation']>(initialState, (builder) => {
+  builder
+    .addCase(showWorkflowCancellationDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeWorkflowCancellationDialog(),
+      onClosed: workflowCancellationDialogClosed(),
+      ...(payload as Partial<WorkflowCancellationDialogStateProps>),
+      open: true
+    }))
+    .addCase(closeWorkflowCancellationDialog, (state) => ({ ...state, open: false }))
+    .addCase(workflowCancellationDialogClosed, () => initialState);
 });

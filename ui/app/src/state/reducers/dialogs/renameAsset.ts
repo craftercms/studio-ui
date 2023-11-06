@@ -39,36 +39,39 @@ const initialState: RenameAssetStateProps = {
   fetchingDependantItems: false
 };
 
-export default createReducer<GlobalState['dialogs']['renameAsset']>(initialState, {
-  [showRenameAssetDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeRenameAssetDialog(),
-    onClosed: renameAssetDialogClosed(),
-    onRenamed: closeRenameAssetDialog(),
-    ...payload,
-    open: true
-  }),
-  [closeRenameAssetDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [updateRenameAssetDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [renameAssetDialogClosed.type]: () => initialState,
-  [fetchRenameAssetDependants.type]: (state) => ({
-    ...state,
-    fetchingDependantItems: true
-  }),
-  [fetchRenameAssetDependantsComplete.type]: (state, { payload }) => ({
-    ...state,
-    dependantItems: payload.dependants,
-    fetchingDependantItems: false
-  }),
-  [fetchRenameAssetDependantsFailed.type]: (state, { payload }) => ({
-    ...state,
-    fetchingDependantItems: false,
-    error: payload
-  })
+export default createReducer<GlobalState['dialogs']['renameAsset']>(initialState, (builder) => {
+  builder
+    .addCase(showRenameAssetDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeRenameAssetDialog(),
+      onClosed: renameAssetDialogClosed(),
+      onRenamed: closeRenameAssetDialog(),
+      // Omitting error property from payload because of a ts error showing up.
+      ...(payload as Partial<Omit<RenameAssetStateProps, 'error'>>),
+      open: true
+    }))
+    .addCase(closeRenameAssetDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(updateRenameAssetDialog, (state, { payload }) => ({
+      ...state,
+      // Omitting error property from payload because of a ts error showing up.
+      ...(payload as Partial<Omit<RenameAssetStateProps, 'error'>>)
+    }))
+    .addCase(renameAssetDialogClosed, () => initialState)
+    .addCase(fetchRenameAssetDependants, (state) => ({
+      ...state,
+      fetchingDependantItems: true
+    }))
+    .addCase(fetchRenameAssetDependantsComplete, (state, { payload }) => ({
+      ...state,
+      dependantItems: payload.dependants,
+      fetchingDependantItems: false
+    }))
+    .addCase(fetchRenameAssetDependantsFailed, (state, { payload }) => ({
+      ...state,
+      fetchingDependantItems: false,
+      error: payload
+    }));
 });

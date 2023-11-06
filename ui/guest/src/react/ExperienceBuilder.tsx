@@ -162,7 +162,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<SnackbarProps>>();
   const dispatch = useDispatch();
-  const state = useSelector<GuestState>((state) => state);
+  const state = useSelector<GuestState>((state) => state) as GuestState;
   const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable, authoringBase } = state;
   const refs = useRef({
     contentReady: false,
@@ -248,7 +248,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // This requires maintenance as key shortcuts evolve/change.
   useHotkeys(
-    'a,r,m,e,p,shift+/,shift+e',
+    'a,r,m,e,p,shift+/,shift,/,shift+e',
     (e) => {
       post(hotKey({ key: e.key, type: 'keyup', shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, metaKey: e.metaKey }));
     },
@@ -448,7 +448,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   useEffect(() => {
     if (hasHost && !window.tinymce) {
       const script = document.createElement('script');
-      script.src = '/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js';
+      script.src = '/studio/static-assets/libs/tinymce/tinymce.min.js';
       // script.onload = () => ...;
       document.head.appendChild(script);
     }
