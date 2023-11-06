@@ -74,10 +74,6 @@
                             <followSymlinks>false</followSymlinks>
                         </fileset>
                         <fileset>
-                            <directory>ui/monaco/node_modules</directory>
-                            <followSymlinks>false</followSymlinks>
-                        </fileset>
-                        <fileset>
                             <directory>ui/uppy/node_modules</directory>
                             <followSymlinks>false</followSymlinks>
                         </fileset>
@@ -200,17 +196,6 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <workingDirectory>ui/guest</workingDirectory>
-                            <arguments>build-if-changed</arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Monaco editor: build</id>
-                        <goals>
-                            <goal>yarn</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <workingDirectory>ui/monaco</workingDirectory>
                             <arguments>build-if-changed</arguments>
                         </configuration>
                     </execution>

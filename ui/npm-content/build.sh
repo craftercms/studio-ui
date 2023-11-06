@@ -21,8 +21,8 @@ libsDirectory=../../static-assets/libs
 # ace build
 rm -rf "$libsDirectory/ace"
 rsync -ar --delete ../../node_modules/ace-builds/src-min-noconflict/ "$libsDirectory/ace/"
-cat src/ace-append.js >> "$libsDirectory/ace/ace.js"
-cp src/mode-yaml/* "$libsDirectory/ace"
+cat src/ace/ace-append.js >> "$libsDirectory/ace/ace.js"
+cp src/ace/mode-yaml/* "$libsDirectory/ace"
 echo "Ace build complete"
 
 # js-yaml build
@@ -58,3 +58,7 @@ rm -rf "$libsDirectory/tinymce"
 cp -r ../../node_modules/tinymce "$libsDirectory/tinymce"
 
 echo "TinyMCE build complete"
+
+# monaco build
+webpack --config webpack.config.js
+echo "Monaco build complete"

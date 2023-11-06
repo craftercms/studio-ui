@@ -27,7 +27,7 @@ rimraf.sync(`${targetPath}/*`);
 
 module.exports = {
   mode: 'production',
-  entry: './src/index.js',
+  entry: './src/monaco/index.js',
   output: {
     publicPath,
     path: targetPath,
