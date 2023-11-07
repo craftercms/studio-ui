@@ -35,64 +35,63 @@ export interface MobileStepperProps {
   variant: 'text' | 'dots' | 'progress';
 }
 
-export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStepperProps>(function MobileStepper(
-  props,
-  ref
-) {
-  const {
-    activeStep = 0,
-    backButton,
-    onDotClick,
-    classes = {},
-    className,
-    LinearProgressProps,
-    nextButton,
-    position = 'bottom',
-    steps,
-    variant = 'dots',
-    ...other
-  } = props;
+export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStepperProps>(
+  function MobileStepper(props, ref) {
+    const {
+      activeStep = 0,
+      backButton,
+      onDotClick,
+      classes = {},
+      className,
+      LinearProgressProps,
+      nextButton,
+      position = 'bottom',
+      steps,
+      variant = 'dots',
+      ...other
+    } = props;
 
-  return (
-    <Paper
-      square
-      elevation={0}
-      className={clsx(classes.root, classes[`position${capitalize(position)}`], className)}
-      onClick={(e) => e.stopPropagation()}
-      ref={ref}
-      {...other}
-    >
-      {backButton}
-      {variant === 'text' && (
-        <React.Fragment>
-          {activeStep + 1} / {steps}
-        </React.Fragment>
-      )}
-      {variant === 'dots' && (
-        <div className={classes.dots}>
-          {[...new Array(steps)].map((_, index) => (
-            <div
-              key={index}
-              onClick={onDotClick ? (e) => onDotClick(e, index) : null}
-              className={clsx(classes.dot, {
-                [classes.dotActive]: index === activeStep
-              })}
-            />
-          ))}
-        </div>
-      )}
-      {variant === 'progress' && (
-        <LinearProgress
-          className={classes.progress}
-          variant="determinate"
-          value={Math.ceil((activeStep / (steps - 1)) * 100)}
-          {...LinearProgressProps}
-        />
-      )}
-      {nextButton}
-    </Paper>
-  );
-});
+    return (
+      <Paper
+        square
+        elevation={0}
+        className={clsx(classes.root, classes[`position${capitalize(position)}`], className)}
+        onClick={(e) => e.stopPropagation()}
+        ref={ref}
+        {...other}
+      >
+        {backButton}
+        {variant === 'text' && (
+          <React.Fragment>
+            {activeStep + 1} / {steps}
+          </React.Fragment>
+        )}
+        {variant === 'dots' && (
+          <div className={classes.dots}>
+            {[...new Array(steps)].map((_, index) => (
+              <div
+                key={index}
+                onClick={onDotClick ? (e) => onDotClick(e, index) : null}
+                className={clsx(classes.dot, {
+                  [classes.dotActive]: index === activeStep
+                })}
+              />
+            ))}
+          </div>
+        )}
+        {variant === 'progress' && (
+          <LinearProgress
+            className={classes.progress}
+            variant="determinate"
+            value={Math.ceil((activeStep / (steps - 1)) * 100)}
+            {...LinearProgressProps}
+          />
+        )}
+        {nextButton}
+      </Paper>
+    );
+  }
+);
 
 export const MobileStepper = withStyles(
   UnstyledMobileStepper,

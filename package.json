@@ -59,16 +59,11 @@
     }
   },
   "resolutions": {
-    "@types/react": "^18.0.28",
-    "browserslist": "^4.21.5",
-    "caniuse-lite": "^1.0.30001451",
+    "@types/react": "^18.2.36",
     "react-is": "^18.2.0",
-    "ansi-regex": "^5.0.1",
-    "json5": "^2.2.2",
-    "nth-check": "^2.0.1",
-    "semver": "^7.5.2"
+    "@babel/runtime": "^7"
   },
-  "packageManager": "yarn@3.1.0",
+  "packageManager": "yarn@4.0.1",
   "scripts": {
     "prettier:raw": "node scripts/prettier.js",
     "prettier:all": "node scripts/prettier.js write",
@@ -81,7 +76,8 @@
     "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
     "format-pom": "prettier --use-tabs --write pom.xml",
     "lint:ci": "eslint --ext .ts,.tsx .",
-    "upgrade-yarn": "yarn set version latest"
+    "upgrade-yarn": "yarn set version latest",
+    "update:caniuse": "yarn up -R caniuse-lite"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.1.0",
@@ -90,13 +86,13 @@
     "@types/node": "^20.8.10",
     "@types/rimraf": "^4.0.5",
     "build-if-changed": "^1.5.5",
-    "eslint": "^8.3.0",
-    "eslint-config-prettier": "^8.10.0",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "glob-gitignore": "^1.0.14",
     "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.5",
-    "rollup": "^3.21.6",
+    "rollup": "^3.29.4",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-terser": "^7.0.2",

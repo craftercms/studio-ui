@@ -35,8 +35,7 @@
         <groupId>org.craftercms</groupId>
         <artifactId>craftercms</artifactId>
         <version>4.2.0-SNAPSHOT</version><!-- craftercms version flag -->
-        <relativePath />
-        <!-- lookup parent from repository -->
+        <relativePath /><!-- lookup parent from repository -->
     </parent>
     <build>
         <!-- Overrides are listed here -->
@@ -115,9 +114,6 @@
                             <goal>yarn</goal>
                         </goals>
                         <phase>prepare-package</phase>
-                        <configuration>
-                            <arguments>install</arguments>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>NPM content: build</id>

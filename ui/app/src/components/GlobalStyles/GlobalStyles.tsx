@@ -48,7 +48,7 @@ export function GlobalStyles(props: GlobalStylesProps) {
             pointerEvents: 'all'
           }
         }
-      } as Interpolation<Theme>),
+      }) as Interpolation<Theme>,
     [theme.palette.background.paper, theme.zIndex.modal]
   );
   return (

@@ -105,4 +105,4 @@ export const initInContextEditing = initExperienceBuilder;
 
 export { elementRegistry, iceRegistry, contentController, fromTopic, post };
 
-setTimeout(() => document?.dispatchEvent(new CustomEvent(xbLoadedEvent)));
+typeof document !== 'undefined' && setTimeout(() => document?.dispatchEvent(new CustomEvent(xbLoadedEvent)));

@@ -135,12 +135,11 @@ export function Dashboard(props: DashboardProps) {
                 renderWidgets(dashboard.mainSection.widgets, {
                   userRoles,
                   defaultProps: { contentHeight: height, onMinimize, maximizable: true },
-                  createMapperFn: (mapper) => (widget, index) =>
-                    (
-                      <Grid item xs={12} md={6} key={index}>
-                        {mapper(widget, index)}
-                      </Grid>
-                    )
+                  createMapperFn: (mapper) => (widget, index) => (
+                    <Grid item xs={12} md={6} key={index}>
+                      {mapper(widget, index)}
+                    </Grid>
+                  )
                 })
               ) : (
                 <Grid item xs={12}>
