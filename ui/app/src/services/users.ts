@@ -134,10 +134,13 @@ export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<
   }).pipe(
     switchMap(({ username, sites }) =>
       forkJoin(
-        sites.reduce((lookup, site) => {
-          lookup[site.id] = fetchRolesInSite(username, site.id);
-          return lookup;
-        }, {} as LookupTable<Observable<string[]>>)
+        sites.reduce(
+          (lookup, site) => {
+            lookup[site.id] = fetchRolesInSite(username, site.id);
+            return lookup;
+          },
+          {} as LookupTable<Observable<string[]>>
+        )
       )
     )
   );
@@ -148,10 +151,13 @@ export function fetchMyRolesBySite(sites?: Site[]): Observable<LookupTable<strin
   return (sites ? of(sites) : fetchAllSites()).pipe(
     switchMap((sites) =>
       forkJoin(
-        sites.reduce((lookup, site) => {
-          lookup[site.id] = fetchMyRolesInSite(site.id);
-          return lookup;
-        }, {} as LookupTable<Observable<string[]>>)
+        sites.reduce(
+          (lookup, site) => {
+            lookup[site.id] = fetchMyRolesInSite(site.id);
+            return lookup;
+          },
+          {} as LookupTable<Observable<string[]>>
+        )
       )
     )
   );

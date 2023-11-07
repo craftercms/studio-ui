@@ -62,7 +62,7 @@ function GraphiQL(props: GraphiQLProps) {
         setItem: (key: string, value: any) => window.localStorage.setItem(`${storageKey}${key}`, value),
         getItem: (key: string) => window.localStorage.getItem(`${storageKey}${key}`),
         removeItem: (key: string) => window.localStorage.removeItem(`${storageKey}${key}`)
-      } as Storage),
+      }) as Storage,
     [storageKey]
   );
   const graphQLFetcher = useMemo(() => {

@@ -40,6 +40,7 @@ import { beautify, serialize } from '../utils/xml';
 import { stripDuplicateSlashes } from '../utils/path';
 import { Api2ResponseFormat } from '../models/ApiResponse';
 import { asArray } from '../utils/array';
+import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 const typeMap = {
   input: 'text',
@@ -456,10 +457,13 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
       zip(
         of(contentTypes),
         forkJoin(
-          contentTypes.reduce((hash, contentType) => {
-            hash[contentType.id] = fetchFormDefinition(site, contentType.id);
-            return hash;
-          }, {} as LookupTable<Observable<Partial<ContentType>>>)
+          contentTypes.reduce(
+            (hash, contentType) => {
+              hash[contentType.id] = fetchFormDefinition(site, contentType.id);
+              return hash;
+            },
+            {} as LookupTable<Observable<Partial<ContentType>>>
+          )
         )
       )
     ),
@@ -552,7 +556,9 @@ export function associateTemplate(site: string, contentTypeId: string, displayTe
         property.appendChild(type);
         doc.querySelector('properties').appendChild(property);
       }
-      return writeConfiguration(site, path, module, beautify(serialize(doc)));
+      return fromPromise(beautify(serialize(doc))).pipe(
+        switchMap((xml) => writeConfiguration(site, path, module, xml))
+      );
     })
   );
 }
@@ -568,7 +574,9 @@ export function dissociateTemplate(site: string, contentTypeId: string): Observa
       );
       if (property) {
         property.querySelector('value').innerHTML = '';
-        return writeConfiguration(site, path, module, beautify(serialize(doc)));
+        return fromPromise(beautify(serialize(doc))).pipe(
+          switchMap((xml) => writeConfiguration(site, path, module, xml))
+        );
       } else {
         return of(false);
       }
