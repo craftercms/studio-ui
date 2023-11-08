@@ -27,7 +27,7 @@ import {
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect } from 'react';
+import React, { ReactNode, useCallback, useEffect } from 'react';
 import {
   DashletEmptyMessage,
   DashletItemOptions,
@@ -331,10 +331,12 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
                     values={{
                       name: item.sandbox?.submitter?.username ?? item.sandbox?.modifier?.username,
                       publishingTarget: item.stateMap.submittedToLive ? 'live' : 'staging',
-                      render_target(target: string[]) {
+                      render_target(target: ReactNode[]) {
                         return (
                           <Box component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
-                            {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
+                            {messages[target[0] as string]
+                              ? formatMessage(messages[target[0] as string]).toLowerCase()
+                              : target[0]}
                           </Box>
                         );
                       },

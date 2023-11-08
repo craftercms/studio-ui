@@ -34,30 +34,31 @@ const initialState: CodeEditorDialogStateProps = commonDialogProps({
   isMinimized: false
 });
 
-export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, {
-  [showCodeEditorDialog.type]: (state, { payload }) => {
-    return state.open
-      ? state
-      : {
-          ...state,
-          onClose: closeCodeEditorDialog(),
-          onClosed: codeEditorDialogClosed(),
-          onMinimize: updateCodeEditorDialog({ isMinimized: true }),
-          onMaximize: updateCodeEditorDialog({ isMinimized: false }),
-          onFullScreen: updateCodeEditorDialog({ isFullScreen: true }),
-          onCancelFullScreen: updateCodeEditorDialog({ isFullScreen: false }),
-          ...payload,
-          open: true
-        };
-  },
-  [updateCodeEditorDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [closeCodeEditorDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [codeEditorDialogClosed.type]: () => initialState,
-  [changeSite.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState, (builder) => {
+  builder
+    .addCase(showCodeEditorDialog, (state, { payload }) => {
+      return state.open
+        ? state
+        : {
+            ...state,
+            onClose: closeCodeEditorDialog(),
+            onClosed: codeEditorDialogClosed(),
+            onMinimize: updateCodeEditorDialog({ isMinimized: true }),
+            onMaximize: updateCodeEditorDialog({ isMinimized: false }),
+            onFullScreen: updateCodeEditorDialog({ isFullScreen: true }),
+            onCancelFullScreen: updateCodeEditorDialog({ isFullScreen: false }),
+            ...(payload as Partial<CodeEditorDialogStateProps>),
+            open: true
+          };
+    })
+    .addCase(updateCodeEditorDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<CodeEditorDialogStateProps>)
+    }))
+    .addCase(closeCodeEditorDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(codeEditorDialogClosed, () => initialState)
+    .addCase(changeSite, () => initialState);
 });

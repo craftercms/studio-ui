@@ -19,7 +19,7 @@ import copy from 'rollup-plugin-copy';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
-import pkg from './package.json';
+import pkg from './package.json' assert{ type: 'json'};
 
 const input = 'src/index.tsx';
 
@@ -87,7 +87,11 @@ const external = Object.keys(globals);
 const baseConfig = {
   // TODO: Without @babel/preset-env this error doesn't occur.
   // Addresses rollup's this replaced to undefined
-  context: 'this'
+  context: 'this',
+  onwarn: function (warning, next) {
+    if ( warning.code === 'MODULE_LEVEL_DIRECTIVE' ) return; // you can do this now btw
+    next( warning );
+  },
 };
 
 export default [

@@ -1210,8 +1210,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           };
 
           // filter data sources to only the ones that match the type
-          const dataSourcesKeys = Object.keys(typedPayload.datasources).filter((datasourceId) =>
-            dataSourcesByType[typedPayload.type]?.includes(datasourceId)
+          const dataSourcesKeys = Object.keys(typedPayload.datasources).filter(
+            (datasourceId) => dataSourcesByType[typedPayload.type]?.includes(datasourceId)
           );
 
           // directly open corresponding dialog
@@ -1361,7 +1361,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Host hotkeys
   useHotkeys(
-    'a,r,e,m,p,shift+/,shift+e',
+    'a,r,e,m,p,shift+/,shift,/,shift+e',
     (e) => {
       upToDateRefs.current.onShortCutKeypress(e);
     },

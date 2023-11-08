@@ -72,32 +72,31 @@ const usePublishingStatusTileStyles = makeStyles<PublishingStatusTileStyles, Pub
   })
 );
 
-const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement, PublishingStatusTileProps>(function (
-  props,
-  ref
-) {
-  const { classes, cx } = usePublishingStatusTileStyles(props.styles);
-  const { formatMessage } = useIntl();
-  const { enabled, status, onClick, isFetching, classes: propClasses, ...rest } = props;
-  const Component = onClick ? ('button' as ElementType) : ('div' as ElementType);
-  const statusText = getPublishingStatusText(props, formatMessage);
-  return (
-    <Component
-      ref={ref}
-      {...rest}
-      onClick={onClick}
-      className={cx(classes.root, propClasses?.root, !isFetching && status)}
-    >
-      <PublishingStatusAvatar
-        enabled={enabled}
-        status={isFetching ? null : status}
-        className={cx(classes.avatar, propClasses?.avatar)}
-      />
-      <Typography className={cx(classes.text, propClasses?.text)} noWrap title={statusText} color="textPrimary">
-        {isFetching ? <Skeleton /> : statusText}
-      </Typography>
-    </Component>
-  );
-});
+const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement, PublishingStatusTileProps>(
+  function (props, ref) {
+    const { classes, cx } = usePublishingStatusTileStyles(props.styles);
+    const { formatMessage } = useIntl();
+    const { enabled, status, onClick, isFetching, classes: propClasses, ...rest } = props;
+    const Component = onClick ? ('button' as ElementType) : ('div' as ElementType);
+    const statusText = getPublishingStatusText(props, formatMessage);
+    return (
+      <Component
+        ref={ref}
+        {...rest}
+        onClick={onClick}
+        className={cx(classes.root, propClasses?.root, !isFetching && status)}
+      >
+        <PublishingStatusAvatar
+          enabled={enabled}
+          status={isFetching ? null : status}
+          className={cx(classes.avatar, propClasses?.avatar)}
+        />
+        <Typography className={cx(classes.text, propClasses?.text)} noWrap title={statusText} color="textPrimary">
+          {isFetching ? <Skeleton /> : statusText}
+        </Typography>
+      </Component>
+    );
+  }
+);
 
 export default PublishingStatusTile;

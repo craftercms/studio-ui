@@ -18,9 +18,10 @@ import { useStore } from 'react-redux';
 import { useEffect, useRef } from 'react';
 import { UNDEFINED } from '../utils/constants';
 import { fetchSandboxItems } from '../state/actions/content';
+import { Store } from 'redux';
 
 export function useFetchSandboxItems(paths: string[]): void {
-  const store = useStore();
+  const store: Store = useStore();
   const storeRef = useRef(store);
   useEffect(
     () => {

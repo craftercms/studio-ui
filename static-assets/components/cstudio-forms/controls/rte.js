@@ -321,9 +321,7 @@ CStudioAuthoring.Module.requireModule(
           // https://www.tiny.cloud/docs/plugins/
           // paste plugin is hardcoded in order to enable drag and drop functionality (and avoid it being removed from
           // configuration file).
-          pluginList = [rteConfig.tinymceOptions?.plugins, 'paste', this.autoGrow && 'autoresize']
-            .filter(Boolean)
-            .join(' ');
+          pluginList = [rteConfig.tinymceOptions?.plugins, this.autoGrow && 'autoresize'].filter(Boolean).join(' ');
 
           const $editorContainer = $(`#${rteId}`).parent(),
             editorContainerWidth = $editorContainer.width(),
@@ -350,7 +348,11 @@ CStudioAuthoring.Module.requireModule(
           };
 
           tinymce.init({
-            selector: '#' + rteId,
+            selector: `#${CSS.escape(rteId)}`,
+            promotion: false,
+            // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
+            // note that it will become premium on version 7.
+            deprecation_warnings: false,
             width: _thisControl.rteWidth,
             // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window).
             // Adding 78px (toolbar's height) so that the toolbar doesn't eat up on the height set on the content modelling tool.
@@ -368,8 +370,6 @@ CStudioAuthoring.Module.requireModule(
             forced_root_block: forceRootBlockPTag, // comes from control props (not xml config)
             remove_trailing_brs: false,
             media_live_embeds: true,
-            autoresize_on_init: false,
-            autoresize_bottom_margin: 0,
             contextmenu: !this.enableSpellCheck, // comes from control props (not xml config)
             image_uploadtab: this.editorImageDatasources.length > 0, // comes from control props (not xml config)
             craftercms_paste_cleanup: rteConfig?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true

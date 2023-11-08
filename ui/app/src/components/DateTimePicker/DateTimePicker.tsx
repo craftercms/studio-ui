@@ -199,29 +199,25 @@ function DateTimePicker(props: DateTimePickerProps) {
         <DatePicker
           open={datePickerOpen}
           views={['year', 'month', 'day']}
-          renderInput={(props) => (
-            <TextField
-              size="small"
-              margin="normal"
-              placeholder={formatMessage(translations.datePlaceholder)}
-              error={!pickerState.dateValid}
-              helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
-              onClick={
-                disabled
-                  ? null
-                  : () => {
-                      setDatePickerOpen(true);
-                    }
-              }
-              {...props}
-              inputProps={{
-                ...props.inputProps,
+          slotProps={{
+            textField: {
+              size: 'small',
+              margin: 'normal',
+              placeholder: formatMessage(translations.datePlaceholder),
+              error: !pickerState.dateValid,
+              helperText: pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage),
+              onClick: disabled
+                ? null
+                : () => {
+                    setDatePickerOpen(true);
+                  },
+              inputProps: {
                 value: internalDate ? asLocalizedDateTime(internalDate, localeCode) : '',
                 onChange: handlePopupOnlyInputChange
-              }}
-            />
-          )}
-          value={internalDate}
+              }
+            }
+          }}
+          value={moment(internalDate)}
           onChange={createOnDateChange('date')}
           disabled={disabled}
           disablePast={disablePast}
@@ -236,44 +232,38 @@ function DateTimePicker(props: DateTimePickerProps) {
         {showTimeSelector && (
           <TimePicker
             open={timePickerOpen}
-            value={internalDate}
+            value={moment(internalDate)}
             onChange={createOnDateChange('time')}
             disabled={disabled}
             ampm={hour12}
             onOpen={() => setTimePickerOpen(true)}
             onAccept={() => setTimePickerOpen(false)}
             onClose={() => setTimePickerOpen(false)}
-            renderInput={(props) => (
-              <TextField
-                size="small"
-                margin="normal"
-                helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
-                placeholder={formatMessage(translations.timePlaceholder)}
-                onClick={
-                  disabled
-                    ? null
-                    : () => {
-                        setTimePickerOpen(true);
-                      }
-                }
-                {...props}
-                inputProps={{
-                  ...props.inputProps,
+            slotProps={{
+              textField: {
+                size: 'small',
+                margin: 'normal',
+                helperText: pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage),
+                placeholder: formatMessage(translations.timePlaceholder),
+                onClick: disabled
+                  ? null
+                  : () => {
+                      setTimePickerOpen(true);
+                    },
+                inputProps: {
                   onChange: handlePopupOnlyInputChange,
-                  value: internalDate
-                    ? asLocalizedDateTime(internalDate, localeCode, {
-                        hour12,
-                        hour: dateTimeFormatOptions?.hour || '2-digit',
-                        minute: dateTimeFormatOptions?.minute || '2-digit',
-                        // If the timezone control isn't displayed, the time displayed may
-                        // be misleading/unexpected to the user, so if timezone isn't displayed,
-                        // display timezone here.
-                        timeZoneName: showTimeZoneSelector ? UNDEFINED : 'short'
-                      })
-                    : ''
-                }}
-              />
-            )}
+                  value: asLocalizedDateTime(internalDate, localeCode, {
+                    hour12,
+                    hour: dateTimeFormatOptions?.hour || '2-digit',
+                    minute: dateTimeFormatOptions?.minute || '2-digit',
+                    // If the timezone control isn't displayed, the time displayed may
+                    // be misleading/unexpected to the user, so if timezone isn't displayed,
+                    // display timezone here.
+                    timeZoneName: showTimeZoneSelector ? UNDEFINED : 'short'
+                  })
+                }
+              }
+            }}
           />
         )}
       </LocalizationProvider>

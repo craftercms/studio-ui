@@ -17,7 +17,6 @@
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  fetchSiteConfig,
   fetchSiteConfigComplete,
   fetchSiteUiConfig,
   fetchSiteUiConfigComplete,
@@ -68,103 +67,103 @@ const initialState: GlobalState['uiConfig'] = {
   cdataEscapedFieldPatterns: []
 };
 
-const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
-  [changeSite.type]: () => ({ ...initialState }),
-  [fetchSiteUiConfig.type]: (state, { payload: { site } }) => ({
-    ...state,
-    isFetching: true,
-    currentSite: site,
-    xml: null
-  }),
-  [fetchSiteUiConfigComplete.type]: (state, { payload }) => {
-    let config = payload.config;
-    const references = {};
-    if (config) {
-      const configDOM = fromString(config);
-      const site = payload.site;
-      const arrays = ['tools'];
+const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) => {
+  builder
+    .addCase(changeSite, () => ({ ...initialState }))
+    .addCase(fetchSiteUiConfig, (state, { payload: { site } }) => ({
+      ...state,
+      isFetching: true,
+      currentSite: site,
+      xml: null
+    }))
+    .addCase(fetchSiteUiConfigComplete, (state, { payload }) => {
+      let config = payload.config;
+      const references = {};
+      if (config) {
+        const configDOM = fromString(config);
+        const site = payload.site;
+        const arrays = ['tools'];
 
-      configDOM.querySelectorAll('plugin').forEach((tag) => {
-        const siteAttr = tag.getAttribute('site');
-        if (siteAttr === '{site}' || siteAttr === null) {
-          tag.setAttribute('site', site);
-        }
-      });
-
-      configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
-        references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
-          arrays
+        configDOM.querySelectorAll('plugin').forEach((tag) => {
+          const siteAttr = tag.getAttribute('site');
+          if (siteAttr === '{site}' || siteAttr === null) {
+            tag.setAttribute('site', site);
+          }
         });
-      });
 
-      configDOM.querySelectorAll('configuration > reference').forEach((tag) => {
-        tag.outerHTML = references[tag.id];
-      });
+        configDOM.querySelectorAll(':scope > references > reference').forEach((tag) => {
+          references[tag.id] = applyDeserializedXMLTransforms(deserialize(tag.innerHTML), {
+            arrays
+          });
+        });
 
-      configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
+        configDOM.querySelectorAll('configuration > reference').forEach((tag) => {
+          tag.outerHTML = references[tag.id];
+        });
 
-      config = serialize(configDOM);
-    }
+        configDOM.querySelectorAll('widget').forEach((e, index) => e.setAttribute('uiKey', String(index)));
 
-    return {
-      ...state,
-      isFetching: false,
-      xml: config,
-      references: references
-    };
-  },
-  [fetchSiteUiConfigFailed.type]: (state, { payload }) => ({
-    ...state,
-    error: payload,
-    isFetching: false,
-    currentSite: null
-  }),
-  [fetchSiteLocales.type]: (state) => ({
-    ...state,
-    siteLocales: {
-      ...state.siteLocales,
-      isFetching: true
-    }
-  }),
-  [fetchSiteLocalesComplete.type]: (state, { payload }) => ({
-    ...state,
-    siteLocales: {
-      ...state.siteLocales,
-      isFetching: false,
-      localeCodes: payload.localeCodes ?? [],
-      defaultLocaleCode: payload.defaultLocaleCode
-    }
-  }),
-  [fetchSiteLocalesFailed.type]: (state, { payload }) => ({
-    ...state,
-    siteLocales: {
-      ...state.siteLocales,
-      isFetching: false,
-      error: payload
-    }
-  }),
-  [fetchSiteConfig.type]: (state) => ({ ...state }),
-  [fetchSiteConfigComplete.type]: (state, { payload }) => {
-    const { cdataEscapedFieldPatterns, locale, publishing, upload } = payload;
-    return {
-      ...state,
-      upload: {
-        ...state.upload,
-        ...upload
-      },
-      cdataEscapedFieldPatterns,
-      locale: {
-        ...state.locale,
-        // If localization config is not present in the config, use the browser's resolved options.
-        localeCode: locale?.localeCode || initialState.locale.localeCode,
-        dateTimeFormatOptions: locale?.dateTimeFormatOptions || initialState.locale.dateTimeFormatOptions
-      },
-      publishing: {
-        ...state.publishing,
-        ...publishing
+        config = serialize(configDOM);
       }
-    };
-  }
+
+      return {
+        ...state,
+        isFetching: false,
+        xml: config,
+        references: references
+      };
+    })
+    .addCase(fetchSiteUiConfigFailed, (state, { payload }) => ({
+      ...state,
+      error: payload,
+      isFetching: false,
+      currentSite: null
+    }))
+    .addCase(fetchSiteLocales, (state) => ({
+      ...state,
+      siteLocales: {
+        ...state.siteLocales,
+        isFetching: true
+      }
+    }))
+    .addCase(fetchSiteLocalesComplete, (state, { payload }) => ({
+      ...state,
+      siteLocales: {
+        ...state.siteLocales,
+        isFetching: false,
+        localeCodes: payload.localeCodes ?? [],
+        defaultLocaleCode: payload.defaultLocaleCode
+      }
+    }))
+    .addCase(fetchSiteLocalesFailed, (state, { payload }) => ({
+      ...state,
+      siteLocales: {
+        ...state.siteLocales,
+        isFetching: false,
+        error: payload
+      }
+    }))
+    .addCase(fetchSiteConfigComplete, (state, { payload }) => {
+      const { cdataEscapedFieldPatterns, locale, publishing, upload } = payload;
+      return {
+        ...state,
+        upload: {
+          ...state.upload,
+          ...upload
+        },
+        cdataEscapedFieldPatterns,
+        locale: {
+          ...state.locale,
+          // If localization config is not present in the config, use the browser's resolved options.
+          localeCode: locale?.localeCode || initialState.locale.localeCode,
+          dateTimeFormatOptions: locale?.dateTimeFormatOptions || initialState.locale.dateTimeFormatOptions
+        },
+        publishing: {
+          ...state.publishing,
+          ...publishing
+        }
+      };
+    });
 });
 
 export default reducer;

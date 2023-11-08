@@ -36,20 +36,19 @@ export type LogoAndMenuBundleButtonProps = ButtonProps & {
   showMenuIcon?: boolean;
 };
 
-const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuBundleButtonProps>(function (
-  props,
-  ref
-) {
-  const { classes, cx } = useStyles();
-  const { showCrafterIcon = true, showMenuIcon = true, ...buttonProps } = props;
-  return (
-    <Button ref={ref} {...buttonProps}>
-      {showCrafterIcon && (
-        <CrafterCMSIcon sx={{ mr: 0.5 }} className={cx(classes.crafterIcon, props.classes?.crafterIcon)} />
-      )}
-      {showMenuIcon && <MenuRounded className={props.classes?.menuIcon} />}
-    </Button>
-  );
-});
+const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuBundleButtonProps>(
+  function (props, ref) {
+    const { classes, cx } = useStyles();
+    const { showCrafterIcon = true, showMenuIcon = true, ...buttonProps } = props;
+    return (
+      <Button ref={ref} {...buttonProps}>
+        {showCrafterIcon && (
+          <CrafterCMSIcon sx={{ mr: 0.5 }} className={cx(classes.crafterIcon, props.classes?.crafterIcon)} />
+        )}
+        {showMenuIcon && <MenuRounded className={props.classes?.menuIcon} />}
+      </Button>
+    );
+  }
+);
 
 export default LogoAndMenuBundleButton;

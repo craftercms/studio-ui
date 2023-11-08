@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { parse, ParsedQuery } from 'query-string';
+import queryString, { ParsedQuery } from 'query-string';
 import { DetailedItem, PasteItem } from '../models/Item';
 import { toQueryString } from './object';
 import LookupTable from '../models/LookupTable';
@@ -57,12 +57,12 @@ export function getFileNameFromPath(path: string): string {
 }
 
 export function getQueryVariable(query: string, variable: string): string | string[] {
-  let qs = parse(query);
+  let qs = queryString.parse(query);
   return qs[variable] ?? null;
 }
 
 export function parseQueryString(): ParsedQuery {
-  return parse(window.location.search);
+  return queryString.parse(window.location.search);
 }
 
 export function withoutIndex(path: string): string {

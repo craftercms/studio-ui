@@ -33,37 +33,38 @@ const messages = defineMessages({
   }
 });
 
-const reducer = createReducer<GlobalState['dashboard']>(null, {
-  [changeSite.type]: () => null,
-  [initDashboardConfig.type]: (state, { payload }) => {
-    let dashboardConfig = {
-      widgets: [
-        {
-          id: 'craftercms.component.EmptyState',
-          uiKey: -1,
-          configuration: {
-            title: messages.noUiConfigMessageTitle,
-            subtitle: messages.noUiConfigMessageSubtitle
+const reducer = createReducer<GlobalState['dashboard']>(null, (builder) => {
+  builder
+    .addCase(changeSite, () => null)
+    .addCase(initDashboardConfig, (state, { payload }) => {
+      let dashboardConfig = {
+        widgets: [
+          {
+            id: 'craftercms.component.EmptyState',
+            uiKey: -1,
+            configuration: {
+              title: messages.noUiConfigMessageTitle,
+              subtitle: messages.noUiConfigMessageSubtitle
+            }
           }
-        }
-      ]
-    };
-    const arrays = ['widgets', 'permittedRoles'];
-    const configDOM = fromString(payload.configXml);
-    // TODO: 4.0.1 update selector to craftercms.components.SiteDashboard
-    const dashboard = configDOM.querySelector('[id="craftercms.components.Dashboard"] > configuration');
+        ]
+      };
+      const arrays = ['widgets', 'permittedRoles'];
+      const configDOM = fromString(payload.configXml);
+      // TODO: 4.0.1 update selector to craftercms.components.SiteDashboard
+      const dashboard = configDOM.querySelector('[id="craftercms.components.Dashboard"] > configuration');
 
-    if (dashboard) {
-      dashboardConfig = applyDeserializedXMLTransforms(deserialize(dashboard), {
-        arrays
-      }).configuration;
-    }
+      if (dashboard) {
+        dashboardConfig = applyDeserializedXMLTransforms(deserialize(dashboard), {
+          arrays
+        }).configuration;
+      }
 
-    return {
-      ...state,
-      ...dashboardConfig
-    };
-  }
+      return {
+        ...state,
+        ...dashboardConfig
+      };
+    });
 });
 
 export default reducer;

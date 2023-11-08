@@ -26,15 +26,19 @@ const initialState: PublishDialogStateProps = {
   hasPendingChanges: null
 };
 
-export default createReducer<GlobalState['dialogs']['publish']>(initialState, {
-  [showPublishDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closePublishDialog(),
-    onClosed: publishDialogClosed(),
-    ...payload,
-    open: true
-  }),
-  [updatePublishDialog.type]: (state, { payload }) => ({ ...state, ...payload }),
-  [closePublishDialog.type]: (state) => ({ ...state, open: false }),
-  [publishDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['publish']>(initialState, (builder) => {
+  builder
+    .addCase(showPublishDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closePublishDialog(),
+      onClosed: publishDialogClosed(),
+      ...(payload as Partial<PublishDialogStateProps>),
+      open: true
+    }))
+    .addCase(updatePublishDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<PublishDialogStateProps>)
+    }))
+    .addCase(closePublishDialog, (state) => ({ ...state, open: false }))
+    .addCase(publishDialogClosed, () => initialState);
 });

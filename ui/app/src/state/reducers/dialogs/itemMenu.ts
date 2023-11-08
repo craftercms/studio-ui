@@ -17,25 +17,27 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeItemMenu, itemMenuClosed, showItemMenu } from '../../actions/dialogs';
+import { ItemMenuStateProps } from '../../../components';
 
-export default createReducer<GlobalState['dialogs']['itemMenu']>(
-  {
-    open: false,
-    path: null,
-    anchorReference: 'anchorPosition',
-    anchorPosition: {
-      top: 0,
-      left: 0
-    }
-  },
-  {
-    [showItemMenu.type]: (state, { payload }) => ({
+const initialState: ItemMenuStateProps = {
+  open: false,
+  path: null,
+  anchorReference: 'anchorPosition',
+  anchorPosition: {
+    top: 0,
+    left: 0
+  }
+};
+
+export default createReducer<GlobalState['dialogs']['itemMenu']>(initialState, (builder) => {
+  builder
+    .addCase(showItemMenu, (state, { payload }) => ({
+      ...state,
       onClose: closeItemMenu(),
       onClosed: itemMenuClosed(),
-      ...payload,
+      ...(payload as Partial<ItemMenuStateProps>),
       open: true
-    }),
-    [closeItemMenu.type]: (state) => ({ ...state, open: false }),
-    [itemMenuClosed.type]: () => ({ open: false })
-  }
-);
+    }))
+    .addCase(closeItemMenu, (state) => ({ ...state, open: false }))
+    .addCase(itemMenuClosed, () => initialState);
+});

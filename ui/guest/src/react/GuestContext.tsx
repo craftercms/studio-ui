@@ -38,7 +38,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const useDispatch: () => Dispatch<StandardAction> = createDispatchHook(GuestReduxContext);
 
-export const useSelector = createSelectorHook<GuestState, GuestStandardAction>(GuestReduxContext);
+export const useSelector = createSelectorHook(GuestReduxContext);
 
 export const useStore: () => Store<GuestState, StandardAction> = createStoreHook(GuestReduxContext);
 

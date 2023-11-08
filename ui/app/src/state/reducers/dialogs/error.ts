@@ -29,14 +29,16 @@ const initialState: ErrorDialogStateProps = {
   error: null
 };
 
-export default createReducer<GlobalState['dialogs']['error']>(initialState, {
-  [showErrorDialog.type]: (state, { payload }) => ({
-    onClose: closeErrorDialog(),
-    onClosed: errorDialogClosed(),
-    onDismiss: closeErrorDialog(),
-    ...payload,
-    open: true
-  }),
-  [closeErrorDialog.type]: (state) => ({ ...state, open: false }),
-  [errorDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['error']>(initialState, (builder) => {
+  builder
+    .addCase(showErrorDialog, (state, { payload }) => ({
+      onClose: closeErrorDialog(),
+      onClosed: errorDialogClosed(),
+      onDismiss: closeErrorDialog(),
+      error: null,
+      ...(payload as Partial<ErrorDialogStateProps>),
+      open: true
+    }))
+    .addCase(closeErrorDialog, (state) => ({ ...state, open: false }))
+    .addCase(errorDialogClosed, (state) => initialState);
 });

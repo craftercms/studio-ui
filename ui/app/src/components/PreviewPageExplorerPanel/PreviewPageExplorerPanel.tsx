@@ -17,12 +17,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from 'tss-react/mui';
-import TreeView from '@mui/lab/TreeView';
+import { TreeView } from '@mui/x-tree-view/TreeView';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import ChevronRightIcon from '@mui/icons-material/ChevronRightRounded';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
-import TreeItem from '@mui/lab/TreeItem';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import { ContentType, ContentTypeField } from '../../models/ContentType';
 import Page from '../../icons/Page';
