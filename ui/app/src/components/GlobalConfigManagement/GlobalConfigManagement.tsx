@@ -163,6 +163,15 @@ export function GlobalConfigManagement() {
     });
   };
 
+  const onAceInit = (editor: AceAjax.Editor) => {
+    editor.commands.addCommand({
+      name: 'saveToCrafter',
+      bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+      exec: () => onSaveClick(),
+      readOnly: false
+    });
+  };
+
   return (
     <Paper elevation={0}>
       <GlobalAppToolbar
@@ -179,6 +188,7 @@ export function GlobalConfigManagement() {
             theme="ace/theme/textmate"
             autoFocus={true}
             readOnly={enable}
+            onInit={onAceInit}
           />
           <Box p="10px" display="flex" justifyContent="space-between">
             <SecondaryButton onClick={() => setViewSample(true)}>
