@@ -18,6 +18,7 @@ import { errorSelectorApi1, get, getBinary, getGlobalHeaders, getText, post, pos
 import { catchError, map, pluck, switchMap, tap } from 'rxjs/operators';
 import { forkJoin, Observable, of, zip } from 'rxjs';
 import {
+  beautify,
   cdataWrap,
   createElement,
   createElements,
@@ -58,6 +59,7 @@ import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
 import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
 import { isPdfDocument, isMediaContent, isTextContent } from '../components/PathNavigator/utils';
+import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html${toQueryString({ path })}`).pipe(pluck('response'));
@@ -263,7 +265,9 @@ export function writeInstance(
   const doc = newXMLDocument('component');
   const transferObj = createComponentObject(instance, contentType, shouldSerializeValueFn);
   createElements(doc.documentElement, transferObj);
-  return writeContent(site, instance.craftercms.path, serialize(doc));
+  return fromPromise(beautify(serialize(doc))).pipe(
+    switchMap((xml) => writeContent(site, instance.craftercms.path, xml))
+  );
 }
 // endregion
 
@@ -328,15 +332,19 @@ function performMutation(
 
       updateModifiedDateElement(doc.documentElement);
 
-      return post(
-        writeContentUrl({
-          site,
-          path: path,
-          unlock: 'true',
-          fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-        }),
-        serialize(doc)
-      ).pipe(map(() => ({ updatedDocument: doc })));
+      return fromPromise(beautify(serialize(doc))).pipe(
+        switchMap((xml) =>
+          post(
+            writeContentUrl({
+              site,
+              path: path,
+              unlock: 'true',
+              fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+            }),
+            xml
+          ).pipe(map(() => ({ updatedDocument: doc })))
+        )
+      );
     })
   );
 }
@@ -498,15 +506,19 @@ export function duplicateItem(
       };
 
       if (isEmbedded) {
-        return post(
-          writeContentUrl({
-            site,
-            path: path,
-            unlock: 'true',
-            fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-          }),
-          serialize(doc)
-        ).pipe(map(() => returnValue));
+        return fromPromise(beautify(serialize(doc))).pipe(
+          switchMap((xml) =>
+            post(
+              writeContentUrl({
+                site,
+                path: path,
+                unlock: 'true',
+                fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+              }),
+              xml
+            ).pipe(map(() => returnValue))
+          )
+        );
       } else {
         return fetchContentDOM(site, itemPath).pipe(
           switchMap((componentDoc) => {
@@ -515,23 +527,31 @@ export function duplicateItem(
             updateModifiedDateElement(componentDoc.documentElement);
 
             return forkJoin([
-              post(
-                writeContentUrl({
-                  site,
-                  path,
-                  unlock: 'true',
-                  fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-                }),
-                serialize(doc)
+              fromPromise(beautify(serialize(doc))).pipe(
+                switchMap((xml) =>
+                  post(
+                    writeContentUrl({
+                      site,
+                      path,
+                      unlock: 'true',
+                      fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+                    }),
+                    xml
+                  )
+                )
               ),
-              post(
-                writeContentUrl({
-                  site,
-                  path: newItemData.path,
-                  unlock: 'true',
-                  fileName: getInnerHtml(componentDoc.querySelector(':scope > file-name'))
-                }),
-                serialize(componentDoc)
+              fromPromise(beautify(serialize(componentDoc))).pipe(
+                switchMap((xml) =>
+                  post(
+                    writeContentUrl({
+                      site,
+                      path: newItemData.path,
+                      unlock: 'true',
+                      fileName: getInnerHtml(componentDoc.querySelector(':scope > file-name'))
+                    }),
+                    xml
+                  )
+                )
               )
             ]).pipe(
               map(() => {
@@ -779,14 +799,18 @@ export function fetchItemsByContentType(
 export function formatXML(site: string, path: string): Observable<boolean> {
   return fetchContentDOM(site, path).pipe(
     switchMap((doc) =>
-      post(
-        writeContentUrl({
-          site,
-          path: path,
-          unlock: 'true',
-          fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
-        }),
-        serialize(doc)
+      fromPromise(beautify(serialize(doc))).pipe(
+        switchMap((xml) =>
+          post(
+            writeContentUrl({
+              site,
+              path: path,
+              unlock: 'true',
+              fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
+            }),
+            xml
+          )
+        )
       )
     ),
     map(() => true)

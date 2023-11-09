@@ -111,7 +111,7 @@ function getStyles(sx: PaginationPartialSx, props: PaginationProps): PaginationP
       [`& .${tablePaginationClasses.menuItem}`]: {
         ...sx.menuItem
       }
-    } as SystemStyleObject<Theme>);
+    }) as SystemStyleObject<Theme>;
 }
 
 export function Pagination(props: PaginationProps) {

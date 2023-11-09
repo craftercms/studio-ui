@@ -1,7 +1,7 @@
 {
   "name": "@craftercms/experience-builder",
   "description": "CrafterCMS' Experience Builder integration sdk.",
-  "version": "4.1.2",
+  "version": "4.1.2-1",
   "repository": {
     "type": "git",
     "url": "https://github.com/craftercms/studio-ui.git",
@@ -94,14 +94,14 @@
   "dependencies": {
     "@craftercms/classes": "4.1.2",
     "@craftercms/content": "4.1.2",
-    "@craftercms/ice": "4.1.2",
+    "@craftercms/ice": "4.1.2-1",
     "@craftercms/search": "4.1.2",
     "@craftercms/studio-ui": "workspace:^",
     "@emotion/css": "^11.11.2",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
-    "@mui/material": "^5.14.16",
+    "@mui/material": "^5.14.17",
     "@reduxjs/toolkit": "^1.9.7",
     "@types/react-dom": "^18.2.14",
     "jquery": "^3.7.1",
@@ -120,14 +120,14 @@
   },
   "devDependencies": {
     "@types/jquery": "^3.5.25",
-    "@types/js-cookie": "^3.0.5",
+    "@types/js-cookie": "^3.0.6",
     "@types/prop-types": "^15.7.9",
     "@types/react-is": "^18.2.3",
     "@types/tinymce": "^4.6.7",
     "build-if-changed": "^1.5.5",
     "npm-run-all": "^4.1.5",
-    "replace-in-file": "^6.3.5",
-    "rollup": "^3.21.6",
+    "replace-in-file": "^7.0.2",
+    "rollup": "^3.29.4",
     "yargs": "^17.7.2"
   }
 }
