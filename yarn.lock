@@ -1664,37 +1664,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@craftercms/monaco-adapter@workspace:ui/monaco":
-  version: 0.0.0-use.local
-  resolution: "@craftercms/monaco-adapter@workspace:ui/monaco"
-  dependencies:
-    "@types/rimraf": "npm:^4.0.5"
-    build-if-changed: "npm:^1.5.5"
-    css-loader: "npm:^6.8.1"
-    file-loader: "npm:^6.2.0"
-    monaco-editor: "npm:0.44.0"
-    monaco-editor-webpack-plugin: "npm:^7.1.0"
-    npm-run-all: "npm:^4.1.5"
-    rimraf: "npm:^5.0.5"
-    style-loader: "npm:^3.3.3"
-    webpack: "npm:^5.89.0"
-    webpack-cli: "npm:^5.1.4"
-  languageName: unknown
-  linkType: soft
-
 "@craftercms/npm-content@workspace:ui/npm-content":
   version: 0.0.0-use.local
   resolution: "@craftercms/npm-content@workspace:ui/npm-content"
   dependencies:
     "@popperjs/core": "npm:^2.11.8"
-    "@types/bootstrap": "npm:^5.2.8"
+    "@types/bootstrap": "npm:^5"
+    "@types/rimraf": "npm:^4.0.5"
     ace-builds: "npm:^1.31.1"
     bootstrap: "npm:^5.3.2"
     build-if-changed: "npm:^1.5.5"
+    css-loader: "npm:^6.8.1"
+    file-loader: "npm:^6.2.0"
     jquery-ui: "npm:^1.13.2"
     jquery-ui-css: "npm:^1.11.5"
     js-yaml: "npm:^4.1.0"
+    monaco-editor: "npm:0.44.0"
+    monaco-editor-webpack-plugin: "npm:^7.1.0"
+    npm-run-all: "npm:^4.1.5"
+    rimraf: "npm:^5.0.5"
+    style-loader: "npm:^3.3.3"
     tinymce: "npm:^6.7.2"
+    webpack: "npm:^5.89.0"
+    webpack-cli: "npm:^5.1.4"
   languageName: unknown
   linkType: soft
 
@@ -4469,12 +4461,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/bootstrap@npm:^5.2.8":
-  version: 5.2.8
-  resolution: "@types/bootstrap@npm:5.2.8"
+"@types/bootstrap@npm:^5":
+  version: 5.2.9
+  resolution: "@types/bootstrap@npm:5.2.9"
   dependencies:
     "@popperjs/core": "npm:^2.9.2"
-  checksum: 8c1cde113c77e28caf29492463a68979401a249838963cdb8e446cefd1550a442526f8765667274df2ba2d1c2add7ac584eab1ff51f0f6e7f7940f3ee3c14540
+  checksum: d8f14e0cfb25bc8e167daa21fe871fc669e7e68d19b6a823f9aea5833ac1244814488fde7176246a35fd582ee7f947646a2be8e964e2fe58b64b307fd2e6c455
   languageName: node
   linkType: hard
 
