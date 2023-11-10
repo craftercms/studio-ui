@@ -511,15 +511,6 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 
   const tagsAndCurls = Object.assign({ lc: '{', rc: '}' }, tags);
 
-  const onAceInit = (editor: AceAjax.Editor) => {
-    editor.commands.addCommand({
-      name: 'saveToCrafter',
-      bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
-      exec: () => onSave(),
-      readOnly: false
-    });
-  };
-
   return (
     <section className={classes.root}>
       {!embedded && (
@@ -701,7 +692,6 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                   autoFocus={true}
                   onChange={onEditorChanges}
                   value={selectedConfigFileXml}
-                  onInit={onAceInit}
                 />
                 {showSampleEditor && (
                   <>
