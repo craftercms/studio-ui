@@ -151,7 +151,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             e.dataTransfer.setData('text/plain', `${record.id}`);
             e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
           }
-          document.querySelector('html').classList.add(dragAndDropActiveClass);
+          document.documentElement.classList.add(dragAndDropActiveClass);
           return initializeDragSubjects(state$);
         }
         return NEVER;
@@ -611,7 +611,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType(computedDragEnd.type),
       tap(() => {
-        document.querySelector('html').classList.remove(dragAndDropActiveClass);
+        document.documentElement.classList.remove(dragAndDropActiveClass);
         destroyDragSubjects();
       }),
       ignoreElements()
@@ -748,7 +748,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               })
             );
           } else {
-            document.querySelector('html').classList.add(dragAndDropActiveClass);
+            document.documentElement.classList.add(dragAndDropActiveClass);
             return initializeDragSubjects(state$);
           }
         }
@@ -774,7 +774,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               })
             );
           } else {
-            document.querySelector('html').classList.add(dragAndDropActiveClass);
+            document.documentElement.classList.add(dragAndDropActiveClass);
             return initializeDragSubjects(state$);
           }
         }

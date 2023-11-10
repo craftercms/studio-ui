@@ -141,7 +141,7 @@ const initialDocumentDomain = typeof document === 'undefined' ? void 0 : documen
 function bypassKeyStroke(e, refs) {
   const isKeyDown = e.type === 'keydown';
   refs.current.keysPressed['z'] = isKeyDown;
-  const html = document.querySelector('html');
+  const html = document.documentElement;
   html.classList[isKeyDown ? 'add' : 'remove'](iceBypassKeyClass);
   document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: isKeyDown }));
 }
@@ -284,7 +284,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // Add/remove edit mode highlight mode classes
   useEffect(() => {
-    const html = document.querySelector('html');
+    const html = document.documentElement;
     const cls = highlightMode === HighlightMode.MOVE_TARGETS ? moveModeClass : editModeClass;
     if (editMode) {
       html.classList.add(cls);
@@ -296,7 +296,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // Add/remove edit mode padding mode classes
   useEffect(() => {
-    const html = document.querySelector('html');
+    const html = document.documentElement;
     if (editMode && editModePadding) {
       html.classList.add(editModePaddingClass);
       return () => {
@@ -320,7 +320,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // Add/remove edit on class
   useEffect(() => {
-    const html = document.querySelector('html');
+    const html = document.documentElement;
     if (editMode === false) {
       html.classList.remove(editOnClass);
       document.dispatchEvent(new CustomEvent(editModeEvent, { detail: false }));
