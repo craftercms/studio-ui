@@ -60,5 +60,5 @@ cp -r ../../node_modules/tinymce "$libsDirectory/tinymce"
 echo "TinyMCE build complete"
 
 # monaco build
-webpack --config webpack.config.js
+webpack --config ./src/monaco/webpack.config.js
 echo "Monaco build complete"

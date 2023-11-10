@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -18,9 +18,9 @@ const path = require('path');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const publicPath = '/studio/static-assets/libs/monaco/';
-const pkg = require('./package.json');
+const pkg = require('../../package.json');
 const rimraf = require('rimraf');
-const targetPath = path.resolve(__dirname, '..', '..', 'static-assets', 'libs', 'monaco');
+const targetPath = path.resolve(__dirname, '..', '..', '..', '..', 'static-assets', 'libs', 'monaco');
 
 // Delete prior build
 rimraf.sync(`${targetPath}/*`);
