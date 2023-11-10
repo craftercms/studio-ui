@@ -235,6 +235,254 @@
 
             _self.loadConfig(contentType, {
               success: function (config) {
+                const onSave = (type) => {
+                  function saveFn(type) {
+                    _self.loadConfig(contentType, {
+                      success: function (currentConfig) {
+                        var xmlFormDef =
+                            CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef),
+                          xmlConfig = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeConfigToXml(
+                            currentConfig,
+                            formDef
+                          );
+
+                        var doc = $.parseXML('<xml/>');
+                        var json = { key1: 1, key2: 2 };
+                        var xml = doc.getElementsByTagName('xml')[0];
+                        var key, elem;
+
+                        for (key in json) {
+                          if (json.hasOwnProperty(key)) {
+                            elem = doc.createElement(key);
+                            $(elem).text(json[key]);
+                            xml.appendChild(elem);
+                          }
+                        }
+
+                        var defPath = '/content-types' + formDef.contentType + '/form-definition.xml';
+                        var confPath = '/content-types' + formDef.contentType + '/config.xml';
+
+                        CrafterCMSNext.rxjs
+                          .forkJoin({
+                            formDef: CrafterCMSNext.services.configuration.writeConfiguration(
+                              CStudioAuthoringContext.site,
+                              defPath,
+                              'studio',
+                              xmlFormDef
+                            ),
+                            config: CrafterCMSNext.services.configuration.writeConfiguration(
+                              CStudioAuthoringContext.site,
+                              confPath,
+                              'studio',
+                              xmlConfig
+                            )
+                          })
+                          .subscribe(
+                            () => {
+                              onSetDirty(false);
+                              CStudioAuthoring.Utils.showNotification(
+                                CMgs.format(langBundle, 'saved'),
+                                'top',
+                                'left',
+                                'success',
+                                48,
+                                197,
+                                'saveContentType'
+                              );
+                              window.top.postMessage(
+                                {
+                                  type: 'CONTENT_TYPES_ON_SAVED',
+                                  saveType: type
+                                },
+                                '*'
+                              );
+                              if (type === 'saveAndClose') {
+                                _self.closeEditor();
+                              }
+                            },
+                            () => {
+                              CStudioAuthoring.Operations.showSimpleDialog(
+                                'errorDialog-dialog',
+                                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                                CMgs.format(langBundle, 'notification'),
+                                CMgs.format(langBundle, 'saveFailed'),
+                                null, // use default button
+                                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                                'studioDialog'
+                              );
+                            }
+                          );
+                      }
+                    });
+                  }
+
+                  var validation = _self.componentsValidation(formDef);
+                  var istemplate = _self.templateValidation(formDef);
+
+                  let errorMessage = validation.fileNameError
+                    ? `<li>${formatMessage(contentTypesMessages.fileNameErrorMessage)}</li>`
+                    : '';
+
+                  errorMessage += validation.internalNameError
+                    ? `<li>${formatMessage(contentTypesMessages.internalNameErrorMessage)}</li>`
+                    : '';
+
+                  errorMessage += validation.flagTitleError
+                    ? `<li>${formatMessage(contentTypesMessages.flagTitleError)}</li>`
+                    : '';
+
+                  errorMessage +=
+                    validation.idError.length > 0
+                      ? `<li>${formatMessage(contentTypesMessages.idError)} ${validation.idError
+                          .map((s) => CrafterCMSNext.util.string.escapeHTML(s))
+                          .join(', ')}</li>`
+                      : '';
+
+                  errorMessage +=
+                    validation.postfixError.length > 0 && CStudioAdminConsole.isPostfixAvailable
+                      ? `<li>${_self.postfixErrorMessage(validation.postfixError)}</li>`
+                      : '';
+
+                  if (errorMessage !== '') {
+                    errorMessage = `${formatMessage(contentTypesMessages.saveFailed)}</br><ul>${errorMessage}</ul>`;
+
+                    CStudioAuthoring.Operations.showSimpleDialog(
+                      'errorTitle-dialog',
+                      CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                      formatMessage(words.notification),
+                      errorMessage,
+                      null, // use default button
+                      YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                      'studioDialog'
+                    );
+                  } else {
+                    // if there are no errors, check for templateError (that has different dialog)
+                    if (!istemplate.flagTemplateError) {
+                      let unmount;
+                      const elem = document.createElement('div');
+
+                      const React = craftercms.libs.React;
+                      const createElement = React.createElement;
+                      const PrimaryButton = craftercms.components.PrimaryButton;
+                      const SecondaryButton = craftercms.components.SecondaryButton;
+
+                      const saveButton = createElement(
+                        PrimaryButton,
+                        {
+                          fullWidth: true,
+                          onClick: () => {
+                            _self.updateFormDefProp('no-template-required', 'true', type !== 'saveAndClose');
+                            saveFn(type);
+                            unmount();
+                          }
+                        },
+                        type === 'save'
+                          ? formatMessage(contentTypesMessages.templateNotRequiredSave)
+                          : type === 'saveAndClose'
+                          ? formatMessage(contentTypesMessages.templateNotRequiredSaveAndClose)
+                          : formatMessage(contentTypesMessages.templateNotRequiredSaveAndMinimize)
+                      );
+
+                      const customEventId = 'createFileDialogEventId';
+                      const createTemplateButton = createElement(
+                        PrimaryButton,
+                        {
+                          fullWidth: true,
+                          onClick: () => {
+                            unmount();
+                            CrafterCMSNext.system.store.dispatch({
+                              type: 'SHOW_CREATE_FILE_DIALOG',
+                              payload: {
+                                path: '/templates/web',
+                                type: 'template',
+                                onCreated: {
+                                  type: 'BATCH_ACTIONS',
+                                  payload: [
+                                    {
+                                      type: 'DISPATCH_DOM_EVENT',
+                                      payload: { id: customEventId, type: 'onCreated' }
+                                    },
+                                    { type: 'CLOSE_CREATE_FILE_DIALOG' }
+                                  ]
+                                }
+                              }
+                            });
+
+                            CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
+                              const { fileName, path } = response;
+                              const templateUrl = `${path}/${fileName}`;
+
+                              CStudioAuthoring.Operations.openCodeEditor({
+                                path: templateUrl,
+                                contentType,
+                                mode: 'ftl',
+                                onSuccess: () => {
+                                  _self.updateFormDefProp('display-template', templateUrl, type !== 'saveAndClose');
+                                  saveFn(type);
+                                },
+                                onClose: () => {
+                                  // When closing, update the template (since template is already created) and save,
+                                  // but do not close/minimize the editor.
+                                  _self.updateFormDefProp('display-template', templateUrl, true);
+                                  saveFn('save');
+                                }
+                              });
+                            });
+                          }
+                        },
+                        formatMessage(contentTypesMessages.createATemplate)
+                      );
+
+                      const chooseTemplateButton = createElement(
+                        PrimaryButton,
+                        {
+                          fullWidth: true,
+                          onClick: () => {
+                            CStudioAuthoring.Operations.openBrowseFilesDialog({
+                              path: '/templates/web',
+                              onSuccess: ({ path }) => {
+                                _self.updateFormDefProp('display-template', path, type !== 'saveAndClose');
+                                saveFn(type);
+                                unmount();
+                              },
+                              onClose: () => unmount()
+                            });
+                          }
+                        },
+                        formatMessage(contentTypesMessages.chooseExistingTemplate)
+                      );
+
+                      const stayButton = createElement(
+                        SecondaryButton,
+                        {
+                          fullWidth: true,
+                          onClick: () => unmount()
+                        },
+                        formatMessage(contentTypesMessages.stayEditing)
+                      );
+
+                      CrafterCMSNext.render(elem, 'AlertDialog', {
+                        open: true,
+                        title: formatMessage(contentTypesMessages.missingTemplateTitle),
+                        body: formatMessage(contentTypesMessages.missingTemplateBody),
+                        buttons: [saveButton, createTemplateButton, chooseTemplateButton, stayButton]
+                      }).then((done) => (unmount = done.unmount));
+                    } else {
+                      // otherwise, save
+                      saveFn(type);
+                    }
+                  }
+                };
+                const onKeyDown = (e) => {
+                  if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    onSave('save');
+                  }
+                };
+
+                // Ctrl/Command + S hotkey
+                document.addEventListener('keydown', onKeyDown);
+
                 // render save bar
                 CStudioAdminConsole.CommandBar.render([
                   {
@@ -255,6 +503,7 @@
                       } else {
                         _self.closeEditor();
                       }
+                      document.removeEventListener('keydown', onKeyDown);
                     }
                   },
                   {
@@ -262,242 +511,7 @@
                     class: 'btn-primary',
                     multiChoice: true,
                     fn: function (e, type) {
-                      function saveFn(type) {
-                        _self.loadConfig(contentType, {
-                          success: function (currentConfig) {
-                            var xmlFormDef =
-                                CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeDefinitionToXml(formDef),
-                              xmlConfig = CStudioAdminConsole.Tool.ContentTypes.FormDefMain.serializeConfigToXml(
-                                currentConfig,
-                                formDef
-                              );
-
-                            var doc = $.parseXML('<xml/>');
-                            var json = { key1: 1, key2: 2 };
-                            var xml = doc.getElementsByTagName('xml')[0];
-                            var key, elem;
-
-                            for (key in json) {
-                              if (json.hasOwnProperty(key)) {
-                                elem = doc.createElement(key);
-                                $(elem).text(json[key]);
-                                xml.appendChild(elem);
-                              }
-                            }
-
-                            var defPath = '/content-types' + formDef.contentType + '/form-definition.xml';
-                            var confPath = '/content-types' + formDef.contentType + '/config.xml';
-
-                            CrafterCMSNext.rxjs
-                              .forkJoin({
-                                formDef: CrafterCMSNext.services.configuration.writeConfiguration(
-                                  CStudioAuthoringContext.site,
-                                  defPath,
-                                  'studio',
-                                  xmlFormDef
-                                ),
-                                config: CrafterCMSNext.services.configuration.writeConfiguration(
-                                  CStudioAuthoringContext.site,
-                                  confPath,
-                                  'studio',
-                                  xmlConfig
-                                )
-                              })
-                              .subscribe(
-                                () => {
-                                  onSetDirty(false);
-                                  CStudioAuthoring.Utils.showNotification(
-                                    CMgs.format(langBundle, 'saved'),
-                                    'top',
-                                    'left',
-                                    'success',
-                                    48,
-                                    197,
-                                    'saveContentType'
-                                  );
-                                  window.top.postMessage(
-                                    {
-                                      type: 'CONTENT_TYPES_ON_SAVED',
-                                      saveType: type
-                                    },
-                                    '*'
-                                  );
-                                  if (type === 'saveAndClose') {
-                                    _self.closeEditor();
-                                  }
-                                },
-                                () => {
-                                  CStudioAuthoring.Operations.showSimpleDialog(
-                                    'errorDialog-dialog',
-                                    CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                                    CMgs.format(langBundle, 'notification'),
-                                    CMgs.format(langBundle, 'saveFailed'),
-                                    null, // use default button
-                                    YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                                    'studioDialog'
-                                  );
-                                }
-                              );
-                          }
-                        });
-                      }
-
-                      var validation = _self.componentsValidation(formDef);
-                      var istemplate = _self.templateValidation(formDef);
-
-                      let errorMessage = validation.fileNameError
-                        ? `<li>${formatMessage(contentTypesMessages.fileNameErrorMessage)}</li>`
-                        : '';
-
-                      errorMessage += validation.internalNameError
-                        ? `<li>${formatMessage(contentTypesMessages.internalNameErrorMessage)}</li>`
-                        : '';
-
-                      errorMessage += validation.flagTitleError
-                        ? `<li>${formatMessage(contentTypesMessages.flagTitleError)}</li>`
-                        : '';
-
-                      errorMessage +=
-                        validation.idError.length > 0
-                          ? `<li>${formatMessage(contentTypesMessages.idError)} ${validation.idError
-                              .map((s) => CrafterCMSNext.util.string.escapeHTML(s))
-                              .join(', ')}</li>`
-                          : '';
-
-                      errorMessage +=
-                        validation.postfixError.length > 0 && CStudioAdminConsole.isPostfixAvailable
-                          ? `<li>${_self.postfixErrorMessage(validation.postfixError)}</li>`
-                          : '';
-
-                      if (errorMessage !== '') {
-                        errorMessage = `${formatMessage(contentTypesMessages.saveFailed)}</br><ul>${errorMessage}</ul>`;
-
-                        CStudioAuthoring.Operations.showSimpleDialog(
-                          'errorTitle-dialog',
-                          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                          formatMessage(words.notification),
-                          errorMessage,
-                          null, // use default button
-                          YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                          'studioDialog'
-                        );
-                      } else {
-                        // if there are no errors, check for templateError (that has different dialog)
-                        if (!istemplate.flagTemplateError) {
-                          let unmount;
-                          const elem = document.createElement('div');
-
-                          const React = craftercms.libs.React;
-                          const createElement = React.createElement;
-                          const PrimaryButton = craftercms.components.PrimaryButton;
-                          const SecondaryButton = craftercms.components.SecondaryButton;
-
-                          const saveButton = createElement(
-                            PrimaryButton,
-                            {
-                              fullWidth: true,
-                              onClick: () => {
-                                _self.updateFormDefProp('no-template-required', 'true', type !== 'saveAndClose');
-                                saveFn(type);
-                                unmount();
-                              }
-                            },
-                            type === 'save'
-                              ? formatMessage(contentTypesMessages.templateNotRequiredSave)
-                              : type === 'saveAndClose'
-                              ? formatMessage(contentTypesMessages.templateNotRequiredSaveAndClose)
-                              : formatMessage(contentTypesMessages.templateNotRequiredSaveAndMinimize)
-                          );
-
-                          const customEventId = 'createFileDialogEventId';
-                          const createTemplateButton = createElement(
-                            PrimaryButton,
-                            {
-                              fullWidth: true,
-                              onClick: () => {
-                                unmount();
-                                CrafterCMSNext.system.store.dispatch({
-                                  type: 'SHOW_CREATE_FILE_DIALOG',
-                                  payload: {
-                                    path: '/templates/web',
-                                    type: 'template',
-                                    onCreated: {
-                                      type: 'BATCH_ACTIONS',
-                                      payload: [
-                                        {
-                                          type: 'DISPATCH_DOM_EVENT',
-                                          payload: { id: customEventId, type: 'onCreated' }
-                                        },
-                                        { type: 'CLOSE_CREATE_FILE_DIALOG' }
-                                      ]
-                                    }
-                                  }
-                                });
-
-                                CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
-                                  const { fileName, path } = response;
-                                  const templateUrl = `${path}/${fileName}`;
-
-                                  CStudioAuthoring.Operations.openCodeEditor({
-                                    path: templateUrl,
-                                    contentType,
-                                    mode: 'ftl',
-                                    onSuccess: () => {
-                                      _self.updateFormDefProp('display-template', templateUrl, type !== 'saveAndClose');
-                                      saveFn(type);
-                                    },
-                                    onClose: () => {
-                                      // When closing, update the template (since template is already created) and save,
-                                      // but do not close/minimize the editor.
-                                      _self.updateFormDefProp('display-template', templateUrl, true);
-                                      saveFn('save');
-                                    }
-                                  });
-                                });
-                              }
-                            },
-                            formatMessage(contentTypesMessages.createATemplate)
-                          );
-
-                          const chooseTemplateButton = createElement(
-                            PrimaryButton,
-                            {
-                              fullWidth: true,
-                              onClick: () => {
-                                CStudioAuthoring.Operations.openBrowseFilesDialog({
-                                  path: '/templates/web',
-                                  onSuccess: ({ path }) => {
-                                    _self.updateFormDefProp('display-template', path, type !== 'saveAndClose');
-                                    saveFn(type);
-                                    unmount();
-                                  },
-                                  onClose: () => unmount()
-                                });
-                              }
-                            },
-                            formatMessage(contentTypesMessages.chooseExistingTemplate)
-                          );
-
-                          const stayButton = createElement(
-                            SecondaryButton,
-                            {
-                              fullWidth: true,
-                              onClick: () => unmount()
-                            },
-                            formatMessage(contentTypesMessages.stayEditing)
-                          );
-
-                          CrafterCMSNext.render(elem, 'AlertDialog', {
-                            open: true,
-                            title: formatMessage(contentTypesMessages.missingTemplateTitle),
-                            body: formatMessage(contentTypesMessages.missingTemplateBody),
-                            buttons: [saveButton, createTemplateButton, chooseTemplateButton, stayButton]
-                          }).then((done) => (unmount = done.unmount));
-                        } else {
-                          // otherwise, save
-                          saveFn(type);
-                        }
-                      }
+                      onSave(type);
                     }
                   }
                 ]);
