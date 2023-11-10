@@ -474,7 +474,8 @@
                   }
                 };
                 const onKeyDown = (e) => {
-                  if (e.ctrlKey && e.key === 's') {
+                  const isOSX = /mac/i.test(navigator.platform);
+                  if ((isOSX ? e.metaKey : e.ctrlKey) && e.key === 's') {
                     e.preventDefault();
                     onSave('save');
                   }

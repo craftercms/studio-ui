@@ -1899,7 +1899,8 @@ var CStudioForms =
                 };
 
                 document.addEventListener('keydown', (e) => {
-                  if (e.ctrlKey && e.key === 's') {
+                  const isOSX = /mac/i.test(navigator.platform);
+                  if ((isOSX ? e.metaKey : e.ctrlKey) && e.key === 's') {
                     // Prevent the Save dialog to open
                     e.preventDefault();
                     // Blur current focused element for the model to update before saving
