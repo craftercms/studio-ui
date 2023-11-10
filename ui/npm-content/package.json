@@ -6,7 +6,8 @@
   "license": "LGPL-3.0-only",
   "private": true,
   "scripts": {
-    "build": "chmod +x build.sh; ./build.sh"
+    "build": "chmod +x build.sh; ./build.sh && run-s build:monaco",
+    "build:monaco": "webpack --config ./src/monaco/webpack.config.js"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
