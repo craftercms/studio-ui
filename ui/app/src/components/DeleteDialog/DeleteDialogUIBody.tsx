@@ -77,11 +77,9 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
           {dependentItems.length ? (
             <List>
               {dependentItems.map((path) => {
-                const labelId = `checkbox-list-label-${path}`;
                 return (
                   <ListItem dense key={path}>
                     <ListItemText
-                      id={labelId}
                       primary={path}
                       primaryTypographyProps={{
                         title: path,
