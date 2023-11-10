@@ -73,6 +73,7 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { UNDEFINED } from '../../utils/constants';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { nnou } from '../../utils/object';
+import { getContentSizeInBytes, MAX_CONFIG_SIZE } from '../../utils/content';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -423,6 +424,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 
   const onSave = () => {
     const content = editorRef.current.getValue();
+    const contentSize = getContentSizeInBytes(content);
     const doc = parseValidateDocument(content);
     if (typeof doc === 'string') {
       showXmlParseError(doc);
@@ -440,6 +442,17 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
       dispatch(
         showSystemNotification({
           message: formatMessage(translations.documentError),
+          options: {
+            variant: 'error'
+          }
+        })
+      );
+    } else if (contentSize > MAX_CONFIG_SIZE) {
+      dispatch(
+        showSystemNotification({
+          message: formatMessage({
+            defaultMessage: 'Maximum configuration size exceeded, please reduce it in order to properly save.'
+          }),
           options: {
             variant: 'error'
           }

@@ -33,6 +33,7 @@ import { useHistory } from 'react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
+import { getContentSizeInBytes, MAX_CONFIG_SIZE } from '../../utils/content';
 
 const translations = defineMessages({
   configSaved: {
@@ -106,6 +107,8 @@ export function GlobalConfigManagement() {
   };
 
   const onSaveClick = () => {
+    const value = aceEditorRef.current.getValue();
+    const contentSize = getContentSizeInBytes(value);
     const errors = aceEditorRef.current
       .getSession()
       .getAnnotations()
@@ -122,8 +125,18 @@ export function GlobalConfigManagement() {
           }
         })
       );
+    } else if (contentSize > MAX_CONFIG_SIZE) {
+      dispatch(
+        showSystemNotification({
+          message: formatMessage({
+            defaultMessage: 'Maximum configuration size exceeded, please reduce it in order to properly save.'
+          }),
+          options: {
+            variant: 'error'
+          }
+        })
+      );
     } else {
-      const value = aceEditorRef.current.getValue();
       writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value).subscribe(
         () => {
           setLastSavedContent(value);

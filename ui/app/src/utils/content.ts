@@ -77,6 +77,8 @@ import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
 
+export const MAX_CONFIG_SIZE = 512000; // Max configuration files allowed (in bytes)
+
 export function isEditableAsset(path: string) {
   return (
     path.endsWith('.ftl') ||
@@ -1066,4 +1068,8 @@ export function generateComponentBasePath(contentType: string) {
 
 export function generateComponentPath(modelId: string, contentType: string) {
   return `${generateComponentBasePath(contentType)}/${modelId}.xml`;
+}
+
+export function getContentSizeInBytes(content: string) {
+  return new TextEncoder().encode(content).length;
 }
