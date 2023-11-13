@@ -34,17 +34,9 @@
     <parent>
         <groupId>org.craftercms</groupId>
         <artifactId>craftercms</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
-        <!-- craftercms version flag -->
-        <relativePath />
-        <!-- lookup parent from repository -->
+        <version>4.0.8-SNAPSHOT</version><!-- craftercms version flag -->
+        <relativePath /><!-- lookup parent from repository -->
     </parent>
-    <properties>
-        <!-- Overrides are listed here -->
-        <frontend.maven.version>1.12.0</frontend.maven.version>
-        <studio.ui.node.version>v16.13.0</studio.ui.node.version>
-        <studio.ui.yarn.version>v1.22.17</studio.ui.yarn.version>
-    </properties>
     <build>
         <!-- Overrides are listed here -->
         <plugins>

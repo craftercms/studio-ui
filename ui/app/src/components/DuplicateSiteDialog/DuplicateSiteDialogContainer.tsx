@@ -332,7 +332,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
                     </Typography>
                     <div>
                       <Typography variant="body2" gutterBottom>
-                        <FormattedMessage defaultMessage="Duplicate project" />
+                        <FormattedMessage defaultMessage="Duplicate Project" />
                       </Typography>
                       <Typography variant="body2" gutterBottom>
                         <span>
