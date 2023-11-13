@@ -33,6 +33,7 @@ import FontIcon from '@mui/icons-material/FontDownloadOutlined';
 import TextIcon from '@mui/icons-material/SubjectRounded';
 import FolderIcon from '@mui/icons-material/FolderOpenRounded';
 import TaxonomyIcon from '@mui/icons-material/LocalOfferOutlined';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { IntlFormatters, useIntl } from 'react-intl';
 import { messages } from './translations';
@@ -58,6 +59,7 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
   switch (item.systemType) {
     case 'file':
     case 'asset':
+    case 'content type':
       if (item.mimeType.includes('image/')) {
         TheIcon = ImageIcon;
       } else if (item.mimeType.includes('video/')) {
@@ -127,6 +129,9 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
       break;
     case 'taxonomy':
       TheIcon = TaxonomyIcon;
+      break;
+    case 'configuration':
+      TheIcon = SettingsOutlinedIcon;
       break;
   }
   return (
