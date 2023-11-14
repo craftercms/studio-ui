@@ -6,19 +6,30 @@
   "license": "LGPL-3.0-only",
   "private": true,
   "scripts": {
-    "build": "chmod +x build.sh; ./build.sh"
+    "build": "chmod +x build.sh; ./build.sh && run-s build:monaco",
+    "build:monaco": "webpack --config ./src/monaco/webpack.config.js"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "ace-builds": "^1.31.1",
     "bootstrap": "^5.3.2",
+    "css-loader": "^6.8.1",
+    "file-loader": "^6.2.0",
     "jquery-ui": "^1.13.2",
     "jquery-ui-css": "^1.11.5",
     "js-yaml": "^4.1.0",
+    "monaco-editor": "0.44.0",
+    "style-loader": "^3.3.3",
     "tinymce": "^6.7.2"
   },
   "devDependencies": {
-    "@types/bootstrap": "^5.2.8",
-    "build-if-changed": "^1.5.5"
+    "@types/bootstrap": "^5",
+    "@types/rimraf": "^4.0.5",
+    "build-if-changed": "^1.5.5",
+    "monaco-editor-webpack-plugin": "^7.1.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^5.0.5",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   }
 }
