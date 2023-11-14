@@ -99,3 +99,5 @@ export const XSRF_TOKEN_COOKIE_NAME = 'XSRF-TOKEN';
 export const plugins = new Map<string, PluginDescriptorWithSource>();
 
 export const components = new Map<string, WidgetRecord>();
+
+export const MAX_CONFIG_SIZE = 512000; // Max configuration files allowed (in bytes)

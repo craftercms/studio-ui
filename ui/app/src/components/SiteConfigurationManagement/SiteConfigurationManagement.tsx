@@ -70,10 +70,10 @@ import { ConfirmDialogProps } from '../ConfirmDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { findPendingEncryption } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { UNDEFINED } from '../../utils/constants';
+import { MAX_CONFIG_SIZE, UNDEFINED } from '../../utils/constants';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { nnou } from '../../utils/object';
-import { getContentSizeInBytes, MAX_CONFIG_SIZE } from '../../utils/content';
+import { getContentSizeInBytes } from '../../utils/content';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;

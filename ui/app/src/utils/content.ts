@@ -77,8 +77,6 @@ import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
 
-export const MAX_CONFIG_SIZE = 512000; // Max configuration files allowed (in bytes)
-
 export function isEditableAsset(path: string) {
   return (
     path.endsWith('.ftl') ||
