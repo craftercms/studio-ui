@@ -542,8 +542,9 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         if (path == '') {
           path = '/';
         }
-
-        value = value.substring(1);
+        if (value.startsWith('/')) {
+          value = value.substring(1);
+        }
       } else {
         value = path.substring(path.lastIndexOf('/') + 1).replace('.xml', '');
       }
