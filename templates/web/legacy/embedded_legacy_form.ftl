@@ -263,6 +263,9 @@
     if(event.data.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
       CStudioAuthoring.InContextEdit.messageDialogs({ type: LEGACY_FORM_DIALOG_CANCEL_REQUEST })
     }
+    if(event.data.type === 'LEGACY_FORM_DIALOG_RENAMED_CONTENT') {
+      getTopLegacyWindow().CStudioAuthoring.InContextEdit.messageDialogs(event.data, '*');
+    }
   }, false);
 
   CrafterCMSNext.system.getStore().subscribe(() => {
