@@ -344,7 +344,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     if (type === 'language') {
       const locales = siteLocales.localeCodes?.map((code) => ({
         id: `locale.${code}`,
-        label: formatMessage(languages[code.toLowerCase()])
+        label: languages[code.toLowerCase()]
       }));
       setWidgetMenu({
         sections: locales.length ? [locales] : [],
