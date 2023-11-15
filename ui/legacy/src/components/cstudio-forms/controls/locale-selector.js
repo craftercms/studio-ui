@@ -20,11 +20,7 @@
   }
 
   function formatLanguageMessage(id) {
-    if (CrafterCMSNext.i18n.messages.languages[id]) {
-      return CrafterCMSNext.i18n.intl.formatMessage(CrafterCMSNext.i18n.messages.languages[id]);
-    } else {
-      return id;
-    }
+    return CrafterCMSNext.i18n.messages.languages[id] ?? id;
   }
 
   CStudioForms.Controls.LocaleSelector = function (id, form, owner, properties, constraints, readonly) {
