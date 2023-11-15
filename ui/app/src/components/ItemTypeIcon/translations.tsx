@@ -49,6 +49,9 @@ export const messages = defineMessages({
     id: 'systemType.taxonomy',
     defaultMessage: 'Taxonomy'
   },
+  configuration: {
+    defaultMessage: 'Configuration'
+  },
   unknown: {
     id: 'words.unknown',
     defaultMessage: 'Unknown'
