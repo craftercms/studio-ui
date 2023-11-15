@@ -1898,6 +1898,17 @@ var CStudioForms =
                   saveFn(type === 'saveAndPreview', type !== 'saveAndClose', null, type);
                 };
 
+                document.addEventListener('keydown', (e) => {
+                  const isOSX = /mac/i.test(navigator.platform);
+                  if ((isOSX ? e.metaKey : e.ctrlKey) && e.key === 's') {
+                    // Prevent the Save dialog to open
+                    e.preventDefault();
+                    // Blur current focused element for the model to update before saving
+                    document.activeElement.blur();
+                    saveFn(false, true, null, 'save');
+                  }
+                });
+
                 const React = craftercms.libs.React;
                 const MultiChoiceSaveButton = craftercms.components.MultiChoiceSaveButton;
 
