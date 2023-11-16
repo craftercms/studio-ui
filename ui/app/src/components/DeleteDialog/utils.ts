@@ -34,7 +34,6 @@ export interface DeleteDialogContentUIProps {
   items: DetailedItem[];
   childItems: string[];
   dependentItems: string[];
-  disabledDependentItems: LookupTable<true>;
   comment: string;
   selectedItems: LookupTable<boolean>;
   isCommentRequired: boolean;
@@ -43,7 +42,6 @@ export interface DeleteDialogContentUIProps {
   onCommentChange: InputProps['onChange'];
   onItemClicked: SelectionListProps['onItemClicked'];
   onSelectAllClicked: SelectionListProps['onSelectAllClicked'];
-  onSelectAllDependantClicked: SelectionListProps['onSelectAllClicked'];
   onConfirmDeleteChange(event: React.ChangeEvent, checked: boolean): void;
   onEditDependantClick: SelectionListProps['onEditClick'];
 }
