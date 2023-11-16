@@ -15,13 +15,10 @@
  */
 
 import React, { ChangeEvent, ElementType, useEffect, useState } from 'react';
-import { useIntl } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
 import { withIndex, withoutIndex } from '../../utils/path';
-import { translations } from './translations';
-import { languages } from '../../env/i18n-legacy';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangeLimit,
@@ -152,7 +149,6 @@ export function PathNavigator(props: PathNavigatorProps) {
   const user = useActiveUser();
   const { authoringBase } = useEnv();
   const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
   const [widgetMenu, setWidgetMenu] = useState<Menu>({
     anchorEl: null,
     sections: [],
@@ -328,24 +324,12 @@ export function PathNavigator(props: PathNavigatorProps) {
   };
 
   const onHeaderButtonClick = (anchorEl: Element, type: string) => {
-    if (type === 'language') {
-      const locales = siteLocales.localeCodes?.map((code) => ({
-        id: `locale.${code}`,
-        label: languages[code.toLowerCase()]
-      }));
-      setWidgetMenu({
-        sections: locales.length ? [locales] : [],
-        anchorEl,
-        emptyState: { message: formatMessage(translations.noLocales) }
-      });
-    } else {
-      // @see https://github.com/craftercms/craftercms/issues/5360
-      onSimpleMenuClick('refresh');
-      // setWidgetMenu({
-      //   sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
-      //   anchorEl
-      // });
-    }
+    // @see https://github.com/craftercms/craftercms/issues/5360
+    onSimpleMenuClick('refresh');
+    // setWidgetMenu({
+    //   sections: [[toContextMenuOptionsLookup(menuOptions, formatMessage).refresh]],
+    //   anchorEl
+    // });
   };
 
   const onCloseWidgetMenu = () => setWidgetMenu({ ...widgetMenu, anchorEl: null });
