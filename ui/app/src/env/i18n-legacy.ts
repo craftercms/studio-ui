@@ -35,73 +35,6 @@ export function translateElements(
   });
 }
 
-export const approveDialogMessages = defineMessages({
-  approveForPublish: {
-    id: 'publishDialog.approveForPublish',
-    defaultMessage: 'Approve for Publish'
-  },
-  differentPublishDateWarning: {
-    id: 'publishDialog.differentPublishDateWarning',
-    defaultMessage:
-      '<strong>Warning</strong> The items you have selected for approval were submitted with different requested publish dates/times.'
-  },
-  publishingScheduleTitle: {
-    id: 'publishDialog.publishingScheduleTitle',
-    defaultMessage: 'Selected Item Scheduling'
-  },
-  introductoryText: {
-    id: 'publishDialog.introductoryText',
-    defaultMessage:
-      'Selected files will be published. Hard dependencies are automatically included. Soft dependencies are optional and you may choose which to include.'
-  },
-  submissionCommentFieldError: {
-    id: 'publishDialog.submissionCommentFieldError',
-    defaultMessage: 'Please write submission comment.'
-  }
-});
-
-export const deleteDialogMessages = defineMessages({
-  submissionCommentFieldError: {
-    id: 'deleteDialog.submissionCommentFieldError',
-    defaultMessage: 'Please write submission comment.'
-  }
-});
-
-export const usersAdminMessages = defineMessages({
-  maxLengthError: {
-    id: 'usersAdmin.maxLengthError',
-    defaultMessage: "{field} can't be longer than {size} characters"
-  },
-  userName: {
-    id: 'usersAdmin.userName',
-    defaultMessage: 'User Name'
-  },
-  firstName: {
-    id: 'usersAdmin.firstName',
-    defaultMessage: 'First Name'
-  },
-  lastName: {
-    id: 'usersAdmin.lastName',
-    defaultMessage: 'Last Name'
-  },
-  userCreated: {
-    id: 'usersAdmin.userCreated',
-    defaultMessage: '{username} created.'
-  },
-  userEdited: {
-    id: 'usersAdmin.userEdited',
-    defaultMessage: '{username} edited.'
-  },
-  userDeleted: {
-    id: 'usersAdmin.userDeleted',
-    defaultMessage: '{username} deleted.'
-  },
-  passwordChangeSuccess: {
-    id: 'usersAdmin.passwordChangeSuccessMessage',
-    defaultMessage: 'Password changed successfully'
-  }
-});
-
 export const passwordRequirementMessages = defineMessages({
   hasNumbers: {
     id: 'passwordRequirement.hasNumbers',
@@ -169,72 +102,6 @@ export const passwordRequirementMessages = defineMessages({
   }
 });
 
-export const groupsAdminMessages = defineMessages({
-  maxLengthError: {
-    id: 'groupsAdmin.maxLengthError',
-    defaultMessage: "{field} can't be longer than {size} characters"
-  },
-  displayName: {
-    id: 'groupsAdmin.displayName',
-    defaultMessage: 'Display Name'
-  },
-  groupCreated: {
-    id: 'groupsAdmin.groupCreated',
-    defaultMessage: '{group} created.'
-  },
-  groupEdited: {
-    id: 'groupsAdmin.groupEdited',
-    defaultMessage: '{group} edited.'
-  },
-  groupDeleted: {
-    id: 'groupsAdmin.groupDeleted',
-    defaultMessage: '{group} deleted.'
-  },
-  usersAdded: {
-    id: 'groupsAdmin.usersAdded',
-    defaultMessage: 'User(s) successfully added.'
-  },
-  userRemoved: {
-    id: 'groupsAdmin.usereRemoved',
-    defaultMessage: '{username} successfully removed from {group}'
-  }
-});
-
-export const profileSettingsMessages = defineMessages({
-  password: {
-    id: 'profileSettings.password',
-    defaultMessage: 'Password'
-  },
-  currentPassword: {
-    id: 'profileSettings.currentPassword',
-    defaultMessage: 'Current password'
-  },
-  isRequired: {
-    id: 'profileSettings.isRequired',
-    defaultMessage: 'is required'
-  },
-  mustMatchPreviousEntry: {
-    id: 'profileSettings.mustMatchPreviousEntry',
-    defaultMessage: 'Must match the previous entry'
-  },
-  languageSaveSuccesfully: {
-    id: 'profileSettings.languageUpdatedSuccessfully',
-    defaultMessage: 'Language Updated Successfully.'
-  },
-  languageSaveFailedWarning: {
-    id: 'profileSettings.languageUpdateFailedWarning',
-    defaultMessage: 'Language update has failed. Please retry momentarily.'
-  },
-  unSavedConfirmation: {
-    id: 'profileSettings.unsavedConfirmation',
-    defaultMessage: 'You have unsaved changes. Discard changes?'
-  },
-  unSavedConfirmationTitle: {
-    id: 'profileSettings.unsavedConfirmationTitle',
-    defaultMessage: 'Unsaved Changes'
-  }
-});
-
 export const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
@@ -250,27 +117,6 @@ export const numericInputControlMessages = defineMessages({
   }
 });
 
-export const reposAdminMessages = defineMessages({
-  pendingCommit: {
-    id: 'reposAdmin.pendingCommit',
-    defaultMessage: 'Repo contains files pending commit. See Repository status below for details.'
-  },
-  unstagedFiles: {
-    id: 'reposAdmin.unstagedFilesMessage',
-    defaultMessage: 'There are unstaged files in your repository.'
-  },
-  unreachableRemote: {
-    id: 'reposAdmin.unreachableRemote',
-    defaultMessage: 'Remote "{name}" is currently unreachable.'
-  },
-  repositoriesNote: {
-    id: 'reposAdmin.repositoriesNote',
-    defaultMessage:
-      'Do not use Studio as a git merge and conflict resolution platform. ' +
-      'All merge conflicts should be resolved upstream before getting pulled into Studio.'
-  }
-});
-
 export const sharedContentDSMessages = defineMessages({
   sharedContent: {
     id: 'sharedContentDS.sharedContent',
@@ -282,13 +128,6 @@ export const embeddedContentDSMessages = defineMessages({
   embeddedContent: {
     id: 'embeddedContentDS.embeddedContent',
     defaultMessage: 'Embedded Content'
-  }
-});
-
-export const childContentDSMessages = defineMessages({
-  childContent: {
-    id: 'childContentDS.childContent',
-    defaultMessage: 'Child Content (Deprecated)'
   }
 });
 
@@ -471,17 +310,6 @@ export const contentTypesMessages = defineMessages({
   }
 });
 
-export const targetingDialog = defineMessages({
-  setNow: {
-    id: 'targetingDialog.setNow',
-    defaultMessage: 'Set Now'
-  },
-  defaults: {
-    id: 'words.defaults',
-    defaultMessage: 'Defaults'
-  }
-});
-
 export const words = defineMessages({
   notification: {
     id: 'words.notification',
@@ -589,115 +417,6 @@ export const simpleTaxonomyDSMessages = defineMessages({
   simpleTaxonomy: {
     id: 'simpleTaxonomyDS.simpleTaxonomy',
     defaultMessage: 'Simple Taxonomy'
-  }
-});
-
-export const codeEditorMessages = defineMessages({
-  inProgressConfirmation: {
-    id: 'codeEditor.inProgressConfirmation',
-    defaultMessage:
-      'Another editor is currently open & minimized. Please close the current editor before opening another'
-  },
-  confirm: {
-    id: 'codeEditor.confirm',
-    defaultMessage: 'Confirm Close'
-  },
-  stay: {
-    id: 'codeEditor.stay',
-    defaultMessage: 'No, stay'
-  },
-  base: {
-    id: 'words.base',
-    defaultMessage: 'Base'
-  },
-  copy: {
-    id: 'words.copy',
-    defaultMessage: 'Copy'
-  },
-  save: {
-    id: 'words.save',
-    defaultMessage: 'Save'
-  },
-  insertCode: {
-    id: 'codeEditor.insertCode',
-    defaultMessage: 'Insert Code'
-  },
-  saved: {
-    id: 'codeEditor.saved',
-    defaultMessage: 'Item saved successfully'
-  },
-  saveAndClose: {
-    id: 'codeEditor.saveAndClose',
-    defaultMessage: 'Save & Close'
-  },
-  saveAndMinimize: {
-    id: 'codeEditor.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
-  },
-  localesHelperText: {
-    id: 'codeEditor.localesHelperText',
-    defaultMessage:
-      "Select the locale for which to create/edit a template. Locales, like 'en' will cover sub-locales like 'en_us' or 'en_uk'."
-  },
-  localesConfirmTitle: {
-    id: 'codeEditor.localesConfirmTitle',
-    defaultMessage: 'Create Template'
-  },
-  localesConfirmBody: {
-    id: 'codeEditor.localesConfirmBody',
-    defaultMessage: 'The template for the locale you selected does not exist. Do you want to create it now?'
-  },
-  localesSnackBarTitle: {
-    id: 'codeEditor.localesSnackBarTitle',
-    defaultMessage: 'Template Created. Do you want to copy the base template?'
-  }
-});
-
-export const globalConfigMessages = defineMessages({
-  unSavedConfirmation: {
-    id: 'globalConfig.unsavedConfirmation',
-    defaultMessage: 'You have unsaved changes, do you want to leave?'
-  },
-  unSavedConfirmationTitle: {
-    id: 'globalConfig.unsavedConfirmationTitle',
-    defaultMessage: 'Unsaved changes'
-  }
-});
-
-export const publishingMessages = defineMessages({
-  idle: {
-    id: 'publishing.idle',
-    defaultMessage: 'Idle'
-  },
-  busy: {
-    id: 'publishing.busy',
-    defaultMessage: 'Busy'
-  },
-  ready: {
-    id: 'publishing.ready',
-    defaultMessage: 'Ready'
-  },
-  stopped: {
-    id: 'publishing.stopped',
-    defaultMessage: 'Stopped'
-  },
-  started: {
-    id: 'publishing.started',
-    defaultMessage: 'Started'
-  },
-  queued: {
-    id: 'publishing.queued',
-    defaultMessage: 'Queued'
-  },
-  bulkPublishNote: {
-    id: 'publishing.bulkPublishNote',
-    defaultMessage:
-      'Bulk publish should be used to publish changes made in Studio via the UI. For changes made via direct git actions, use the "Publish by..." feature.'
-  },
-  publishByNote: {
-    id: 'publishing.publishByNote',
-    defaultMessage:
-      '"Publish by..." feature must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use "Bulk Publish".'
   }
 });
 
@@ -936,40 +655,6 @@ export const globalMenuMessages = defineMessages({
 globalMenuMessages['home.globalMenu.about-us'] = globalMenuMessages['home.about-us'];
 globalMenuMessages['home.globalMenu.settings'] = globalMenuMessages['home.settings'];
 
-export const encryptToolMessages = defineMessages({
-  pageTitle: {
-    id: 'encryptTool.pageTitle',
-    defaultMessage: 'Encryption Tool'
-  },
-  inputLabel: {
-    id: 'encryptTool.inputLabel',
-    defaultMessage: 'Raw Text'
-  },
-  buttonText: {
-    id: 'encryptTool.buttonText',
-    defaultMessage: 'Encrypt Text'
-  },
-  successMessage: {
-    id: 'encryptTool.successMessage',
-    defaultMessage: 'Encrypted text copied to clipboard.'
-  },
-  errorMessage: {
-    id: 'encryptTool.errorMessage',
-    defaultMessage: 'Text encryption failed. Please try again momentarily.'
-  },
-  clearResultButtonText: {
-    id: 'encryptTool.clearResultButtonText',
-    defaultMessage: 'Clear'
-  }
-});
-
-export const fileNameControlMessages = defineMessages({
-  urlChangeWaring: {
-    id: 'fileNameControl.urlChangeWarning',
-    defaultMessage: 'Changing this value may result in broken references and links.'
-  }
-});
-
 export const rteControlMessages = defineMessages({
   escapeScripts: {
     id: 'rteControlMessages.escapeScripts',
@@ -995,20 +680,6 @@ export const rteControlMessages = defineMessages({
   dropImageUploaded: {
     id: 'rteControlMessages.dropImageUploaded',
     defaultMessage: '{title} was successfully uploaded.'
-  }
-});
-
-export const ossAttribution = defineMessages({
-  attribution: {
-    id: 'aboutView.attribution',
-    defaultMessage: 'CrafterCMS is made possible by these other <a>open source software projects</a>.'
-  }
-});
-
-export const dashboardWidgetsMessages = defineMessages({
-  publishingTarget: {
-    id: 'common.publishingTarget',
-    defaultMessage: 'Publishing Target'
   }
 });
 
@@ -1086,13 +757,6 @@ export const componentsMessages = defineMessages({
   }
 });
 
-export const wcmRootFolder = defineMessages({
-  pathNotFound: {
-    id: 'wcmRootFolder.pathNotFound',
-    defaultMessage: 'Folder {path} not found.'
-  }
-});
-
 export const localeSelectorControlMessages = defineMessages({
   label: {
     id: 'localeSelectorControl.label',
@@ -1101,13 +765,6 @@ export const localeSelectorControlMessages = defineMessages({
   requiredError: {
     id: 'localeSelectorControl.requiredError',
     defaultMessage: 'Field is Required'
-  }
-});
-
-export const adminDashboardMessages = defineMessages({
-  siteUpdated: {
-    id: 'sitesAdmin.siteUpdated',
-    defaultMessage: 'Project Updated.'
   }
 });
 
@@ -1191,12 +848,5 @@ export const itemSuccessMessages = defineMessages({
   folderCreated: {
     id: 'folder.created',
     defaultMessage: 'Folder created successfully'
-  }
-});
-
-export const siteSuccessMessages = defineMessages({
-  siteDeleted: {
-    id: 'site.deleted',
-    defaultMessage: 'Project deleted successfully'
   }
 });
