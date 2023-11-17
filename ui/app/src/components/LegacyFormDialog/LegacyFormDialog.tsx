@@ -63,13 +63,10 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
 
   const onContentRenamed = (newName) => {
     renameContentDialogState.onClose();
-    iframeRef.current.contentWindow
-      // @ts-ignore - Defined in common-api.js
-      .getTopLegacyWindow()
-      .CStudioAuthoring.InContextEdit.messageDialogs(
-        { type: 'LEGACY_FORM_DIALOG_RENAMED_CONTENT', newName, id: renameContentDialogData.id },
-        '*'
-      );
+    iframeRef.current.contentWindow.postMessage(
+      { type: 'LEGACY_FORM_DIALOG_RENAMED_CONTENT', newName, id: renameContentDialogData.id },
+      '*'
+    );
   };
 
   useEffect(() => {
