@@ -142,7 +142,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onChangeCollapsed,
     onHeaderButtonClick,
     onCurrentParentMenu,
-    siteLocales,
     onSearch,
     keyword,
     onBreadcrumbSelected,
@@ -185,11 +184,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         // @see https://github.com/craftercms/craftercms/issues/5360
         menuButtonIcon={<RefreshRounded />}
         onMenuButtonClick={onHeaderButtonClick ? (anchor) => onHeaderButtonClick(anchor, 'options') : null}
-        onLanguageMenu={
-          onHeaderButtonClick && siteLocales?.localeCodes?.length
-            ? (anchor) => onHeaderButtonClick(anchor, 'language')
-            : null
-        }
         collapsed={state.collapsed}
       />
       {/* endregion */}
