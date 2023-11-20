@@ -77,11 +77,22 @@ git clone --quiet -c advice.detachedHead=false --branch 3.7.1 https://github.com
 npm --prefix ./jquery-src install -s ./jquery-src
 yarn build:jquery
 # Copy build files to npm build directory
-rsync -ar --delete ./src/jquery/* "$npmContentBuildDirectory/jquery/"
+rsync -ar --delete ./src/jquery/index.d.ts "$npmContentBuildDirectory/jquery/index.d.ts"
 rsync -ar --delete ./jquery-src/dist/jquery.js "$npmContentBuildDirectory/jquery/jquery.js"
 # Copy build files to guest
-rsync -ar --delete ./src/jquery/* "$guestBuildDirectory/jquery/"
+rsync -ar --delete ./src/jquery/index.d.ts "$guestBuildDirectory/jquery/index.d.ts"
 rsync -ar --delete ./jquery-src/dist/jquery.js "$guestBuildDirectory/jquery/jquery.js"
+# update main path of package.json
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # Mac OS sed command needs a prefix for the backup file, if '' (empty) it won't create a backup file
+  sed -i '' 's/"main": "dist\/jquery.js"/"main": "jquery.js"/' ./jquery-src/package.json
+else
+  sed -i 's/"main": "dist\/jquery.js"/"main": "jquery.js"/' ./jquery-src/package.json
+fi
+# Copy package.json
+rsync -ar --delete ./jquery-src/package.json "$npmContentBuildDirectory/jquery/package.json"
+rsync -ar --delete ./jquery-src/package.json "$guestBuildDirectory/jquery/package.json"
+
 rm -rf jquery-src
 
 echo "jQuery build complete"
