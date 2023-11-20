@@ -1067,7 +1067,3 @@ export function generateComponentBasePath(contentType: string) {
 export function generateComponentPath(modelId: string, contentType: string) {
   return `${generateComponentBasePath(contentType)}/${modelId}.xml`;
 }
-
-export function getContentSizeInBytes(content: string) {
-  return new TextEncoder().encode(content).length;
-}

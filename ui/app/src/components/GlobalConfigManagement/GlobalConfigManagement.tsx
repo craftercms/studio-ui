@@ -33,7 +33,6 @@ import { useHistory } from 'react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
-import { getContentSizeInBytes } from '../../utils/content';
 import { MAX_CONFIG_SIZE } from '../../utils/constants';
 
 const translations = defineMessages({
@@ -109,7 +108,7 @@ export function GlobalConfigManagement() {
 
   const onSaveClick = () => {
     const value = aceEditorRef.current.getValue();
-    const contentSize = getContentSizeInBytes(value);
+    const contentSize = value.length;
     const errors = aceEditorRef.current
       .getSession()
       .getAnnotations()

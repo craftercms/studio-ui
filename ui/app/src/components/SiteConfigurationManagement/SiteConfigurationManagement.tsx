@@ -73,7 +73,6 @@ import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { MAX_CONFIG_SIZE, UNDEFINED } from '../../utils/constants';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { nnou } from '../../utils/object';
-import { getContentSizeInBytes } from '../../utils/content';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -424,7 +423,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
 
   const onSave = () => {
     const content = editorRef.current.getValue();
-    const contentSize = getContentSizeInBytes(content);
+    const contentSize = content.length;
     const doc = parseValidateDocument(content);
     if (typeof doc === 'string') {
       showXmlParseError(doc);
