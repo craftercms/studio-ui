@@ -123,7 +123,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType('mouseover', 'mouseleave'),
       withLatestFrom(state$),
       filter((args) => args[1].status === EditingStatus.LISTENING),
-      tap(([action]) => action.payload.event.stopPropagation?.()),
+      tap(([action]) => action.payload.event.stopPropagation()),
       ignoreElements()
     ),
   // endregion
