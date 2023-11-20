@@ -77,11 +77,11 @@ git clone --quiet -c advice.detachedHead=false --branch 3.7.1 https://github.com
 npm --prefix ./jquery-src install -s ./jquery-src
 yarn build:jquery
 # Copy build files to npm build directory
-cp ./src/jquery/* "$npmContentBuildDirectory/jquery/"
-cp ./jquery-src/dist/jquery.js "$npmContentBuildDirectory/jquery/jquery.js"
+rsync -ar --delete ./src/jquery/* "$npmContentBuildDirectory/jquery/"
+rsync -ar --delete ./jquery-src/dist/jquery.js "$npmContentBuildDirectory/jquery/jquery.js"
 # Copy build files to guest
-cp ./src/jquery/* "$guestBuildDirectory/jquery/"
-cp ./jquery-src/dist/jquery.js "$guestBuildDirectory/jquery/jquery.js"
+rsync -ar --delete ./src/jquery/* "$guestBuildDirectory/jquery/"
+rsync -ar --delete ./jquery-src/dist/jquery.js "$guestBuildDirectory/jquery/jquery.js"
 rm -rf jquery-src
 
 echo "jQuery build complete"
