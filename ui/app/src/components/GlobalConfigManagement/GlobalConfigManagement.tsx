@@ -34,6 +34,7 @@ import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
 import { MAX_CONFIG_SIZE } from '../../utils/constants';
+import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 
 const translations = defineMessages({
   configSaved: {
@@ -57,6 +58,7 @@ export function GlobalConfigManagement() {
   const [nextRoute, setNextRoute] = useState<string>();
   const history = useHistory();
   const { classes } = useStyles();
+  const [contentSize, setContentSize] = useState(0);
 
   const aceEditorRef = useRef<any>();
   const dispatch = useDispatch();
@@ -86,6 +88,7 @@ export function GlobalConfigManagement() {
     forkJoin(requests).subscribe(([sample, content]) => {
       setLastSavedContent(content);
       setContent(content);
+      setContentSize(content.length);
       setSample(sample);
       setEnable(false);
     });
@@ -108,7 +111,6 @@ export function GlobalConfigManagement() {
 
   const onSaveClick = () => {
     const value = aceEditorRef.current.getValue();
-    const contentSize = value.length;
     const errors = aceEditorRef.current
       .getSession()
       .getAnnotations()
@@ -120,17 +122,6 @@ export function GlobalConfigManagement() {
       dispatch(
         showSystemNotification({
           message: formatMessage(translations.documentError),
-          options: {
-            variant: 'error'
-          }
-        })
-      );
-    } else if (contentSize > MAX_CONFIG_SIZE) {
-      dispatch(
-        showSystemNotification({
-          message: formatMessage({
-            defaultMessage: 'Maximum configuration size exceeded, please reduce it in order to properly save.'
-          }),
           options: {
             variant: 'error'
           }
@@ -162,8 +153,10 @@ export function GlobalConfigManagement() {
     }
   };
 
-  const onChange = (e) => {
-    const hasChanges = lastSavedContent !== aceEditorRef.current.getValue();
+  const onChange = () => {
+    const currentEditorValue = aceEditorRef.current.getValue();
+    const hasChanges = lastSavedContent !== currentEditorValue;
+    setContentSize(currentEditorValue.length);
     setHasChanges(hasChanges);
   };
 
@@ -208,9 +201,15 @@ export function GlobalConfigManagement() {
               }
               onConfirm={onResetClick}
             />
-            <PrimaryButton disabled={!hasChanges} onClick={onSaveClick}>
+            <PrimaryButton disabled={!hasChanges || contentSize > MAX_CONFIG_SIZE} onClick={onSaveClick}>
               <FormattedMessage id="words.save" defaultMessage="Save" />
             </PrimaryButton>
+            <MaxLengthCircularProgress
+              sxs={{ root: { ml: 1 }, circularProgress: { width: '35px !important', height: '35px !important' } }}
+              max={MAX_CONFIG_SIZE}
+              current={contentSize}
+              renderThresholdPercentage={90}
+            />
           </Box>
         </section>
       </ConditionalLoadingState>
