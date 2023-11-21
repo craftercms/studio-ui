@@ -19,7 +19,7 @@ import { useGuestContext, useSelector } from './GuestContext';
 import * as ElementRegistry from '../elementRegistry';
 import { getParentElementFromICEProps } from '../elementRegistry';
 import * as iceRegistry from '../iceRegistry';
-import $ from 'jquery';
+import $ from '../jquery';
 import {
   contentTypes$,
   getCachedContentType,

@@ -90,7 +90,6 @@ else
   sed -i 's/"main": "dist\/jquery.js"/"main": "jquery.js"/' ./jquery-src/package.json
 fi
 # Copy package.json
-rsync -ar --delete ./jquery-src/package.json "$npmContentBuildDirectory/jquery/package.json"
 rsync -ar --delete ./jquery-src/package.json "$guestBuildDirectory/jquery/package.json"
 
 rm -rf jquery-src
