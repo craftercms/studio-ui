@@ -1604,7 +1604,6 @@ __metadata:
     "@craftercms/classes": "npm:4.1.2"
     "@craftercms/content": "npm:4.1.2"
     "@craftercms/ice": "npm:4.1.2-1"
-    "@craftercms/npm-content": "workspace:^"
     "@craftercms/search": "npm:4.1.2"
     "@craftercms/studio-ui": "workspace:^"
     "@emotion/css": "npm:^11.11.2"
@@ -1663,7 +1662,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@craftercms/npm-content@workspace:^, @craftercms/npm-content@workspace:ui/npm-content":
+"@craftercms/npm-content@workspace:ui/npm-content":
   version: 0.0.0-use.local
   resolution: "@craftercms/npm-content@workspace:ui/npm-content"
   dependencies:
