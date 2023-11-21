@@ -1612,6 +1612,7 @@ __metadata:
     "@mui/icons-material": "npm:^5.14.16"
     "@mui/material": "npm:^5.14.17"
     "@reduxjs/toolkit": "npm:^1.9.7"
+    "@types/jquery": "npm:^3.5.28"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/prop-types": "npm:^15.7.9"
     "@types/react-dom": "npm:^18.2.14"
@@ -4655,6 +4656,15 @@ __metadata:
   dependencies:
     "@types/sizzle": "npm:*"
   checksum: e8a50a33cf31eb03f0c5cf3c4fb11a0d266821fffd56674dff1cece1eb1a839f2d0580b82a9735f494902567cb21acefd3e81593c9011f20ae212a7296366044
+  languageName: node
+  linkType: hard
+
+"@types/jquery@npm:^3.5.28":
+  version: 3.5.28
+  resolution: "@types/jquery@npm:3.5.28"
+  dependencies:
+    "@types/sizzle": "npm:*"
+  checksum: 831819366fd7266cd5a3ce3c79a60b1a4d452a1f62bad35aa5cfe0a6c2ec8b0769e6d058fb08193ed2db83e0f9fbfe0e124a6c404b7663818f2c30343b659aad
   languageName: node
   linkType: hard
 

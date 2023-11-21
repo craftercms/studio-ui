@@ -119,6 +119,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.28",
     "@types/js-cookie": "^3.0.6",
     "@types/prop-types": "^15.7.9",
     "@types/react-is": "^18.2.3",
