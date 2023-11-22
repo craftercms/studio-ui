@@ -33,21 +33,22 @@ const initialState: SingleFileUploadDialogStateProps = {
   hasPendingChanges: null
 };
 
-export default createReducer<GlobalState['dialogs']['singleFileUpload']>(initialState, {
-  [showSingleFileUploadDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeSingleFileUploadDialog(),
-    onClosed: singleFileUploadDialogClosed(),
-    ...payload,
-    open: true
-  }),
-  [closeSingleFileUploadDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [updateSingleFileUploadDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [singleFileUploadDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['singleFileUpload']>(initialState, (builder) => {
+  builder
+    .addCase(showSingleFileUploadDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeSingleFileUploadDialog(),
+      onClosed: singleFileUploadDialogClosed(),
+      ...(payload as Partial<SingleFileUploadDialogStateProps>),
+      open: true
+    }))
+    .addCase(closeSingleFileUploadDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(updateSingleFileUploadDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<SingleFileUploadDialogStateProps>)
+    }))
+    .addCase(singleFileUploadDialogClosed, () => initialState);
 });

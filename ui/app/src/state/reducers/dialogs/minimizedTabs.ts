@@ -29,19 +29,17 @@ export const popTab = /*#__PURE__*/ createAction<Payload>('POP_TAB');
 
 export const updateTab = /*#__PURE__*/ createAction<Partial<MinimizedTab> & Payload>('UPDATE_TAB');
 
-export default createReducer<GlobalState['dialogs']['minimizedTabs']>(
-  {},
-  {
-    [pushTab.type]: (state, { payload }) => ({
+export default createReducer<GlobalState['dialogs']['minimizedTabs']>({}, (builder) => {
+  builder
+    .addCase(pushTab, (state, { payload }) => ({
       ...state,
       [payload.id]: {
         ...payload
       }
-    }),
-    [popTab.type]: (state, { payload }) => reversePluckProps(state, payload.id),
-    [updateTab.type]: (state, { payload }) => ({
+    }))
+    .addCase(popTab, (state, { payload }) => reversePluckProps(state, payload.id))
+    .addCase(updateTab, (state, { payload }) => ({
       ...state,
       [payload.id]: { ...state[payload.id], ...payload }
-    })
-  }
-);
+    }));
+});

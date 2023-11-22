@@ -487,6 +487,14 @@ export class Dashboard extends UppyDashboard {
     });
   };
 
+  discoverProviderPlugins = () => {
+    this.uppy.iteratePlugins((plugin) => {
+      if (plugin && !plugin.target && plugin.opts && plugin.opts.target === this.constructor) {
+        this.addTarget(plugin);
+      }
+    });
+  };
+
   install = () => {
     // Set default state for Dashboard
     this.setPluginState({

@@ -17,25 +17,27 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeItemMegaMenu, itemMegaMenuClosed, showItemMegaMenu } from '../../actions/dialogs';
+import { ItemMegaMenuStateProps } from '../../../components';
 
-export default createReducer<GlobalState['dialogs']['itemMegaMenu']>(
-  {
-    open: false,
-    path: null,
-    anchorReference: 'anchorPosition',
-    anchorPosition: {
-      top: 0,
-      left: 0
-    }
-  },
-  {
-    [showItemMegaMenu.type]: (state, { payload }) => ({
+const initialState: ItemMegaMenuStateProps = {
+  open: false,
+  path: null,
+  anchorReference: 'anchorPosition',
+  anchorPosition: {
+    top: 0,
+    left: 0
+  }
+};
+
+export default createReducer<GlobalState['dialogs']['itemMegaMenu']>(initialState, (builder) => {
+  builder
+    .addCase(showItemMegaMenu, (state, { payload }) => ({
+      ...state,
       onClose: closeItemMegaMenu(),
       onClosed: itemMegaMenuClosed(),
-      ...payload,
+      ...(payload as Partial<ItemMegaMenuStateProps>),
       open: true
-    }),
-    [closeItemMegaMenu.type]: (state) => ({ ...state, open: false }),
-    [itemMegaMenuClosed.type]: () => ({ open: false })
-  }
-);
+    }))
+    .addCase(closeItemMegaMenu, (state) => ({ ...state, open: false }))
+    .addCase(itemMegaMenuClosed, () => initialState);
+});

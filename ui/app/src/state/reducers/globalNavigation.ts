@@ -25,22 +25,22 @@ const initialState: GlobalState['globalNavigation'] = {
   isFetching: false
 };
 
-// @ts-ignore - TODO: Typing system is complaining about something to be determined.
-const reducer = createReducer<GlobalState['globalNavigation']>(initialState, {
-  [changeSite.type]: (state) => ({ ...initialState, ...state }),
-  [fetchGlobalMenu.type]: (state) => ({ ...state, isFetching: true }),
-  [fetchGlobalMenuComplete.type]: (state, { payload }) => ({
-    ...state,
-    error: null,
-    items: payload,
-    isFetching: false
-  }),
-  [fetchGlobalMenuFailed.type]: (state, { payload }) => ({
-    ...state,
-    error: payload,
-    items: state.items,
-    isFetching: false
-  })
+const reducer = createReducer<GlobalState['globalNavigation']>(initialState, (builder) => {
+  builder
+    .addCase(changeSite, (state) => ({ ...initialState, ...state }))
+    .addCase(fetchGlobalMenu, (state) => ({ ...state, isFetching: true }))
+    .addCase(fetchGlobalMenuComplete, (state, { payload }) => ({
+      ...state,
+      error: null,
+      items: payload,
+      isFetching: false
+    }))
+    .addCase(fetchGlobalMenuFailed, (state, { payload }) => ({
+      ...state,
+      error: payload,
+      items: state.items,
+      isFetching: false
+    }));
 });
 
 export default reducer;

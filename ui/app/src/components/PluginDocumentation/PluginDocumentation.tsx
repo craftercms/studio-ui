@@ -15,8 +15,9 @@
  */
 
 import { MarketplacePlugin } from '../../models';
-import React, { useEffect, useState } from 'react';
-import { marked } from 'marked';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { Marked } from 'marked';
+import { markedHighlight } from 'marked-highlight';
 import hljs from '../../env/hljs';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
@@ -33,17 +34,20 @@ export function PluginDocumentation(props: PluginDocumentationProps) {
   const [markdownError, setMarkdownError] = useState<boolean>(null);
   useEffect(() => {
     if (plugin.documentation) {
-      marked.setOptions({
-        highlight: function (code, lang) {
-          return hljs.highlightAuto(code).value;
-        },
-        langPrefix: 'hljs language-'
-      });
+      const marked = new Marked(
+        markedHighlight({
+          langPrefix: 'hljs language-',
+          highlight(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+            return hljs.highlight(code, { language }).value;
+          }
+        })
+      );
       if (/(\/readme$)|(.md$)/.test(plugin.documentation)) {
         fetch(plugin.documentation)
           .then((r) => r.text())
           .then((content) => {
-            setMarkdown(marked(content));
+            setMarkdown(marked.parse(content));
           })
           .catch((error) => {
             setMarkdownError(true);
@@ -62,7 +66,7 @@ export function PluginDocumentation(props: PluginDocumentationProps) {
           <FormattedMessage
             id="pluginDetails.markdownError"
             defaultMessage="Unable to render documentation. Visit <a>{link}</a> to view."
-            values={{ link: plugin.documentation, a: (text: string[]) => <a href={text[0]}>{text[0]}</a> }}
+            values={{ link: plugin.documentation, a: (text: ReactNode[]) => <a href={text[0] as string}>{text[0]}</a> }}
           />
         </Typography>
       )}

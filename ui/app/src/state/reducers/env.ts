@@ -39,22 +39,23 @@ export const envInitialState: GlobalState['env'] = ((origin: string) => ({
   socketConnected: false
 }))(window.location.origin);
 
-const reducer = createReducer<GlobalState['env']>(envInitialState, {
-  [fetchSystemVersionComplete.type]: (state, { payload }: { payload: Version }) => ({
-    ...state,
-    version: payload.packageVersion.replace('-SNAPSHOT', ''),
-    packageBuild: payload.packageBuild,
-    packageVersion: payload.packageVersion,
-    packageBuildDate: payload.packageBuildDate
-  }),
-  [storeInitialized.type]: (state, { payload }) => ({
-    ...state,
-    activeEnvironment: payload.activeEnvironment
-  }),
-  [siteSocketStatus.type]: (state, { payload }) => ({
-    ...state,
-    socketConnected: payload.connected
-  })
+const reducer = createReducer<GlobalState['env']>(envInitialState, (builder) => {
+  builder
+    .addCase(fetchSystemVersionComplete, (state, { payload }: { payload: Version }) => ({
+      ...state,
+      version: payload.packageVersion.replace('-SNAPSHOT', ''),
+      packageBuild: payload.packageBuild,
+      packageVersion: payload.packageVersion,
+      packageBuildDate: payload.packageBuildDate
+    }))
+    .addCase(storeInitialized, (state, { payload }) => ({
+      ...state,
+      activeEnvironment: payload.activeEnvironment
+    }))
+    .addCase(siteSocketStatus, (state, { payload }) => ({
+      ...state,
+      socketConnected: payload.connected
+    }));
 });
 
 export default reducer;

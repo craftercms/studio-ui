@@ -48,19 +48,30 @@ const initialState: PublishingStatusDialogStateProps = commonDialogProps({
   submissionId: null
 });
 
-const publishingStatus = createReducer<GlobalState['dialogs']['publishingStatus']>(initialState, {
-  [showPublishingStatusDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload,
-    // Only show unlock if there is a lockOwner (i.e. if there's a lock)
-    onUnlock: payload?.lockOwner ? showUnlockPublisherDialog({}) : null,
-    open: true
-  }),
-  [closePublishingStatusDialog.type]: (state) => ({ ...state, open: false }),
-  [updatePublishingStatus.type]: (state, { payload }) => ({ ...state, ...payload }),
-  [fetchPublishingStatus.type]: (state) => ({ ...state, isFetching: true }),
-  [fetchPublishingStatusComplete.type]: (state, { payload }) => ({ ...state, ...payload, isFetching: false }),
-  [fetchPublishingStatusFailed.type]: (state) => ({ ...state, isFetching: false })
+const publishingStatus = createReducer<GlobalState['dialogs']['publishingStatus']>(initialState, (builder) => {
+  builder
+    .addCase(showPublishingStatusDialog, (state, { payload }) => {
+      const data: Partial<PublishingStatusDialogStateProps> = payload;
+      return {
+        ...state,
+        ...data,
+        // Only show unlock if there is a lockOwner (i.e. if there's a lock)
+        onUnlock: data?.lockOwner ? showUnlockPublisherDialog({}) : null,
+        open: true
+      };
+    })
+    .addCase(closePublishingStatusDialog, (state) => ({ ...state, open: false }))
+    .addCase(updatePublishingStatus, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<PublishingStatusDialogStateProps>)
+    }))
+    .addCase(fetchPublishingStatus, (state) => ({ ...state, isFetching: true }))
+    .addCase(fetchPublishingStatusComplete, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<PublishingStatusDialogStateProps>),
+      isFetching: false
+    }))
+    .addCase(fetchPublishingStatusFailed, (state) => ({ ...state, isFetching: false }));
 });
 
 export default publishingStatus;

@@ -32,23 +32,24 @@ const initialState: CreateFolderStateProps = {
   hasPendingChanges: null
 };
 
-export default createReducer<GlobalState['dialogs']['createFolder']>(initialState, {
-  [showCreateFolderDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeCreateFolderDialog(),
-    onClosed: createFolderDialogClosed(),
-    onCreated: closeCreateFolderDialog(),
-    onRenamed: closeCreateFolderDialog(),
-    ...payload,
-    open: true
-  }),
-  [updateCreateFolderDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [closeCreateFolderDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [createFolderDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['createFolder']>(initialState, (builder) => {
+  builder
+    .addCase(showCreateFolderDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeCreateFolderDialog(),
+      onClosed: createFolderDialogClosed(),
+      onCreated: closeCreateFolderDialog(),
+      onRenamed: closeCreateFolderDialog(),
+      ...(payload as Partial<CreateFolderStateProps>),
+      open: true
+    }))
+    .addCase(updateCreateFolderDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<CreateFolderStateProps>)
+    }))
+    .addCase(closeCreateFolderDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(createFolderDialogClosed, () => initialState);
 });

@@ -70,7 +70,8 @@ const initialState: ContentState = {
   itemsBeingFetchedByPath: {}
 };
 
-const updateItemByPath = (state: ContentState, { payload: { parent, children } }) => {
+const updateItemByPath = (state: ContentState, { payload }) => {
+  const { parent, children } = payload;
   const nextByPath = {
     ...state.itemsByPath,
     ...createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
@@ -100,165 +101,169 @@ const updateItemsBeingFetchedByPaths = (state, { payload: { paths } }) => {
   });
 };
 
-const reducer = createReducer<ContentState>(initialState, {
-  [fetchQuickCreateList.type]: (state) => ({
-    ...state,
-    quickCreate: {
-      ...state.quickCreate,
-      isFetching: true
-    }
-  }),
-  [fetchQuickCreateListComplete.type]: (state, { payload }: StandardAction<QuickCreateItem[]>) => ({
-    ...state,
-    quickCreate: {
-      ...state.quickCreate,
-      items: payload,
-      isFetching: false
-    }
-  }),
-  [fetchQuickCreateListFailed.type]: (state, error: StandardAction<AjaxError>) => ({
-    ...state,
-    quickCreate: {
-      ...state.quickCreate,
-      isFetching: false,
-      error: error.payload.response
-    }
-  }),
-  [fetchDetailedItem.type]: updateItemsBeingFetchedByPath,
-  [reloadDetailedItem.type]: updateItemsBeingFetchedByPath,
-  [completeDetailedItem.type]: updateItemsBeingFetchedByPath,
-  [fetchSandboxItem.type]: updateItemsBeingFetchedByPath,
-  [fetchSandboxItems.type]: updateItemsBeingFetchedByPaths,
-  [fetchSandboxItemsComplete.type]: (state, { payload: { items } }) => {
-    items.forEach((item) => {
+const reducer = createReducer<ContentState>(initialState, (builder) => {
+  builder
+    .addCase(fetchQuickCreateList, (state) => ({
+      ...state,
+      quickCreate: {
+        ...state.quickCreate,
+        isFetching: true
+      }
+    }))
+    .addCase(fetchQuickCreateListComplete, (state, { payload }: StandardAction<QuickCreateItem[]>) => ({
+      ...state,
+      quickCreate: {
+        ...state.quickCreate,
+        items: payload,
+        isFetching: false
+      }
+    }))
+    .addCase(fetchQuickCreateListFailed, (state, error: StandardAction<AjaxError>) => ({
+      ...state,
+      quickCreate: {
+        ...state.quickCreate,
+        isFetching: false,
+        error: error.payload.response
+      }
+    }))
+    .addCase(fetchDetailedItem, updateItemsBeingFetchedByPath)
+    .addCase(reloadDetailedItem, updateItemsBeingFetchedByPath)
+    .addCase(completeDetailedItem, updateItemsBeingFetchedByPath)
+    .addCase(fetchSandboxItem, updateItemsBeingFetchedByPath)
+    .addCase(fetchSandboxItems, updateItemsBeingFetchedByPaths)
+    .addCase(fetchSandboxItemsComplete, (state, { payload: { items } }) => {
+      items.forEach((item) => {
+        const path = item.path;
+        state.itemsByPath[path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
+        delete state.itemsBeingFetchedByPath[path];
+      });
+    })
+    .addCase(fetchDetailedItemComplete, (state, { payload }) => ({
+      ...state,
+      itemsByPath: {
+        ...state.itemsByPath,
+        [payload.path]: payload
+      },
+      itemsBeingFetchedByPath: {
+        ...reversePluckProps(state.itemsBeingFetchedByPath, payload.path)
+      }
+    }))
+    .addCase(fetchDetailedItems, updateItemsBeingFetchedByPaths)
+    .addCase(fetchDetailedItemsComplete, (state, { payload: { items } }) => {
+      items.forEach((item) => {
+        const path = item.path;
+        state.itemsByPath[path] = item;
+        delete state.itemsBeingFetchedByPath[path];
+      });
+    })
+    .addCase(fetchSandboxItemComplete, (state, { payload: { item } }) => {
       const path = item.path;
       state.itemsByPath[path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
-      delete state.itemsBeingFetchedByPath[path];
-    });
-  },
-  [fetchDetailedItemComplete.type]: (state, { payload }) => ({
-    ...state,
-    itemsByPath: {
-      ...state.itemsByPath,
-      [payload.path]: payload
-    },
-    itemsBeingFetchedByPath: {
-      ...reversePluckProps(state.itemsBeingFetchedByPath, payload.path)
-    }
-  }),
-  [fetchDetailedItems.type]: updateItemsBeingFetchedByPaths,
-  [fetchDetailedItemsComplete.type]: (state, { payload: { items } }) => {
-    items.forEach((item) => {
-      const path = item.path;
-      state.itemsByPath[path] = item;
-      delete state.itemsBeingFetchedByPath[path];
-    });
-  },
-  [fetchSandboxItemComplete.type]: (state, { payload: { item } }) => {
-    const path = item.path;
-    state.itemsByPath[path] = parseSandBoxItemToDetailedItem(item, state.itemsByPath[item.path]);
-    state.itemsBeingFetchedByPath[path] = false;
-  },
-  [restoreClipboard.type]: (state, { payload }) => ({
-    ...state,
-    clipboard: payload
-  }),
-  [setClipboard.type]: (state, { payload }) => ({
-    ...state,
-    clipboard: payload
-  }),
-  [clearClipboard.type]: (state) => ({
-    ...state,
-    clipboard: null
-  }),
-  [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
-  [pathNavigatorFetchPathComplete.type]: updateItemByPath,
-  [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { items, children } }) => {
-    return {
+      state.itemsBeingFetchedByPath[path] = false;
+    })
+    .addCase(restoreClipboard, (state, { payload }) => ({
       ...state,
-      itemsByPath: {
-        ...state.itemsByPath,
-        ...createLookupTable(parseSandBoxItemToDetailedItem(children, state.itemsByPath), 'path'),
-        ...(children.levelDescriptor && {
-          [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(
-            children.levelDescriptor,
-            state.itemsByPath[children.levelDescriptor.path]
+      clipboard: payload
+    }))
+    .addCase(setClipboard, (state, { payload }) => ({
+      ...state,
+      clipboard: payload
+    }))
+    .addCase(clearClipboard, (state) => ({
+      ...state,
+      clipboard: null
+    }))
+    .addCase(pathNavigatorConditionallySetPathComplete, updateItemByPath)
+    .addCase(pathNavigatorFetchPathComplete, updateItemByPath)
+    .addCase(pathNavigatorFetchParentItemsComplete, (state, { payload: { items, children } }) => {
+      return {
+        ...state,
+        itemsByPath: {
+          ...state.itemsByPath,
+          ...createLookupTable(parseSandBoxItemToDetailedItem(children, state.itemsByPath), 'path'),
+          ...(children.levelDescriptor && {
+            [children.levelDescriptor.path]: parseSandBoxItemToDetailedItem(
+              children.levelDescriptor,
+              state.itemsByPath[children.levelDescriptor.path]
+            )
+          }),
+          ...createLookupTable(
+            items.reduce((items, item) => {
+              if (state.itemsByPath[item.path]?.live) {
+                item.live = state.itemsByPath[item.path].live;
+                item.staging = state.itemsByPath[item.path].staging;
+              }
+              return items;
+            }, items),
+            'path'
           )
-        }),
-        ...createLookupTable(
-          items.reduce((items, item) => {
-            if (state.itemsByPath[item.path]?.live) {
-              item.live = state.itemsByPath[item.path].live;
-              item.staging = state.itemsByPath[item.path].staging;
-            }
-            return items;
-          }, items),
-          'path'
-        )
-      }
-    };
-  },
-  [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
-  [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
-  [pathNavigatorTreeRestoreComplete.type]: (state, action: { payload: PathNavigatorTreeRestoreCompletePayload }) => {
-    const {
-      payload: { children, items }
-    } = action;
-    let nextByPath = {};
-    Object.values(children).forEach((children) => {
-      Object.assign(
-        nextByPath,
-        createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
-      );
-      if (children.levelDescriptor) {
-        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
-          children.levelDescriptor,
-          state.itemsByPath[children.levelDescriptor.path]
-        );
-      }
-    });
-    items.forEach((item) => {
-      nextByPath[item.path] = item;
-    });
-    return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
-  },
-  [updateItemsByPath.type]: (state, { payload }) => {
-    return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
-  },
-  [changeSite.type]: () => initialState,
-  [lockContentEvent.type]: (state, { payload }: { payload: SocketEventBase & { locked: boolean } }) => {
-    const { targetPath: path, user, locked } = payload;
-    if (
-      !state.itemsByPath[path] ||
-      (locked && state.itemsByPath[path].stateMap.locked) ||
-      (!locked && !state.itemsByPath[path].stateMap.locked)
-    ) {
-      return state;
-    }
-    const updatedState: ContentState = {
-      ...state,
-      itemsByPath: {
-        ...state.itemsByPath,
-        [path]: {
-          ...state.itemsByPath[path],
-          lockOwner: locked ? user : null,
-          state: locked
-            ? state.itemsByPath[path].state + STATE_LOCKED_MASK
-            : state.itemsByPath[path].state - STATE_LOCKED_MASK,
-          stateMap: { ...state.itemsByPath[path].stateMap, locked }
         }
+      };
+    })
+    .addCase(pathNavigatorTreeFetchPathChildrenComplete, updateItemByPath)
+    .addCase(pathNavigatorTreeFetchPathPageComplete, updateItemByPath)
+    .addCase(
+      pathNavigatorTreeRestoreComplete,
+      (state, action: { payload: PathNavigatorTreeRestoreCompletePayload }) => {
+        const {
+          payload: { children, items }
+        } = action;
+        let nextByPath = {};
+        Object.values(children).forEach((children) => {
+          Object.assign(
+            nextByPath,
+            createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
+          );
+          if (children.levelDescriptor) {
+            nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
+              children.levelDescriptor,
+              state.itemsByPath[children.levelDescriptor.path]
+            );
+          }
+        });
+        items.forEach((item) => {
+          nextByPath[item.path] = item;
+        });
+        return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
       }
-    };
-    return updatedState;
-  },
-  [deleteContentEvent.type]: (state, { payload: { targetPath } }: StandardAction<SocketEventBase>) => {
-    delete state.itemsByPath[targetPath];
-    delete state.itemsBeingFetchedByPath[targetPath];
-  },
-  [moveContentEvent.type]: (state, { payload: { sourcePath } }: StandardAction<MoveContentEventPayload>) => {
-    delete state.itemsByPath[sourcePath];
-    delete state.itemsBeingFetchedByPath[sourcePath];
-  }
+    )
+    .addCase(updateItemsByPath, (state, { payload }) => {
+      return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
+    })
+    .addCase(changeSite, () => initialState)
+    .addCase(lockContentEvent, (state, { payload }: { payload: SocketEventBase & { locked: boolean } }) => {
+      const { targetPath: path, user, locked } = payload;
+      if (
+        !state.itemsByPath[path] ||
+        (locked && state.itemsByPath[path].stateMap.locked) ||
+        (!locked && !state.itemsByPath[path].stateMap.locked)
+      ) {
+        return state;
+      }
+      const updatedState: ContentState = {
+        ...state,
+        itemsByPath: {
+          ...state.itemsByPath,
+          [path]: {
+            ...state.itemsByPath[path],
+            lockOwner: locked ? user : null,
+            state: locked
+              ? state.itemsByPath[path].state + STATE_LOCKED_MASK
+              : state.itemsByPath[path].state - STATE_LOCKED_MASK,
+            stateMap: { ...state.itemsByPath[path].stateMap, locked }
+          }
+        }
+      };
+      return updatedState;
+    })
+    .addCase(deleteContentEvent, (state, { payload: { targetPath } }: StandardAction<SocketEventBase>) => {
+      delete state.itemsByPath[targetPath];
+      delete state.itemsBeingFetchedByPath[targetPath];
+    })
+    .addCase(moveContentEvent, (state, { payload: { sourcePath } }: StandardAction<MoveContentEventPayload>) => {
+      delete state.itemsByPath[sourcePath];
+      delete state.itemsBeingFetchedByPath[sourcePath];
+    });
 });
 
 export default reducer;

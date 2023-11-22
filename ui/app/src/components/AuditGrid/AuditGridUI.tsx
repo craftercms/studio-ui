@@ -19,7 +19,7 @@ import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useStyles } from './styles';
-import { DataGrid, DataGridProps, GridCellParams, GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
@@ -47,17 +47,17 @@ export interface AuditGridUIProps {
   hasActiveFilters: boolean;
   timezones: string[];
   siteMode?: boolean;
-  onPageChange: DataGridProps['onPageChange'];
+  onPageChange(page: number): void;
   onResetFilters(): void;
   onResetFilter(id: string | string[]): void;
   onFetchParameters(id: number): void;
-  onPageSizeChange: DataGridProps['onPageSizeChange'];
+  onPageSizeChange(size: number): void;
   onFilterChange(filter: { id: string; value: string | string[] }): void;
 }
 
 export interface GridColumnMenuProps extends React.HTMLAttributes<HTMLUListElement> {
   hideMenu: () => void;
-  currentColumn: GridColDef;
+  colDef: GridColDef;
   open: boolean;
   id?: string;
   labelledby?: string;
@@ -142,7 +142,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
   const onFilterSelected = (props: GridColumnMenuProps) => {
     if (props.open && anchorPosition === null) {
       setTimeout(() => {
-        setOpenedFilter(props.currentColumn.field);
+        setOpenedFilter(props.colDef.field);
         const element = document.getElementById(props.labelledby);
         const anchorRect = element.getBoundingClientRect();
         const top = anchorRect.top + getOffsetTop(anchorRect, 'top');
@@ -178,6 +178,11 @@ export function AuditGridUI(props: AuditGridUIProps) {
     onFilterChange({ id, value: value === 'all' ? undefined : value });
   };
 
+  const onPaginationModelChange = (newModel) => {
+    onPageSizeChange(newModel.pageSize);
+    onPageChange(newModel.page);
+  };
+
   const columns: GridColDef[] = useMemo(
     () => [
       {
@@ -209,7 +214,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
-              {params.value}
+              {params.value as React.ReactNode}
             </Typography>
           );
         }
@@ -224,7 +229,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
-              {params.value}
+              {params.value as React.ReactNode}
             </Typography>
           );
         }
@@ -239,7 +244,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
-              {params.value}
+              {params.value as React.ReactNode}
             </Typography>
           );
         }
@@ -254,7 +259,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
-              {params.value}
+              {params.value as React.ReactNode}
             </Typography>
           );
         }
@@ -269,7 +274,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
-              {params.value}
+              {params.value as React.ReactNode}
             </Typography>
           );
         }
@@ -284,7 +289,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
-              {params.value}
+              {params.value as React.ReactNode}
             </Typography>
           );
         }
@@ -299,7 +304,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
         renderCell: (params: GridCellParams) => {
           return (
             <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
-              {params.value}
+              {params.value as React.ReactNode}
             </Typography>
           );
         }
@@ -376,17 +381,15 @@ export function AuditGridUI(props: AuditGridUIProps) {
             </Box>
           )
         }}
-        disableSelectionOnClick
+        disableRowSelectionOnClick
         disableColumnSelector
         rows={auditLogs}
         columns={columns}
-        page={page}
-        pageSize={auditLogs.limit}
+        paginationModel={{ page, pageSize: auditLogs.limit }}
         onSortModelChange={onTimestampSortChanges}
-        onPageSizeChange={onPageSizeChange}
-        rowsPerPageOptions={[5, 10, 15]}
+        onPaginationModelChange={onPaginationModelChange}
+        pageSizeOptions={[5, 10, 15]}
         paginationMode="server"
-        onPageChange={onPageChange}
         rowCount={auditLogs.total}
       />
       <AuditGridFilterPopover

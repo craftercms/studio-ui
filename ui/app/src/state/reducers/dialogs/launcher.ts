@@ -31,32 +31,33 @@ const initialState: LauncherStateProps = {
   siteCardMenuLinks: null
 };
 
-const launcher = createReducer<GlobalState['dialogs']['launcher']>(initialState, {
-  [showLauncher.type]: (state, { payload }) => ({
-    ...state,
-    ...payload,
-    open: true
-  }),
-  [initLauncherConfig.type]: (state, { payload }) => {
-    const configDOM = fromString(payload.configXml);
-    const launcher = configDOM.querySelector('[id="craftercms.components.Launcher"] > configuration');
-    if (launcher) {
-      let launcherConfig = applyDeserializedXMLTransforms(deserialize(launcher), {
-        arrays: ['widgets', 'permittedRoles', 'siteCardMenuLinks']
-      }).configuration;
-      return {
-        ...state,
-        ...launcherConfig
-      };
-    } else {
-      return state;
-    }
-  },
-  [closeLauncher.type]: (state) => ({
-    ...state,
-    open: false,
-    anchor: null
-  })
+const launcher = createReducer<GlobalState['dialogs']['launcher']>(initialState, (builder) => {
+  builder
+    .addCase(showLauncher, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<LauncherStateProps>),
+      open: true
+    }))
+    .addCase(initLauncherConfig, (state, { payload }) => {
+      const configDOM = fromString(payload.configXml);
+      const launcher = configDOM.querySelector('[id="craftercms.components.Launcher"] > configuration');
+      if (launcher) {
+        let launcherConfig = applyDeserializedXMLTransforms(deserialize(launcher), {
+          arrays: ['widgets', 'permittedRoles', 'siteCardMenuLinks']
+        }).configuration;
+        return {
+          ...state,
+          ...launcherConfig
+        };
+      } else {
+        return state;
+      }
+    })
+    .addCase(closeLauncher, (state) => ({
+      ...state,
+      open: false,
+      anchor: null
+    }));
 });
 
 export default launcher;

@@ -15,7 +15,7 @@
  */
 
 import prettierXmlPlugin from '@prettier/plugin-xml';
-import prettier from 'prettier/standalone';
+import { format } from 'prettier/standalone.mjs';
 import { nnou } from './object';
 import { XMLParser, X2jOptionsOptional } from 'fast-xml-parser';
 import { legacyUnescapeXml } from './string';
@@ -24,10 +24,8 @@ export function fromString(xml: string): XMLDocument {
   return xml != null ? new DOMParser().parseFromString(xml, 'text/xml') : null;
 }
 
-export function serialize(doc: Node, options?: { format: boolean }): string {
-  options = Object.assign({ format: true }, options || {});
-  const content = new XMLSerializer().serializeToString(doc);
-  return options.format ? beautify(content, { printWidth: +Infinity }) : content;
+export function serialize(doc: Node): string {
+  return new XMLSerializer().serializeToString(doc);
 }
 
 interface BeautifyOptions {
@@ -37,12 +35,12 @@ interface BeautifyOptions {
   xmlSelfClosingSpace: boolean;
 }
 
-export function beautify(xml: string): string;
-export function beautify(xml: string, options: Partial<BeautifyOptions>): string;
-export function beautify(xml: string, options?: Partial<BeautifyOptions>): string {
-  return prettier.format(xml, {
+export function beautify(xml: string): Promise<string>;
+export function beautify(xml: string, options: Partial<BeautifyOptions>): Promise<string>;
+export function beautify(xml: string, options?: Partial<BeautifyOptions>): Promise<string> {
+  return format(xml, {
     tabWidth: 2,
-    printWidth: 100,
+    printWidth: +Infinity,
     xmlWhitespaceSensitivity: 'ignore',
     xmlSelfClosingSpace: true,
     ...options,

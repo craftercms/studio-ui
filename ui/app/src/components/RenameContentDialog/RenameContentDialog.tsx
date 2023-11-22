@@ -60,7 +60,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="renameAsset.title" defaultMessage="Rename Content" />}
+      title={<FormattedMessage defaultMessage="Rename Content" />}
       onWithPendingChangesCloseRequest={pendingChangesCloseRequest}
       maxWidth={dependantItems?.length > 0 ? 'md' : 'xs'}
       {...dialogProps}

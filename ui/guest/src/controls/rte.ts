@@ -111,11 +111,14 @@ export function initTinyMCE(
   $element.removeClass(emptyFieldClass);
 
   window.tinymce.init({
-    mode: 'none',
     target: rteEl,
+    promotion: false,
+    // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
+    // note that it will become premium on version 7.
+    deprecation_warnings: false,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
-    plugins: ['paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' & 'paste' plugins will always be loaded
+    plugins: ['editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
     paste_as_text: type !== 'html',
     paste_data_images: type === 'html',
     paste_preprocess(plugin, args) {
@@ -128,7 +131,7 @@ export function initTinyMCE(
     forced_root_block: type === 'html',
     menubar: false,
     inline: true,
-    base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
+    base_url: '/studio/static-assets/libs/tinymce',
     suffix: '.min',
     external_plugins: external,
     code_editor_inline: false,
@@ -176,7 +179,8 @@ export function initTinyMCE(
 
       function save() {
         const content = getContent();
-        if (changed) {
+        // 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
+        if (changed || content !== originalContent) {
           contentController.updateField(record.modelId, record.fieldId[0], record.index, content);
         }
       }
@@ -233,7 +237,7 @@ export function initTinyMCE(
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
           let saved = false;
-          let relatedTarget = e.relatedTarget;
+          let relatedTarget = e.relatedTarget as HTMLElement;
           if (
             !relatedTarget?.closest('.tox-tinymce') &&
             !relatedTarget?.classList.contains('tox-dialog__body-nav-item')

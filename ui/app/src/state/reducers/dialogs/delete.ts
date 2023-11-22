@@ -39,32 +39,33 @@ const initialState: DeleteDialogStateProps = {
   error: null
 };
 
-export default createReducer<GlobalState['dialogs']['delete']>(initialState, {
-  [showDeleteDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeDeleteDialog(),
-    onClosed: deleteDialogClosed(),
-    ...payload,
-    open: true
-  }),
-  [updateDeleteDialog.type]: (state, { payload }) => ({
-    ...state,
-    ...payload
-  }),
-  [closeDeleteDialog.type]: (state) => ({ ...state, open: false }),
-  [deleteDialogClosed.type]: () => initialState,
-  [fetchDeleteDependencies.type]: (state) => ({
-    ...state,
-    isFetching: true
-  }),
-  [fetchDeleteDependenciesComplete.type]: (state, { payload }) => ({
-    ...state,
-    isFetching: false,
-    ...payload
-  }),
-  [fetchDeleteDependenciesFailed.type]: (state, { payload }) => ({
-    ...state,
-    isFetching: false,
-    error: payload.response
-  })
+export default createReducer<GlobalState['dialogs']['delete']>(initialState, (builder) => {
+  builder
+    .addCase(showDeleteDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeDeleteDialog(),
+      onClosed: deleteDialogClosed(),
+      ...(payload as Partial<DeleteDialogStateProps>),
+      open: true
+    }))
+    .addCase(updateDeleteDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<DeleteDialogStateProps>)
+    }))
+    .addCase(closeDeleteDialog, (state) => ({ ...state, open: false }))
+    .addCase(deleteDialogClosed, () => initialState)
+    .addCase(fetchDeleteDependencies, (state) => ({
+      ...state,
+      isFetching: true
+    }))
+    .addCase(fetchDeleteDependenciesComplete, (state, { payload }) => ({
+      ...state,
+      isFetching: false,
+      ...payload
+    }))
+    .addCase(fetchDeleteDependenciesFailed, (state, { payload }) => ({
+      ...state,
+      isFetching: false,
+      error: payload.response
+    }));
 });

@@ -1,4 +1,11 @@
+## 4.2.0
+
+* [utils/xml] Upgrade prettier to v3x which changed from sync apis to async
+  * `serialize` no longer formats code
+  * `beautify` is now async
+
 ## 4.1.2
+
 * Update return type of configuration/fetchHistory and content/fetchItemHistory to `ItemHistoryEntry[]`.
 * Update content/fetchItemHistory service to use new `/studio/api/2/content/item_history` API.
 * Removed deprecated `Guest` component. Use `ExperienceBuilder`.

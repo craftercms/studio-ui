@@ -58,7 +58,6 @@ const translations = defineMessages({
     defaultMessage: 'Instances on this page'
   },
   filter: {
-    id: 'previewComponentsPanel.filter',
     defaultMessage: 'Filter...'
   }
 });

@@ -24,7 +24,7 @@ export function RenameAssetDialog(props: RenameAssetDialogProps) {
   const { path, allowBraces, value, onRenamed, type, dependantItems, fetchingDependantItems, error, ...rest } = props;
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="renameAsset.title" defaultMessage="Rename Asset" />}
+      title={<FormattedMessage defaultMessage="Rename Asset" />}
       maxWidth={dependantItems?.length > 0 ? 'md' : 'xs'}
       {...rest}
     >

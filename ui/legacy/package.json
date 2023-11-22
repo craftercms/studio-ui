@@ -15,7 +15,7 @@
     "watch": "babel -w ./src -d ../../static-assets"
   },
   "devDependencies": {
-    "@babel/cli": "^7.20.7",
+    "@babel/cli": "^7.23.0",
     "build-if-changed": "^1.5.5"
   }
 }

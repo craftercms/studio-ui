@@ -18,6 +18,7 @@ import { DetailedItem } from './Item';
 import ApiResponse from './ApiResponse';
 import ContentInstance from './ContentInstance';
 import Person from './Person';
+import LookupTable from './LookupTable';
 
 export interface ItemHistoryEntry {
   author: Person;
@@ -42,7 +43,7 @@ export interface CompareVersionsBranch {
 }
 
 export interface VersionsStateProps {
-  byId: string;
+  byId: LookupTable<ItemHistoryEntry>;
   item: DetailedItem;
   rootPath?: string;
   isConfig?: boolean;

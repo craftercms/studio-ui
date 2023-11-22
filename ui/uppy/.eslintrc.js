@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,20 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export type SystemType =
-  | 'asset'
-  | 'component'
-  | 'content type'
-  | 'document'
-  | 'file'
-  | 'folder'
-  | 'levelDescriptor'
-  | 'page'
-  | 'renderingTemplate'
-  | 'script'
-  | 'taxonomy'
-  | 'configuration';
-
-export type FilterSystemTypeGroups = 'all' | 'item' | 'asset' | 'contentType' | 'template' | 'script' | 'other';
-
-export default SystemType;
+{
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module"
+  }
+}

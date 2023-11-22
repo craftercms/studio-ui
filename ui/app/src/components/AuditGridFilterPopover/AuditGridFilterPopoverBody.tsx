@@ -176,13 +176,11 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
                 value={fromDate}
                 onChange={onFromDateSelected}
-                renderInput={(props) => <TextField {...props} />}
               />
               <DateTimePicker
                 label={<FormattedMessage id="words.to" defaultMessage="To" />}
                 value={toDate}
                 onChange={onToDateSelected}
-                renderInput={(props) => <TextField {...props} />}
               />
               <Button
                 className={classes.clearButton}

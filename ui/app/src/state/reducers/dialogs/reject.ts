@@ -26,16 +26,20 @@ const initialState: RejectDialogStateProps = {
   hasPendingChanges: null
 };
 
-export default createReducer<GlobalState['dialogs']['reject']>(initialState, {
-  [showRejectDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeRejectDialog(),
-    onClosed: rejectDialogClosed(),
-    onRejectSuccess: closeRejectDialog(),
-    ...payload,
-    open: true
-  }),
-  [updateRejectDialog.type]: (state, { payload }) => ({ ...state, ...payload }),
-  [closeRejectDialog.type]: (state) => ({ ...state, open: false }),
-  [rejectDialogClosed.type]: () => ({ open: false })
+export default createReducer<GlobalState['dialogs']['reject']>(initialState, (builder) => {
+  builder
+    .addCase(showRejectDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeRejectDialog(),
+      onClosed: rejectDialogClosed(),
+      onRejectSuccess: closeRejectDialog(),
+      ...(payload as Partial<RejectDialogStateProps>),
+      open: true
+    }))
+    .addCase(updateRejectDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<RejectDialogStateProps>)
+    }))
+    .addCase(closeRejectDialog, (state) => ({ ...state, open: false }))
+    .addCase(rejectDialogClosed, () => ({ open: false }));
 });

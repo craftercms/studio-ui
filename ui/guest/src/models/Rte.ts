@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Settings } from 'tinymce';
+import { Settings } from 'tinymce/index';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 
 export interface TinymceOptions extends Settings {

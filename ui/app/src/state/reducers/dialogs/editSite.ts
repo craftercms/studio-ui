@@ -32,16 +32,20 @@ const initialState: EditSiteDialogStateProps = {
   site: null
 };
 
-export default createReducer<GlobalState['dialogs']['editSite']>(initialState, {
-  [showEditSiteDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeEditSiteDialog(),
-    onClosed: editSiteDialogClosed(),
-    onSaveSuccess: closeEditSiteDialog(),
-    ...payload,
-    open: true
-  }),
-  [updateEditSiteDialog.type]: (state, { payload }) => ({ ...state, ...payload }),
-  [closeEditSiteDialog.type]: (state) => ({ ...state, open: false }),
-  [editSiteDialogClosed.type]: (state) => initialState
+export default createReducer<GlobalState['dialogs']['editSite']>(initialState, (builder) => {
+  builder
+    .addCase(showEditSiteDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeEditSiteDialog(),
+      onClosed: editSiteDialogClosed(),
+      onSaveSuccess: closeEditSiteDialog(),
+      ...(payload as Partial<EditSiteDialogStateProps>),
+      open: true
+    }))
+    .addCase(updateEditSiteDialog, (state, { payload }) => ({
+      ...state,
+      ...(payload as Partial<EditSiteDialogStateProps>)
+    }))
+    .addCase(closeEditSiteDialog, (state) => ({ ...state, open: false }))
+    .addCase(editSiteDialogClosed, (state) => initialState);
 });

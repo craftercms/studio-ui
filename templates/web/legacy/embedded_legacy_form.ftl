@@ -155,7 +155,7 @@
                     CStudioAuthoring.InContextEdit.messageDialogs({
                       type: 'OPEN_CHILD_COMPONENT',
                       key: Boolean(modelId) ? modelId : null,
-                      iceId: null,
+                      iceId: selectedFields ? JSON.parse(decodeURIComponent(selectedFields)) : iceId,
                       contentType: embeddedData ? embeddedData.contentType : null,
                       edit: Boolean(modelId),
                       selectorId: embeddedData ? embeddedData.fieldId : null,
@@ -262,6 +262,9 @@
   window.addEventListener("message", (event) => {
     if(event.data.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
       CStudioAuthoring.InContextEdit.messageDialogs({ type: LEGACY_FORM_DIALOG_CANCEL_REQUEST })
+    }
+    if(event.data.type === 'LEGACY_FORM_DIALOG_RENAMED_CONTENT') {
+      CStudioAuthoring.InContextEdit.messageDialogs(event.data, '*');
     }
   }, false);
 
