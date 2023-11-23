@@ -70,9 +70,10 @@ import { ConfirmDialogProps } from '../ConfirmDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { findPendingEncryption } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { UNDEFINED } from '../../utils/constants';
+import { MAX_CONFIG_SIZE, UNDEFINED } from '../../utils/constants';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { nnou } from '../../utils/object';
+import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -113,6 +114,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const editorRef = useRef<any>({
     container: null
   });
+  const [contentSize, setContentSize] = useState(0);
 
   useEffect(() => {
     history?.block((props) => {
@@ -172,6 +174,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
       fetchConfigurationXML(site, selectedConfigFile.path, selectedConfigFile.module, environment).subscribe({
         next(xml) {
           setSelectedConfigFileXml(xml ?? '');
+          setContentSize(xml?.length ?? 0);
           setLoadingXml(false);
         },
         error({ response }) {
@@ -375,13 +378,15 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   };
 
   const onEditorChanges = () => {
-    if (selectedConfigFileXml !== editorRef.current.getValue()) {
+    const currentEditorValue = editorRef.current.getValue();
+    if (selectedConfigFileXml !== currentEditorValue) {
       setDisabledSaveButton(false);
       functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
     } else {
       setDisabledSaveButton(true);
       functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
     }
+    setContentSize(currentEditorValue.length);
   };
 
   const onShowHistory = () => {
@@ -732,9 +737,18 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                 <SecondaryButton disabled={encrypting} onClick={onCancel}>
                   <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                 </SecondaryButton>
-                <PrimaryButton disabled={disabledSaveButton || encrypting || isSubmitting} onClick={onSave}>
+                <PrimaryButton
+                  disabled={disabledSaveButton || encrypting || isSubmitting || contentSize > MAX_CONFIG_SIZE}
+                  onClick={onSave}
+                >
                   <FormattedMessage id="words.save" defaultMessage="Save" />
                 </PrimaryButton>
+                <MaxLengthCircularProgress
+                  sxs={{ circularProgress: { width: '35px !important', height: '35px !important' } }}
+                  max={MAX_CONFIG_SIZE}
+                  current={contentSize}
+                  renderThresholdPercentage={90}
+                />
               </DialogFooter>
             </>
           ) : (
