@@ -1745,6 +1745,7 @@ __metadata:
     "@rollup/plugin-typescript": "npm:^11.1.5"
     "@stomp/stompjs": "npm:^7.0.0"
     "@types/ace": "npm:^0.0.51"
+    "@types/diff": "npm:^5"
     "@types/graphql": "npm:^14.5.0"
     "@types/jquery": "npm:^3.5.25"
     "@types/js-cookie": "npm:^3.0.6"
@@ -1762,6 +1763,7 @@ __metadata:
     babel-plugin-react-intl: "npm:^8.2.25"
     build-if-changed: "npm:^1.5.5"
     clsx: "npm:^2.0.0"
+    diff: "npm:^5.1.0"
     eslint: "npm:^8.53.0"
     eslint-config-react-app: "npm:^7.0.1"
     fast-xml-parser: "npm:^4.3.2"
@@ -4504,6 +4506,13 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: fe81351470f2d3165e8b12ce33542eef89ea893e36dd62e8f7d72566dfb7e448376ae962f9f3ea888547ce8b55a40020ca0e01d637fab5d99567673084542641
+  languageName: node
+  linkType: hard
+
+"@types/diff@npm:^5":
+  version: 5.0.8
+  resolution: "@types/diff@npm:5.0.8"
+  checksum: 73ed9eb68d159c81f5464a7df9d1db14510ebeaa521cce3e29da9749bdff4d75801fbd55bb935ef7fa8ea6593939c56c73c446af3f965ddbffb93b22e67524d7
   languageName: node
   linkType: hard
 
@@ -8147,6 +8156,13 @@ __metadata:
   version: 4.0.2
   resolution: "diff@npm:4.0.2"
   checksum: ec09ec2101934ca5966355a229d77afcad5911c92e2a77413efda5455636c4cf2ce84057e2d7715227a2eeeda04255b849bd3ae3a4dd22eb22e86e76456df069
+  languageName: node
+  linkType: hard
+
+"diff@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "diff@npm:5.1.0"
+  checksum: f4557032a98b2967fe27b1a91dfcf8ebb6b9a24b1afe616b5c2312465100b861e9b8d4da374be535f2d6b967ce2f53826d7f6edc2a0d32b2ab55abc96acc2f9d
   languageName: node
   linkType: hard
 

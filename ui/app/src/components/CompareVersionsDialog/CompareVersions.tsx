@@ -17,7 +17,7 @@
 import ContentInstance from '../../models/ContentInstance';
 import { LookupTable } from '../../models/LookupTable';
 import ContentType, { ContentTypeField } from '../../models/ContentType';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ListItemText from '@mui/material/ListItemText';
@@ -43,6 +43,7 @@ import { batchActions } from '../../state/actions/misc';
 import { compareVersion } from '../../state/actions/versions';
 import { showCompareVersionsDialog, showHistoryDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
+import { diffArrays } from 'diff';
 
 const translations = defineMessages({
   changed: {
@@ -310,36 +311,38 @@ interface ContentInstanceComponentsProps {
 
 function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const { contentA, contentB } = props;
-  const [mergeContent, setMergeContent] = useState([]);
-  const [status, setStatus] = useState<any>({});
+  const [diff, setDiff] = useState(null);
   const { formatMessage } = useIntl();
   const itemsByPath = useItemsByPath();
+  const contentById = useMemo(() => {
+    const byId = {};
+    [...contentA, ...contentB].forEach((item) => {
+      byId[item.craftercms.id] = item;
+    });
+    return byId;
+  }, [contentA, contentB]);
 
   const getItemLabel = (item) => {
     return item.craftercms.label ?? itemsByPath?.[item.craftercms.path]?.label ?? item.craftercms.id;
   };
 
+  const getItemStatus = (diff): string => {
+    if (diff.added) {
+      return 'new';
+    }
+    if (diff.removed) {
+      return 'deleted';
+    }
+    return 'unchanged';
+  };
+
   useEffect(() => {
-    let itemStatus = {};
-    let merged = {};
-    contentA.forEach((itemA, index: number) => {
-      const itemB = contentB[index];
-      if (!itemB || itemA.craftercms.id !== itemB.craftercms.id) {
-        itemStatus[index] = 'deleted';
-      } else {
-        itemStatus[index] = itemA.craftercms.dateModified !== itemB.craftercms.dateModified ? 'changed' : 'unchanged';
-      }
-      merged[index] = itemA;
-    });
-    contentB.forEach((itemB, index: number) => {
-      const itemA = contentA[index];
-      if (!itemA || itemB.craftercms.id !== itemA.craftercms.id) {
-        itemStatus[index] = 'new';
-      }
-      merged[index] = itemB;
-    });
-    setMergeContent(Object.values(merged));
-    setStatus(itemStatus);
+    setDiff(
+      diffArrays(
+        contentA.map((item) => item.craftercms.id),
+        contentB.map((item) => item.craftercms.id)
+      )
+    );
   }, [contentA, contentB]);
 
   return (
@@ -351,56 +354,59 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
         width: '100%'
       }}
     >
-      {mergeContent.length ? (
-        mergeContent.map((item, index) => (
-          <Box
-            sx={{
-              padding: '4px 15px',
-              marginBottom: '12px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              borderRadius: '10px',
-              alignItems: 'center',
-              '&.unchanged': {
-                color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
-                backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1)
-              },
-              '&.new': {
-                color: palette.green.shade,
-                backgroundColor: palette.green.highlight,
-                width: '50%',
-                marginLeft: 'auto'
-              },
-              '&.changed': {
-                color: palette.yellow.shade,
-                backgroundColor: palette.yellow.highlight
-              },
-              '&.deleted': {
-                color: palette.red.shade,
-                backgroundColor: palette.red.highlight,
-                width: '50%',
-                marginRight: 'auto'
-              },
-              '&:last-child': {
-                marginBottom: 0
-              }
-            }}
-            className={status[index] ?? ''}
-            key={item.craftercms.id}
-          >
-            <Typography sx={{ fontSize: '14px' }}> {getItemLabel(item)}</Typography>
-            {status[index] && status[index] !== 'new' && (
-              <Typography
-                sx={{
-                  fontSize: '14px',
-                  color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4)
-                }}
-              >
-                {formatMessage(translations[status[index]])}
-              </Typography>
-            )}
-          </Box>
-        ))
+      {diff?.length ? (
+        diff.map((part) =>
+          part.value.map((id, index) => (
+            <Box
+              sx={{
+                padding: '4px 15px',
+                marginBottom: '12px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                borderRadius: '10px',
+                alignItems: 'center',
+                '&.unchanged': {
+                  color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+                  backgroundColor: (theme) =>
+                    theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
+                },
+                '&.new': {
+                  color: palette.green.shade,
+                  backgroundColor: palette.green.highlight,
+                  width: '50%',
+                  marginLeft: 'auto'
+                },
+                '&.changed': {
+                  color: palette.yellow.shade,
+                  backgroundColor: palette.yellow.highlight
+                },
+                '&.deleted': {
+                  color: palette.red.shade,
+                  backgroundColor: palette.red.highlight,
+                  width: '50%',
+                  marginRight: 'auto'
+                },
+                '&:last-child': {
+                  marginBottom: 0
+                }
+              }}
+              className={getItemStatus(part) ?? ''}
+              key={`${id}-${index}`}
+            >
+              <Typography sx={{ fontSize: '14px' }}> {getItemLabel(contentById[id])}</Typography>
+              {getItemStatus(part) === 'unchanged' && (
+                <Typography
+                  sx={{
+                    fontSize: '14px',
+                    color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4)
+                  }}
+                >
+                  {formatMessage(translations.unchanged)}
+                </Typography>
+              )}
+            </Box>
+          ))
+        )
       ) : (
         <EmptyState title={formatMessage(translations.noItemsStatus)} />
       )}
