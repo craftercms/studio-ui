@@ -5,6 +5,13 @@
   "author": "Roy Art",
   "license": "LGPL-3.0-only",
   "private": true,
+  "bic": {
+    "skip": [
+      "build",
+      "README.md",
+      "CHANGE_LOG.md"
+    ]
+  },
   "scripts": {
     "build": "chmod +x build.sh; ./build.sh",
     "build:monaco": "webpack --config ./src/monaco/webpack.config.js",
