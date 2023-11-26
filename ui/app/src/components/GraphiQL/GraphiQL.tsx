@@ -104,7 +104,6 @@ function GraphiQL(props: GraphiQLProps) {
     window.localStorage.setItem(`${storageKey}graphiql:query`, newQuery);
   };
   const explorer = explorerPlugin({
-    query,
     onEdit: onEditQuery,
     showAttribution: false
   });
