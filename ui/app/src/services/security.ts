@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { get, postJSON } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
+import { get, post, postJSON } from '../utils/ajax';
+import { map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { toQueryString } from '../utils/object';
 
@@ -30,4 +30,8 @@ export function getUserPermissions(site: string, path: string): Observable<strin
   return get(`/studio/api/1/services/api/1/security/get-user-permissions.json${qs}`).pipe(
     pluck('response', 'permissions')
   );
+}
+
+export function previewSwitch(): Observable<true> {
+  return post(`/studio/api/2/security/preview/switch`).pipe(map(() => true));
 }

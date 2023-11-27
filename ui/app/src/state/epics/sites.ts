@@ -15,13 +15,22 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { setSiteCookie } from '../../utils/auth';
 import { fetchAll } from '../../services/sites';
 import { catchAjaxError } from '../../utils/ajax';
-import { changeSite, fetchSites as fetchSitesAction, fetchSitesComplete, fetchSitesFailed } from '../actions/sites';
+import {
+  changeSite,
+  changeSiteComplete,
+  fetchSites as fetchSitesAction,
+  fetchSitesComplete,
+  fetchSitesFailed
+} from '../actions/sites';
 import GlobalState from '../../models/GlobalState';
 import { CrafterCMSEpic } from '../store';
+import { previewSwitch } from '../../services/security';
+import { merge, of } from 'rxjs';
+import { blockUI, unblockUI } from '../actions/system';
 
 export default [
   // region Change site
@@ -39,7 +48,17 @@ export default [
           }
         ]) => setSiteCookie(nextSite, useBaseDomain)
       ),
-      ignoreElements()
+      switchMap(
+        ([
+          {
+            payload: { nextSite, nextUrl }
+          }
+        ]) =>
+          merge(
+            of(blockUI({ progress: 'indeterminate' })),
+            previewSwitch().pipe(switchMap(() => [unblockUI(), changeSiteComplete({ nextSite, nextUrl })]))
+          )
+      )
     ),
   // endregion
   // region Fetch sites
