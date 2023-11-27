@@ -52,11 +52,18 @@ export default [
         ([
           {
             payload: { nextSite, nextUrl }
-          }
+          },
+          state
         ]) =>
           merge(
             of(blockUI({ progress: 'indeterminate' })),
-            previewSwitch().pipe(switchMap(() => [unblockUI(), changeSiteComplete({ nextSite, nextUrl })]))
+            previewSwitch().pipe(
+              switchMap(() => [unblockUI(), changeSiteComplete({ nextSite, nextUrl })]),
+              catchAjaxError(() => {
+                setSiteCookie(state.sites.active, state.env.useBaseDomain);
+                return of(unblockUI());
+              })
+            )
           )
       )
     ),
