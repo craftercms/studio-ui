@@ -123,6 +123,7 @@ ui/app/public/craftercms-xb.umd.js
 ui/app/public/preview-landing.umd.js
 ui/app/public/shared-worker.js
 ui/guest/dist
+ui/guest/src/jquery
 ui/app/src/test
 ui/app/src/tests
 static-assets/components/cstudio-admin/mods/encrypt-tool.js

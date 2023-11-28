@@ -89,7 +89,8 @@
     "build:node": "tsc --build tsconfig.node.json",
     "create-package-file": "node ./scripts/package.js",
     "replace-env-version": "node ./scripts/replaceEnvVersion.js",
-    "build:npm": "run-s clean:npm build:modern replace-env-version create-package-file"
+    "build:npm": "run-s clean:npm build:modern replace-env-version create-package-file copy-jquery-npm",
+    "copy-jquery-npm": "cp -r ./src/jquery ./build_tsc/jquery"
   },
   "dependencies": {
     "@craftercms/classes": "4.1.2",
@@ -104,7 +105,6 @@
     "@mui/material": "^5.14.17",
     "@reduxjs/toolkit": "^1.9.7",
     "@types/react-dom": "^18.2.14",
-    "jquery": "^3.7.1",
     "js-cookie": "^3.0.5",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
@@ -119,7 +119,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/jquery": "^3.5.25",
+    "@types/jquery": "^3.5.28",
     "@types/js-cookie": "^3.0.6",
     "@types/prop-types": "^15.7.9",
     "@types/react-is": "^18.2.3",

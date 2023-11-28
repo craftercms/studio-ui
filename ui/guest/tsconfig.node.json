@@ -28,6 +28,7 @@
   "include": ["./src"],
   "exclude": [
     "./src/hooks.bak.ts",
-    "node_modules"
+    "node_modules",
+    "./src/jquery"
   ]
 }

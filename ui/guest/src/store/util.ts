@@ -38,7 +38,7 @@ export function dragOk(status): boolean {
   ].includes(status);
 }
 
-export function unwrapEvent<T extends Event>(event: JQueryEventObject | SyntheticEvent | Event): T {
+export function unwrapEvent<T extends Event>(event: SyntheticEvent | Event): T {
   // @ts-ignore
   return event?.originalEvent ?? event?.nativeEvent ?? event;
 }

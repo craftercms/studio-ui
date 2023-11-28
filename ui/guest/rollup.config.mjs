@@ -48,7 +48,7 @@ const plugins = [
     dedupe: ['react', 'react-dom', 'react-is'],
     mainFields: ['module', 'main', 'browser']
   }),
-  commonjs({ include: /node_modules/ }),
+  commonjs({ include: /node_modules|jquery/ }),
   copy({
     targets: [
       { src: 'build/*.umd.js', dest: '../app/public' },

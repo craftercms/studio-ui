@@ -66,7 +66,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { notNullOrUndefined, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../elementRegistry';
 import { get, getElementFromICEProps } from '../../elementRegistry';
@@ -89,7 +89,6 @@ import {
   setEditingStatus,
   startListening
 } from '../actions';
-import $ from 'jquery';
 import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 import { getParentModelId } from '../../utils/ice';
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
@@ -98,7 +97,7 @@ import { validateActionPolicy } from '@craftercms/studio-ui/services/sites';
 import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
-import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
+import { ensureSingleSlash, isSimple } from '@craftercms/studio-ui/utils/string';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -152,7 +151,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             e.dataTransfer.setData('text/plain', `${record.id}`);
             e.dataTransfer.setDragImage(document.querySelector('.craftercms-dragged-element'), 20, 20);
           }
-          $('html').addClass(dragAndDropActiveClass);
+          document.documentElement.classList.add(dragAndDropActiveClass);
           return initializeDragSubjects(state$);
         }
         return NEVER;
@@ -612,7 +611,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType(computedDragEnd.type),
       tap(() => {
-        $('html').removeClass(dragAndDropActiveClass);
+        document.documentElement.classList.remove(dragAndDropActiveClass);
         destroyDragSubjects();
       }),
       ignoreElements()
@@ -749,7 +748,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               })
             );
           } else {
-            $('html').addClass(dragAndDropActiveClass);
+            document.documentElement.classList.add(dragAndDropActiveClass);
             return initializeDragSubjects(state$);
           }
         }
@@ -775,7 +774,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
               })
             );
           } else {
-            $('html').addClass(dragAndDropActiveClass);
+            document.documentElement.classList.add(dragAndDropActiveClass);
             return initializeDragSubjects(state$);
           }
         }
