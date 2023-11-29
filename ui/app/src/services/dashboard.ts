@@ -17,7 +17,7 @@
 import { get } from '../utils/ajax';
 import { reversePluckProps, toQueryString } from '../utils/object';
 import { map, pluck } from 'rxjs/operators';
-import { DashboardPublishingPackage, LegacyDashboardItem, LegacyDeploymentHistoryResponse } from '../models/Dashboard';
+import { DashboardPublishingPackage, LegacyDeploymentHistoryResponse } from '../models/Dashboard';
 import { Observable } from 'rxjs';
 import { DetailedItem, PagedArray, PublishingStats, PublishingTargets, SandboxItem } from '../models';
 import { Activity } from '../models/Activity';
@@ -25,67 +25,6 @@ import PaginationOptions from '../models/PaginationOptions';
 import { createPagedArray } from '../utils/array';
 import { prepareVirtualItemProps } from '../utils/content';
 import SystemType from '../models/SystemType';
-
-export function fetchLegacyGetGoLiveItems(
-  site: string,
-  sortBy?: string,
-  sortAsc?: boolean,
-  includeInProgress?: boolean,
-  filterByNumber?: number
-): Observable<LegacyDashboardItem> {
-  const qs = toQueryString({
-    site,
-    ...(sortBy
-      ? {
-          sort: sortBy,
-          ascending: sortAsc
-        }
-      : {}),
-    ...(includeInProgress && { includeInProgress }),
-    ...(filterByNumber && { num: filterByNumber })
-  });
-  return get(`/studio/api/1/services/api/1/workflow/get-go-live-items.json${qs}`).pipe(pluck('response'));
-}
-
-export function fetchLegacyUserActivities(
-  site: string,
-  user: string,
-  sortBy: string,
-  sortAsc: boolean,
-  numResults: number,
-  filterBy: string,
-  excludeLive: boolean
-): Observable<LegacyDashboardItem> {
-  const qs = toQueryString({
-    site,
-    user,
-    ...(sortBy
-      ? {
-          sort: sortBy,
-          ascending: sortAsc
-        }
-      : {}),
-    ...(numResults && { num: numResults }),
-    ...(filterBy && { filterType: filterBy }),
-    excludeLive
-  });
-  return get(`/studio/api/1/services/api/1/activity/get-user-activities.json${qs}`).pipe(pluck('response'));
-}
-
-export function fetchLegacyScheduledItems(
-  site: string,
-  sort: string,
-  ascending: boolean,
-  filterType: string
-): Observable<LegacyDashboardItem> {
-  const qs = toQueryString({
-    site,
-    sort,
-    ascending,
-    filterType
-  });
-  return get(`/studio/api/1/services/api/1/deployment/get-scheduled-items.json${qs}`).pipe(pluck('response'));
-}
 
 export function fetchLegacyDeploymentHistory(
   siteId: string,

@@ -3471,47 +3471,6 @@ var nodeOpen = false,
         }
         return children;
       },
-      /**
-       * get go live items
-       */
-      getGoLiveQueueItems: function (site, includeInprogressItems, sortBy, sortAscDesc, callback, filterByNumber) {
-        callback.beforeServiceCall();
-
-        CrafterCMSNext.services.dashboard
-          .fetchLegacyGetGoLiveItems(site, sortBy, sortAscDesc, includeInprogressItems, filterByNumber)
-          .subscribe(
-            function (response) {
-              CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap = CStudioAuthoring.Service.createFlatMap(
-                response.documents
-              );
-              callback.success(response);
-            },
-            function (response) {
-              callback.failure(response);
-            }
-          );
-      },
-      /**
-       * get user activites items
-       */
-      getUserActivitiesServices: function (site, user, sortBy, sortAscDesc, number, filterBy, hideLive, callback) {
-        callback.beforeServiceCall();
-
-        if (filterBy == undefined && filterBy == null) {
-          filterBy = 'page';
-        }
-
-        CrafterCMSNext.services.dashboard
-          .fetchLegacyUserActivities(site, user, sortBy, sortAscDesc, number, filterBy, hideLive)
-          .subscribe(
-            function (response) {
-              callback.success(response);
-            },
-            function (response) {
-              callback.failure(response);
-            }
-          );
-      },
 
       /**
        * get user roles
