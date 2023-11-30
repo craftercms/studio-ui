@@ -115,6 +115,7 @@ export const components = {
   DialogTitle: lazy(() => import('../components/DialogTitle')),
   DraggablePanelListItem: lazy(() => import('../components/DraggablePanelListItem')),
   DropDownMenuButton: lazy(() => import('../components/DropDownMenuButton')),
+  DuplicateSiteDialog: lazy(() => import('../components/DuplicateSiteDialog')),
   EditFormPanel: lazy(() => import('../components/EditFormPanel')),
   EditGroupDialog: lazy(() => import('../components/EditGroupDialog')),
   EditModeSwitch: lazy(() => import('../components/EditModeSwitch')),
@@ -178,27 +179,6 @@ export const components = {
   LegacyDashboardFrame: lazy(() => import('../components/LegacyDashboardFrame')),
   LegacyFormDialog: lazy(() => import('../components/LegacyFormDialog')),
   LegacyIFrame: lazy(() => import('../components/LegacyIFrame')),
-  LegacySiteDashboard: lazy(() => import('../components/LegacySiteDashboard')),
-  LegacyApprovedScheduledDashlet: lazy(
-    () => import('../components/LegacySiteDashboard/LegacyApprovedScheduledDashlet')
-  ),
-  LegacyApprovedScheduledDashletGrid: lazy(
-    () => import('../components/LegacySiteDashboard/LegacyApprovedScheduledDashletGrid')
-  ),
-  LegacyAwaitingApprovalDashlet: lazy(() => import('../components/LegacySiteDashboard/LegacyAwaitingApprovalDashlet')),
-  LegacyAwaitingApprovalDashletGrid: lazy(
-    () => import('../components/LegacySiteDashboard/LegacyAwaitingApprovalDashletGrid')
-  ),
-  LegacyDashletCard: lazy(() => import('../components/LegacySiteDashboard/LegacyDashletCard')),
-  LegacyInReviewDashlet: lazy(() => import('../components/LegacySiteDashboard/LegacyInReviewDashlet')),
-  LegacyRecentActivityDashlet: lazy(() => import('../components/LegacySiteDashboard/LegacyRecentActivityDashlet')),
-  LegacyRecentActivityDashletGrid: lazy(
-    () => import('../components/LegacySiteDashboard/LegacyRecentActivityDashletGrid')
-  ),
-  LegacyRecentlyPublishedDashlet: lazy(
-    () => import('../components/LegacySiteDashboard/LegacyRecentlyPublishedDashlet')
-  ),
-  LegacyUnpublishedDashlet: lazy(() => import('../components/LegacySiteDashboard/LegacyUnpublishedDashlet')),
   LegacySiteToolsFrame: lazy(() => import('../components/LegacySiteToolsFrame')),
   LoadingIconButton: lazy(() => import('../components/LoadingIconButton')),
   LoadingState: lazy(() => import('../components/LoadingState')),
@@ -211,6 +191,7 @@ export const components = {
   LoginView: lazy(() => import('../components/LoginView')),
   LogoAndMenuBundleButton: lazy(() => import('../components/LogoAndMenuBundleButton')),
   MarketplaceDialog: lazy(() => import('../components/MarketplaceDialog')),
+  MaxLengthCircularProgress: lazy(() => import('../components/MaxLengthCircularProgress')),
   MediaCard: lazy(() => import('../components/MediaCard')),
   MinimizedBar: lazy(() => import('../components/MinimizedBar')),
   MinimizedBarPortal: lazy(() => import('../components/MinimizedBarPortal')),
