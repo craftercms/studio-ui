@@ -3412,16 +3412,14 @@ var nodeOpen = false,
       },
 
       getUserPermissions: function (site, path, callback) {
-        CrafterCMSNext.services.security
-          .getUserPermissions(site, encodeURI(path), CStudioAuthoringContext.user)
-          .subscribe(
-            function (response) {
-              callback.success({ permissions: response });
-            },
-            function (response) {
-              callback.failure(response);
-            }
-          );
+        craftercms.services.users.fetchMyPermissions(site).subscribe({
+          next: (response) => {
+            callback.success({ permissions: response });
+          },
+          error: (response) => {
+            callback.failure(response);
+          }
+        });
       },
 
       /**
