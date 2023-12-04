@@ -181,4 +181,5 @@ export interface ContentValidationResult {
   target: string;
   allowed: boolean;
   modifiedValue: string;
+  message: string;
 }

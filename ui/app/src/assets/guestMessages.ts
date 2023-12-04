@@ -152,11 +152,11 @@ export const guestMessages = defineMessages({
   },
   noPolicyComply: {
     id: 'desktopAssetUpload.noPolicyComply',
-    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies and can\'t be uploaded'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies and can\'t be uploaded: {detail}'
   },
   fileNameChangedPolicy: {
     id: 'desktopAssetUpload.fileNameChangedPolicy',
-    defaultMessage: 'File "{fileName}" was renamed to "{modifiedFileName}" to comply with project policies'
+    defaultMessage: 'File "{fileName}" was renamed to "{modifiedFileName}" to comply with project policies: {detail}'
   },
   uploadError: {
     id: 'desktopAssetUpload.uploadError',

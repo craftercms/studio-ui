@@ -92,7 +92,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
         type: 'CREATE',
         target: `${path}/${name}`
       }).subscribe({
-        next: ({ allowed, modifiedValue }) => {
+        next: ({ allowed, modifiedValue, message }) => {
           if (allowed) {
             const fileName = getFileNameWithExtensionForItemType(type, name);
             const pathToCheckExists = modifiedValue ?? `${path}/${fileName}`;
@@ -105,7 +105,10 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
                 } else {
                   if (modifiedValue) {
                     setConfirm({
-                      body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
+                      body: formatMessage(translations.createPolicy, {
+                        name: modifiedValue.replace(`${path}/`, ''),
+                        detail: message
+                      })
                     });
                   } else {
                     onCreateFile(site, path, fileName);
@@ -117,7 +120,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
           } else {
             setConfirm({
               error: true,
-              body: formatMessage(translations.policyError)
+              body: formatMessage(translations.policyError, { detail: message })
             });
             dispatch(
               updateCreateFolderDialog({
