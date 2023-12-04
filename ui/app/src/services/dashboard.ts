@@ -17,7 +17,7 @@
 import { get } from '../utils/ajax';
 import { reversePluckProps, toQueryString } from '../utils/object';
 import { map, pluck } from 'rxjs/operators';
-import { DashboardPublishingPackage, LegacyDeploymentHistoryResponse } from '../models/Dashboard';
+import { DashboardPublishingPackage } from '../models/Dashboard';
 import { Observable } from 'rxjs';
 import { DetailedItem, PagedArray, PublishingStats, PublishingTargets, SandboxItem } from '../models';
 import { Activity } from '../models/Activity';
@@ -25,21 +25,6 @@ import PaginationOptions from '../models/PaginationOptions';
 import { createPagedArray } from '../utils/array';
 import { prepareVirtualItemProps } from '../utils/content';
 import SystemType from '../models/SystemType';
-
-export function fetchLegacyDeploymentHistory(
-  siteId: string,
-  days: number,
-  numResults: number,
-  filterBy: string
-): Observable<LegacyDeploymentHistoryResponse> {
-  const qs = toQueryString({
-    siteId,
-    ...(days && { days }),
-    ...(numResults && { num: numResults }),
-    ...(filterBy && { filterType: filterBy })
-  });
-  return get(`/studio/api/2/publish/history.json${qs}`).pipe(pluck('response'));
-}
 
 function parseDashletOptions(options: FetchUnpublishedOptions | FetchPendingApprovalOptions | FetchScheduledOptions) {
   const { sortBy, sortOrder, itemType } = options;
@@ -103,14 +88,6 @@ export function fetchPendingApproval(
         response
       )
     )
-  );
-}
-
-export function fetchPendingApprovalPackageItems(siteId: string, packageId: number): Observable<SandboxItem[]> {
-  const qs = toQueryString({ siteId });
-  return get(`/studio/api/2/dashboard/content/pending_approval/${packageId}${qs}`).pipe(
-    pluck('response', 'publishingPackageItems'),
-    map((items) => items.map((item) => prepareVirtualItemProps(item)))
   );
 }
 

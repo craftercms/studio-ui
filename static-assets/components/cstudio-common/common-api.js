@@ -3501,25 +3501,6 @@ var nodeOpen = false,
           }
         );
       },
-      /**
-       * get recently deployed items
-       */
-      getDeploymentHistory: function (site, sortBy, sortAscDesc, days, number, filterBy, callback) {
-        callback.beforeServiceCall();
-
-        if (filterBy === undefined || filterBy === null) {
-          filterBy = 'page';
-        }
-
-        CrafterCMSNext.services.dashboard.fetchLegacyDeploymentHistory(site, days, number, filterBy).subscribe({
-          next: (response) => {
-            callback.success(response);
-          },
-          error: (response) => {
-            callback.failure(response);
-          }
-        });
-      },
 
       /**
        * get version history for given content path
