@@ -3,6 +3,13 @@
 * [utils/xml] Upgrade prettier to v3x which changed from sync apis to async
   * `serialize` no longer formats code
   * `beautify` is now async
+* Removed Legacy Dashboard.
+  * Removed LegacyApprovedScheduledDashlet, LegacyAwaitingApprovalDashlet, LegacyInReviewDashlet, LegacyRecentActivityDashlet, 
+  LegacyRecentActivityDashlet, LegacyRecentlyPublishedDashlet and LegacyUnpublishedDashlet.
+  * Removed fetchLegacyGetGoLiveItems, fetchLegacyUserActivities, fetchLegacyScheduledItems, fetchPendingApprovalPackageItems 
+  and fetchLegacyDeploymentHistory services.
+* Removed deprecated aws-file-upload and aws-video upload controls.
+* Removed `getUserPermissions` service and updated to use `fetchMyPermissions` (`/studio/api/2/users/me/sites/${site}/permissions`).
 
 ## 4.1.2
 
