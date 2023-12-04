@@ -18,7 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
 import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { storeInitialized } from '../actions/system';
-import { changeSite, fetchSites, fetchSitesComplete, fetchSitesFailed, popSite } from '../actions/sites';
+import { changeSiteComplete, fetchSites, fetchSitesComplete, fetchSitesFailed, popSite } from '../actions/sites';
 
 export const initialState: GlobalState['sites'] = {
   byId: {},
@@ -33,7 +33,7 @@ const reducer = createReducer<GlobalState['sites']>(initialState, (builder) => {
       byId: createLookupTable(payload.sites),
       active: payload.activeSiteId
     }))
-    .addCase(changeSite, (state, { payload }) =>
+    .addCase(changeSiteComplete, (state, { payload }) =>
       payload.nextSite === state.active
         ? state
         : {

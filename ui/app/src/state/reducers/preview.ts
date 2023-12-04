@@ -81,7 +81,7 @@ import {
   SearchResult
 } from '../../models/Search';
 import ContentInstance from '../../models/ContentInstance';
-import { changeSite } from '../actions/sites';
+import { changeSiteComplete } from '../actions/sites';
 import { deserialize, fromString } from '../../utils/xml';
 import { defineMessages } from 'react-intl';
 import LookupTable from '../../models/LookupTable';
@@ -613,7 +613,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       ...state,
       highlightMode: payload.highlightMode
     }))
-    .addCase(changeSite, (state) => {
+    .addCase(changeSiteComplete, (state) => {
       return {
         ...state,
         ...reversePluckProps(

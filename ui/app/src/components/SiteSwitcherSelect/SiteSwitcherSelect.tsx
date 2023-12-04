@@ -29,6 +29,7 @@ import { getSystemLink } from '../../utils/system';
 import { PREVIEW_URL_PATH } from '../../utils/constants';
 import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
+import { previewSwitch } from '../../services/security';
 
 export interface SiteSwitcherSelectProps extends SelectProps {
   site: string;
@@ -48,14 +49,13 @@ function SiteSwitcherSelect(props: SiteSwitcherSelectProps) {
         dispatch(changeSite(value));
       } else {
         setSiteCookie(value, useBaseDomain);
-        setTimeout(
-          () =>
-            (window.location.href = getSystemLink({
-              site: value,
-              systemLinkId: 'preview',
-              authoringBase
-            }))
-        );
+        previewSwitch().subscribe(() => {
+          window.location.href = getSystemLink({
+            site: value,
+            systemLinkId: 'preview',
+            authoringBase
+          });
+        });
       }
     }
   };
