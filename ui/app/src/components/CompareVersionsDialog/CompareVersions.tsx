@@ -14,121 +14,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Next UI code disabled temporarily
-
-import { makeStyles } from 'tss-react/mui';
 import ContentInstance from '../../models/ContentInstance';
 import { LookupTable } from '../../models/LookupTable';
-import ContentType from '../../models/ContentType';
-import React from 'react';
-import { Resource } from '../../models/Resource';
-import { useSelection } from '../../hooks/useSelection';
+import ContentType, { ContentTypeField } from '../../models/ContentType';
+import React, { useEffect, useRef, useState } from 'react';
+import palette from '../../styles/palette';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import ListItemText from '@mui/material/ListItemText';
+import { AsDayMonthDateTime } from '../VersionList';
+import Paper from '@mui/material/Paper';
+import useMount from '../../hooks/useMount';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
+import Typography from '@mui/material/Typography';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Chip from '@mui/material/Chip';
+import { EmptyState } from '../EmptyState';
+import { withMonaco } from '../../utils/system';
+import Box from '@mui/material/Box';
+import { systemPropsList } from '../../utils/content';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import useItemsByPath from '../../hooks/useItemsByPath';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import { batchActions } from '../../state/actions/misc';
+import { compareVersion } from '../../state/actions/versions';
+import { showCompareVersionsDialog, showHistoryDialog } from '../../state/actions/dialogs';
+import { useDispatch } from 'react-redux';
 
-// declare const monaco: any;
-
-/*const CompareVersionsStyles = makeStyles(() =>
-  createStyles({
-    monacoWrapper: {
-      width: '100%',
-      height: '150px',
-      '&.unChanged': {
-        height: 'auto'
-      }
-    },
-    singleImage: {
-      display: 'flex',
-      width: '100%',
-      justifyContent: 'center'
-    },
-    imagesCompare: {
-      display: 'flex',
-      alignItems: 'center',
-      '& img': {
-        width: '50%',
-        padding: '20px'
-      }
-    },
-    compareBoxHeader: {
-      display: 'flex',
-      justifyContent: 'space-around'
-    },
-    compareBoxHeaderItem: {
-      flexBasis: '50%',
-      margin: '0 10px 10px 10px',
-      '& .blackText': {
-        color: palette.black
-      }
-    },
-    compareVersionsContent: {
-      background: palette.white
-    },
-    root: {
-      margin: 0,
-      border: 0,
-      boxShadow: 'none',
-      '&.Mui-expanded': {
-        margin: 0,
-        borderBottom: '1px solid rgba(0,0,0,0.12)'
-      }
-    },
-    bold: {
-      fontWeight: 600
-    },
-    unchangedChip: {
-      marginLeft: 'auto',
-      height: '26px',
-      color: palette.gray.medium4,
-      backgroundColor: palette.gray.light1
-    }
-  })
-); */
-
-/*const ContentInstanceComponentsStyles = makeStyles(() =>
-  createStyles({
-    componentsWrapper: {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%'
-    },
-    component: {
-      padding: '10px',
-      marginBottom: '12px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      borderRadius: '5px',
-      alignItems: 'center',
-      '&.unchanged': {
-        color: palette.gray.medium4,
-        backgroundColor: palette.gray.light1
-      },
-      '&.new': {
-        color: palette.green.shade,
-        backgroundColor: palette.green.highlight,
-        width: '50%',
-        marginLeft: 'auto'
-      },
-      '&.changed': {
-        color: palette.yellow.shade,
-        backgroundColor: palette.yellow.highlight
-      },
-      '&.deleted': {
-        color: palette.red.shade,
-        backgroundColor: palette.red.highlight,
-        width: '50%',
-        marginRight: 'auto'
-      },
-      '&:last-child': {
-        marginBottom: 0
-      }
-    },
-    status: {
-      fontSize: '0.8125rem',
-      color: palette.gray.medium4
-    }
-  })
-); */
-
-/*const translations = defineMessages({
+const translations = defineMessages({
   changed: {
     id: 'words.changed',
     defaultMessage: 'Changed'
@@ -149,122 +65,165 @@ import { useSelection } from '../../hooks/useSelection';
     id: 'compareVersionsDialog.noItemsStatus',
     defaultMessage: 'No items'
   }
-}); */
+});
 
-export interface CompareVersionsResource {
-  a: ContentInstance;
+interface CompareVersionsProps {
+  a: ContentInstance; // TODO: check, this doesn't seem like a content instance!
   b: any;
+  contentTypeId: string;
   contentTypes: LookupTable<ContentType>;
 }
 
-interface CompareVersionsProps {
-  resource: Resource<CompareVersionsResource>;
-}
-
-const getLegacyDialogStyles = makeStyles()(() => ({
-  iframe: {
-    border: 'none',
-    height: '80vh'
-  }
-}));
-
 export function CompareVersions(props: CompareVersionsProps) {
-  const { a, b } = props.resource.read();
-  const { classes } = getLegacyDialogStyles();
-  const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
+  const { a, b, contentTypes, contentTypeId } = props;
+  const values = Object.values(contentTypes[contentTypeId].fields) as ContentTypeField[];
+  const dispatch = useDispatch();
+
+  const compareVersionDialogWithActions = () =>
+    showCompareVersionsDialog({
+      disableItemSwitching: true,
+      rightActions: [
+        {
+          icon: { id: '@mui/icons-material/HistoryRounded' },
+          onClick: showHistoryDialog({}),
+          'aria-label': <FormattedMessage defaultMessage="Back to history list" />
+        }
+      ]
+    });
+
+  const compareTo = (versionNumber: string) => {
+    dispatch(batchActions([compareVersion({ id: versionNumber }), compareVersionDialogWithActions()]));
+  };
+
   return (
-    <iframe
-      title="Comparing versions"
-      className={classes.iframe}
-      src={`${authoringUrl}/diff?site=${a.site}&path=${a.path}&oldPath=${b.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
-    />
+    <Box
+      sx={{
+        p: 1,
+        background: (theme) =>
+          theme.palette.mode === 'dark' ? theme.palette.background.paper : theme.palette.background.default
+      }}
+    >
+      <Box
+        component="section"
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-around'
+        }}
+      >
+        <Box
+          sx={{
+            flexBasis: '50%',
+            margin: '0 10px 10px 10px',
+            '& .primaryText': {
+              color: (theme) => theme.palette.text.primary
+            }
+          }}
+        >
+          <ListItemText
+            primary={
+              <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
+                <AsDayMonthDateTime date={a.dateModified} />
+                <Tooltip title={<FormattedMessage defaultMessage="Edit" />}>
+                  <IconButton onClick={() => compareTo(a.versionNumber)} sx={{ ml: 1 }}>
+                    <EditRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            }
+            secondary={
+              <FormattedMessage
+                id="historyDialog.versionNumber"
+                defaultMessage="Version: <span>{versionNumber}</span>"
+                values={{
+                  versionNumber: a.versionNumber,
+                  span: (msg) => <span className="primaryText">{msg}</span>
+                }}
+              />
+            }
+          />
+        </Box>
+        <Box
+          sx={{
+            flexBasis: '50%',
+            margin: '0 10px 10px 10px',
+            '& .primaryText': {
+              color: (theme) => theme.palette.text.primary
+            }
+          }}
+        >
+          <ListItemText
+            primary={
+              <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
+                <AsDayMonthDateTime date={b.dateModified} />
+                <Tooltip title={<FormattedMessage defaultMessage="Edit" />}>
+                  <IconButton onClick={() => compareTo(b.versionNumber)} sx={{ ml: 1 }}>
+                    <EditRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            }
+            secondary={
+              <FormattedMessage
+                id="historyDialog.versionNumber"
+                defaultMessage="Version: <span>{versionNumber}</span>"
+                values={{
+                  versionNumber: b.versionNumber,
+                  span: (msg) => <span className="primaryText">{msg}</span>
+                }}
+              />
+            }
+          />
+        </Box>
+      </Box>
+      <Box
+        component="section"
+        sx={{
+          background: (theme) => theme.palette.background.paper
+        }}
+      >
+        <Paper>
+          {contentTypes &&
+            values
+              .filter((value) => !systemPropsList.includes(value.id))
+              .map((field) => <CompareFieldPanel a={a.content} b={b.content} field={field} key={field.id} />)}
+        </Paper>
+      </Box>
+    </Box>
   );
 }
 
-/*export function CompareVersions(props: CompareVersionsProps) {
-  const classes = CompareVersionsStyles({});
-  const { a, b, contentTypes } = props.resource.read();
-  const values = Object.values(contentTypes[a.craftercms.contentTypeId].fields) as ContentTypeField[];
-
-  return (
-    <>
-      <section className={classes.compareBoxHeader}>
-        <div className={classes.compareBoxHeaderItem}>
-          <ListItemText
-            primary={<AsDayMonthDateTime date={a.craftercms.dateModified} />}
-            secondary={
-              <FormattedMessage
-                id="historyDialog.versionNumber"
-                defaultMessage="Version: <span>{versionNumber}</span>"
-                values={{
-                  versionNumber: a.craftercms.versionNumber,
-                  span: (msg) => <span className="blackText">{msg}</span>
-                }}
-              />
-            }
-          />
-        </div>
-        <div className={classes.compareBoxHeaderItem}>
-          <ListItemText
-            primary={<AsDayMonthDateTime date={b.craftercms.dateModified} />}
-            secondary={
-              <FormattedMessage
-                id="historyDialog.versionNumber"
-                defaultMessage="Version: <span>{versionNumber}</span>"
-                values={{
-                  versionNumber: b.craftercms.versionNumber,
-                  span: (msg) => <span className="blackText">{msg}</span>
-                }}
-              />
-            }
-          />
-        </div>
-      </section>
-      <section className={classes.compareVersionsContent}>
-        <Paper>
-          {
-            contentTypes &&
-            values.filter(value => !systemProps.includes(value.id)).map((field) => (
-              <CompareFieldPanel a={a} b={b} field={field} key={field.id} />
-            ))
-          }
-        </Paper>
-      </section>
-    </>
-  );
-} */
-
-/*interface CompareFieldPanelProps {
+interface CompareFieldPanelProps {
   a: ContentInstance;
   b: ContentInstance;
   field: ContentTypeField;
-} */
+}
 
-/*function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const classes = CompareVersionsStyles({});
+function CompareFieldPanel(props: CompareFieldPanelProps) {
   const { a, b, field } = props;
   const [unChanged, setUnChanged] = useState(false);
+  const [open, setOpen] = useState(false);
   const { formatMessage } = useIntl();
+
   let contentA = a[field.id];
   let contentB = b[field.id];
+
+  useEffect(() => {
+    setOpen(!unChanged);
+  }, [unChanged, setOpen]);
 
   useMount(() => {
     switch (field.type) {
       case 'text':
       case 'html':
       case 'image':
-        if (contentA === contentB) {
-          setUnChanged(true);
-        }
+        setUnChanged(contentA === contentB);
         break;
       case 'node-selector': {
-        setUnChanged(false);
+        setUnChanged(JSON.stringify(contentA) === JSON.stringify(contentB));
         break;
       }
       default:
-        if (contentA === contentB) {
-          setUnChanged(true);
-        }
+        setUnChanged(contentA === contentB);
         break;
     }
   });
@@ -272,69 +231,93 @@ export function CompareVersions(props: CompareVersionsProps) {
   return (
     <Accordion
       key={field.id}
-      classes={{ root: classes.root }}
+      expanded={open}
+      onChange={() => setOpen(!open)}
+      sx={{
+        margin: 0,
+        border: 0,
+        boxShadow: 'none',
+        '&.Mui-expanded': {
+          margin: 0,
+          borderBottom: '1px solid rgba(0,0,0,0.12)'
+        }
+      }}
       TransitionProps={{ mountOnEnter: true }}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Typography>
-          <span className={classes.bold}>{field.name} </span>({field.id})
+          <Box component="span" sx={{ fontWeight: 600 }}>
+            {field.name}{' '}
+          </Box>
+          ({field.id})
         </Typography>
-        {
-          unChanged &&
-          <Chip label={formatMessage(translations.unchanged)} className={classes.unchangedChip} />
-        }
-        {
-          field.type === 'node-selector' && !contentA.length && !contentB.length &&
-          <Chip label={formatMessage(translations.empty)} className={classes.unchangedChip} />
-        }
+        {unChanged && (
+          <Chip
+            label={formatMessage(translations.unchanged)}
+            sx={{
+              marginLeft: 'auto',
+              height: '26px',
+              color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+              backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1)
+            }}
+          />
+        )}
       </AccordionSummary>
       <AccordionDetails>
-        {
-          (field.type === 'text' || field.type === 'html') && (!unChanged ? (
-              <MonacoWrapper
-                contentA={contentA}
-                contentB={contentB}
-              />
-            ) : (
-              <Typography>
-                {contentA}
-              </Typography>
-            )
-          )
-        }
-        {
-          (field.type === 'image') && (!unChanged ? (
-              <div className={classes.imagesCompare}>
-                <img src={contentA} alt="" />
-                <img src={contentB} alt="" />
-              </div>
-            ) : (
-              <div className={classes.singleImage}>
-                <img src={contentA} alt="" />
-              </div>
-            )
-          )
-        }
-        {
-          (field.type === 'node-selector') &&
-          <ContentInstanceComponents contentA={contentA} contentB={contentB} />
-        }
+        {(field.type === 'text' || field.type === 'html') &&
+          (!unChanged ? (
+            <MonacoWrapper contentA={contentA} contentB={contentB} />
+          ) : (
+            <Typography>{contentA}</Typography>
+          ))}
+        {field.type === 'image' &&
+          (!unChanged ? (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-around',
+                '& img': {
+                  maxHeight: '200px',
+                  padding: '20px'
+                }
+              }}
+            >
+              <img src={contentA} alt="" />
+              <img src={contentB} alt="" />
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                '& img': { maxHeight: '200px' }
+              }}
+            >
+              <img src={contentA} alt="" />
+            </Box>
+          ))}
+        {field.type === 'node-selector' && <ContentInstanceComponents contentA={contentA} contentB={contentB} />}
       </AccordionDetails>
     </Accordion>
   );
-} */
+}
 
-/*interface ContentInstanceComponentsProps {
+interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
   contentB: ContentInstance[];
-} */
+}
 
-/*function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
+function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const { contentA, contentB } = props;
-  const classes = ContentInstanceComponentsStyles({});
   const [mergeContent, setMergeContent] = useState([]);
   const [status, setStatus] = useState<any>({});
   const { formatMessage } = useIntl();
+  const itemsByPath = useItemsByPath();
+
+  const getItemLabel = (item) => {
+    return item.craftercms.label ?? itemsByPath?.[item.craftercms.path]?.label ?? item.craftercms.id;
+  };
 
   useEffect(() => {
     let itemStatus = {};
@@ -350,7 +333,7 @@ export function CompareVersions(props: CompareVersionsProps) {
     });
     contentB.forEach((itemB, index: number) => {
       const itemA = contentA[index];
-      if (!itemA || (itemB.craftercms.id !== itemA.craftercms.id)) {
+      if (!itemA || itemB.craftercms.id !== itemA.craftercms.id) {
         itemStatus[index] = 'new';
       }
       merged[index] = itemB;
@@ -360,58 +343,110 @@ export function CompareVersions(props: CompareVersionsProps) {
   }, [contentA, contentB]);
 
   return (
-    <section className={classes.componentsWrapper}>
-      {
-        mergeContent.length ? (
-          mergeContent.map((item, index) =>
-            <div
-              className={clsx(classes.component, status[index] ?? '')}
-              key={item.craftercms.id}
-            >
-              <Typography> {item.craftercms.label ?? item.craftercms.id}</Typography>
-              {
-                status[index] && status[index] !== 'new' &&
-                <Typography className={classes.status}>
-                  {formatMessage(translations[status[index]])}
-                </Typography>
+    <Box
+      component="section"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%'
+      }}
+    >
+      {mergeContent.length ? (
+        mergeContent.map((item, index) => (
+          <Box
+            sx={{
+              padding: '4px 15px',
+              marginBottom: '12px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              borderRadius: '10px',
+              alignItems: 'center',
+              '&.unchanged': {
+                color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+                backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1)
+              },
+              '&.new': {
+                color: palette.green.shade,
+                backgroundColor: palette.green.highlight,
+                width: '50%',
+                marginLeft: 'auto'
+              },
+              '&.changed': {
+                color: palette.yellow.shade,
+                backgroundColor: palette.yellow.highlight
+              },
+              '&.deleted': {
+                color: palette.red.shade,
+                backgroundColor: palette.red.highlight,
+                width: '50%',
+                marginRight: 'auto'
+              },
+              '&:last-child': {
+                marginBottom: 0
               }
-            </div>
-          )
-        ) : (
-          <EmptyState title={formatMessage(translations.noItemsStatus)} />
-        )
-      }
-    </section>
+            }}
+            className={status[index] ?? ''}
+            key={item.craftercms.id}
+          >
+            <Typography sx={{ fontSize: '14px' }}> {getItemLabel(item)}</Typography>
+            {status[index] && status[index] !== 'new' && (
+              <Typography
+                sx={{
+                  fontSize: '14px',
+                  color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4)
+                }}
+              >
+                {formatMessage(translations[status[index]])}
+              </Typography>
+            )}
+          </Box>
+        ))
+      ) : (
+        <EmptyState title={formatMessage(translations.noItemsStatus)} />
+      )}
+    </Box>
   );
-} */
+}
 
-/*interface MonacoWrapperProps {
+interface MonacoWrapperProps {
   contentA: string;
   contentB: string;
-} */
+}
 
-/*function MonacoWrapper(props: MonacoWrapperProps) {
-  const classes = CompareVersionsStyles({});
+function MonacoWrapper(props: MonacoWrapperProps) {
   const { contentA, contentB } = props;
   const ref = useRef();
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   useEffect(() => {
     if (ref.current) {
-      const originalModel = monaco.editor.createModel(contentA, 'text/plain');
-      const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
-      const diffEditor = monaco.editor.createDiffEditor(ref.current, {
-        scrollbar: {
-          alwaysConsumeMouseWheel: false
-        }
-      });
-      diffEditor.setModel({
-        original: originalModel,
-        modified: modifiedModel
+      withMonaco((monaco) => {
+        const originalModel = monaco.editor.createModel(contentA, 'text/plain');
+        const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
+        const diffEditor = monaco.editor.createDiffEditor(ref.current, {
+          scrollbar: {
+            alwaysConsumeMouseWheel: false
+          }
+        });
+        monaco.editor.setTheme(prefersDarkMode ? 'vs-dark' : 'vs');
+        diffEditor.setModel({
+          original: originalModel,
+          modified: modifiedModel
+        });
       });
     }
-  }, [contentA, contentB]);
+  }, [contentA, contentB, prefersDarkMode]);
 
   return (
-    <div ref={ref} className={classes.monacoWrapper} />
+    <Box
+      ref={ref}
+      sx={{
+        width: '100%',
+        height: '150px',
+        '&.unChanged': {
+          height: 'auto'
+        }
+      }}
+    />
   );
-} */
+}
