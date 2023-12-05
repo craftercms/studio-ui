@@ -46,7 +46,7 @@ import {
 import { parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
-import { changeSite } from '../actions/sites';
+import { changeSiteComplete } from '../actions/sites';
 import {
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
@@ -230,7 +230,7 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
     .addCase(updateItemsByPath, (state, { payload }) => {
       return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
     })
-    .addCase(changeSite, () => initialState)
+    .addCase(changeSiteComplete, () => initialState)
     .addCase(lockContentEvent, (state, { payload }: { payload: SocketEventBase & { locked: boolean } }) => {
       const { targetPath: path, user, locked } = payload;
       if (

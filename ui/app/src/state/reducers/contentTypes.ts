@@ -25,11 +25,11 @@ import {
   fetchContentTypesFailed
 } from '../actions/preview';
 import ContentType from '../../models/ContentType';
-import { changeSite } from '../actions/sites';
+import { changeSiteComplete } from '../actions/sites';
 
 const reducer = createReducer<GlobalState['contentTypes']>(createEntityState(), (builder) => {
   builder
-    .addCase(changeSite, () => createEntityState())
+    .addCase(changeSiteComplete, () => createEntityState())
     .addCase(fetchContentTypes, (state) => ({
       ...state,
       isFetching: true

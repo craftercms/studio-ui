@@ -19,7 +19,7 @@ import GlobalState from '../../../models/GlobalState';
 import { closeEditDialog, editDialogClosed, showEditDialog, updateEditConfig } from '../../actions/dialogs';
 import { nnou } from '../../../utils/object';
 import { LegacyFormDialogStateProps } from '../../../components/LegacyFormDialog/utils';
-import { changeSite } from '../../actions/sites';
+import { changeSiteComplete } from '../../actions/sites';
 
 const initialState: LegacyFormDialogStateProps = {
   open: false,
@@ -58,5 +58,5 @@ export default createReducer<GlobalState['dialogs']['edit']>(initialState, (buil
       open: false
     }))
     .addCase(editDialogClosed, () => initialState)
-    .addCase(changeSite, () => initialState);
+    .addCase(changeSiteComplete, () => initialState);
 });

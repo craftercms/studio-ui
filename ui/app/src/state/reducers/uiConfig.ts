@@ -22,7 +22,7 @@ import {
   fetchSiteUiConfigComplete,
   fetchSiteUiConfigFailed
 } from '../actions/configuration';
-import { changeSite } from '../actions/sites';
+import { changeSiteComplete } from '../actions/sites';
 import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } from '../actions/translation';
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
@@ -69,7 +69,7 @@ const initialState: GlobalState['uiConfig'] = {
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) => {
   builder
-    .addCase(changeSite, () => ({ ...initialState }))
+    .addCase(changeSiteComplete, () => ({ ...initialState }))
     .addCase(fetchSiteUiConfig, (state, { payload: { site } }) => ({
       ...state,
       isFetching: true,

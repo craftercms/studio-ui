@@ -72,7 +72,7 @@ import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
 import { getXSRFToken, setSiteCookie } from '../../utils/auth';
-import { changeSite, fetchSites } from '../actions/sites';
+import { changeSiteComplete, fetchSites } from '../actions/sites';
 import { closeConfirmDialog, showConfirmDialog } from '../actions/dialogs';
 import { defineMessages } from 'react-intl';
 import { createCustomDocumentEventListener } from '../../utils/dom';
@@ -121,10 +121,10 @@ const systemEpics: CrafterCMSEpic[] = [
       })
     ),
   // endregion
-  // region changeSite
+  // region changeSiteComplete
   (action$) =>
     action$.pipe(
-      ofType(changeSite.type),
+      ofType(changeSiteComplete.type),
       switchMap(({ payload: { nextSite } }) => [
         startPublishingStatusFetcher(),
         fetchSiteConfig(),
