@@ -42,7 +42,7 @@ import {
   PathNavInitPayload,
   pathNavRootPathMissing
 } from '../actions/pathNavigator';
-import { changeSite } from '../actions/sites';
+import { changeSiteComplete } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
 import { contentEvent, deleteContentEvent, moveContentEvent, MoveContentEventPayload } from '../actions/system';
 import SocketEvent from '../../models/SocketEvent';
@@ -191,7 +191,7 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>({}, (builder
       state[id].limit = limit;
       state[id].isFetching = true;
     })
-    .addCase(changeSite, () => ({}))
+    .addCase(changeSiteComplete, () => ({}))
     .addCase(fetchSiteUiConfig, () => ({}))
     .addCase(pathNavRootPathMissing, (state, { payload: { id } }) => {
       state[id].isRootPathMissing = true;

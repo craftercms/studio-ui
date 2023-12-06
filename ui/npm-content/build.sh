@@ -58,3 +58,30 @@ rm -rf "$libsDirectory/tinymce"
 cp -r ../../node_modules/tinymce "$libsDirectory/tinymce"
 
 echo "TinyMCE build complete"
+
+# Monaco
+yarn build:monaco
+echo "Monaco editor build complete"
+
+# jquery
+npmContentBuildDirectory=./build
+guestBuildDirectory=../guest/src/
+# clean/create npm build directories
+rm -rf $npmContentBuildDirectory
+mkdir $npmContentBuildDirectory
+mkdir "$npmContentBuildDirectory/jquery"
+# clean/create guest build directory
+rm -rf "$guestBuildDirectory/jquery"
+mkdir "$guestBuildDirectory/jquery"
+git clone --quiet -c advice.detachedHead=false --branch 3.7.1 https://github.com/jquery/jquery jquery-src
+npm --prefix ./jquery-src install -s ./jquery-src
+yarn build:jquery
+# Copy build files to npm build directory
+rsync -ar --delete ./src/jquery/index.d.ts "$npmContentBuildDirectory/jquery/index.d.ts"
+rsync -ar --delete ./jquery-src/dist/jquery.js "$npmContentBuildDirectory/jquery/index.js"
+# Copy build files to guest
+rsync -ar --delete ./src/jquery/index.d.ts "$guestBuildDirectory/jquery/index.d.ts"
+rsync -ar --delete ./jquery-src/dist/jquery.js "$guestBuildDirectory/jquery/index.js"
+rm -rf jquery-src
+
+echo "jQuery build complete"

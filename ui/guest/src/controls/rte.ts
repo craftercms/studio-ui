@@ -23,7 +23,6 @@ import { post, message$ } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
-import $ from 'jquery';
 import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
@@ -107,8 +106,7 @@ export function initTinyMCE(
     craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
   };
 
-  const $element = $(record.element);
-  $element.removeClass(emptyFieldClass);
+  record.element.classList.remove(emptyFieldClass);
 
   window.tinymce.init({
     target: rteEl,
@@ -204,17 +202,17 @@ export function initTinyMCE(
         // In case the user did some text bolding or other formatting which won't
         // be honoured on plain text, revert the content to the edited plain text
         // version of the input.
-        changed && type === 'text' && $element.html(content);
+        changed && type === 'text' && (record.element.innerHTML = content);
 
         if (isRecordElInline) {
           // Update original element and remove created blockElement
           record.element.innerHTML = rteEl.innerHTML;
           rteEl.remove();
-          $element.css('display', '');
+          record.element.style.display = '';
         }
 
-        if ($element.html().trim() === '') {
-          $element.addClass(emptyFieldClass);
+        if (record.element.innerHTML.trim() === '') {
+          record.element.classList.add(emptyFieldClass);
         }
 
         // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE

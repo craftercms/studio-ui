@@ -33,7 +33,7 @@ import {
   pathNavigatorTreeToggleCollapsed,
   pathNavigatorTreeUpdate
 } from '../actions/pathNavigatorTree';
-import { changeSite } from '../actions/sites';
+import { changeSiteComplete } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
 import { reversePluckProps } from '../../utils/object';
 import { SocketEventBase, StandardAction } from '../../models';
@@ -254,7 +254,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (bui
       }
     )
     // endregion
-    .addCase(changeSite, () => ({}))
+    .addCase(changeSiteComplete, () => ({}))
     .addCase(fetchSiteUiConfig, () => ({}))
     // region fetchSandboxItemComplete
     .addCase(

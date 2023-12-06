@@ -186,22 +186,6 @@ export interface LegacyFormDefinition {
   datasources: { datasource: LegacyDataSource | Array<LegacyDataSource> };
 }
 
-export interface LegacyFormConfig {
-  // As returned by `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types/.../config.xml`
-  contentAsFolder: 'true' | 'false';
-  fileExtension: 'xml';
-  form: string;
-  formPath: string;
-  imageThumbnail: string;
-  label: string;
-  modelInstancePath: string;
-  noThumbnail: 'true' | 'false';
-  paths: { excludes: LegacyFormConfigPattern | Array<LegacyFormConfigPattern> };
-  previewable: 'true' | 'false';
-  quickCreate: 'true' | 'false';
-  quickCreatePath: string;
-}
-
 // As returned by `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`
 export interface LegacyContentType {
   allowedRoles: string[];

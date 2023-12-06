@@ -155,17 +155,16 @@ function componentsIndex() {
         });
     });
 
-  fs.writeFile(
-    `${componentsPath}/index.ts`,
-    prettier.format(builder.join(''), {
+  prettier
+    .format(builder.join(''), {
       ...prettierConfig,
       parser: 'babel'
-    }),
-    'utf8',
-    () => {
-      console.log('Components index created successfully.');
-    }
-  );
+    })
+    .then((formatted) => {
+      fs.writeFile(`${componentsPath}/index.ts`, formatted, 'utf8', () => {
+        console.log('Components index created successfully.');
+      });
+    });
 }
 
 function iconsIndex() {
@@ -182,17 +181,16 @@ function iconsIndex() {
     }
   });
 
-  fs.writeFile(
-    `${iconsPath}/index.ts`,
-    prettier.format(builder.join(''), {
+  prettier
+    .format(builder.join(''), {
       ...prettierConfig,
       parser: 'babel'
-    }),
-    'utf8',
-    () => {
-      console.log('Icons index created successfully.');
-    }
-  );
+    })
+    .then((formatted) => {
+      fs.writeFile(`${iconsPath}/index.ts`, formatted, 'utf8', () => {
+        console.log('Icons index created successfully.');
+      });
+    });
 }
 
 function modelsIndex() {
@@ -215,17 +213,16 @@ function modelsIndex() {
     }
   });
 
-  fs.writeFile(
-    `${modelsPath}/index.ts`,
-    prettier.format(builder.join(''), {
+  prettier
+    .format(builder.join(''), {
       ...prettierConfig,
       parser: 'babel'
-    }),
-    'utf8',
-    () => {
-      console.log('Models index created successfully.');
-    }
-  );
+    })
+    .then((formatted) => {
+      fs.writeFile(`${modelsPath}/index.ts`, formatted, 'utf8', () => {
+        console.log('Models index created successfully.');
+      });
+    });
 }
 
 function xbReactIndex() {
@@ -242,17 +239,16 @@ function xbReactIndex() {
     }
   });
 
-  fs.writeFile(
-    `${path}/index.ts`,
-    prettier.format(builder.join(''), {
+  prettier
+    .format(builder.join(''), {
       ...prettierConfig,
       parser: 'babel'
-    }),
-    'utf8',
-    () => {
-      console.log('xb/react index created successfully.');
-    }
-  );
+    })
+    .then((formatted) => {
+      fs.writeFile(`${path}/index.ts`, formatted, 'utf8', () => {
+        console.log('xb/react index created successfully.');
+      });
+    });
 }
 
 function muiExport() {
@@ -285,17 +281,16 @@ function muiExport() {
   builder.push(`export { ${muiExports.join(', ')} }`);
   builder.push(`// endregion\n`);
 
-  fs.writeFile(
-    '../ui/app/src/env/mui.ts',
-    prettier.format(builder.join(''), {
+  prettier
+    .format(builder.join(''), {
       ...prettierConfig,
       parser: 'babel'
-    }),
-    'utf8',
-    () => {
-      console.log('MUI export created successfully.');
-    }
-  );
+    })
+    .then((formatted) => {
+      fs.writeFile('../ui/app/src/env/mui.ts', formatted, 'utf8', () => {
+        console.log('MUI export created successfully.');
+      });
+    });
 }
 
 function main(...args) {

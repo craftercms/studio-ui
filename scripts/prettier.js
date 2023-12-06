@@ -12,8 +12,7 @@ function runPrettier(options) {
   const { changedFiles, shouldWrite, onlyLegacy, onlyNext } = options;
 
   const cwd = process.cwd();
-  if (cwd.endsWith('/ui/app'))
-    process.chdir('../../');
+  if (cwd.endsWith('/ui/app')) process.chdir('../../');
 
   let didWarn = false;
   let didError = false;
@@ -25,10 +24,9 @@ function runPrettier(options) {
     .filter((notEmpty) => notEmpty);
 
   const files = glob
-    .sync(
-      (onlyLegacy ? 'static-assets/' : (onlyNext ? 'ui/' : '')) + '**/*.{js,tsx,ts}',
-      { ignore: ['**/node_modules/**', ...ignoredFiles] }
-    )
+    .sync((onlyLegacy ? 'static-assets/' : onlyNext ? 'ui/' : '') + '**/*.{js,tsx,ts}', {
+      ignore: ['**/node_modules/**', ...ignoredFiles]
+    })
     .filter((f) => !changedFiles || changedFiles.has(f));
 
   if (!files.length) {
@@ -37,45 +35,51 @@ function runPrettier(options) {
 
   const prettierConfigPath = path.join(__dirname, '../prettier.config.js');
 
-  files.forEach((file) => {
-    const prettierOptions = prettier.resolveConfig.sync(file, {
+  const promises = files.map((file) => {
+    return prettier.resolveConfig(file, {
       config: prettierConfigPath
     });
-
-    try {
-      const input = fs.readFileSync(file, 'utf8');
-      if (shouldWrite) {
-        console.log(`Formatting ${file}`);
-        const output = prettier.format(input, { ...prettierOptions, filepath: file });
-        if (output !== input) {
-          fs.writeFileSync(file, output, 'utf8');
-        }
-      } else {
-        console.log(`Checking ${file}`);
-        if (!prettier.check(input, { ...prettierOptions, filepath: file })) {
-          warnedFiles.push(file);
-          didWarn = true;
-        }
-      }
-    } catch (error) {
-      didError = true;
-      console.log(`\n\n${error.message}`);
-      console.log(file);
-    }
   });
 
-  if (didWarn) {
-    console.log(
-      '\n\nThis project uses prettier to format all JavaScript code.\n' +
-      `Please run '${!changedFiles ? 'yarn prettier:all' : 'yarn prettier'}'` +
-      ' and commit the changes to the files listed below:\n\n'
-    );
-    console.log(warnedFiles.join('\n'));
-  }
+  Promise.all(promises).then((results) => {
+    results.forEach((prettierOptions, index) => {
+      const file = files[index];
+      try {
+        const input = fs.readFileSync(file, 'utf8');
+        if (shouldWrite) {
+          console.log(`Formatting ${file}`);
+          prettier.format(input, { ...prettierOptions, filepath: file }).then((output) => {
+            if (output !== input) {
+              fs.writeFileSync(file, output, 'utf8');
+            }
+          });
+        } else {
+          console.log(`Checking ${file}`);
+          if (!prettier.check(input, { ...prettierOptions, filepath: file })) {
+            warnedFiles.push(file);
+            didWarn = true;
+          }
+        }
+      } catch (error) {
+        didError = true;
+        console.log(`\n\n${error.message}`);
+        console.log(file);
+      }
+    });
 
-  if (didWarn || didError) {
-    throw new Error('Triggered at least one error or warning');
-  }
+    if (didWarn) {
+      console.log(
+        '\n\nThis project uses prettier to format all JavaScript code.\n' +
+          `Please run '${!changedFiles ? 'yarn prettier:all' : 'yarn prettier'}'` +
+          ' and commit the changes to the files listed below:\n\n'
+      );
+      console.log(warnedFiles.join('\n'));
+    }
+
+    if (didWarn || didError) {
+      throw new Error('Triggered at least one error or warning');
+    }
+  });
 }
 
 async function run(argv) {

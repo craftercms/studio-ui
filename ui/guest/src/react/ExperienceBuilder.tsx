@@ -15,7 +15,6 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
@@ -142,7 +141,8 @@ const initialDocumentDomain = typeof document === 'undefined' ? void 0 : documen
 function bypassKeyStroke(e, refs) {
   const isKeyDown = e.type === 'keydown';
   refs.current.keysPressed['z'] = isKeyDown;
-  $('html')[isKeyDown ? 'addClass' : 'removeClass'](iceBypassKeyClass);
+  const html = document.documentElement;
+  html.classList[isKeyDown ? 'add' : 'remove'](iceBypassKeyClass);
   document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: isKeyDown }));
 }
 
@@ -284,23 +284,23 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // Add/remove edit mode highlight mode classes
   useEffect(() => {
-    const $html = $('html');
+    const html = document.documentElement;
     const cls = highlightMode === HighlightMode.MOVE_TARGETS ? moveModeClass : editModeClass;
     if (editMode) {
-      $html.addClass(cls);
+      html.classList.add(cls);
       return () => {
-        $html.removeClass(cls);
+        html.classList.remove(cls);
       };
     }
   }, [editMode, highlightMode]);
 
   // Add/remove edit mode padding mode classes
   useEffect(() => {
-    const $html = $('html');
+    const html = document.documentElement;
     if (editMode && editModePadding) {
-      $html.addClass(editModePaddingClass);
+      html.classList.add(editModePaddingClass);
       return () => {
-        $html.removeClass(editModePaddingClass);
+        html.classList.remove(editModePaddingClass);
       };
     }
   }, [editMode, editModePadding]);
@@ -320,15 +320,16 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // Add/remove edit on class
   useEffect(() => {
+    const html = document.documentElement;
     if (editMode === false) {
-      $('html').removeClass(editOnClass);
+      html.classList.remove(editOnClass);
       document.dispatchEvent(new CustomEvent(editModeEvent, { detail: false }));
       // Refreshing the page for now. Will revisit on a later release.
       if (!refs.current.firstRender && refs.current.hasChanges) {
         window.location.reload();
       }
     } else {
-      $('html').addClass(editOnClass);
+      html.classList.add(editOnClass);
       document.dispatchEvent(new CustomEvent(editModeEvent, { detail: true }));
     }
     if (refs.current.firstRender) {

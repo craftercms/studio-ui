@@ -16,7 +16,7 @@
 
 import GlobalState from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
-import { changeSite } from '../actions/sites';
+import { changeSiteComplete } from '../actions/sites';
 import { fetchGlobalMenu, fetchGlobalMenuComplete, fetchGlobalMenuFailed } from '../actions/system';
 
 const initialState: GlobalState['globalNavigation'] = {
@@ -27,7 +27,7 @@ const initialState: GlobalState['globalNavigation'] = {
 
 const reducer = createReducer<GlobalState['globalNavigation']>(initialState, (builder) => {
   builder
-    .addCase(changeSite, (state) => ({ ...initialState, ...state }))
+    .addCase(changeSiteComplete, (state) => ({ ...initialState, ...state }))
     .addCase(fetchGlobalMenu, (state) => ({ ...state, isFetching: true }))
     .addCase(fetchGlobalMenuComplete, (state, { payload }) => ({
       ...state,

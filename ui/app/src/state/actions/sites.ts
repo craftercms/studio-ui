@@ -23,6 +23,9 @@ export function changeSite(nextSite: string, nextUrl: string = '/'): StandardAct
     payload: { nextSite, nextUrl }
   };
 }
+export const changeSiteComplete = /*#__PURE__*/ createAction<{ nextSite: string; nextUrl: string }>(
+  'CHANGE_SITE_COMPLETE'
+);
 
 changeSite.type = 'CHANGE_SITE';
 

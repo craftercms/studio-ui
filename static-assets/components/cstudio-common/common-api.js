@@ -2946,9 +2946,6 @@ var nodeOpen = false,
       writeS3ContentUri: '/api/2/aws/s3/upload.json',
       videoTranscode: '/api/2/aws/mediaconvert/upload',
 
-      // WRITE OPS
-      unlockContentItemUrl: '/api/1/services/api/1/content/unlock-content.json',
-
       // ORDER SERVICES
       // READ
       getServiceOrderUrl: '/api/1/services/api/1/content/get-item-orders.json',
@@ -2960,12 +2957,6 @@ var nodeOpen = false,
       // Preview Services
       previewSyncAllServiceUrl: '/api/1/services/api/1/preview/sync-site.json',
       syncRepoServiceUrl: '/api/1/services/api/1/repo/sync-from-repo.json',
-
-      // Security Services
-      logoutUrl: '/api/1/services/api/1/security/logout.json',
-
-      // Workflow Services
-      createWorkflowJobsServiceUrl: '/api/1/services/api/1/workflow/create-jobs.json',
 
       // Quick Create
       getQuickCreateURL: '/api/2/content/list_quick_create_content.json',
@@ -3282,48 +3273,6 @@ var nodeOpen = false,
           }
         );
       },
-      /**
-       *  unlock the content item synchronous
-       *  Used on unload event of the window
-       */
-      unlockContentItemSync: function (site, path) {
-        var _self = this;
-
-        function isLockedByUser(site, path) {
-          var value = false,
-            response,
-            itemTO;
-          var serviceUrl =
-            _self.lookupContentItemServiceUri +
-            '?site=' +
-            site +
-            '&path=' +
-            encodeURI(path) +
-            '&populateDependencies=false';
-          var xhrObj = YConnect.createXhrObject();
-          xhrObj.conn.open('GET', _self.createServiceUri(serviceUrl), false);
-          xhrObj.conn.send(null);
-
-          response = xhrObj.conn.responseText;
-          if (response && response != '') {
-            itemTO = eval('(' + response + ')');
-            if (itemTO.item.lockOwner == CStudioAuthoringContext.user) {
-              value = true;
-            }
-          }
-          return value;
-        }
-
-        if (!isLockedByUser(site, path)) return;
-
-        var serviceUrl = this.unlockContentItemUrl + '?site=' + site + '&path=' + encodeURI(path);
-
-        var xhrObj = YConnect.createXhrObject();
-        xhrObj.conn.open('GET', this.createServiceUri(serviceUrl), false);
-        xhrObj.conn.send(null);
-
-        return xhrObj.conn.responseText;
-      },
 
       /**
        * given a site id and a path look up the available taxonomy types
@@ -3448,29 +3397,6 @@ var nodeOpen = false,
           }
         );
       },
-      /**
-       * crop image
-       */
-      cropImage: function (site, path, left, top, height, width, callback) {
-        const qs = CrafterCMSNext.util.object.toQueryString({
-          site,
-          path,
-          l: left,
-          t: top,
-          h: height,
-          w: width
-        });
-
-        CrafterCMSNext.util.ajax.get(`/studio/api/1/services/api/1/content/crop-image.json${qs}`).subscribe(
-          function (response) {
-            callback.success(response.response);
-          },
-          function (response) {
-            callback.failure(response);
-          }
-        );
-      },
-
       calculateDependencies: function (data, callback) {
         var serviceUrl =
           '/api/1/services/api/1/dependency/calculate-dependencies.json' + '?site_id=' + CStudioAuthoringContext.site;
@@ -3486,16 +3412,14 @@ var nodeOpen = false,
       },
 
       getUserPermissions: function (site, path, callback) {
-        CrafterCMSNext.services.security
-          .getUserPermissions(site, encodeURI(path), CStudioAuthoringContext.user)
-          .subscribe(
-            function (response) {
-              callback.success({ permissions: response });
-            },
-            function (response) {
-              callback.failure(response);
-            }
-          );
+        craftercms.services.users.fetchMyPermissions(site).subscribe({
+          next: (response) => {
+            callback.success({ permissions: response });
+          },
+          error: (response) => {
+            callback.failure(response);
+          }
+        });
       },
 
       /**
@@ -3545,47 +3469,6 @@ var nodeOpen = false,
         }
         return children;
       },
-      /**
-       * get go live items
-       */
-      getGoLiveQueueItems: function (site, includeInprogressItems, sortBy, sortAscDesc, callback, filterByNumber) {
-        callback.beforeServiceCall();
-
-        CrafterCMSNext.services.dashboard
-          .fetchLegacyGetGoLiveItems(site, sortBy, sortAscDesc, includeInprogressItems, filterByNumber)
-          .subscribe(
-            function (response) {
-              CStudioAuthoringWidgets.GoLiveQueueDashboard.resultMap = CStudioAuthoring.Service.createFlatMap(
-                response.documents
-              );
-              callback.success(response);
-            },
-            function (response) {
-              callback.failure(response);
-            }
-          );
-      },
-      /**
-       * get user activites items
-       */
-      getUserActivitiesServices: function (site, user, sortBy, sortAscDesc, number, filterBy, hideLive, callback) {
-        callback.beforeServiceCall();
-
-        if (filterBy == undefined && filterBy == null) {
-          filterBy = 'page';
-        }
-
-        CrafterCMSNext.services.dashboard
-          .fetchLegacyUserActivities(site, user, sortBy, sortAscDesc, number, filterBy, hideLive)
-          .subscribe(
-            function (response) {
-              callback.success(response);
-            },
-            function (response) {
-              callback.failure(response);
-            }
-          );
-      },
 
       /**
        * get user roles
@@ -3617,45 +3500,6 @@ var nodeOpen = false,
             callback.failure(response);
           }
         );
-      },
-
-      /**
-       * get scheduled items
-       */
-      getScheduledItems: function (site, sortBy, sortAscDesc, filterBy, callback) {
-        callback.beforeServiceCall();
-
-        if (filterBy === undefined || filterBy === null) {
-          filterBy = 'page';
-        }
-
-        CrafterCMSNext.services.dashboard.fetchLegacyScheduledItems(site, sortBy, sortAscDesc, filterBy).subscribe({
-          next: (response) => {
-            callback.success(response);
-          },
-          error: (response) => {
-            callback.failure(response);
-          }
-        });
-      },
-      /**
-       * get recently deployed items
-       */
-      getDeploymentHistory: function (site, sortBy, sortAscDesc, days, number, filterBy, callback) {
-        callback.beforeServiceCall();
-
-        if (filterBy === undefined || filterBy === null) {
-          filterBy = 'page';
-        }
-
-        CrafterCMSNext.services.dashboard.fetchLegacyDeploymentHistory(site, days, number, filterBy).subscribe({
-          next: (response) => {
-            callback.success(response);
-          },
-          error: (response) => {
-            callback.failure(response);
-          }
-        });
       },
 
       /**
@@ -3904,22 +3748,6 @@ var nodeOpen = false,
               callback.failure(response, callback.argument);
             }
           );
-      },
-
-      /**
-       * create workflow jobs
-       */
-      createWorkflowJobs: function (jobRequests, callback) {
-        var serviceUri = this.createWorkflowJobsServiceUrl;
-
-        CrafterCMSNext.util.ajax.postJSON(this.createServiceUri(serviceUri), jobRequests).subscribe(
-          (response) => {
-            callback.success(response.response);
-          },
-          (response) => {
-            callback.failure(response);
-          }
-        );
       },
 
       // is this really a service and not a util, can we rename it to something descriptive?
