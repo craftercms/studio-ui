@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import LegacyDashletCard from '../LegacySiteDashboard/LegacyDashletCard';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -24,6 +23,11 @@ import ItemStateIcon from '../ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemTypeIcon from '../ItemTypeIcon';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Accordion from '@mui/material/Accordion';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
+import { styled } from '@mui/material/styles';
+import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 
 export interface IconGuideDashletProps {
   contentHeight?: number | string;
@@ -107,61 +111,77 @@ const types = {
   icon: { systemType: 'asset', mimeType: 'image/vnd.microsoft.icon' }
 };
 
+const Summary = styled(AccordionSummary)(() => {
+  return {
+    [`& .${accordionSummaryClasses['content']}`]: {
+      alignItems: 'center'
+    },
+    [`&.${accordionSummaryClasses['focusVisible']}`]: {
+      backgroundColor: 'inherit'
+    }
+  };
+});
+
 export function IconGuideDashlet(props: IconGuideDashletProps) {
   const { contentHeight } = props;
   const [expanded, setExpanded] = useState(true);
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
   return (
-    <LegacyDashletCard
-      title={<FormattedMessage id="iconGuide.title" defaultMessage="Icon Guide" />}
-      expanded={expanded}
-      onToggleExpanded={() => setExpanded(!expanded)}
-    >
-      <div className={classes.iconGuideContainer} style={{ overflow: 'auto', height: contentHeight }}>
-        <Typography variant="subtitle2" className={classes.guideSectionTitle}>
-          <FormattedMessage id="iconGuide.publishingStatusTarget" defaultMessage="Publishing Status/Target" />
-        </Typography>
-        <Grid container spacing={2}>
-          {Object.keys(status).map((key) => (
-            <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
-              <ItemPublishingTargetIcon item={status[key]} className={classes.icon} />
-              <Typography variant="body2" component="span">
-                {getItemPublishingTargetText(status[key].stateMap)}
-              </Typography>
+    <>
+      <Accordion expanded={expanded}>
+        <Summary expandIcon={<ExpandMoreIcon />} onClick={() => setExpanded(!expanded)}>
+          <Typography>
+            <FormattedMessage id="iconGuide.title" defaultMessage="Icon Guide" />
+          </Typography>
+        </Summary>
+        <AccordionDetails sx={{ p: 0 }}>
+          <div className={classes.iconGuideContainer} style={{ overflow: 'auto', height: contentHeight }}>
+            <Typography variant="subtitle2" className={classes.guideSectionTitle}>
+              <FormattedMessage id="iconGuide.publishingStatusTarget" defaultMessage="Publishing Status/Target" />
+            </Typography>
+            <Grid container spacing={2}>
+              {Object.keys(status).map((key) => (
+                <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+                  <ItemPublishingTargetIcon item={status[key]} className={classes.icon} />
+                  <Typography variant="body2" component="span">
+                    {getItemPublishingTargetText(status[key].stateMap)}
+                  </Typography>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
 
-        <Typography variant="subtitle2" className={classes.guideSectionTitle}>
-          <FormattedMessage id="iconGuide.workflowStates" defaultMessage="Workflow States" />
-        </Typography>
-        <Grid container spacing={2}>
-          {Object.keys(states).map((key) => (
-            <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
-              <ItemStateIcon item={states[key]} className={classes.icon} />
-              <Typography variant="body2" component="span">
-                {getItemStateText(states[key].stateMap)}
-              </Typography>
+            <Typography variant="subtitle2" className={classes.guideSectionTitle}>
+              <FormattedMessage id="iconGuide.workflowStates" defaultMessage="Workflow States" />
+            </Typography>
+            <Grid container spacing={2}>
+              {Object.keys(states).map((key) => (
+                <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+                  <ItemStateIcon item={states[key]} className={classes.icon} />
+                  <Typography variant="body2" component="span">
+                    {getItemStateText(states[key].stateMap)}
+                  </Typography>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
 
-        <Typography variant="subtitle2" className={classes.guideSectionTitle}>
-          <FormattedMessage id="iconGuide.itemTypes" defaultMessage="Item Types" />
-        </Typography>
-        <Grid container spacing={2}>
-          {Object.keys(types).map((key) => (
-            <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
-              <ItemTypeIcon item={types[key]} className={classes.icon} />
-              <Typography variant="body2" component="span">
-                {formatMessage(messages[key])}
-              </Typography>
+            <Typography variant="subtitle2" className={classes.guideSectionTitle}>
+              <FormattedMessage id="iconGuide.itemTypes" defaultMessage="Item Types" />
+            </Typography>
+            <Grid container spacing={2}>
+              {Object.keys(types).map((key) => (
+                <Grid key={key} item xs={6} sm={4} md={3} lg={2} className={classes.stateContainer}>
+                  <ItemTypeIcon item={types[key]} className={classes.icon} />
+                  <Typography variant="body2" component="span">
+                    {formatMessage(messages[key])}
+                  </Typography>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      </div>
-    </LegacyDashletCard>
+          </div>
+        </AccordionDetails>
+      </Accordion>
+    </>
   );
 }
 

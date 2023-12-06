@@ -206,6 +206,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/AdminPanelSettingsRounded'))
   );
   components.set(
+    '@mui/icons-material/AdsClickRounded',
+    lazy(() => import('@mui/icons-material/AdsClickRounded'))
+  );
+  components.set(
     '@mui/icons-material/AgricultureRounded',
     lazy(() => import('@mui/icons-material/AgricultureRounded'))
   );
@@ -628,6 +632,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/BabyChangingStationRounded',
     lazy(() => import('@mui/icons-material/BabyChangingStationRounded'))
+  );
+  components.set(
+    '@mui/icons-material/BackHandRounded',
+    lazy(() => import('@mui/icons-material/BackHandRounded'))
   );
   components.set(
     '@mui/icons-material/BackpackRounded',
@@ -1364,6 +1372,14 @@ export default function register() {
   components.set(
     '@mui/icons-material/CheckRounded',
     lazy(() => import('@mui/icons-material/CheckRounded'))
+  );
+  components.set(
+    '@mui/icons-material/ChecklistRounded',
+    lazy(() => import('@mui/icons-material/ChecklistRounded'))
+  );
+  components.set(
+    '@mui/icons-material/ChecklistRtlRounded',
+    lazy(() => import('@mui/icons-material/ChecklistRtlRounded'))
   );
   components.set(
     '@mui/icons-material/CheckroomRounded',
@@ -2234,6 +2250,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/DragIndicatorRounded'))
   );
   components.set(
+    '@mui/icons-material/DrawRounded',
+    lazy(() => import('@mui/icons-material/DrawRounded'))
+  );
+  components.set(
     '@mui/icons-material/DriveEtaRounded',
     lazy(() => import('@mui/icons-material/DriveEtaRounded'))
   );
@@ -2302,12 +2322,20 @@ export default function register() {
     lazy(() => import('@mui/icons-material/EditAttributesRounded'))
   );
   components.set(
+    '@mui/icons-material/EditCalendarRounded',
+    lazy(() => import('@mui/icons-material/EditCalendarRounded'))
+  );
+  components.set(
     '@mui/icons-material/EditLocationAltRounded',
     lazy(() => import('@mui/icons-material/EditLocationAltRounded'))
   );
   components.set(
     '@mui/icons-material/EditLocationRounded',
     lazy(() => import('@mui/icons-material/EditLocationRounded'))
+  );
+  components.set(
+    '@mui/icons-material/EditNoteRounded',
+    lazy(() => import('@mui/icons-material/EditNoteRounded'))
   );
   components.set(
     '@mui/icons-material/EditNotificationsRounded',
@@ -5862,6 +5890,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/RectangleRounded'))
   );
   components.set(
+    '@mui/icons-material/RecyclingRounded',
+    lazy(() => import('@mui/icons-material/RecyclingRounded'))
+  );
+  components.set(
     '@mui/icons-material/RedeemRounded',
     lazy(() => import('@mui/icons-material/RedeemRounded'))
   );
@@ -6896,6 +6928,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/SpaceBarRounded',
     lazy(() => import('@mui/icons-material/SpaceBarRounded'))
+  );
+  components.set(
+    '@mui/icons-material/SpaceDashboardRounded',
+    lazy(() => import('@mui/icons-material/SpaceDashboardRounded'))
   );
   components.set(
     '@mui/icons-material/SpatialAudioOffRounded',
@@ -8230,6 +8266,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/WaterDamageRounded'))
   );
   components.set(
+    '@mui/icons-material/WaterDropRounded',
+    lazy(() => import('@mui/icons-material/WaterDropRounded'))
+  );
+  components.set(
     '@mui/icons-material/WaterRounded',
     lazy(() => import('@mui/icons-material/WaterRounded'))
   );
@@ -8240,6 +8280,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/WavesRounded',
     lazy(() => import('@mui/icons-material/WavesRounded'))
+  );
+  components.set(
+    '@mui/icons-material/WavingHandRounded',
+    lazy(() => import('@mui/icons-material/WavingHandRounded'))
   );
   components.set(
     '@mui/icons-material/WbAutoRounded',
