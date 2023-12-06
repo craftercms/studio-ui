@@ -43,7 +43,10 @@ import { batchActions } from '../../state/actions/misc';
 import { compareVersion } from '../../state/actions/versions';
 import { showCompareVersionsDialog, showHistoryDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { diffArrays } from 'diff';
+import { diffArrays } from './utils';
+import useLocale from '../../hooks/useLocale';
+import { asLocalizedDateTime } from '../../utils/datetime';
+import AsyncVideoPlayer from '../AsyncVideoPlayer';
 
 const translations = defineMessages({
   changed: {
@@ -69,7 +72,7 @@ const translations = defineMessages({
 });
 
 interface CompareVersionsProps {
-  a: ContentInstance; // TODO: check, this doesn't seem like a content instance!
+  a: ContentInstance;
   b: any;
   contentTypeId: string;
   contentTypes: LookupTable<ContentType>;
@@ -193,6 +196,44 @@ export function CompareVersions(props: CompareVersionsProps) {
   );
 }
 
+interface CompareVersionsDetailsContainerProps {
+  contentA: ContentInstance;
+  contentB: ContentInstance;
+  unChanged: boolean;
+  renderContent: (content) => React.ReactNode;
+}
+function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerProps) {
+  const { contentA, contentB, unChanged, renderContent } = props;
+
+  return !unChanged ? (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        '& img': {
+          maxHeight: '200px'
+        }
+      }}
+    >
+      {renderContent(contentA)}
+      {renderContent(contentB)}
+    </Box>
+  ) : (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        '& img': {
+          maxHeight: '200px'
+        }
+      }}
+    >
+      {renderContent(contentA)}
+    </Box>
+  );
+}
+
 interface CompareFieldPanelProps {
   a: ContentInstance;
   b: ContentInstance;
@@ -204,6 +245,8 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
   const [unChanged, setUnChanged] = useState(false);
   const [open, setOpen] = useState(false);
   const { formatMessage } = useIntl();
+  const fieldType = field.type;
+  const locale = useLocale();
 
   let contentA = a[field.id];
   let contentB = b[field.id];
@@ -213,14 +256,15 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
   }, [unChanged, setOpen]);
 
   useMount(() => {
-    switch (field.type) {
+    switch (fieldType) {
       case 'text':
       case 'html':
       case 'image':
         setUnChanged(contentA === contentB);
         break;
-      case 'node-selector': {
-        setUnChanged(JSON.stringify(contentA) === JSON.stringify(contentB));
+      case 'node-selector':
+      case 'checkbox-group': {
+        setUnChanged(JSON.stringify(contentA ?? '') === JSON.stringify(contentB ?? ''));
         break;
       }
       default:
@@ -265,40 +309,56 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
         )}
       </AccordionSummary>
       <AccordionDetails>
-        {(field.type === 'text' || field.type === 'html') &&
-          (!unChanged ? (
+        {fieldType === 'text' || fieldType === 'html' ? (
+          !unChanged ? (
             <MonacoWrapper contentA={contentA} contentB={contentB} />
           ) : (
             <Typography>{contentA}</Typography>
-          ))}
-        {field.type === 'image' &&
-          (!unChanged ? (
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-around',
-                '& img': {
-                  maxHeight: '200px',
-                  padding: '20px'
-                }
-              }}
-            >
-              <img src={contentA} alt="" />
-              <img src={contentB} alt="" />
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                '& img': { maxHeight: '200px' }
-              }}
-            >
-              <img src={contentA} alt="" />
-            </Box>
-          ))}
-        {field.type === 'node-selector' && <ContentInstanceComponents contentA={contentA} contentB={contentB} />}
+          )
+        ) : fieldType === 'node-selector' ? (
+          <ContentInstanceComponents contentA={contentA} contentB={contentB} />
+        ) : (
+          <CompareVersionsDetailsContainer
+            contentA={contentA}
+            contentB={contentB}
+            unChanged={unChanged}
+            renderContent={(content) =>
+              fieldType === 'image' ? (
+                <Box sx={{ textAlign: 'center' }}>
+                  <img src={content} alt="" />
+                  <Typography variant="subtitle2">{content}</Typography>
+                </Box>
+              ) : fieldType === 'video-picker' ? (
+                <Box sx={{ textAlign: 'center' }}>
+                  <AsyncVideoPlayer playerOptions={{ src: content, controls: true }} />
+                  <Typography variant="subtitle2">{content}</Typography>
+                </Box>
+              ) : fieldType === 'time' ? (
+                <Tooltip title={content}>
+                  <Typography>{content}</Typography>
+                </Tooltip>
+              ) : fieldType === 'date-time' ? (
+                <Tooltip title={content}>
+                  <Typography>
+                    {asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)}
+                  </Typography>
+                </Tooltip>
+              ) : fieldType === 'boolean' ? (
+                <Typography>
+                  {content ? (
+                    <FormattedMessage defaultMessage="Checked" />
+                  ) : (
+                    <FormattedMessage defaultMessage="Unchecked" />
+                  )}
+                </Typography>
+              ) : fieldType === 'checkbox-group' ? (
+                <>{console.log(content)}</>
+              ) : (
+                <></>
+              )
+            }
+          />
+        )}
       </AccordionDetails>
     </Accordion>
   );
@@ -316,7 +376,7 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const itemsByPath = useItemsByPath();
   const contentById = useMemo(() => {
     const byId = {};
-    [...contentA, ...contentB].forEach((item) => {
+    [...(contentA ?? []), ...(contentB ?? [])].forEach((item) => {
       byId[item.craftercms.id] = item;
     });
     return byId;
@@ -339,8 +399,8 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   useEffect(() => {
     setDiff(
       diffArrays(
-        contentA.map((item) => item.craftercms.id),
-        contentB.map((item) => item.craftercms.id)
+        (contentA ?? []).map((item) => item.craftercms.id),
+        (contentB ?? []).map((item) => item.craftercms.id)
       )
     );
   }, [contentA, contentB]);
@@ -432,7 +492,8 @@ function MonacoWrapper(props: MonacoWrapperProps) {
         const diffEditor = monaco.editor.createDiffEditor(ref.current, {
           scrollbar: {
             alwaysConsumeMouseWheel: false
-          }
+          },
+          readOnly: true
         });
         monaco.editor.setTheme(prefersDarkMode ? 'vs-dark' : 'vs');
         diffEditor.setModel({
