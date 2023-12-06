@@ -236,7 +236,7 @@
         true,
         type === 'embedded',
         (item) => item.type === 'component',
-        this.baseRepoPath ?? this.defaultBaseRepoPath
+        this.baseRepoPath ? this._processPathsForMacros(this.baseRepoPath) : this.defaultBaseRepoPath
       );
     },
 
@@ -357,7 +357,9 @@
 
     _openContentTypeForm(contentType, type, control) {
       const self = this;
-      const path = this.baseRepoPath ?? craftercms.utils.content.generateComponentBasePath(contentType);
+      const path = this.baseRepoPath
+        ? this._processPathsForMacros(this.baseRepoPath)
+        : craftercms.utils.content.generateComponentBasePath(contentType);
 
       let parentPath = self.form.path;
       CStudioAuthoring.Operations.openContentWebForm(
