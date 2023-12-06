@@ -30,13 +30,13 @@ import {
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank } from '../utils/string';
 import { forkJoin, Observable, of, zip } from 'rxjs';
-import { errorSelectorApi1, get, getBinary, postJSON } from '../utils/ajax';
+import { errorSelectorApi1, get, getBinary, post, postJSON } from '../utils/ajax';
 import { catchError, map, pluck, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
 import { SandboxItem } from '../models/Item';
 import { fetchConfigurationDOM, fetchConfigurationJSON, writeConfiguration } from './configuration';
-import { beautify, serialize } from '../utils/xml';
+import { beautify, deserialize, entityEncodingTagValueProcessor, serialize } from '../utils/xml';
 import { stripDuplicateSlashes } from '../utils/path';
 import { Api2ResponseFormat } from '../models/ApiResponse';
 import { asArray } from '../utils/array';
@@ -346,9 +346,9 @@ function parseLegacyFormDefinitionFields(
   });
 }
 
-function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<ContentType> {
+function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentType {
   if (nou(definition)) {
-    return {};
+    return {} as ContentType;
   }
 
   const fields: LookupTable<ContentTypeField> = {};
@@ -401,7 +401,11 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
   const topLevelProps: LegacyFormDefinitionProperty[] = asArray(definition.properties?.property);
 
   return {
-    // Find display template
+    id: definition['content-type'],
+    name: definition.title,
+    quickCreate: (definition.quickCreate ?? '').trim() === 'true',
+    quickCreatePath: definition.quickCreatePath,
+    type: definition.objectType as LegacyContentType['type'],
     displayTemplate: topLevelProps.find((prop) => prop.name === 'display-template')?.value,
     mergeStrategy: topLevelProps.find((prop) => prop.name === 'merge-strategy')?.value,
     dataSources: Object.values(dataSources),
@@ -425,7 +429,7 @@ function parseLegacyContentType(legacy: LegacyContentType): ContentType {
   };
 }
 
-function fetchFormDefinition(site: string, contentTypeId: string): Observable<Partial<ContentType>> {
+function fetchFormDefinition(site: string, contentTypeId: string): Observable<ContentType> {
   const path = `/content-types${contentTypeId}/form-definition.xml`;
   return fetchConfigurationJSON(site, path, 'studio').pipe(map((def) => parseLegacyFormDefinition(def.form)));
 }
@@ -442,32 +446,17 @@ export function fetchContentType(site: string, contentTypeId: string): Observabl
   );
 }
 
-export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
-  return fetchLegacyContentTypes(site).pipe(
-    map((response) =>
-      (query?.type
-        ? response.filter(
-            (contentType) => contentType.type === query.type && contentType.name !== '/component/level-descriptor'
-          )
-        : response
-      ).map(parseLegacyContentType)
-    ),
-    switchMap((contentTypes) =>
-      zip(
-        of(contentTypes),
-        forkJoin(
-          contentTypes.reduce((hash, contentType) => {
-            hash[contentType.id] = fetchFormDefinition(site, contentType.id);
-            return hash;
-          }, {} as LookupTable<Observable<Partial<ContentType>>>)
+export function fetchContentTypes(site: string): Observable<ContentType[]> {
+  return post(`/studio/api/2/model/${site}/definitions`).pipe(
+    map(({ response }) =>
+      response.types.map((xmlStr) =>
+        parseLegacyFormDefinition(
+          deserialize(xmlStr, {
+            parseTagValue: false,
+            tagValueProcessor: entityEncodingTagValueProcessor
+          }).form
         )
       )
-    ),
-    map(([contentTypes, formDefinitions]) =>
-      contentTypes.map((contentType) => ({
-        ...contentType,
-        ...formDefinitions[contentType.id]
-      }))
     )
   );
 }

@@ -17,7 +17,7 @@
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
 import { catchError, map, pluck } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { deserialize, fromString, getInnerHtml } from '../utils/xml';
+import { deserialize, entityEncodingTagValueProcessor, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
 import { reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
@@ -53,6 +53,13 @@ export function fetchConfigurationDOM(
   return fetchConfigurationXML(site, configPath, module, environment).pipe(map(fromString));
 }
 
+/**
+ * Fetches the requested configPath XML and deserializes such XML into JSON
+ * @param site {string} The site id from which to fetch the configuration from
+ * @param configPath {string} The path — inside the module — to the configuration file to fetch
+ * @param module {engine | studio} The module from which to fetch the configuration from
+ * @param environment {string} Optional environment to fetch the configuration from
+ */
 export function fetchConfigurationJSON(
   site: string,
   configPath: string,
@@ -63,12 +70,7 @@ export function fetchConfigurationJSON(
     map((conf) => {
       return deserialize(conf, {
         parseTagValue: false,
-        tagValueProcessor: (tag, value) =>
-          value
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
-            .replace(/&amp;/g, '&')
+        tagValueProcessor: entityEncodingTagValueProcessor
       });
     })
   );
@@ -92,7 +94,7 @@ export function writeConfiguration(
 
 // region AudiencesPanelConfig
 
-interface ActiveTargetingModel {
+export interface ActiveTargetingModel {
   id: string;
 
   [prop: string]: string;
