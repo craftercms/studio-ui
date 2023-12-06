@@ -103,12 +103,12 @@ export interface DataSource {
   [prop: string]: any;
 }
 
-type LegacyComponentTypes = 'component' | 'page' | 'file';
+export type LegacyComponentType = 'component' | 'page' | 'file';
 
 export interface ContentType {
   id: string;
   name: string;
-  type: LegacyComponentTypes;
+  type: LegacyComponentType;
   quickCreate: boolean;
   quickCreatePath: string;
   displayTemplate: string;
@@ -116,10 +116,6 @@ export interface ContentType {
   fields: LookupTable<ContentTypeField>;
   dataSources: DataSource[];
   mergeStrategy: string;
-}
-
-export interface LegacyFormConfigPattern {
-  pattern: string;
 }
 
 export interface LegacyFormDefinitionProperty {
@@ -206,7 +202,7 @@ export interface LegacyContentType {
   previewable: boolean;
   quickCreate: boolean;
   quickCreatePath: string;
-  type: LegacyComponentTypes;
+  type: LegacyComponentType;
   useRoundedFolder: string;
 }
 
