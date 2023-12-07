@@ -148,7 +148,7 @@
     "highlight.js": "^11.9.0",
     "jabber": "^1.5.3",
     "js-cookie": "^3.0.5",
-    "marked": "^9.1.6",
+    "marked": "^11.0.0",
     "marked-highlight": "^2.0.9",
     "moment-timezone": "^0.5.43",
     "nanoid": "^5.0.4",
