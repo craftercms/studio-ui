@@ -4794,11 +4794,11 @@ __metadata:
   linkType: hard
 
 "@types/react-infinite-scroller@npm:^1.2.4":
-  version: 1.2.4
-  resolution: "@types/react-infinite-scroller@npm:1.2.4"
+  version: 1.2.5
+  resolution: "@types/react-infinite-scroller@npm:1.2.5"
   dependencies:
     "@types/react": "npm:*"
-  checksum: 3fa8c9ea96efd880b98935f7e24a122c59aa46bc1522d38a66c542a6e74c3ed726e2e96613a92a5a541d2c9d438b50fdf4ead31ac0991faed81777bf55b0e766
+  checksum: 8b56f63c35802d2593cc25b3ab03bfbeceb2a5379997364fb5cea414cc8690341fbf3902d8fc7a6db43f87c144276009cb4a7f3388f1a52091ac3a4fd7de7d33
   languageName: node
   linkType: hard
 
