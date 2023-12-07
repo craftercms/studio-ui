@@ -48,8 +48,8 @@ export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage:
   return messages[item.systemType]
     ? formatMessage(messages[item.systemType])
     : item.mimeType
-    ? item.mimeType
-    : formatMessage(messages.unknown);
+      ? item.mimeType
+      : formatMessage(messages.unknown);
 }
 
 export function ItemTypeIcon(props: ItemTypeIconProps) {

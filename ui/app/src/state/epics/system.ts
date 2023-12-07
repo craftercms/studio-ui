@@ -113,8 +113,8 @@ const systemEpics: CrafterCMSEpic[] = [
                 showToolsPanel === null || state.preview.showToolsPanel === showToolsPanel
                   ? false
                   : state.preview.showToolsPanel
-                  ? closeToolsPanel()
-                  : openToolsPanel()
+                    ? closeToolsPanel()
+                    : openToolsPanel()
               ].filter(Boolean)
             : [])
         ];

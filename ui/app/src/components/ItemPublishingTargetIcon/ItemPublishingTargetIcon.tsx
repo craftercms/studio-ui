@@ -58,8 +58,8 @@ export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
           item.stateMap.live
             ? classes.publishingTargetLive
             : item.stateMap.staged
-            ? classes.publishingTargetStaged
-            : false
+              ? classes.publishingTargetStaged
+              : false
         )}
       />
     </Tooltip>

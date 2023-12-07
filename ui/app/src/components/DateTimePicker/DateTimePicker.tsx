@@ -274,8 +274,8 @@ function DateTimePicker(props: DateTimePickerProps) {
             return currentTimeZoneDesc.name === timezone.name
               ? `GMT${timezone.offset}`
               : typeof timezone === 'string'
-              ? timezone
-              : `${timezone.name} (GMT${timezone.offset})`;
+                ? timezone
+                : `${timezone.name} (GMT${timezone.offset})`;
           }}
           value={currentTimeZoneDesc}
           onChange={handleTimezoneChange}
