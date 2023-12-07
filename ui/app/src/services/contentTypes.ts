@@ -29,7 +29,7 @@ import {
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank } from '../utils/string';
-import { forkJoin, Observable, of, zip } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { errorSelectorApi1, get, getBinary, post, postJSON } from '../utils/ajax';
 import { catchError, map, pluck, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';

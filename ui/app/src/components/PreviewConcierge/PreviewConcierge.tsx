@@ -1061,8 +1061,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 ? payload.level === 'required'
                   ? 'error'
                   : payload.level === 'suggestion'
-                  ? 'warning'
-                  : 'info'
+                    ? 'warning'
+                    : 'info'
                 : null
             }
           );

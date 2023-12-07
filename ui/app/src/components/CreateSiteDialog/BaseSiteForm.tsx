@@ -105,8 +105,8 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
             inputs.submitted && !inputs.siteName
               ? formatMessage(messages.required, { name: formatMessage(messages.siteName) })
               : inputs.siteNameExist
-              ? formatMessage(messages.nameExist)
-              : formatMessage(messages.fieldMaxLength, { maxLength: siteNameMaxLength })
+                ? formatMessage(messages.nameExist)
+                : formatMessage(messages.fieldMaxLength, { maxLength: siteNameMaxLength })
           }
         />
       </Grid>

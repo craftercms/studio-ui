@@ -802,8 +802,8 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
         ? 4
         : 3
       : item.path.startsWith('/templates') || item.path.startsWith('/scripts')
-      ? 7
-      : 6;
+        ? 7
+        : 6;
   } else if (isPreviewable(item)) {
     return item.systemType === 'component' || item.systemType === 'taxonomy' ? 11 : 10;
   }

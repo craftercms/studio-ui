@@ -35,8 +35,8 @@ export function useDashletFilterState(storageKey: string): {
       key === 'all'
         ? [key]
         : selectedKeys.includes(key)
-        ? selectedKeys.filter((k) => k !== key)
-        : [...selectedKeys.filter((k) => k !== 'all'), key];
+          ? selectedKeys.filter((k) => k !== key)
+          : [...selectedKeys.filter((k) => k !== 'all'), key];
     if (updatedKeys.length === 0) {
       updatedKeys = ['all'];
     }

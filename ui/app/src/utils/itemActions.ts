@@ -589,8 +589,8 @@ export const itemActionDispatcher = ({
             item.systemType === 'renderingTemplate'
               ? 'template'
               : item.systemType === 'script'
-              ? 'controller'
-              : 'asset';
+                ? 'controller'
+                : 'asset';
 
           dispatch(
             showRenameAssetDialog({
