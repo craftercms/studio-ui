@@ -51,6 +51,7 @@ export interface CompareVersionsDialogContainerProps
       'contentTypesBranch' | 'versionsBranch' | 'selectedA' | 'selectedB' | 'disableItemSwitching'
     > {}
 
+// region diffArrays
 function _clonePath(path) {
   return {
     newPos: path.newPos,
@@ -159,6 +160,21 @@ function _buildValues(components, newString, oldString, useLongestToken) {
   return components;
 }
 
+/* This generates an array with information about the diff between two arrays of primitive types.
+ * For example, given two arrays like this:
+ * oldArray = [1, 2, 3]
+ * newArray = [1, 3, 2, 4]
+ * The result will be (simplifying the content of the result array items):
+ * [
+ *   { value: [1] }, // Meaning that the value 1 didn't change
+ *   { value: [3], added: true }, // Meaning that the value 3 was removed from this position
+ *   { value: [2] }, // Meaning that the value 2 didn't change
+ *   { value: [3], removed: true }, // Meaning that the value 3 was added in this position
+ *   { value: [4], added: true } // Meaning that the value 4 was added in this position
+ * ]
+ * Note that each of the items in the result array has a value property that is an array of one or more items (for
+ * example, if two items are staying the same, they will both be wrapped in the same array item)
+ */
 export function diffArrays(oldArray, newArray) {
   oldArray = oldArray.slice();
   newArray = newArray.slice();
@@ -242,3 +258,4 @@ export function diffArrays(oldArray, newArray) {
     }
   }
 }
+// endregion

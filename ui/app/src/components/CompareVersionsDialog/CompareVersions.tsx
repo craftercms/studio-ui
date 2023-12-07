@@ -47,6 +47,7 @@ import { diffArrays } from './utils';
 import useLocale from '../../hooks/useLocale';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
+import Button from '@mui/material/Button';
 
 const translations = defineMessages({
   changed: {
@@ -263,10 +264,9 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
         setUnChanged(contentA === contentB);
         break;
       case 'node-selector':
-      case 'checkbox-group': {
+      case 'checkbox-group':
         setUnChanged(JSON.stringify(contentA ?? '') === JSON.stringify(contentB ?? ''));
         break;
-      }
       default:
         setUnChanged(contentA === contentB);
         break;
@@ -276,7 +276,6 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
   return (
     <Accordion
       key={field.id}
-      expanded={open}
       onChange={() => setOpen(!open)}
       sx={{
         margin: 0,
@@ -311,12 +310,25 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
       <AccordionDetails>
         {fieldType === 'text' || fieldType === 'html' ? (
           !unChanged ? (
-            <MonacoWrapper contentA={contentA} contentB={contentB} />
+            <MonacoWrapper contentA={contentA} contentB={contentB} isHTML={fieldType === 'html'} />
           ) : (
             <Typography>{contentA}</Typography>
           )
         ) : fieldType === 'node-selector' ? (
           <ContentInstanceComponents contentA={contentA} contentB={contentB} />
+        ) : fieldType === 'checkbox-group' ? (
+          !unChanged ? (
+            <MonacoWrapper
+              contentA={(contentA ?? []).map((item) => item.key).join('\n')}
+              contentB={(contentB ?? []).map((item) => item.key).join('\n')}
+            />
+          ) : (
+            <Box>
+              {contentA.map((item) => (
+                <Typography key={item.key}>{item.key}</Typography>
+              ))}
+            </Box>
+          )
         ) : (
           <CompareVersionsDetailsContainer
             contentA={contentA}
@@ -352,7 +364,11 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
                   )}
                 </Typography>
               ) : fieldType === 'checkbox-group' ? (
-                <>{console.log(content)}</>
+                <Box>
+                  {content.map((item) => (
+                    <Typography>{item.key}</Typography>
+                  ))}
+                </Box>
               ) : (
                 <></>
               )
@@ -477,24 +493,42 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
 interface MonacoWrapperProps {
   contentA: string;
   contentB: string;
+  isHTML?: boolean;
+}
+
+function removeTags(content: string) {
+  return content.replace(/<[^>]*>?/gm, '');
 }
 
 function MonacoWrapper(props: MonacoWrapperProps) {
-  const { contentA, contentB } = props;
+  const { contentA, contentB, isHTML = false } = props;
   const ref = useRef();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const [cleanText, setCleanText] = useState(false);
+  const originalContent = useMemo(() => (cleanText ? removeTags(contentA) : contentA), [cleanText, contentA]);
+  const modifiedContent = useMemo(() => (cleanText ? removeTags(contentB) : contentB), [cleanText, contentB]);
+  const [diffEditor, setDiffEditor] = useState(null);
 
   useEffect(() => {
     if (ref.current) {
       withMonaco((monaco) => {
-        const originalModel = monaco.editor.createModel(contentA, 'text/plain');
-        const modifiedModel = monaco.editor.createModel(contentB, 'text/plain');
-        const diffEditor = monaco.editor.createDiffEditor(ref.current, {
-          scrollbar: {
-            alwaysConsumeMouseWheel: false
-          },
-          readOnly: true
-        });
+        setDiffEditor(
+          monaco.editor.createDiffEditor(ref.current, {
+            scrollbar: {
+              alwaysConsumeMouseWheel: false
+            },
+            readOnly: true
+          })
+        );
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (diffEditor) {
+      withMonaco((monaco) => {
+        const originalModel = monaco.editor.createModel(originalContent, 'html');
+        const modifiedModel = monaco.editor.createModel(modifiedContent, 'html');
         monaco.editor.setTheme(prefersDarkMode ? 'vs-dark' : 'vs');
         diffEditor.setModel({
           original: originalModel,
@@ -502,18 +536,29 @@ function MonacoWrapper(props: MonacoWrapperProps) {
         });
       });
     }
-  }, [contentA, contentB, prefersDarkMode]);
+  }, [diffEditor, originalContent, modifiedContent, prefersDarkMode]);
 
   return (
-    <Box
-      ref={ref}
-      sx={{
-        width: '100%',
-        height: '150px',
-        '&.unChanged': {
-          height: 'auto'
-        }
-      }}
-    />
+    <Box>
+      {isHTML && (
+        <Button variant="outlined" onClick={() => setCleanText(!cleanText)}>
+          {cleanText ? (
+            <FormattedMessage defaultMessage="Show HTML" />
+          ) : (
+            <FormattedMessage defaultMessage="Show text" />
+          )}
+        </Button>
+      )}
+      <Box
+        ref={ref}
+        sx={{
+          width: '100%',
+          height: '150px',
+          '&.unChanged': {
+            height: 'auto'
+          }
+        }}
+      />
+    </Box>
   );
 }
