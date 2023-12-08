@@ -34,6 +34,7 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { getStoredBrowseDialogCompactMode, setStoredBrowseDialogCompactMode } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
+import { withoutIndex } from '../../utils/path';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
   const {
@@ -140,7 +141,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   };
 
   const onPathSelected = (path: string) => {
-    setCurrentPath(path);
+    setCurrentPath(withoutIndex(path));
   };
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
