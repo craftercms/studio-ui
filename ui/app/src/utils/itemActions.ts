@@ -121,7 +121,6 @@ import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
 import { Dispatch } from 'redux';
 import SystemType from '../models/SystemType';
-import StandardAction from '../models/StandardAction';
 import { fetchItemVersions } from '../state/actions/versions';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
