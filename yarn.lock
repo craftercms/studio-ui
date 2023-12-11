@@ -1626,7 +1626,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-hotkeys-hook: "npm:^4.4.1"
     react-is: "npm:^18.2.0"
-    react-redux: "npm:^8.1.3"
+    react-redux: "npm:^9.0.3"
     redux: "npm:^4.2.1"
     redux-observable: "npm:^2.0.0"
     replace-in-file: "npm:^7.0.2"
@@ -1787,7 +1787,7 @@ __metadata:
     react-hotkeys-hook: "npm:^4.4.1"
     react-infinite-scroller: "npm:^1.2.6"
     react-intl: "npm:^6.5.5"
-    react-redux: "npm:^8.1.3"
+    react-redux: "npm:^9.0.3"
     react-router-dom: "npm:^5.3.4"
     react-scripts: "npm:5.0.1"
     react-swipeable-views: "npm:^0.14.0"
@@ -15344,35 +15344,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-redux@npm:^8.1.3":
-  version: 8.1.3
-  resolution: "react-redux@npm:8.1.3"
+"react-redux@npm:^9.0.3":
+  version: 9.0.3
+  resolution: "react-redux@npm:9.0.3"
   dependencies:
-    "@babel/runtime": "npm:^7.12.1"
-    "@types/hoist-non-react-statics": "npm:^3.3.1"
     "@types/use-sync-external-store": "npm:^0.0.3"
-    hoist-non-react-statics: "npm:^3.3.2"
-    react-is: "npm:^18.0.0"
     use-sync-external-store: "npm:^1.0.0"
   peerDependencies:
-    "@types/react": ^16.8 || ^17.0 || ^18.0
-    "@types/react-dom": ^16.8 || ^17.0 || ^18.0
-    react: ^16.8 || ^17.0 || ^18.0
-    react-dom: ^16.8 || ^17.0 || ^18.0
-    react-native: ">=0.59"
-    redux: ^4 || ^5.0.0-beta.0
+    "@types/react": ^18.2.25
+    react: ^18.0
+    react-native: ^0.69.0
+    redux: ^5.0.0
   peerDependenciesMeta:
     "@types/react":
-      optional: true
-    "@types/react-dom":
-      optional: true
-    react-dom:
       optional: true
     react-native:
       optional: true
     redux:
       optional: true
-  checksum: c4c7586cff3abeb784e73598d330f5301116a4e9942fd36895f2bccd8990001709c6c3ea1817edb75ee477470d6c67c9113e05a7f86b2b68a3950c9c29fe20cb
+  checksum: 49960b0224f5611bd63e1a4d2730c0f930eee2b7c98126e853f0d6da2796367290b0dbb97e7860499831e14459d9cf61e3ca052e304d9343b5ff88feb12abbe2
   languageName: node
   linkType: hard
 
