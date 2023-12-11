@@ -50,6 +50,7 @@ import {
   changeContentType,
   editContentTypeTemplate,
   editController,
+  EditFilePayload,
   editTemplate
 } from '../state/actions/misc';
 import {
@@ -970,7 +971,10 @@ export const itemActionDispatcher = ({
   }
 };
 
-export function editControllerActionCreator(systemType: SystemType, contentTypeId: string): StandardAction {
+export function editControllerActionCreator(
+  systemType: SystemType,
+  contentTypeId: string
+): { payload: EditFilePayload; type: string } {
   return editController({
     path: getControllerPath(systemType),
     fileName: `${popPiece(contentTypeId, '/')}.groovy`,

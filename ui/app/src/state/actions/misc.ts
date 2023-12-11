@@ -39,7 +39,7 @@ export const editContentTypeTemplate = /*#__PURE__*/ createAction<{ contentTypeI
   'EDIT_CONTENT_TYPE_TEMPLATE'
 );
 
-interface EditFilePayload {
+export interface EditFilePayload {
   path: string;
   fileName: string;
   mode: string;

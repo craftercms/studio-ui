@@ -78,7 +78,6 @@ import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { Snackbar, SnackbarProps, ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
-import { DeepPartial } from 'redux';
 import ZoneMenu from './ZoneMenu';
 import {
   contentReady,
@@ -112,7 +111,7 @@ import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 interface BaseXBProps {
   documentDomain?: string;
   themeOptions?: ThemeOptions;
-  sxOverrides?: DeepPartial<GuestStylesSx>;
+  sxOverrides?: Partial<GuestStylesSx>;
   globalStyleOverrides?: GuestGlobalStylesProps['styles'];
   isAuthoring: boolean; // boolean | Promise<boolean> | () => boolean | Promise<boolean>
   scrollElement?: string;

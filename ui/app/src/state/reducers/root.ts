@@ -14,9 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReducersMapObject } from 'redux';
-import GlobalState from '../../models/GlobalState';
-import { StandardAction } from '../../models/StandardAction';
 import auth from './auth';
 import user from './user';
 import sites from './sites';
@@ -32,8 +29,9 @@ import pathNavigatorTree from './pathNavigatorTree';
 import uiConfig from './uiConfig';
 import dashboard from './dashboard';
 import globalNavigation from './globalNavigation';
+import { combineReducers } from 'redux';
 
-const reducer: ReducersMapObject<GlobalState, StandardAction> = {
+const reducer = combineReducers({
   auth,
   user,
   sites,
@@ -49,6 +47,6 @@ const reducer: ReducersMapObject<GlobalState, StandardAction> = {
   uiConfig,
   dashboard,
   globalNavigation
-};
+});
 
 export default reducer;
