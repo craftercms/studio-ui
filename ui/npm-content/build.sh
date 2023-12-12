@@ -29,7 +29,7 @@ echo "Ace build complete"
 rm -rf "$libsDirectory/js-yaml"
 mkdir "$libsDirectory/js-yaml"
 rsync -ar --delete ../../node_modules/js-yaml/dist/js-yaml.min.js "$libsDirectory/js-yaml/js-yaml.min.js"
-echo "js-yaml build complete"
+echo "Copied js-yaml assets"
 
 # bootstrap build
 rm -rf "$libsDirectory/bootstrap"
@@ -37,9 +37,10 @@ mkdir "$libsDirectory/bootstrap"
 rsync -ar --delete ../../node_modules/bootstrap/scss/ "$libsDirectory/bootstrap/scss"
 rsync -ar --delete ../../node_modules/bootstrap/dist/js/bootstrap.min.js "$libsDirectory/bootstrap/bootstrap.min.js"
 rsync -ar --delete ../../node_modules/@popperjs/core/dist/umd/popper.min.js "$libsDirectory/bootstrap/popper.min.js"
-echo "Bootstrap build complete"
+echo "Copied Bootstrap assets"
 
 # jquery-ui build
+echo "Building custom jQuery (events)..."
 rm -rf "$libsDirectory/jquery-ui"
 rsync -ar --delete ../../node_modules/jquery-ui/dist/ "$libsDirectory/jquery-ui"
 rsync -ar --delete ../../node_modules/jquery-ui-css/jquery-ui.min.css "$libsDirectory/jquery-ui/jquery-ui.min.css"
@@ -57,9 +58,10 @@ echo "jQuery UI build complete"
 rm -rf "$libsDirectory/tinymce"
 cp -r ../../node_modules/tinymce "$libsDirectory/tinymce"
 
-echo "TinyMCE build complete"
+echo "Copied TinyMCE"
 
 # Monaco
+echo "Building Monaco editor..."
 yarn build:monaco
 echo "Monaco editor build complete"
 
