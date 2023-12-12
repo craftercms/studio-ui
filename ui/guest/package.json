@@ -81,7 +81,7 @@
     ]
   },
   "scripts": {
-    "build": "rollup -c --filterLogs \"code:A_COMMENT\" ",
+    "build": "rollup -c",
     "start": "rollup -c -w",
     "watch": "rollup -c -w",
     "build:modern": "tsc --build tsconfig.json",
