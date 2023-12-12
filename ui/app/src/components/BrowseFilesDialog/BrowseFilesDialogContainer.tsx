@@ -34,6 +34,7 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { getStoredBrowseDialogCompactMode, setStoredBrowseDialogCompactMode } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
+import { withIndex, withoutIndex } from '../../utils/path';
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
   const {
@@ -73,7 +74,14 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
 
   const fetchItems = useCallback(
     () =>
-      search(site, { ...searchParameters, path: `${currentPath}/[^/]+(/index\\.xml)?` }).subscribe((response) => {
+      // Since lookahead regex is not supported by opensearch, we are excluding the current path from the search using a
+      // negative filter in a query. This scenario only happens with pages, hence the `withIndex` function wrapping the
+      // current path.
+      search(site, {
+        ...searchParameters,
+        path: `${currentPath}/[^/]+(/index\\.xml)?`,
+        query: `-localId:"${withIndex(currentPath)}"`
+      }).subscribe((response) => {
         setTotal(response.total);
         setItems(response.items);
         setSortKeys(response.facets.map((facet) => facet.name));
@@ -140,7 +148,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   };
 
   const onPathSelected = (path: string) => {
-    setCurrentPath(path);
+    setCurrentPath(withoutIndex(path));
   };
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
