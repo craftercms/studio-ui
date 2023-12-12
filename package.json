@@ -64,7 +64,7 @@
     "@babel/runtime": "^7",
     "nth-check": "^2.0.1"
   },
-  "packageManager": "yarn@4.0.1",
+  "packageManager": "yarn@4.0.2",
   "scripts": {
     "prettier:raw": "node scripts/prettier.js",
     "prettier:all": "node scripts/prettier.js write",
