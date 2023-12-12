@@ -122,6 +122,7 @@ import { Clipboard } from '../models/GlobalState';
 import { Dispatch } from 'redux';
 import SystemType from '../models/SystemType';
 import { fetchItemVersions } from '../state/actions/versions';
+import StandardAction from '../models/StandardAction';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -973,7 +974,7 @@ export const itemActionDispatcher = ({
 export function editControllerActionCreator(
   systemType: SystemType,
   contentTypeId: string
-): { payload: EditFilePayload; type: string } {
+): StandardAction<EditFilePayload> {
   return editController({
     path: getControllerPath(systemType),
     fileName: `${popPiece(contentTypeId, '/')}.groovy`,
