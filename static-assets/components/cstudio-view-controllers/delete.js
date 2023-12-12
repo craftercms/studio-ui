@@ -97,7 +97,7 @@
     doDeleteActionClicked: function () {
       this.showProcessingOverlay(true);
       this.fire('submitStart');
-      var data = `${this.result.map((i) => `${i}`).join('&paths=')}`,
+      var data = `${this.result.map((i) => `${i}`).join(',')}`,
         _this = this;
       (function (dataInf) {
         CStudioAuthoring.Service.request({
