@@ -32,6 +32,7 @@ import {
 import { Interpolation } from '@emotion/react';
 import { Theme } from '@mui/material/styles';
 import { deepmerge } from '@mui/utils';
+import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 
 export interface GuestGlobalStyleRules {
   'craftercms-asset-uploader-mask-container': Interpolation<Theme>;
@@ -49,7 +50,7 @@ export interface GuestGlobalStyleRules {
 export interface GuestGlobalStylesProps {
   /**
    * Global styles for XB components. Please memoize your styles to avoid unnecessary renders. */
-  styles?: Partial<GuestGlobalStyleRules>;
+  styles?: DeepPartial<GuestGlobalStyleRules>;
 }
 
 const overlayBackgroundColor = 'rgba(0, 0, 0, .4)';
