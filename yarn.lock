@@ -12893,11 +12893,11 @@ __metadata:
   linkType: hard
 
 "marked@npm:^11.0.1":
-  version: 11.0.1
-  resolution: "marked@npm:11.0.1"
+  version: 11.1.0
+  resolution: "marked@npm:11.1.0"
   bin:
     marked: bin/marked.js
-  checksum: a732d6d2ad1b74fc0e94eea266e87fe17777bce4f1c631230384b843c27bd03c18fce337a9effd97c893ef4583c19d8ddc1c965aa71b602375efb89de14d5e67
+  checksum: 4636b16283c1963a715e97578d9fd91588b11949276e633a4de53dc408bcdab7b846d2b5c2cf3239f6d2dc8affe5294a0895954b5e3d9562d77301d8847a8915
   languageName: node
   linkType: hard
 
@@ -17973,11 +17973,11 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>":
   version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=29ae49"
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 57bf073a0b88f9bf76e5a24be3df864a8f9d0e70f8316969f4992ae26e30cb8d078708922da2ade1f2c8d1faee13b28bcb69876ebb1e37910e31c54aa9126aa2
+  checksum: c93786fcc9a70718ba1e3819bab56064ead5817004d1b8186f8ca66165f3a2d0100fee91fa64c840dcd45f994ca5d615d8e1f566d39a7470fc1e014dbb4cf15d
   languageName: node
   linkType: hard
 
