@@ -33,7 +33,7 @@ import {
 import { Interpolation } from '@emotion/react';
 import { Theme } from '@mui/material/styles';
 import { deepmerge } from '@mui/utils';
-import { DeepPartial } from 'redux';
+import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 
 export type GlobalStyleKeys =
   | 'craftercms-asset-uploader-mask-container'

@@ -62,7 +62,10 @@
     "@types/react": "^18.2.36",
     "react-is": "^18.2.0",
     "@babel/runtime": "^7",
-    "nth-check": "^2.0.1"
+    "nth-check": "^2.0.1",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "fork-ts-checker-webpack-plugin": "^6.5.3"
   },
   "packageManager": "yarn@4.0.2",
   "scripts": {
@@ -81,7 +84,7 @@
     "update:caniuse": "yarn up -R caniuse-lite"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^24.1.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@types/node": "^20.10.4",
@@ -93,7 +96,7 @@
     "glob-gitignore": "^1.0.14",
     "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.5",
-    "rollup": "^3.29.4",
+    "rollup": "^4.7.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-terser": "^7.0.2",

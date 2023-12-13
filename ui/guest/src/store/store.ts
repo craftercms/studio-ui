@@ -15,7 +15,7 @@
  */
 
 import { createEpicMiddleware } from 'redux-observable';
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Tuple } from '@reduxjs/toolkit';
 import { GuestStandardAction } from './models/GuestStandardAction';
 import epic from './epics/root';
 import reducer from './reducers/root';
@@ -23,6 +23,7 @@ import { Middleware } from 'redux';
 import { GuestState, GuestStore } from './models/GuestStore';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, pluck, share } from 'rxjs/operators';
+import { Middlewares } from '@reduxjs/toolkit/dist/configureStore';
 
 let store: GuestStore;
 
@@ -31,7 +32,7 @@ export function createGuestStore(): GuestStore {
     return store;
   }
   const epicMiddleware = createEpicMiddleware<GuestStandardAction, GuestStandardAction, GuestState>();
-  store = configureStore<GuestState, GuestStandardAction, Middleware[]>({
+  store = configureStore<GuestState, GuestStandardAction, Tuple<Middlewares<GuestState>>>({
     reducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
