@@ -87,6 +87,7 @@ export function SiteManagement() {
   const duplicateSiteDialogState = useEnhancedDialogState();
   const [duplicateSiteId, setDuplicateSiteId] = useState(null);
   const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);
+  const [disabledSitesLookup, setDisabledSitesLookup] = useSpreadState({});
 
   useEffect(() => {
     merge(
@@ -140,8 +141,9 @@ export function SiteManagement() {
   };
 
   const onDeleteSiteClick = (site: Site) => {
-    trash(site.id).subscribe(
-      () => {
+    setDisabledSitesLookup({ [site.id]: true });
+    trash(site.id).subscribe({
+      next() {
         dispatch(
           batchActions([
             popSite({ siteId: site.id }),
@@ -151,11 +153,13 @@ export function SiteManagement() {
             fetchSites()
           ])
         );
+        setDisabledSitesLookup({ [site.id]: false });
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
+        setDisabledSitesLookup({ [site.id]: false });
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onEditSiteClick = (site: Site) => {
@@ -305,6 +309,7 @@ export function SiteManagement() {
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
             onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
+            disabledSitesLookup={disabledSitesLookup}
           />
         </SuspenseWithEmptyState>
       </ErrorBoundary>
