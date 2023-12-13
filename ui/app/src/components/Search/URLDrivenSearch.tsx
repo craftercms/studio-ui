@@ -209,7 +209,7 @@ export function URLDrivenSearch(props: URLDrivenSearchProps) {
       sortOrder={queryParams['sortOrder'] as string}
       currentView={currentView}
       embedded={embedded}
-      keyword={keyword}
+      keyword={Array.isArray(keyword) ? keyword.join(' ') : keyword}
       mode={mode}
       checkedFilters={checkedFilters}
       desktopScreen={desktopScreen}
