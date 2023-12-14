@@ -468,7 +468,6 @@ export function UppyDashboard(props: UppyDashboardProps) {
         projectPoliciesChangeRequired: (fileName, detail) =>
           formatMessage(translations.projectPoliciesChangeRequired, { fileName, detail }),
         projectPoliciesNoComply: (fileName, detail) => {
-          debugger;
           return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
         }
       },
