@@ -21,14 +21,8 @@ export const translations = defineMessages({
     id: 'createFolder.placeholder',
     defaultMessage: 'Please type a folder name'
   },
-  createPolicy: {
-    id: 'createFolder.createPolicy',
-    defaultMessage:
-      'The supplied name goes against project policies ({detail}). Suggested name is: "{name}". Would you like to use the suggested name?'
-  },
   policyError: {
-    id: 'createFolder.policyError',
-    defaultMessage: 'The supplied name goes against project policies: {detail}.'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
   }
 });
 

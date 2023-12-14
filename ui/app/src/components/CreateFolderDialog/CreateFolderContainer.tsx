@@ -124,12 +124,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
                   dispatch(updateCreateFolderDialog({ isSubmitting: false }));
                 } else {
                   if (modifiedValue) {
-                    setConfirm({
-                      body: formatMessage(translations.createPolicy, {
-                        name: modifiedValue.replace(`${path}/`, ''),
-                        detail: message
-                      })
-                    });
+                    setConfirm({ body: message });
                   } else {
                     if (rename) {
                       onRenameFolder(site, path, name);
@@ -144,7 +139,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
           } else {
             setConfirm({
               error: true,
-              body: formatMessage(translations.policyError, { detail: message })
+              body: formatMessage(translations.policyError, { fileName: name, detail: message })
             });
             dispatch(updateCreateFolderDialog({ isSubmitting: false }));
           }

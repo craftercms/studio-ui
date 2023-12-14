@@ -102,18 +102,13 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
         target: newAssetPath
       }).subscribe(({ allowed, modifiedValue, message }) => {
         if (allowed && modifiedValue) {
-          setConfirm({
-            body: formatMessage(translations.createPolicy, {
-              name: modifiedValue.replace(`${path}/`, ''),
-              detail: message
-            })
-          });
+          setConfirm({ body: message });
         } else if (allowed) {
           onRenameAsset(siteId, path, name);
         } else {
           setConfirm({
             error: true,
-            body: formatMessage(translations.policyError, { detail: message })
+            body: formatMessage(translations.policyError, { fileName: name, detail: message })
           });
         }
       });

@@ -104,12 +104,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
                   dispatch(updateCreateFileDialog({ isSubmitting: false }));
                 } else {
                   if (modifiedValue) {
-                    setConfirm({
-                      body: formatMessage(translations.createPolicy, {
-                        name: modifiedValue.replace(`${path}/`, ''),
-                        detail: message
-                      })
-                    });
+                    setConfirm({ body: message });
                   } else {
                     onCreateFile(site, path, fileName);
                   }
@@ -120,7 +115,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
           } else {
             setConfirm({
               error: true,
-              body: formatMessage(translations.policyError, { detail: message })
+              body: formatMessage(translations.policyError, { fileName: name, detail: message })
             });
             dispatch(
               updateCreateFolderDialog({
