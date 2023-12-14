@@ -60,6 +60,11 @@ import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardHeader from '@mui/material/CardHeader';
+import { Typography } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import { ConfirmDialog } from '../ConfirmDialog';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -67,6 +72,12 @@ const translations = defineMessages({
     defaultMessage: 'Project deleted successfully'
   }
 });
+
+const confirmDeleteInitialState = {
+  site: null,
+  open: false,
+  checked: false
+};
 
 export function SiteManagement() {
   const dispatch = useDispatch();
@@ -88,6 +99,7 @@ export function SiteManagement() {
   const [duplicateSiteId, setDuplicateSiteId] = useState(null);
   const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);
   const [disabledSitesLookup, setDisabledSitesLookup] = useSpreadState({});
+  const [confirmDeleteState, setConfirmDeleteState] = useSpreadState(confirmDeleteInitialState);
 
   useEffect(() => {
     merge(
@@ -141,6 +153,10 @@ export function SiteManagement() {
   };
 
   const onDeleteSiteClick = (site: Site) => {
+    setConfirmDeleteState({ site, open: true });
+  };
+
+  const onConfirmDeleteSite = (site: Site) => {
     setDisabledSitesLookup({ [site.id]: true });
     trash(site.id).subscribe({
       next() {
@@ -344,6 +360,43 @@ export function SiteManagement() {
         hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
         isSubmitting={duplicateSiteDialogState.isSubmitting}
         onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
+      />
+      <ConfirmDialog
+        open={confirmDeleteState.open}
+        body={
+          <>
+            <Typography>
+              <FormattedMessage
+                defaultMessage="Confirm the permanent deletion of the “{siteId}” project."
+                values={{
+                  siteId: confirmDeleteState.site?.id
+                }}
+              />
+            </Typography>
+            <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
+              <FormControlLabel
+                sx={{ textAlign: 'left' }}
+                control={
+                  <Checkbox
+                    color="primary"
+                    checked={confirmDeleteState.checked}
+                    onChange={() => setConfirmDeleteState({ checked: !confirmDeleteState.checked })}
+                  />
+                }
+                label={
+                  <FormattedMessage defaultMessage="I understand deleting a project is immediate and irreversible." />
+                }
+              />
+            </Alert>
+          </>
+        }
+        okButtonText={<FormattedMessage defaultMessage="Delete" />}
+        disableOkButton={!confirmDeleteState.checked}
+        onOk={() => {
+          onConfirmDeleteSite(confirmDeleteState.site);
+          setConfirmDeleteState(confirmDeleteInitialState);
+        }}
+        onCancel={() => setConfirmDeleteState(confirmDeleteInitialState)}
       />
     </Paper>
   );
