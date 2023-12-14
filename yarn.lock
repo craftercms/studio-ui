@@ -3189,8 +3189,8 @@ __metadata:
   linkType: hard
 
 "@mui/x-data-grid@npm:^6.18.3":
-  version: 6.18.3
-  resolution: "@mui/x-data-grid@npm:6.18.3"
+  version: 6.18.4
+  resolution: "@mui/x-data-grid@npm:6.18.4"
   dependencies:
     "@babel/runtime": "npm:^7.23.2"
     "@mui/utils": "npm:^5.14.16"
@@ -3202,7 +3202,7 @@ __metadata:
     "@mui/system": ^5.4.1
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: 520fe1d172995d9048ca99a80de85c5fe04a912911754590c7bd4c5a9598c75f44109042b77fb37be1f7b7172cd600908166a40df6525267fc87617663ab6a5c
+  checksum: e765c4f0b7a1c4d111fa4e79f3f8a30339e615f25fb98ec198f042c669b1be4473948f4b4523dd80da57be8d389e11d8d67b28404a8dafdb336ef26172a15441
   languageName: node
   linkType: hard
 
@@ -17973,11 +17973,11 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>":
   version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=29ae49"
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 57bf073a0b88f9bf76e5a24be3df864a8f9d0e70f8316969f4992ae26e30cb8d078708922da2ade1f2c8d1faee13b28bcb69876ebb1e37910e31c54aa9126aa2
+  checksum: c93786fcc9a70718ba1e3819bab56064ead5817004d1b8186f8ca66165f3a2d0100fee91fa64c840dcd45f994ca5d615d8e1f566d39a7470fc1e014dbb4cf15d
   languageName: node
   linkType: hard
 
