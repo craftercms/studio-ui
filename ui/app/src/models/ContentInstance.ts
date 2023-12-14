@@ -30,7 +30,7 @@ export interface ContentInstanceBase {
   craftercms: ContentInstanceSystemProps;
 }
 
-type ContentInstance<T extends Record<string, any> = Record<string, any>> = T & ContentInstanceBase;
+export type ContentInstance<T extends Record<string, any> = Record<string, any>> = T & ContentInstanceBase;
 
 // An InstanceRecord is a ContentInstance without ContentInstanceSystemProps
 export type InstanceRecord = Record<string, Primitive>;
