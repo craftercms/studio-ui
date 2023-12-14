@@ -21,7 +21,7 @@ import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Fab from '@mui/material/Fab';
-import crack from '../../assets/full-crack.svg';
+import crack from '../../assets/warning.svg';
 import { nnou } from '../../utils/object';
 
 type ErrorStateClassKey = 'root' | 'image' | 'title' | 'message' | 'button';

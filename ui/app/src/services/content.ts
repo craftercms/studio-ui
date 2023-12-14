@@ -303,8 +303,8 @@ export function updateField(
         typeof serializeValue === 'function'
           ? serializeValue(value)
           : Boolean(serializeValue)
-          ? cdataWrap(value)
-          : value;
+            ? cdataWrap(value)
+            : value;
     },
     modelId
   );
@@ -978,7 +978,7 @@ export function createFileUpload(
   uploadUrl: string,
   file: any,
   path: string,
-  metaData: object,
+  metaData: Record<string, unknown>,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
   const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });

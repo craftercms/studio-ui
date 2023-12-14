@@ -52,7 +52,7 @@ export interface SearchUIProps {
   guestBase: string;
   sortBy?: string;
   sortOrder?: string;
-  keyword: string[] | string;
+  keyword: string;
   mode: 'select' | 'default';
   drawerOpen: boolean;
   embedded: boolean;
@@ -398,7 +398,7 @@ export function SearchUI(props: SearchUIProps) {
                     from,
                     to,
                     count,
-                    keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
+                    keyword: keyword.length > 18 ? keyword.substring(0, 15).trim() + '...' : keyword,
                     keywordLength: keyword.length,
                     b: (content: ReactNode[]) => <strong key={content[0] as string}>{content[0]}</strong>
                   }}

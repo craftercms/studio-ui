@@ -150,7 +150,7 @@ export function usePreviewUrlControl(history) {
       // Not the first render. Something changed and we're updating.
 
       // Check if either the QS or the state has changed
-      const qsSiteChanged = qs.site !== prev.qsSite && qs.site !== site;
+      const qsSiteChanged = qs.site !== prev.qsSite || qs.site !== site;
       const siteChanged = site !== prev.site;
       const qsUrlChanged = qs.page !== prev.qsPage && qs.page !== currentUrlPath;
       const urlChanged = currentUrlPath !== prev.currentUrlPath;

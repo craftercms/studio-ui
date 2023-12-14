@@ -78,7 +78,6 @@ import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { Snackbar, SnackbarProps, ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
-import { DeepPartial } from 'redux';
 import ZoneMenu from './ZoneMenu';
 import {
   contentReady,
@@ -107,6 +106,7 @@ import {
 import { setJwt } from '@craftercms/studio-ui/utils/auth';
 import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
+import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {

@@ -24,7 +24,7 @@ import {
 } from '../../actions/dialogs';
 import { CodeEditorDialogStateProps } from '../../../components/CodeEditorDialog/utils';
 import { commonDialogProps } from '../../../utils/state';
-import { changeSite } from '../../actions/sites';
+import { changeSiteComplete } from '../../actions/sites';
 
 const initialState: CodeEditorDialogStateProps = commonDialogProps({
   path: null,
@@ -60,5 +60,5 @@ export default createReducer<GlobalState['dialogs']['codeEditor']>(initialState,
       open: false
     }))
     .addCase(codeEditorDialogClosed, () => initialState)
-    .addCase(changeSite, () => initialState);
+    .addCase(changeSiteComplete, () => initialState);
 });

@@ -24,7 +24,7 @@ import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
 import SocketEventBase, { SocketRootEventBase } from '../../models/SocketEvent';
-import { MarketplacePlugin } from '../../models';
+import { DetailedItem, MarketplacePlugin } from '../../models';
 
 // region Item Events
 
@@ -58,9 +58,18 @@ export const moveContentEvent = /*#__PURE__*/ createAction<MoveContentEventPaylo
 
 // region Notifications
 
-export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
+export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction<StandardAction<{ items: DetailedItem[] }>>(
+  'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
+);
 
-export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
+export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction<
+  StandardAction<{
+    items: DetailedItem[];
+    type: string;
+    schedule: string;
+    environment: string;
+  }>
+>('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCreateItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CREATE_ITEM_SUCCESS_NOTIFICATION');
 
@@ -70,7 +79,11 @@ export const showCreateFolderSuccessNotification = /*#__PURE__*/ createAction(
 
 export const showEditItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 
-export const showCopyItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
+export const showCopyItemSuccessNotification = /*#__PURE__*/ createAction<
+  StandardAction<{
+    paths: string[];
+  }>
+>('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCutItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
 

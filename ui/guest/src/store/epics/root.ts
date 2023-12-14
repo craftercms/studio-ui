@@ -97,7 +97,7 @@ import { validateActionPolicy } from '@craftercms/studio-ui/services/sites';
 import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
-import { ensureSingleSlash, isSimple } from '@craftercms/studio-ui/utils/string';
+import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -118,12 +118,14 @@ const createReader$ = (file: File) =>
 
 const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region mouseover, mouseleave
-  (action$, state$) =>
+  (action$: MouseEventActionObservable, state$) =>
     action$.pipe(
       ofType('mouseover', 'mouseleave'),
       withLatestFrom(state$),
       filter((args) => args[1].status === EditingStatus.LISTENING),
-      tap(([action]) => action.payload.event.stopPropagation()),
+      tap(([action, state]: [action: GuestStandardAction, state: GuestState]) =>
+        action.payload.event.stopPropagation()
+      ),
       ignoreElements()
     ),
   // endregion
@@ -132,7 +134,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType('dragstart'),
       withLatestFrom(state$),
-      switchMap(([action, state]) => {
+      switchMap(([action, state]: [action: GuestStandardAction, state: GuestState]) => {
         const {
           payload: { event, record }
         } = action;
@@ -163,7 +165,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType('dragover'),
       withLatestFrom(state$),
-      tap(([action, state]) => {
+      tap(([action, state]: [action: GuestStandardAction, state: GuestState]) => {
         const {
           payload: { event, record }
         } = action;
@@ -203,7 +205,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType('drop'),
       withLatestFrom(state$),
       filter(([, state]) => dragOk(state.status) && !state.dragContext.invalidDrop),
-      switchMap(([action, state]) => {
+      switchMap(([action, state]: [action: GuestStandardAction, state: GuestState]) => {
         const {
           payload: { event, record }
         } = action;
@@ -468,7 +470,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType('dragend'),
       withLatestFrom(state$),
       filter(([, state]) => dragOk(state.status)),
-      switchMap(([action]) => {
+      switchMap(([action, state]: [action: GuestStandardAction, state: GuestState]) => {
         const { event } = action.payload;
         event.preventDefault();
         event.stopPropagation();
@@ -502,7 +504,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) ||
           (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.FIELD_SELECTED)
       ),
-      switchMap(([action, state]) => {
+      switchMap(([action, state]: [action: GuestStandardAction, state: GuestState]) => {
         const { record, event } = action.payload;
         if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
           let selected = {

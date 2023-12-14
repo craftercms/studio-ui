@@ -378,7 +378,11 @@ export function parseContentXML(
   contentTypesLookup: LookupTable<ContentType>,
   instanceLookup: LookupTable<ContentInstance>
 ): ContentInstance {
-  const id = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > objectId')) : fileNameFromPath(path);
+  let id = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > objectId')) : null;
+  if (id === null && !/^[a-f\d]{4}(?:[a-f\d]{4}-){4}[a-f\d]{12}$/i.test((id = fileNameFromPath(path)))) {
+    // If the id is not a guid by now, then is simply not available at this time.
+    id = null;
+  }
   const contentTypeId = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > content-type')) : null;
   const current = {
     craftercms: {
@@ -400,7 +404,7 @@ export function parseContentXML(
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
   }
-  instanceLookup[id] = current;
+  instanceLookup[id ?? path] = current;
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
       const tagName = element.tagName;
@@ -485,27 +489,34 @@ function parseElementByContentType(
         });
       } else {
         items.forEach((item) => {
-          let path = getInnerHtml(item.querySelector(':scope > include'));
-          const component = item.querySelector(':scope > component');
-          const itemKey = getInnerHtml(item.querySelector(':scope > key'));
-          if (!path && !component) {
-            path = itemKey;
-          }
-          // Embedded components have no .xml in their key
-          const isFile = Boolean(itemKey) && !itemKey.endsWith('.xml') && Boolean(!item.getAttribute('inline'));
-          if (isFile) {
-            array.push({
-              key: itemKey,
-              value: getInnerHtml(item.querySelector(':scope > value'))
-            });
+          const key = getInnerHtml(item.querySelector(':scope > key'));
+          if (key) {
+            const isFile =
+              // If the `key` tag value is not a path rooted at `/site/website` or `/site/components`
+              // or not an `xml` would mean is something other than content (asset, template, script, etc).
+              key.match(/^\/site\/(website|components)\/.+\.xml$/) === null ||
+              // Embedded components don't have a path as the value of `key` (the guid is the value),
+              // but/and they have an `inline` attribute.
+              item.getAttribute('inline') !== 'true';
+            if (isFile) {
+              array.push({
+                key,
+                value: getInnerHtml(item.querySelector(':scope > value'))
+              });
+            } else {
+              const path = getInnerHtml(item.querySelector(':scope > include')) || key;
+              const component = item.querySelector(':scope > component');
+              const instance = parseContentXML(
+                component ? wrapElementInAuxDocument(component) : null,
+                path,
+                contentTypesLookup,
+                instanceLookup
+              );
+              array.push(instance);
+            }
           } else {
-            const instance = parseContentXML(
-              component ? wrapElementInAuxDocument(component) : null,
-              path,
-              contentTypesLookup,
-              instanceLookup
-            );
-            array.push(instance);
+            // Not sure if there can be a case without a `key`. Leaving this case based on the previous code checking for it.
+            array.push(item);
           }
         });
       }
@@ -802,8 +813,8 @@ export function getNumOfMenuOptionsForItem(item: DetailedItem): number {
         ? 4
         : 3
       : item.path.startsWith('/templates') || item.path.startsWith('/scripts')
-      ? 7
-      : 6;
+        ? 7
+        : 6;
   } else if (isPreviewable(item)) {
     return item.systemType === 'component' || item.systemType === 'taxonomy' ? 11 : 10;
   }
