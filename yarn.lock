@@ -1603,7 +1603,7 @@ __metadata:
   dependencies:
     "@craftercms/classes": "npm:4.1.2"
     "@craftercms/content": "npm:4.1.2"
-    "@craftercms/ice": "npm:4.1.2-1"
+    "@craftercms/ice": "npm:4.1.2"
     "@craftercms/search": "npm:4.1.2"
     "@craftercms/studio-ui": "workspace:^"
     "@emotion/css": "npm:^11.11.2"
@@ -1638,14 +1638,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@craftercms/ice@npm:4.1.2-1":
-  version: 4.1.2-1
-  resolution: "@craftercms/ice@npm:4.1.2-1"
+"@craftercms/ice@npm:4.1.2":
+  version: 4.1.2
+  resolution: "@craftercms/ice@npm:4.1.2"
   dependencies:
-    "@craftercms/models": "npm:4.1.2-1"
+    "@craftercms/models": "npm:4.1.2"
   peerDependencies:
-    react: ^18.0.0
-  checksum: 0ebbacd5749fa377b0341b36cd9f1b6935d6d8cb3dd359b95698bfd23fb0048bbb5553558e28bba260aff454a3d3892a090b1897c8c4093851beab841977f2cd
+    react: ^16.8.0 || ^17.0.0
+  checksum: 1850074496e8673a07a42615ba2d4c6722e1711879fbcc853fa4150668ceeeaf11fd16a85b0ac0ec7bf6f3b58545149abd092225d5f5072f85a4abda48b17d08
   languageName: node
   linkType: hard
 
@@ -1653,13 +1653,6 @@ __metadata:
   version: 4.1.2
   resolution: "@craftercms/models@npm:4.1.2"
   checksum: 6475b90661712f95051783d02ada83ebedca4472adc6560a17a9126c00ffbd79f76f03fb53f9c8cc3572d34d54738a48301843b2fa98a67c41c5e34a12906d2d
-  languageName: node
-  linkType: hard
-
-"@craftercms/models@npm:4.1.2-1":
-  version: 4.1.2-1
-  resolution: "@craftercms/models@npm:4.1.2-1"
-  checksum: c7612abe152e907b0c4d108631137eb12da0c71f02816321fab5f294450c7290a2e3e4417deeeb37e10300256f20aceacbee985c0c008a3a40bfb81e2b015389
   languageName: node
   linkType: hard
 
@@ -17973,11 +17966,11 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A^5.3.3#optional!builtin<compat/typescript>":
   version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=29ae49"
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 57bf073a0b88f9bf76e5a24be3df864a8f9d0e70f8316969f4992ae26e30cb8d078708922da2ade1f2c8d1faee13b28bcb69876ebb1e37910e31c54aa9126aa2
+  checksum: c93786fcc9a70718ba1e3819bab56064ead5817004d1b8186f8ca66165f3a2d0100fee91fa64c840dcd45f994ca5d615d8e1f566d39a7470fc1e014dbb4cf15d
   languageName: node
   linkType: hard
 
