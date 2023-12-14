@@ -36,6 +36,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { ConfirmDialog } from '../ConfirmDialog';
 import useSpreadState from '../../hooks/useSpreadState';
+import Alert from '@mui/material/Alert';
 
 interface SiteCardProps {
   site: Site;
@@ -71,8 +72,6 @@ export function SiteCard(props: SiteCardProps) {
   const { classes, cx: clsx } = useSiteCardStyles();
   const isSiteReady = site.state === 'READY';
   const [confirmDeleteState, setConfirmDeleteState] = useSpreadState(confirmDeleteInitialState);
-
-  console.log('site disabeld', site.id, disabled);
 
   return (
     <>
@@ -172,25 +171,27 @@ export function SiteCard(props: SiteCardProps) {
           <>
             <Typography>
               <FormattedMessage
-                defaultMessage="Confirm the permanent deletion of the '{siteId}' project."
+                defaultMessage={'Confirm the permanent deletion of the "{siteId}" project.'}
                 values={{
                   siteId: site.id
                 }}
               />
             </Typography>
-            <FormControlLabel
-              sx={{ textAlign: 'left', margin: '10px 0 0' }}
-              control={
-                <Checkbox
-                  color="primary"
-                  checked={confirmDeleteState.checked}
-                  onChange={() => setConfirmDeleteState({ checked: !confirmDeleteState.checked })}
-                />
-              }
-              label={
-                <FormattedMessage defaultMessage="I understand deleting a project is immediate and irreversible." />
-              }
-            />
+            <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
+              <FormControlLabel
+                sx={{ textAlign: 'left' }}
+                control={
+                  <Checkbox
+                    color="primary"
+                    checked={confirmDeleteState.checked}
+                    onChange={() => setConfirmDeleteState({ checked: !confirmDeleteState.checked })}
+                  />
+                }
+                label={
+                  <FormattedMessage defaultMessage="I understand deleting a project is immediate and irreversible." />
+                }
+              />
+            </Alert>
           </>
         }
         okButtonText={<FormattedMessage defaultMessage="Delete" />}
