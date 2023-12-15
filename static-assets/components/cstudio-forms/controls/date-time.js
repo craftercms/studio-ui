@@ -1153,6 +1153,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         'click',
         function (e) {
           this.show();
+          if (calEl.getBoundingClientRect().top < 0) {
+            calEl.style.setProperty('top', '0px', 'important');
+          }
         },
         calendarComponent,
         true
