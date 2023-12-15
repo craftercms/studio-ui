@@ -32,6 +32,7 @@ interface SitesGridProps {
   onDuplicateSiteClick(siteId: string): void;
   currentView: 'grid' | 'list';
   publishingStatusLookup: LookupTable<PublishingStatus>;
+  disabledSitesLookup: LookupTable<boolean>;
 }
 
 export function SitesGrid(props: SitesGridProps) {
@@ -43,7 +44,8 @@ export function SitesGrid(props: SitesGridProps) {
     onDuplicateSiteClick,
     currentView,
     publishingStatusLookup,
-    onPublishButtonClick
+    onPublishButtonClick,
+    disabledSitesLookup
   } = props;
   const sites = resource.read();
   const { classes } = useSitesGridStyles();
@@ -61,6 +63,7 @@ export function SitesGrid(props: SitesGridProps) {
               onDuplicateSiteClick={onDuplicateSiteClick}
               onPublishButtonClick={onPublishButtonClick}
               compact={currentView === 'list'}
+              disabled={disabledSitesLookup[site.id]}
             />
           </Grid>
         ))}
