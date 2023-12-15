@@ -372,16 +372,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                                       );
                                     } else {
                                       if (modifiedValue) {
-                                        post(
-                                          snackGuestMessage({
-                                            id: 'fileNameChangedPolicy',
-                                            values: {
-                                              fileName: file.name,
-                                              modifiedFileName: fileName,
-                                              detail: message
-                                            }
-                                          })
-                                        );
+                                        post(snackGuestMessage({ id: message }));
                                       }
                                       return of(
                                         desktopAssetUploadComplete({
