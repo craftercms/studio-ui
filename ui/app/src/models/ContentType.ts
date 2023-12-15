@@ -59,14 +59,7 @@ export type ContentTypeFieldValidations = {
 };
 
 export interface ValidationResult {
-  id:
-    | ValidationKeys
-    | 'outOfSyncContent'
-    | 'itemLocked'
-    | 'noPolicyComply'
-    | 'fileNameChangedPolicy'
-    | 'uploadError'
-    | 'assetUploadStarted';
+  id: string;
   level?: 'required' | 'suggestion' | 'info';
   values?: object;
 }
