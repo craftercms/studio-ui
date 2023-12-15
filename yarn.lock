@@ -3189,8 +3189,8 @@ __metadata:
   linkType: hard
 
 "@mui/x-data-grid@npm:^6.18.3":
-  version: 6.18.4
-  resolution: "@mui/x-data-grid@npm:6.18.4"
+  version: 6.18.5
+  resolution: "@mui/x-data-grid@npm:6.18.5"
   dependencies:
     "@babel/runtime": "npm:^7.23.2"
     "@mui/utils": "npm:^5.14.16"
@@ -3202,7 +3202,7 @@ __metadata:
     "@mui/system": ^5.4.1
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: e765c4f0b7a1c4d111fa4e79f3f8a30339e615f25fb98ec198f042c669b1be4473948f4b4523dd80da57be8d389e11d8d67b28404a8dafdb336ef26172a15441
+  checksum: 2d7738b052c9b4c56fa1421928fe07d4e51067606c2caac942e5256736c06a2d9dbb0e7650e08dd5dea93035a3a127e2a27c3995838b81d53cc425d1fbd3535c
   languageName: node
   linkType: hard
 
