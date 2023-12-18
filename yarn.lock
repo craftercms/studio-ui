@@ -1628,10 +1628,10 @@ __metadata:
     react-is: "npm:^18.2.0"
     react-redux: "npm:^9.0.4"
     redux: "npm:^5.0.0"
-    redux-observable: "npm:^2.0.0"
+    redux-observable: "npm:^3.0.0-rc.2"
     replace-in-file: "npm:^7.0.2"
     rollup: "npm:^4.7.0"
-    rxjs: "npm:^7.0.0"
+    rxjs: "npm:^7.8.1"
     typescript: "npm:^5.3.3"
     uuid: "npm:^9.0.1"
     yargs: "npm:^17.7.2"
@@ -1796,10 +1796,10 @@ __metadata:
     react-swipeable-views: "npm:^0.14.0"
     react-swipeable-views-utils: "npm:^0.14.0"
     redux: "npm:^5.0.0"
-    redux-observable: "npm:^2.0.0"
+    redux-observable: "npm:^3.0.0-rc.2"
     rimraf: "npm:^5.0.5"
     rollup: "npm:^4.7.0"
-    rxjs: "npm:^7.0.0"
+    rxjs: "npm:^7.8.1"
     slugify: "npm:^1.6.6"
     tss-react: "npm:^4.9.3"
     typescript: "npm:^5.3.3"
@@ -15849,15 +15849,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux-observable@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "redux-observable@npm:2.0.0"
-  dependencies:
-    rxjs: "npm:^7.0.0"
-    tslib: "npm:~2.1.0"
+"redux-observable@npm:^3.0.0-rc.2":
+  version: 3.0.0-rc.2
+  resolution: "redux-observable@npm:3.0.0-rc.2"
   peerDependencies:
-    redux: ">=4 <5"
-  checksum: a90f2567c665df8a74142b7df3c0b290e738687d0f63a4058b0c2d23ef42970fc6cd886e26a3ead9395f203ca76877c1a0feb9a27949ebf33affb0b690d7db37
+    redux: ">=5 <6"
+    rxjs: ">=7 <8"
+  checksum: 76064556813915ec7c4e48054cd3a5412ce9d2bb226813dae8a3df17f935f8971861a97cab0e0d37558d68238dd54b940fc7022e2300760b39376e5e70b9d899
   languageName: node
   linkType: hard
 
@@ -16372,6 +16370,15 @@ __metadata:
   dependencies:
     tslib: "npm:^2.1.0"
   checksum: 9c8af134bc557b0c51aff8fd4d8190cbbb1f3ca4602f46cdded04a0d68bb2581e61ae2fbf583aea4f99ee66dac6cf6c4b31856022a9b929f37c521c048f48465
+  languageName: node
+  linkType: hard
+
+"rxjs@npm:^7.8.1":
+  version: 7.8.1
+  resolution: "rxjs@npm:7.8.1"
+  dependencies:
+    tslib: "npm:^2.1.0"
+  checksum: b10cac1a5258f885e9dd1b70d23c34daeb21b61222ee735d2ec40a8685bdca40429000703a44f0e638c27a684ac139e1c37e835d2a0dc16f6fc061a138ae3abb
   languageName: node
   linkType: hard
 
@@ -17784,13 +17791,6 @@ __metadata:
   version: 2.6.2
   resolution: "tslib@npm:2.6.2"
   checksum: bd26c22d36736513980091a1e356378e8b662ded04204453d353a7f34a4c21ed0afc59b5f90719d4ba756e581a162ecbf93118dc9c6be5acf70aa309188166ca
-  languageName: node
-  linkType: hard
-
-"tslib@npm:~2.1.0":
-  version: 2.1.0
-  resolution: "tslib@npm:2.1.0"
-  checksum: 15a0efbca455d7ce0bb2b7eaabbda70293082519e7d7f14b660d2fdb7a70c64f8dbd142067b1de25c84d4acc87922e699726cfe38864af92b056d14dcd01670f
   languageName: node
   linkType: hard
 
