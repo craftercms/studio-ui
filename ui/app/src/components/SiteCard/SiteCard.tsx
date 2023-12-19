@@ -25,10 +25,9 @@ import { Site } from '../../models/Site';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 import Tooltip from '@mui/material/Tooltip';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import CardActionArea from '@mui/material/CardActionArea';
 import { Typography } from '@mui/material';
-import ConfirmDropdown from '../ConfirmDropdown';
 import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
@@ -44,22 +43,8 @@ interface SiteCardProps {
   fallbackImageSrc?: string;
   compact?: boolean;
   publishingStatus: PublishingStatus | false;
+  disabled?: boolean;
 }
-
-const translations = defineMessages({
-  confirmHelperText: {
-    id: 'siteCard.helperText',
-    defaultMessage: 'Delete "{site}" project?'
-  },
-  confirmOk: {
-    id: 'words.yes',
-    defaultMessage: 'Yes'
-  },
-  confirmCancel: {
-    id: 'words.no',
-    defaultMessage: 'No'
-  }
-});
 
 export function SiteCard(props: SiteCardProps) {
   const {
@@ -71,10 +56,10 @@ export function SiteCard(props: SiteCardProps) {
     fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg',
     compact = false,
     publishingStatus,
+    disabled,
     onPublishButtonClick
   } = props;
   const { classes, cx: clsx } = useSiteCardStyles();
-  const { formatMessage } = useIntl();
   const isSiteReady = site.state === 'READY';
 
   return (
@@ -82,7 +67,7 @@ export function SiteCard(props: SiteCardProps) {
       <CardActionArea
         onClick={() => onSiteClick(site)}
         component="div"
-        disabled={!isSiteReady}
+        disabled={disabled || !isSiteReady}
         sx={{ paddingRight: isSiteReady ? undefined : '35px' }}
       >
         <CardHeader
@@ -133,34 +118,33 @@ export function SiteCard(props: SiteCardProps) {
             variant="icon"
             size={compact ? 'small' : 'medium'}
             onClick={(e) => onPublishButtonClick(e, site)}
+            disabled={disabled}
           />
         )}
         {isSiteReady && onEditSiteClick && (
           <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-            <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'}>
+            <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'} disabled={disabled}>
               <EditRoundedIcon />
             </IconButton>
           </Tooltip>
         )}
         {isSiteReady && onDuplicateSiteClick && (
           <Tooltip title={<FormattedMessage defaultMessage="Duplicate" />}>
-            <IconButton onClick={() => onDuplicateSiteClick(site.id)} size={compact ? 'small' : 'medium'}>
+            <IconButton
+              onClick={() => onDuplicateSiteClick(site.id)}
+              size={compact ? 'small' : 'medium'}
+              disabled={disabled}
+            >
               <ContentCopyIcon />
             </IconButton>
           </Tooltip>
         )}
         {isSiteReady && onDeleteSiteClick && (
-          <ConfirmDropdown
-            size={compact ? 'small' : 'medium'}
-            cancelText={formatMessage(translations.confirmCancel)}
-            confirmText={formatMessage(translations.confirmOk)}
-            confirmHelperText={formatMessage(translations.confirmHelperText, { site: site.name })}
-            iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
-            icon={DeleteRoundedIcon}
-            onConfirm={() => {
-              onDeleteSiteClick(site);
-            }}
-          />
+          <Tooltip title={<FormattedMessage defaultMessage="Delete" />}>
+            <IconButton onClick={() => onDeleteSiteClick(site)} size={compact ? 'small' : 'medium'} disabled={disabled}>
+              <DeleteRoundedIcon />
+            </IconButton>
+          </Tooltip>
         )}
       </CardActions>
       {!isSiteReady && <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: 22, right: 10 }} />}

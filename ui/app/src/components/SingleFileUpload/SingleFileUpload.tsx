@@ -55,14 +55,8 @@ const messages = defineMessages({
     id: 'fileUpload.selectFileMessage',
     defaultMessage: 'Please select a file to upload'
   },
-  createPolicy: {
-    id: 'fileUpload.createPolicy',
-    defaultMessage:
-      'The upload file name goes against project policies. Suggested modified file name is: "{name}". Would you like to use the suggested name?'
-  },
   policyError: {
-    id: 'fileUpload.policyError',
-    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies and can\'t be uploaded'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
   }
 });
 
@@ -265,13 +259,11 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         contentMetadata: {
           fileSize: file.size
         }
-      }).subscribe(({ allowed, modifiedValue }) => {
+      }).subscribe(({ allowed, modifiedValue, message }) => {
         if (allowed) {
           if (modifiedValue) {
             const modifiedName = modifiedValue.replace(path, '');
-            setConfirm({
-              body: formatMessage(messages.createPolicy, { name: modifiedName })
-            });
+            setConfirm({ body: message });
             setSuggestedName(modifiedName);
           } else {
             setDisableInput(true);
@@ -282,7 +274,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         } else {
           setConfirm({
             error: true,
-            body: formatMessage(messages.policyError, { fileName: file.name })
+            body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
           });
         }
       });

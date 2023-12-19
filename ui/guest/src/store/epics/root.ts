@@ -335,7 +335,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                           fileSize: file.size
                         }
                       }).pipe(
-                        switchMap(({ allowed, modifiedValue }) => {
+                        switchMap(({ allowed, modifiedValue, message }) => {
                           const aImg = record.element;
                           const originalSrc = aImg.src;
                           if (allowed) {
@@ -372,15 +372,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                                       );
                                     } else {
                                       if (modifiedValue) {
-                                        post(
-                                          snackGuestMessage({
-                                            id: 'fileNameChangedPolicy',
-                                            values: {
-                                              fileName: file.name,
-                                              modifiedFileName: fileName
-                                            }
-                                          })
-                                        );
+                                        post(snackGuestMessage({ id: message }));
                                       }
                                       return of(
                                         desktopAssetUploadComplete({
@@ -410,7 +402,8 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                                 id: 'noPolicyComply',
                                 level: 'required',
                                 values: {
-                                  fileName: file.name
+                                  fileName: file.name,
+                                  detail: message
                                 }
                               })
                             );

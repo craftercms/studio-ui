@@ -378,13 +378,8 @@ const translations = defineMessages({
     id: 'uppyDashboard.maxActiveUploadsReached',
     defaultMessage: '{maxFiles} maximum active uploads reached. Excess has been discarded.'
   },
-  projectPoliciesChangeRequired: {
-    id: 'uppyDashboard.projectPoliciesChangeRequired',
-    defaultMessage: 'File name "{fileName}" requires changes to comply with project policies.'
-  },
   projectPoliciesNoComply: {
-    id: 'uppyDashboard.projectPoliciesNoComply',
-    defaultMessage: 'File name "{fileName}" doesn\'t comply with project policies and can\'t be uploaded.'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
   }
 });
 
@@ -465,9 +460,10 @@ export function UppyDashboard(props: UppyDashboardProps) {
       maxActiveUploads,
       externalMessages: {
         maxFiles: formatMessage(translations.maxFiles, { maxFiles: maxActiveUploads }),
-        projectPoliciesChangeRequired: (fileName) =>
-          formatMessage(translations.projectPoliciesChangeRequired, { fileName }),
-        projectPoliciesNoComply: (fileName) => formatMessage(translations.projectPoliciesNoComply, { fileName })
+        projectPoliciesChangeRequired: (fileName, detail) => detail,
+        projectPoliciesNoComply: (fileName, detail) => {
+          return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
+        }
       },
       onMaxActiveUploadsReached: () => {
         dispatch(
