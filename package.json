@@ -65,7 +65,8 @@
     "nth-check": "^2.0.1",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
-    "fork-ts-checker-webpack-plugin": "^6.5.3"
+    "fork-ts-checker-webpack-plugin": "^6.5.3",
+    "rxjs": "^7.8.1"
   },
   "packageManager": "yarn@4.0.2",
   "scripts": {
