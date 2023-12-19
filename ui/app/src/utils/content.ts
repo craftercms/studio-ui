@@ -491,10 +491,11 @@ function parseElementByContentType(
         items.forEach((item) => {
           const key = getInnerHtml(item.querySelector(':scope > key'));
           if (key) {
+            // Note: as it stands, taxonomies would be considered as "files" and not expanded/parsed as components.
             const isFile =
               // If the `key` tag value is not a path rooted at `/site/website` or `/site/components`
               // or not an `xml` would mean is something other than content (asset, template, script, etc).
-              key.match(/^\/site\/(website|components)\/.+\.xml$/) === null ||
+              key.match(/^\/site\/(website|components)\/.+\.xml$/) === null &&
               // Embedded components don't have a path as the value of `key` (the guid is the value),
               // but/and they have an `inline` attribute.
               item.getAttribute('inline') !== 'true';
