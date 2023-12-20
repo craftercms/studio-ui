@@ -25,7 +25,7 @@ ${"(function (crafterRequire, origin) {
     baseUrl: `${'$'}{staticAssets}/scripts`,
     paths: {
       'libs': `${'$'}{staticAssets}/libs/`,
-      'jquery': `${'$'}{staticAssets}/libs/jquery/dist/jquery`,
+      'jquery': `${'$'}{staticAssets}/libs/jquery/jquery.min`,
       'jquery-ui': `${'$'}{staticAssets}/libs/jquery-ui/jquery-ui.min`,
       'amplify': `${'$'}{staticAssets}/libs/amplify/lib/amplify.core`,
       'noty': `${'$'}{staticAssets}/libs/notify/notify.min`

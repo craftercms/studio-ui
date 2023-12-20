@@ -24,7 +24,7 @@
   <script src="/studio/static-assets/yui/container/container-min.js"></script>
   <script src="/studio/static-assets/yui/json/json-min.js"></script>
   <script src="/studio/static-assets/yui/yahoo/yahoo-min.js"></script>
-  <script src="/studio/static-assets/libs/jquery/dist/jquery-3.4.1.min.js"></script>
+  <script src="/studio/static-assets/libs/jquery/jquery.min.js"></script>
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
   <script src="/studio/static-assets/components/cstudio-common/common-api.js"></script>
   <script src="/studio/static-assets/scripts/crafter.js"></script>

@@ -52,3 +52,16 @@ else
 fi
 
 echo "jQuery UI build complete"
+
+# jquery - legacy
+rm -rf "$libsDirectory/jquery"
+mkdir "$libsDirectory/jquery"
+rsync -ar --delete ../../node_modules/jquery/dist/jquery.min.js "$libsDirectory/jquery/jquery.min.js"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # Mac OS sed command needs a prefix for the backup file, if '' (empty) it won't create a backup file
+  sed -i '' 's/typeof define\&\&define.amd\&\&define/typeof crafterDefine\&\&crafterDefine.amd\&\&crafterDefine/' ../../static-assets/libs/jquery/jquery.min.js
+else
+  sed -i 's/typeof define\&\&define.amd\&\&define/typeof crafterDefine\&\&crafterDefine.amd\&\&crafterDefine/' ../../static-assets/libs/jquery/jquery.min.js
+fi
+
+echo "jQuery build complete"
