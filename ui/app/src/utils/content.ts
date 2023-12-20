@@ -505,8 +505,8 @@ function parseElementByContentType(
                 value: getInnerHtml(item.querySelector(':scope > value'))
               });
             } else {
-              const path = getInnerHtml(item.querySelector(':scope > include')) || key;
               const component = item.querySelector(':scope > component');
+              const path = getInnerHtml(item.querySelector(':scope > include')) || (!component ? key : null);
               const instance = parseContentXML(
                 component ? wrapElementInAuxDocument(component) : null,
                 path,
