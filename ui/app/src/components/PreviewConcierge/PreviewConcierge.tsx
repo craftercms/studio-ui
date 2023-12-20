@@ -88,8 +88,8 @@ import {
   sortItem,
   updateField
 } from '../../services/content';
-import { filter, map, switchMap, takeUntil } from 'rxjs/operators';
-import { forkJoin, Observable, of } from 'rxjs';
+import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
@@ -187,6 +187,7 @@ import useAuth from '../../hooks/useAuth';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { isSameDay } from '../../utils/datetime';
 import compatibilityList from './compatibilityList';
+import ContentType from '../../models/ContentType';
 
 const originalDocDomain = document.domain;
 
@@ -217,7 +218,7 @@ const issueDescriptorRequest = (props) => {
       takeUntil(guestToHost$.pipe(filter(({ type }) => [guestCheckIn.type, guestCheckOut.type].includes(type)))),
       switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
         let requests: Array<Observable<ContentInstance>> = [];
-        let sandboxItemPaths = [];
+        let sandboxItemPaths = []; // Used to collect the paths to fetch the sandbox items corresponding to the Content Instances.
         let sandboxItemPathLookup = {};
         Object.values(obj.modelLookup).forEach((model) => {
           if (model.craftercms.path) {
@@ -264,7 +265,8 @@ const issueDescriptorRequest = (props) => {
       const modelIdByPath = {};
       Object.values(modelLookup).forEach((model) => {
         // Embedded components don't have a path.
-        if (model.craftercms.path) {
+        // Items that weren't flattened would come with a `null` id.
+        if (model.craftercms.path && model.craftercms.id) {
           modelIdByPath[model.craftercms.path] = model.craftercms.id;
         }
       });
@@ -321,6 +323,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
+  const contentTypes$Ref = useRef<BehaviorSubject<Record<string, ContentType>>>();
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site: siteId });
   const { enqueueSnackbar } = useSnackbar();
@@ -447,7 +450,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     },
     env,
     xbCompatConsoleWarningPrinted: false,
-    xbDetectionTimeoutMs
+    xbDetectionTimeoutMs,
+    contentTypes$: contentTypes$Ref.current
   });
 
   const onRtePickerResult = (payload?: { path: string; name: string }) => {
@@ -547,6 +551,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   // Post content types
   useEffect(() => {
     contentTypes && getHostToGuestBus().next(contentTypesResponse({ contentTypes: Object.values(contentTypes) }));
+    if (!contentTypes$Ref.current) contentTypes$Ref.current = new BehaviorSubject(contentTypes);
+    contentTypes$Ref.current.next(contentTypes);
   }, [contentTypes]);
 
   // region guestToHost$ subscription
@@ -580,6 +586,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       // endregion
       const { type, payload } = action;
       const permissions = user?.permissionsBySite[siteId];
+      const contentTypes$ = upToDateRefs.current.contentTypes$.pipe(
+        filter((contentTypes) => Boolean(contentTypes)),
+        take(1)
+      );
       switch (type) {
         case guestSiteLoad.type:
         case guestCheckIn.type:
@@ -620,14 +630,16 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           const { url, location } = payload;
           const path = getPathFromPreviewURL(url);
           dispatch(guestCheckIn({ location, site: siteId, path }));
-          issueDescriptorRequest({
-            site: siteId,
-            path,
-            contentTypes,
-            requestedSourceMapPaths,
-            dispatch,
-            completeAction: fetchPrimaryGuestModelComplete,
-            permissions
+          contentTypes$.subscribe((contentTypes) => {
+            issueDescriptorRequest({
+              site: siteId,
+              path,
+              contentTypes,
+              requestedSourceMapPaths,
+              dispatch,
+              completeAction: fetchPrimaryGuestModelComplete,
+              permissions
+            });
           });
           break;
         }
@@ -685,28 +697,31 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             } else {
               const path = payload.path;
 
-              contentTypes && hostToGuest$.next(contentTypesResponse({ contentTypes: Object.values(contentTypes) }));
-
-              issueDescriptorRequest({
-                site: siteId,
-                path,
-                contentTypes,
-                requestedSourceMapPaths,
-                dispatch,
-                completeAction: fetchPrimaryGuestModelComplete,
-                permissions
+              contentTypes$.subscribe((contentTypes) => {
+                hostToGuest$.next(contentTypesResponse({ contentTypes: Object.values(contentTypes) }));
+                issueDescriptorRequest({
+                  site: siteId,
+                  path,
+                  contentTypes,
+                  requestedSourceMapPaths,
+                  dispatch,
+                  completeAction: fetchPrimaryGuestModelComplete,
+                  permissions
+                });
               });
             }
           } /* else if (type === FETCH_GUEST_MODEL) */ else {
             if (payload.path?.startsWith('/')) {
-              issueDescriptorRequest({
-                site: siteId,
-                path: payload.path,
-                contentTypes,
-                requestedSourceMapPaths,
-                dispatch,
-                completeAction: fetchGuestModelComplete,
-                permissions
+              contentTypes$.subscribe((contentTypes) => {
+                issueDescriptorRequest({
+                  site: siteId,
+                  path: payload.path,
+                  contentTypes,
+                  requestedSourceMapPaths,
+                  dispatch,
+                  completeAction: fetchGuestModelComplete,
+                  permissions
+                });
               });
             } else {
               return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);

@@ -27,25 +27,28 @@ import {
   emptyFieldClass,
   eventCaptureOverlayAttribute,
   iceBypassKeyClass,
-  moveModeClass
+  moveModeClass,
+  XbUtilityClasses
 } from '../constants';
 import { Interpolation } from '@emotion/react';
 import { Theme } from '@mui/material/styles';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from 'redux';
 
-export interface GuestGlobalStyleRules {
-  'craftercms-asset-uploader-mask-container': Interpolation<Theme>;
-  'craftercms-asset-uploader-mask': Interpolation<Theme>;
-  'craftercms-field-instance-switcher': Interpolation<Theme>;
-  '.craftercms-placeholder-spinner': Interpolation<Theme>;
-  '.craftercms-content-tree-locate': Interpolation<Theme>;
-  '.mce-content-body': Interpolation<Theme>;
-  '@keyframes craftercms-uploader-mask-animation': Interpolation<Theme>;
-  '@keyframes craftercms-placeholder-animation': Interpolation<Theme>;
-  '@keyframes craftercms-placeholder-inner-animation': Interpolation<Theme>;
-  '@keyframes craftercms-content-tree-locate-animation': Interpolation<Theme>;
-}
+export type GlobalStyleKeys =
+  | 'craftercms-asset-uploader-mask-container'
+  | 'craftercms-asset-uploader-mask'
+  | 'craftercms-field-instance-switcher'
+  | '.craftercms-placeholder-spinner'
+  | '.craftercms-content-tree-locate'
+  | '.mce-content-body'
+  | '@keyframes craftercms-uploader-mask-animation'
+  | '@keyframes craftercms-placeholder-animation'
+  | '@keyframes craftercms-placeholder-inner-animation'
+  | '@keyframes craftercms-content-tree-locate-animation'
+  | `.${XbUtilityClasses}`;
+
+export type GuestGlobalStyleRules = Record<GlobalStyleKeys, Interpolation<Theme>>;
 
 export interface GuestGlobalStylesProps {
   /**
