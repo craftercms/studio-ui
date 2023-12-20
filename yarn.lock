@@ -12886,11 +12886,11 @@ __metadata:
   linkType: hard
 
 "marked-highlight@npm:^2.0.9":
-  version: 2.0.9
-  resolution: "marked-highlight@npm:2.0.9"
+  version: 2.1.0
+  resolution: "marked-highlight@npm:2.1.0"
   peerDependencies:
     marked: ">=4 <12"
-  checksum: 53f501462d9fd085ac8954f70484747c9042a4ce6c4b79287b98e59b020ee9fdd719a476962d68a1b8a87b3ac5b40768e38bc487c990829b3a74569af1e74cd9
+  checksum: 2f9a8cf4a4bddc690060e9bdb6b9fcfd3efff4ddaa0fbed2d39057738fea1c6d5a9b108fb96cca2acdc92f646e3ea972546ade5c1cc7ec0fe2df1356c62c3193
   languageName: node
   linkType: hard
 
