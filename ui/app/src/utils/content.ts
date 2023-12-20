@@ -485,27 +485,35 @@ function parseElementByContentType(
         });
       } else {
         items.forEach((item) => {
-          let path = getInnerHtml(item.querySelector(':scope > include'));
-          const component = item.querySelector(':scope > component');
-          const itemKey = getInnerHtml(item.querySelector(':scope > key'));
-          if (!path && !component) {
-            path = itemKey;
-          }
-          // Embedded components have no .xml in their key
-          const isFile = Boolean(itemKey) && !itemKey.endsWith('.xml') && Boolean(!item.getAttribute('inline'));
-          if (isFile) {
-            array.push({
-              key: itemKey,
-              value: getInnerHtml(item.querySelector(':scope > value'))
-            });
+          const key = getInnerHtml(item.querySelector(':scope > key'));
+          if (key) {
+            // Note: as it stands, taxonomies would be considered as "files" and not expanded/parsed as components.
+            const isFile =
+              // If the `key` tag value is not a path rooted at `/site/website` or `/site/components`
+              // or not an `xml` would mean is something other than content (asset, template, script, etc).
+              key.match(/^\/site\/(website|components)\/.+\.xml$/) === null &&
+              // Embedded components don't have a path as the value of `key` (the guid is the value),
+              // but/and they have an `inline` attribute.
+              item.getAttribute('inline') !== 'true';
+            if (isFile) {
+              array.push({
+                key,
+                value: getInnerHtml(item.querySelector(':scope > value'))
+              });
+            } else {
+              const component = item.querySelector(':scope > component');
+              const path = getInnerHtml(item.querySelector(':scope > include')) || (!component ? key : null);
+              const instance = parseContentXML(
+                component ? wrapElementInAuxDocument(component) : null,
+                path,
+                contentTypesLookup,
+                instanceLookup
+              );
+              array.push(instance);
+            }
           } else {
-            const instance = parseContentXML(
-              component ? wrapElementInAuxDocument(component) : null,
-              path,
-              contentTypesLookup,
-              instanceLookup
-            );
-            array.push(instance);
+            // Not sure if there can be a case without a `key`. Leaving this case based on the previous code checking for it.
+            array.push(item);
           }
         });
       }
