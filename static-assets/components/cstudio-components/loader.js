@@ -151,7 +151,7 @@
   Loader.addModule({
     type: 'js',
     name: 'jquery',
-    path: 'libs/jquery/dist/jquery.js'
+    path: 'libs/jquery/jquery.min.js'
   });
 
   Loader.addModule({

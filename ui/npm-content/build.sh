@@ -65,7 +65,7 @@ echo "Building Monaco editor..."
 yarn build:monaco
 echo "Monaco editor build complete"
 
-# jquery
+# jquery - custom build for guest
 npmContentBuildDirectory=./build
 guestBuildDirectory=../guest/src/
 # clean/create npm build directories
@@ -85,5 +85,16 @@ rsync -ar --delete ./jquery-src/dist/jquery.js "$npmContentBuildDirectory/jquery
 rsync -ar --delete ./src/jquery/index.d.ts "$guestBuildDirectory/jquery/index.d.ts"
 rsync -ar --delete ./jquery-src/dist/jquery.js "$guestBuildDirectory/jquery/index.js"
 rm -rf jquery-src
+
+# jquery - legacy
+rm -rf "$libsDirectory/jquery"
+mkdir "$libsDirectory/jquery"
+rsync -ar --delete ../../node_modules/jquery/dist/jquery.min.js "$libsDirectory/jquery/jquery.min.js"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # Mac OS sed command needs a prefix for the backup file, if '' (empty) it won't create a backup file
+  sed -i '' 's/typeof define\&\&define.amd\&\&define/typeof crafterDefine\&\&crafterDefine.amd\&\&crafterDefine/' ../../static-assets/libs/jquery/jquery.min.js
+else
+  sed -i 's/typeof define\&\&define.amd\&\&define/typeof crafterDefine\&\&crafterDefine.amd\&\&crafterDefine/' ../../static-assets/libs/jquery/jquery.min.js
+fi
 
 echo "jQuery build complete"
