@@ -202,9 +202,10 @@ interface CompareVersionsDetailsContainerProps {
   contentB: ContentInstance;
   unChanged: boolean;
   renderContent: (content) => React.ReactNode;
+  noContent?: React.ReactNode;
 }
 function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerProps) {
-  const { contentA, contentB, unChanged, renderContent } = props;
+  const { contentA, contentB, unChanged, renderContent, noContent = <Box>no content set</Box> } = props;
 
   return !unChanged ? (
     <Box
@@ -217,8 +218,8 @@ function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerP
         }
       }}
     >
-      {renderContent(contentA)}
-      {renderContent(contentB)}
+      {contentA ? renderContent(contentA) : noContent}
+      {contentB ? renderContent(contentB) : noContent}
     </Box>
   ) : (
     <Box
@@ -230,7 +231,7 @@ function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerP
         }
       }}
     >
-      {renderContent(contentA)}
+      {contentA ? renderContent(contentA) : noContent}
     </Box>
   );
 }
@@ -352,7 +353,13 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
               ) : fieldType === 'date-time' ? (
                 <Tooltip title={content}>
                   <Typography>
-                    {asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)}
+                    {content
+                      ? asLocalizedDateTime(
+                          new Date(content).getTime(),
+                          locale.localeCode,
+                          locale.dateTimeFormatOptions
+                        )
+                      : ''}
                   </Typography>
                 </Tooltip>
               ) : fieldType === 'boolean' ? (
@@ -370,7 +377,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
                   ))}
                 </Box>
               ) : (
-                <></>
+                <Box>{JSON.stringify(content)}</Box>
               )
             }
           />
@@ -505,8 +512,8 @@ function MonacoWrapper(props: MonacoWrapperProps) {
   const ref = useRef();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [cleanText, setCleanText] = useState(false);
-  const originalContent = useMemo(() => (cleanText ? removeTags(contentA) : contentA), [cleanText, contentA]);
-  const modifiedContent = useMemo(() => (cleanText ? removeTags(contentB) : contentB), [cleanText, contentB]);
+  const originalContent = useMemo(() => (cleanText ? removeTags(contentA ?? '') : contentA), [cleanText, contentA]);
+  const modifiedContent = useMemo(() => (cleanText ? removeTags(contentB ?? '') : contentB), [cleanText, contentB]);
   const [diffEditor, setDiffEditor] = useState(null);
 
   useEffect(() => {
