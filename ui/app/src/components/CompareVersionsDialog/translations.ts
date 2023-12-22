@@ -20,6 +20,12 @@ export const translations = defineMessages({
   backToSelectRevision: {
     id: 'compareVersionsDialog.back.selectRevision',
     defaultMessage: 'Back to select revision'
+  },
+  compareXml: {
+    defaultMessage: 'Compare XML'
+  },
+  compareContent: {
+    defaultMessage: 'Compare Content'
   }
 });
 

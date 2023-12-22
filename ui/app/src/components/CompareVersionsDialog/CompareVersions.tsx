@@ -25,11 +25,10 @@ import { AsDayMonthDateTime } from '../VersionList';
 import Paper from '@mui/material/Paper';
 import useMount from '../../hooks/useMount';
 import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import Typography from '@mui/material/Typography';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import Chip from '@mui/material/Chip';
 import { EmptyState } from '../EmptyState';
 import { withMonaco } from '../../utils/system';
 import Box from '@mui/material/Box';
@@ -43,11 +42,16 @@ import { batchActions } from '../../state/actions/misc';
 import { compareVersion } from '../../state/actions/versions';
 import { showCompareVersionsDialog, showHistoryDialog } from '../../state/actions/dialogs';
 import { useDispatch } from 'react-redux';
-import { diffArrays } from './utils';
+import { diffArrays, getItemDiffStatus } from './utils';
 import useLocale from '../../hooks/useLocale';
 import { asLocalizedDateTime } from '../../utils/datetime';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import Button from '@mui/material/Button';
+import useSpreadState from '../../hooks/useSpreadState';
+import { toColor } from '../../utils/string';
+import { PartialSxRecord } from '../../models';
+import CodeRounded from '@mui/icons-material/CodeRounded';
+import { fromString, serialize } from '../../utils/xml';
 
 const translations = defineMessages({
   changed: {
@@ -77,10 +81,11 @@ interface CompareVersionsProps {
   b: any;
   contentTypeId: string;
   contentTypes: LookupTable<ContentType>;
+  compareXml: boolean;
 }
 
 export function CompareVersions(props: CompareVersionsProps) {
-  const { a, b, contentTypes, contentTypeId } = props;
+  const { a, b, contentTypes, contentTypeId, compareXml } = props;
   const values = Object.values(contentTypes[contentTypeId].fields) as ContentTypeField[];
   const dispatch = useDispatch();
 
@@ -186,12 +191,16 @@ export function CompareVersions(props: CompareVersionsProps) {
           background: (theme) => theme.palette.background.paper
         }}
       >
-        <Paper>
-          {contentTypes &&
-            values
-              .filter((value) => !systemPropsList.includes(value.id))
-              .map((field) => <CompareFieldPanel a={a.content} b={b.content} field={field} key={field.id} />)}
-        </Paper>
+        {compareXml ? (
+          <MonacoWrapper contentA={a.xml} contentB={b.xml} isHTML={false} sxs={{ editor: { height: '400px' } }} />
+        ) : (
+          <Paper>
+            {contentTypes &&
+              values
+                .filter((value) => !systemPropsList.includes(value.id))
+                .map((field) => <CompareFieldPanel a={a} b={b} field={field} key={field.id} />)}
+          </Paper>
+        )}
       </Box>
     </Box>
   );
@@ -200,14 +209,22 @@ export function CompareVersions(props: CompareVersionsProps) {
 interface CompareVersionsDetailsContainerProps {
   contentA: ContentInstance;
   contentB: ContentInstance;
-  unChanged: boolean;
   renderContent: (content) => React.ReactNode;
   noContent?: React.ReactNode;
 }
 function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerProps) {
-  const { contentA, contentB, unChanged, renderContent, noContent = <Box>no content set</Box> } = props;
+  const {
+    contentA,
+    contentB,
+    renderContent,
+    noContent = (
+      <Box>
+        <Typography color="textSecondary">no content set</Typography>
+      </Box>
+    )
+  } = props;
 
-  return !unChanged ? (
+  return (
     <Box
       sx={{
         display: 'flex',
@@ -221,18 +238,6 @@ function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerP
       {contentA ? renderContent(contentA) : noContent}
       {contentB ? renderContent(contentB) : noContent}
     </Box>
-  ) : (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        '& img': {
-          maxHeight: '200px'
-        }
-      }}
-    >
-      {contentA ? renderContent(contentA) : noContent}
-    </Box>
   );
 }
 
@@ -244,18 +249,17 @@ interface CompareFieldPanelProps {
 
 function CompareFieldPanel(props: CompareFieldPanelProps) {
   const { a, b, field } = props;
-  const [unChanged, setUnChanged] = useState(false);
-  const [open, setOpen] = useState(false);
-  const { formatMessage } = useIntl();
+  const [unChanged, setUnChanged] = useState(true);
   const fieldType = field.type;
   const locale = useLocale();
+  const [compareXml, setCompareXml] = useState(false);
+  const aFieldDoc = fromString(a.xml).querySelector(`page > ${field.id}`);
+  const bFieldDoc = fromString(b.xml).querySelector(`page > ${field.id}`);
+  const aFieldXml = aFieldDoc ? serialize(aFieldDoc) : '';
+  const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
 
-  let contentA = a[field.id];
-  let contentB = b[field.id];
-
-  useEffect(() => {
-    setOpen(!unChanged);
-  }, [unChanged, setOpen]);
+  let contentA = a.content[field.id];
+  let contentB = b.content[field.id];
 
   useMount(() => {
     switch (fieldType) {
@@ -266,6 +270,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
         break;
       case 'node-selector':
       case 'checkbox-group':
+      case 'repeat':
         setUnChanged(JSON.stringify(contentA ?? '') === JSON.stringify(contentB ?? ''));
         break;
       default:
@@ -274,10 +279,9 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
     }
   });
 
-  return (
+  return !unChanged ? (
     <Accordion
       key={field.id}
-      onChange={() => setOpen(!open)}
       sx={{
         margin: 0,
         border: 0,
@@ -289,52 +293,57 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
       }}
       TransitionProps={{ mountOnEnter: true }}
     >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        sx={{ [`.${accordionSummaryClasses.content}`]: { justifyContent: 'space-between', alignItems: 'center' } }}
+      >
         <Typography>
           <Box component="span" sx={{ fontWeight: 600 }}>
             {field.name}{' '}
           </Box>
           ({field.id})
         </Typography>
-        {unChanged && (
-          <Chip
-            label={formatMessage(translations.unchanged)}
-            sx={{
-              marginLeft: 'auto',
-              height: '26px',
-              color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
-              backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1)
-            }}
-          />
+        {(fieldType === 'node-selector' || fieldType === 'repeat') && (
+          <Tooltip
+            title={
+              compareXml ? (
+                <FormattedMessage defaultMessage="Compare content" />
+              ) : (
+                <FormattedMessage defaultMessage="Compare xml" />
+              )
+            }
+          >
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                setCompareXml(!compareXml);
+              }}
+            >
+              <CodeRounded fontSize="small" />
+            </IconButton>
+          </Tooltip>
         )}
       </AccordionSummary>
       <AccordionDetails>
         {fieldType === 'text' || fieldType === 'html' ? (
-          !unChanged ? (
-            <MonacoWrapper contentA={contentA} contentB={contentB} isHTML={fieldType === 'html'} />
-          ) : (
-            <Typography>{contentA}</Typography>
-          )
+          <MonacoWrapper contentA={contentA} contentB={contentB} isHTML={fieldType === 'html'} />
         ) : fieldType === 'node-selector' ? (
-          <ContentInstanceComponents contentA={contentA} contentB={contentB} />
-        ) : fieldType === 'checkbox-group' ? (
-          !unChanged ? (
-            <MonacoWrapper
-              contentA={(contentA ?? []).map((item) => item.key).join('\n')}
-              contentB={(contentB ?? []).map((item) => item.key).join('\n')}
-            />
+          compareXml ? (
+            <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isHTML={false} />
           ) : (
-            <Box>
-              {contentA.map((item) => (
-                <Typography key={item.key}>{item.key}</Typography>
-              ))}
-            </Box>
+            <ContentInstanceComponents contentA={contentA} contentB={contentB} />
           )
+        ) : fieldType === 'checkbox-group' ? (
+          <MonacoWrapper
+            contentA={(contentA ?? []).map((item) => item.key).join('\n')}
+            contentB={(contentB ?? []).map((item) => item.key).join('\n')}
+          />
+        ) : fieldType === 'repeat' ? (
+          <RepeatGroupItems contentA={contentA} contentB={contentB} />
         ) : (
           <CompareVersionsDetailsContainer
             contentA={contentA}
             contentB={contentB}
-            unChanged={unChanged}
             renderContent={(content) =>
               fieldType === 'image' ? (
                 <Box sx={{ textAlign: 'center' }}>
@@ -384,6 +393,8 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
         )}
       </AccordionDetails>
     </Accordion>
+  ) : (
+    <></>
   );
 }
 
@@ -400,30 +411,24 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const contentById = useMemo(() => {
     const byId = {};
     [...(contentA ?? []), ...(contentB ?? [])].forEach((item) => {
-      byId[item.craftercms.id] = item;
+      if (item.craftercms?.id) {
+        byId[item.craftercms.id] = item;
+      } else {
+        byId[item.key] = item;
+      }
     });
     return byId;
   }, [contentA, contentB]);
 
   const getItemLabel = (item) => {
-    return item.craftercms.label ?? itemsByPath?.[item.craftercms.path]?.label ?? item.craftercms.id;
-  };
-
-  const getItemStatus = (diff): string => {
-    if (diff.added) {
-      return 'new';
-    }
-    if (diff.removed) {
-      return 'deleted';
-    }
-    return 'unchanged';
+    return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
 
   useEffect(() => {
     setDiff(
       diffArrays(
-        (contentA ?? []).map((item) => item.craftercms.id),
-        (contentB ?? []).map((item) => item.craftercms.id)
+        (contentA ?? []).map((item, index) => item.craftercms?.id ?? item.key),
+        (contentB ?? []).map((item, index) => item.craftercms?.id ?? item.key)
       )
     );
   }, [contentA, contentB]);
@@ -473,11 +478,11 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
                   marginBottom: 0
                 }
               }}
-              className={getItemStatus(part) ?? ''}
+              className={getItemDiffStatus(part) ?? ''}
               key={`${id}-${index}`}
             >
               <Typography sx={{ fontSize: '14px' }}> {getItemLabel(contentById[id])}</Typography>
-              {getItemStatus(part) === 'unchanged' && (
+              {getItemDiffStatus(part) === 'unchanged' && (
                 <Typography
                   sx={{
                     fontSize: '14px',
@@ -497,10 +502,64 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   );
 }
 
+interface RepeatGroupItemsProps {
+  contentA: any[];
+  contentB: any[];
+}
+
+function RepeatGroupItems(props: RepeatGroupItemsProps) {
+  const { contentA, contentB } = props;
+  const [diff, setDiff] = useState(null);
+  const [itemsById, setItemsById] = useSpreadState({});
+
+  useEffect(() => {
+    setDiff(
+      diffArrays(
+        (contentA ?? []).map((item, index) => {
+          const hash = toColor(JSON.stringify(item));
+          setItemsById({ [hash]: item });
+          return hash;
+        }),
+        (contentB ?? []).map((item, index) => {
+          const hash = toColor(JSON.stringify(item));
+          setItemsById({ [hash]: item });
+          return hash;
+        })
+      )
+    );
+  }, [contentA, contentB, setItemsById]);
+
+  return (
+    <Box
+      component="section"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%'
+      }}
+    >
+      {diff?.length ? (
+        diff.map((part) =>
+          part.value.map((id, index) => (
+            <Box key={`${id}-${index}`}>
+              <Typography>
+                {`Item ${JSON.stringify(itemsById[id])}`} - {getItemDiffStatus(part)}
+              </Typography>
+            </Box>
+          ))
+        )
+      ) : (
+        <></>
+      )}
+    </Box>
+  );
+}
+
 interface MonacoWrapperProps {
   contentA: string;
   contentB: string;
   isHTML?: boolean;
+  sxs?: PartialSxRecord<'root' | 'editor'>;
 }
 
 function removeTags(content: string) {
@@ -508,7 +567,7 @@ function removeTags(content: string) {
 }
 
 function MonacoWrapper(props: MonacoWrapperProps) {
-  const { contentA, contentB, isHTML = false } = props;
+  const { contentA, contentB, isHTML = false, sxs } = props;
   const ref = useRef();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [cleanText, setCleanText] = useState(false);
@@ -546,7 +605,7 @@ function MonacoWrapper(props: MonacoWrapperProps) {
   }, [diffEditor, originalContent, modifiedContent, prefersDarkMode]);
 
   return (
-    <Box>
+    <Box sx={sxs?.root}>
       {isHTML && (
         <Button variant="outlined" onClick={() => setCleanText(!cleanText)}>
           {cleanText ? (
@@ -563,7 +622,8 @@ function MonacoWrapper(props: MonacoWrapperProps) {
           height: '150px',
           '&.unChanged': {
             height: 'auto'
-          }
+          },
+          ...sxs?.editor
         }}
       />
     </Box>

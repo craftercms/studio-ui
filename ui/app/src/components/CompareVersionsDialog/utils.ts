@@ -49,7 +49,9 @@ export interface CompareVersionsDialogContainerProps
     Pick<
       CompareVersionsDialogProps,
       'contentTypesBranch' | 'versionsBranch' | 'selectedA' | 'selectedB' | 'disableItemSwitching'
-    > {}
+    > {
+  compareXml: boolean;
+}
 
 // region diffArrays
 function _clonePath(path) {
@@ -259,3 +261,13 @@ export function diffArrays(oldArray, newArray) {
   }
 }
 // endregion
+
+export const getItemDiffStatus = (diff): string => {
+  if (diff.added) {
+    return 'new';
+  }
+  if (diff.removed) {
+    return 'deleted';
+  }
+  return 'unchanged';
+};

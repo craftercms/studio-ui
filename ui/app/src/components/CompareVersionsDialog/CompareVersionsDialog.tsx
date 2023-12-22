@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { CompareVersionsDialogProps } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -27,6 +27,7 @@ import { useDispatch } from 'react-redux';
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const isSelectMode = props.selectedA && !props.selectedB;
   const isCompareMode = props.selectedA && props.selectedB;
+  const [compareXml, setCompareXml] = useState(false);
   const {
     selectedA,
     selectedB,
@@ -69,7 +70,16 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
               }
             ]
           : null,
-        rightActions
+        rightActions: [
+          {
+            icon: { id: '@mui/icons-material/CodeRounded' },
+            onClick: () => setCompareXml(!compareXml),
+            'aria-label': compareXml
+              ? formatMessage(translations.compareContent)
+              : formatMessage(translations.compareXml)
+          },
+          ...(rightActions ?? [])
+        ]
       }}
       maxWidth={isCompareMode ? 'lg' : 'md'}
       {...rest}
@@ -82,6 +92,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         contentTypesBranch={contentTypesBranch}
         selectedA={selectedA}
         selectedB={selectedB}
+        compareXml={compareXml}
       />
     </EnhancedDialog>
   );

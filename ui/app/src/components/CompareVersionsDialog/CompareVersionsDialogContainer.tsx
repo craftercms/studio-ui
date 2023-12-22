@@ -44,12 +44,17 @@ import { parseContentXML } from '../../utils/content';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
-  const { selectedA, selectedB, versionsBranch, disableItemSwitching = false, contentTypesBranch } = props;
+  const { selectedA, selectedB, versionsBranch, disableItemSwitching = false, contentTypesBranch, compareXml } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
   const compareMode = selectedA && selectedB;
-  const [selectionContent, setSelectionContent] = useSpreadState({ contentA: null, contentB: null });
+  const [selectionContent, setSelectionContent] = useSpreadState({
+    contentA: null,
+    contentB: null,
+    contentAXml: null,
+    contentBXml: null
+  });
   const siteId = useActiveSiteId();
   const isCompareDataReady =
     compareVersionsBranch?.compareVersions &&
@@ -66,7 +71,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       ]).subscribe(([contentA, contentB]) => {
         setSelectionContent({
           contentA: parseContentXML(fromString(contentA as string), selectedA.path, contentTypesBranch.byId, {}),
-          contentB: parseContentXML(fromString(contentB as string), selectedB.path, contentTypesBranch.byId, {})
+          contentB: parseContentXML(fromString(contentB as string), selectedB.path, contentTypesBranch.byId, {}),
+          contentAXml: contentA,
+          contentBXml: contentB
         });
       });
     }
@@ -122,15 +129,18 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                 a={{
                   ...selectedA,
                   ...compareVersionsBranch.compareVersions?.[0],
-                  content: selectionContent.contentA
+                  content: selectionContent.contentA,
+                  xml: selectionContent.contentAXml
                 }}
                 b={{
                   ...selectedB,
                   ...compareVersionsBranch.compareVersions?.[1],
-                  content: selectionContent.contentB
+                  content: selectionContent.contentB,
+                  xml: selectionContent.contentBXml
                 }}
                 contentTypeId={item.contentTypeId}
                 contentTypes={contentTypesBranch.byId}
+                compareXml={compareXml}
               />
             )}
           </>
