@@ -2985,7 +2985,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/base@npm:5.0.0-beta.28":
+"@mui/base@npm:5.0.0-beta.28, @mui/base@npm:^5.0.0-beta.20, @mui/base@npm:^5.0.0-beta.22":
   version: 5.0.0-beta.28
   resolution: "@mui/base@npm:5.0.0-beta.28"
   dependencies:
@@ -3004,28 +3004,6 @@ __metadata:
     "@types/react":
       optional: true
   checksum: fb37f4301035bfcd5b6a7280521e3fcccd46ee34f096318c93516c03f3ed9e0bcb0dfbdeeca7611d0ccc42eadef483b7fd9c253cb3a19bbe86d3575144af84ac
-  languageName: node
-  linkType: hard
-
-"@mui/base@npm:^5.0.0-beta.20, @mui/base@npm:^5.0.0-beta.22":
-  version: 5.0.0-beta.27
-  resolution: "@mui/base@npm:5.0.0-beta.27"
-  dependencies:
-    "@babel/runtime": "npm:^7.23.5"
-    "@floating-ui/react-dom": "npm:^2.0.4"
-    "@mui/types": "npm:^7.2.11"
-    "@mui/utils": "npm:^5.15.0"
-    "@popperjs/core": "npm:^2.11.8"
-    clsx: "npm:^2.0.0"
-    prop-types: "npm:^15.8.1"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 944f2a020cb6b58f5dccde55cdc25ec486b26a1f89ee18d108b555e9e8855834890664e4b67eb6e3d1961c3847cd14ec725dd6a28d7e462a26f933c5ef8472b3
   languageName: node
   linkType: hard
 
@@ -3192,25 +3170,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.14.14, @mui/utils@npm:^5.14.16, @mui/utils@npm:^5.15.0":
-  version: 5.15.0
-  resolution: "@mui/utils@npm:5.15.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.23.5"
-    "@types/prop-types": "npm:^15.7.11"
-    prop-types: "npm:^15.8.1"
-    react-is: "npm:^18.2.0"
-  peerDependencies:
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 241ce42bc2f18df46f2adbbac640f16a64afd55a7829b10ef944d6648d45223ecad825ee56a44db29f6c387384e3977e30a966ea4425bda667e92989dd218b0a
-  languageName: node
-  linkType: hard
-
-"@mui/utils@npm:^5.15.1":
+"@mui/utils@npm:^5.14.14, @mui/utils@npm:^5.14.16, @mui/utils@npm:^5.15.1":
   version: 5.15.1
   resolution: "@mui/utils@npm:5.15.1"
   dependencies:
