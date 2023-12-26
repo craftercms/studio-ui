@@ -65,7 +65,7 @@ echo "Building Monaco editor..."
 yarn build:monaco
 echo "Monaco editor build complete"
 
-# jquery - custom build for XB
+# jQuery - Custom build for XB
 npmContentBuildDirectory=./build
 guestBuildDirectory=../guest/src/
 # clean/create npm build directories
