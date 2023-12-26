@@ -23,6 +23,7 @@
     "bootstrap": "^5.3.2",
     "css-loader": "^6.8.1",
     "file-loader": "^6.2.0",
+    "jquery": "^3.7.1",
     "jquery-ui": "^1.13.2",
     "jquery-ui-css": "^1.11.5",
     "js-yaml": "^4.1.0",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",
+    "@types/jquery": "^3",
     "@types/rimraf": "^4.0.5",
     "build-if-changed": "^1.5.5",
     "grunt": "^1.6.1",
