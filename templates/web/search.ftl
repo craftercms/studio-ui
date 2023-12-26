@@ -22,7 +22,6 @@
 <head>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 
-  <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
   <#include "/templates/web/common/page-fragments/head.ftl" />
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
