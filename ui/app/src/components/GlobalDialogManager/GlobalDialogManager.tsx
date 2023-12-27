@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
 import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../utils/subjects';
-import { showSystemNotification, newProjectReady } from '../../state/actions/system';
+import { newProjectReady, showSystemNotification } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
 import useSelection from '../../hooks/useSelection';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
@@ -31,7 +31,9 @@ import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import { getSystemLink } from '../../utils/system';
 import useEnv from '../../hooks/useEnv';
-import useActiveUser from '../../hooks/useActiveUser';
+import { filter, map, switchMap } from 'rxjs/operators';
+import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
+import { fetchAll as fetchSitesService } from '../../services/sites';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
@@ -107,7 +109,6 @@ function GlobalDialogManager() {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const { authoringBase } = useEnv();
-  const { username } = useActiveUser();
 
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
@@ -116,40 +117,53 @@ function GlobalDialogManager() {
         case showSystemNotification.type:
           enqueueSnackbar(payload.message, payload.options);
           break;
-        case newProjectReady.type:
-          const isCreateSiteDialogOpen = Boolean(document.querySelector('[data-dialog-id="create-site-dialog"]'));
-          if (!isCreateSiteDialogOpen && username === payload.user.username) {
-            enqueueSnackbar(
-              <FormattedMessage
-                defaultMessage={`Project "{siteId}" has been created.`}
-                values={{ siteId: payload.siteId }}
-              />,
-              {
-                action: (
-                  <Button
-                    size="small"
-                    onClick={() => {
-                      window.location.href = getSystemLink({
-                        systemLinkId: 'preview',
-                        authoringBase,
-                        site: payload.siteId,
-                        page: '/'
-                      });
-                    }}
-                  >
-                    <FormattedMessage id="words.view" defaultMessage="View" />
-                  </Button>
-                )
-              }
-            );
-          }
-          break;
       }
     });
     return () => {
       subscription.unsubscribe();
     };
-  }, [enqueueSnackbar, dispatch, authoringBase, username]);
+  }, [enqueueSnackbar]);
+
+  useEffect(() => {
+    const subscription = getHostToHostBus()
+      .pipe(
+        filter((e: StandardAction<ProjectLifecycleEvent>) => e.type === newProjectReady.type),
+        switchMap((e) =>
+          // Not the most efficient approach to (re)fetch all sites (which already occurs when a new site is created), but it's not possible to
+          // look site by uuid or to sync this even with the completion of the background fetch of the sites.
+          fetchSitesService().pipe(
+            map((sites) => sites.find((site) => site.uuid === e.payload.siteUuid)),
+            filter((site) => Boolean(site))
+          )
+        )
+      )
+      .subscribe((site) => {
+        if (!Boolean(document.querySelector('[data-dialog-id="create-site-dialog"]'))) {
+          const siteId = site.id;
+          enqueueSnackbar(
+            <FormattedMessage defaultMessage={`Project "{siteId}" has been created.`} values={{ siteId }} />,
+            {
+              action: (
+                <Button
+                  size="small"
+                  onClick={() => {
+                    window.location.href = getSystemLink({
+                      systemLinkId: 'preview',
+                      authoringBase,
+                      site: siteId,
+                      page: '/'
+                    });
+                  }}
+                >
+                  <FormattedMessage id="words.view" defaultMessage="View" />
+                </Button>
+              )
+            }
+          );
+        }
+      });
+    return () => subscription.unsubscribe();
+  }, [authoringBase, enqueueSnackbar]);
 
   return (
     <Suspense fallback="">
