@@ -5936,21 +5936,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@videojs/http-streaming@npm:3.8.0":
-  version: 3.8.0
-  resolution: "@videojs/http-streaming@npm:3.8.0"
+"@videojs/http-streaming@npm:3.9.0":
+  version: 3.9.0
+  resolution: "@videojs/http-streaming@npm:3.9.0"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
     "@videojs/vhs-utils": "npm:4.0.0"
     aes-decrypter: "npm:4.0.1"
     global: "npm:^4.4.0"
     m3u8-parser: "npm:^7.1.0"
-    mpd-parser: "npm:^1.2.2"
+    mpd-parser: "npm:^1.3.0"
     mux.js: "npm:7.0.2"
     video.js: "npm:^7 || ^8"
   peerDependencies:
     video.js: ^7 || ^8
-  checksum: 224b7adae31c5818b0a1483f640c8b3eaf3e922893841cde265314b71baff0e5118db125a4e2eaaf86b2c78f7e28e7fce5feef0b8dc2a766bca3c4f32e441618
+  checksum: 7a5fc6b8472d1eb63b5b2f5f149b1fab3ba89586f736837777aae2959f3e4f2b4e3e4cf8f2b7fb6aabdf11f28bec739a05561f3ddbc8fbfde97fd42404fb1f3e
   languageName: node
   linkType: hard
 
@@ -13388,6 +13388,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mpd-parser@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "mpd-parser@npm:1.3.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.12.5"
+    "@videojs/vhs-utils": "npm:^4.0.0"
+    "@xmldom/xmldom": "npm:^0.8.3"
+    global: "npm:^4.4.0"
+  bin:
+    mpd-to-m3u8-json: bin/parse.js
+  checksum: 10873b814376433ad1d84395b91a08e398720ae10872bc1061945e491e63953863783fac2a8bf1276cb19d69df7ce755f4fa246c5435ff36c9cb9ec49ea64208
+  languageName: node
+  linkType: hard
+
 "ms@npm:2.0.0":
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
@@ -18497,11 +18511,11 @@ __metadata:
   linkType: hard
 
 "video.js@npm:^7 || ^8, video.js@npm:^8.7.0":
-  version: 8.7.0
-  resolution: "video.js@npm:8.7.0"
+  version: 8.8.0
+  resolution: "video.js@npm:8.8.0"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
-    "@videojs/http-streaming": "npm:3.8.0"
+    "@videojs/http-streaming": "npm:3.9.0"
     "@videojs/vhs-utils": "npm:^4.0.0"
     "@videojs/xhr": "npm:2.6.0"
     aes-decrypter: "npm:^4.0.1"
@@ -18514,7 +18528,7 @@ __metadata:
     videojs-contrib-quality-levels: "npm:4.0.0"
     videojs-font: "npm:4.1.0"
     videojs-vtt.js: "npm:0.15.5"
-  checksum: c42c1bb4bbed1477646313080bd32aa0dcea4df3862437217c14d5ea31cc85611df12d52e2768dc91b6aaba8f22817c5e41655a3e88ea416e5221f022efd98a7
+  checksum: a224f7cb3c38d2670715aa39785453501cfe96511634fe5ac7744b5958b350bcfa3a0795c48b281dcaae1dc99c185d74539162c27280ac9fb507dc754ac98db9
   languageName: node
   linkType: hard
 
