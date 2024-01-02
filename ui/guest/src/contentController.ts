@@ -92,7 +92,6 @@ const notEmpty = (objects) => Object.keys(objects).length > 0;
 const modelsObs$ = models$.pipe(filter(notEmpty));
 const contentTypesObs$ = contentTypes$.pipe(filter(notEmpty));
 const pathsObs$ = paths$.pipe(filter(notEmpty));
-const itemsObs$ = items$.pipe(filter(notEmpty));
 
 export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ as contentTypes$, pathsObs$ as paths$ };
 
@@ -746,7 +745,7 @@ fromTopic(contentTypesResponse.type)
     contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
   });
 
-interface FetchGuestModelCompletePayload {
+export interface FetchGuestModelCompletePayload {
   path: string;
   model: ContentInstance;
   modelLookup: LookupTable<ContentInstance>;

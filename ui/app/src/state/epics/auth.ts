@@ -57,7 +57,7 @@ const epics: CrafterCMSEpic[] = [
         const hasActiveSite = Boolean(state.sites.active);
         return [
           messageSharedWorker(refreshAuthToken({ xsrfToken: getXSRFToken() })),
-          // This action here assumes this epic is ran only when login from session timeout, not on initial login too
+          // This action here assumes this epic is run only when login from session timeout, not on initial login too
           hasActiveSite && messageSharedWorker(openSiteSocket({ site: state.sites.active, xsrfToken: getXSRFToken() }))
         ].filter(Boolean);
       })

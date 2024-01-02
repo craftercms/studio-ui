@@ -21,6 +21,8 @@ import { SxProps } from '@mui/system';
 import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '@craftercms/studio-ui/models/CustomRecord';
 import LevelDescriptorIcon from '@craftercms/studio-ui/icons/LevelDescriptor';
 import FieldIcon from '@craftercms/studio-ui/icons/ContentTypeField';
+import LockedStateIcon from '@craftercms/studio-ui/icons/Lock';
+import Person from '@craftercms/studio-ui/models/Person';
 
 export type ZoneMarkerClassKey = 'box' | 'paper' | 'icon' | 'tooltip' | 'menuItemsContainer';
 
@@ -34,6 +36,8 @@ export interface ZoneMarkerProps {
   inherited: boolean;
   showZoneTooltip?: boolean;
   menuItems?: ReactNode;
+  lockInfo?: Person;
+  isStale?: boolean;
   onPopperClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   // TODO: Receive zoneType and abstract icon display here?
   // zoneType: 'component' | 'page' | 'field';
@@ -83,7 +87,18 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
 }
 
 export function ZoneMarker(props: ZoneMarkerProps) {
-  const { rect, label, classes, inherited, menuItems, showZoneTooltip = true, onPopperClick } = props;
+  const {
+    rect,
+    label,
+    classes,
+    inherited,
+    menuItems,
+    showZoneTooltip = true,
+    onPopperClick,
+    lockInfo = null,
+    isStale = false
+  } = props;
+  const isLockedItem = Boolean(lockInfo);
   const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
   const sx = getStyles(props.sx);
   const elRef = useRef();
@@ -117,11 +132,29 @@ export function ZoneMarker(props: ZoneMarkerProps) {
         >
           <Paper className={classes?.paper} sx={sx.paper}>
             <div style={{ display: 'flex' }}>
-              {inherited ? <LevelDescriptorIcon sx={sx.icon} /> : <FieldIcon sx={sx.icon} />}
+              {isLockedItem || isStale ? (
+                <LockedStateIcon />
+              ) : inherited ? (
+                <LevelDescriptorIcon sx={sx.icon} />
+              ) : (
+                <FieldIcon sx={sx.icon} />
+              )}
               <Typography title={label} noWrap sx={{ pointerEvents: 'all' }}>
                 {label}
               </Typography>
             </div>
+            {isLockedItem && (
+              <Typography noWrap variant="body2" component="div">
+                {/* TODO: i18n */}
+                Locked by {lockInfo.username}
+              </Typography>
+            )}
+            {isStale && (
+              <Typography noWrap variant="body2" component="div">
+                {/* TODO: i18n */}
+                Item was modified. Refresh to enable editing.
+              </Typography>
+            )}
             <div>{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}</div>
           </Paper>
         </Popper>

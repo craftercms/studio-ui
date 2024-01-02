@@ -27,6 +27,10 @@ import {
 import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { NEVER, Observable, of } from 'rxjs';
 import { SandboxItem } from '@craftercms/studio-ui/models';
+import { GuestState } from './models/GuestStore';
+import { ElementRecord } from '../models/InContextEditing';
+import { getCachedModel, getCachedModels, modelHierarchyMap } from '../contentController';
+import { getParentModelId } from '../utils/ice';
 
 export function dragOk(status): boolean {
   return [
@@ -72,6 +76,8 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
           tap(({ payload }) => payload.type !== 'continue' && post(unlockItem({ path }))),
           switchMap(({ payload }) => (payload.type === 'continue' ? continue$ : stop$))
         );
+        // TODO: commitId is not a property of SandboxItem after 4.2.0
+        //  Date & time could be the new way
       } else if (item.commitId !== localItem.commitId && item.lockOwner?.username !== username) {
         post(snackGuestMessage({ id: 'outOfSyncContent', level: 'suggestion' }));
         post(unlockItem({ path }));
@@ -89,3 +95,18 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
     })
   );
 }
+
+/**
+ * Checks if the target item is locked and checks for background changes. Returns all the objects
+ * it uses to compute the result, so they can be used by consumer if needed.
+ */
+export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord) => {
+  const { modelId } = record;
+  const model = getCachedModel(modelId);
+  const parentModelId = model.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
+  const parentModel = parentModelId ? getCachedModel(parentModelId) : null;
+  const path = model.craftercms.path ?? parentModel.craftercms.path;
+  const isLocked = Boolean(state.lockedPaths[path]);
+  const isExternallyModified = Boolean(state.externallyModifiedPaths[path]);
+  return { isLocked, isExternallyModified, model, parentModelId, parentModel, path };
+};
