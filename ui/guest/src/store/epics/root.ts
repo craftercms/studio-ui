@@ -31,7 +31,7 @@ import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
 import { getById, getReferentialEntries, isTypeAcceptedAsByField } from '../../iceRegistry';
-import { beforeWrite$, dragOk, unwrapEvent } from '../util';
+import { beforeWrite$, checkIfLockedOrModified, dragOk, unwrapEvent } from '../util';
 import * as contentController from '../../contentController';
 import {
   createContentInstance,
@@ -139,7 +139,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           payload: { event, record }
         } = action;
         const iceId = state.draggable?.[record.id];
-        if (nullOrUndefined(iceId)) {
+        const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
+        if (isLocked || isExternallyModified) {
+          return NEVER;
+        } else if (nullOrUndefined(iceId)) {
           // When the drag starts on a child element of the item, it passes through here.
           console.error('No ice id found for this drag instance.', record, state.draggable);
         } else if (not(iceId)) {
@@ -497,7 +500,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ),
       switchMap(([action, state]: [action: GuestStandardAction, state: GuestState]) => {
         const { record, event } = action.payload;
-        if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
+        const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
+        if (isLocked || isExternallyModified) {
+          return NEVER;
+        } else if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
           let selected = {
             modelId: null,
             fieldId: [],

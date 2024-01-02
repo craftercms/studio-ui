@@ -23,6 +23,7 @@ import ContentType from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { EditingStatus } from '../../constants';
 import { RteConfig } from '../../models/Rte';
+import Person from '@craftercms/studio-ui/models/Person';
 
 interface T {
   [K: string]: any;
@@ -60,6 +61,8 @@ export interface GuestState {
   highlighted: T;
   uploading: LookupTable;
   models: LookupTable<ContentInstance>;
+  lockedPaths: LookupTable<{ user: Person }>;
+  externallyModifiedPaths: LookupTable<{ user: Person }>;
   contentTypes: LookupTable<ContentType>;
   fieldSwitcher?: {
     iceId: number;

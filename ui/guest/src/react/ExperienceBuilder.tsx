@@ -18,7 +18,7 @@ import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from '
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
-import { contentTypes$, flushRequestedPaths, operations$ } from '../contentController';
+import { contentTypes$, FetchGuestModelCompletePayload, flushRequestedPaths, operations$ } from '../contentController';
 import * as elementRegistry from '../elementRegistry';
 import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -72,7 +72,7 @@ import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
-import { dragOk } from '../store/util';
+import { checkIfLockedOrModified, dragOk } from '../store/util';
 import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
@@ -91,6 +91,7 @@ import {
   dropzoneEnter,
   dropzoneLeave,
   setDropPosition,
+  setLockedItems,
   startListening
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
@@ -107,6 +108,8 @@ import { setJwt } from '@craftercms/studio-ui/utils/auth';
 import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
+import { emitSystemEvent, openSiteSocket } from '@craftercms/studio-ui/state/actions/system';
+import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -163,7 +166,16 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   const [snack, setSnack] = useState<Partial<SnackbarProps>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState>((state) => state) as GuestState;
-  const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable, authoringBase } = state;
+  const {
+    editMode,
+    highlightMode,
+    editModePadding,
+    status,
+    hostCheckedIn: hasHost,
+    draggable,
+    authoringBase,
+    activeSite
+  } = state;
   const refs = useRef({
     contentReady: false,
     firstRender: true,
@@ -225,11 +237,17 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       const unload = () => worker.port.postMessage(sharedWorkerDisconnect());
       window.addEventListener('beforeunload', unload);
       const subscription = fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
-        const { type, payload } = event.data;
-        switch (type) {
-          case sharedWorkerToken.type: {
-            setJwt(payload.token);
-            break;
+        if (event.data?.type) {
+          const { type, payload } = event.data;
+          switch (type) {
+            case sharedWorkerToken.type: {
+              setJwt(payload.token);
+              break;
+            }
+            case emitSystemEvent.type: {
+              dispatch(payload);
+              break;
+            }
           }
         }
       });
@@ -240,7 +258,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         worker.port.close();
       };
     }
-  }, [authoringBase, hasHost]);
+  }, [authoringBase, hasHost, dispatch]);
 
   const sxStylesConfig = useMemo(() => deepmerge(styleSxDefaults, sxOverrides), [sxOverrides]);
 
@@ -488,6 +506,11 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
     fromTopic('FETCH_GUEST_MODEL_COMPLETE')
       .pipe(
+        // Collect locked items to update locked lookup table on state...
+        tap(({ payload }: StandardAction<FetchGuestModelCompletePayload>) => {
+          const locked = payload.sandboxItems.filter((item) => item.stateMap.locked);
+          locked.length && dispatch(setLockedItems(locked));
+        }),
         filter(({ payload }) => payload.path === path),
         pluck('payload', 'model'),
         withLatestFrom(contentTypes$),
@@ -622,12 +645,15 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
               const elementRecord = elementRegistry.get(highlight.id);
+              const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, elementRecord);
               return (
                 <ZoneMarker
                   key={highlight.id}
                   label={highlight.label}
                   rect={highlight.rect}
                   inherited={highlight.inherited}
+                  lockInfo={state.lockedPaths[path]?.user}
+                  isStale={isExternallyModified}
                   onPopperClick={
                     isMoveMode && isFieldSelectedMode
                       ? (e) => {
@@ -637,8 +663,13 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                       : null
                   }
                   menuItems={
-                    isFieldSelectedMode ? (
-                      <ZoneMenu record={elementRecord} dispatch={dispatch} isHeadlessMode={isHeadlessMode} />
+                    isFieldSelectedMode && !isExternallyModified ? (
+                      <ZoneMenu
+                        record={elementRecord}
+                        dispatch={dispatch}
+                        isHeadlessMode={isHeadlessMode}
+                        isLockedItem={isLocked}
+                      />
                     ) : (
                       void 0
                     )
@@ -651,8 +682,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                         : sxStylesConfig.zoneMarker.selectModeHighlight,
                       { clone: true }
                     ),
-                    hasValidations
-                      ? hasFailedRequired
+                    hasValidations || isLocked || isExternallyModified
+                      ? hasFailedRequired || isExternallyModified
                         ? sxStylesConfig.zoneMarker.errorHighlight
                         : sxStylesConfig.zoneMarker.warnHighlight
                       : null,

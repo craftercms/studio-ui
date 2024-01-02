@@ -309,6 +309,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const store = useStore<GlobalState>();
   const { id: siteId, uuid } = useActiveSite() ?? {};
   const user = useActiveUser();
+  const username = user?.username;
   const {
     guest,
     editMode,
@@ -332,6 +333,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
   const hierarchyMap = guest?.hierarchyMap;
+  const mainModelModifier = guest?.mainModelModifier;
   const requestedSourceMapPaths = useRef({});
   const guestDetectionTimeoutRef = useRef<number>();
   const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
@@ -351,7 +353,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     dataSourceActionsListInitialState
   );
   const conditionallyToggleEditMode = (nextHighlightMode?: HighlightMode) => {
-    if (item && !isItemLockedForMe(item, user.username) && hasEditAction(item.availableActions)) {
+    if (item && !isItemLockedForMe(item, username) && hasEditAction(item.availableActions)) {
       dispatch(
         setPreviewEditMode({
           // If switching from highlight modes (all vs move), we just want to switch modes without turning off edit mode.
@@ -464,12 +466,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   useEffect(() => {
     if (nnou(uiConfig.xml)) {
-      const storedEditMode = getStoredEditModeChoice(user.username, uuid);
-      const storedHighlightMode = getStoredHighlightModeChoice(user.username, uuid);
-      const storedPaddingMode = getStoredEditModePadding(user.username);
+      const storedEditMode = getStoredEditModeChoice(username, uuid);
+      const storedHighlightMode = getStoredHighlightModeChoice(username, uuid);
+      const storedPaddingMode = getStoredEditModePadding(username);
       dispatch(initPreviewConfig({ configXml: uiConfig.xml, storedEditMode, storedHighlightMode, storedPaddingMode }));
     }
-  }, [uiConfig.xml, user.username, uuid, dispatch]);
+  }, [uiConfig.xml, username, uuid, dispatch]);
 
   useEffect(() => {
     if (!socketConnected && authActive) {
@@ -496,10 +498,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     // FYI. Path navigator refresh triggers this effect too due to item changing.
     if (item) {
-      const mode = getComputedEditMode({ item, username: user.username, editMode });
+      const mode =
+        getComputedEditMode({ item, username: username, editMode }) &&
+        (mainModelModifier == null || mainModelModifier.username === username);
       getHostToGuestBus().next(setPreviewEditMode({ editMode: mode }));
     }
-  }, [item, editMode, user.username, dispatch]);
+  }, [item, editMode, username, dispatch, mainModelModifier?.username]);
 
   // Fetch active item
   useEffect(() => {
@@ -531,11 +535,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Retrieve stored site clipboard, retrieve stored tools panel page.
   useEffect(() => {
-    const localClipboard = getStoredClipboard(uuid, user.username);
+    const localClipboard = getStoredClipboard(uuid, username);
     if (localClipboard) {
       let hours = moment().diff(moment(localClipboard.timestamp), 'hours');
       if (hours >= 24) {
-        removeStoredClipboard(uuid, user.username);
+        removeStoredClipboard(uuid, username);
       } else {
         dispatch(
           restoreClipboard({
@@ -546,7 +550,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         );
       }
     }
-  }, [dispatch, uuid, user.username]);
+  }, [dispatch, uuid, username]);
 
   // Post content types
   useEffect(() => {
@@ -1323,7 +1327,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                   >
                     <RefreshRounded />
                   </IconButton>
-                )
+                ),
+                autoHideDuration: 10000
               }
             );
           }
