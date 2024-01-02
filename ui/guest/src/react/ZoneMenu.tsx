@@ -64,10 +64,11 @@ export interface ZoneMenuProps {
   record: ElementRecord;
   dispatch: Dispatch<AnyAction>;
   isHeadlessMode: boolean;
+  isLockedItem?: boolean;
 }
 
 export function ZoneMenu(props: ZoneMenuProps) {
-  const { record, dispatch, isHeadlessMode } = props;
+  const { record, dispatch, isHeadlessMode, isLockedItem = false } = props;
   const {
     modelId,
     fieldId: [fieldId],
@@ -371,11 +372,13 @@ export function ZoneMenu(props: ZoneMenuProps) {
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
-      <Tooltip title="Edit" key="edit">
-        <UltraStyledIconButton size="small" onClick={onEdit}>
-          <PencilIcon />
-        </UltraStyledIconButton>
-      </Tooltip>
+      {!isLockedItem && (
+        <Tooltip title="Edit" key="edit">
+          <UltraStyledIconButton size="small" onClick={onEdit}>
+            <PencilIcon />
+          </UltraStyledIconButton>
+        </Tooltip>
+      )}
       {showCodeEditOptions && (
         <>
           {itemAvailableActions.editTemplate && (
@@ -394,7 +397,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
           )}
         </>
       )}
-      {showAddItem && (
+      {!isLockedItem && showAddItem && (
         <Tooltip title="Add new item" key="addNewItem">
           <UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
             <AddCircleOutlineRoundedIcon />
@@ -409,6 +412,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
         </Tooltip>
       )}
       {isMovable &&
+        (!isLockedItem || !isEmbedded) &&
         !isOnlyItem && [
           !isFirstItem && (
             <Tooltip title="Move up/left (← or ↑)" key="moveUp">
@@ -425,14 +429,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
             </Tooltip>
           )
         ]}
-      {isTrashable && (
+      {isTrashable && !isLockedItem && (
         <Tooltip title="Trash (⌫)" key="trash">
           <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
             <DeleteOutlineRoundedIcon />
           </UltraStyledIconButton>
         </Tooltip>
       )}
-      {isMovable && (
+      {isMovable && (!isLockedItem || !isEmbedded) && (
         <Tooltip title="Move" key="move">
           <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
             <DragIndicatorRounded />
