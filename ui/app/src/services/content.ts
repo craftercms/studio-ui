@@ -1177,21 +1177,10 @@ export function fetchChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  return postJSON('/studio/api/2/content/children_by_path', {
-    siteId,
-    path,
-    ...options
-  }).pipe(
-    pluck('response'),
-    map(({ children, levelDescriptor, total, offset, limit }) =>
-      Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
-        levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
-        total,
-        offset,
-        limit
-      })
-    )
-  );
+  const paths = {
+    [path]: { ...options }
+  };
+  return fetchChildrenByPaths(siteId, paths).pipe(map((data) => data[path]));
 }
 
 export function fetchChildrenByPaths(
@@ -1199,25 +1188,22 @@ export function fetchChildrenByPaths(
   fetchOptionsByPath: LookupTable<Partial<GetChildrenOptions>>,
   options?: Partial<GetChildrenOptions>
 ): Observable<LookupTable<GetChildrenResponse>> {
-  const paths = Object.keys(fetchOptionsByPath);
+  const paths = Object.keys(fetchOptionsByPath).map((path) => ({ path, ...options, ...fetchOptionsByPath[path] }));
   if (paths.length === 0) {
     return of({});
   }
-  const requests = paths.map((path) =>
-    fetchChildrenByPath(siteId, path, { ...options, ...fetchOptionsByPath[path] }).pipe(
-      catchError((error: AjaxError) => {
-        if (error.status === 404) {
-          return of([]);
-        } else {
-          throw error;
-        }
-      })
-    )
-  );
-  return forkJoin(requests).pipe(
-    map((responses) => {
+  return postJSON(`/studio/api/2/content/${siteId}/children`, { paths }).pipe(
+    pluck('response'),
+    map(({ items }) => {
       const data = {};
-      Object.keys(fetchOptionsByPath).forEach((path, i) => (data[path] = responses[i]));
+      items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
+        data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
+          levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
+          total,
+          offset,
+          limit
+        });
+      });
       return data;
     })
   );
