@@ -108,7 +108,7 @@ import { setJwt } from '@craftercms/studio-ui/utils/auth';
 import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
-import { emitSystemEvent, openSiteSocket } from '@craftercms/studio-ui/state/actions/system';
+import { emitSystemEvent } from '@craftercms/studio-ui/state/actions/system';
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 // TODO: add themeOptions and global styles customising
@@ -166,16 +166,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   const [snack, setSnack] = useState<Partial<SnackbarProps>>();
   const dispatch = useDispatch();
   const state = useSelector<GuestState>((state) => state) as GuestState;
-  const {
-    editMode,
-    highlightMode,
-    editModePadding,
-    status,
-    hostCheckedIn: hasHost,
-    draggable,
-    authoringBase,
-    activeSite
-  } = state;
+  const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable, authoringBase } = state;
   const refs = useRef({
     contentReady: false,
     firstRender: true,
