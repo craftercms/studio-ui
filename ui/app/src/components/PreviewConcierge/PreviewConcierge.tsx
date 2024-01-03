@@ -503,7 +503,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         (mainModelModifier == null || mainModelModifier.username === username);
       getHostToGuestBus().next(setPreviewEditMode({ editMode: mode }));
     }
-  }, [item, editMode, username, dispatch, mainModelModifier?.username]);
+  }, [item, editMode, username, dispatch, mainModelModifier]);
 
   // Fetch active item
   useEffect(() => {
