@@ -26,7 +26,7 @@ import {
   SearchResult
 } from '../../models/Search';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
-import { EditSelection, WidgetDescriptor } from '../../models';
+import { EditSelection, ContentEventPayload, WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
@@ -420,3 +420,7 @@ export const setHighlightMode = /*#__PURE__*/ createAction<{ highlightMode: High
 export const goToLastPage = /*#__PURE__*/ createAction<string>('GO_TO_LAST_PAGE');
 export const goToNextPage = /*#__PURE__*/ createAction('GO_TO_NEXT_PAGE');
 // endregion
+
+export const mainModelModifiedExternally = /*#__PURE__*/ createAction<ContentEventPayload>(
+  'MAIN_MODEL_MODIFIED_EXTERNALLY'
+);

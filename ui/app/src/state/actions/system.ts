@@ -23,7 +23,7 @@ import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
-import SocketEventBase from '../../models/SocketEvent';
+import SocketEventBase, { ContentEventPayload, DeleteContentEventPayload } from '../../models/SocketEvent';
 import { DetailedItem, MarketplacePlugin } from '../../models';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 
@@ -34,9 +34,6 @@ export const itemReverted = /*#__PURE__*/ createAction<{ target: string }>('ITEM
 export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT');
 
 export const lockContentEvent = /*#__PURE__*/ createAction<SocketEventBase & { locked: boolean }>('LOCK_CONTENT_EVENT');
-
-export type ContentEventPayload = SocketEventBase;
-export type DeleteContentEventPayload = SocketEventBase;
 
 // New or updated (writeContent, createFolder, copyContent, revertContent, renameFolder
 export const contentEvent = /*#__PURE__*/ createAction<ContentEventPayload>('CONTENT_EVENT');

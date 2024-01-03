@@ -42,6 +42,7 @@ import {
   initRichTextEditorConfig,
   initToolbarConfig,
   initToolsPanelConfig,
+  mainModelModifiedExternally,
   openToolsPanel,
   popIcePanelPage,
   popToolsPanelPage,
@@ -327,7 +328,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
         hierarchyMap: null,
         modelIdByPath: null,
         selected: null,
-        itemBeingDragged: null
+        itemBeingDragged: null,
+        mainModelModifier: null
       };
     })
     .addCase(guestCheckOut, (state) => {
@@ -800,6 +802,9 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       state.windowSize = windowSize;
       state.toolsPanelWidth = adjustedToolsPanelWidth;
       state.icePanelWidth = adjustedIcePanelWidth;
+    })
+    .addCase(mainModelModifiedExternally, (state, { payload }) => {
+      if (state.guest) state.guest.mainModelModifier = payload.user;
     });
 });
 
