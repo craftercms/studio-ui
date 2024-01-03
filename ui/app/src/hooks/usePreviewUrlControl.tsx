@@ -28,6 +28,8 @@ import { defineMessages, useIntl } from 'react-intl';
 import { getHostToHostBus } from '../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { projectDeleted } from '../state/actions/system';
+import { ProjectLifecycleEvent } from '../models/ProjectLifecycleEvent';
+import StandardAction from '../models/StandardAction';
 
 const messages = defineMessages({
   siteNotFound: {
@@ -87,16 +89,18 @@ export function usePreviewUrlControl(history) {
 
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => e.type === projectDeleted.type)).subscribe(({ payload }) => {
-      if (payload.siteId === site) {
-        notValidSiteRedirect(formatMessage(messages.siteDeleted), `${authoringBase}#/sites`);
-        dispatch(popSite({ siteId: payload.siteId }));
-      }
-    });
+    const subscription = hostToHost$
+      .pipe(filter((e) => e.type === projectDeleted.type))
+      .subscribe(({ payload }: StandardAction<ProjectLifecycleEvent<'SITE_DELETED_EVENT'>>) => {
+        if (payload.siteUuid === sites[site]?.uuid) {
+          notValidSiteRedirect(formatMessage(messages.siteDeleted), `${authoringBase}#/sites`);
+          dispatch(popSite({ siteId: site }));
+        }
+      });
     return () => {
       subscription.unsubscribe();
     };
-  }, [authoringBase, formatMessage, site, dispatch]);
+  }, [authoringBase, formatMessage, site, dispatch, sites]);
 
   useEffect(() => {
     const prev = priorState.current;

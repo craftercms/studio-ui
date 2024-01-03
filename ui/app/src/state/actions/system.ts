@@ -23,12 +23,9 @@ import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
-import SocketEventBase, {
-  ContentEventPayload,
-  DeleteContentEventPayload,
-  SocketRootEventBase
-} from '../../models/SocketEvent';
+import SocketEventBase, { ContentEventPayload, DeleteContentEventPayload } from '../../models/SocketEvent';
 import { MarketplacePlugin } from '../../models';
+import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 
 // region Item Events
 
@@ -134,11 +131,10 @@ export const siteSocketStatus = /*#__PURE__*/ createAction<{ siteId: string; con
 export const globalSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('GLOBAL_SOCKET_STATUS');
 
 // region projects events
-export const newProjectReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_READY_EVENT');
-export const projectBeingDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
-  'SITE_DELETING_EVENT'
-);
-export const projectDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
-  'SITE_DELETED_EVENT'
-);
+export const newProjectReady =
+  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_READY_EVENT'>>('SITE_READY_EVENT');
+export const projectBeingDeleted =
+  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_DELETING_EVENT'>>('SITE_DELETING_EVENT');
+export const projectDeleted =
+  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_DELETED_EVENT'>>('SITE_DELETED_EVENT');
 // endregion
