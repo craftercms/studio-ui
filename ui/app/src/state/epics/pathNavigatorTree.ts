@@ -33,6 +33,7 @@ import {
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeRestoreFailed,
   pathNavigatorTreeRootMissing,
+  pathNavigatorTreesBackgroundRefresh,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
   pathNavigatorTreeUpdate
@@ -45,9 +46,16 @@ import {
 } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { removeStoredPathNavigatorTree, setStoredPathNavigatorTree } from '../../utils/state';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
-import { getFileExtension, getIndividualPaths, getParentPath, getRootPath, withIndex } from '../../utils/path';
+import {
+  getFileExtension,
+  getIndividualPaths,
+  getParentPath,
+  getRootPath,
+  withIndex,
+  withoutIndex
+} from '../../utils/path';
 import { batchActions } from '../actions/misc';
 import {
   contentEvent,
@@ -161,6 +169,89 @@ export default [
             } else {
               return pathNavigatorTreeRestoreFailed({ error, id });
             }
+          })
+        );
+      })
+    ),
+  // endregion
+  // region pathNavigatorTreesBackgroundRefresh
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreesBackgroundRefresh.type),
+      withLatestFrom(state$),
+      mergeMap(([{ payload }, state]) => {
+        const { ids } = payload;
+        const expandedTreesIds = ids.filter((id) => !state.pathNavigatorTree[id].collapsed);
+        let paths = [];
+        let optionsByPath = {};
+
+        // For each tree, get the paths of the expanded nodes that will be retrieved, and the options for the children
+        // that will be fetched
+        expandedTreesIds.forEach((id) => {
+          const chunk = state.pathNavigatorTree[id];
+          const { expanded, keywordByPath, offsetByPath, limit } = chunk;
+          expanded.forEach((expandedPath) => {
+            getIndividualPaths(expandedPath, chunk.rootPath).forEach((parentPath) => {
+              if (!paths.includes(parentPath)) {
+                paths.push(parentPath);
+              }
+            });
+          });
+          if (!expanded.length) {
+            paths.push(chunk.rootPath);
+          }
+          optionsByPath = {
+            ...optionsByPath,
+            ...createPresenceTable(expanded, (value) => ({
+              ...(keywordByPath[value] ? { keyword: keywordByPath[value] } : {}),
+              ...(offsetByPath[value] ? { limit: limit + offsetByPath[value] } : {}),
+              ...createGetChildrenOptions(chunk, pluckProps(payload, true, 'limit', 'excludes'))
+            }))
+          };
+        });
+        return forkJoin([
+          fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+          fetchChildrenByPaths(state.sites.active, optionsByPath)
+        ]).pipe(
+          map(([items, children]) => {
+            const actions = [];
+
+            expandedTreesIds.forEach((id) => {
+              let updatedExpanded = state.pathNavigatorTree[id].expanded;
+              if (items.missingItems.length) {
+                updatedExpanded = state.pathNavigatorTree[id].expanded.filter(
+                  (expandedPath) => !items.missingItems.includes(expandedPath)
+                );
+                const uuid = state.sites.byId[state.sites.active].uuid;
+                setStoredPathNavigatorTree(uuid, state.user.username, id, {
+                  expanded: updatedExpanded,
+                  collapsed: state.pathNavigatorTree[id].collapsed,
+                  keywordByPath: state.pathNavigatorTree[id].keywordByPath
+                });
+              }
+
+              // Filter children, only keep those that are children of the rootPath of the current tree
+              const treeChildrenByPath = {};
+              Object.entries(children).forEach(([parentPath, children]) => {
+                if (parentPath.startsWith(withoutIndex(state.pathNavigatorTree[id].rootPath))) {
+                  treeChildrenByPath[parentPath] = children;
+                }
+              });
+              // Add the restoreComplete action to the batch of actions, containing the filtered items and children
+              // for the current tree.
+              actions.push(
+                pathNavigatorTreeRestoreComplete({
+                  id,
+                  expanded: updatedExpanded,
+                  collapsed: state.pathNavigatorTree[id].collapsed,
+                  items: items.filter((item) =>
+                    item.path.startsWith(withoutIndex(state.pathNavigatorTree[id].rootPath))
+                  ),
+                  children: treeChildrenByPath
+                })
+              );
+            });
+            return batchActions(actions);
           })
         );
       })
@@ -407,11 +498,7 @@ export default [
       throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
-        const actions = [];
-        Object.values(state.pathNavigatorTree).forEach((tree) => {
-          actions.push(pathNavigatorTreeBackgroundRefresh({ id: tree.id }));
-        });
-        return actions;
+        return of(pathNavigatorTreesBackgroundRefresh({ ids: Object.keys(state.pathNavigatorTree) }));
       })
     )
   // endregion
