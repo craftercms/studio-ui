@@ -32,7 +32,7 @@ import { createLookupTable, nnou, nou, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
-import { AjaxError, AjaxResponse } from 'rxjs/ajax';
+import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
@@ -1195,10 +1195,7 @@ export function fetchChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  const paths = {
-    [path]: { ...options }
-  };
-  return fetchChildrenByPaths(siteId, paths).pipe(map((data) => data[path]));
+  return fetchChildrenByPaths(siteId, { [path]: options }).pipe(map((data) => data[path]));
 }
 
 export function fetchChildrenByPaths(
@@ -1211,8 +1208,8 @@ export function fetchChildrenByPaths(
     return of({});
   }
   return postJSON(`/studio/api/2/content/${siteId}/children`, { paths }).pipe(
-    pluck('response'),
-    map(({ items }) => {
+    pluck('response', 'items'),
+    map((items) => {
       const data = {};
       items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
         data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
