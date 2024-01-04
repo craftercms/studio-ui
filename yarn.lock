@@ -15973,15 +15973,15 @@ __metadata:
   linkType: hard
 
 "replace-in-file@npm:^7.0.2":
-  version: 7.0.2
-  resolution: "replace-in-file@npm:7.0.2"
+  version: 7.1.0
+  resolution: "replace-in-file@npm:7.1.0"
   dependencies:
     chalk: "npm:^4.1.2"
     glob: "npm:^8.1.0"
     yargs: "npm:^17.7.2"
   bin:
     replace-in-file: bin/cli.js
-  checksum: e77a430e6b133ff41e0c4f7e1526b83ab57eb2c4be67efa9b293f16dfaa622ab053c6e32211880206da6bdc0a50f0a2c021be2325a137c6f6a765f37380d25db
+  checksum: 575319cc1b5cdefb17a89e1642227be709fbd2fbd9347d2b0a218e71c74b73572699a29a75c095c0d2260e58e363395d066a755965c564537df30122a8f85fe7
   languageName: node
   linkType: hard
 
