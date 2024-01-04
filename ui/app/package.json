@@ -131,7 +131,7 @@
     "@prettier/plugin-xml": "^3.2.2",
     "@reduxjs/toolkit": "^2.0.1",
     "@stomp/stompjs": "^7.0.0",
-    "@types/ace": "^0.0.51",
+    "@types/ace": "^0.0.52",
     "@types/graphql": "^14.5.0",
     "@types/marked": "^6.0.0",
     "@types/react": "^18.2.42",
