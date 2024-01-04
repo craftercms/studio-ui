@@ -1746,7 +1746,7 @@ __metadata:
     "@reduxjs/toolkit": "npm:^2.0.1"
     "@rollup/plugin-typescript": "npm:^11.1.5"
     "@stomp/stompjs": "npm:^7.0.0"
-    "@types/ace": "npm:^0.0.51"
+    "@types/ace": "npm:^0.0.52"
     "@types/graphql": "npm:^14.5.0"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/marked": "npm:^6.0.0"
@@ -4479,10 +4479,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ace@npm:^0.0.51":
-  version: 0.0.51
-  resolution: "@types/ace@npm:0.0.51"
-  checksum: ff901552876945f5bad9eb4bb8dcc4df1db0d7467a9a1ab8501f294311bdf019e23e2c9bf76303c0f6d5ee0c91ea2274df46da906b66d9ac94b8be810d8bac80
+"@types/ace@npm:^0.0.52":
+  version: 0.0.52
+  resolution: "@types/ace@npm:0.0.52"
+  checksum: 62226b4596691fa8a900aaa898cf0e8a7419f4ffb18bdbc7bf071eada2ef4c9877f2acbe705a951829e782dd9ab1c9466ac6f8ec2dbb91f93ec36a7aa1e79451
   languageName: node
   linkType: hard
 
