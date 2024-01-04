@@ -20,6 +20,7 @@ import { catchAjaxError } from '../../utils/ajax';
 import {
   checkPathExistence,
   fetchChildrenByPath,
+  fetchChildrenByPaths,
   fetchItemsByPath,
   fetchItemWithChildrenByPath
 } from '../../services/content';
@@ -39,6 +40,7 @@ import {
   pathNavigatorFetchPathFailed,
   pathNavigatorInit,
   pathNavigatorRefresh,
+  pathNavigatorsBackgroundRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
@@ -60,6 +62,7 @@ import {
   publishEvent,
   workflowEvent
 } from '../actions/system';
+import { batchActions } from '../actions/misc';
 
 export default [
   // region pathNavigatorInit
@@ -124,6 +127,59 @@ export default [
             })
           )
       )
+    ),
+  // endregion
+  // region pathNavigatorsBackgroundRefresh
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorsBackgroundRefresh.type),
+      withLatestFrom(state$),
+      mergeMap(([{ payload }, state]) => {
+        const { ids } = payload;
+        const expandedNavsIds = ids.filter((id) => !state.pathNavigator[id].collapsed);
+        let paths = [];
+        let optionsByPath = {};
+
+        expandedNavsIds.forEach((id) => {
+          const chunk = state.pathNavigator[id];
+          const { currentPath, keyword, limit, offset, excludes, sortStrategy, order } = chunk;
+          paths.push(currentPath);
+          optionsByPath[currentPath] = {
+            keyword,
+            limit,
+            offset,
+            excludes,
+            sortStrategy,
+            order
+          };
+        });
+
+        return forkJoin([
+          fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+          fetchChildrenByPaths(state.sites.active, optionsByPath)
+        ]).pipe(
+          map(([items, children]) => {
+            const actions = [];
+            expandedNavsIds.forEach((id) => {
+              actions.push(
+                pathNavigatorFetchPathComplete({
+                  id,
+                  parent: items.find((item) => item.path.startsWith(withoutIndex(state.pathNavigator[id].currentPath))),
+                  children: children[state.pathNavigator[id].currentPath]
+                })
+              );
+            });
+            return batchActions(actions);
+          }),
+          catchAjaxError((error) => {
+            const actions = [];
+            expandedNavsIds.forEach((id) => {
+              actions.push(pathNavigatorFetchPathFailed({ error, id }));
+            });
+            return batchActions(actions);
+          })
+        );
+      })
     ),
   // endregion
   // region pathNavigatorFetchPath
@@ -459,9 +515,10 @@ export default [
       withLatestFrom(state$),
       mergeMap(([, state]) => {
         const actions = [];
-        Object.values(state.pathNavigator).forEach((tree) => {
-          actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
-        });
+        // Object.values(state.pathNavigator).forEach((tree) => {
+        //   actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+        // });
+        actions.push(pathNavigatorsBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
         return actions;
       })
     )
