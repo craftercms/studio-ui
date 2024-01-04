@@ -252,6 +252,13 @@ export default [
               );
             });
             return batchActions(actions);
+          }),
+          catchAjaxError((error) => {
+            const actions = [];
+            expandedTreesIds.forEach((id) => {
+              actions.push(pathNavigatorTreeRestoreFailed({ error, id }));
+            });
+            return batchActions(actions);
           })
         );
       })
