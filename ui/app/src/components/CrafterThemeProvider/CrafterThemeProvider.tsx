@@ -68,6 +68,7 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
         background: {
           default: prefersDarkMode ? palette.gray.dark7 : palette.gray.light0
         },
+        divider: prefersDarkMode ? 'rgba(59, 74, 89, 0.3)' : auxTheme.palette.divider,
         ...props.themeOptions?.palette
       },
       components: deepmerge((props.themeOptions ?? defaultThemeOptions).components ?? {}, {

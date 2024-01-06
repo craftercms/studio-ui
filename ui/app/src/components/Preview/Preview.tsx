@@ -29,11 +29,12 @@ function Preview(props) {
     <PreviewConcierge>
       <Box
         component="section"
-        sx={{
+        sx={(theme) => ({
           height: '100%',
           display: 'flex',
-          flexDirection: 'column'
-        }}
+          flexDirection: 'column',
+          background: theme.palette.background.default
+        })}
       >
         <ToolBar />
         <Host />

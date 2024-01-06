@@ -35,7 +35,7 @@ export interface EditModesSwitcherUIProps {
 }
 
 export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
-  const { isEditMode, highlightMode, onEditModeChange, size = 'small', activeSxShadow = 1, disabled = false } = props;
+  const { isEditMode, highlightMode, onEditModeChange, size = 'small', activeSxShadow = 0, disabled = false } = props;
   const isAllHighlightMode = isEditMode && highlightMode === 'all';
   const isMoveHighlightMode = isEditMode && !isAllHighlightMode;
   const getStyle = () => ({
@@ -51,7 +51,8 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
         minWidth: 104,
         borderRadius: 20,
         display: 'inline-block',
-        border: (theme) => `1px solid ${disabled ? theme.palette.grey[200] : theme.palette.grey[300]}`,
+        border: (theme) =>
+          `1px solid ${theme.palette.mode === 'light' ? theme.palette.divider : theme.palette.grey[700]}`,
         transition: (theme) => theme.transitions.create(['background-color', 'border'])
       }}
     >
@@ -72,16 +73,17 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
       >
         <IconButton
           size={size}
+          color={!isEditMode ? 'error' : UNDEFINED}
           disabled={disabled}
           onClick={() => onEditModeChange(false)}
-          sx={
-            isEditMode
-              ? null
-              : {
-                  boxShadow: activeSxShadow,
-                  cursor: 'default'
-                }
-          }
+          sx={{
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+            ...(!isEditMode && {
+              boxShadow: activeSxShadow,
+              cursor: 'default'
+            })
+          }}
         >
           <PowerSettingsNewRoundedIcon />
         </IconButton>
@@ -96,7 +98,10 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
           disabled={disabled}
           size={size}
           onClick={() => onEditModeChange(true, 'all')}
-          sx={isAllHighlightMode ? getStyle() : UNDEFINED}
+          sx={{
+            borderRadius: 0,
+            ...(isAllHighlightMode && getStyle())
+          }}
         >
           <EditRoundedIcon />
         </IconButton>
@@ -111,7 +116,11 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
           disabled={disabled}
           size={size}
           onClick={() => onEditModeChange(true, 'move')}
-          sx={isMoveHighlightMode ? getStyle() : UNDEFINED}
+          sx={{
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            ...(isMoveHighlightMode && getStyle())
+          }}
         >
           <DragIndicatorRoundedIcon />
         </IconButton>
