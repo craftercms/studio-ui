@@ -20,13 +20,15 @@ import { catchAjaxError } from '../../utils/ajax';
 import {
   checkPathExistence,
   fetchChildrenByPath,
+  fetchChildrenByPaths,
   fetchItemsByPath,
   fetchItemWithChildrenByPath
 } from '../../services/content';
-import { getIndividualPaths, getParentPath, getRootPath, withIndex } from '../../utils/path';
+import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
 import { forkJoin, Observable } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
+  pathNavigatorBulkBackgroundRefresh,
   pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
@@ -60,6 +62,7 @@ import {
   publishEvent,
   workflowEvent
 } from '../actions/system';
+import { batchActions } from '../actions/misc';
 
 export default [
   // region pathNavigatorInit
@@ -120,6 +123,56 @@ export default [
             })
           )
       )
+    ),
+  // endregion
+  // region pathNavigatorBulkBackgroundRefresh
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorBulkBackgroundRefresh.type),
+      withLatestFrom(state$),
+      mergeMap(([{ payload }, state]) => {
+        const { ids } = payload;
+        let paths = [];
+        let optionsByPath = {};
+
+        ids.forEach((id) => {
+          const chunk = state.pathNavigator[id];
+          const { currentPath, keyword, limit, offset, excludes } = chunk;
+          paths.push(currentPath);
+          optionsByPath[currentPath] = {
+            keyword,
+            limit,
+            offset,
+            excludes
+          };
+        });
+
+        return forkJoin([
+          fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+          fetchChildrenByPaths(state.sites.active, optionsByPath)
+        ]).pipe(
+          map(([items, children]) => {
+            const actions = [];
+            ids.forEach((id) => {
+              actions.push(
+                pathNavigatorFetchPathComplete({
+                  id,
+                  parent: items.find((item) => item.path.startsWith(withoutIndex(state.pathNavigator[id].currentPath))),
+                  children: children[state.pathNavigator[id].currentPath]
+                })
+              );
+            });
+            return batchActions(actions);
+          }),
+          catchAjaxError((error) => {
+            const actions = [];
+            ids.forEach((id) => {
+              actions.push(pathNavigatorFetchPathFailed({ error, id }));
+            });
+            return batchActions(actions);
+          })
+        );
+      })
     ),
   // endregion
   // region pathNavigatorFetchPath
@@ -430,9 +483,7 @@ export default [
       withLatestFrom(state$),
       mergeMap(([, state]) => {
         const actions = [];
-        Object.values(state.pathNavigator).forEach((tree) => {
-          actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
-        });
+        actions.push(pathNavigatorBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
         return actions;
       })
     )
