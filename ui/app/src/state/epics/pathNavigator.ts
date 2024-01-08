@@ -136,11 +136,10 @@ export default [
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const { ids } = payload;
-        const expandedNavsIds = ids.filter((id) => !state.pathNavigator[id].collapsed);
         let paths = [];
         let optionsByPath = {};
 
-        expandedNavsIds.forEach((id) => {
+        ids.forEach((id) => {
           const chunk = state.pathNavigator[id];
           const { currentPath, keyword, limit, offset, excludes, sortStrategy, order } = chunk;
           paths.push(currentPath);
@@ -160,7 +159,7 @@ export default [
         ]).pipe(
           map(([items, children]) => {
             const actions = [];
-            expandedNavsIds.forEach((id) => {
+            ids.forEach((id) => {
               actions.push(
                 pathNavigatorFetchPathComplete({
                   id,
@@ -173,7 +172,7 @@ export default [
           }),
           catchAjaxError((error) => {
             const actions = [];
-            expandedNavsIds.forEach((id) => {
+            ids.forEach((id) => {
               actions.push(pathNavigatorFetchPathFailed({ error, id }));
             });
             return batchActions(actions);
@@ -515,9 +514,6 @@ export default [
       withLatestFrom(state$),
       mergeMap(([, state]) => {
         const actions = [];
-        // Object.values(state.pathNavigator).forEach((tree) => {
-        //   actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
-        // });
         actions.push(pathNavigatorsBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
         return actions;
       })

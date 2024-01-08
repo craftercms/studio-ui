@@ -181,13 +181,12 @@ export default [
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const { ids } = payload;
-        const expandedTreesIds = ids.filter((id) => !state.pathNavigatorTree[id].collapsed);
         let paths = [];
         let optionsByPath = {};
 
         // For each tree, get the paths of the expanded nodes that will be retrieved, and the options for the children
         // that will be fetched
-        expandedTreesIds.forEach((id) => {
+        ids.forEach((id) => {
           const chunk = state.pathNavigatorTree[id];
           const { expanded, keywordByPath, offsetByPath, limit } = chunk;
           expanded.forEach((expandedPath) => {
@@ -216,7 +215,7 @@ export default [
           map(([items, children]) => {
             const actions = [];
 
-            expandedTreesIds.forEach((id) => {
+            ids.forEach((id) => {
               let updatedExpanded = state.pathNavigatorTree[id].expanded;
               if (items.missingItems.length) {
                 updatedExpanded = state.pathNavigatorTree[id].expanded.filter(
@@ -255,7 +254,7 @@ export default [
           }),
           catchAjaxError((error) => {
             const actions = [];
-            expandedTreesIds.forEach((id) => {
+            ids.forEach((id) => {
               actions.push(pathNavigatorTreeRestoreFailed({ error, id }));
             });
             return batchActions(actions);
