@@ -43,6 +43,10 @@ export const pathNavigatorTreeBackgroundRefresh = /*#__PURE__*/ createAction<{ i
   'PATH_NAV_TREE_BACKGROUND_REFRESH'
 );
 
+export const pathNavigatorTreeBulkBackgroundRefresh = /*#__PURE__*/ createAction<{ ids: string[] }>(
+  'PATH_NAV_TREE_BULK_BG_REFRESH'
+);
+
 export const pathNavigatorTreeRestore = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_RESTORE');
 
 export type PathNavigatorTreeRestoreCompletePayload = PayloadWithId<{
