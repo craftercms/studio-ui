@@ -28,6 +28,7 @@ import { usePreviewState } from '../../hooks/usePreviewState';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
 import useCurrentPreviewItem from '../../hooks/useCurrentPreviewItem';
+import { useTheme } from '@mui/material';
 
 const translations = defineMessages({
   openToolsPanel: {
@@ -53,6 +54,7 @@ export function ToolBar() {
   const { showToolsPanel, toolbar } = usePreviewState();
   const item = useCurrentPreviewItem();
   const uiConfig = useSiteUIConfig();
+  const theme = useTheme();
 
   useEffect(() => {
     if (uiConfig.xml && !toolbar.leftSection && !toolbar.middleSection && !toolbar.rightSection) {
@@ -61,7 +63,14 @@ export function ToolBar() {
   }, [uiConfig.xml, toolbar, dispatch]);
 
   return (
-    <ViewToolbar>
+    <ViewToolbar
+      styles={{
+        appBar: {
+          borderBottom: 'none',
+          background: theme.palette.background.default
+        }
+      }}
+    >
       <section>
         <Tooltip title={formatMessage(translations.toggleSidebarTooltip)}>
           <LogoAndMenuBundleButton

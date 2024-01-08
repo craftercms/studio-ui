@@ -49,17 +49,6 @@ const useAddressBarStyles = makeStyles()((theme: Theme) => ({
   toolbar: {
     placeContent: 'center space-between'
   },
-  addressBarInput: {
-    width: 300,
-    padding: '2px 2px 2px 10px',
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: theme.palette.background.default
-  },
-  addressBarInputFocused: {
-    border: `2px solid ${theme.palette.primary.main}`,
-    backgroundColor: theme.palette.background.paper
-  },
   inputContainer: {
     marginLeft: theme.spacing(1)
   },
@@ -105,7 +94,7 @@ const useAddressBarStyles = makeStyles()((theme: Theme) => ({
 }));
 
 export function PreviewAddressBar(props: AddressBarProps) {
-  const { classes, cx } = useAddressBarStyles();
+  const { classes } = useAddressBarStyles();
   const { site = '', item } = props;
   const noSiteSet = isBlank(site);
   const { currentUrlPath = '' } = usePreviewNavigation();
@@ -149,7 +138,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
     <>
       <PreviewBackButton />
       <PreviewForwardButton />
-      <Tooltip title={<FormattedMessage id="previewAddressBar.reloadButtonLabel" defaultMessage="Reload this page" />}>
+      <Tooltip title={<FormattedMessage defaultMessage="Reload this page (r)" />}>
         <span>
           <IconButton onClick={onRefresh} size="large" disabled={disabled}>
             <RefreshRounded />
@@ -159,7 +148,19 @@ export function PreviewAddressBar(props: AddressBarProps) {
       <Paper
         variant={focus ? 'elevation' : 'outlined'}
         elevation={focus ? 2 : 0}
-        className={cx(classes.addressBarInput, focus && classes.addressBarInputFocused)}
+        sx={(theme) => ({
+          width: '300px',
+          borderRadius: 8,
+          padding: '2px 2px 2px 10px',
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: theme.palette.background.default,
+          borderColor: theme.palette.mode === 'light' ? theme.palette.divider : theme.palette.grey[700],
+          ...(focus && {
+            border: `2px solid ${theme.palette.primary.main}`,
+            backgroundColor: theme.palette.background.paper
+          })
+        })}
       >
         {!focus && item && (
           <div className={classes.itemDisplayWrapper} onClick={() => setFocus(true)}>
@@ -189,12 +190,11 @@ export function PreviewAddressBar(props: AddressBarProps) {
             onUrlChange(item.previewUrl);
           }}
           hideUI
-          classes={{
-            popoverRoot: classes.selectorPopoverRoot
-          }}
+          classes={{ popoverRoot: classes.selectorPopoverRoot }}
+          buttonSize="medium"
         />
       </Paper>
-      <Tooltip title={Boolean(item) ? <FormattedMessage id="words.options" defaultMessage="Options" /> : ''}>
+      <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
         <IconButton onClick={onOptions} disabled={!item} size="large" id="previewAddressBarActionsMenuButton">
           <MoreRounded />
         </IconButton>

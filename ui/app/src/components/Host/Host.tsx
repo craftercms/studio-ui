@@ -14,72 +14,115 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from 'react';
-import { makeStyles } from 'tss-react/mui';
+import React, { useEffect, useRef } from 'react';
 import { getGuestToHostBus, getHostToGuestBus } from '../../utils/subjects';
 import { StandardAction } from '../../models/StandardAction';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useEnv } from '../../hooks/useEnv';
-import HostUI from './HostUI';
-
-const useStyles = makeStyles()((theme) => ({
-  hostContainer: {
-    flexGrow: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    background: '#f3f3f3',
-    height: '100%',
-    maxHeight: 'calc(100% - 64px)',
-    overflow: 'auto',
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
-  },
-  shift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-    // width: `calc(100% - ${DRAWER_WIDTH}px)`,
-    // marginLeft: DRAWER_WIDTH
-  }
-}));
+import Box from '@mui/material/Box';
+import { filter, map } from 'rxjs/operators';
+import { fromEvent } from 'rxjs';
 
 export function Host() {
-  const { classes, cx } = useStyles();
   const site = useActiveSiteId();
   const { guestBase, previewLandingBase } = useEnv();
-  const { hostSize, showToolsPanel, toolsPanelWidth, icePanelWidth, editMode } = usePreviewState();
+  const {
+    hostSize,
+    showToolsPanel: leftSideBarOpen,
+    toolsPanelWidth: leftSideBarWidth,
+    icePanelWidth: rightSideBarWidth,
+    editMode: rightSideBarOpen
+  } = usePreviewState();
   const { currentUrlPath } = usePreviewNavigation();
+  const iframeRef = useRef<React.ElementRef<'iframe'>>(null);
+  const url = currentUrlPath === '' ? previewLandingBase : `${guestBase}${currentUrlPath}`;
+  const eitherSideBarOpen = leftSideBarOpen || rightSideBarOpen;
 
-  const postMessage$ = useMemo(() => getHostToGuestBus().asObservable(), []);
-  const onMessage = useMemo(() => {
+  useEffect(() => {
     const guestToHost$ = getGuestToHostBus();
-    return (action: StandardAction) => guestToHost$.next(action);
+    const guestToHostSubscription = fromEvent<MessageEvent>(window, 'message')
+      .pipe(
+        filter((e) => Boolean(e.data?.meta?.craftercms)),
+        map(({ data }) =>
+          data.type
+            ? data
+            : {
+                type: data.topic,
+                payload: data.message
+              }
+        )
+      )
+      .subscribe((action: StandardAction) => guestToHost$.next(action));
+
+    const hostToGuestSubscription = getHostToGuestBus()
+      .asObservable()
+      .pipe(map((action) => ({ ...action, craftercms: true, source: 'host' })))
+      .subscribe((action) => {
+        const contentWindow = iframeRef.current.contentWindow;
+        contentWindow.postMessage(action, '*');
+      });
+
+    return () => {
+      guestToHostSubscription.unsubscribe();
+      hostToGuestSubscription.unsubscribe();
+    };
   }, []);
 
+  useEffect(() => {
+    try {
+      if (iframeRef.current.contentDocument.location.href !== url) {
+        iframeRef.current.src = url;
+      }
+    } catch {
+      iframeRef.current.src = url;
+    }
+  }, [url, site]);
+
   return (
-    <div
-      style={{
-        width: `calc(100% - ${showToolsPanel ? toolsPanelWidth : 0}px - ${editMode ? icePanelWidth : 0}px)`,
-        marginLeft: showToolsPanel ? toolsPanelWidth : 0
-      }}
-      className={cx(classes.hostContainer, { [classes.shift]: showToolsPanel })}
+    <Box
+      sx={(theme) => ({
+        flexGrow: 1,
+        display: 'flex',
+        justifyContent: 'center',
+        maxHeight: 'calc(100% - 64px)',
+        marginBottom: '5px',
+        zIndex: theme.zIndex.drawer + 1,
+        background: theme.palette.background.default,
+        height: '100%',
+        // Want to leave 5px margin on the sides where the sidebar is hidden for the shadows to show appreciably.
+        marginLeft: leftSideBarOpen ? `${leftSideBarWidth}px` : '5px',
+        marginRight: rightSideBarOpen ? `${rightSideBarWidth}px` : '5px',
+        transition: eitherSideBarOpen
+          ? theme.transitions.create('margin', {
+              easing: theme.transitions.easing.easeOut,
+              duration: theme.transitions.duration.enteringScreen
+            })
+          : theme.transitions.create('margin', {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.leavingScreen
+            })
+      })}
     >
-      <HostUI
-        url={currentUrlPath === '' ? previewLandingBase : `${guestBase}${currentUrlPath}`}
-        site={site}
-        width={hostSize.width}
-        origin={guestBase}
-        height={hostSize.height}
-        onMessage={onMessage}
-        postMessage$={postMessage$}
-        onLocationChange={() => null}
+      <Box
+        key={site}
+        ref={iframeRef}
+        component="iframe"
+        id="crafterCMSPreviewIframe"
+        title="Preview Frame"
+        sx={{
+          width: hostSize.width ?? '100%',
+          height: hostSize.height ?? '100%',
+          transition: 'width .25s ease, height .25s ease',
+          maxWidth: '100%',
+          border: 'none',
+          margin: 'auto',
+          boxShadow: 3,
+          borderRadius: 3
+        }}
       />
-    </div>
+    </Box>
   );
 }
 

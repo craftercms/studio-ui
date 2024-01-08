@@ -16,7 +16,7 @@
 
 import React, { ReactNode, useCallback, useReducer, useRef } from 'react';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import { TypographyVariant as Variant } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import { DetailedItem, SandboxItem } from '../../models/Item';
@@ -94,6 +94,7 @@ interface SingleItemSelectorProps {
   hideUI?: boolean;
   canSelectFolders?: boolean;
   disabled?: boolean;
+  buttonSize?: IconButtonProps['size'];
   onClose?(): void;
   onItemClicked(item: DetailedItem): void;
   onDropdownClick?(): void;
@@ -261,7 +262,8 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     selectedItem,
     rootPath,
     canSelectFolders = false,
-    filterChildren = () => true
+    filterChildren = () => true,
+    buttonSize = 'large'
   } = props;
   const { classes, cx } = useStyles();
   const anchorEl = useRef();
@@ -414,7 +416,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
           ref={anchorEl}
           disabled={disabled}
           onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
-          size="large"
+          size={buttonSize}
         >
           <SelectIcon className={cx(classes.selectIcon, propClasses?.selectIcon)} />
         </IconButton>

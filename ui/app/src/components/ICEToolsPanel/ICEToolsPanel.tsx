@@ -66,6 +66,10 @@ export function ICEToolsPanel() {
       width={width}
       maxWidth={windowSize}
       onWidthChange={onWidthChange}
+      styles={{
+        resizeHandle: { backgroundColor: 'transparent' },
+        drawerPaperBelowToolbar: { top: '64px' }
+      }}
     >
       <Suspense fallback={<LoadingState />}>
         <ConditionalLoadingState isLoading={!Boolean(icePanel)}>
