@@ -33,7 +33,7 @@ import {
   pathNavigatorTreeRestoreComplete,
   pathNavigatorTreeRestoreFailed,
   pathNavigatorTreeRootMissing,
-  pathNavigatorTreesBackgroundRefresh,
+  pathNavigatorTreeBulkBackgroundRefresh,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
   pathNavigatorTreeUpdate
@@ -174,10 +174,10 @@ export default [
       })
     ),
   // endregion
-  // region pathNavigatorTreesBackgroundRefresh
+  // region pathNavigatorTreeBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorTreesBackgroundRefresh.type),
+      ofType(pathNavigatorTreeBulkBackgroundRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const { ids } = payload;
@@ -504,7 +504,7 @@ export default [
       throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
-        return of(pathNavigatorTreesBackgroundRefresh({ ids: Object.keys(state.pathNavigatorTree) }));
+        return of(pathNavigatorTreeBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigatorTree) }));
       })
     )
   // endregion

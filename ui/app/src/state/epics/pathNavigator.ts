@@ -40,7 +40,7 @@ import {
   pathNavigatorFetchPathFailed,
   pathNavigatorInit,
   pathNavigatorRefresh,
-  pathNavigatorsBackgroundRefresh,
+  pathNavigatorBulkBackgroundRefresh,
   pathNavigatorSetCollapsed,
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
@@ -129,10 +129,10 @@ export default [
       )
     ),
   // endregion
-  // region pathNavigatorsBackgroundRefresh
+  // region pathNavigatorBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorsBackgroundRefresh.type),
+      ofType(pathNavigatorBulkBackgroundRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const { ids } = payload;
@@ -514,7 +514,7 @@ export default [
       withLatestFrom(state$),
       mergeMap(([, state]) => {
         const actions = [];
-        actions.push(pathNavigatorsBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
+        actions.push(pathNavigatorBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
         return actions;
       })
     )
