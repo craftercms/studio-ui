@@ -3,8 +3,9 @@
 * [utils/xml] Upgrade prettier to v3x which changed from sync apis to async
   * `serialize` no longer formats code
   * `beautify` is now async
-* [components] 
+* [components]
   * HostUI removed, merged with Host (its container component)
+  * EditModeSwitcherUI removed, merged with EditModeSwitcher (its container component)
   * Removed Legacy Dashboard components:
     * `LegacyApprovedScheduledDashlet`
     * `LegacyAwaitingApprovalDashlet`

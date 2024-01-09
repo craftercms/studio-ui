@@ -16,7 +16,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, MouseEvent } from 'react';
 import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import { useDispatch } from 'react-redux';
@@ -34,10 +34,18 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@mui/material/Tooltip';
 import { changeCurrentUrl, reloadRequest } from '../../state/actions/preview';
-import { getHostToGuestBus } from '../../utils/subjects';
+import { getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import PreviewBackButton from '../PreviewBackButton';
 import PreviewForwardButton from '../PreviewForwardButton';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
+import CircularProgress from '@mui/material/CircularProgress';
+import usePreviewState from '../../hooks/usePreviewState';
+import Popover from '@mui/material/Popover';
+import Box from '@mui/material/Box';
+import Alert, { alertClasses } from '@mui/material/Alert';
+import Button from '@mui/material/Button';
+import ErrorOutlineOutlined from '@mui/icons-material/ErrorOutlineOutlined';
+import useEnv from '../../hooks/useEnv';
 
 export interface AddressBarProps {
   site: string;
@@ -101,7 +109,6 @@ export function PreviewAddressBar(props: AddressBarProps) {
   const [internalUrl, setInternalUrl] = useState(currentUrlPath);
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
-  const disabled = noSiteSet || !item;
   const dispatch = useDispatch();
 
   const onOptions = (e) => {
@@ -127,23 +134,62 @@ export function PreviewAddressBar(props: AddressBarProps) {
   };
 
   const onRefresh = () => {
-    getHostToGuestBus().next({ type: reloadRequest.type });
+    const action = reloadRequest();
+    getHostToGuestBus().next(action);
+    getHostToHostBus().next(action);
   };
 
   useEffect(() => {
     currentUrlPath && setInternalUrl(currentUrlPath);
   }, [currentUrlPath]);
 
+  // region XB communication detection
+
+  let { xbDetectionTimeoutMs } = usePreviewState();
+  const timeoutRef = useRef<any>();
+  const [alertLevel, setAlertLevel] = useState(0);
+  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLElement | null>(null);
+  const openPopover = Boolean(popoverAnchorEl);
+  const { authoringBase } = useEnv();
+
+  const handlePopoverHover = (event: MouseEvent<HTMLElement>) => {
+    clearTimeout(timeoutRef.current);
+  };
+  const handlePopoverOpen = (event: MouseEvent<HTMLElement>) => {
+    clearTimeout(timeoutRef.current);
+    setPopoverAnchorEl(event.currentTarget);
+  };
+  const handlePopoverClose = () => {
+    timeoutRef.current = setTimeout(() => {
+      setPopoverAnchorEl(null);
+    }, 800);
+  };
+
+  useEffect(() => {
+    if (!item && xbDetectionTimeoutMs > 0) {
+      let timeout = setTimeout(() => {
+        setAlertLevel(1);
+        timeout = setTimeout(() => {
+          setAlertLevel(2);
+        }, xbDetectionTimeoutMs);
+      }, xbDetectionTimeoutMs);
+      return () => {
+        clearTimeout(timeout);
+        setAlertLevel(0);
+      };
+    }
+  }, [item, xbDetectionTimeoutMs]);
+
+  // endregion
+
   return (
     <>
       <PreviewBackButton />
       <PreviewForwardButton />
-      <Tooltip title={<FormattedMessage defaultMessage="Reload this page (r)" />}>
-        <span>
-          <IconButton onClick={onRefresh} size="large" disabled={disabled}>
-            <RefreshRounded />
-          </IconButton>
-        </span>
+      <Tooltip title={noSiteSet ? '' : <FormattedMessage defaultMessage="Reload this page (r)" />}>
+        <IconButton onClick={noSiteSet ? undefined : onRefresh} size="large" disabled={noSiteSet}>
+          <RefreshRounded />
+        </IconButton>
       </Tooltip>
       <Paper
         variant={focus ? 'elevation' : 'outlined'}
@@ -178,27 +224,88 @@ export function PreviewAddressBar(props: AddressBarProps) {
             onBlur={() => setFocus(false)}
           />
         )}
-        <SingleItemSelector
-          rootPath="/site/website/index.xml"
-          selectedItem={item as DetailedItem}
-          open={openSelector}
-          onClose={() => setOpenSelector(false)}
-          onDropdownClick={() => setOpenSelector(!openSelector)}
-          onItemClicked={(item) => {
-            setOpenSelector(false);
-            setInternalUrl(item.previewUrl);
-            onUrlChange(item.previewUrl);
-          }}
-          hideUI
-          classes={{ popoverRoot: classes.selectorPopoverRoot }}
-          buttonSize="medium"
-        />
+        <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
+          <IconButton onClick={onOptions} disabled={!item} size="medium" id="previewAddressBarActionsMenuButton">
+            <MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
+            {!item && (
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: 'flex',
+                  position: 'absolute',
+                  alignItems: 'center',
+                  placeContent: 'center',
+                  pointerEvents: 'all'
+                }}
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+              >
+                {alertLevel === 2 ? (
+                  <ErrorOutlineOutlined color="error" />
+                ) : (
+                  <CircularProgress
+                    sx={{ position: 'absolute', pointerEvents: 'all' }}
+                    color={alertLevel ? (alertLevel === 1 ? 'warning' : 'error') : 'primary'}
+                  />
+                )}
+              </Box>
+            )}
+          </IconButton>
+        </Tooltip>
       </Paper>
-      <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
-        <IconButton onClick={onOptions} disabled={!item} size="large" id="previewAddressBarActionsMenuButton">
-          <MoreRounded />
-        </IconButton>
-      </Tooltip>
+      <SingleItemSelector
+        rootPath="/site/website/index.xml"
+        selectedItem={item as DetailedItem}
+        open={openSelector}
+        onClose={() => setOpenSelector(false)}
+        onDropdownClick={() => setOpenSelector(!openSelector)}
+        onItemClicked={(item) => {
+          setOpenSelector(false);
+          setInternalUrl(item.previewUrl);
+          onUrlChange(item.previewUrl);
+        }}
+        hideUI
+        classes={{ popoverRoot: classes.selectorPopoverRoot }}
+        tooltip="Navigation"
+      />
+      <Popover
+        // Avoid backdrop from blocking the interaction with other elements
+        sx={{ pointerEvents: 'none' }}
+        open={openPopover}
+        anchorEl={popoverAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center'
+        }}
+        slotProps={{
+          paper: {
+            sx: { pointerEvents: 'all' },
+            onMouseEnter: handlePopoverHover,
+            onMouseLeave: handlePopoverClose
+          }
+        }}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+      >
+        <Alert
+          severity={alertLevel ? (alertLevel === 1 ? 'warning' : 'error') : 'info'}
+          action={
+            <Button href={`${authoringBase}/help/preview-missing-app-connection`} target="_blank">
+              <FormattedMessage defaultMessage="Learn more" />
+            </Button>
+          }
+          sx={{ [`.${alertClasses.icon},.${alertClasses.message}`]: { display: 'flex', alignItems: 'center' } }}
+        >
+          <FormattedMessage defaultMessage="Awaiting a connection from the Preview application" />
+        </Alert>
+      </Popover>
     </>
   );
 }

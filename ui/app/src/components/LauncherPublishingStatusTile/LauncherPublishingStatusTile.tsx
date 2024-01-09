@@ -36,6 +36,7 @@ function LauncherPublishingStatusTile() {
         enabled={state.enabled}
         status={state.status}
         isFetching={state.isFetching}
+        styles={{ root: { background: 'transparent' } }}
         onClick={() => {
           dispatch(closeLauncher());
           onShowDialog();

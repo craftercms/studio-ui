@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from 'react';
-import { getGuestToHostBus, getHostToGuestBus } from '../../utils/subjects';
+import React, { ElementRef, useEffect, useRef, useState } from 'react';
+import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { StandardAction } from '../../models/StandardAction';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';
@@ -24,6 +24,8 @@ import { useEnv } from '../../hooks/useEnv';
 import Box from '@mui/material/Box';
 import { filter, map } from 'rxjs/operators';
 import { fromEvent } from 'rxjs';
+import { reloadRequest } from '../../state/actions/preview';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 export function Host() {
   const site = useActiveSiteId();
@@ -33,16 +35,18 @@ export function Host() {
     showToolsPanel: leftSideBarOpen,
     toolsPanelWidth: leftSideBarWidth,
     icePanelWidth: rightSideBarWidth,
-    editMode: rightSideBarOpen
+    editMode: rightSideBarOpen,
+    guest
   } = usePreviewState();
   const { currentUrlPath } = usePreviewNavigation();
-  const iframeRef = useRef<React.ElementRef<'iframe'>>(null);
+  const [iframeKeyAppend, setIframeKeyAppend] = useState(0);
+  const iframeRef = useRef<ElementRef<'iframe'>>(null);
   const url = currentUrlPath === '' ? previewLandingBase : `${guestBase}${currentUrlPath}`;
   const eitherSideBarOpen = leftSideBarOpen || rightSideBarOpen;
+  const refs = useUpdateRefs({ guest, iframeKeyAppend, url });
 
   useEffect(() => {
-    const guestToHost$ = getGuestToHostBus();
-    const guestToHostSubscription = fromEvent<MessageEvent>(window, 'message')
+    const g2h = fromEvent<MessageEvent>(window, 'message')
       .pipe(
         filter((e) => Boolean(e.data?.meta?.craftercms)),
         map(({ data }) =>
@@ -54,9 +58,9 @@ export function Host() {
               }
         )
       )
-      .subscribe((action: StandardAction) => guestToHost$.next(action));
+      .subscribe((action: StandardAction) => getGuestToHostBus().next(action));
 
-    const hostToGuestSubscription = getHostToGuestBus()
+    const h2g = getHostToGuestBus()
       .asObservable()
       .pipe(map((action) => ({ ...action, craftercms: true, source: 'host' })))
       .subscribe((action) => {
@@ -64,11 +68,24 @@ export function Host() {
         contentWindow.postMessage(action, '*');
       });
 
+    const hth = getHostToHostBus().subscribe(({ type }) => {
+      // Attempt a refresh only if the preview application hasn't checked in.
+      // This is an alternative mechanism to the primary refresh mechanism
+      // (i.e. the message posted to the preview application to refresh its window).
+      if (type === reloadRequest.type && !refs.current.guest) {
+        setIframeKeyAppend(refs.current.iframeKeyAppend + 1);
+        setTimeout(() => {
+          iframeRef.current.src = refs.current.url;
+        });
+      }
+    });
+
     return () => {
-      guestToHostSubscription.unsubscribe();
-      hostToGuestSubscription.unsubscribe();
+      g2h.unsubscribe();
+      h2g.unsubscribe();
+      hth.unsubscribe();
     };
-  }, []);
+  }, [refs]);
 
   useEffect(() => {
     try {
@@ -106,7 +123,7 @@ export function Host() {
       })}
     >
       <Box
-        key={site}
+        key={`${site}_${iframeKeyAppend}`}
         ref={iframeRef}
         component="iframe"
         id="crafterCMSPreviewIframe"
