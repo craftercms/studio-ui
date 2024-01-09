@@ -15,7 +15,7 @@
  */
 
 import { get } from '../utils/ajax';
-import { pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { toQueryString } from '../utils/object';
 import { Observable } from 'rxjs';
 import { AwsItem } from '../models/Aws';
@@ -32,6 +32,6 @@ export function list(
     ...options
   });
   return get<Api2ResponseFormat<{ items: AwsItem[] }>>(`/studio/api/2/aws/s3/list${qs}`).pipe(
-    pluck('response', 'items')
+    map(({ response: { items } }) => items)
   );
 }

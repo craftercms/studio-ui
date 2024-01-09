@@ -21,7 +21,7 @@ import { createEpicMiddleware, Epic } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 import { BehaviorSubject, forkJoin, fromEvent, Observable, of } from 'rxjs';
-import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { fetchGlobalProperties, me } from '../services/users';
 import { exists, fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
@@ -145,8 +145,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
       }),
       filter((e) => e.data?.type === sharedWorkerToken.type),
       take(1),
-      pluck('data', 'payload'),
-      map((response) => ({ ...response, worker }))
+      map(({ data: { payload } }) => ({ ...payload, worker }))
     );
   } else {
     return new Observable((observer) => {

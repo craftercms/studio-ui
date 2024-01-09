@@ -30,7 +30,7 @@ import { fetchAuthenticationType } from './auth';
 // Check services/auth/login if `me` method is changed.
 export function me(): Observable<User> {
   return forkJoin({
-    user: get(me.url).pipe(pluck('response', 'authenticatedUser')),
+    user: get(me.url).pipe(map(({ response: { authenticatedUser } }) => authenticatedUser)),
     authenticationType: fetchAuthenticationType()
   }).pipe(map(({ user, authenticationType }) => ({ ...user, authenticationType })));
 }
@@ -38,11 +38,11 @@ export function me(): Observable<User> {
 me.url = '/studio/api/2/users/me.json';
 
 export function create(user: Partial<User>): Observable<User> {
-  return postJSON(`/studio/api/2/users`, user).pipe(pluck('response', 'user'));
+  return postJSON(`/studio/api/2/users`, user).pipe(map(({ response: { user } }) => user));
 }
 
 export function update(user: Partial<User>): Observable<User> {
-  return patchJSON(`/studio/api/2/users`, user).pipe(pluck('response', 'user'));
+  return patchJSON(`/studio/api/2/users`, user).pipe(map(({ response: { user } }) => user));
 }
 
 export function trash(username: string): Observable<true> {
@@ -70,8 +70,7 @@ export function enable(username: string): Observable<User>;
 export function enable(usernames: string[]): Observable<User[]>;
 export function enable(usernames: string | string[]): Observable<User | User[]> {
   return patchJSON('/studio/api/2/users/enable', { usernames: asArray(usernames) }).pipe(
-    pluck('response', 'users'),
-    map((users) => (Array.isArray(usernames) ? users : users[0]))
+    map(({ response: { users } }) => (Array.isArray(usernames) ? users : users[0]))
   );
 }
 
@@ -79,8 +78,7 @@ export function disable(username: string): Observable<User>;
 export function disable(usernames: string[]): Observable<User[]>;
 export function disable(usernames: string | string[]): Observable<User | User[]> {
   return patchJSON('/studio/api/2/users/disable', { usernames: asArray(usernames) }).pipe(
-    pluck('response', 'users'),
-    map((users) => (Array.isArray(usernames) ? users : users[0]))
+    map(({ response: { users } }) => (Array.isArray(usernames) ? users : users[0]))
   );
 }
 
@@ -91,7 +89,7 @@ export function setPassword(username: string, password: string): Observable<void
   return postJSON(`/studio/api/2/users/${encodeURIComponent(username)}/reset_password`, {
     username,
     new: password
-  }).pipe(pluck('response'));
+  }).pipe(map(({ response }) => response));
 }
 
 /**
@@ -101,7 +99,7 @@ export function resetPasswordWithToken(token: string, password: string): Observa
   return postJSON('/studio/api/2/users/set_password', {
     token,
     new: password
-  }).pipe(pluck('response', 'user'));
+  }).pipe(map(({ response: { user } }) => user));
 }
 
 /**
@@ -112,19 +110,19 @@ export function setMyPassword(username: string, currentPassword: string, newPass
     username,
     current: currentPassword,
     new: newPassword
-  }).pipe(pluck('response', 'user'));
+  }).pipe(map(({ response: { user } }) => user));
 }
 
 export function fetchByUsername(username: string): Observable<User> {
-  return get(`/studio/api/2/users/${encodeURIComponent(username)}`).pipe(pluck('response', 'user'));
+  return get(`/studio/api/2/users/${encodeURIComponent(username)}`).pipe(map(({ response: { user } }) => user));
 }
 
 export function fetchRolesInSite(username: string, siteId: string): Observable<string[]> {
-  return get(`/studio/api/2/users/${username}/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
+  return get(`/studio/api/2/users/${username}/sites/${siteId}/roles`).pipe(map(({ response: { roles } }) => roles));
 }
 
 export function fetchMyRolesInSite(siteId: string): Observable<string[]> {
-  return get(`/studio/api/2/users/me/sites/${siteId}/roles`).pipe(pluck('response', 'roles'));
+  return get(`/studio/api/2/users/me/sites/${siteId}/roles`).pipe(map(({ response: { roles } }) => roles));
 }
 
 export function fetchRolesBySite(username?: string, sites?: Site[]): Observable<LookupTable<string[]>> {
@@ -169,12 +167,14 @@ export function fetchGlobalProperties(): Observable<LookupTable<string>> {
 
 export function deleteGlobalProperties(...preferenceKeys: string[]): Observable<LookupTable<any>> {
   return del(`/studio/api/2/users/me/properties${toQueryString({ properties: preferenceKeys.join(',') })}`).pipe(
-    pluck('response', 'properties')
+    map(({ response: { properties } }) => properties)
   );
 }
 
 export function fetchSiteProperties(siteId: string): Observable<LookupTable<string>> {
-  return get(`/studio/api/2/users/me/properties?siteId=${siteId}`).pipe(pluck('response', 'properties', siteId));
+  return get(`/studio/api/2/users/me/properties?siteId=${siteId}`).pipe(
+    map(({ response: { properties } }) => properties[siteId])
+  );
 }
 
 export function deleteSiteProperties(site: string, ...preferenceKeys: string[]): Observable<LookupTable<any>> {
@@ -183,7 +183,7 @@ export function deleteSiteProperties(site: string, ...preferenceKeys: string[]):
       siteId: site,
       properties: JSON.stringify(preferenceKeys)
     })}`
-  ).pipe(pluck('response', 'properties'));
+  ).pipe(map(({ response: { properties } }) => properties));
 }
 
 export function setProperties(
@@ -193,39 +193,41 @@ export function setProperties(
   return postJSON('/studio/api/2/users/me/properties', {
     siteId,
     properties: preferences
-  }).pipe(pluck('response', 'properties'));
+  }).pipe(map(({ response: { properties } }) => properties));
 }
 
 export function deleteProperties(properties: string[], siteId?: string): Observable<LookupTable<any>> {
   return del(`/studio/api/2/users/me/properties${toQueryString({ siteId, properties: properties.join(',') })}`).pipe(
-    pluck('response', 'properties')
+    map(({ response: { properties } }) => properties)
   );
 }
 
 export function fetchMyPermissions(site: string): Observable<string[]> {
-  return get(`/studio/api/2/users/me/sites/${site}/permissions`).pipe(pluck('response', 'permissions'));
+  return get(`/studio/api/2/users/me/sites/${site}/permissions`).pipe(
+    map(({ response: { permissions } }) => permissions)
+  );
 }
 
 export function hasPermissions(site: string, ...permissions: string[]): Observable<LookupTable<boolean>> {
   return postJSON(`/studio/api/2/users/me/sites/${site}/has_permissions`, { permissions }).pipe(
-    pluck('response', 'permissions')
+    map(({ response: { permissions } }) => permissions)
   );
 }
 
 export function hasPermission(site: string, permission: string): Observable<boolean> {
-  return hasPermissions(site, permission).pipe(pluck(permission));
+  return hasPermissions(site, permission).pipe(map(({ permission }) => permission));
 }
 
 export function fetchGlobalPermissions(): Observable<string[]> {
-  return get(`/studio/api/2/users/me/global/permissions`).pipe(pluck('response', 'permissions'));
+  return get(`/studio/api/2/users/me/global/permissions`).pipe(map(({ response: { permissions } }) => permissions));
 }
 
 export function hasGlobalPermissions(...permissions: string[]): Observable<LookupTable<boolean>> {
   return postJSON('/studio/api/2/users/me/global/has_permissions', { permissions }).pipe(
-    pluck('response', 'permissions')
+    map(({ response: { permissions } }) => permissions)
   );
 }
 
 export function hasGlobalPermission(permission: string): Observable<boolean> {
-  return hasGlobalPermissions(permission).pipe(pluck(permission));
+  return hasGlobalPermissions(permission).pipe(map(({ permission }) => permission));
 }

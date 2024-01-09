@@ -15,7 +15,7 @@
  */
 
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { catchError, map, pluck } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { deserialize, entityEncodingTagValueProcessor, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
@@ -41,7 +41,7 @@ export function fetchConfigurationXML(
     path: configPath,
     environment
   });
-  return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(pluck('response', 'content'));
+  return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(map(({ response: { content } }) => content));
 }
 
 export function fetchConfigurationDOM(
@@ -152,7 +152,7 @@ export function deserializeActiveTargetingModelData<T extends Object>(
 export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
   const model = reversePluckProps(data, 'craftercms');
   const qs = toQueryString({ id: data.craftercms.id });
-  return postJSON(`/api/1/profile/set${qs}`, model).pipe(pluck('response'));
+  return postJSON(`/api/1/profile/set${qs}`, model).pipe(map(({ response }) => response));
 }
 
 // endregion
@@ -176,9 +176,8 @@ const legacyToNextMenuIconMap = {
 
 export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation']['items']> {
   return get('/studio/api/2/ui/views/global_menu.json').pipe(
-    pluck('response', 'menuItems'),
-    map((items) => [
-      ...items.map((item) => ({
+    map(({ response: { menuItems } }) => [
+      ...menuItems.map((item) => ({
         ...item,
         icon: legacyToNextMenuIconMap[item.icon]
           ? { id: legacyToNextMenuIconMap[item.icon] }
@@ -191,7 +190,7 @@ export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation
 }
 
 export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
-  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
+  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(map(({ response }) => response));
 }
 
 export function fetchHistory(
@@ -204,13 +203,16 @@ export function fetchHistory(
 
   return get(
     `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
-  ).pipe(pluck('response', 'history', 'versions'));
+  ).pipe(map(({ response }) => response.history.versions));
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {
   return get(
     `/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  ).pipe(
+    map(({ response }) => response),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function fetchSiteLocale(site: string, environment: string): Observable<any> {

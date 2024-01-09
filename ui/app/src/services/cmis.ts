@@ -16,7 +16,7 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { toQueryString } from '../utils/object';
-import { map, pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { CMISItem } from '../models/CMIS';
 
@@ -32,7 +32,7 @@ export function list(
     cmisRepoId,
     ...options
   });
-  return get<ReturnType>(`/studio/api/2/cmis/list${qs}`).pipe(pluck('response', 'items'));
+  return get<ReturnType>(`/studio/api/2/cmis/list${qs}`).pipe(map(({ response: { items } }) => items));
 }
 
 export function search(
@@ -47,7 +47,7 @@ export function search(
     searchTerm,
     ...options
   });
-  return get<ReturnType>(`/studio/api/2/cmis/search${qs}`).pipe(pluck('response', 'items'));
+  return get<ReturnType>(`/studio/api/2/cmis/search${qs}`).pipe(map(({ response: { items } }) => items));
 }
 
 export function clone(siteId: string, cmisRepoId: string, cmisPath: string, studioPath: string): Observable<true> {

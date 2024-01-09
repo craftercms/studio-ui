@@ -16,7 +16,7 @@
 
 import { forkJoin, Observable, Observer } from 'rxjs';
 import { get, postJSON } from '../utils/ajax';
-import { map, pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { fetchSandboxItem } from './content';
 import TranslationConfig from '../models/TranslationConfig';
 
@@ -79,5 +79,5 @@ export function markForTranslation(site: string, path: string, locale: string) {
 }
 
 export function fetchSiteLocales(site: string): Observable<TranslationConfig> {
-  return get(`/studio/api/2/configuration/translation?siteId=${site}`).pipe(pluck('response', 'config'));
+  return get(`/studio/api/2/configuration/translation?siteId=${site}`).pipe(map(({ response: { config } }) => config));
 }
