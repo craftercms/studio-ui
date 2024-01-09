@@ -15,7 +15,7 @@
  */
 
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from './utils/communicator';
@@ -99,7 +99,7 @@ export { operationsObs$ as operations$, modelsObs$ as models$, contentTypesObs$ 
 
 export function model$(modelId: string): Observable<ContentInstance> {
   return models$.pipe(
-    pluck(modelId),
+    map((models) => models[modelId]),
     filter((model) => Boolean(model))
   );
 }
@@ -166,12 +166,12 @@ export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance
   } else if (requestedPaths[path]) {
     return paths$.pipe(
       filter((paths) => Boolean(paths[path])),
-      pluck(path),
+      map((paths) => paths[path]),
       map((modelId) => models$.value[modelId])
     );
   } else {
     requestedPaths[path] = true;
-    return fetchByPath(path).pipe(pluck('model'));
+    return fetchByPath(path).pipe(map(({ model }) => model));
   }
 }
 
@@ -200,7 +200,7 @@ export function fetchByPath(
     tap(() => post({ type: 'FETCH_GUEST_MODEL', payload: { path } })),
     switchMap(() =>
       fromTopic('FETCH_GUEST_MODEL_COMPLETE').pipe(
-        pluck('payload'),
+        map(({ payload }) => payload),
         filter((payload) => payload.path === path),
         take(1)
       )
@@ -740,7 +740,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
 // Host sends over all content types upon Guest check in.
 fromTopic(contentTypesResponse.type)
-  .pipe(pluck('payload'))
+  .pipe(map(({ payload }) => payload))
   .subscribe(({ contentTypes }) => {
     contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
   });
@@ -756,7 +756,7 @@ export interface FetchGuestModelCompletePayload {
 }
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
-  .pipe(pluck('payload'))
+  .pipe(map(({ payload }) => payload))
   .subscribe(
     ({ modelLookup, hierarchyMap, modelIdByPath, sandboxItems, permissions }: FetchGuestModelCompletePayload) => {
       Object.keys(modelIdByPath).forEach((path) => {
@@ -771,7 +771,7 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   );
 
 fromTopic(updateFieldValueOperationComplete.type)
-  .pipe(pluck('payload'))
+  .pipe(map(({ payload }) => payload))
   .subscribe(({ item }) => {
     items$.next({
       ...items$.value,

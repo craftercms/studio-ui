@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import { fromEvent, interval, merge } from 'rxjs';
-import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
 import { contentTypes$, FetchGuestModelCompletePayload, flushRequestedPaths, operations$ } from '../contentController';
 import * as elementRegistry from '../elementRegistry';
@@ -503,7 +503,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           locked.length && dispatch(setLockedItems(locked));
         }),
         filter(({ payload }) => payload.path === path),
-        pluck('payload', 'model'),
+        map(({ payload: { model } }) => model),
         withLatestFrom(contentTypes$),
         take(1)
       )
