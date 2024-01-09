@@ -19,6 +19,7 @@ import { PathNavigatorStateProps } from '../../components/PathNavigator';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, getParentPath, withoutIndex } from '../../utils/path';
 import {
+  pathNavigatorBulkRefresh,
   pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorClearChecked,
@@ -183,6 +184,11 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>({}, (builder
     })
     .addCase(pathNavigatorRefresh, (state, { payload: { id } }) => {
       state[id].isFetching = true;
+    })
+    .addCase(pathNavigatorBulkRefresh, (state, { payload: { ids } }) => {
+      ids.forEach((id) => {
+        state[id].isFetching = true;
+      });
     })
     .addCase(pathNavigatorChangePage, (state, { payload: { id } }) => {
       state[id].isFetching = true;

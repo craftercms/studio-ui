@@ -36,7 +36,8 @@ import {
   pathNavigatorTreeBulkBackgroundRefresh,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
-  pathNavigatorTreeUpdate
+  pathNavigatorTreeUpdate,
+  pathNavigatorTreeBulkRefresh
 } from '../actions/pathNavigatorTree';
 import {
   checkPathExistence,
@@ -177,7 +178,7 @@ export default [
   // region pathNavigatorTreeBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorTreeBulkBackgroundRefresh.type),
+      ofType(pathNavigatorTreeBulkBackgroundRefresh.type, pathNavigatorTreeBulkRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const { ids } = payload;
@@ -371,6 +372,7 @@ export default [
       withLatestFrom(state$),
       mergeMap(([action, state]) => {
         const actions = [];
+        const idsToRefresh = [];
         // Content Event Cases:
         // a. New file/folder: fetch parent
         // b. File/folder updated (with no `sortStrategy` or `order` configurations set up): fetch item
@@ -389,7 +391,7 @@ export default [
               tree.isRootPathMissing &&
               (targetPath === rootPath || withIndex(targetPath) === rootPath)
             ) {
-              actions.push(pathNavigatorTreeRefresh({ id }));
+              idsToRefresh.push(id);
             } else if (
               // If an entry for the path exists, assume it's an update to an existing item.
               // If sorting options are set, the parent path needs to be updated for the sort order to be correct.
@@ -412,6 +414,7 @@ export default [
             }
           }
         );
+        actions.push(pathNavigatorTreeBulkRefresh({ ids: idsToRefresh }));
         return actions;
       })
     ),
@@ -441,6 +444,7 @@ export default [
         const sourcePath = action.payload.sourcePath;
         const parentPathOfTargetPath = getParentPath(targetPath);
         const parentPathOfSourcePath = getParentPath(sourcePath);
+        const idsToRefresh = [];
         Object.values(state.pathNavigatorTree).forEach((tree) => {
           const id = tree.id;
           if (
@@ -448,7 +452,7 @@ export default [
             tree.isRootPathMissing &&
             tree.rootPath === targetPath
           ) {
-            actions.push(pathNavigatorTreeRefresh({ id }));
+            idsToRefresh.push(id);
           } else {
             [parentPathOfTargetPath, parentPathOfSourcePath].forEach((path) => {
               if (
@@ -474,6 +478,7 @@ export default [
             });
           }
         });
+        actions.push(pathNavigatorTreeBulkRefresh({ ids: idsToRefresh }));
         return actions;
       })
     ),
@@ -486,13 +491,13 @@ export default [
       throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
-        const actions = [];
+        const ids = [];
         Object.values(state.pathNavigatorTree).forEach((tree) => {
           if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
-            actions.push(pathNavigatorTreeBackgroundRefresh({ id: tree.id }));
+            ids.push(tree.id);
           }
         });
-        return actions;
+        return of(pathNavigatorTreeBulkBackgroundRefresh({ ids }));
       })
     ),
   // endregion

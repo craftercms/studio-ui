@@ -25,7 +25,7 @@ import {
   fetchItemWithChildrenByPath
 } from '../../services/content';
 import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangeLimit,
@@ -45,7 +45,8 @@ import {
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
   PathNavInitPayload,
-  pathNavRootPathMissing
+  pathNavRootPathMissing,
+  pathNavigatorBulkRefresh
 } from '../actions/pathNavigator';
 import { setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
@@ -132,7 +133,7 @@ export default [
   // region pathNavigatorBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorBulkBackgroundRefresh.type),
+      ofType(pathNavigatorBulkBackgroundRefresh.type, pathNavigatorBulkRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const { ids } = payload;
@@ -416,12 +417,12 @@ export default [
         // b. Item is a direct child of the current path: refresh navigator
         // b. Item is a direct child of the current path: refresh navigator
         // c. Item is a child of an item on the current path: refresh item's child count
-        const actions = [];
         const {
           payload: { targetPath }
         } = action;
         const parentPathOfTargetPath = getParentPath(targetPath);
         const parentOfTargetWithIndex = withIndex(parentPathOfTargetPath);
+        const idsToRefresh = [];
         Object.values(state.pathNavigator).forEach((navigator) => {
           if (
             // Case (a)
@@ -430,7 +431,7 @@ export default [
             navigator.currentPath === parentPathOfTargetPath ||
             navigator.currentPath === parentOfTargetWithIndex
           ) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+            idsToRefresh.push(navigator.id);
           } /* else if (
             // Case (c) - Content epics load any item that's on the state already
             navigator.currentPath === getParentPath(parentPathOfTargetPath)
@@ -438,7 +439,7 @@ export default [
             actions.push(fetchSandboxItem({ path: parentPathOfTargetPath }));
           } */
         });
-        return actions;
+        return of(pathNavigatorBulkBackgroundRefresh({ ids: idsToRefresh }));
       })
     ),
   // endregion
@@ -473,18 +474,22 @@ export default [
         } = action;
         const parentOfTargetPath = getParentPath(targetPath);
         const parentOfSourcePath = getParentPath(sourcePath);
+        const idsToRefresh = [];
+        const idsToBgRefresh = [];
         Object.values(state.pathNavigator).forEach((navigator) => {
           if (navigator.isRootPathMissing && targetPath === navigator.rootPath) {
-            actions.push(pathNavigatorRefresh({ id: navigator.id }));
+            idsToRefresh.push(navigator.id);
           } else if (!navigator.isRootPathMissing && navigator.currentPath.startsWith(sourcePath)) {
             actions.push(pathNavigatorSetCurrentPath({ id: navigator.id, path: navigator.rootPath }));
           } else if (
             withoutIndex(navigator.currentPath) === parentOfTargetPath ||
             withoutIndex(navigator.currentPath) === parentOfSourcePath
           ) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+            idsToBgRefresh.push(navigator.id);
           }
         });
+        actions.push(pathNavigatorBulkRefresh({ ids: idsToRefresh }));
+        actions.push(pathNavigatorBulkBackgroundRefresh({ ids: idsToBgRefresh }));
         return actions;
       })
     ),
@@ -496,13 +501,13 @@ export default [
       throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
-        const actions = [];
+        const ids = [];
         Object.values(state.pathNavigator).forEach((tree) => {
           if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+            ids.push(tree.id);
           }
         });
-        return actions;
+        return of(pathNavigatorBulkBackgroundRefresh({ ids }));
       })
     ),
   // endregion
@@ -513,9 +518,7 @@ export default [
       throttleTime(500),
       withLatestFrom(state$),
       mergeMap(([, state]) => {
-        const actions = [];
-        actions.push(pathNavigatorBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
-        return actions;
+        return of(pathNavigatorBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
       })
     )
   // endregion

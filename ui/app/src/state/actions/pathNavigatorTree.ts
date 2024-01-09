@@ -44,6 +44,8 @@ export const pathNavigatorTreeBackgroundRefresh = /*#__PURE__*/ createAction<{ i
   'PATH_NAV_TREE_BACKGROUND_REFRESH'
 );
 
+export const pathNavigatorTreeBulkRefresh = /*#__PURE__*/ createAction<{ ids: string[] }>('PATH_NAV_TREE_BULK_REFRESH');
+
 export const pathNavigatorTreeBulkBackgroundRefresh = /*#__PURE__*/ createAction<{ ids: string[] }>(
   'PATH_NAV_TREE_BULK_BG_REFRESH'
 );
