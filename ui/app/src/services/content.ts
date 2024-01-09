@@ -1208,8 +1208,7 @@ export function fetchChildrenByPaths(
     return of({});
   }
   return postJSON(`/studio/api/2/content/${siteId}/children`, { paths }).pipe(
-    pluck('response', 'items'),
-    map((items) => {
+    map(({ response: { items } }) => {
       const data = {};
       items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
         data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
