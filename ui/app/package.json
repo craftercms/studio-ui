@@ -140,7 +140,7 @@
     "@types/video.js": "^7.3.56",
     "@videojs/vhs-utils": "^4.1.0",
     "autosuggest-highlight": "^3.3.4",
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.0",
     "fast-xml-parser": "^4.3.2",
     "graphiql": "^3.0.10",
     "graphql": "^16.8.1",
