@@ -25,10 +25,13 @@ import {
   fetchItemWithChildrenByPath
 } from '../../services/content';
 import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, NEVER, Observable, of } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorBulkBackgroundRefresh,
+  pathNavigatorBulkFetchPathComplete,
+  pathNavigatorBulkFetchPathFailed,
+  pathNavigatorBulkRefresh,
   pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
@@ -62,7 +65,6 @@ import {
   publishEvent,
   workflowEvent
 } from '../actions/system';
-import { batchActions } from '../actions/misc';
 
 export default [
   // region pathNavigatorInit
@@ -132,7 +134,7 @@ export default [
   // region pathNavigatorBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(
-      ofType(pathNavigatorBulkBackgroundRefresh.type),
+      ofType(pathNavigatorBulkBackgroundRefresh.type, pathNavigatorBulkRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const { ids } = payload;
@@ -158,24 +160,18 @@ export default [
           fetchChildrenByPaths(state.sites.active, optionsByPath)
         ]).pipe(
           map(([items, children]) => {
-            const actions = [];
+            const paths = [];
             ids.forEach((id) => {
-              actions.push(
-                pathNavigatorFetchPathComplete({
-                  id,
-                  parent: items.find((item) => item.path.startsWith(withoutIndex(state.pathNavigator[id].currentPath))),
-                  children: children[state.pathNavigator[id].currentPath]
-                })
-              );
+              paths.push({
+                id,
+                parent: items.find((item) => item.path.startsWith(withoutIndex(state.pathNavigator[id].currentPath))),
+                children: children[state.pathNavigator[id].currentPath]
+              });
             });
-            return batchActions(actions);
+            return pathNavigatorBulkFetchPathComplete({ paths });
           }),
           catchAjaxError((error) => {
-            const actions = [];
-            ids.forEach((id) => {
-              actions.push(pathNavigatorFetchPathFailed({ error, id }));
-            });
-            return batchActions(actions);
+            return pathNavigatorBulkFetchPathFailed({ ids, error });
           })
         );
       })
@@ -410,18 +406,18 @@ export default [
     action$.pipe(
       ofType(contentEvent.type),
       withLatestFrom(state$),
-      mergeMap(([action, state]) => {
+      map(([action, state]) => {
         // Cases:
         // a. Item is the current path in the navigator: refresh navigator
         // b. Item is a direct child of the current path: refresh navigator
         // b. Item is a direct child of the current path: refresh navigator
         // c. Item is a child of an item on the current path: refresh item's child count
-        const actions = [];
         const {
           payload: { targetPath }
         } = action;
         const parentPathOfTargetPath = getParentPath(targetPath);
         const parentOfTargetWithIndex = withIndex(parentPathOfTargetPath);
+        const idsToRefresh = [];
         Object.values(state.pathNavigator).forEach((navigator) => {
           if (
             // Case (a)
@@ -430,7 +426,7 @@ export default [
             navigator.currentPath === parentPathOfTargetPath ||
             navigator.currentPath === parentOfTargetWithIndex
           ) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+            idsToRefresh.push(navigator.id);
           } /* else if (
             // Case (c) - Content epics load any item that's on the state already
             navigator.currentPath === getParentPath(parentPathOfTargetPath)
@@ -438,7 +434,7 @@ export default [
             actions.push(fetchSandboxItem({ path: parentPathOfTargetPath }));
           } */
         });
-        return actions;
+        return pathNavigatorBulkBackgroundRefresh({ ids: idsToRefresh });
       })
     ),
   // endregion
@@ -473,18 +469,22 @@ export default [
         } = action;
         const parentOfTargetPath = getParentPath(targetPath);
         const parentOfSourcePath = getParentPath(sourcePath);
+        const idsToRefresh = [];
+        const idsToBgRefresh = [];
         Object.values(state.pathNavigator).forEach((navigator) => {
           if (navigator.isRootPathMissing && targetPath === navigator.rootPath) {
-            actions.push(pathNavigatorRefresh({ id: navigator.id }));
+            idsToRefresh.push(navigator.id);
           } else if (!navigator.isRootPathMissing && navigator.currentPath.startsWith(sourcePath)) {
             actions.push(pathNavigatorSetCurrentPath({ id: navigator.id, path: navigator.rootPath }));
           } else if (
             withoutIndex(navigator.currentPath) === parentOfTargetPath ||
             withoutIndex(navigator.currentPath) === parentOfSourcePath
           ) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+            idsToBgRefresh.push(navigator.id);
           }
         });
+        idsToRefresh.length && actions.push(pathNavigatorBulkRefresh({ ids: idsToRefresh }));
+        idsToBgRefresh.length && actions.push(pathNavigatorBulkBackgroundRefresh({ ids: idsToBgRefresh }));
         return actions;
       })
     ),
@@ -495,14 +495,14 @@ export default [
       ofType(pluginInstalled.type),
       throttleTime(500),
       withLatestFrom(state$),
-      mergeMap(([, state]) => {
-        const actions = [];
+      map(([, state]) => {
+        const ids = [];
         Object.values(state.pathNavigator).forEach((tree) => {
           if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+            ids.push(tree.id);
           }
         });
-        return actions;
+        return ids.length ? pathNavigatorBulkBackgroundRefresh({ ids }) : NEVER;
       })
     ),
   // endregion
@@ -512,10 +512,8 @@ export default [
       ofType(publishEvent.type, workflowEvent.type),
       throttleTime(500),
       withLatestFrom(state$),
-      mergeMap(([, state]) => {
-        const actions = [];
-        actions.push(pathNavigatorBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
-        return actions;
+      map(([, state]) => {
+        return pathNavigatorBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigator) });
       })
     )
   // endregion
