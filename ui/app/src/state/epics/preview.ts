@@ -252,7 +252,8 @@ export default [
       withLatestFrom(state$),
       filter(
         ([action, state]) =>
-          action.payload.targetPath === state.preview.guest.path && action.payload.user.username !== state.user.username
+          action.payload.targetPath === state.preview.guest?.path &&
+          action.payload.user.username !== state.user.username
       ),
       map(([action]) => mainModelModifiedExternally(action.payload))
     )

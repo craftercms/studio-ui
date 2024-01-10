@@ -27,7 +27,7 @@ import React, {
 import { ThemeOptions } from '@mui/material/styles';
 import { setRequestForgeryToken } from '../../utils/auth';
 import { CrafterCMSStore, getStore } from '../../state/store';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, SnackbarProviderProps } from 'notistack';
 import I18nProvider from '../I18nProvider';
 import StoreProvider from '../StoreProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
@@ -37,6 +37,7 @@ import { registerComponents } from '../../env/registerComponents';
 import LoadingState from '../LoadingState';
 import GlobalStyles from '../GlobalStyles';
 import ErrorState from '../ErrorState/ErrorState';
+import NotistackVariant from '../NotistackVariant';
 
 const LegacyConcierge = lazy(() => import('../LegacyConcierge/LegacyConcierge'));
 const GlobalDialogManager = lazy(() => import('../GlobalDialogManager/GlobalDialogManager'));
@@ -64,12 +65,18 @@ export function CrafterCMSNextBridge(
   } = props;
   const SnackbarOrFragment: ElementType = mountSnackbarProvider ? SnackbarProvider : Fragment;
   const snackbarOrFragmentProps = mountSnackbarProvider
-    ? {
+    ? ({
         maxSnack: 5,
         autoHideDuration: 5000,
         anchorOrigin: { vertical: 'bottom', horizontal: 'left' },
-        action: (id) => <SnackbarCloseButton id={id} />
-      }
+        action: (id) => <SnackbarCloseButton id={id} />,
+        Components: {
+          error: NotistackVariant,
+          success: NotistackVariant,
+          warning: NotistackVariant,
+          info: NotistackVariant
+        }
+      } as SnackbarProviderProps)
     : {};
   useLayoutEffect(() => {
     registerComponents();
