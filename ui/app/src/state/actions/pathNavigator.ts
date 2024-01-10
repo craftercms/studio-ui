@@ -64,6 +64,8 @@ export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('
 
 export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_BACKGROUND_REFRESH');
 
+export const pathNavigatorBulkRefresh = /*#__PURE__*/ createAction<{ ids: string[] }>('PATH_NAV_BULK_REFRESH');
+
 export const pathNavigatorBulkBackgroundRefresh = /*#__PURE__*/ createAction<{ ids: string[] }>(
   'PATH_NAV_BULK_BG_REFRESH'
 );
@@ -89,6 +91,10 @@ export const pathNavigatorFetchPathComplete =
     'PATH_NAV_FETCH_PATH_COMPLETE'
   );
 
+export const pathNavigatorBulkFetchPathComplete = /*#__PURE__*/ createAction<{
+  paths: PayloadWithId<{ parent?: DetailedItem; children: GetChildrenResponse }>[];
+}>('PATH_NAV_BULK_FETCH_PATH_COMPLETE');
+
 export const pathNavigatorFetchParentItemsComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ items: DetailedItem[]; children: GetChildrenResponse }>
 >('PATH_NAV_FETCH_PARENT_ITEMS_COMPLETE');
@@ -97,6 +103,11 @@ export const pathNavigatorFetchPathFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_FETCH_PATH_FAILED');
+
+export const pathNavigatorBulkFetchPathFailed = /*#__PURE__*/ createAction<{
+  ids: string[];
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAV_BULK_FETCH_PATH_FAILED');
 
 export const pathNavigatorSetKeyword =
   /*#__PURE__*/ createAction<PayloadWithId<{ keyword: string }>>('PATH_NAV_SET_KEYWORD');
