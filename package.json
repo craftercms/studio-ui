@@ -59,10 +59,18 @@
     }
   },
   "resolutions": {
-    "react-is": "^18.2.0",
     "@babel/runtime": "^7",
+    "@typescript-eslint/eslint-plugin": "^6",
+    "@typescript-eslint/parser": "^6",
+    "@typescript-eslint/scope-manager": "^6",
+    "@typescript-eslint/type-utils": "^6",
+    "@typescript-eslint/types": "^6",
+    "@typescript-eslint/typescript-": "^6",
+    "@typescript-eslint/utils": "^6",
+    "@typescript-eslint/visitor-keys": "^6",
+    "clsx": "^2.0.0",
     "nth-check": "^2.0.1",
-    "clsx": "^2.0.0"
+    "react-is": "^18.2.0"
   },
   "packageManager": "yarn@4.0.2",
   "scripts": {
