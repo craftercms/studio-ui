@@ -50,6 +50,7 @@ import { SandboxItem } from '../../models/Item';
 import { changeSiteComplete } from '../actions/sites';
 import {
   pathNavigatorTreeBulkFetchPathChildrenComplete,
+  pathNavigatorTreeBulkRestoreComplete,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeRestoreComplete,
@@ -115,6 +116,27 @@ const updateItemsBeingFetchedByPaths = (state, { payload: { paths } }) => {
   paths.forEach((path) => {
     state.itemsBeingFetchedByPath[path] = true;
   });
+};
+
+const updateItemsFromRestoredTree = (state, payload: PathNavigatorTreeRestoreCompletePayload) => {
+  const { children, items } = payload;
+  let nextByPath = {};
+  Object.values(children).forEach((children) => {
+    Object.assign(
+      nextByPath,
+      createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
+    );
+    if (children.levelDescriptor) {
+      nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
+        children.levelDescriptor,
+        state.itemsByPath[children.levelDescriptor.path]
+      );
+    }
+  });
+  items.forEach((item) => {
+    nextByPath[item.path] = item;
+  });
+  return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
 };
 
 const reducer = createReducer<ContentState>(initialState, (builder) => {
@@ -223,28 +245,23 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
     .addCase(
       pathNavigatorTreeRestoreComplete,
       (state, action: { payload: PathNavigatorTreeRestoreCompletePayload }) => {
-        const {
-          payload: { children, items }
-        } = action;
-        let nextByPath = {};
-        Object.values(children).forEach((children) => {
-          Object.assign(
-            nextByPath,
-            createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
-          );
-          if (children.levelDescriptor) {
-            nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
-              children.levelDescriptor,
-              state.itemsByPath[children.levelDescriptor.path]
-            );
-          }
-        });
-        items.forEach((item) => {
-          nextByPath[item.path] = item;
-        });
-        return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
+        const { payload } = action;
+        return updateItemsFromRestoredTree(state, payload);
       }
     )
+    .addCase(pathNavigatorTreeBulkRestoreComplete, (state, { payload: { trees } }) => {
+      let nextByPath = state.itemsByPath;
+      trees.forEach((tree) => {
+        nextByPath = {
+          ...nextByPath,
+          ...updateItemsFromRestoredTree({ ...state, itemsByPath: nextByPath }, tree).itemsByPath
+        };
+      });
+      return {
+        ...state,
+        itemsByPath: nextByPath
+      };
+    })
     .addCase(updateItemsByPath, (state, { payload }) => {
       return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
     })

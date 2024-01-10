@@ -63,8 +63,17 @@ export const pathNavigatorTreeRestoreComplete = /*#__PURE__*/ createAction<PathN
   'PATH_NAV_TREE_RESTORE_COMPLETE'
 );
 
+export const pathNavigatorTreeBulkRestoreComplete = /*#__PURE__*/ createAction<{
+  trees: PathNavigatorTreeRestoreCompletePayload[];
+}>('PATH_NAV_TREE_BULK_RESTORE_COMPLETE');
+
 export const pathNavigatorTreeRestoreFailed = /*#__PURE__*/ createAction<{
   id: string;
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAV_TREE_RESTORE_FAILED');
+
+export const pathNavigatorTreeBulkRestoreFailed = /*#__PURE__*/ createAction<{
+  ids: string[];
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_RESTORE_FAILED');
 

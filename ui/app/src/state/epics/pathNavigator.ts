@@ -25,7 +25,7 @@ import {
   fetchItemWithChildrenByPath
 } from '../../services/content';
 import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
-import { forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, NEVER, Observable } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangeLimit,
@@ -406,7 +406,7 @@ export default [
     action$.pipe(
       ofType(contentEvent.type),
       withLatestFrom(state$),
-      mergeMap(([action, state]) => {
+      map(([action, state]) => {
         // Cases:
         // a. Item is the current path in the navigator: refresh navigator
         // b. Item is a direct child of the current path: refresh navigator
@@ -434,7 +434,7 @@ export default [
             actions.push(fetchSandboxItem({ path: parentPathOfTargetPath }));
           } */
         });
-        return of(pathNavigatorBulkBackgroundRefresh({ ids: idsToRefresh }));
+        return pathNavigatorBulkBackgroundRefresh({ ids: idsToRefresh });
       })
     ),
   // endregion
@@ -483,8 +483,8 @@ export default [
             idsToBgRefresh.push(navigator.id);
           }
         });
-        actions.push(pathNavigatorBulkRefresh({ ids: idsToRefresh }));
-        actions.push(pathNavigatorBulkBackgroundRefresh({ ids: idsToBgRefresh }));
+        idsToRefresh.length && actions.push(pathNavigatorBulkRefresh({ ids: idsToRefresh }));
+        idsToBgRefresh.length && actions.push(pathNavigatorBulkBackgroundRefresh({ ids: idsToBgRefresh }));
         return actions;
       })
     ),
@@ -495,14 +495,14 @@ export default [
       ofType(pluginInstalled.type),
       throttleTime(500),
       withLatestFrom(state$),
-      mergeMap(([, state]) => {
+      map(([, state]) => {
         const ids = [];
         Object.values(state.pathNavigator).forEach((tree) => {
           if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
             ids.push(tree.id);
           }
         });
-        return of(pathNavigatorBulkBackgroundRefresh({ ids }));
+        return ids.length ? pathNavigatorBulkBackgroundRefresh({ ids }) : NEVER;
       })
     ),
   // endregion
@@ -512,8 +512,8 @@ export default [
       ofType(publishEvent.type, workflowEvent.type),
       throttleTime(500),
       withLatestFrom(state$),
-      mergeMap(([, state]) => {
-        return of(pathNavigatorBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigator) }));
+      map(([, state]) => {
+        return pathNavigatorBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigator) });
       })
     )
   // endregion
