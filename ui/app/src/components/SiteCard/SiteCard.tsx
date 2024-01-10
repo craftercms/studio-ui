@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
@@ -27,11 +27,12 @@ import CardActions from '@mui/material/CardActions';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import CardActionArea from '@mui/material/CardActionArea';
-import { Typography } from '@mui/material';
+import { alpha, Typography } from '@mui/material';
 import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
+import { toColor } from '../../utils/string';
 
 interface SiteCardProps {
   site: Site;
@@ -53,7 +54,7 @@ export function SiteCard(props: SiteCardProps) {
     onDeleteSiteClick,
     onEditSiteClick,
     onDuplicateSiteClick,
-    fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg',
+    fallbackImageSrc = '',
     compact = false,
     publishingStatus,
     disabled,
@@ -61,6 +62,8 @@ export function SiteCard(props: SiteCardProps) {
   } = props;
   const { classes, cx: clsx } = useSiteCardStyles();
   const isSiteReady = site.state === 'READY';
+  const [hasImg, setHasImg] = useState(true);
+  const color = useMemo(() => toColor(site.name), [site.name]);
 
   return (
     <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
@@ -99,11 +102,31 @@ export function SiteCard(props: SiteCardProps) {
         />
         {!compact && (
           <CardMedia
-            component="img"
+            component={hasImg ? 'img' : 'div'}
             className={classes.media}
             image={site.imageUrl}
             title={site.name}
-            onError={(event) => ((event.target as HTMLImageElement).src = fallbackImageSrc)}
+            sx={(theme) => ({
+              display: 'flex',
+              alignItems: 'center',
+              placeContent: 'center',
+              backgroundColor: theme.palette.mode === 'light' ? color : alpha(color, 0.6)
+            })}
+            children={
+              hasImg ? undefined : (
+                <Typography
+                  variant="h6"
+                  component="span"
+                  sx={(theme) => ({ color: theme.palette.getContrastText(color) })}
+                >
+                  {site.name}
+                </Typography>
+              )
+            }
+            onError={(event) => {
+              if (fallbackImageSrc) (event.target as HTMLImageElement).src = fallbackImageSrc;
+              else setHasImg(false);
+            }}
           />
         )}
       </CardActionArea>
