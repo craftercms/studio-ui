@@ -20,7 +20,7 @@
         "Awaiting a connection from the Preview application"
       </p>
       <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-        Crafter Studio is not receiving a connection from the previewed application; editing features are unavailable.
+        Crafter Studio is not receiving a connection from the previewed application; editing features are unavailable. This can be due to factors outlined below.
       </p>
     </div>
     <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
