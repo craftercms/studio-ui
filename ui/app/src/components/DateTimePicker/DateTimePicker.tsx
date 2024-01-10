@@ -108,7 +108,19 @@ function DateTimePicker(props: DateTimePickerProps) {
     dateTimeFormatOptions
   } = props;
   const timeZones = getTimezones();
-  const offset = value ? moment.parseZone(value).format().slice(-6) : null;
+  let offset = null;
+  // MomentJS format returns a UTC string. When the timezone is GMT (zero), the formatted string will end with `Z`
+  // instead of the offset string (+-HH:mm). We need to handle this case separately.
+  if (value) {
+    const formattedValue = moment.parseZone(value).format();
+    if (formattedValue.endsWith('Z')) {
+      // If the UTC string ends with `Z`, then the offset is `+00:00`.
+      offset = '+00:00';
+    } else {
+      // Otherwise, the offset is the last 6 characters of the UTC string.
+      offset = formattedValue.slice(-6);
+    }
+  }
   const timeZone = offset
     ? timeZones.find((tz) => tz.offset === offset).name
     : locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone();
