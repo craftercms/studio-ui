@@ -37,7 +37,8 @@ import {
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
   pathNavigatorTreeUpdate,
-  pathNavigatorTreeBulkRefresh
+  pathNavigatorTreeBulkRefresh,
+  pathNavigatorTreeBulkFetchPathChildren
 } from '../actions/pathNavigatorTree';
 import {
   checkPathExistence,
@@ -294,6 +295,50 @@ export default [
       })
     ),
   // endregion
+  // region pathNavigatorTreeBulkFetchPathChildren
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreeBulkFetchPathChildren.type),
+      withLatestFrom(state$),
+      mergeMap(([{ payload }, state]) => {
+        const optionsByPath = {};
+        payload.forEach((item) => {
+          const chunk = state.pathNavigatorTree[item.id];
+          optionsByPath[item.path] = {
+            ...createGetChildrenOptions(chunk, item.options),
+            ...(chunk.offsetByPath[item.path]
+              ? {
+                  limit: chunk.limit + chunk.offsetByPath[item.path]
+                }
+              : {})
+          };
+        });
+        return fetchChildrenByPaths(state.sites.active, optionsByPath).pipe(
+          map((children) => {
+            const actions = [];
+            payload.forEach((item) => {
+              actions.push(
+                pathNavigatorTreeFetchPathChildrenComplete({
+                  id: item.id,
+                  children: children[item.path],
+                  parentPath: item.path,
+                  options: optionsByPath[item.path]
+                })
+              );
+            });
+            return batchActions(actions);
+          }),
+          catchAjaxError((error) => {
+            const actions = [];
+            payload.forEach((item) => {
+              actions.push(pathNavigatorTreeFetchPathChildrenFailed({ error, id: item.id }));
+            });
+            return batchActions(actions);
+          })
+        );
+      })
+    ),
+  // endregion
   // region pathNavigatorTreeSetKeyword
   (action$, state$) =>
     action$.pipe(
@@ -373,6 +418,7 @@ export default [
       mergeMap(([action, state]) => {
         const actions = [];
         const idsToRefresh = [];
+        const fetchPathsData = [];
         // Content Event Cases:
         // a. New file/folder: fetch parent
         // b. File/folder updated (with no `sortStrategy` or `order` configurations set up): fetch item
@@ -407,14 +453,16 @@ export default [
             ) {
               const pathToUpdate = parentPath in tree.totalByPath ? parentPath : withIndex(parentPath);
               // Show the new child
-              pathToUpdate in tree.childrenByParentPath &&
-                actions.push(pathNavigatorTreeFetchPathChildren({ id, path: pathToUpdate, expand: false }));
+              if (pathToUpdate in tree.childrenByParentPath) {
+                fetchPathsData.push({ id, path: pathToUpdate, expand: false });
+              }
               // Update child count done by content epics.
               // fetchSandboxItem({ path: parentPath })
             }
           }
         );
         actions.push(pathNavigatorTreeBulkRefresh({ ids: idsToRefresh }));
+        actions.push(pathNavigatorTreeBulkFetchPathChildren(fetchPathsData));
         return actions;
       })
     ),
@@ -445,6 +493,7 @@ export default [
         const parentPathOfTargetPath = getParentPath(targetPath);
         const parentPathOfSourcePath = getParentPath(sourcePath);
         const idsToRefresh = [];
+        const fetchPathsData = [];
         Object.values(state.pathNavigatorTree).forEach((tree) => {
           const id = tree.id;
           if (
@@ -464,14 +513,17 @@ export default [
                 // Get correct path to fetch (may include index.xml)
                 const fetchPath = path in tree.totalByPath ? path : withIndex(path);
                 // If its children are loaded, then re-fetch to get the new
-                tree.childrenByParentPath[fetchPath] &&
-                  actions.push(
-                    pathNavigatorTreeFetchPathChildren({
-                      id: id,
-                      path: fetchPath,
-                      expand: false
-                    })
-                  );
+                if (tree.childrenByParentPath[fetchPath]) {
+                  fetchPathsData.push({ id, path: fetchPath, expand: false });
+                }
+                // tree.childrenByParentPath[fetchPath] &&
+                //   actions.push(
+                //     pathNavigatorTreeFetchPathChildren({
+                //       id: id,
+                //       path: fetchPath,
+                //       expand: false
+                //     })
+                //   );
                 // Re-fetching the item done by content epics.
                 // fetchSandboxItem({ path: path })
               }
@@ -479,6 +531,7 @@ export default [
           }
         });
         actions.push(pathNavigatorTreeBulkRefresh({ ids: idsToRefresh }));
+        actions.push(pathNavigatorTreeBulkFetchPathChildren(fetchPathsData));
         return actions;
       })
     ),

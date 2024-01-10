@@ -98,6 +98,10 @@ export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
   PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions>; expand?: boolean }>
 >('PATH_NAV_TREE_FETCH_PATH_CHILDREN');
 
+export const pathNavigatorTreeBulkFetchPathChildren = /*#__PURE__*/ createAction<
+  Array<PayloadWithId<{ paths: string[]; options?: Partial<GetChildrenOptions>; expand?: boolean }>>
+>('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN');
+
 export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAV_TREE_FETCH_PATH_CHILDREN_COMPLETE');
