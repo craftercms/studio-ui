@@ -162,7 +162,7 @@
     "react-infinite-scroller": "^1.2.6",
     "react-intl": "^6.5.5",
     "react-redux": "^9.0.4",
-    "react-router-dom": "^5.3.4",
+    "react-router-dom": "^6.21.1",
     "react-scripts": "5.0.1",
     "react-swipeable-views": "^0.14.0",
     "react-swipeable-views-utils": "^0.14.0",
