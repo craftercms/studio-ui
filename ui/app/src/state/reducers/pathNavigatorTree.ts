@@ -18,6 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { PathNavigatorTreeStateProps } from '../../components/PathNavigatorTree';
 import LookupTable from '../../models/LookupTable';
 import {
+  pathNavigatorTreeBulkFetchPathChildrenComplete,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -106,6 +107,26 @@ export function deleteItemFromState(tree: PathNavigatorTreeStateProps, targetPat
   );
 }
 
+const updatePath = (state, payload) => {
+  const { id, parentPath, children, options } = payload;
+  const chunk = state[id];
+  chunk.totalByPath[parentPath] = children.total;
+  chunk.childrenByParentPath[parentPath] = [];
+  children.forEach((item) => {
+    chunk.childrenByParentPath[parentPath].push(item.path);
+    chunk.totalByPath[item.path] = item.childrenCount;
+  });
+  if (children.levelDescriptor) {
+    chunk.childrenByParentPath[parentPath].push(children.levelDescriptor.path);
+    chunk.totalByPath[children.levelDescriptor.path] = 0;
+  }
+  // If the expanded node has no children and is not filtered, it's a
+  // leaf node and there's no point keeping it in `expanded`
+  if (children.length === 0 && !options?.keyword) {
+    chunk.expanded = chunk.expanded.filter((path) => path !== parentPath);
+  }
+};
+
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (builder) => {
   builder
     // region pathNavigatorTreeInit
@@ -165,27 +186,14 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (bui
       const { expand = true } = action.payload;
       expand && expandPath(state, action);
     })
-    .addCase(
-      pathNavigatorTreeFetchPathChildrenComplete,
-      (state, { payload: { id, parentPath, children, options } }) => {
-        const chunk = state[id];
-        chunk.totalByPath[parentPath] = children.total;
-        chunk.childrenByParentPath[parentPath] = [];
-        children.forEach((item) => {
-          chunk.childrenByParentPath[parentPath].push(item.path);
-          chunk.totalByPath[item.path] = item.childrenCount;
-        });
-        if (children.levelDescriptor) {
-          chunk.childrenByParentPath[parentPath].push(children.levelDescriptor.path);
-          chunk.totalByPath[children.levelDescriptor.path] = 0;
-        }
-        // If the expanded node has no children and is not filtered, it's a
-        // leaf node and there's no point keeping it in `expanded`
-        if (children.length === 0 && !options?.keyword) {
-          chunk.expanded = chunk.expanded.filter((path) => path !== parentPath);
-        }
-      }
-    )
+    .addCase(pathNavigatorTreeFetchPathChildrenComplete, (state, { payload }) => {
+      updatePath(state, payload);
+    })
+    .addCase(pathNavigatorTreeBulkFetchPathChildrenComplete, (state, { payload: { paths } }) => {
+      paths.forEach((path) => {
+        updatePath(state, path);
+      });
+    })
     .addCase(pathNavigatorTreeFetchPathPage, (state, { payload: { id, path } }) => {
       state[id].offsetByPath[path] = state[id].offsetByPath[path]
         ? state[id].offsetByPath[path] + state[id].limit

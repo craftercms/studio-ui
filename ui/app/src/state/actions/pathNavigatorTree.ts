@@ -106,10 +106,19 @@ export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAc
   PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAV_TREE_FETCH_PATH_CHILDREN_COMPLETE');
 
+export const pathNavigatorTreeBulkFetchPathChildrenComplete = /*#__PURE__*/ createAction<{
+  paths: PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>[];
+}>('PATH_NAV_BULK_TREE_FETCH_PATH_CHILDREN_COMPLETE');
+
 export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
   id: string;
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_FETCH_PATH_CHILDREN_FAILED');
+
+export const pathNavigatorTreeBulkFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
+  ids: string[];
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN_FAILED');
 
 export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
   PayloadWithId<{

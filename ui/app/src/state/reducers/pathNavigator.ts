@@ -19,6 +19,8 @@ import { PathNavigatorStateProps } from '../../components/PathNavigator';
 import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, getParentPath, withoutIndex } from '../../utils/path';
 import {
+  pathNavigatorBulkFetchPathComplete,
+  pathNavigatorBulkFetchPathFailed,
   pathNavigatorBulkRefresh,
   pathNavigatorChangeLimit,
   pathNavigatorChangePage,
@@ -48,6 +50,26 @@ import { fetchSiteUiConfig } from '../actions/configuration';
 import { contentEvent, deleteContentEvent, moveContentEvent, MoveContentEventPayload } from '../actions/system';
 import SocketEvent from '../../models/SocketEvent';
 import StandardAction from '../../models/StandardAction';
+
+const updatePath = (state, payload) => {
+  const { id, parent, children } = payload;
+  if (
+    // If it's not the first page, and the fetched data has no children, stay on the previous page.
+    !(children.offset >= children.limit && children.length === 0)
+  ) {
+    const chunk = state[id];
+    const path = parent?.path ?? state[id].currentPath;
+    chunk.currentPath = path;
+    chunk.breadcrumb = getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath));
+    chunk.itemsInPath = children.length === 0 ? [] : children.map((item) => item.path);
+    chunk.levelDescriptor = children.levelDescriptor?.path;
+    chunk.total = children.total;
+    chunk.offset = children.offset;
+    chunk.limit = children.limit;
+    chunk.isFetching = false;
+    chunk.error = null;
+  }
+};
 
 const reducer = createReducer<LookupTable<PathNavigatorStateProps>>({}, (builder) => {
   builder
@@ -122,27 +144,23 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>({}, (builder
       state[payload.id].isFetching = true;
       state[payload.id].error = null;
     })
-    .addCase(pathNavigatorFetchPathComplete, (state, { payload: { id, children, parent } }) => {
-      if (
-        // If it's not the first page, and the fetched data has no children, stay on the previous page.
-        !(children.offset >= children.limit && children.length === 0)
-      ) {
-        const chunk = state[id];
-        const path = parent?.path ?? state[id].currentPath;
-        chunk.currentPath = path;
-        chunk.breadcrumb = getIndividualPaths(withoutIndex(path), withoutIndex(state[id].rootPath));
-        chunk.itemsInPath = children.length === 0 ? [] : children.map((item) => item.path);
-        chunk.levelDescriptor = children.levelDescriptor?.path;
-        chunk.total = children.total;
-        chunk.offset = children.offset;
-        chunk.limit = children.limit;
-        chunk.isFetching = false;
-        chunk.error = null;
-      }
+    .addCase(pathNavigatorFetchPathComplete, (state, { payload }) => {
+      updatePath(state, payload);
+    })
+    .addCase(pathNavigatorBulkFetchPathComplete, (state, { payload: { paths } }) => {
+      paths.forEach((path) => {
+        updatePath(state, path);
+      });
     })
     .addCase(pathNavigatorFetchPathFailed, (state, { payload: { id, error } }) => {
       state[id].isFetching = false;
       state[id].error = error;
+    })
+    .addCase(pathNavigatorBulkFetchPathFailed, (state, { payload: { ids, error } }) => {
+      ids.forEach((id) => {
+        state[id].isFetching = false;
+        state[id].error = error;
+      });
     })
     .addCase(pathNavigatorFetchParentItems, (state, { payload: { id, path } }) => {
       state[id].isFetching = true;

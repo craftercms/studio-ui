@@ -38,7 +38,9 @@ import {
   pathNavigatorTreeToggleCollapsed,
   pathNavigatorTreeUpdate,
   pathNavigatorTreeBulkRefresh,
-  pathNavigatorTreeBulkFetchPathChildren
+  pathNavigatorTreeBulkFetchPathChildren,
+  pathNavigatorTreeBulkFetchPathChildrenComplete,
+  pathNavigatorTreeBulkFetchPathChildrenFailed
 } from '../actions/pathNavigatorTree';
 import {
   checkPathExistence,
@@ -315,25 +317,19 @@ export default [
         });
         return fetchChildrenByPaths(state.sites.active, optionsByPath).pipe(
           map((children) => {
-            const actions = [];
+            const paths = [];
             payload.forEach((item) => {
-              actions.push(
-                pathNavigatorTreeFetchPathChildrenComplete({
-                  id: item.id,
-                  children: children[item.path],
-                  parentPath: item.path,
-                  options: optionsByPath[item.path]
-                })
-              );
+              paths.push({
+                id: item.id,
+                children: children[item.path],
+                parentPath: item.path,
+                options: optionsByPath[item.path]
+              });
             });
-            return batchActions(actions);
+            return pathNavigatorTreeBulkFetchPathChildrenComplete({ paths });
           }),
           catchAjaxError((error) => {
-            const actions = [];
-            payload.forEach((item) => {
-              actions.push(pathNavigatorTreeFetchPathChildrenFailed({ error, id: item.id }));
-            });
-            return batchActions(actions);
+            return pathNavigatorTreeBulkFetchPathChildrenFailed({ ids: payload.map((item) => item.id), error });
           })
         );
       })

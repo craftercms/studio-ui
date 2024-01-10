@@ -46,7 +46,9 @@ import {
   pathNavigatorSetKeyword,
   PathNavInitPayload,
   pathNavRootPathMissing,
-  pathNavigatorBulkRefresh
+  pathNavigatorBulkRefresh,
+  pathNavigatorBulkFetchPathComplete,
+  pathNavigatorBulkFetchPathFailed
 } from '../actions/pathNavigator';
 import { setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
@@ -63,7 +65,6 @@ import {
   publishEvent,
   workflowEvent
 } from '../actions/system';
-import { batchActions } from '../actions/misc';
 
 export default [
   // region pathNavigatorInit
@@ -159,24 +160,18 @@ export default [
           fetchChildrenByPaths(state.sites.active, optionsByPath)
         ]).pipe(
           map(([items, children]) => {
-            const actions = [];
+            const paths = [];
             ids.forEach((id) => {
-              actions.push(
-                pathNavigatorFetchPathComplete({
-                  id,
-                  parent: items.find((item) => item.path.startsWith(withoutIndex(state.pathNavigator[id].currentPath))),
-                  children: children[state.pathNavigator[id].currentPath]
-                })
-              );
+              paths.push({
+                id,
+                parent: items.find((item) => item.path.startsWith(withoutIndex(state.pathNavigator[id].currentPath))),
+                children: children[state.pathNavigator[id].currentPath]
+              });
             });
-            return batchActions(actions);
+            return pathNavigatorBulkFetchPathComplete({ paths });
           }),
           catchAjaxError((error) => {
-            const actions = [];
-            ids.forEach((id) => {
-              actions.push(pathNavigatorFetchPathFailed({ error, id }));
-            });
-            return batchActions(actions);
+            return pathNavigatorBulkFetchPathFailed({ ids, error });
           })
         );
       })

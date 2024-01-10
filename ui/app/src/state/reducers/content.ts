@@ -39,6 +39,7 @@ import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
 import {
+  pathNavigatorBulkFetchPathComplete,
   pathNavigatorConditionallySetPathComplete,
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete
@@ -48,6 +49,7 @@ import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
 import { changeSiteComplete } from '../actions/sites';
 import {
+  pathNavigatorTreeBulkFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeRestoreComplete,
@@ -85,6 +87,20 @@ const updateItemByPath = (state: ContentState, { payload }) => {
   if (parent) {
     nextByPath[parent.path] = parent;
   }
+  return {
+    ...state,
+    itemsByPath: nextByPath
+  };
+};
+
+const updateItemsByPaths = (state: ContentState, { payload: { paths } }) => {
+  let nextByPath = state.itemsByPath;
+  paths.forEach((path) => {
+    nextByPath = {
+      ...nextByPath,
+      ...updateItemByPath({ ...state, itemsByPath: nextByPath }, { payload: path }).itemsByPath
+    };
+  });
   return {
     ...state,
     itemsByPath: nextByPath
@@ -175,6 +191,7 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
     }))
     .addCase(pathNavigatorConditionallySetPathComplete, updateItemByPath)
     .addCase(pathNavigatorFetchPathComplete, updateItemByPath)
+    .addCase(pathNavigatorBulkFetchPathComplete, updateItemsByPaths)
     .addCase(pathNavigatorFetchParentItemsComplete, (state, { payload: { items, children } }) => {
       return {
         ...state,
@@ -201,6 +218,7 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
       };
     })
     .addCase(pathNavigatorTreeFetchPathChildrenComplete, updateItemByPath)
+    .addCase(pathNavigatorTreeBulkFetchPathChildrenComplete, updateItemsByPaths)
     .addCase(pathNavigatorTreeFetchPathPageComplete, updateItemByPath)
     .addCase(
       pathNavigatorTreeRestoreComplete,
