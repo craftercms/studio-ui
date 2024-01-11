@@ -32,11 +32,11 @@ import { map } from 'rxjs/operators';
 import { Site } from '../../models/Site';
 import { setSiteCookie } from '../../utils/auth';
 import { trash } from '../../services/sites';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { fetchSites, popSite } from '../../state/actions/sites';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { closeEditSiteDialog, showEditSiteDialog } from '../../state/actions/dialogs';
+import { showEditSiteDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import SitesGrid from '../SitesGrid/SitesGrid';
@@ -45,7 +45,7 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
-import { foo, nnou } from '../../utils/object';
+import { foo } from '../../utils/object';
 import { useEnv } from '../../hooks/useEnv';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useLogicResource } from '../../hooks/useLogicResource';
@@ -55,7 +55,6 @@ import { useSitesBranch } from '../../hooks/useSitesBranch';
 import Paper from '@mui/material/Paper';
 import { getSystemLink } from '../../utils/system';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
@@ -94,7 +93,6 @@ export function SiteManagement() {
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
-  const [sitesRefreshCountLookup, setSitesRefreshCountLookup] = useSpreadState<LookupTable<number>>({});
   const duplicateSiteDialogState = useEnhancedDialogState();
   const [duplicateSiteId, setDuplicateSiteId] = useState(null);
   const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);
@@ -121,24 +119,12 @@ export function SiteManagement() {
   });
 
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
-    useMemo(
-      () => ({ sitesById, isFetching, permissionsLookup, sitesRefreshCountLookup }),
-      [sitesById, isFetching, permissionsLookup, sitesRefreshCountLookup]
-    ),
+    useMemo(() => ({ sitesById, isFetching, permissionsLookup }), [sitesById, isFetching, permissionsLookup]),
     {
       shouldResolve: (source) => Boolean(source.sitesById) && permissionsLookup !== foo && !isFetching,
       shouldReject: () => false,
       shouldRenew: (source, resource) => resource.complete,
-      resultSelector: () =>
-        Object.values(sitesById).map((site) => {
-          if (nnou(sitesRefreshCountLookup[site.id])) {
-            return {
-              ...site,
-              imageUrl: `${site.imageUrl}&v=${sitesRefreshCountLookup[site.id]}`
-            };
-          }
-          return site;
-        }),
+      resultSelector: () => Object.values(sitesById),
       errorSelector: () => null
     }
   );
@@ -179,31 +165,7 @@ export function SiteManagement() {
   };
 
   const onEditSiteClick = (site: Site) => {
-    const eventId = 'editSiteImageUploadComplete';
-    createCustomDocumentEventListener(eventId, ({ type }) => {
-      if (type === 'uploadComplete') {
-        setSitesRefreshCountLookup({
-          [site.id]: (sitesRefreshCountLookup[site.id] ?? 0) + 1
-        });
-      }
-    });
-
-    dispatch(
-      showEditSiteDialog({
-        site,
-        onSiteImageChange: dispatchDOMEvent({
-          id: eventId,
-          type: 'uploadComplete'
-        }),
-        onClose: batchActions([
-          closeEditSiteDialog(),
-          dispatchDOMEvent({
-            id: eventId,
-            type: 'close'
-          })
-        ])
-      })
-    );
+    dispatch(showEditSiteDialog({ site }));
   };
 
   const onPublishButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site) => {

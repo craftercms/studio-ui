@@ -121,7 +121,6 @@ export interface Site {
   uuid: string;
   name: string;
   description: string;
-  imageUrl: string;
   state?: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
 }
 

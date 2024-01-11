@@ -101,3 +101,5 @@ export const plugins = new Map<string, PluginDescriptorWithSource>();
 export const components = new Map<string, WidgetRecord>();
 
 export const MAX_CONFIG_SIZE = 524288; // Max configuration file size allowed (in bytes) (512 * 1024 = 524288)
+
+export const PROJECT_PREVIEW_IMAGE_UPDATED = 'ProjectPreviewImageUpdated';
