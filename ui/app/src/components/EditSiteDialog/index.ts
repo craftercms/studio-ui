@@ -19,5 +19,3 @@ export { default } from './EditSiteDialog';
 export * from './EditSiteDialog';
 
 export * from './EditSiteDialogContainer';
-
-export * from './EditSiteDialogUI';

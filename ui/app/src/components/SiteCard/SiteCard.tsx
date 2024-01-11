@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
@@ -33,6 +33,9 @@ import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { toColor } from '../../utils/string';
+import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
+import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
+import { Subscription } from 'rxjs';
 
 interface SiteCardProps {
   site: Site;
@@ -54,7 +57,7 @@ export function SiteCard(props: SiteCardProps) {
     onDeleteSiteClick,
     onEditSiteClick,
     onDuplicateSiteClick,
-    fallbackImageSrc = '',
+    fallbackImageSrc,
     compact = false,
     publishingStatus,
     disabled,
@@ -62,8 +65,20 @@ export function SiteCard(props: SiteCardProps) {
   } = props;
   const { classes, cx: clsx } = useSiteCardStyles();
   const isSiteReady = site.state === 'READY';
-  const [hasImg, setHasImg] = useState(true);
+  const [dataUrl, fetch] = useProjectPreviewImage(site.id, fallbackImageSrc);
   const color = useMemo(() => toColor(site.name), [site.name]);
+
+  useEffect(() => {
+    let subscription: Subscription | undefined;
+    const callback = () => {
+      subscription = fetch();
+    };
+    document.addEventListener(PROJECT_PREVIEW_IMAGE_UPDATED, callback);
+    return () => {
+      subscription?.unsubscribe();
+      document.removeEventListener(PROJECT_PREVIEW_IMAGE_UPDATED, callback);
+    };
+  }, [fetch]);
 
   return (
     <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
@@ -102,9 +117,9 @@ export function SiteCard(props: SiteCardProps) {
         />
         {!compact && (
           <CardMedia
-            component={hasImg ? 'img' : 'div'}
+            component={dataUrl ? 'img' : 'div'}
             className={classes.media}
-            image={site.imageUrl}
+            image={dataUrl}
             title={site.name}
             sx={(theme) => ({
               display: 'flex',
@@ -113,7 +128,7 @@ export function SiteCard(props: SiteCardProps) {
               backgroundColor: theme.palette.mode === 'light' ? color : alpha(color, 0.6)
             })}
             children={
-              hasImg ? undefined : (
+              dataUrl ? undefined : (
                 <Typography
                   variant="h6"
                   component="span"
@@ -123,10 +138,6 @@ export function SiteCard(props: SiteCardProps) {
                 </Typography>
               )
             }
-            onError={(event) => {
-              if (fallbackImageSrc) (event.target as HTMLImageElement).src = fallbackImageSrc;
-              else setHasImg(false);
-            }}
           />
         )}
       </CardActionArea>
