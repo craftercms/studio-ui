@@ -21,19 +21,22 @@ import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
 import { useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../utils/subjects';
-import { newProjectReady, showSystemNotification } from '../../state/actions/system';
+import { blockUI, newProjectReady, showSystemNotification, unblockUI } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
 import useSelection from '../../hooks/useSelection';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import MinimizedBar from '../MinimizedBar';
 import { RenameAssetDialog } from '../RenameAssetDialog';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import { getSystemLink } from '../../utils/system';
 import useEnv from '../../hooks/useEnv';
 import { filter, map, switchMap } from 'rxjs/operators';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 import { fetchAll as fetchSitesService } from '../../services/sites';
+import IconButton from '@mui/material/IconButton';
+import CloseRounded from '@mui/icons-material/CloseRounded';
+import useAuth from '../../hooks/useAuth';
 
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
@@ -106,9 +109,11 @@ function GlobalDialogManager() {
   const state = useSelection((state) => state.dialogs);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const versionsBranch = useSelection((state) => state.versions);
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { authoringBase } = useEnv();
+  const { authoringBase, socketConnected } = useEnv();
+  const { active: authActive } = useAuth();
+  const { formatMessage } = useIntl();
 
   useEffect(() => {
     const hostToHost$ = getHostToHostBus();
@@ -164,6 +169,55 @@ function GlobalDialogManager() {
       });
     return () => subscription.unsubscribe();
   }, [authoringBase, enqueueSnackbar]);
+
+  useEffect(() => {
+    if (authActive && !socketConnected) {
+      let key;
+      fetch(`${authoringBase}/help/socket-connection-error`)
+        .then((r) => r.text())
+        .then(() => {
+          key = enqueueSnackbar(<FormattedMessage defaultMessage="Studio will continue to retry the connection." />, {
+            variant: 'warning',
+            persist: true,
+            anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
+            alertTitle: <FormattedMessage defaultMessage="Connection with the server interrupted" />,
+            action: (key) => (
+              <>
+                <Button
+                  href={`${authoringBase}/help/socket-connection-error`}
+                  target="_blank"
+                  size="small"
+                  color="inherit"
+                >
+                  <FormattedMessage defaultMessage="Learn more" />
+                </Button>
+                <IconButton size="small" color="inherit" onClick={() => closeSnackbar(key)}>
+                  <CloseRounded />
+                </IconButton>
+              </>
+            )
+          });
+        })
+        .catch(() => {
+          dispatch(
+            blockUI({
+              title: formatMessage({ defaultMessage: 'Connection with the server interrupted' }),
+              message: formatMessage({
+                defaultMessage:
+                  'Studio servers might be down, being restarted or your network connection dropped. Check your connection or ask the administrator to validate server status.'
+              })
+            })
+          );
+        });
+      return () => {
+        if (key) {
+          closeSnackbar(key);
+        } else {
+          dispatch(unblockUI());
+        }
+      };
+    }
+  }, [authoringBase, authActive, closeSnackbar, enqueueSnackbar, socketConnected, dispatch, formatMessage]);
 
   return (
     <Suspense fallback="">
