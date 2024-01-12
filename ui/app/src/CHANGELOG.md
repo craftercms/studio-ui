@@ -1,3 +1,7 @@
+# 4.1.3
+
+* HostUI removed and merged into Host
+
 ## 4.1.2
 
 * Update return type of configuration/fetchHistory and content/fetchItemHistory to `ItemHistoryEntry[]`.
