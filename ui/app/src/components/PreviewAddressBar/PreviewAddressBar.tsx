@@ -160,7 +160,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
   const timeoutRef = useRef<any>();
   const [alertLevel, setAlertLevel] = useState(0);
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLElement | null>(null);
-  const openPopover = Boolean(popoverAnchorEl);
+  const openPopover = Boolean(popoverAnchorEl) && !item;
   const { authoringBase } = useEnv();
 
   const handlePopoverHover = (event: MouseEvent<HTMLElement>) => {
@@ -188,6 +188,8 @@ export function PreviewAddressBar(props: AddressBarProps) {
         clearTimeout(timeout);
         setAlertLevel(0);
       };
+    } else {
+      setPopoverAnchorEl(null);
     }
   }, [item, xbDetectionTimeoutMs]);
 
@@ -223,87 +225,87 @@ export function PreviewAddressBar(props: AddressBarProps) {
             onBlur={() => setFocus(false)}
           />
         )}
-        <SingleItemSelector
-          rootPath="/site/website/index.xml"
-          selectedItem={item as DetailedItem}
-          open={openSelector}
-          onClose={() => setOpenSelector(false)}
-          onDropdownClick={() => setOpenSelector(!openSelector)}
-          onItemClicked={(item) => {
-            setOpenSelector(false);
-            setInternalUrl(item.previewUrl);
-            onUrlChange(item.previewUrl);
-          }}
-          hideUI
-          classes={{
-            popoverRoot: classes.selectorPopoverRoot
-          }}
-        />
-        <Popover
-          // Avoid backdrop from blocking the interaction with other elements
-          sx={{ pointerEvents: 'none' }}
-          open={openPopover}
-          anchorEl={popoverAnchorEl}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left'
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center'
-          }}
-          PaperProps={{
-            sx: { pointerEvents: 'all' },
-            onMouseEnter: handlePopoverHover,
-            onMouseLeave: handlePopoverClose
-          }}
-          onClose={handlePopoverClose}
-          disableRestoreFocus
-        >
-          <Alert
-            severity={alertLevel ? (alertLevel === 1 ? 'warning' : 'error') : 'info'}
-            action={
-              <Button href={`${authoringBase}/help/preview-missing-app-connection`} target="_blank">
-                <FormattedMessage defaultMessage="Learn more" />
-              </Button>
-            }
-            sx={{ [`.${alertClasses.icon},.${alertClasses.message}`]: { display: 'flex', alignItems: 'center' } }}
-          >
-            <FormattedMessage defaultMessage="Awaiting a connection from the Preview application" />
-          </Alert>
-        </Popover>
+        <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
+          <IconButton onClick={onOptions} disabled={!item} size="medium" id="previewAddressBarActionsMenuButton">
+            <MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
+            {!item && (
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: 'flex',
+                  position: 'absolute',
+                  alignItems: 'center',
+                  placeContent: 'center',
+                  pointerEvents: 'all'
+                }}
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+              >
+                {alertLevel === 2 ? (
+                  <ErrorOutlineOutlined color="error" />
+                ) : (
+                  <CircularProgress
+                    sx={{ position: 'absolute', pointerEvents: 'all' }}
+                    color={alertLevel ? (alertLevel === 1 ? 'warning' : 'error') : 'primary'}
+                  />
+                )}
+              </Box>
+            )}
+          </IconButton>
+        </Tooltip>
       </Paper>
-      <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
-        <IconButton onClick={onOptions} disabled={!item} size="medium" id="previewAddressBarActionsMenuButton">
-          <MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
-          {!item && (
-            <Box
-              sx={{
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: 'flex',
-                position: 'absolute',
-                alignItems: 'center',
-                placeContent: 'center',
-                pointerEvents: 'all'
-              }}
-              onMouseEnter={handlePopoverOpen}
-              onMouseLeave={handlePopoverClose}
-            >
-              {alertLevel === 2 ? (
-                <ErrorOutlineOutlined color="error" />
-              ) : (
-                <CircularProgress
-                  sx={{ position: 'absolute', pointerEvents: 'all' }}
-                  color={alertLevel ? (alertLevel === 1 ? 'warning' : 'error') : 'primary'}
-                />
-              )}
-            </Box>
-          )}
-        </IconButton>
-      </Tooltip>
+      <SingleItemSelector
+        rootPath="/site/website/index.xml"
+        selectedItem={item as DetailedItem}
+        open={openSelector}
+        onClose={() => setOpenSelector(false)}
+        onDropdownClick={() => setOpenSelector(!openSelector)}
+        onItemClicked={(item) => {
+          setOpenSelector(false);
+          setInternalUrl(item.previewUrl);
+          onUrlChange(item.previewUrl);
+        }}
+        hideUI
+        classes={{
+          popoverRoot: classes.selectorPopoverRoot
+        }}
+      />
+      <Popover
+        // Avoid backdrop from blocking the interaction with other elements
+        sx={{ pointerEvents: 'none' }}
+        open={openPopover}
+        anchorEl={popoverAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center'
+        }}
+        PaperProps={{
+          sx: { pointerEvents: 'all' },
+          onMouseEnter: handlePopoverHover,
+          onMouseLeave: handlePopoverClose
+        }}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+      >
+        <Alert
+          severity={alertLevel ? (alertLevel === 1 ? 'warning' : 'error') : 'info'}
+          action={
+            <Button href={`${authoringBase}/help/preview-missing-app-connection`} target="_blank">
+              <FormattedMessage defaultMessage="Learn more" />
+            </Button>
+          }
+          sx={{ [`.${alertClasses.icon},.${alertClasses.message}`]: { display: 'flex', alignItems: 'center' } }}
+        >
+          <FormattedMessage defaultMessage="Awaiting a connection from the Preview application" />
+        </Alert>
+      </Popover>
     </>
   );
 }

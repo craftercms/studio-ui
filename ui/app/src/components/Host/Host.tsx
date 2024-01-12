@@ -104,13 +104,11 @@ export function Host() {
         display: 'flex',
         justifyContent: 'center',
         maxHeight: 'calc(100% - 64px)',
-        marginBottom: '5px',
-        zIndex: theme.zIndex.drawer + 1,
         background: theme.palette.background.default,
         height: '100%',
         // Want to leave 5px margin on the sides where the sidebar is hidden for the shadows to show appreciably.
-        marginLeft: leftSideBarOpen ? `${leftSideBarWidth}px` : '5px',
-        marginRight: rightSideBarOpen ? `${rightSideBarWidth}px` : '5px',
+        marginLeft: leftSideBarOpen ? `${leftSideBarWidth}px` : 0,
+        marginRight: rightSideBarOpen ? `${rightSideBarWidth}px` : 0,
         transition: eitherSideBarOpen
           ? theme.transitions.create('margin', {
               easing: theme.transitions.easing.easeOut,
@@ -134,9 +132,7 @@ export function Host() {
           transition: 'width .25s ease, height .25s ease',
           maxWidth: '100%',
           border: 'none',
-          margin: 'auto',
-          boxShadow: 3,
-          borderRadius: 3
+          margin: 'auto'
         }}
       />
     </Box>
