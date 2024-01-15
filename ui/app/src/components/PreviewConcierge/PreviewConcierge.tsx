@@ -1184,8 +1184,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           };
 
           // filter data sources to only the ones that match the type
-          const dataSourcesKeys = Object.keys(typedPayload.datasources).filter(
-            (datasourceId) => dataSourcesByType[typedPayload.type]?.includes(datasourceId)
+          const dataSourcesKeys = Object.keys(typedPayload.datasources).filter((datasourceId) =>
+            dataSourcesByType[typedPayload.type]?.includes(datasourceId)
           );
 
           // directly open corresponding dialog
