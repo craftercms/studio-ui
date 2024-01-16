@@ -2312,8 +2312,8 @@ __metadata:
   linkType: hard
 
 "@formatjs/cli@npm:^6.2.4":
-  version: 6.2.4
-  resolution: "@formatjs/cli@npm:6.2.4"
+  version: 6.2.5
+  resolution: "@formatjs/cli@npm:6.2.5"
   peerDependencies:
     vue: ^3.3.4
   peerDependenciesMeta:
@@ -2321,7 +2321,7 @@ __metadata:
       optional: true
   bin:
     formatjs: bin/formatjs
-  checksum: d3ae6de8ca9a73dc9d85cbfc0722fef1b694f617689a9e18c5c65f9ea38ab2b293e57f63d946503fe19059bef1aeaa5141f5be8102edca74300a62c712f02b4e
+  checksum: aba095d15fa2becaf9af43c1f81ca0822641d1de542549a4d4768ae87f83cdd3d9a1b9e0499e720ff1d48de6e50cf7727d25afe91d2f50d73ca1cb65816215b3
   languageName: node
   linkType: hard
 
