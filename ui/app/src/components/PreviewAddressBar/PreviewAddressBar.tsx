@@ -46,6 +46,7 @@ import Alert, { alertClasses } from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import ErrorOutlineOutlined from '@mui/icons-material/ErrorOutlineOutlined';
 import useEnv from '../../hooks/useEnv';
+import { Subscription } from 'rxjs';
 
 export interface AddressBarProps {
   site: string;
@@ -167,16 +168,30 @@ export function PreviewAddressBar(props: AddressBarProps) {
 
   useEffect(() => {
     if (!item && xbDetectionTimeoutMs > 0) {
-      let timeout = setTimeout(() => {
-        setAlertLevel(1);
+      let timeout: NodeJS.Timeout, subscription: Subscription;
+      let beginStatusTimer = () => {
         timeout = setTimeout(() => {
-          setAlertLevel(2);
+          setAlertLevel(1);
+          timeout = setTimeout(() => {
+            setAlertLevel(2);
+          }, xbDetectionTimeoutMs);
         }, xbDetectionTimeoutMs);
-      }, xbDetectionTimeoutMs);
+      };
+      subscription = getHostToHostBus().subscribe((action) => {
+        if (action.type === reloadRequest.type) {
+          clearTimeout(timeout);
+          setAlertLevel(0);
+          beginStatusTimer();
+        }
+      });
+      beginStatusTimer();
       return () => {
         clearTimeout(timeout);
         setAlertLevel(0);
+        subscription.unsubscribe();
       };
+    } else {
+      setPopoverAnchorEl(null);
     }
   }, [item, xbDetectionTimeoutMs]);
 
