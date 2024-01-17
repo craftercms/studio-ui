@@ -342,13 +342,13 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
                   date: new Intl.DateTimeFormat(locale.localeCode, locale.dateTimeFormatOptions).format(
                     new Date(item?.sandbox.dateModified)
                   ),
-                  by: item?.sandbox.modifier.username,
+                  by: item?.sandbox.modifier?.username ?? '',
                   edited: (
                     <span className={classes.itemEditedText}>
                       <FormattedMessage id="words.edited" defaultMessage="Edited" />
                     </span>
                   ),
-                  byLabel: item?.sandbox.modifier.username ? (
+                  byLabel: item?.sandbox.modifier?.username ? (
                     <span className={classes.itemEditedText}>
                       <FormattedMessage id="words.by" defaultMessage="By" />
                     </span>
