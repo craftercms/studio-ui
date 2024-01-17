@@ -188,9 +188,9 @@ export function AwaitingApprovalDashletGridUI(props: AwaitingApprovalDashletGrid
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15 ellipsis"
-                                  title={itemsLookup[path].sandbox.modifier.username}
+                                  title={itemsLookup[path].sandbox.modifier?.username ?? ''}
                                 >
-                                  {itemsLookup[path].sandbox.modifier.username}
+                                  {itemsLookup[path].sandbox.modifier?.username ?? ''}
                                 </GlobalAppGridCell>
                                 <GlobalAppGridCell
                                   className="width15 ellipsis"

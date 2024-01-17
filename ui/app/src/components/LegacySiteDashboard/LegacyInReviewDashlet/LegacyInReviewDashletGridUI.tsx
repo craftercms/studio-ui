@@ -157,8 +157,8 @@ export function LegacyInReviewDashletGridUI(props: LegacyInReviewDashletGridUIPr
                   </Typography>
                 )}
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width15 ellipsis" title={item.sandbox.modifier.username}>
-                {item.sandbox.modifier.username}
+              <GlobalAppGridCell className="width15 ellipsis" title={item.sandbox.modifier?.username ?? ''}>
+                {item.sandbox.modifier?.username ?? ''}
               </GlobalAppGridCell>
               <GlobalAppGridCell className="width15 ellipsis">
                 {item.sandbox.dateModified &&
