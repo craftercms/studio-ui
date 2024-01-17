@@ -51,7 +51,8 @@ import {
   showRevertItemSuccessNotification,
   showSystemNotification,
   showUnlockItemSuccessNotification,
-  storeInitialized
+  storeInitialized,
+  closeSiteSocket
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import {
@@ -64,19 +65,22 @@ import {
 } from '../actions/publishingStatus';
 import { fetchStatus } from '../../services/publishing';
 import { catchAjaxError } from '../../utils/ajax';
-import { interval } from 'rxjs';
+import { interval, NEVER, Observable } from 'rxjs';
 import { sessionTimeout } from '../actions/user';
 import { sharedWorkerUnauthenticated } from '../actions/auth';
 import { fetchGlobalMenuItems } from '../../services/configuration';
 import { fetchSiteConfig } from '../actions/configuration';
 import { getStoredShowToolsPanel } from '../../utils/state';
 import { closeToolsPanel, openToolsPanel } from '../actions/preview';
-import { getXSRFToken, setSiteCookie } from '../../utils/auth';
-import { changeSite, fetchSites } from '../actions/sites';
+import { getXSRFToken, removeSiteCookie, setSiteCookie } from '../../utils/auth';
+import { changeSite, fetchSites, popSite } from '../actions/sites';
 import { closeConfirmDialog, showConfirmDialog } from '../actions/dialogs';
 import { defineMessages } from 'react-intl';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { batchActions, dispatchDOMEvent } from '../actions/misc';
+import StandardAction from '../../models/StandardAction';
+import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
+import { isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl } from '../../utils/system';
 
 const msgs = defineMessages({
   siteSwitchedOnAnotherTab: {
@@ -445,11 +449,41 @@ const systemEpics: CrafterCMSEpic[] = [
       exhaustMap(() => fetchGlobalMenuItems().pipe(map(fetchGlobalMenuComplete), catchAjaxError(fetchGlobalMenuFailed)))
     ),
   // endregion
-  // region newProjectReady, projectDeleted
+  // region newProjectReady
   (action$) =>
     action$.pipe(
-      ofType(newProjectReady.type, projectDeleted.type),
+      ofType(newProjectReady.type),
       map(() => fetchSites())
+    ),
+  // endregion
+  // region projectDeleted
+  (action$: Observable<StandardAction<ProjectLifecycleEvent<'SITE_DELETED_EVENT'>>>, state$, { getIntl }) =>
+    action$.pipe(
+      ofType(projectDeleted.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) => {
+        const { formatMessage } = getIntl();
+        const { byId: sites, active: site } = state.sites;
+        const { authoringBase } = state.env;
+        // Site deleted was the active site?
+        if (payload.siteUuid === sites[site]?.uuid) {
+          removeSiteCookie();
+          const pathname = window.location.pathname;
+          const shouldRedirect =
+            isPreviewAppUrl(pathname) || isDashboardAppUrl(pathname) || isProjectToolsAppUrl(pathname);
+          if (shouldRedirect) {
+            alert(
+              formatMessage({ defaultMessage: "This project has been deleted, you'll be redirected to projects list." })
+            );
+            window.location.href = `${authoringBase}#/sites`;
+            return NEVER;
+          } else {
+            return [popSite({ siteId: site, isActive: true }), messageSharedWorker(closeSiteSocket({ site }))];
+          }
+        } else {
+          return [fetchSites()];
+        }
+      })
     ),
   // endregion
   // region siteSocketStatus
@@ -457,7 +491,7 @@ const systemEpics: CrafterCMSEpic[] = [
     action$.pipe(
       ofType(siteSocketStatus.type),
       withLatestFrom(state$),
-      filter(([action, state]) => action.payload.siteId !== state.sites.active),
+      filter(([action, state]) => action.payload.connected && action.payload.siteId !== state.sites.active),
       map(([action, state]) => {
         const sites = state.sites.byId;
         const currentProjectId = state.sites.active;

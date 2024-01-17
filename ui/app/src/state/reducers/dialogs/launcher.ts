@@ -21,6 +21,7 @@ import { closeLauncher, showLauncher } from '../../actions/dialogs';
 import { initLauncherConfig } from '../../actions/launcher';
 import { deserialize, fromString } from '../../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../../utils/object';
+import { popSite } from '../../actions/sites';
 
 const initialState: LauncherStateProps = {
   open: false,
@@ -56,7 +57,13 @@ const launcher = createReducer<GlobalState['dialogs']['launcher']>(initialState,
     ...state,
     open: false,
     anchor: null
-  })
+  }),
+  [popSite.type]: (state, { payload }) => {
+    if (payload?.siteId && payload.isActive) {
+      state.widgets = null;
+      state.siteCardMenuLinks = null;
+    }
+  }
 });
 
 export default launcher;

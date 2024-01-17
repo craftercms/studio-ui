@@ -77,9 +77,7 @@ export function SiteManagement() {
   const [currentView, setCurrentView] = useState<'grid' | 'list'>(
     getStoredGlobalMenuSiteViewPreference(user.username) ?? 'grid'
   );
-  const sitesBranch = useSitesBranch();
-  const sitesById = sitesBranch.byId;
-  const isFetching = sitesBranch.isFetching;
+  const { byId: sitesById, isFetching, active } = useSitesBranch();
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
@@ -140,11 +138,11 @@ export function SiteManagement() {
   };
 
   const onDeleteSiteClick = (site: Site) => {
-    trash(site.id).subscribe(
-      () => {
+    trash(site.id).subscribe({
+      next() {
         dispatch(
           batchActions([
-            popSite({ siteId: site.id }),
+            popSite({ siteId: site.id, isActive: site.id === active }),
             showSystemNotification({
               message: formatMessage(translations.siteDeleted)
             }),
@@ -152,10 +150,10 @@ export function SiteManagement() {
           ])
         );
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onEditSiteClick = (site: Site) => {

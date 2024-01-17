@@ -52,13 +52,15 @@ const reducer = /*#__PURE__*/ createReducer<GlobalState['sites']>(initialState, 
     ...state,
     isFetching: false
   }),
-  [popSite.type]: (state, { payload }) =>
-    !payload?.site
-      ? state
-      : {
-          ...state,
-          byId: reversePluckProps(state.byId, payload.site)
-        }
+  [popSite.type]: (state, { payload }) => {
+    if (payload?.siteId) {
+      const site = payload?.siteId;
+      state.byId = reversePluckProps(state.byId, site);
+      if (state.active === site) {
+        state.active = null;
+      }
+    }
+  }
 });
 
 export default reducer;
