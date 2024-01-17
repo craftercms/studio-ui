@@ -32,6 +32,7 @@ import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
+import { toQueryString } from '../../utils/object';
 
 const messages = defineMessages({
   chooseFile: {
@@ -204,7 +205,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         hideAfterFinish: false
       })
       .use(XHRUpload, {
-        endpoint: url,
+        endpoint: `${url}${toQueryString({ path, site })}`,
         formData: true,
         fieldName: 'file',
         timeout: upload.timeout,
@@ -217,7 +218,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       instance.cancelAll();
       instance.close();
     };
-  }, [uppy, formTarget, url, upload.timeout]);
+  }, [uppy, formTarget, url, upload.timeout, path, site]);
 
   useEffect(() => {
     const onUploadSuccess = (file) => {
