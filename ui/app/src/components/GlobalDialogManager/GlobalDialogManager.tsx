@@ -37,7 +37,9 @@ import { fetchAll as fetchSitesService } from '../../services/sites';
 import IconButton from '@mui/material/IconButton';
 import CloseRounded from '@mui/icons-material/CloseRounded';
 import useAuth from '../../hooks/useAuth';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
 
+// region const ... = lazy(() => import('...'));
 const ViewVersionDialog = lazy(() => import('../ViewVersionDialog'));
 const CompareVersionsDialog = lazy(() => import('../CompareVersionsDialog'));
 const RejectDialog = lazy(() => import('../RejectDialog'));
@@ -67,6 +69,7 @@ const PathSelectionDialog = lazy(() => import('../PathSelectionDialog'));
 const UnlockPublisherDialog = lazy(() => import('../UnlockPublisherDialog'));
 const WidgetDialog = lazy(() => import('../WidgetDialog'));
 const CodeEditorDialog = lazy(() => import('../CodeEditorDialog'));
+// endregion
 
 // @formatter:off
 function createCallback(action: StandardAction, dispatch: Dispatch): (output?: unknown) => void {
@@ -113,6 +116,7 @@ function GlobalDialogManager() {
   const dispatch = useDispatch();
   const { authoringBase, socketConnected } = useEnv();
   const { active: authActive } = useAuth();
+  const activeSiteId = useActiveSiteId();
   const { formatMessage } = useIntl();
 
   useEffect(() => {
@@ -171,7 +175,7 @@ function GlobalDialogManager() {
   }, [authoringBase, enqueueSnackbar]);
 
   useEffect(() => {
-    if (authActive && !socketConnected) {
+    if (authActive && !socketConnected && activeSiteId !== null) {
       let key;
       fetch(`${authoringBase}/help/socket-connection-error`)
         .then((r) => r.text())
@@ -217,7 +221,16 @@ function GlobalDialogManager() {
         }
       };
     }
-  }, [authoringBase, authActive, closeSnackbar, enqueueSnackbar, socketConnected, dispatch, formatMessage]);
+  }, [
+    authoringBase,
+    authActive,
+    closeSnackbar,
+    enqueueSnackbar,
+    socketConnected,
+    dispatch,
+    formatMessage,
+    activeSiteId
+  ]);
 
   return (
     <Suspense fallback="">
