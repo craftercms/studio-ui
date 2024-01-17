@@ -87,9 +87,7 @@ export function SiteManagement() {
   const [currentView, setCurrentView] = useState<'grid' | 'list'>(
     getStoredGlobalMenuSiteViewPreference(user.username) ?? 'grid'
   );
-  const sitesBranch = useSitesBranch();
-  const sitesById = sitesBranch.byId;
-  const isFetching = sitesBranch.isFetching;
+  const { byId: sitesById, isFetching, active } = useSitesBranch();
   const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
@@ -148,7 +146,7 @@ export function SiteManagement() {
       next() {
         dispatch(
           batchActions([
-            popSite({ siteId: site.id }),
+            popSite({ siteId: site.id, isActive: site.id === active }),
             showSystemNotification({
               message: formatMessage(translations.siteDeleted)
             }),

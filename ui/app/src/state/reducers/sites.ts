@@ -54,14 +54,15 @@ const reducer = createReducer<GlobalState['sites']>(initialState, (builder) => {
       ...state,
       isFetching: false
     }))
-    .addCase(popSite, (state, { payload }) =>
-      !payload?.siteId
-        ? state
-        : {
-            ...state,
-            byId: reversePluckProps(state.byId, payload.siteId)
-          }
-    );
+    .addCase(popSite, (state, { payload }) => {
+      if (payload?.siteId) {
+        const site = payload?.siteId;
+        state.byId = reversePluckProps(state.byId, site);
+        if (state.active === site) {
+          state.active = null;
+        }
+      }
+    });
 });
 
 export default reducer;
