@@ -178,15 +178,27 @@ export function PreviewAddressBar(props: AddressBarProps) {
 
   useEffect(() => {
     if (!item && xbDetectionTimeoutMs > 0) {
-      let timeout = setTimeout(() => {
-        setAlertLevel(1);
+      let timeout, subscription;
+      let beginStatusTimer = () => {
         timeout = setTimeout(() => {
-          setAlertLevel(2);
+          setAlertLevel(1);
+          timeout = setTimeout(() => {
+            setAlertLevel(2);
+          }, xbDetectionTimeoutMs);
         }, xbDetectionTimeoutMs);
-      }, xbDetectionTimeoutMs);
+      };
+      subscription = getHostToHostBus().subscribe((action) => {
+        if (action.type === reloadRequest.type) {
+          clearTimeout(timeout);
+          setAlertLevel(0);
+          beginStatusTimer();
+        }
+      });
+      beginStatusTimer();
       return () => {
         clearTimeout(timeout);
         setAlertLevel(0);
+        subscription.unsubscribe();
       };
     } else {
       setPopoverAnchorEl(null);
