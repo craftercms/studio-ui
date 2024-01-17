@@ -331,7 +331,7 @@ function performMutation(
       return post(
         writeContentUrl({
           site,
-          path: path,
+          path,
           unlock: 'true',
           fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
         }),
@@ -947,10 +947,14 @@ export function createFileUpload(
   uploadUrl: string,
   file: any,
   path: string,
-  metaData: object,
+  metaData: Record<string, unknown>,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
-  const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
+  const qs = toQueryString({
+    path,
+    site: metaData?.site ?? metaData?.siteId,
+    [xsrfArgumentName]: getRequestForgeryToken()
+  });
   return new Observable((subscriber) => {
     const uppy = new Core({ autoProceed: true });
     uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, headers: getGlobalHeaders() });
