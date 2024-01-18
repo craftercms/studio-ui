@@ -106,7 +106,7 @@ export interface SingleFileUploadProps {
   site: string;
   formTarget?: string;
   url?: string;
-  path?: string;
+  path: string;
   customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
@@ -263,7 +263,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       }).subscribe(({ allowed, modifiedValue, message }) => {
         if (allowed) {
           if (modifiedValue) {
-            const modifiedName = modifiedValue.replace(path, '');
+            // Modified value is expected to be a path.
+            const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
             setConfirm({ body: message });
             setSuggestedName(modifiedName);
           } else {
@@ -342,7 +343,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
               className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
               title={file.name}
             >
-              {file.name}
+              {' ' + file.name}
             </em>
           )}
         </Typography>
