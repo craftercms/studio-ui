@@ -70,7 +70,8 @@ export function PublishCommitDialog(props: PublishCommitDialogProps) {
   const open = Boolean(dialogProps?.open);
   const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
-  const onCancel = (e) => pendingChangesCloseRequest(e, null);
+  const onCancel = (e) =>
+    dialogProps.hasPendingChanges ? pendingChangesCloseRequest(e, null) : dialogProps.onClose(e, null);
   const onPublish = () => {
     if (!isInvalid) {
       setState({ isSubmitting: true });
