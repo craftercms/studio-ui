@@ -59,7 +59,7 @@ const messages = defineMessages({
   createPolicy: {
     id: 'fileUpload.createPolicy',
     defaultMessage:
-      'The upload file name goes against project policies. Suggested modified file name is: "{name}". Would you like to use the suggested name?'
+      'The uploaded file name goes against project policies. Suggested modified file name is: "{name}". Would you like to use the suggested name?'
   },
   policyError: {
     id: 'fileUpload.policyError',
@@ -112,7 +112,7 @@ export interface SingleFileUploadProps {
   site: string;
   formTarget?: string;
   url?: string;
-  path?: string;
+  path: string;
   customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
@@ -269,10 +269,9 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
           if (modifiedValue) {
-            const modifiedName = modifiedValue.replace(path, '');
-            setConfirm({
-              body: formatMessage(messages.createPolicy, { name: modifiedName })
-            });
+            // Modified value is expected to be a path.
+            const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
+            setConfirm({ body: formatMessage(messages.createPolicy, { name: modifiedName }) });
             setSuggestedName(modifiedName);
           } else {
             setDisableInput(true);
@@ -350,7 +349,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
               className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
               title={file.name}
             >
-              {file.name}
+              {' ' + file.name}
             </em>
           )}
         </Typography>
