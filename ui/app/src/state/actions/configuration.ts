@@ -16,11 +16,12 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { AjaxError } from 'rxjs/ajax';
+import { StudioSiteConfig } from '../../services/configuration';
 
 export const fetchSiteUiConfig = /*#__PURE__*/ createAction<{ site: string }>('FETCH_SITE_UI_CONFIG');
 export const fetchSiteUiConfigComplete = /*#__PURE__*/ createAction<any>('FETCH_SITE_UI_CONFIG_COMPLETE');
 export const fetchSiteUiConfigFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SITE_UI_CONFIG_FAILED');
 
 export const fetchSiteConfig = /*#__PURE__*/ createAction('FETCH_SITE_CONFIG');
-export const fetchSiteConfigComplete = /*#__PURE__*/ createAction<any>('FETCH_SITE_CONFIG_COMPLETE');
+export const fetchSiteConfigComplete = /*#__PURE__*/ createAction<StudioSiteConfig>('FETCH_SITE_CONFIG_COMPLETE');
 export const fetchSiteConfigFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_SITE_CONFIG_FAILED');
