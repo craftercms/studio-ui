@@ -157,7 +157,11 @@ export function GitManagement(props: GitManagementProps) {
     });
     dispatch(
       showSystemNotification({
-        message: response.message,
+        message:
+          response?.message ??
+          formatMessage({
+            defaultMessage: 'An error occurred while pulling from remote repository.'
+          }),
         options: { variant: 'error' }
       })
     );
