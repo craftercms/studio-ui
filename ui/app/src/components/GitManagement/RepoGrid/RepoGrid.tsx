@@ -77,13 +77,7 @@ const messages = defineMessages({
 });
 
 export function RepoGrid(props: RepoGridProps) {
-  const {
-    repositories,
-    disableActions,
-    onPullSuccess: onPullSuccessProp,
-    onPullError: onPullErrorProp,
-    fetchRepositories
-  } = props;
+  const { repositories, disableActions, onPullSuccess: onPullSuccessProp, onPullError, fetchRepositories } = props;
   const [repositoriesPushDialogBranches, setRepositoriesPushDialogBranches] = useState([]);
   const [pullRemoteName, setPullRemoteName] = useState(null);
   const [pushRemoteName, setPushRemoteName] = useState(null);
@@ -137,11 +131,6 @@ export function RepoGrid(props: RepoGridProps) {
         })
       );
     }
-  };
-
-  const onPullError = (response) => {
-    onPullErrorProp(response);
-    pullFromRemoteDialogState.onClose();
   };
 
   const onPushSuccess = () => {

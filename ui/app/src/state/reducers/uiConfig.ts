@@ -17,7 +17,6 @@
 import { GlobalState } from '../../models/GlobalState';
 import { createReducer } from '@reduxjs/toolkit';
 import {
-  fetchSiteConfig,
   fetchSiteConfigComplete,
   fetchSiteUiConfig,
   fetchSiteUiConfigComplete,
@@ -28,6 +27,7 @@ import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } fr
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 import { getUserLocaleCode, getUserTimeZone } from '../../utils/datetime';
+import { StudioSiteConfig } from '../../services/configuration';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
@@ -65,7 +65,8 @@ const initialState: GlobalState['uiConfig'] = {
     publishEverythingCommentRequired: false,
     submissionCommentMaxLength: 250
   },
-  cdataEscapedFieldPatterns: []
+  cdataEscapedFieldPatterns: [],
+  remoteGitBranch: null
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
@@ -143,9 +144,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       error: payload
     }
   }),
-  [fetchSiteConfig.type]: (state) => ({ ...state }),
   [fetchSiteConfigComplete.type]: (state, { payload }) => {
-    const { cdataEscapedFieldPatterns, locale, publishing, upload } = payload;
+    const { cdataEscapedFieldPatterns, locale, publishing, upload, remoteGitBranch } = payload as StudioSiteConfig;
     return {
       ...state,
       upload: {
@@ -162,7 +162,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, {
       publishing: {
         ...state.publishing,
         ...publishing
-      }
+      },
+      remoteGitBranch
     };
   }
 });
