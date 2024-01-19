@@ -272,6 +272,7 @@ export interface GlobalState {
     cdataEscapedFieldPatterns: string[];
     references: LookupTable;
     xml: string;
+    remoteGitBranch: string;
   };
   pathNavigator: LookupTable<PathNavigatorStateProps>;
   pathNavigatorTree: LookupTable<PathNavigatorTreeStateProps>;

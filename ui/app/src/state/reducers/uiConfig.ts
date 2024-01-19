@@ -27,6 +27,7 @@ import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } fr
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 import { getUserLocaleCode, getUserTimeZone } from '../../utils/datetime';
+import { StudioSiteConfig } from '../../services/configuration';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
@@ -64,7 +65,8 @@ const initialState: GlobalState['uiConfig'] = {
     publishEverythingCommentRequired: false,
     submissionCommentMaxLength: 250
   },
-  cdataEscapedFieldPatterns: []
+  cdataEscapedFieldPatterns: [],
+  remoteGitBranch: null
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) => {
@@ -144,7 +146,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
       }
     }))
     .addCase(fetchSiteConfigComplete, (state, { payload }) => {
-      const { cdataEscapedFieldPatterns, locale, publishing, upload } = payload;
+      const { cdataEscapedFieldPatterns, locale, publishing, upload, remoteGitBranch } = payload;
       return {
         ...state,
         upload: {
@@ -161,7 +163,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
         publishing: {
           ...state.publishing,
           ...publishing
-        }
+        },
+        remoteGitBranch
       };
     });
 });
