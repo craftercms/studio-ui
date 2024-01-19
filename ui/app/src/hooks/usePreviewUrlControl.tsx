@@ -19,15 +19,12 @@ import { useCallback, useEffect, useRef } from 'react';
 import { parse, stringify } from 'query-string';
 import { LookupTable } from '../models/LookupTable';
 import { changeCurrentUrl } from '../state/actions/preview';
-import { changeSite, popSite } from '../state/actions/sites';
+import { changeSite } from '../state/actions/sites';
 import { useActiveSiteId } from './useActiveSiteId';
 import { useEnv } from './useEnv';
 import { usePreviewNavigation } from './usePreviewNavigation';
 import useSiteLookup from './useSiteLookup';
 import { defineMessages, useIntl } from 'react-intl';
-import { getHostToHostBus } from '../utils/subjects';
-import { filter } from 'rxjs/operators';
-import { projectDeleted } from '../state/actions/system';
 
 const messages = defineMessages({
   siteNotFound: {
@@ -35,9 +32,6 @@ const messages = defineMessages({
   },
   siteNotReady: {
     defaultMessage: 'Project not initialized yet. Redirecting to projects list.'
-  },
-  siteDeleted: {
-    defaultMessage: "This project has been deleted, you'll be redirected to projects list."
   }
 });
 
@@ -84,19 +78,6 @@ export function usePreviewUrlControl(history) {
     },
     [sites, authoringBase, formatMessage]
   );
-
-  useEffect(() => {
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => e.type === projectDeleted.type)).subscribe(({ payload }) => {
-      if (payload.siteId === site) {
-        notValidSiteRedirect(formatMessage(messages.siteDeleted), `${authoringBase}#/sites`);
-        dispatch(popSite({ siteId: payload.siteId }));
-      }
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [authoringBase, formatMessage, site, dispatch]);
 
   useEffect(() => {
     const prev = priorState.current;

@@ -74,3 +74,15 @@ export function withMonaco(onReady: (api: Monaco) => void): void {
   }
   monaco$.asObservable().pipe(take(1)).subscribe(onReady);
 }
+
+export function isPreviewAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(`/preview`);
+}
+
+export function isDashboardAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(`/site-dashboard`);
+}
+
+export function isProjectToolsAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(`/site-config`);
+}

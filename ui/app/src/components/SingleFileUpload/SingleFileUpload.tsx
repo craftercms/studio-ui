@@ -33,6 +33,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
+import { toQueryString } from '../../utils/object';
 
 const messages = defineMessages({
   chooseFile: {
@@ -58,7 +59,7 @@ const messages = defineMessages({
   createPolicy: {
     id: 'fileUpload.createPolicy',
     defaultMessage:
-      'The upload file name goes against project policies. Suggested modified file name is: "{name}". Would you like to use the suggested name?'
+      'The uploaded file name goes against project policies. Suggested modified file name is: "{name}". Would you like to use the suggested name?'
   },
   policyError: {
     id: 'fileUpload.policyError',
@@ -111,7 +112,7 @@ export interface SingleFileUploadProps {
   site: string;
   formTarget?: string;
   url?: string;
-  path?: string;
+  path: string;
   customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
@@ -205,7 +206,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         hideAfterFinish: false
       })
       .use(XHRUpload, {
-        endpoint: url,
+        endpoint: `${url}${toQueryString({ path, site })}`,
         formData: true,
         fieldName: 'file',
         timeout: upload.timeout,
@@ -218,7 +219,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       instance.cancelAll();
       instance.close();
     };
-  }, [uppy, formTarget, url, upload.timeout]);
+  }, [uppy, formTarget, url, upload.timeout, path, site]);
 
   useEffect(() => {
     const onUploadSuccess = (file) => {
@@ -268,10 +269,9 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
           if (modifiedValue) {
-            const modifiedName = modifiedValue.replace(path, '');
-            setConfirm({
-              body: formatMessage(messages.createPolicy, { name: modifiedName })
-            });
+            // Modified value is expected to be a path.
+            const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
+            setConfirm({ body: formatMessage(messages.createPolicy, { name: modifiedName }) });
             setSuggestedName(modifiedName);
           } else {
             setDisableInput(true);
@@ -349,7 +349,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
               className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
               title={file.name}
             >
-              {file.name}
+              {' ' + file.name}
             </em>
           )}
         </Typography>

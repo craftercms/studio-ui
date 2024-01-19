@@ -214,7 +214,7 @@ export function RecentActivityDashletGridUI(props: RecentActivityDashletGridUIPr
                   </Typography>
                 )}
               </GlobalAppGridCell>
-              <GlobalAppGridCell className="width15">{item.sandbox.modifier.username}</GlobalAppGridCell>
+              <GlobalAppGridCell className="width15">{item.sandbox.modifier?.username ?? ''}</GlobalAppGridCell>
               <GlobalAppGridCell className="width20">
                 {item.sandbox.dateModified &&
                   asLocalizedDateTime(item.sandbox.dateModified, locale.localeCode, locale.dateTimeFormatOptions)}

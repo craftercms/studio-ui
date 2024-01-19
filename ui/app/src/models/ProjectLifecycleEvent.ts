@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './Host';
-
-export * from './Host';
+export interface ProjectLifecycleEvent<T = 'SITE_READY_EVENT' | 'SITE_DELETING_EVENT' | 'SITE_DELETED_EVENT'> {
+  timestamp: number;
+  siteUuid: string;
+  eventType: T;
+}
