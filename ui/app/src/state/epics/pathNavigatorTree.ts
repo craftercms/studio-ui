@@ -42,7 +42,9 @@ import {
   pathNavigatorTreeRootMissing,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
-  pathNavigatorTreeUpdate
+  pathNavigatorTreeUpdate,
+  PathNavTreeBulkFetchPathChildrenPayload,
+  PathNavTreeFetchPathChildrenPayload
 } from '../actions/pathNavigatorTree';
 import {
   checkPathExistence,
@@ -52,7 +54,7 @@ import {
 } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import { removeStoredPathNavigatorTree, setStoredPathNavigatorTree } from '../../utils/state';
-import { forkJoin, NEVER, Observable, of } from 'rxjs';
+import { forkJoin, NEVER, Observable } from 'rxjs';
 import { createPresenceTable } from '../../utils/array';
 import {
   getFileExtension,
@@ -183,6 +185,8 @@ export default [
   // region pathNavigatorTreeBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(
+      // TODO: Ensure these actions are never called with an empty list of `ids`
+      // TODO: There's no special handling for background vs visible. Should there be?
       ofType(pathNavigatorTreeBulkBackgroundRefresh.type, pathNavigatorTreeBulkRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
@@ -252,15 +256,13 @@ export default [
             });
             return pathNavigatorTreeBulkRestoreComplete({ trees });
           }),
-          catchAjaxError((error) => {
-            return pathNavigatorTreeBulkRestoreFailed({ ids, error });
-          })
+          catchAjaxError((error) => pathNavigatorTreeBulkRestoreFailed({ ids, error }))
         );
       })
     ),
   // endregion
   // region pathNavigatorFetchPathChildren
-  (action$, state$) =>
+  (action$: Observable<StandardAction<PathNavTreeFetchPathChildrenPayload>>, state$) =>
     action$.pipe(
       ofType(pathNavigatorTreeFetchPathChildren.type),
       withLatestFrom(state$),
@@ -270,11 +272,9 @@ export default [
         const finalOptions = createGetChildrenOptions(chunk, options);
         return fetchChildrenByPath(state.sites.active, path, {
           ...finalOptions,
-          ...(chunk.offsetByPath[path]
-            ? {
-                limit: chunk.limit + chunk.offsetByPath[path]
-              }
-            : {})
+          ...(chunk.offsetByPath[path] && {
+            limit: chunk.limit + chunk.offsetByPath[path]
+          })
         }).pipe(
           map((children) =>
             pathNavigatorTreeFetchPathChildrenComplete({
@@ -290,27 +290,26 @@ export default [
     ),
   // endregion
   // region pathNavigatorTreeBulkFetchPathChildren
-  (action$, state$) =>
+  (action$: Observable<StandardAction<PathNavTreeBulkFetchPathChildrenPayload>>, state$) =>
     action$.pipe(
       ofType(pathNavigatorTreeBulkFetchPathChildren.type),
       withLatestFrom(state$),
-      mergeMap(([{ payload }, state]) => {
+      mergeMap(([action, state]) => {
+        const { requests } = action.payload;
         const optionsByPath = {};
-        payload.forEach((item) => {
-          const chunk = state.pathNavigatorTree[item.id];
-          optionsByPath[item.path] = {
-            ...createGetChildrenOptions(chunk, item.options),
-            ...(chunk.offsetByPath[item.path]
-              ? {
-                  limit: chunk.limit + chunk.offsetByPath[item.path]
-                }
-              : {})
+        requests.forEach((request) => {
+          const chunk = state.pathNavigatorTree[request.id];
+          optionsByPath[request.path] = {
+            ...createGetChildrenOptions(chunk, request.options),
+            ...(chunk.offsetByPath[request.path] && {
+              limit: chunk.limit + chunk.offsetByPath[request.path]
+            })
           };
         });
         return fetchChildrenByPaths(state.sites.active, optionsByPath).pipe(
           map((children) => {
             const paths = [];
-            payload.forEach((item) => {
+            requests.forEach((item) => {
               paths.push({
                 id: item.id,
                 children: children[item.path],
@@ -320,9 +319,9 @@ export default [
             });
             return pathNavigatorTreeBulkFetchPathChildrenComplete({ paths });
           }),
-          catchAjaxError((error) => {
-            return pathNavigatorTreeBulkFetchPathChildrenFailed({ ids: payload.map((item) => item.id), error });
-          })
+          catchAjaxError((error) =>
+            pathNavigatorTreeBulkFetchPathChildrenFailed({ ids: requests.map((item) => item.id), error })
+          )
         );
       })
     ),
@@ -406,7 +405,7 @@ export default [
       mergeMap(([action, state]) => {
         const actions = [];
         const idsToRefresh = [];
-        const fetchPathsData = [];
+        const idsToRefreshChildrenOnly: PathNavTreeBulkFetchPathChildrenPayload['requests'] = [];
         // Content Event Cases:
         // a. New file/folder: fetch parent
         // b. File/folder updated (with no `sortStrategy` or `order` configurations set up): fetch item
@@ -428,8 +427,8 @@ export default [
               idsToRefresh.push(id);
             } else if (
               // If an entry for the path exists, assume it's an update to an existing item.
-              // If sorting options are set, the parent path needs to be updated for the sort order to be correct.
               (targetPath in tree.totalByPath || withIndex(targetPath) in tree.totalByPath) &&
+              // If sorting options are set, the parent path needs to be updated for the sort order to be correct.
               !sortingOptionsSet
             ) {
               // Reloading the item done by content epics
@@ -440,16 +439,17 @@ export default [
               withIndex(parentPath) in tree.totalByPath
             ) {
               const pathToUpdate = parentPath in tree.totalByPath ? parentPath : withIndex(parentPath);
-              // Show the new child
-              if (pathToUpdate in tree.childrenByParentPath) {
-                fetchPathsData.push({ id, path: pathToUpdate, expand: false });
-              }
+              // Show/fetch the new child(ren)
+              pathToUpdate in tree.childrenByParentPath &&
+                idsToRefreshChildrenOnly.push({ id, path: pathToUpdate, expand: false });
               // Update child count done by content epics.
               // fetchSandboxItem({ path: parentPath })
             }
           }
         );
-        actions.push(pathNavigatorTreeBulkRefresh({ ids: idsToRefresh }));
+        idsToRefresh.length && actions.push(pathNavigatorTreeBulkRefresh({ ids: idsToRefresh }));
+        idsToRefreshChildrenOnly.length &&
+          actions.push(pathNavigatorTreeBulkFetchPathChildren({ requests: idsToRefreshChildrenOnly }));
         return actions;
       })
     ),
@@ -480,7 +480,7 @@ export default [
         const parentPathOfTargetPath = getParentPath(targetPath);
         const parentPathOfSourcePath = getParentPath(sourcePath);
         const idsToRefresh = [];
-        const fetchPathsData = [];
+        const idsToRefreshChildrenOnly: PathNavTreeBulkFetchPathChildrenPayload['requests'] = [];
         Object.values(state.pathNavigatorTree).forEach((tree) => {
           const id = tree.id;
           if (
@@ -498,10 +498,10 @@ export default [
                 withIndex(path) in tree.totalByPath
               ) {
                 // Get correct path to fetch (may include index.xml)
-                const fetchPath = path in tree.totalByPath ? path : withIndex(path);
+                const pathToFetch = path in tree.totalByPath ? path : withIndex(path);
                 // If its children are loaded, then re-fetch to get the new
-                if (tree.childrenByParentPath[fetchPath]) {
-                  fetchPathsData.push({ id, path: fetchPath, expand: false });
+                if (tree.childrenByParentPath[pathToFetch]) {
+                  idsToRefreshChildrenOnly.push({ id, path: pathToFetch, expand: false });
                 }
                 // Re-fetching the item done by content epics.
                 // fetchSandboxItem({ path: path })
@@ -509,8 +509,9 @@ export default [
             });
           }
         });
-        actions.push(pathNavigatorTreeBulkRefresh({ ids: idsToRefresh }));
-        actions.push(pathNavigatorTreeBulkFetchPathChildren(fetchPathsData));
+        idsToRefresh.length && actions.push(pathNavigatorTreeBulkRefresh({ ids: idsToRefresh }));
+        idsToRefreshChildrenOnly.length &&
+          actions.push(pathNavigatorTreeBulkFetchPathChildren({ requests: idsToRefreshChildrenOnly }));
         return actions;
       })
     ),
@@ -522,14 +523,14 @@ export default [
       ofType(pluginInstalled.type),
       throttleTime(500),
       withLatestFrom(state$),
-      map(([, state]) => {
+      switchMap(([, state]) => {
         const ids = [];
         Object.values(state.pathNavigatorTree).forEach((tree) => {
           if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
             ids.push(tree.id);
           }
         });
-        return ids.length ? pathNavigatorTreeBulkBackgroundRefresh({ ids }) : NEVER;
+        return ids.length ? [pathNavigatorTreeBulkBackgroundRefresh({ ids })] : NEVER;
       })
     ),
   // endregion
@@ -540,9 +541,7 @@ export default [
       ofType(workflowEvent.type, publishEvent.type),
       throttleTime(500),
       withLatestFrom(state$),
-      map(([, state]) => {
-        return pathNavigatorTreeBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigatorTree) });
-      })
+      map(([, state]) => pathNavigatorTreeBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigatorTree) }))
     )
   // endregion
 ] as CrafterCMSEpic[];

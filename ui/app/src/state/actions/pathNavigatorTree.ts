@@ -102,21 +102,33 @@ export const pathNavigatorTreeFetchPathPageFailed = /*#__PURE__*/ createAction<{
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_FETCH_PATH_PAGE_FAILED');
 
-export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions>; expand?: boolean }>
->('PATH_NAV_TREE_FETCH_PATH_CHILDREN');
+export type PathNavTreeFetchPathChildrenPayload = PayloadWithId<{
+  path: string;
+  options?: Partial<GetChildrenOptions>;
+  expand?: boolean;
+}>;
 
-export const pathNavigatorTreeBulkFetchPathChildren = /*#__PURE__*/ createAction<
-  Array<PayloadWithId<{ paths: string[]; options?: Partial<GetChildrenOptions>; expand?: boolean }>>
->('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN');
+export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<PathNavTreeFetchPathChildrenPayload>(
+  'PATH_NAV_TREE_FETCH_PATH_CHILDREN'
+);
+
+export type PathNavTreeBulkFetchPathChildrenPayload = { requests: Array<PathNavTreeFetchPathChildrenPayload> };
+
+export const pathNavigatorTreeBulkFetchPathChildren =
+  /*#__PURE__*/ createAction<PathNavTreeBulkFetchPathChildrenPayload>('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN');
 
 export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAV_TREE_FETCH_PATH_CHILDREN_COMPLETE');
 
-export const pathNavigatorTreeBulkFetchPathChildrenComplete = /*#__PURE__*/ createAction<{
+export type PathNavTreeBulkFetchPathChildrenCompletePayload = {
   paths: PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>[];
-}>('PATH_NAV_BULK_TREE_FETCH_PATH_CHILDREN_COMPLETE');
+};
+
+export const pathNavigatorTreeBulkFetchPathChildrenComplete =
+  /*#__PURE__*/ createAction<PathNavTreeBulkFetchPathChildrenCompletePayload>(
+    'PATH_NAV_BULK_TREE_FETCH_PATH_CHILDREN_COMPLETE'
+  );
 
 export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
   id: string;
