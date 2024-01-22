@@ -57,12 +57,13 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
     return 'aws-file-upload';
   },
 
-  setValue: function (value) {
+  // Previously received Array<{ key; bucket }>
+  setValue: function (value /*: string; */) {
     var validationResult = true;
-    if (value && value[0] && value[0].key) {
+    if (value) {
       this.value = value;
+      this.fileEl.innerHTML = value;
       this.form.updateModel(this.id, this.value);
-      this.fileEl.innerHTML = 's3://' + value[0].bucket + '/' + value[0].key + '*';
       this.clearError('required');
     } else if (this.required) {
       validationResult = false;
@@ -84,72 +85,44 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
     return [{ label: CMgs.format(langBundle, 'required'), name: 'required', type: 'boolean' }];
   },
 
-  _onChange: function (evt, obj) {
-    var serviceUri = CStudioAuthoring.Service.createServiceUri('/api/1/services/api/1/aws/s3/upload.json');
-
-    var callback = {
-      cache: false,
-      upload: function (o) {
-        document.getElementById('cstudioSaveAndClose').disabled = '';
-        document.getElementById('cstudioSaveAndCloseDraft').disabled = '';
-        document.getElementById('cstudioSaveAndPreview').disabled = '';
-        document.getElementById('cancelBtn').disabled = '';
-        try {
-          var data = JSON.parse(o.responseText);
-          if (data.hasError) {
-            CStudioAuthoring.Operations.showSimpleDialog(
-              'error-dialog',
-              CStudioAuthoring.Operations.simpleDialogTypeINFO,
-              'Notification',
-              data.errors.join(', '),
-              null,
-              YAHOO.widget.SimpleDialog.ICON_BLOCK,
-              'studioDialog'
-            );
-          } else {
-            obj.setValue(data);
-            obj.edited = true;
-          }
-        } catch (err) {
-          obj.fileEl.innerHTML = '';
-          CStudioAuthoring.Operations.showSimpleDialog(
-            'error-dialog',
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            'Notification',
-            err.message,
-            null,
-            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
-          );
-        }
-      },
-      failure: function (o) {
-        obj.fileEl.innerHTML = '';
-        document.getElementById('cstudioSaveAndClose').disabled = '';
-        document.getElementById('cstudioSaveAndCloseDraft').disabled = '';
-        document.getElementById('cstudioSaveAndPreview').disabled = '';
-        document.getElementById('cancelBtn').disabled = '';
-        CStudioAuthoring.Operations.showSimpleDialog(
-          'error-dialog',
-          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          'Notification',
-          'File upload failed due to a unknown error.',
-          null,
-          YAHOO.widget.SimpleDialog.ICON_BLOCK,
-          'studioDialog'
-        );
-      }
-    };
-
-    YAHOO.util.Connect.setForm('upload_form_' + obj.id, true);
-    serviceUri +=
-      '&' + CStudioAuthoringContext.xsrfParameterName + '=' + CrafterCMSNext.util.auth.getRequestForgeryToken();
-    YAHOO.util.Connect.asyncRequest('POST', serviceUri, callback);
-    document.getElementById('cstudioSaveAndClose').disabled = 'disabled';
-    document.getElementById('cstudioSaveAndCloseDraft').disabled = 'disabled';
-    document.getElementById('cstudioSaveAndPreview').disabled = 'disabled';
-    document.getElementById('cancelBtn').disabled = 'disabled';
-    obj.fileEl.innerHTML = '<i class="fa fa-spinner fa-spin"/>';
+  _onChange: function (event, obj) {
+    const dispatch = craftercms.getStore().dispatch;
+    const file = event.target.files[0];
+    const profileId = this.profile_id;
+    if (file) {
+      dispatch({ type: 'BLOCK_UI', payload: { message: 'Uploading...' } });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        file.dataUrl = e.target.result;
+        craftercms.services.content
+          .uploadToS3(CStudioAuthoringContext.site, file, '/', profileId, CStudioAuthoringContext.xsrfParameterName)
+          .subscribe({
+            next(result) {
+              if (result.type === 'complete') {
+                dispatch({ type: 'UNBLOCK_UI' });
+                obj.setValue(result.payload.body.item.url);
+                obj.edited = true;
+              } else {
+                // Progress event...
+              }
+            },
+            error(error) {
+              const apiResponse = error?.body?.response;
+              !apiResponse && console.error(error);
+              dispatch({ type: 'UNBLOCK_UI' });
+              dispatch({
+                type: 'SHOW_ERROR_DIALOG',
+                payload: {
+                  error: apiResponse ?? {
+                    message: 'An error occurred while uploading the file'
+                  }
+                }
+              });
+            }
+          });
+      };
+      reader.readAsDataURL(file);
+    }
   },
 
   render: function (config, containerEl, lastTwo) {
@@ -167,7 +140,7 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
     containerEl.appendChild(validEl);
 
     this.fileEl = document.createElement('span');
-    controlWidgetContainerEl.appendChild(this.fileEl);
+    this.fileEl.style.marginLeft = '10px';
 
     var formEl = document.createElement('form');
     formEl.id = 'upload_form_' + this.id;
@@ -192,9 +165,10 @@ YAHOO.extend(CStudioForms.Controls.AWSFileUpload, CStudioForms.CStudioFormField,
     inputEl.name = 'file';
     YAHOO.util.Dom.addClass(inputEl, 'datum');
     YAHOO.util.Dom.addClass(inputEl, 'cstudio-form-control-input');
-    YAHOO.util.Event.on(inputEl, 'change', this._onChange, this);
+    YAHOO.util.Event.on(inputEl, 'change', (e) => this._onChange(e, this));
 
     formEl.appendChild(inputEl);
+    formEl.appendChild(this.fileEl);
 
     controlWidgetContainerEl.appendChild(formEl);
 
