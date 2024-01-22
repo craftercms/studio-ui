@@ -32,7 +32,7 @@ import { LookupTable } from '../models/LookupTable';
 import $ from 'jquery/dist/jquery.slim';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
-import { AjaxError, AjaxResponse } from 'rxjs/ajax';
+import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
@@ -1181,50 +1181,37 @@ export function fetchChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  return postJSON('/studio/api/2/content/children_by_path', {
-    siteId,
-    path,
-    ...options
-  }).pipe(
-    pluck('response'),
-    map(({ children, levelDescriptor, total, offset, limit }) =>
-      Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
-        levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
-        total,
-        offset,
-        limit
-      })
-    )
-  );
+  const paths = { [path]: { ...options } };
+  return fetchChildrenByPaths(siteId, paths).pipe(map((data) => data[path]));
 }
 
+/**
+ * siteId {string} The site id.
+ * fetchOptionsByPath {LookupTable<Partial<GetChildrenOptions>>} A lookup table of paths and their respective options.
+ * options {GetChildrenOptions} Options that will be applied to all the path requests.
+ * */
 export function fetchChildrenByPaths(
   siteId: string,
   fetchOptionsByPath: LookupTable<Partial<GetChildrenOptions>>,
   options?: Partial<GetChildrenOptions>
 ): Observable<LookupTable<GetChildrenResponse>> {
-  const paths = Object.keys(fetchOptionsByPath);
-  if (paths.length === 0) {
-    return of({});
-  }
-  const requests = paths.map((path) =>
-    fetchChildrenByPath(siteId, path, { ...options, ...fetchOptionsByPath[path] }).pipe(
-      catchError((error: AjaxError) => {
-        if (error.status === 404) {
-          return of([]);
-        } else {
-          throw error;
-        }
-      })
-    )
-  );
-  return forkJoin(requests).pipe(
-    map((responses) => {
-      const data = {};
-      Object.keys(fetchOptionsByPath).forEach((path, i) => (data[path] = responses[i]));
-      return data;
-    })
-  );
+  const paths = Object.keys(fetchOptionsByPath).map((path) => ({ path, ...options, ...fetchOptionsByPath[path] }));
+  return paths.length === 0
+    ? of({})
+    : postJSON(`/studio/api/2/content/${siteId}/children`, { paths }).pipe(
+        map(({ response: { items } }) => {
+          const data = {};
+          items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
+            data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
+              levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
+              total,
+              offset,
+              limit
+            });
+          });
+          return data;
+        })
+      );
 }
 
 export function fetchItemsByPath(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<SandboxItem>>;

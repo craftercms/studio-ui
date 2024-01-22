@@ -15,18 +15,23 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, mergeMap, tap, throttleTime, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, switchMap, tap, throttleTime, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   checkPathExistence,
   fetchChildrenByPath,
+  fetchChildrenByPaths,
   fetchItemsByPath,
   fetchItemWithChildrenByPath
 } from '../../services/content';
 import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, NEVER, Observable } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
+  pathNavigatorBulkBackgroundRefresh,
+  pathNavigatorBulkFetchPathComplete,
+  pathNavigatorBulkFetchPathFailed,
+  pathNavigatorBulkRefresh,
   pathNavigatorChangeLimit,
   pathNavigatorChangePage,
   pathNavigatorConditionallySetPath,
@@ -124,6 +129,53 @@ export default [
             })
           )
       )
+    ),
+  // endregion
+  // region pathNavigatorBulkBackgroundRefresh
+  (action$, state$) =>
+    action$.pipe(
+      // TODO: Ensure these actions are never called with an empty list of `ids`
+      ofType(pathNavigatorBulkBackgroundRefresh.type, pathNavigatorBulkRefresh.type),
+      withLatestFrom(state$),
+      mergeMap(([{ payload }, state]) => {
+        const { ids } = payload;
+        let paths = [];
+        let optionsByPath = {};
+
+        ids.forEach((id) => {
+          const chunk = state.pathNavigator[id];
+          const { currentPath, keyword, limit, offset, excludes, sortStrategy, order } = chunk;
+          paths.push(currentPath);
+          optionsByPath[currentPath] = {
+            keyword,
+            limit,
+            offset,
+            excludes,
+            sortStrategy,
+            order
+          };
+        });
+
+        return forkJoin([
+          fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+          fetchChildrenByPaths(state.sites.active, optionsByPath)
+        ]).pipe(
+          map(([items, children]) =>
+            pathNavigatorBulkFetchPathComplete({
+              paths: ids.map((id) => ({
+                id,
+                // TODO: If the backend sends back in the same order received, this find is unnecessary (ie. items[0] corresponds to children[0], etc).
+                //   Could send separately to the action creator and the reducer does the work without this intermediate `paths` object:
+                //    pathNavigatorBulkFetchPathComplete({ items, children })
+                //   Unless, it this would reqyire multiple reducers to the the same work.
+                parent: items.find((item) => item.path.startsWith(withoutIndex(state.pathNavigator[id].currentPath))),
+                children: children[state.pathNavigator[id].currentPath]
+              }))
+            })
+          ),
+          catchAjaxError((error) => pathNavigatorBulkFetchPathFailed({ ids, error }))
+        );
+      })
     ),
   // endregion
   // region pathNavigatorFetchPath
@@ -361,12 +413,12 @@ export default [
         // b. Item is a direct child of the current path: refresh navigator
         // b. Item is a direct child of the current path: refresh navigator
         // c. Item is a child of an item on the current path: refresh item's child count
-        const actions = [];
         const {
           payload: { targetPath }
         } = action;
         const parentPathOfTargetPath = getParentPath(targetPath);
         const parentOfTargetWithIndex = withIndex(parentPathOfTargetPath);
+        const idsToRefresh = [];
         Object.values(state.pathNavigator).forEach((navigator) => {
           if (
             // Case (a)
@@ -375,7 +427,7 @@ export default [
             navigator.currentPath === parentPathOfTargetPath ||
             navigator.currentPath === parentOfTargetWithIndex
           ) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+            idsToRefresh.push(navigator.id);
           } /* else if (
             // Case (c) - Content epics load any item that's on the state already
             navigator.currentPath === getParentPath(parentPathOfTargetPath)
@@ -383,7 +435,7 @@ export default [
             actions.push(fetchSandboxItem({ path: parentPathOfTargetPath }));
           } */
         });
-        return actions;
+        return idsToRefresh.length ? [pathNavigatorBulkBackgroundRefresh({ ids: idsToRefresh })] : NEVER;
       })
     ),
   // endregion
@@ -418,19 +470,26 @@ export default [
         } = action;
         const parentOfTargetPath = getParentPath(targetPath);
         const parentOfSourcePath = getParentPath(sourcePath);
+        const idsToRefresh = [];
+        const idsToBgRefresh = [];
         Object.values(state.pathNavigator).forEach((navigator) => {
           if (navigator.isRootPathMissing && targetPath === navigator.rootPath) {
-            actions.push(pathNavigatorRefresh({ id: navigator.id }));
+            idsToRefresh.push(navigator.id);
           } else if (!navigator.isRootPathMissing && navigator.currentPath.startsWith(sourcePath)) {
             actions.push(pathNavigatorSetCurrentPath({ id: navigator.id, path: navigator.rootPath }));
           } else if (
             withoutIndex(navigator.currentPath) === parentOfTargetPath ||
             withoutIndex(navigator.currentPath) === parentOfSourcePath
           ) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+            idsToBgRefresh.push(navigator.id);
           }
         });
-        return actions;
+        // TODO: The two separate actions would result in additional requests for something that could be bulked.
+        //  Could we bulk into a single action with a background argument per path requested to state if it should
+        //  be background, fetch all together, and handle the background nature at the reducer level?
+        idsToRefresh.length && actions.push(pathNavigatorBulkRefresh({ ids: idsToRefresh }));
+        idsToBgRefresh.length && actions.push(pathNavigatorBulkBackgroundRefresh({ ids: idsToBgRefresh }));
+        return actions.length ? actions : NEVER;
       })
     ),
   // endregion
@@ -440,14 +499,14 @@ export default [
       ofType(pluginInstalled.type),
       throttleTime(500),
       withLatestFrom(state$),
-      mergeMap(([, state]) => {
-        const actions = [];
+      switchMap(([, state]) => {
+        const ids = [];
         Object.values(state.pathNavigator).forEach((tree) => {
           if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+            ids.push(tree.id);
           }
         });
-        return actions;
+        return ids.length ? [pathNavigatorBulkBackgroundRefresh({ ids })] : NEVER;
       })
     ),
   // endregion
@@ -457,12 +516,9 @@ export default [
       ofType(publishEvent.type, workflowEvent.type),
       throttleTime(500),
       withLatestFrom(state$),
-      mergeMap(([, state]) => {
-        const actions = [];
-        Object.values(state.pathNavigator).forEach((tree) => {
-          actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
-        });
-        return actions;
+      switchMap(([, state]) => {
+        const ids = Object.keys(state.pathNavigator);
+        return ids.length ? [pathNavigatorBulkBackgroundRefresh({ ids })] : NEVER;
       })
     )
   // endregion

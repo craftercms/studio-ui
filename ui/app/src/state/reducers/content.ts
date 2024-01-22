@@ -39,6 +39,7 @@ import QuickCreateItem from '../../models/content/QuickCreateItem';
 import StandardAction from '../../models/StandardAction';
 import { AjaxError } from 'rxjs/ajax';
 import {
+  pathNavigatorBulkFetchPathComplete,
   pathNavigatorConditionallySetPathComplete,
   pathNavigatorFetchParentItemsComplete,
   pathNavigatorFetchPathComplete
@@ -48,6 +49,8 @@ import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { SandboxItem } from '../../models/Item';
 import { changeSite } from '../actions/sites';
 import {
+  pathNavigatorTreeBulkFetchPathChildrenComplete,
+  pathNavigatorTreeBulkRestoreComplete,
   pathNavigatorTreeFetchPathChildrenComplete,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeRestoreComplete,
@@ -90,6 +93,20 @@ const updateItemByPath = (state: ContentState, { payload: { parent, children } }
   };
 };
 
+const updateItemsByPaths = (state: ContentState, { payload: { paths } }) => {
+  let nextByPath = state.itemsByPath;
+  paths.forEach((path) => {
+    nextByPath = {
+      ...nextByPath,
+      ...updateItemByPath({ ...state, itemsByPath: nextByPath }, { payload: path }).itemsByPath
+    };
+  });
+  return {
+    ...state,
+    itemsByPath: nextByPath
+  };
+};
+
 const updateItemsBeingFetchedByPath = (state: ContentState, { payload: { path } }) => {
   state.itemsBeingFetchedByPath[path] = true;
 };
@@ -98,6 +115,27 @@ const updateItemsBeingFetchedByPaths = (state, { payload: { paths } }) => {
   paths.forEach((path) => {
     state.itemsBeingFetchedByPath[path] = true;
   });
+};
+
+const updateItemsFromRestoredTree = (state, payload: PathNavigatorTreeRestoreCompletePayload) => {
+  const { children, items } = payload;
+  let nextByPath = {};
+  Object.values(children).forEach((children) => {
+    Object.assign(
+      nextByPath,
+      createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
+    );
+    if (children.levelDescriptor) {
+      nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
+        children.levelDescriptor,
+        state.itemsByPath[children.levelDescriptor.path]
+      );
+    }
+  });
+  items.forEach((item) => {
+    nextByPath[item.path] = item;
+  });
+  return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
 };
 
 const reducer = createReducer<ContentState>(initialState, {
@@ -173,6 +211,7 @@ const reducer = createReducer<ContentState>(initialState, {
   }),
   [pathNavigatorConditionallySetPathComplete.type]: updateItemByPath,
   [pathNavigatorFetchPathComplete.type]: updateItemByPath,
+  [pathNavigatorBulkFetchPathComplete.type]: updateItemsByPaths,
   [pathNavigatorFetchParentItemsComplete.type]: (state, { payload: { items, children } }) => {
     return {
       ...state,
@@ -199,28 +238,24 @@ const reducer = createReducer<ContentState>(initialState, {
     };
   },
   [pathNavigatorTreeFetchPathChildrenComplete.type]: updateItemByPath,
+  [pathNavigatorTreeBulkFetchPathChildrenComplete.type]: updateItemsByPaths,
   [pathNavigatorTreeFetchPathPageComplete.type]: updateItemByPath,
   [pathNavigatorTreeRestoreComplete.type]: (state, action: { payload: PathNavigatorTreeRestoreCompletePayload }) => {
-    const {
-      payload: { children, items }
-    } = action;
-    let nextByPath = {};
-    Object.values(children).forEach((children) => {
-      Object.assign(
-        nextByPath,
-        createLookupTable(parseSandBoxItemToDetailedItem(children as SandboxItem[], state.itemsByPath), 'path')
-      );
-      if (children.levelDescriptor) {
-        nextByPath[children.levelDescriptor.path] = parseSandBoxItemToDetailedItem(
-          children.levelDescriptor,
-          state.itemsByPath[children.levelDescriptor.path]
-        );
-      }
+    const { payload } = action;
+    return updateItemsFromRestoredTree(state, payload);
+  },
+  [pathNavigatorTreeBulkRestoreComplete.type]: (state, { payload: { trees } }) => {
+    let nextByPath = state.itemsByPath;
+    trees.forEach((tree) => {
+      nextByPath = {
+        ...nextByPath,
+        ...updateItemsFromRestoredTree({ ...state, itemsByPath: nextByPath }, tree).itemsByPath
+      };
     });
-    items.forEach((item) => {
-      nextByPath[item.path] = item;
-    });
-    return { ...state, itemsByPath: { ...state.itemsByPath, ...nextByPath } };
+    return {
+      ...state,
+      itemsByPath: nextByPath
+    };
   },
   [updateItemsByPath.type]: (state, { payload }) => {
     return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
