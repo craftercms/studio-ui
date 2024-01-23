@@ -108,7 +108,6 @@
       },
 
       _onChange: function (event, obj) {
-        // TODO: Disable UI while uploading
         const dispatch = craftercms.getStore().dispatch;
         const file = event.target.files[0];
         const profileId = this.profile_id;
