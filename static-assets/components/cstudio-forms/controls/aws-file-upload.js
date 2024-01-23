@@ -58,7 +58,7 @@
         if (item?.url) {
           const url = item.url;
           const name = item.name ?? item.key;
-          const bucket = item.bucketName ?? '';
+          const bucket = item.bucketName ?? item.bucket ?? '';
           this.value = [{ key: name, bucket, url }];
           this.fileEl.innerHTML = `<code>${url}</code><code>s3://${bucket}/${name}*</code>`;
           this.form.updateModel(this.id, this.value);
