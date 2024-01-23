@@ -27,7 +27,6 @@ import { fetchSiteLocales, fetchSiteLocalesComplete, fetchSiteLocalesFailed } fr
 import { deserialize, fromString, serialize } from '../../utils/xml';
 import { applyDeserializedXMLTransforms } from '../../utils/object';
 import { getUserLocaleCode, getUserTimeZone } from '../../utils/datetime';
-import { StudioSiteConfig } from '../../services/configuration';
 
 const initialState: GlobalState['uiConfig'] = {
   error: null,
