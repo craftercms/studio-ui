@@ -30,6 +30,7 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { UppyFile } from '@uppy/utils';
 import { CSSObject } from 'tss-react';
+import { ensureSingleSlash } from '../../utils/string';
 
 interface UppyDashboardProps {
   uppy: Uppy;
@@ -442,7 +443,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
       title,
       id: 'craftercms:Dashboard',
       site,
-      path,
+      path: ensureSingleSlash(`${path}/`),
       locale: {
         strings: {
           // @ts-ignore - TODO: find substitution(s)
