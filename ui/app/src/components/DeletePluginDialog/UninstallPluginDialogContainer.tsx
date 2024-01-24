@@ -48,7 +48,10 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
         });
         onComplete?.();
       },
-      error: (response) => {
+      error: ({ response: { response } }) => {
+        callbacksRef.current.onSubmittingAndOrPendingChange({
+          isSubmitting: false
+        });
         dispatch(showErrorDialog({ error: response }));
       }
     });
