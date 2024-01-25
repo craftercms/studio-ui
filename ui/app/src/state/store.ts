@@ -49,6 +49,8 @@ import {
 } from './actions/auth';
 import { SHARED_WORKER_NAME } from '../utils/constants';
 import { fetchActiveEnvironment } from '../services/environment';
+import { batchActions, dispatchDOMEvent } from './actions/misc';
+import { closeSingleFileUploadDialog } from './actions/dialogs';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
@@ -170,7 +172,19 @@ export function createStoreSync(args: { preloadedState?: any; dependencies?: any
   });
   const store = configureStore({
     reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: false }).concat(epicMiddleware as Middleware),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        thunk: false,
+        serializableCheck: {
+          ignoredActions: [
+            // The SingleFileUpload dialog used via the global dialog manager will dispatch non-serializables.
+            // It is often used with dispatchDOMEvent and batchActions.
+            batchActions.type,
+            dispatchDOMEvent.type,
+            closeSingleFileUploadDialog.type
+          ]
+        }
+      }).concat(epicMiddleware as Middleware),
     preloadedState,
     devTools: { name: 'Studio Store' }
     // devTools: process.env.NODE_ENV === 'production' ? false : { name: 'Studio Store' }

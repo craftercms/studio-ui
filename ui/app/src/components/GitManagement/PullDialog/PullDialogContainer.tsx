@@ -42,6 +42,7 @@ import Button from '@mui/material/Button';
 import { fetchLegacySite } from '../../../services/sites';
 import useSpreadState from '../../../hooks/useSpreadState';
 import Skeleton from '@mui/material/Skeleton';
+import useSelection from '../../../hooks/useSelection';
 
 const useStyles = makeStyles()((theme) => ({
   formControl: {
@@ -89,8 +90,9 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   const { classes, cx } = useStyles();
   const { uuid, id: siteId } = useActiveSite();
   const { username } = useActiveUser();
+  const remoteGitBranch = useSelection((state) => state.uiConfig.remoteGitBranch);
   const [sandboxState, setSandboxState] = useSpreadState({
-    branch: '',
+    branch: remoteGitBranch,
     error: null,
     loading: false
   });
@@ -114,8 +116,8 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
         next(result) {
           onPullSuccess?.(result);
         },
-        error({ response }) {
-          onPullError?.(response.response);
+        error(response) {
+          onPullError?.(response?.response?.response);
         }
       });
     }
@@ -163,8 +165,9 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   }, [selectedMergeStrategy, uuid, username]);
 
   useEffect(() => {
-    fetchSandboxBranch();
-  }, [fetchSandboxBranch]);
+    if (remoteGitBranch === null) fetchSandboxBranch();
+    else setSandboxState({ branch: remoteGitBranch });
+  }, [fetchSandboxBranch, remoteGitBranch, setSandboxState]);
 
   return (
     <form onSubmit={onSubmit}>

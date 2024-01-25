@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,15 +14,5 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages } from 'react-intl';
-
-export const translations = defineMessages({
-  siteNameRequired: {
-    id: 'editSiteDialog.siteNameRequired',
-    defaultMessage: 'Project Name is required.'
-  },
-  siteNameExists: {
-    id: 'editSiteDialog.sitenameExists',
-    defaultMessage: 'The name already exist.'
-  }
-});
+export { default } from './NotistackVariant';
+export * from './NotistackVariant';

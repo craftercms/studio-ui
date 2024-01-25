@@ -17,10 +17,15 @@
 import Person from './Person';
 
 export interface SocketEventBase {
+  siteId: string;
   timestamp: number;
   eventType: string;
   targetPath: string;
   user: Person;
 }
+
+export type ContentEventPayload = SocketEventBase;
+
+export type DeleteContentEventPayload = SocketEventBase;
 
 export default SocketEventBase;

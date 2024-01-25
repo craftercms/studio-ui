@@ -24,7 +24,7 @@ import {
   getRecordsFromIceId,
   getSiblingRects
 } from '../../elementRegistry';
-import { dragOk } from '../util';
+import { checkIfLockedOrModified, dragOk } from '../util';
 import * as iceRegistry from '../../iceRegistry';
 import { findChildRecord, getById, getReferentialEntries } from '../../iceRegistry';
 import { Reducer } from '@reduxjs/toolkit';
@@ -67,9 +67,12 @@ import {
   desktopAssetUploadComplete,
   desktopAssetUploadProgress,
   desktopAssetUploadStarted,
-  desktopAssetUploadFailed
+  desktopAssetUploadFailed,
+  setLockedItems
 } from '../actions';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { contentEvent, lockContentEvent } from '@craftercms/studio-ui/state/actions/system';
+import { NotFunction, ReducerWithInitialState } from '@reduxjs/toolkit/src/createReducer';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
@@ -89,6 +92,8 @@ const initialState: GuestState = {
   authoringBase: null,
   uploading: {},
   models: {},
+  lockedPaths: {},
+  externallyModifiedPaths: {},
   contentTypes: {},
   hostCheckedIn: false,
   rteConfig: {},
@@ -97,11 +102,16 @@ const initialState: GuestState = {
   username: null
 };
 
-function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMap: CR): Reducer<S> {
-  return (state = initialState, action) => {
+function createReducer<S extends NotFunction<any>, CR extends CaseReducers<S, any> = CaseReducers<S, any>>(
+  initialState: S,
+  actionsMap: CR
+): ReducerWithInitialState<S> {
+  const reducer = (state = initialState, action) => {
     const caseReducer = actionsMap[action.type];
     return caseReducer?.(state, action) ?? state;
   };
+  reducer.getInitialState = () => initialState;
+  return reducer;
 }
 
 const resetState: (state: GuestState) => GuestState = (state: GuestState) => ({
@@ -179,8 +189,9 @@ const reducer = createReducer(initialState, {
     const { record } = action.payload;
     // onMouseOver pre-populates the draggable record
     const iceId = state.draggable?.[record.id];
+    const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
     // Items that browser make draggable by default (images, etc) may not have an ice id
-    if (notNullOrUndefined(iceId)) {
+    if (!isLocked && !isExternallyModified && notNullOrUndefined(iceId)) {
       const dropTargets = iceRegistry.getRecordDropTargets(iceId);
       const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
       const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(
@@ -756,7 +767,31 @@ const reducer = createReducer(initialState, {
   [setEditModePadding.type]: (state, action) => ({
     ...state,
     editModePadding: action.payload.editModePadding
-  })
+  }),
+  // endregion
+  // TODO: The below return statements shouldn't be necessary, but TypeScript is demanding them.
+  // region contentEvent
+  [contentEvent.type]: (state, { payload }) => {
+    if (state.username !== payload.user.username) {
+      state.externallyModifiedPaths[payload.targetPath] = { user: payload.user };
+      return state;
+    }
+  },
+  // endregion
+  // region lockContentEvent
+  [lockContentEvent.type]: (state, { payload }) => {
+    if (payload.locked) state.lockedPaths[payload.targetPath] = { user: payload.user };
+    else delete state.lockedPaths[payload.targetPath];
+    return state;
+  },
+  // endregion
+  // region setLockedItems
+  [setLockedItems.type]: (state, { payload }) => {
+    payload.forEach((item) => {
+      state.lockedPaths[item.path] = { user: item.lockOwner };
+    });
+    return state;
+  }
   // endregion
 });
 

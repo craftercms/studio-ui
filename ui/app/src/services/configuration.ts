@@ -243,24 +243,12 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
   );
 }
 
-export interface StudioSiteConfig {
+export interface StudioSiteConfig
+  extends Pick<
+    GlobalState['uiConfig'],
+    'cdataEscapedFieldPatterns' | 'upload' | 'locale' | 'publishing' | 'remoteGitBranch'
+  > {
   site: string;
-  cdataEscapedFieldPatterns: string[];
-  upload: {
-    timeout: number;
-    maxActiveUploads: number;
-    maxSimultaneousUploads: number;
-  };
-  locale: {
-    localeCode: string;
-    dateTimeFormatOptions: Intl.DateTimeFormatOptions;
-  };
-  publishing: {
-    publishCommentRequired: boolean;
-    deleteCommentRequired: boolean;
-    bulkPublishCommentRequired: boolean;
-    publishByCommitCommentRequired: boolean;
-  };
 }
 
 export function fetchSiteConfig(site: string, environment: string): Observable<StudioSiteConfig> {
@@ -272,6 +260,9 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
         .filter(Boolean),
       upload: ((node) => (node ? deserialize(node).upload : {}))(dom.querySelector(':scope > upload')),
       locale: ((node) => (node ? deserialize(node).locale : {}))(dom.querySelector(':scope > locale')),
+      remoteGitBranch: ((node) => (node ? deserialize(node).remoteGitBranch : null))(
+        dom.querySelector(':scope > remoteGitBranch')
+      ),
       publishing: ((node) => {
         const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
         return {
@@ -279,7 +270,8 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
           deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
           bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
           publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required,
-          publishEverythingCommentRequired: commentSettings['publish-everything-required'] ?? commentSettings.required
+          publishEverythingCommentRequired: commentSettings['publish-everything-required'] ?? commentSettings.required,
+          submissionCommentMaxLength: commentSettings['submission-max-length'] ?? 500
         };
       })(dom.querySelector(':scope > publishing'))
     }))

@@ -16,7 +16,7 @@
 
 import React, { ReactNode, useCallback, useReducer, useRef } from 'react';
 import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import { TypographyVariant as Variant } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import { DetailedItem, SandboxItem } from '../../models/Item';
@@ -42,6 +42,7 @@ import NavItem from '../PathNavigator/PathNavigatorItem';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import ItemDisplay from '../ItemDisplay';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
+import Tooltip from '@mui/material/Tooltip';
 
 const useStyles = makeStyles()((theme) => ({
   popoverRoot: {
@@ -94,6 +95,8 @@ interface SingleItemSelectorProps {
   hideUI?: boolean;
   canSelectFolders?: boolean;
   disabled?: boolean;
+  buttonSize?: IconButtonProps['size'];
+  tooltip?: string;
   onClose?(): void;
   onItemClicked(item: DetailedItem): void;
   onDropdownClick?(): void;
@@ -124,7 +127,7 @@ const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props
   pageNumber: 0,
   breadcrumb: [],
   offset: 0,
-  limit: 10,
+  limit: 20,
   total: 0,
   rootPath: props.rootPath,
   currentPath: props.selectedItem?.path ?? props.rootPath
@@ -247,6 +250,7 @@ const fetchChildrenByPathComplete = /*#__PURE__*/ createAction<{
 const fetchChildrenByPathFailed = /*#__PURE__*/ createAction<any>('FETCH_CHILDREN_BY_PATH_FAILED');
 
 export function SingleItemSelector(props: SingleItemSelectorProps) {
+  // region const { ... } = props;
   const {
     selectIcon: SelectIcon = ExpandMoreRoundedIcon,
     classes: propClasses,
@@ -261,10 +265,13 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     selectedItem,
     rootPath,
     canSelectFolders = false,
-    filterChildren = () => true
+    filterChildren = () => true,
+    buttonSize = 'large',
+    tooltip = ''
   } = props;
+  // endregion
   const { classes, cx } = useStyles();
-  const anchorEl = useRef();
+  const buttonElRef = useRef();
   const [state, _dispatch] = useReducer(reducer, props, init);
   const site = useActiveSiteId();
 
@@ -388,8 +395,8 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
   const wrapperProps = hideUI
     ? {}
     : {
-        className: cx(classes.root, !onDropdownClick && 'disable', propClasses?.root),
-        elevation: 0
+        elevation: 0,
+        className: cx(classes.root, !onDropdownClick && 'disable', propClasses?.root)
       };
 
   return (
@@ -409,18 +416,20 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
         </>
       )}
       {onDropdownClick && (
-        <IconButton
-          className={classes.changeBtn}
-          ref={anchorEl}
-          disabled={disabled}
-          onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
-          size="large"
-        >
-          <SelectIcon className={cx(classes.selectIcon, propClasses?.selectIcon)} />
-        </IconButton>
+        <Tooltip title={tooltip}>
+          <IconButton
+            className={classes.changeBtn}
+            ref={buttonElRef}
+            disabled={disabled}
+            onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
+            size={buttonSize}
+          >
+            <SelectIcon className={cx(classes.selectIcon, propClasses?.selectIcon)} />
+          </IconButton>
+        </Tooltip>
       )}
       <Popover
-        anchorEl={anchorEl.current}
+        anchorEl={buttonElRef.current}
         open={open}
         classes={{ paper: cx(classes.popoverRoot, propClasses?.popoverRoot) }}
         onClose={onClose}

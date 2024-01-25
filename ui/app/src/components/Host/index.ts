@@ -17,5 +17,3 @@
 export { default } from './Host';
 
 export * from './Host';
-
-export * from './HostUI';
