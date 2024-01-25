@@ -53,20 +53,22 @@
       getName: () => 'aws-file-upload',
 
       setValue: function (value) {
-        var validationResult = true;
+        let validationResult = true;
         const item = value?.[0];
-        if (item?.url) {
-          const url = item.url;
+        if (item) {
+          const url = item.url ?? '';
           const name = item.name ?? item.key;
-          const bucket = item.bucketName ?? item.bucket ?? '';
+          const bucket = item.bucketName ? `${item.bucketName}/${item.prefix}` : item.bucket ?? '';
           this.value = [{ key: name, bucket, url }];
-          this.fileEl.innerHTML = `<code>${url}</code><code>s3://${bucket}/${name}*</code>`;
+          this.fileEl.innerHTML = `<code>s3://${bucket}/${name}*</code><code>${url}</code>`;
           this.form.updateModel(this.id, this.value);
-          this.previewEl.innerHTML = /\.(jpg|jpeg|png|gif|bmp|ico|svg)$/i.test(url)
+          this.previewEl.innerHTML = /\.(jpg|jpeg|png|gif|bmp|ico|svg|webp)$/i.test(url)
             ? `<img src="${url}" />`
+            : /\.(mp4|webm|ogv)$/i.test(url)
+            ? `<video controls muted><source src="${url}" type="video/${url.match(/\.(.+)$/)?.[1]}"></video>`
             : /\.(pdf|html|js|css|txt|json|md|jsx|ts|tsx|yaml|ftl)$/i.test(url)
             ? `<iframe src="${url}" />`
-            : '';
+            : '(Preview not available)';
           this.clearError('required');
         } else if (this.required) {
           validationResult = false;
@@ -89,18 +91,18 @@
       render: function (config, containerEl, lastTwo) {
         // language=html
         containerEl.innerHTML = `
-        <span class="cstudio-form-field-title">${config.title}</span>
-        <span class="validation-hint cstudio-form-control-validation fa fa-check"></span>
-        <div class="aws-file-upload-control-container cstudio-form-control-input-container">
-          <input
-            type="file"
-            name="file"
-            class="datum cstudio-form-control-input"
-          >
-          <div data-name="fileEl" class="aws-file-upload-url-el"></div>
-          <div data-name="previewEl" class="aws-file-upload-preview-el"></div>
-        </div>
-      `;
+          <span class="cstudio-form-field-title">${config.title}</span>
+          <span class="validation-hint cstudio-form-control-validation fa fa-check"></span>
+          <div class="aws-file-upload-control-container cstudio-form-control-input-container">
+            <input
+              type="file"
+              name="file"
+              class="datum cstudio-form-control-input"
+            >
+            <div data-name="fileEl" class="aws-file-upload-url-el"></div>
+            <div data-name="previewEl" class="aws-file-upload-preview-el"></div>
+          </div>
+        `;
         this.fileEl = containerEl.querySelector('[data-name="fileEl"]');
         this.previewEl = containerEl.querySelector('[data-name="previewEl"]');
         var inputEl = (this.inputEl = containerEl.querySelector('input'));
