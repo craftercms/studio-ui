@@ -1198,29 +1198,33 @@ export function fetchChildrenByPath(
   return fetchChildrenByPaths(siteId, { [path]: options }).pipe(map((data) => data[path]));
 }
 
+/**
+ * siteId {string} The site id.
+ * fetchOptionsByPath {LookupTable<Partial<GetChildrenOptions>>} A lookup table of paths and their respective options.
+ * options {GetChildrenOptions} Options that will be applied to all the path requests.
+ * */
 export function fetchChildrenByPaths(
   siteId: string,
   fetchOptionsByPath: LookupTable<Partial<GetChildrenOptions>>,
   options?: Partial<GetChildrenOptions>
 ): Observable<LookupTable<GetChildrenResponse>> {
   const paths = Object.keys(fetchOptionsByPath).map((path) => ({ path, ...options, ...fetchOptionsByPath[path] }));
-  if (paths.length === 0) {
-    return of({});
-  }
-  return postJSON(`/studio/api/2/content/${siteId}/children`, { paths }).pipe(
-    map(({ response: { items } }) => {
-      const data = {};
-      items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
-        data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
-          levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
-          total,
-          offset,
-          limit
-        });
-      });
-      return data;
-    })
-  );
+  return paths.length === 0
+    ? of({})
+    : postJSON(`/studio/api/2/content/${siteId}/children`, { paths }).pipe(
+        map(({ response: { items } }) => {
+          const data = {};
+          items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
+            data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
+              levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
+              total,
+              offset,
+              limit
+            });
+          });
+          return data;
+        })
+      );
 }
 
 export function fetchItemsByPath(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<SandboxItem>>;

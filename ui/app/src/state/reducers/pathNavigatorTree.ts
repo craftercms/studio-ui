@@ -18,6 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { PathNavigatorTreeStateProps } from '../../components/PathNavigatorTree';
 import LookupTable from '../../models/LookupTable';
 import {
+  pathNavigatorTreeBulkFetchPathChildren,
   pathNavigatorTreeBulkFetchPathChildrenComplete,
   pathNavigatorTreeBulkRestoreComplete,
   pathNavigatorTreeCollapsePath,
@@ -33,7 +34,9 @@ import {
   pathNavigatorTreeRootMissing,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
-  pathNavigatorTreeUpdate
+  pathNavigatorTreeUpdate,
+  PathNavTreeBulkFetchPathChildrenCompletePayload,
+  PathNavTreeBulkFetchPathChildrenPayload
 } from '../actions/pathNavigatorTree';
 import { changeSiteComplete } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
@@ -226,11 +229,24 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (bui
     .addCase(pathNavigatorTreeFetchPathChildrenComplete, (state, { payload }) => {
       updatePath(state, payload);
     })
-    .addCase(pathNavigatorTreeBulkFetchPathChildrenComplete, (state, { payload: { paths } }) => {
-      paths.forEach((path) => {
-        updatePath(state, path);
-      });
-    })
+    .addCase(
+      pathNavigatorTreeBulkFetchPathChildren,
+      (state, action: StandardAction<PathNavTreeBulkFetchPathChildrenPayload>) => {
+        const { requests } = action.payload;
+        requests.forEach((request) => {
+          const { expand = true } = request;
+          expand && expandPath(state, { payload: request });
+        });
+      }
+    )
+    .addCase(
+      pathNavigatorTreeBulkFetchPathChildrenComplete,
+      (state, { payload: { paths } }: StandardAction<PathNavTreeBulkFetchPathChildrenCompletePayload>) => {
+        paths.forEach((path) => {
+          updatePath(state, path);
+        });
+      }
+    )
     .addCase(pathNavigatorTreeFetchPathPage, (state, { payload: { id, path } }) => {
       state[id].offsetByPath[path] = state[id].offsetByPath[path]
         ? state[id].offsetByPath[path] + state[id].limit
