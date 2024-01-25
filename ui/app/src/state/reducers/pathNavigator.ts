@@ -204,8 +204,8 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>({}, (builder
       state[id].isFetching = true;
     })
     .addCase(pathNavigatorBulkRefresh, (state, { payload: { ids } }) => {
-      ids.forEach((id) => {
-        state[id].isFetching = true;
+      ids.forEach(({ id, backgroundRefresh }) => {
+        !backgroundRefresh && (state[id].isFetching = true);
         state[id].error = null;
       });
     })
