@@ -19,7 +19,7 @@ import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
-import { useSnackbar } from 'notistack';
+import { SnackbarKey, useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../utils/subjects';
 import { blockUI, newProjectReady, showSystemNotification, unblockUI } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
@@ -175,45 +175,49 @@ function GlobalDialogManager() {
   }, [authoringBase, enqueueSnackbar]);
 
   useEffect(() => {
-    if (authActive && !socketConnected && activeSiteId !== null) {
-      let key;
-      fetch(`${authoringBase}/help/socket-connection-error`)
-        .then((r) => r.text())
-        .then(() => {
-          key = enqueueSnackbar(<FormattedMessage defaultMessage="Studio will continue to retry the connection." />, {
-            variant: 'warning',
-            persist: true,
-            anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
-            alertTitle: <FormattedMessage defaultMessage="Connection with the server interrupted" />,
-            action: (key) => (
-              <>
-                <Button
-                  href={`${authoringBase}/help/socket-connection-error`}
-                  target="_blank"
-                  size="small"
-                  color="inherit"
-                >
-                  <FormattedMessage defaultMessage="Learn more" />
-                </Button>
-                <IconButton size="small" color="inherit" onClick={() => closeSnackbar(key)}>
-                  <CloseRounded />
-                </IconButton>
-              </>
-            )
-          });
-        })
-        .catch(() => {
-          dispatch(
-            blockUI({
-              title: formatMessage({ defaultMessage: 'Connection with the server interrupted' }),
-              message: formatMessage({
-                defaultMessage:
-                  'Studio servers might be down, being restarted or your network connection dropped. Check your connection or ask the administrator to validate server status.'
+    const isIframe = window.location !== window.parent.location;
+    if (!isIframe && authActive && !socketConnected && activeSiteId !== null) {
+      let timeout: NodeJS.Timeout, key: SnackbarKey;
+      timeout = setTimeout(() => {
+        fetch(`${authoringBase}/help/socket-connection-error`)
+          .then((r) => r.text())
+          .then(() => {
+            key = enqueueSnackbar(<FormattedMessage defaultMessage="Studio will continue to retry the connection." />, {
+              variant: 'warning',
+              persist: true,
+              anchorOrigin: { vertical: 'bottom', horizontal: 'center' },
+              alertTitle: <FormattedMessage defaultMessage="Connection with the server interrupted" />,
+              action: (key) => (
+                <>
+                  <Button
+                    href={`${authoringBase}/help/socket-connection-error`}
+                    target="_blank"
+                    size="small"
+                    color="inherit"
+                  >
+                    <FormattedMessage defaultMessage="Learn more" />
+                  </Button>
+                  <IconButton size="small" color="inherit" onClick={() => closeSnackbar(key)}>
+                    <CloseRounded />
+                  </IconButton>
+                </>
+              )
+            });
+          })
+          .catch(() => {
+            dispatch(
+              blockUI({
+                title: formatMessage({ defaultMessage: 'Connection with the server interrupted' }),
+                message: formatMessage({
+                  defaultMessage:
+                    'Studio servers might be down, being restarted or your network connection dropped. Check your connection or ask the administrator to validate server status.'
+                })
               })
-            })
-          );
-        });
+            );
+          });
+      }, 5000);
       return () => {
+        clearTimeout(timeout);
         if (key) {
           closeSnackbar(key);
         } else {

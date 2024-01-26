@@ -994,8 +994,19 @@ export function createFileUpload(
       });
     });
 
-    uppy.on('upload-error', (file, error) => {
-      subscriber.error(error);
+    uppy.on('upload-error', (file, error, response) => {
+      // @ts-ignore
+      response.error = response;
+      subscriber.error(
+        response
+        // type CustomUploadError {
+        //   error: { request: XMLHttpRequest } & Error;
+        //   body: {
+        //     response: ApiResponse;
+        //     status: number;
+        //   };
+        // }
+      );
     });
 
     uppy.addFile({

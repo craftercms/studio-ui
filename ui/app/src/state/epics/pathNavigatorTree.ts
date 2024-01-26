@@ -19,12 +19,6 @@ import { filter, ignoreElements, map, mergeMap, switchMap, tap, throttleTime, wi
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeBackgroundRefresh,
-  pathNavigatorTreeBulkFetchPathChildren,
-  pathNavigatorTreeBulkFetchPathChildrenComplete,
-  pathNavigatorTreeBulkFetchPathChildrenFailed,
-  pathNavigatorTreeBulkRefresh,
-  pathNavigatorTreeBulkRestoreComplete,
-  pathNavigatorTreeBulkRestoreFailed,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
