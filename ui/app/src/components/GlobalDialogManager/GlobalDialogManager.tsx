@@ -19,7 +19,7 @@ import StandardAction from '../../models/StandardAction';
 import { Dispatch } from 'redux';
 import { useDispatch } from 'react-redux';
 import { isPlainObject } from '../../utils/object';
-import { useSnackbar } from 'notistack';
+import { SnackbarKey, useSnackbar } from 'notistack';
 import { getHostToHostBus } from '../../utils/subjects';
 import { blockUI, newProjectReady, showSystemNotification, unblockUI } from '../../state/actions/system';
 import Launcher from '../Launcher/Launcher';
@@ -175,10 +175,10 @@ function GlobalDialogManager() {
   }, [authoringBase, enqueueSnackbar]);
 
   useEffect(() => {
-    setTimeout(() => {
-      const isIframe = window.location !== window.parent.location;
-      if (!isIframe && authActive && !socketConnected && activeSiteId !== null) {
-        let key;
+    const isIframe = window.location !== window.parent.location;
+    if (!isIframe && authActive && !socketConnected && activeSiteId !== null) {
+      let timeout: NodeJS.Timeout, key: SnackbarKey;
+      timeout = setTimeout(() => {
         fetch(`${authoringBase}/help/socket-connection-error`)
           .then((r) => r.text())
           .then(() => {
@@ -215,15 +215,16 @@ function GlobalDialogManager() {
               })
             );
           });
-        return () => {
-          if (key) {
-            closeSnackbar(key);
-          } else {
-            dispatch(unblockUI());
-          }
-        };
-      }
-    }, 5000);
+      }, 5000);
+      return () => {
+        clearTimeout(timeout);
+        if (key) {
+          closeSnackbar(key);
+        } else {
+          dispatch(unblockUI());
+        }
+      };
+    }
   }, [
     authoringBase,
     authActive,
