@@ -19,7 +19,6 @@ import { filter, ignoreElements, map, mergeMap, switchMap, tap, throttleTime, wi
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeBackgroundRefresh,
-  pathNavigatorTreeBulkBackgroundRefresh,
   pathNavigatorTreeBulkFetchPathChildren,
   pathNavigatorTreeBulkFetchPathChildrenComplete,
   pathNavigatorTreeBulkFetchPathChildrenFailed,
@@ -185,9 +184,8 @@ export default [
   // region pathNavigatorTreeBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(
-      // TODO: Ensure these actions are never called with an empty list of `ids`
       // TODO: There's no special handling for background vs visible. Should there be?
-      ofType(pathNavigatorTreeBulkBackgroundRefresh.type, pathNavigatorTreeBulkRefresh.type),
+      ofType(pathNavigatorTreeBulkRefresh.type),
       withLatestFrom(state$),
       mergeMap(([{ payload }, state]) => {
         const { ids } = payload;
@@ -196,7 +194,7 @@ export default [
 
         // For each tree, get the paths of the expanded nodes that will be retrieved, and the options for the children
         // that will be fetched
-        ids.forEach((id) => {
+        ids.forEach(({ id }) => {
           const chunk = state.pathNavigatorTree[id];
           const { expanded, keywordByPath, offsetByPath, limit } = chunk;
           expanded.forEach((expandedPath) => {
@@ -218,46 +216,50 @@ export default [
             }))
           };
         });
-        return forkJoin([
-          fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
-          fetchChildrenByPaths(state.sites.active, optionsByPath)
-        ]).pipe(
-          map(([items, children]) => {
-            const trees = [];
-            ids.forEach((id) => {
-              let updatedExpanded = state.pathNavigatorTree[id].expanded;
-              if (items.missingItems.length) {
-                updatedExpanded = state.pathNavigatorTree[id].expanded.filter(
-                  (expandedPath) => !items.missingItems.includes(expandedPath)
-                );
-                const uuid = state.sites.byId[state.sites.active].uuid;
-                setStoredPathNavigatorTree(uuid, state.user.username, id, {
-                  expanded: updatedExpanded,
-                  collapsed: state.pathNavigatorTree[id].collapsed,
-                  keywordByPath: state.pathNavigatorTree[id].keywordByPath
-                });
-              }
+        return ids.length
+          ? forkJoin([
+              fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+              fetchChildrenByPaths(state.sites.active, optionsByPath)
+            ]).pipe(
+              map(([items, children]) => {
+                const trees = [];
+                ids.forEach(({ id }) => {
+                  let updatedExpanded = state.pathNavigatorTree[id].expanded;
+                  if (items.missingItems.length) {
+                    updatedExpanded = state.pathNavigatorTree[id].expanded.filter(
+                      (expandedPath) => !items.missingItems.includes(expandedPath)
+                    );
+                    const uuid = state.sites.byId[state.sites.active].uuid;
+                    setStoredPathNavigatorTree(uuid, state.user.username, id, {
+                      expanded: updatedExpanded,
+                      collapsed: state.pathNavigatorTree[id].collapsed,
+                      keywordByPath: state.pathNavigatorTree[id].keywordByPath
+                    });
+                  }
 
-              // Filter children, only keep those that are children of the rootPath of the current tree
-              const treeChildrenByPath = {};
-              Object.entries(children).forEach(([parentPath, children]) => {
-                if (parentPath.startsWith(withoutIndex(state.pathNavigatorTree[id].rootPath))) {
-                  treeChildrenByPath[parentPath] = children;
-                }
-              });
-              // Add the restored tree, containing the filtered items and children for the current tree.
-              trees.push({
-                id,
-                expanded: updatedExpanded,
-                collapsed: state.pathNavigatorTree[id].collapsed,
-                items: items.filter((item) => item.path.startsWith(withoutIndex(state.pathNavigatorTree[id].rootPath))),
-                children: treeChildrenByPath
-              });
-            });
-            return pathNavigatorTreeBulkRestoreComplete({ trees });
-          }),
-          catchAjaxError((error) => pathNavigatorTreeBulkRestoreFailed({ ids, error }))
-        );
+                  // Filter children, only keep those that are children of the rootPath of the current tree
+                  const treeChildrenByPath = {};
+                  Object.entries(children).forEach(([parentPath, children]) => {
+                    if (parentPath.startsWith(withoutIndex(state.pathNavigatorTree[id].rootPath))) {
+                      treeChildrenByPath[parentPath] = children;
+                    }
+                  });
+                  // Add the restored tree, containing the filtered items and children for the current tree.
+                  trees.push({
+                    id,
+                    expanded: updatedExpanded,
+                    collapsed: state.pathNavigatorTree[id].collapsed,
+                    items: items.filter((item) =>
+                      item.path.startsWith(withoutIndex(state.pathNavigatorTree[id].rootPath))
+                    ),
+                    children: treeChildrenByPath
+                  });
+                });
+                return pathNavigatorTreeBulkRestoreComplete({ trees });
+              }),
+              catchAjaxError((error) => pathNavigatorTreeBulkRestoreFailed({ ids: ids.map(({ id }) => id), error }))
+            )
+          : NEVER;
       })
     ),
   // endregion
@@ -424,7 +426,7 @@ export default [
               tree.isRootPathMissing &&
               (targetPath === rootPath || withIndex(targetPath) === rootPath)
             ) {
-              idsToRefresh.push(id);
+              idsToRefresh.push({ id });
             } else if (
               // If an entry for the path exists, assume it's an update to an existing item.
               (targetPath in tree.totalByPath || withIndex(targetPath) in tree.totalByPath) &&
@@ -488,7 +490,7 @@ export default [
             tree.isRootPathMissing &&
             tree.rootPath === targetPath
           ) {
-            idsToRefresh.push(id);
+            idsToRefresh.push({ id });
           } else {
             [parentPathOfTargetPath, parentPathOfSourcePath].forEach((path) => {
               if (
@@ -527,10 +529,10 @@ export default [
         const ids = [];
         Object.values(state.pathNavigatorTree).forEach((tree) => {
           if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
-            ids.push(tree.id);
+            ids.push({ id: tree.id, backgroundRefresh: true });
           }
         });
-        return ids.length ? [pathNavigatorTreeBulkBackgroundRefresh({ ids })] : NEVER;
+        return ids.length ? [pathNavigatorTreeBulkRefresh({ ids })] : NEVER;
       })
     ),
   // endregion
@@ -541,7 +543,11 @@ export default [
       ofType(workflowEvent.type, publishEvent.type),
       throttleTime(500),
       withLatestFrom(state$),
-      map(([, state]) => pathNavigatorTreeBulkBackgroundRefresh({ ids: Object.keys(state.pathNavigatorTree) }))
+      map(([, state]) =>
+        pathNavigatorTreeBulkRefresh({
+          ids: Object.keys(state.pathNavigatorTree).map((id) => ({ id, backgroundRefresh: true }))
+        })
+      )
     )
   // endregion
 ] as CrafterCMSEpic[];
