@@ -65,7 +65,7 @@ export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('
 export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_BACKGROUND_REFRESH');
 
 export const pathNavigatorBulkRefresh = /*#__PURE__*/ createAction<{
-  ids: PayloadWithId<{ backgroundRefresh?: boolean }>[];
+  requests: PayloadWithId<{ backgroundRefresh?: boolean }>[];
 }>('PATH_NAV_BULK_REFRESH');
 
 export const pathNavigatorItemChecked =
