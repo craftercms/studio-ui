@@ -94,12 +94,12 @@
           <span class="cstudio-form-field-title">${config.title}</span>
           <span class="validation-hint cstudio-form-control-validation fa fa-check"></span>
           <div class="aws-file-upload-control-container cstudio-form-control-input-container">
+            <div data-name="fileEl" class="aws-file-upload-url-el"></div>
             <input
               type="file"
               name="file"
               class="datum cstudio-form-control-input"
             >
-            <div data-name="fileEl" class="aws-file-upload-url-el"></div>
             <div data-name="previewEl" class="aws-file-upload-preview-el"></div>
           </div>
         `;
