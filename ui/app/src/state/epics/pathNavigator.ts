@@ -15,16 +15,17 @@
  */
 
 import { ofType } from 'redux-observable';
-import { ignoreElements, map, mergeMap, tap, throttleTime, withLatestFrom } from 'rxjs/operators';
+import { ignoreElements, map, mergeMap, switchMap, tap, throttleTime, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
   checkPathExistence,
   fetchChildrenByPath,
+  fetchChildrenByPaths,
   fetchItemsByPath,
   fetchItemWithChildrenByPath
 } from '../../services/content';
 import { getIndividualPaths, getParentPath, getRootPath, withIndex, withoutIndex } from '../../utils/path';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, NEVER, Observable } from 'rxjs';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangeLimit,
@@ -43,7 +44,10 @@ import {
   pathNavigatorSetCurrentPath,
   pathNavigatorSetKeyword,
   PathNavInitPayload,
-  pathNavRootPathMissing
+  pathNavRootPathMissing,
+  pathNavigatorBulkRefresh,
+  pathNavigatorBulkFetchPathComplete,
+  pathNavigatorBulkFetchPathFailed
 } from '../actions/pathNavigator';
 import { setStoredPathNavigator } from '../../utils/state';
 import { CrafterCMSEpic } from '../store';
@@ -124,6 +128,52 @@ export default [
             })
           )
       )
+    ),
+  // endregion
+  // region pathNavigatorBulkRefresh
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorBulkRefresh.type),
+      withLatestFrom(state$),
+      mergeMap(([{ payload }, state]) => {
+        const { requests } = payload;
+        let paths = [];
+        let optionsByPath = {};
+
+        requests.forEach(({ id }) => {
+          const chunk = state.pathNavigator[id];
+          const { currentPath, keyword, limit, offset, excludes, sortStrategy, order } = chunk;
+          paths.push(currentPath);
+          optionsByPath[currentPath] = {
+            keyword,
+            limit,
+            offset,
+            excludes,
+            sortStrategy,
+            order
+          };
+        });
+
+        return requests.length
+          ? forkJoin([
+              fetchItemsByPath(state.sites.active, paths, { castAsDetailedItem: true }),
+              fetchChildrenByPaths(state.sites.active, optionsByPath)
+            ]).pipe(
+              map(([items, children]) =>
+                pathNavigatorBulkFetchPathComplete({
+                  paths: requests.map(({ id }) => ({
+                    id,
+                    parent: items.find((item) =>
+                      item.path.startsWith(withoutIndex(state.pathNavigator[id].currentPath))
+                    ),
+                    children: children[state.pathNavigator[id].currentPath]
+                  }))
+                })
+              ),
+              catchAjaxError((error) => pathNavigatorBulkFetchPathFailed({ ids: requests.map(({ id }) => id), error }))
+            )
+          : NEVER;
+      })
     ),
   // endregion
   // region pathNavigatorFetchPath
@@ -361,12 +411,12 @@ export default [
         // b. Item is a direct child of the current path: refresh navigator
         // b. Item is a direct child of the current path: refresh navigator
         // c. Item is a child of an item on the current path: refresh item's child count
-        const actions = [];
         const {
           payload: { targetPath }
         } = action;
         const parentPathOfTargetPath = getParentPath(targetPath);
         const parentOfTargetWithIndex = withIndex(parentPathOfTargetPath);
+        const refreshRequests = [];
         Object.values(state.pathNavigator).forEach((navigator) => {
           if (
             // Case (a)
@@ -375,7 +425,7 @@ export default [
             navigator.currentPath === parentPathOfTargetPath ||
             navigator.currentPath === parentOfTargetWithIndex
           ) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+            refreshRequests.push({ id: navigator.id, backgroundRefresh: true });
           } /* else if (
             // Case (c) - Content epics load any item that's on the state already
             navigator.currentPath === getParentPath(parentPathOfTargetPath)
@@ -383,7 +433,7 @@ export default [
             actions.push(fetchSandboxItem({ path: parentPathOfTargetPath }));
           } */
         });
-        return actions;
+        return refreshRequests.length ? [pathNavigatorBulkRefresh({ requests: refreshRequests })] : NEVER;
       })
     ),
   // endregion
@@ -418,19 +468,22 @@ export default [
         } = action;
         const parentOfTargetPath = getParentPath(targetPath);
         const parentOfSourcePath = getParentPath(sourcePath);
+        const refreshRequests = [];
+        // const idsToBgRefresh = [];
         Object.values(state.pathNavigator).forEach((navigator) => {
           if (navigator.isRootPathMissing && targetPath === navigator.rootPath) {
-            actions.push(pathNavigatorRefresh({ id: navigator.id }));
+            refreshRequests.push({ id: navigator.id });
           } else if (!navigator.isRootPathMissing && navigator.currentPath.startsWith(sourcePath)) {
             actions.push(pathNavigatorSetCurrentPath({ id: navigator.id, path: navigator.rootPath }));
           } else if (
             withoutIndex(navigator.currentPath) === parentOfTargetPath ||
             withoutIndex(navigator.currentPath) === parentOfSourcePath
           ) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: navigator.id }));
+            refreshRequests.push({ id: navigator.id, backgroundRefresh: true });
           }
         });
-        return actions;
+        refreshRequests.length && actions.push(pathNavigatorBulkRefresh({ requests: refreshRequests }));
+        return actions.length ? actions : NEVER;
       })
     ),
   // endregion
@@ -440,14 +493,14 @@ export default [
       ofType(pluginInstalled.type),
       throttleTime(500),
       withLatestFrom(state$),
-      mergeMap(([, state]) => {
-        const actions = [];
+      switchMap(([, state]) => {
+        const requests = [];
         Object.values(state.pathNavigator).forEach((tree) => {
           if (['/templates', '/scripts', '/static-assets'].includes(getRootPath(tree.rootPath))) {
-            actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
+            requests.push({ id: tree.id, backgroundRefresh: true });
           }
         });
-        return actions;
+        return requests.length ? [pathNavigatorBulkRefresh({ requests })] : NEVER;
       })
     ),
   // endregion
@@ -457,12 +510,9 @@ export default [
       ofType(publishEvent.type, workflowEvent.type),
       throttleTime(500),
       withLatestFrom(state$),
-      mergeMap(([, state]) => {
-        const actions = [];
-        Object.values(state.pathNavigator).forEach((tree) => {
-          actions.push(pathNavigatorBackgroundRefresh({ id: tree.id }));
-        });
-        return actions;
+      switchMap(([, state]) => {
+        const requests = Object.keys(state.pathNavigator).map((id) => ({ id, backgroundRefresh: true }));
+        return requests.length ? [pathNavigatorBulkRefresh({ requests })] : NEVER;
       })
     )
   // endregion

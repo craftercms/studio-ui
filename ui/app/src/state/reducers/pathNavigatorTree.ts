@@ -18,6 +18,9 @@ import { createReducer } from '@reduxjs/toolkit';
 import { PathNavigatorTreeStateProps } from '../../components/PathNavigatorTree';
 import LookupTable from '../../models/LookupTable';
 import {
+  pathNavigatorTreeBulkFetchPathChildren,
+  pathNavigatorTreeBulkFetchPathChildrenComplete,
+  pathNavigatorTreeBulkRestoreComplete,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -31,7 +34,9 @@ import {
   pathNavigatorTreeRootMissing,
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
-  pathNavigatorTreeUpdate
+  pathNavigatorTreeUpdate,
+  PathNavTreeBulkFetchPathChildrenCompletePayload,
+  PathNavTreeBulkFetchPathChildrenPayload
 } from '../actions/pathNavigatorTree';
 import { changeSiteComplete } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
@@ -106,6 +111,62 @@ export function deleteItemFromState(tree: PathNavigatorTreeStateProps, targetPat
   );
 }
 
+const updatePath = (state, payload) => {
+  const { id, parentPath, children, options } = payload;
+  const chunk = state[id];
+  chunk.totalByPath[parentPath] = children.total;
+  chunk.childrenByParentPath[parentPath] = [];
+  children.forEach((item) => {
+    chunk.childrenByParentPath[parentPath].push(item.path);
+    chunk.totalByPath[item.path] = item.childrenCount;
+  });
+  if (children.levelDescriptor) {
+    chunk.childrenByParentPath[parentPath].push(children.levelDescriptor.path);
+    chunk.totalByPath[children.levelDescriptor.path] = 0;
+  }
+  // If the expanded node has no children and is not filtered, it's a
+  // leaf node and there's no point keeping it in `expanded`
+  if (children.length === 0 && !options?.keyword) {
+    chunk.expanded = chunk.expanded.filter((path) => path !== parentPath);
+  }
+};
+
+const restoreTree = (state, payload) => {
+  const { id, children, items, expanded } = payload;
+  const chunk = state[id];
+  chunk.childrenByParentPath = {};
+  chunk.totalByPath = {};
+  chunk.expanded = expanded;
+  const childrenByParentPath = chunk.childrenByParentPath;
+  const totalByPath = chunk.totalByPath;
+  const offsetByPath = chunk.offsetByPath;
+  items.forEach((item) => {
+    totalByPath[item.path] = item.childrenCount;
+  });
+  Object.keys(children).forEach((parentPath) => {
+    const childrenOfPath = children[parentPath];
+    if (childrenOfPath.length || childrenOfPath.levelDescriptor) {
+      childrenByParentPath[parentPath] = [];
+      if (childrenOfPath.levelDescriptor) {
+        childrenByParentPath[parentPath].push(childrenOfPath.levelDescriptor.path);
+        totalByPath[childrenOfPath.levelDescriptor.path] = 0;
+      }
+      childrenOfPath.forEach((child) => {
+        childrenByParentPath[parentPath].push(child.path);
+        totalByPath[child.path] = child.childrenCount;
+      });
+    }
+    // Should we account here for the level descriptor (LD)? if there's a LD, add 1 to the total?
+    totalByPath[parentPath] = childrenOfPath.total;
+    offsetByPath[parentPath] = offsetByPath[parentPath] ?? 0;
+    // If the expanded node is filtered or has children it means, it's not a leaf,
+    // and we should keep it in 'expanded'.
+    // if (chunk.keywordByPath[parentPath] || childrenByParentPath[parentPath].length) {
+    //   chunk.expanded.push(parentPath);
+    // }
+  });
+};
+
 const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (builder) => {
   builder
     // region pathNavigatorTreeInit
@@ -165,25 +226,25 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (bui
       const { expand = true } = action.payload;
       expand && expandPath(state, action);
     })
+    .addCase(pathNavigatorTreeFetchPathChildrenComplete, (state, { payload }) => {
+      updatePath(state, payload);
+    })
     .addCase(
-      pathNavigatorTreeFetchPathChildrenComplete,
-      (state, { payload: { id, parentPath, children, options } }) => {
-        const chunk = state[id];
-        chunk.totalByPath[parentPath] = children.total;
-        chunk.childrenByParentPath[parentPath] = [];
-        children.forEach((item) => {
-          chunk.childrenByParentPath[parentPath].push(item.path);
-          chunk.totalByPath[item.path] = item.childrenCount;
+      pathNavigatorTreeBulkFetchPathChildren,
+      (state, action: StandardAction<PathNavTreeBulkFetchPathChildrenPayload>) => {
+        const { requests } = action.payload;
+        requests.forEach((request) => {
+          const { expand = true } = request;
+          expand && expandPath(state, { payload: request });
         });
-        if (children.levelDescriptor) {
-          chunk.childrenByParentPath[parentPath].push(children.levelDescriptor.path);
-          chunk.totalByPath[children.levelDescriptor.path] = 0;
-        }
-        // If the expanded node has no children and is not filtered, it's a
-        // leaf node and there's no point keeping it in `expanded`
-        if (children.length === 0 && !options?.keyword) {
-          chunk.expanded = chunk.expanded.filter((path) => path !== parentPath);
-        }
+      }
+    )
+    .addCase(
+      pathNavigatorTreeBulkFetchPathChildrenComplete,
+      (state, { payload: { paths } }: StandardAction<PathNavTreeBulkFetchPathChildrenCompletePayload>) => {
+        paths.forEach((path) => {
+          updatePath(state, path);
+        });
       }
     )
     .addCase(pathNavigatorTreeFetchPathPage, (state, { payload: { id, path } }) => {
@@ -218,42 +279,18 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>({}, (bui
     // Assumption: this reducer is a reset. Not suitable for partial updates.
     .addCase(
       pathNavigatorTreeRestoreComplete,
-      (state, { payload: { id, children, items, expanded } }: { payload: PathNavigatorTreeRestoreCompletePayload }) => {
-        const chunk = state[id];
-        chunk.childrenByParentPath = {};
-        chunk.totalByPath = {};
-        chunk.expanded = expanded;
-        const childrenByParentPath = chunk.childrenByParentPath;
-        const totalByPath = chunk.totalByPath;
-        const offsetByPath = chunk.offsetByPath;
-        items.forEach((item) => {
-          totalByPath[item.path] = item.childrenCount;
-        });
-        Object.keys(children).forEach((parentPath) => {
-          const childrenOfPath = children[parentPath];
-          if (childrenOfPath.length || childrenOfPath.levelDescriptor) {
-            childrenByParentPath[parentPath] = [];
-            if (childrenOfPath.levelDescriptor) {
-              childrenByParentPath[parentPath].push(childrenOfPath.levelDescriptor.path);
-              totalByPath[childrenOfPath.levelDescriptor.path] = 0;
-            }
-            childrenOfPath.forEach((child) => {
-              childrenByParentPath[parentPath].push(child.path);
-              totalByPath[child.path] = child.childrenCount;
-            });
-          }
-          // Should we account here for the level descriptor (LD)? if there's a LD, add 1 to the total?
-          totalByPath[parentPath] = childrenOfPath.total;
-          offsetByPath[parentPath] = offsetByPath[parentPath] ?? 0;
-          // If the expanded node is filtered or has children it means, it's not a leaf,
-          // and we should keep it in 'expanded'.
-          // if (chunk.keywordByPath[parentPath] || childrenByParentPath[parentPath].length) {
-          //   chunk.expanded.push(parentPath);
-          // }
-        });
+      (state, { payload }: { payload: PathNavigatorTreeRestoreCompletePayload }) => {
+        restoreTree(state, payload);
       }
     )
     // endregion
+    // region pathNavigatorTreeBulkRestoreComplete
+    .addCase(pathNavigatorTreeBulkRestoreComplete, (state, { payload: { trees } }) => {
+      trees.forEach((tree) => {
+        restoreTree(state, tree);
+      });
+    })
+    //
     .addCase(changeSiteComplete, () => ({}))
     .addCase(fetchSiteUiConfig, () => ({}))
     // region fetchSandboxItemComplete
