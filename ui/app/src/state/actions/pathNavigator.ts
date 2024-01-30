@@ -65,13 +65,11 @@ export const pathNavigatorConditionallySetPathFailed = /*#__PURE__*/ createActio
 
 export const pathNavigatorRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_REFRESH');
 
-export const pathNavigatorBulkBackgroundRefresh = /*#__PURE__*/ createAction<{ ids: string[] }>(
-  'PATH_NAV_BULK_BG_REFRESH'
-);
-
 export const pathNavigatorBackgroundRefresh = /*#__PURE__*/ createAction<{ id: string }>('PATH_NAV_BACKGROUND_REFRESH');
 
-export const pathNavigatorBulkRefresh = /*#__PURE__*/ createAction<{ ids: string[] }>('PATH_NAV_BULK_REFRESH');
+export const pathNavigatorBulkRefresh = /*#__PURE__*/ createAction<{
+  requests: PayloadWithId<{ backgroundRefresh?: boolean }>[];
+}>('PATH_NAV_BULK_REFRESH');
 
 export const pathNavigatorItemChecked =
   /*#__PURE__*/ createAction<PayloadWithId<{ item: DetailedItem }>>('PATH_NAV_ITEM_CHECKED');
