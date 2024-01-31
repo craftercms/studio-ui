@@ -59,22 +59,27 @@ export class Dashboard extends UppyDashboard {
   }
 
   addFiles = (files) => {
-    let descriptors = files.map((file) => ({
-      source: this.id,
-      name: file.name,
-      type: file.type,
-      data: file,
-      meta: {
-        // path of the file relative to the ancestor directory the user selected.
-        // e.g. 'docs/Old Prague/airbnb.pdf'
-        relativePath: file.relativePath || null,
-        // sitePolicy custom value
-        validating: true,
-        path: file.relativePath
-          ? this.opts.path + file.relativePath.substring(0, file.relativePath.lastIndexOf('/'))
-          : this.opts.path
-      }
-    }));
+    let descriptors = files.map((file) => {
+      // When uploading via drag and drop, uppy uses `relativePath` as the prop for the actual relative path, for
+      // browse uploads, it uses `webkitRelativePath`.
+      const relativePath = file.relativePath ?? file.webkitRelativePath ?? null;
+      return {
+        source: this.id,
+        name: file.name,
+        type: file.type,
+        data: file,
+        meta: {
+          // path of the file relative to the ancestor directory the user selected.
+          // e.g. 'docs/Old Prague/airbnb.pdf'
+          relativePath,
+          // sitePolicy custom value
+          validating: true,
+          path: relativePath
+            ? this.opts.path + relativePath.substring(0, relativePath.lastIndexOf('/'))
+            : this.opts.path
+        }
+      };
+    });
     const maxActiveUploads = this.opts.maxActiveUploads;
     const uppyFiles = this.uppy.getFiles();
     // TODO: There's a TODO in uppy code to move the code to Core so it can be used as an util,
