@@ -106,7 +106,7 @@ export function deleteItemFromState(tree: PathNavigatorTreeStateProps, targetPat
   tree.expanded = tree.expanded.filter(
     // If the parent is left without children, remove from expanded too.
     totalByPath[parentPath] === 0
-      ? (expandedPath) => expandedPath !== targetPath || expandedPath !== parentPath
+      ? (expandedPath) => expandedPath !== targetPath && expandedPath !== parentPath
       : (expandedPath) => expandedPath !== targetPath
   );
 }
