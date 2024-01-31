@@ -23,6 +23,7 @@ import yaml from 'highlight.js/lib/languages/yaml';
 import json from 'highlight.js/lib/languages/json';
 import groovy from 'highlight.js/lib/languages/groovy';
 import java from 'highlight.js/lib/languages/java';
+import plaintext from 'highlight.js/lib/languages/plaintext';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('typescript', typescript);
@@ -31,5 +32,6 @@ hljs.registerLanguage('yaml', yaml);
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('groovy', groovy);
 hljs.registerLanguage('java', java);
+hljs.registerLanguage('plaintext', plaintext);
 
 export default hljs;
