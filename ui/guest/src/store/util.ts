@@ -76,9 +76,7 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
           tap(({ payload }) => payload.type !== 'continue' && post(unlockItem({ path }))),
           switchMap(({ payload }) => (payload.type === 'continue' ? continue$ : stop$))
         );
-        // TODO: commitId is not a property of SandboxItem after 4.2.0
-        //  Date & time could be the new way
-      } else if (item.commitId !== localItem.commitId && item.lockOwner?.username !== username) {
+      } else if (item.dateModified !== localItem.dateModified && item.lockOwner?.username !== username) {
         post(snackGuestMessage({ id: 'outOfSyncContent', level: 'suggestion' }));
         post(unlockItem({ path }));
         setTimeout(() => window.location.reload());
