@@ -171,7 +171,7 @@ export function byPathFetchIfNotLoaded(path: string): Observable<ContentInstance
     );
   } else {
     requestedPaths[path] = true;
-    return fetchByPath(path).pipe(map(({ model }) => model));
+    return fetchByPath(path).pipe(map((data) => data?.model));
   }
 }
 
@@ -200,7 +200,7 @@ export function fetchByPath(
     tap(() => post({ type: 'FETCH_GUEST_MODEL', payload: { path } })),
     switchMap(() =>
       fromTopic('FETCH_GUEST_MODEL_COMPLETE').pipe(
-        map(({ payload }) => payload),
+        map((e) => e?.payload),
         filter((payload) => payload.path === path),
         take(1)
       )
@@ -740,7 +740,7 @@ export function deleteItem(modelId: string, fieldId: string, index: number | str
 
 // Host sends over all content types upon Guest check in.
 fromTopic(contentTypesResponse.type)
-  .pipe(map(({ payload }) => payload))
+  .pipe(map((action) => action?.payload))
   .subscribe(({ contentTypes }) => {
     contentTypes$.next(Array.isArray(contentTypes) ? createLookupTable(contentTypes) : contentTypes);
   });
@@ -756,7 +756,7 @@ export interface FetchGuestModelCompletePayload {
 }
 
 fromTopic('FETCH_GUEST_MODEL_COMPLETE')
-  .pipe(map(({ payload }) => payload))
+  .pipe(map((action) => action?.payload))
   .subscribe(
     ({ modelLookup, hierarchyMap, modelIdByPath, sandboxItems, permissions }: FetchGuestModelCompletePayload) => {
       Object.keys(modelIdByPath).forEach((path) => {
@@ -771,7 +771,7 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
   );
 
 fromTopic(updateFieldValueOperationComplete.type)
-  .pipe(map(({ payload }) => payload))
+  .pipe(map((action) => action?.payload))
   .subscribe(({ item }) => {
     items$.next({
       ...items$.value,

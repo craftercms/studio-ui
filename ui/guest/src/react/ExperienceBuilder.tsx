@@ -503,7 +503,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           locked.length && dispatch(setLockedItems(locked));
         }),
         filter(({ payload }) => payload.path === path),
-        map(({ payload: { model } }) => model),
+        map((action) => action?.payload?.model),
         withLatestFrom(contentTypes$),
         take(1)
       )

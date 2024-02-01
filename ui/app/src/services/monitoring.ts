@@ -23,24 +23,24 @@ import { LogEvent } from '../models/monitoring/LogEvent';
 import { Memory } from '../models/monitoring/Memory';
 
 export function fetchVersion(): Observable<Version> {
-  return get(`/studio/api/2/monitoring/version`).pipe(map(({ response: { version } }) => version));
+  return get(`/studio/api/2/monitoring/version`).pipe(map((response) => response?.response?.version));
 }
 
 export function fetchStatus(): Observable<Status> {
-  return get('/studio/api/2/monitoring/status').pipe(map(({ response: { status } }) => status));
+  return get('/studio/api/2/monitoring/status').pipe(map((response) => response?.response?.status));
 }
 
 export function fetchMemory(): Observable<Memory> {
-  return get('/studio/api/2/monitoring/memory').pipe(map(({ response: { memory } }) => memory));
+  return get('/studio/api/2/monitoring/memory').pipe(map((response) => response?.response?.memory));
 }
 
 export function fetchLog(since: number): Observable<LogEvent[]> {
-  return get(`/studio/api/2/monitoring/log?since=${since}`).pipe(map(({ response: { events } }) => events));
+  return get(`/studio/api/2/monitoring/log?since=${since}`).pipe(map((response) => response?.response?.events));
 }
 
 export function fetchPreviewLog(site: string, since: number): Observable<LogEvent[]> {
   return get(`/studio/engine/api/1/monitoring/log.json?since=${since}&site=${site}&crafterSite=${site}`).pipe(
-    map(({ response }) => response),
+    map((response) => response?.response),
     catchError(errorSelectorApi1)
   );
 }

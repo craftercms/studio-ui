@@ -26,5 +26,5 @@ export function search(site: string, parameters: any = {}): Observable<SearchRes
   });
   return post(`/studio/api/2/search/search.json${qs}`, parameters, {
     'Content-Type': 'application/json'
-  }).pipe(map(({ response: { result } }) => result));
+  }).pipe(map((response) => response?.response?.result));
 }

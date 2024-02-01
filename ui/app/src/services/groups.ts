@@ -61,11 +61,11 @@ export function fetchUsersFromGroup(id: number, options?: PaginationOptions): Ob
 }
 
 export function create(group: Partial<Group>): Observable<Group> {
-  return postJSON('/studio/api/2/groups', group).pipe(map(({ response: { group } }) => group));
+  return postJSON('/studio/api/2/groups', group).pipe(map((response) => response?.response?.group));
 }
 
 export function update(group: Partial<Group>): Observable<Group> {
-  return patchJSON(`/studio/api/2/groups`, group).pipe(map(({ response: { group } }) => group));
+  return patchJSON(`/studio/api/2/groups`, group).pipe(map((response) => response?.response?.group));
 }
 
 export function trash(groupId: number): Observable<true> {
@@ -81,7 +81,7 @@ export function addUsersToGroup(groupId: number, usernames: string[]): Observabl
 export function addUsersToGroup(groupId: number, idsOrUsernames: Array<number> | Array<string>): Observable<User[]> {
   return postJSON(`/studio/api/2/groups/${groupId}/members`, {
     [typeof idsOrUsernames[0] === 'string' ? 'usernames' : 'ids']: idsOrUsernames
-  }).pipe(map(({ response: { users } }) => users));
+  }).pipe(map((response) => response?.response?.users));
 }
 
 export function deleteUserFromGroup(groupId: number, username: string): Observable<true>;

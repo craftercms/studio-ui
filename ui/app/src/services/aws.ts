@@ -32,6 +32,6 @@ export function list(
     ...options
   });
   return get<Api2ResponseFormat<{ items: AwsItem[] }>>(`/studio/api/2/aws/s3/list${qs}`).pipe(
-    map(({ response: { items } }) => items)
+    map((response) => response?.response?.items)
   );
 }

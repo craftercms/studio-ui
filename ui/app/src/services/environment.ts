@@ -19,5 +19,5 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function fetchActiveEnvironment(): Observable<string> {
-  return get('/studio/api/2/ui/system/active_environment').pipe(map(({ response: { environment } }) => environment));
+  return get('/studio/api/2/ui/system/active_environment').pipe(map((response) => response?.response?.environment));
 }

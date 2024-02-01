@@ -145,7 +145,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
       }),
       filter((e) => e.data?.type === sharedWorkerToken.type),
       take(1),
-      map(({ data: { payload } }) => ({ ...payload, worker }))
+      map((e) => ({ ...e?.data?.payload, worker }))
     );
   } else {
     return new Observable((observer) => {

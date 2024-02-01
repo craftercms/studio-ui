@@ -59,7 +59,7 @@ export function fetchPackage(siteId: string, packageId: string): Observable<Publ
       package: PublishingPackage;
     }>
   >(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`).pipe(
-    map(({ response }) => response.package)
+    map((response) => response?.response?.package)
   );
 }
 
@@ -74,7 +74,7 @@ export type FetchPublishingTargetsResponse = Api2ResponseFormat<{
 
 export function fetchPublishingTargets(site: string): Observable<FetchPublishingTargetsResponse> {
   return get<FetchPublishingTargetsResponse>(`/studio/api/2/publish/available_targets?siteId=${site}`).pipe(
-    map(({ response }) => response)
+    map((response) => response?.response)
   );
 }
 
@@ -91,7 +91,7 @@ export function fetchStatus(siteId: string): Observable<PublishingStatus> {
   return get<Api2ResponseFormat<{ publishingStatus: PublishingStatus }>>(
     `/studio/api/2/publish/status?siteId=${siteId}`
   ).pipe(
-    map(({ response: { publishingStatus } }) => publishingStatus),
+    map((response) => response?.response?.publishingStatus),
     map((status) => {
       if (status.status) {
         return status;

@@ -79,5 +79,7 @@ export function markForTranslation(site: string, path: string, locale: string) {
 }
 
 export function fetchSiteLocales(site: string): Observable<TranslationConfig> {
-  return get(`/studio/api/2/configuration/translation?siteId=${site}`).pipe(map(({ response: { config } }) => config));
+  return get(`/studio/api/2/configuration/translation?siteId=${site}`).pipe(
+    map((response) => response?.response?.config)
+  );
 }

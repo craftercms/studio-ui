@@ -32,7 +32,7 @@ export function list(
     cmisRepoId,
     ...options
   });
-  return get<ReturnType>(`/studio/api/2/cmis/list${qs}`).pipe(map(({ response: { items } }) => items));
+  return get<ReturnType>(`/studio/api/2/cmis/list${qs}`).pipe(map((response) => response?.response?.items));
 }
 
 export function search(
@@ -47,7 +47,7 @@ export function search(
     searchTerm,
     ...options
   });
-  return get<ReturnType>(`/studio/api/2/cmis/search${qs}`).pipe(map(({ response: { items } }) => items));
+  return get<ReturnType>(`/studio/api/2/cmis/search${qs}`).pipe(map((response) => response?.response?.items));
 }
 
 export function clone(siteId: string, cmisRepoId: string, cmisPath: string, studioPath: string): Observable<true> {

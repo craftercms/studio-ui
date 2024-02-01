@@ -465,13 +465,13 @@ export function fetchContentTypes(site: string): Observable<ContentType[]> {
 export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
   return get<LegacyContentType>(
     `/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`
-  ).pipe(map(({ response }) => response));
+  ).pipe(map((response) => response?.response));
 }
 
 export function fetchLegacyContentTypes(site: string, path?: string): Observable<LegacyContentType[]> {
   const qs = toQueryString({ site, path });
   return get<LegacyContentType[]>(`/studio/api/1/services/api/1/content/get-content-types.json${qs}`).pipe(
-    map(({ response }) => response),
+    map((response) => response?.response),
     catchError(errorSelectorApi1)
   );
 }
@@ -487,7 +487,7 @@ export function fetchContentTypeUsage(site: string, contentTypeId: string): Obse
   return get<Api2ResponseFormat<{ usage: FetchContentTypeUsageResponse<string> }>>(
     `/studio/api/2/configuration/content-type/usage${qs}`
   ).pipe(
-    map(({ response: { usage } }) => usage),
+    map((response) => response?.response.usage),
     switchMap((usage: FetchContentTypeUsageResponse<string>) =>
       usage.templates.length + usage.scripts.length + usage.content.length === 0
         ? // @ts-ignore - avoiding creating new object with the exact same structure just for typescript's sake

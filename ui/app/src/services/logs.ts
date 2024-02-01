@@ -21,11 +21,11 @@ import { map } from 'rxjs/operators';
 import { Logger, LoggerLevel } from '../models/Logger';
 
 export function fetchLogs(since: number): Observable<Log[]> {
-  return get(`/studio/api/2/monitoring/log?since=${since}`).pipe(map(({ response: { events } }) => events));
+  return get(`/studio/api/2/monitoring/log?since=${since}`).pipe(map((response) => response?.response?.events));
 }
 
 export function fetchLoggers(): Observable<Logger[]> {
-  return get('/studio/api/2/loggers').pipe(map(({ response: { results } }) => results));
+  return get('/studio/api/2/loggers').pipe(map((response) => response?.response?.results));
 }
 
 export function setLogger(name: string, level: LoggerLevel): Observable<true> {

@@ -137,9 +137,7 @@ export function fetchScheduled(siteId: string, options: FetchScheduledOptions): 
 export function fetchScheduledPackageItems(siteId: string, packageId: number): Observable<SandboxItem[]> {
   const qs = toQueryString({ siteId });
   return get(`/studio/api/2/dashboard/publishing/scheduled/${packageId}${qs}`).pipe(
-    map(({ response: { publishingPackageItems } }) =>
-      publishingPackageItems.map((item) => prepareVirtualItemProps(item))
-    )
+    map((response) => response?.response?.publishingPackageItems.map((item) => prepareVirtualItemProps(item)))
   );
 }
 
@@ -179,11 +177,12 @@ export interface ExpiredItem {
 export function fetchExpired(siteId: string, options?: PaginationOptions): Observable<ExpiredItem[]> {
   const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/content/expired${qs}`).pipe(
-    map(({ response: { items } }) =>
-      items.map((item) => ({
-        ...item,
-        sandboxItem: prepareVirtualItemProps(item.sandboxItem)
-      }))
+    map(
+      (response) =>
+        response?.response?.items.map((item) => ({
+          ...item,
+          sandboxItem: prepareVirtualItemProps(item.sandboxItem)
+        }))
     )
   );
 }
@@ -196,11 +195,12 @@ interface FetchExpiringOptions extends PaginationOptions {
 export function fetchExpiring(siteId: string, options: FetchExpiringOptions): Observable<ExpiredItem[]> {
   const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/content/expiring${qs}`).pipe(
-    map(({ response: { items } }) =>
-      items.map((item) => ({
-        ...item,
-        sandboxItem: prepareVirtualItemProps(item.sandboxItem)
-      }))
+    map(
+      (response) =>
+        response?.response?.items.map((item) => ({
+          ...item,
+          sandboxItem: prepareVirtualItemProps(item.sandboxItem)
+        }))
     )
   );
 }
@@ -208,6 +208,6 @@ export function fetchExpiring(siteId: string, options: FetchExpiringOptions): Ob
 export function fetchPublishingStats(siteId: string, days: number): Observable<PublishingStats> {
   const qs = toQueryString({ siteId, days });
   return get(`/studio/api/2/dashboard/publishing/stats${qs}`).pipe(
-    map(({ response: { publishingStats } }) => publishingStats)
+    map((response) => response?.response?.publishingStats)
   );
 }

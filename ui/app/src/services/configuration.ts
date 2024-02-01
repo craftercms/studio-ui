@@ -41,7 +41,7 @@ export function fetchConfigurationXML(
     path: configPath,
     environment
   });
-  return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(map(({ response: { content } }) => content));
+  return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(map((response) => response?.response?.content));
 }
 
 export function fetchConfigurationDOM(
@@ -152,7 +152,7 @@ export function deserializeActiveTargetingModelData<T extends Object>(
 export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
   const model = reversePluckProps(data, 'craftercms');
   const qs = toQueryString({ id: data.craftercms.id });
-  return postJSON(`/api/1/profile/set${qs}`, model).pipe(map(({ response }) => response));
+  return postJSON(`/api/1/profile/set${qs}`, model).pipe(map((response) => response?.response));
 }
 
 // endregion
@@ -176,21 +176,26 @@ const legacyToNextMenuIconMap = {
 
 export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation']['items']> {
   return get('/studio/api/2/ui/views/global_menu.json').pipe(
-    map(({ response: { menuItems } }) => [
-      ...menuItems.map((item) => ({
-        ...item,
-        icon: legacyToNextMenuIconMap[item.icon]
-          ? { id: legacyToNextMenuIconMap[item.icon] }
-          : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
-      })),
-      { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.About' }, label: 'About' },
-      { id: 'home.globalMenu.settings', icon: { id: '@mui/icons-material/AccountCircleRounded' }, label: 'Account' }
-    ])
+    map((response) => {
+      const menuItems = response?.response?.menuItems ?? [];
+      return [
+        ...menuItems.map((item) => ({
+          ...item,
+          icon: legacyToNextMenuIconMap[item.icon]
+            ? { id: legacyToNextMenuIconMap[item.icon] }
+            : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
+        })),
+        { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.About' }, label: 'About' },
+        { id: 'home.globalMenu.settings', icon: { id: '@mui/icons-material/AccountCircleRounded' }, label: 'Account' }
+      ];
+    })
   );
 }
 
 export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
-  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(map(({ response }) => response));
+  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(
+    map((response) => response?.response)
+  );
 }
 
 export function fetchHistory(
@@ -203,14 +208,14 @@ export function fetchHistory(
 
   return get(
     `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
-  ).pipe(map(({ response }) => response.history.versions));
+  ).pipe(map((response) => response?.response.history.versions));
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {
   return get(
     `/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`
   ).pipe(
-    map(({ response }) => response),
+    map((response) => response?.response),
     catchError(errorSelectorApi1)
   );
 }

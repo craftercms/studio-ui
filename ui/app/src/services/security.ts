@@ -22,7 +22,7 @@ export function encrypt(text: string): Observable<string>;
 export function encrypt(text: string, site: string): Observable<string>;
 export function encrypt(text: string, site: string = ''): Observable<string> {
   return postJSON(`/studio/api/2/security/encrypt.json`, { text, siteId: site }).pipe(
-    map(({ response: { item } }) => item)
+    map((response) => response?.response?.item)
   );
 }
 

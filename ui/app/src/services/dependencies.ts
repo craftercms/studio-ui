@@ -29,21 +29,21 @@ export function fetchDependencies(siteId: string, items: any): Observable<FetchD
   return postJSON('/studio/api/2/dependency/dependencies', {
     siteId,
     paths: items
-  }).pipe(map(({ response: { items } }) => items));
+  }).pipe(map((response) => response?.response?.items));
 }
 
 export function fetchSimpleDependencies(site: string, path: string): Observable<LegacyItem[]> {
   return post(
     `/studio/api/1/services/api/1/dependency/get-simple-dependencies.json${toQueryString({ site, path })}`
   ).pipe(
-    map(({ response }) => response),
+    map((response) => response?.response),
     catchError(errorSelectorApi1)
   );
 }
 
 export function fetchDependant(site: string, path: string): Observable<LegacyItem[]> {
   return post(`/studio/api/1/services/api/1/dependency/get-dependant.json${toQueryString({ site, path })}`).pipe(
-    map(({ response }) => response),
+    map((response) => response?.response),
     catchError(errorSelectorApi1)
   );
 }
@@ -57,5 +57,5 @@ export function fetchDeleteDependencies(siteId: string, paths: string[]): Observ
   return postJSON('/studio/api/2/content/get_delete_package', {
     siteId,
     paths
-  }).pipe(map(({ response: { items } }) => items));
+  }).pipe(map((response) => response?.response?.items));
 }

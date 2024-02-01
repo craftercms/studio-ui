@@ -31,5 +31,5 @@ export function list(
     ...options
   });
 
-  return get(`/studio/api/2/webdav/list${qs}`).pipe(map(({ response: { items } }) => items));
+  return get(`/studio/api/2/webdav/list${qs}`).pipe(map((response) => response?.response?.items));
 }

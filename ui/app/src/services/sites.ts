@@ -44,7 +44,7 @@ export function fetchBlueprints(): Observable<BuiltInBlueprint[]> {
     Api2ResponseFormat<{
       blueprints: BuiltInBlueprint[];
     }>
-  >('/studio/api/2/sites/available_blueprints').pipe(map(({ response: { blueprints } }) => blueprints));
+  >('/studio/api/2/sites/available_blueprints').pipe(map((response) => response?.response?.blueprints));
 }
 
 export function fetchAll(paginationOptions?: PaginationOptions): Observable<PagedArray<Site>> {
@@ -120,12 +120,12 @@ export function update(site: Omit<Site, 'uuid' | 'imageUrl'>): Observable<Api2Re
   return postJSON<Api2ResponseFormat<{}>>(`/studio/api/2/sites/${site.id}`, {
     name: site.name,
     description: site.description
-  }).pipe(map(({ response }) => response));
+  }).pipe(map((response) => response?.response));
 }
 
 export function exists(siteId: string): Observable<boolean> {
   return get<{ exists: boolean }>(`/studio/api/1/services/api/1/site/exists.json?site=${siteId}`).pipe(
-    map(({ response: { exists } }) => exists)
+    map((response) => response?.response?.exists)
   );
 }
 
@@ -147,11 +147,13 @@ export function validateActionPolicy(
 }
 
 export function fetchLegacySite(siteId: string): Observable<LegacySite> {
-  return get(`/studio/api/1/services/api/1/site/get.json?site_id=${siteId}`).pipe(map(({ response }) => response));
+  return get(`/studio/api/1/services/api/1/site/get.json?site_id=${siteId}`).pipe(
+    map((response) => response?.response)
+  );
 }
 
 export function hasInitialPublish(siteId: string): Observable<boolean> {
   return get<FetchPublishingTargetsResponse>(`/studio/api/2/publish/available_targets?siteId=${siteId}`).pipe(
-    map(({ response: { published } }) => published)
+    map((response) => response?.response?.published)
   );
 }
