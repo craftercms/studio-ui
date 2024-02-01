@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import TreeItem from '@mui/lab/TreeItem';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import React, { useState } from 'react';
 import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';

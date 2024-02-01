@@ -16,11 +16,11 @@
 
 import { LegacyItem } from '../../models';
 import { useIntl } from 'react-intl';
-import TreeItem from '@mui/lab/TreeItem';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
-import TreeView from '@mui/lab/TreeView';
+import { TreeView } from '@mui/x-tree-view/TreeView';
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
 import { Theme } from '@mui/material/styles';

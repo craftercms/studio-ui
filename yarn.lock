@@ -1507,7 +1507,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.18.9, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.16.3, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.18.9, @babel/runtime@npm:^7.2.0, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.8.7, @babel/runtime@npm:^7.9.2":
   version: 7.23.9
   resolution: "@babel/runtime@npm:7.23.9"
   dependencies:
@@ -1746,6 +1746,7 @@ __metadata:
     "@mui/material": "npm:^5.15.7"
     "@mui/x-data-grid": "npm:^5.17.26"
     "@mui/x-date-pickers": "npm:^5.0.20"
+    "@mui/x-tree-view": "npm:^6.17.0"
     "@prettier/plugin-xml": "npm:^2.2.0"
     "@reduxjs/toolkit": "npm:^1.9.7"
     "@rollup/plugin-typescript": "npm:^8.5.0"
@@ -2955,7 +2956,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/base@npm:5.0.0-beta.34":
+"@mui/base@npm:5.0.0-beta.34, @mui/base@npm:^5.0.0-beta.20":
   version: 5.0.0-beta.34
   resolution: "@mui/base@npm:5.0.0-beta.34"
   dependencies:
@@ -3140,7 +3141,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/utils@npm:^5.10.3, @mui/utils@npm:^5.15.7":
+"@mui/utils@npm:^5.10.3, @mui/utils@npm:^5.14.14, @mui/utils@npm:^5.15.7":
   version: 5.15.7
   resolution: "@mui/utils@npm:5.15.7"
   dependencies:
@@ -3217,6 +3218,28 @@ __metadata:
     moment:
       optional: true
   checksum: 7ab0fdcdae805292635e416f978ad14d301df0cab9058d9bca43fb4f990e1f87722dbeafa6ce97d5e1e55e0291c44fa65c7d2360cdb7e791ba7249e0d586953f
+  languageName: node
+  linkType: hard
+
+"@mui/x-tree-view@npm:^6.17.0":
+  version: 6.17.0
+  resolution: "@mui/x-tree-view@npm:6.17.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.23.2"
+    "@mui/base": "npm:^5.0.0-beta.20"
+    "@mui/utils": "npm:^5.14.14"
+    "@types/react-transition-group": "npm:^4.4.8"
+    clsx: "npm:^2.0.0"
+    prop-types: "npm:^15.8.1"
+    react-transition-group: "npm:^4.4.5"
+  peerDependencies:
+    "@emotion/react": ^11.9.0
+    "@emotion/styled": ^11.8.1
+    "@mui/material": ^5.8.6
+    "@mui/system": ^5.8.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 64f06dbf1c399c9415824bce6f8c8d6564edcaba6803d278899b65a9925c101fdc2e51698dd824309d3bd5f2fa0298f888084f8cc00f591d003857236559e295
   languageName: node
   linkType: hard
 
@@ -4135,7 +4158,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-transition-group@npm:^4.4.10, @types/react-transition-group@npm:^4.4.5":
+"@types/react-transition-group@npm:^4.4.10, @types/react-transition-group@npm:^4.4.5, @types/react-transition-group@npm:^4.4.8":
   version: 4.4.10
   resolution: "@types/react-transition-group@npm:4.4.10"
   dependencies:
