@@ -1,6 +1,14 @@
 # 4.1.3
 
 * HostUI removed and merged into Host
+* Upgraded yarn
+* Upgrade to the latest version to date of the following libraries:
+  * @mui/*
+  * jquery
+  * moment
+  * ace
+  * bootstrap
+* Replace Navigators to work with new bulk children fetcher api
 
 ## 4.1.2
 
