@@ -126,6 +126,7 @@
     "@mui/material": "^5.15.7",
     "@mui/x-data-grid": "^5.17.26",
     "@mui/x-date-pickers": "^5.0.20",
+    "@mui/x-tree-view": "^6.17.0",
     "@prettier/plugin-xml": "^2.2.0",
     "@reduxjs/toolkit": "^1.9.7",
     "@stomp/stompjs": "^7.0.0",
