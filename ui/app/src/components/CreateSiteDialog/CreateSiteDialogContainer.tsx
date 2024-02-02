@@ -441,7 +441,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
           setApiState({
             creatingSite: false,
             error: true,
-            errorResponse: response,
+            errorResponse: response.response,
             global: true
           });
         } else {
