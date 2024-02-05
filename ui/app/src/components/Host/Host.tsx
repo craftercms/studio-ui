@@ -62,7 +62,7 @@ export function Host() {
 
     const h2g = getHostToGuestBus()
       .asObservable()
-      .pipe(map((action) => ({ ...action, craftercms: true, source: 'host' })))
+      .pipe(map((action) => ({ ...action, meta: { craftercms: true, source: 'host' } })))
       .subscribe((action) => {
         const contentWindow = iframeRef.current.contentWindow;
         contentWindow.postMessage(action, '*');
