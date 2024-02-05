@@ -26,7 +26,7 @@ import {
   PluginRecord,
   SandboxItem
 } from '../models';
-import { map, pluck, switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { pluckProps, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
@@ -92,7 +92,7 @@ export function uninstallMarketplacePlugin(
 
 export function getPluginConfiguration(siteId: string, pluginId: string): Observable<string> {
   const qs = toQueryString({ siteId, pluginId });
-  return get(`/studio/api/2/plugin/get_configuration${qs}`).pipe(pluck('response', 'content'));
+  return get(`/studio/api/2/plugin/get_configuration${qs}`).pipe(map((response) => response?.response?.content));
 }
 
 export function setPluginConfiguration(siteId: string, pluginId: string, content: string): Observable<boolean> {
@@ -102,7 +102,7 @@ export function setPluginConfiguration(siteId: string, pluginId: string, content
 export function fetchMarketplacePluginUsage(siteId: string, pluginId: string): Observable<SandboxItem[]> {
   const qs = toQueryString({ siteId, pluginId });
   return get(`/studio/api/2/marketplace/usage${qs}`).pipe(
-    pluck('response', 'items'),
+    map((response) => response?.response?.items),
     switchMap((items) => (items.length === 0 ? of(items) : fetchItemsByPath(siteId, items)))
   );
 }
@@ -110,7 +110,7 @@ export function fetchMarketplacePluginUsage(siteId: string, pluginId: string): O
 export function fetchInstalledMarketplacePlugins(siteId: string): Observable<PluginRecord[]> {
   return get<Api2ResponseFormat<{ plugins: PluginRecord[] }>>(
     `/studio/api/2/marketplace/installed?siteId=${siteId}`
-  ).pipe(pluck('response', 'plugins'));
+  ).pipe(map((response) => response?.response?.plugins));
 }
 
 export function createSite(site: MarketplaceSite): Observable<boolean> {

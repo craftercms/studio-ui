@@ -15,7 +15,7 @@
  */
 
 import { get, getGlobalHeaders, postJSON } from '../utils/ajax';
-import { catchError, map, pluck } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { from, Observable, of } from 'rxjs';
 import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
@@ -31,7 +31,9 @@ interface FetchSSOLogoutUrlResponse {
  * @deprecated Please note API deprecation for Crafter v4.0.0+
  **/
 export function fetchSSOLogoutURL(): Observable<FetchSSOLogoutUrlResponse> {
-  return get<FetchSSOLogoutUrlResponse>('/studio/api/2/users/me/logout/sso/url').pipe(pluck('response'));
+  return get<FetchSSOLogoutUrlResponse>('/studio/api/2/users/me/logout/sso/url').pipe(
+    map((response) => response?.response)
+  );
 }
 
 export function login(credentials: Credentials): Observable<boolean> {
@@ -54,7 +56,7 @@ export function login(credentials: Credentials): Observable<boolean> {
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
   return get(`/studio/api/2/users/forgot_password?username=${username}`).pipe(
-    pluck('response', 'response'),
+    map((response) => response?.response?.response),
     catchError((error: AjaxError) => {
       throw error.response?.response ?? error;
     })
@@ -94,9 +96,11 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
 export type ObtainAuthTokenResponse = { expiresAt: number; token: string };
 
 export function obtainAuthToken(): Observable<ObtainAuthTokenResponse> {
-  return get<ObtainAuthTokenResponse>('/studio/refresh.json').pipe(
-    pluck('response'),
-    map((auth) => ({ token: auth.token, expiresAt: new Date(auth.expiresAt).getTime() }))
+  return get<{ auth: ObtainAuthTokenResponse }>('/studio/refresh.json').pipe(
+    map((response) => {
+      const auth = response?.response?.auth;
+      return { token: auth.token, expiresAt: new Date(auth.expiresAt).getTime() };
+    })
   );
 }
 
@@ -104,7 +108,6 @@ export type FetchAuthTypeResponse = 'db' | 'ldap' | 'headers' | 'saml';
 
 export function fetchAuthenticationType(): Observable<FetchAuthTypeResponse> {
   return get<{ authType: FetchAuthTypeResponse }>('/studio/authType.json').pipe(
-    pluck('response', 'authType'),
-    map((value) => (value?.toLowerCase() ?? 'db') as FetchAuthTypeResponse)
+    map((response) => (response?.response?.authType?.toLowerCase() ?? 'db') as FetchAuthTypeResponse)
   );
 }

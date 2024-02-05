@@ -16,7 +16,7 @@
 
 import { get, post, postJSON } from '../utils/ajax';
 import { Observable } from 'rxjs';
-import { map, pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { LegacyItem } from '../models/Item';
 import { pluckProps, toQueryString } from '../utils/object';
 import { PublishingStatus, PublishingTarget, PublishingTargets } from '../models/Publishing';
@@ -58,7 +58,9 @@ export function fetchPackage(siteId: string, packageId: string): Observable<Publ
     Api2ResponseFormat<{
       package: PublishingPackage;
     }>
-  >(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`).pipe(pluck('response', 'package'));
+  >(`/studio/api/2/publish/package?siteId=${siteId}&packageId=${packageId}`).pipe(
+    map((response) => response?.response?.package)
+  );
 }
 
 export function cancelPackage(siteId: string, packageIds: any) {
@@ -72,7 +74,7 @@ export type FetchPublishingTargetsResponse = Api2ResponseFormat<{
 
 export function fetchPublishingTargets(site: string): Observable<FetchPublishingTargetsResponse> {
   return get<FetchPublishingTargetsResponse>(`/studio/api/2/publish/available_targets?siteId=${site}`).pipe(
-    pluck('response')
+    map((response) => response?.response)
   );
 }
 
@@ -89,7 +91,7 @@ export function fetchStatus(siteId: string): Observable<PublishingStatus> {
   return get<Api2ResponseFormat<{ publishingStatus: PublishingStatus }>>(
     `/studio/api/2/publish/status?siteId=${siteId}`
   ).pipe(
-    pluck('response', 'publishingStatus'),
+    map((response) => response?.response?.publishingStatus),
     map((status) => {
       if (status.status) {
         return status;

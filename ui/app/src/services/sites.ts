@@ -44,7 +44,7 @@ export function fetchBlueprints(): Observable<BuiltInBlueprint[]> {
     Api2ResponseFormat<{
       blueprints: BuiltInBlueprint[];
     }>
-  >('/studio/api/2/sites/available_blueprints').pipe(pluck('response', 'blueprints'));
+  >('/studio/api/2/sites/available_blueprints').pipe(map((response) => response?.response?.blueprints));
 }
 
 export function fetchAll(paginationOptions?: PaginationOptions): Observable<PagedArray<Site>> {
@@ -89,7 +89,6 @@ export function create(site: CreateSiteMeta): Observable<Site> {
     }
   });
   return postJSON('/studio/api/1/services/api/1/site/create.json', api1Params).pipe(
-    pluck('response'),
     map(() => ({
       id: site.siteId,
       name: site.siteName,
@@ -102,7 +101,6 @@ export function create(site: CreateSiteMeta): Observable<Site> {
 
 export function duplicate(site: DuplicateSiteMeta): Observable<Site> {
   return postJSON(`/studio/api/2/sites/${site.sourceSiteId}/duplicate`, reversePluckProps(site, 'sourceSiteId')).pipe(
-    pluck('response'),
     map(() => ({
       id: site.siteId,
       name: site.siteName,
@@ -114,22 +112,19 @@ export function duplicate(site: DuplicateSiteMeta): Observable<Site> {
 }
 
 export function trash(id: string): Observable<boolean> {
-  return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id }).pipe(
-    pluck('response'),
-    map(() => true)
-  );
+  return postJSON('/studio/api/1/services/api/1/site/delete-site.json', { siteId: id }).pipe(map(() => true));
 }
 
 export function update(site: Omit<Site, 'uuid' | 'imageUrl'>): Observable<Api2ResponseFormat<{}>> {
   return postJSON<Api2ResponseFormat<{}>>(`/studio/api/2/sites/${site.id}`, {
     name: site.name,
     description: site.description
-  }).pipe(pluck('response'));
+  }).pipe(map((response) => response?.response));
 }
 
 export function exists(siteId: string): Observable<boolean> {
   return get<{ exists: boolean }>(`/studio/api/1/services/api/1/site/exists.json?site=${siteId}`).pipe(
-    pluck('response', 'exists')
+    map((response) => response?.response?.exists)
   );
 }
 
@@ -151,11 +146,13 @@ export function validateActionPolicy(
 }
 
 export function fetchLegacySite(siteId: string): Observable<LegacySite> {
-  return get(`/studio/api/1/services/api/1/site/get.json?site_id=${siteId}`).pipe(pluck('response'));
+  return get(`/studio/api/1/services/api/1/site/get.json?site_id=${siteId}`).pipe(
+    map((response) => response?.response)
+  );
 }
 
 export function hasInitialPublish(siteId: string): Observable<boolean> {
   return get<FetchPublishingTargetsResponse>(`/studio/api/2/publish/available_targets?siteId=${siteId}`).pipe(
-    pluck('response', 'published')
+    map((response) => response?.response?.published)
   );
 }

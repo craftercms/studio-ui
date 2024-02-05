@@ -19,7 +19,7 @@ import { PagedArray } from '../models/PagedArray';
 import { Observable } from 'rxjs';
 import { toQueryString } from '../utils/object';
 import { del, get, patchJSON, postJSON } from '../utils/ajax';
-import { map, pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import Group from '../models/Group';
 import User from '../models/User';
 
@@ -61,11 +61,11 @@ export function fetchUsersFromGroup(id: number, options?: PaginationOptions): Ob
 }
 
 export function create(group: Partial<Group>): Observable<Group> {
-  return postJSON('/studio/api/2/groups', group).pipe(pluck('response', 'group'));
+  return postJSON('/studio/api/2/groups', group).pipe(map((response) => response?.response?.group));
 }
 
 export function update(group: Partial<Group>): Observable<Group> {
-  return patchJSON(`/studio/api/2/groups`, group).pipe(pluck('response', 'group'));
+  return patchJSON(`/studio/api/2/groups`, group).pipe(map((response) => response?.response?.group));
 }
 
 export function trash(groupId: number): Observable<true> {
@@ -73,7 +73,7 @@ export function trash(groupId: number): Observable<true> {
 }
 
 export function addUserToGroup(groupId: number, username: string): Observable<User> {
-  return addUsersToGroup(groupId, [username]).pipe(pluck(0));
+  return addUsersToGroup(groupId, [username]).pipe(map((response) => response[0]));
 }
 
 export function addUsersToGroup(groupId: number, ids: number[]): Observable<User[]>;
@@ -81,7 +81,7 @@ export function addUsersToGroup(groupId: number, usernames: string[]): Observabl
 export function addUsersToGroup(groupId: number, idsOrUsernames: Array<number> | Array<string>): Observable<User[]> {
   return postJSON(`/studio/api/2/groups/${groupId}/members`, {
     [typeof idsOrUsernames[0] === 'string' ? 'usernames' : 'ids']: idsOrUsernames
-  }).pipe(pluck('response', 'users'));
+  }).pipe(map((response) => response?.response?.users));
 }
 
 export function deleteUserFromGroup(groupId: number, username: string): Observable<true>;
