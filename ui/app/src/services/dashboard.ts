@@ -177,12 +177,11 @@ export interface ExpiredItem {
 export function fetchExpired(siteId: string, options?: PaginationOptions): Observable<ExpiredItem[]> {
   const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/content/expired${qs}`).pipe(
-    map(
-      (response) =>
-        response?.response?.items.map((item) => ({
-          ...item,
-          sandboxItem: prepareVirtualItemProps(item.sandboxItem)
-        }))
+    map((response) =>
+      response?.response?.items.map((item) => ({
+        ...item,
+        sandboxItem: prepareVirtualItemProps(item.sandboxItem)
+      }))
     )
   );
 }
@@ -195,12 +194,11 @@ interface FetchExpiringOptions extends PaginationOptions {
 export function fetchExpiring(siteId: string, options: FetchExpiringOptions): Observable<ExpiredItem[]> {
   const qs = toQueryString({ siteId, ...options });
   return get(`/studio/api/2/dashboard/content/expiring${qs}`).pipe(
-    map(
-      (response) =>
-        response?.response?.items.map((item) => ({
-          ...item,
-          sandboxItem: prepareVirtualItemProps(item.sandboxItem)
-        }))
+    map((response) =>
+      response?.response?.items.map((item) => ({
+        ...item,
+        sandboxItem: prepareVirtualItemProps(item.sandboxItem)
+      }))
     )
   );
 }
