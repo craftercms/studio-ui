@@ -216,7 +216,7 @@ var CStudioForms =
       renderValidation: function (onOff) {
         var valid = true;
 
-        for (key in this.errors) {
+        for (let key in this.errors) {
           valid = false;
           break;
         }
@@ -692,7 +692,7 @@ var CStudioForms =
         if (formField && formField.edited) {
           var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
           var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
-          if (iceWindowCallback.pendingChanges) {
+          if (iceWindowCallback?.pendingChanges) {
             let callback = getCustomCallback(iceWindowCallback.pendingChanges);
             callback();
           }

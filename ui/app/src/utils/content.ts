@@ -259,7 +259,6 @@ export function parseLegacyItemToSandBoxItem(item: LegacyItem | LegacyItem[]): S
     },
     dateModified: item.lastEditDate,
     dateSubmitted: null,
-    commitId: null,
     sizeInBytes: null,
     expiresOn: null,
     submitter: null
@@ -287,7 +286,6 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       },
       dateModified: item.lastEditDate,
       dateSubmitted: null,
-      commitId: null,
       sizeInBytes: null,
       expiresOn: null,
       submitter: null
@@ -296,14 +294,12 @@ export function parseLegacyItemToDetailedItem(item: LegacyItem | LegacyItem[]): 
       dateScheduled: item.scheduledDate,
       datePublished: item.publishedDate ?? item.eventDate,
       publisher: item.user,
-      commitId: null,
       expiresOn: null
     },
     live: {
       dateScheduled: item.scheduledDate,
       datePublished: item.publishedDate ?? item.eventDate,
       publisher: item.user,
-      commitId: null,
       expiresOn: null
     }
   };
@@ -334,22 +330,13 @@ export function parseSandBoxItemToDetailedItem(
       modifier: item.modifier,
       dateModified: item.dateModified,
       dateSubmitted: item.dateSubmitted,
-      commitId: item.commitId,
       sizeInBytes: item.sizeInBytes,
       expiresOn: item.expiresOn,
       submitter: item.submitter
     },
     staging: (detailedItemComplement?.staging as DetailedItem['staging']) ?? null,
     live: (detailedItemComplement?.live as DetailedItem['live']) ?? null,
-    ...(reversePluckProps(
-      item,
-      'creator',
-      'dateCreated',
-      'modifier',
-      'dateModified',
-      'commitId',
-      'sizeInBytes'
-    ) as BaseItem)
+    ...(reversePluckProps(item, 'creator', 'dateCreated', 'modifier', 'dateModified', 'sizeInBytes') as BaseItem)
   };
 }
 

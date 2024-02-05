@@ -762,7 +762,22 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
       Object.keys(modelIdByPath).forEach((path) => {
         requestedPaths[path] = true;
       });
-      Object.assign(modelHierarchyMap, hierarchyMap);
+      const mhm = modelHierarchyMap;
+      // TODO: Must understand the differences when a model comes multiple times in the `hierarchyMap` coming from Host
+      //  parentId has been seen populated as part of a bigger request but null when model loaded in isolation
+      Object.keys(hierarchyMap).forEach((id) => {
+        if (mhm[id]) {
+          mhm[id].modelId = hierarchyMap[id].modelId;
+          mhm[id].parentId = mhm[id].parentId ?? hierarchyMap[id].parentId;
+          mhm[id].parentContainerFieldPath =
+            mhm[id].parentContainerFieldPath ?? hierarchyMap[id].parentContainerFieldPath;
+          mhm[id].parentContainerFieldIndex =
+            mhm[id].parentContainerFieldIndex ?? hierarchyMap[id].parentContainerFieldIndex;
+          mhm[id].children = mhm[id].children ?? hierarchyMap[id].children;
+        } else {
+          mhm[id] = hierarchyMap[id];
+        }
+      });
       models$.next({ ...models$.value, ...modelLookup });
       paths$.next({ ...paths$.value, ...modelIdByPath });
       items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });

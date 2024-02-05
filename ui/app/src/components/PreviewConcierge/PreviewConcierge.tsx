@@ -38,8 +38,10 @@ import {
   hostCheckIn,
   hotKey,
   iceZoneSelected,
+  initPreviewConfig,
   initRichTextEditorConfig,
   insertComponentOperation,
+  InsertComponentOperationPayload,
   insertItemOperation,
   insertItemOperationComplete,
   insertItemOperationFailed,
@@ -59,6 +61,7 @@ import {
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
+  snackGuestMessage,
   sortItemOperation,
   sortItemOperationComplete,
   sortItemOperationFailed,
@@ -67,13 +70,9 @@ import {
   updateFieldValueOperation,
   updateFieldValueOperationComplete,
   updateFieldValueOperationFailed,
-  updateRteConfig,
-  snackGuestMessage,
-  InsertComponentOperationPayload,
-  initPreviewConfig
+  updateRteConfig
 } from '../../state/actions/preview';
 import {
-  writeInstance,
   deleteItem,
   duplicateItem,
   fetchContentInstance,
@@ -86,11 +85,12 @@ import {
   insertItem,
   moveItem,
   sortItem,
-  updateField
+  updateField,
+  writeInstance
 } from '../../services/content';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { getGuestToHostBus, getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { useDispatch, useStore } from 'react-redux';
 import { nnou } from '../../utils/object';
@@ -102,8 +102,8 @@ import {
   getStoredEditModeChoice,
   getStoredEditModePadding,
   getStoredHighlightModeChoice,
-  removeStoredClipboard,
   getStoredOutdatedXBValidationDate,
+  removeStoredClipboard,
   setStoredOutdatedXBValidationDate
 } from '../../utils/state';
 import {
@@ -127,8 +127,6 @@ import {
 import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
-import Snackbar from '@mui/material/Snackbar';
-import CloseRounded from '@mui/icons-material/CloseRounded';
 import IconButton from '@mui/material/IconButton';
 import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
@@ -183,18 +181,12 @@ import { DetailedItem, MediaItem } from '../../models';
 import DataSourcesActionsList, { DataSourcesActionsListProps } from '../DataSourcesActionsList/DataSourcesActionsList';
 import { editControllerActionCreator, itemActionDispatcher } from '../../utils/itemActions';
 import useEnv from '../../hooks/useEnv';
-import useAuth from '../../hooks/useAuth';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { isSameDay } from '../../utils/datetime';
 import compatibilityList from './compatibilityList';
 import ContentType from '../../models/ContentType';
 
 const originalDocDomain = document.domain;
-
-const startCommunicationDetectionTimeout = (timeoutRef, setShowSnackbar, timeout = 5000) => {
-  clearTimeout(timeoutRef.current);
-  timeoutRef.current = setTimeout(() => setShowSnackbar(true), timeout);
-};
 
 // region const issueDescriptorRequest = () => {...}
 const issueDescriptorRequest = (props) => {
@@ -310,17 +302,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const { id: siteId, uuid } = useActiveSite() ?? {};
   const user = useActiveUser();
   const username = user?.username;
-  const {
-    guest,
-    editMode,
-    highlightMode,
-    editModePadding,
-    icePanelWidth,
-    toolsPanelWidth,
-    hostSize,
-    showToolsPanel,
-    xbDetectionTimeoutMs
-  } = usePreviewState();
+  const { guest, editMode, highlightMode, editModePadding, icePanelWidth, toolsPanelWidth, hostSize, showToolsPanel } =
+    usePreviewState();
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
@@ -329,17 +312,11 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const priorState = useRef({ site: siteId });
   const { enqueueSnackbar } = useSnackbar();
   const { formatMessage } = useIntl();
-  const { active: authActive } = useAuth();
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
   const hierarchyMap = guest?.hierarchyMap;
   const mainModelModifier = guest?.mainModelModifier;
   const requestedSourceMapPaths = useRef({});
-  const guestDetectionTimeoutRef = useRef<number>();
-  const [guestDetectionSnackbarOpen, setGuestDetectionSnackbarOpen] = useState(false);
-  const { socketConnected } = useEnv();
-  const socketConnectionTimeoutRef = useRef<number>();
-  const [socketConnectionSnackbarOpen, setSocketConnectionSnackbarOpen] = useState(false);
   const currentItemPath = guest?.path;
   const uiConfig = useSiteUIConfig();
   const { cdataEscapedFieldPatterns } = uiConfig;
@@ -409,6 +386,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         case 'r':
           getHostToGuestBus().next(reloadRequest());
+          getHostToHostBus().next(reloadRequest());
           break;
         case 'E':
           dispatch(
@@ -452,7 +430,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     },
     env,
     xbCompatConsoleWarningPrinted: false,
-    xbDetectionTimeoutMs,
     contentTypes$: contentTypes$Ref.current
   });
 
@@ -472,15 +449,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       dispatch(initPreviewConfig({ configXml: uiConfig.xml, storedEditMode, storedHighlightMode, storedPaddingMode }));
     }
   }, [uiConfig.xml, username, uuid, dispatch]);
-
-  useEffect(() => {
-    if (!socketConnected && authActive) {
-      startCommunicationDetectionTimeout(socketConnectionTimeoutRef, setSocketConnectionSnackbarOpen);
-    } else {
-      clearTimeout(socketConnectionTimeoutRef.current);
-      setSocketConnectionSnackbarOpen(false);
-    }
-  }, [socketConnected, authActive]);
 
   // Legacy Guest pencil repaint - When the guest screen size changes, pencils need to be repainted.
   useEffect(() => {
@@ -519,12 +487,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       getHostToGuestBus().next(updateRteConfig({ rteConfig }));
     }
   }, [rteConfig]);
-
-  useEffect(() => {
-    if (xbDetectionTimeoutMs) {
-      startCommunicationDetectionTimeout(guestDetectionTimeoutRef, setGuestDetectionSnackbarOpen, xbDetectionTimeoutMs);
-    }
-  }, [xbDetectionTimeoutMs]);
 
   // Document domain restoring.
   useMount(() => {
@@ -624,8 +586,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               }
             }
           }
-          clearTimeout(guestDetectionTimeoutRef.current);
-          setGuestDetectionSnackbarOpen(false);
           break;
       }
       switch (type) {
@@ -736,11 +696,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         case guestCheckOut.type: {
           requestedSourceMapPaths.current = {};
           dispatch(action);
-          startCommunicationDetectionTimeout(
-            guestDetectionTimeoutRef,
-            setGuestDetectionSnackbarOpen,
-            upToDateRefs.current.xbDetectionTimeoutMs
-          );
           break;
         }
         case sortItemOperation.type: {
@@ -1229,8 +1184,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           };
 
           // filter data sources to only the ones that match the type
-          const dataSourcesKeys = Object.keys(typedPayload.datasources).filter(
-            (datasourceId) => dataSourcesByType[typedPayload.type]?.includes(datasourceId)
+          const dataSourcesKeys = Object.keys(typedPayload.datasources).filter((datasourceId) =>
+            dataSourcesByType[typedPayload.type]?.includes(datasourceId)
           );
 
           // directly open corresponding dialog
@@ -1356,13 +1311,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     if (priorState.current.site !== siteId) {
       priorState.current.site = siteId;
-      if (xbDetectionTimeoutMs) {
-        startCommunicationDetectionTimeout(
-          guestDetectionTimeoutRef,
-          setGuestDetectionSnackbarOpen,
-          xbDetectionTimeoutMs
-        );
-      }
       if (guest) {
         // Changing the site will force-reload the iFrame and 'beforeunload'
         // event won't trigger withing; guest won't be submitting it's own checkout
@@ -1370,7 +1318,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         dispatch(guestCheckOut({ path: guest.path }));
       }
     }
-  }, [siteId, guest, dispatch, xbDetectionTimeoutMs]);
+  }, [siteId, guest, dispatch]);
 
   // Initialize RTE config
   useEffect(() => {
@@ -1412,45 +1360,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           dispatch(clearSelectForEdit());
           getHostToGuestBus().next(clearSelectedZones());
         }}
-      />
-      <Snackbar
-        open={guestDetectionSnackbarOpen}
-        onClose={() => void 0}
-        message={
-          <FormattedMessage
-            id="guestDetectionMessage"
-            defaultMessage="Communication with the preview application was interrupted. Studio will continue to retry the connection."
-          />
-        }
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center'
-        }}
-        action={
-          <IconButton color="secondary" size="small" onClick={() => setGuestDetectionSnackbarOpen(false)}>
-            <CloseRounded />
-          </IconButton>
-        }
-      />
-      <Snackbar
-        open={socketConnectionSnackbarOpen}
-        onClose={() => void 0}
-        sx={(theme) => ({ ...(guestDetectionSnackbarOpen ? { bottom: `${theme.spacing(10)} !important` } : {}) })}
-        message={
-          <FormattedMessage
-            id="socketConnectionIssue"
-            defaultMessage="Connection with the server was interrupted. Studio will continue to retry the connection."
-          />
-        }
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center'
-        }}
-        action={
-          <IconButton color="secondary" size="small" onClick={() => setSocketConnectionSnackbarOpen(false)}>
-            <CloseRounded />
-          </IconButton>
-        }
       />
       <KeyboardShortcutsDialog
         open={keyboardShortcutsDialogState.open}

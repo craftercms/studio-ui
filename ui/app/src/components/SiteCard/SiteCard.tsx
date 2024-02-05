@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
@@ -27,11 +27,15 @@ import CardActions from '@mui/material/CardActions';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import CardActionArea from '@mui/material/CardActionArea';
-import { Typography } from '@mui/material';
+import { alpha, Typography } from '@mui/material';
 import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
+import { toColor } from '../../utils/string';
+import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
+import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
+import { Subscription } from 'rxjs';
 
 interface SiteCardProps {
   site: Site;
@@ -53,7 +57,7 @@ export function SiteCard(props: SiteCardProps) {
     onDeleteSiteClick,
     onEditSiteClick,
     onDuplicateSiteClick,
-    fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg',
+    fallbackImageSrc,
     compact = false,
     publishingStatus,
     disabled,
@@ -61,6 +65,20 @@ export function SiteCard(props: SiteCardProps) {
   } = props;
   const { classes, cx: clsx } = useSiteCardStyles();
   const isSiteReady = site.state === 'READY';
+  const [dataUrl, fetch] = useProjectPreviewImage(site.id, fallbackImageSrc);
+  const color = useMemo(() => toColor(site.name), [site.name]);
+
+  useEffect(() => {
+    let subscription: Subscription | undefined;
+    const callback = () => {
+      subscription = fetch();
+    };
+    document.addEventListener(PROJECT_PREVIEW_IMAGE_UPDATED, callback);
+    return () => {
+      subscription?.unsubscribe();
+      document.removeEventListener(PROJECT_PREVIEW_IMAGE_UPDATED, callback);
+    };
+  }, [fetch]);
 
   return (
     <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
@@ -99,11 +117,27 @@ export function SiteCard(props: SiteCardProps) {
         />
         {!compact && (
           <CardMedia
-            component="img"
+            component={dataUrl ? 'img' : 'div'}
             className={classes.media}
-            image={site.imageUrl}
+            image={dataUrl}
             title={site.name}
-            onError={(event) => ((event.target as HTMLImageElement).src = fallbackImageSrc)}
+            sx={(theme) => ({
+              display: 'flex',
+              alignItems: 'center',
+              placeContent: 'center',
+              backgroundColor: theme.palette.mode === 'light' ? color : alpha(color, 0.6)
+            })}
+            children={
+              dataUrl ? undefined : (
+                <Typography
+                  variant="h6"
+                  component="span"
+                  sx={(theme) => ({ color: theme.palette.getContrastText(color) })}
+                >
+                  {site.name}
+                </Typography>
+              )
+            }
           />
         )}
       </CardActionArea>

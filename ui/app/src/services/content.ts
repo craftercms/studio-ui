@@ -32,7 +32,7 @@ import { createLookupTable, nnou, nou, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
-import { AjaxError, AjaxResponse } from 'rxjs/ajax';
+import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
@@ -336,7 +336,7 @@ function performMutation(
           post(
             writeContentUrl({
               site,
-              path: path,
+              path,
               unlock: 'true',
               fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
             }),
@@ -981,7 +981,11 @@ export function createFileUpload(
   metaData: Record<string, unknown>,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
-  const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
+  const qs = toQueryString({
+    path,
+    site: metaData?.site ?? metaData?.siteId,
+    [xsrfArgumentName]: getRequestForgeryToken()
+  });
   return new Observable((subscriber) => {
     const uppy = new Core({ autoProceed: true });
     uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, headers: getGlobalHeaders() });
@@ -1008,8 +1012,19 @@ export function createFileUpload(
       });
     });
 
-    uppy.on('upload-error', (file, error) => {
-      subscriber.error(error);
+    uppy.on('upload-error', (file, error, response) => {
+      // @ts-ignore
+      response.error = response;
+      subscriber.error(
+        response
+        // type CustomUploadError {
+        //   error: { request: XMLHttpRequest } & Error;
+        //   body: {
+        //     response: ApiResponse;
+        //     status: number;
+        //   };
+        // }
+      );
     });
 
     uppy.addFile({
@@ -1195,50 +1210,36 @@ export function fetchChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  return postJSON('/studio/api/2/content/children_by_path', {
-    siteId,
-    path,
-    ...options
-  }).pipe(
-    pluck('response'),
-    map(({ children, levelDescriptor, total, offset, limit }) =>
-      Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
-        levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
-        total,
-        offset,
-        limit
-      })
-    )
-  );
+  return fetchChildrenByPaths(siteId, { [path]: options }).pipe(map((data) => data[path]));
 }
 
+/**
+ * siteId {string} The site id.
+ * fetchOptionsByPath {LookupTable<Partial<GetChildrenOptions>>} A lookup table of paths and their respective options.
+ * options {GetChildrenOptions} Options that will be applied to all the path requests.
+ * */
 export function fetchChildrenByPaths(
   siteId: string,
   fetchOptionsByPath: LookupTable<Partial<GetChildrenOptions>>,
   options?: Partial<GetChildrenOptions>
 ): Observable<LookupTable<GetChildrenResponse>> {
-  const paths = Object.keys(fetchOptionsByPath);
-  if (paths.length === 0) {
-    return of({});
-  }
-  const requests = paths.map((path) =>
-    fetchChildrenByPath(siteId, path, { ...options, ...fetchOptionsByPath[path] }).pipe(
-      catchError((error: AjaxError) => {
-        if (error.status === 404) {
-          return of([]);
-        } else {
-          throw error;
-        }
-      })
-    )
-  );
-  return forkJoin(requests).pipe(
-    map((responses) => {
-      const data = {};
-      Object.keys(fetchOptionsByPath).forEach((path, i) => (data[path] = responses[i]));
-      return data;
-    })
-  );
+  const paths = Object.keys(fetchOptionsByPath).map((path) => ({ path, ...options, ...fetchOptionsByPath[path] }));
+  return paths.length === 0
+    ? of({})
+    : postJSON(`/studio/api/2/content/${siteId}/children`, { paths }).pipe(
+        map(({ response: { items } }) => {
+          const data = {};
+          items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
+            data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
+              levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
+              total,
+              offset,
+              limit
+            });
+          });
+          return data;
+        })
+      );
 }
 
 export function fetchItemsByPath(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<SandboxItem>>;

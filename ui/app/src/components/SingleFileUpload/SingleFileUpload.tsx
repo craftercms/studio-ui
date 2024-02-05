@@ -33,6 +33,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
+import { toQueryString } from '../../utils/object';
 
 const messages = defineMessages({
   chooseFile: {
@@ -105,7 +106,7 @@ export interface SingleFileUploadProps {
   site: string;
   formTarget?: string;
   url?: string;
-  path?: string;
+  path: string;
   customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
@@ -199,7 +200,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         hideAfterFinish: false
       })
       .use(XHRUpload, {
-        endpoint: url,
+        endpoint: `${url}${toQueryString({ path, site })}`,
         formData: true,
         fieldName: 'file',
         timeout: upload.timeout,
@@ -212,7 +213,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       instance.cancelAll();
       instance.close();
     };
-  }, [uppy, formTarget, url, upload.timeout]);
+  }, [uppy, formTarget, url, upload.timeout, path, site]);
 
   useEffect(() => {
     const onUploadSuccess = (file) => {
@@ -262,7 +263,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       }).subscribe(({ allowed, modifiedValue, message }) => {
         if (allowed) {
           if (modifiedValue) {
-            const modifiedName = modifiedValue.replace(path, '');
+            // Modified value is expected to be a path.
+            const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
             setConfirm({ body: message });
             setSuggestedName(modifiedName);
           } else {
@@ -341,7 +343,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
               className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
               title={file.name}
             >
-              {file.name}
+              {' ' + file.name}
             </em>
           )}
         </Typography>
