@@ -244,8 +244,8 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
       dispatch(pathNavigatorTreeCollapsePath({ id, path }));
     } else {
       const childrenCount = itemsByPath[path].childrenCount;
-      // If the item's children have been loaded, should simply be expanded
       if (childrenCount) {
+        // If the item's children have been loaded, should simply be expanded
         if (childrenByParentPath[path]) {
           dispatch(pathNavigatorTreeExpandPath({ id, path }));
         } else {
