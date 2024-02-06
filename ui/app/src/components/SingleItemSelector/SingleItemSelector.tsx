@@ -128,9 +128,10 @@ const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props
   total: 0,
   rootPath: props.rootPath,
   // If path is not a child of the rootPath (or the rootPath itself), then set the currentPath to be the rootPath
-  currentPath: (props.selectedItem?.path ?? '').includes(withoutIndex(props.rootPath))
-    ? props.selectedItem?.path
-    : props.rootPath
+  currentPath:
+    props.selectedItem?.path && props.selectedItem.path.includes(withoutIndex(props.rootPath))
+      ? props.selectedItem.path
+      : props.rootPath
 });
 
 type SingleItemSelectorReducer = React.Reducer<SingleItemSelectorState, StandardAction>;
@@ -439,9 +440,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
       >
         <Breadcrumbs
           keyword={state?.keywords}
-          breadcrumb={state.breadcrumb
-            .map((path) => state.byId[path] ?? state.byId[withIndex(path)])
-            .filter((i) => i !== undefined)}
+          breadcrumb={state.breadcrumb.flatMap((path) => state.byId[path] ?? state.byId[withIndex(path)] ?? [])}
           onSearch={onSearch}
           onCrumbSelected={onCrumbSelected}
         />
