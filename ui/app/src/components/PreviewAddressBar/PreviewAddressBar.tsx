@@ -16,7 +16,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
-import React, { useEffect, useState, useRef, MouseEvent } from 'react';
+import React, { useEffect, useState, useRef, MouseEvent, useMemo } from 'react';
 import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import { useDispatch } from 'react-redux';
@@ -29,7 +29,7 @@ import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import MoreRounded from '@mui/icons-material/MoreVertRounded';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { withIndex } from '../../utils/path';
+import { withIndex, withoutIndex } from '../../utils/path';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
 import Tooltip from '@mui/material/Tooltip';
@@ -111,6 +111,16 @@ export function PreviewAddressBar(props: AddressBarProps) {
   const [openSelector, setOpenSelector] = useState(false);
   const [focus, setFocus] = useState(false);
   const dispatch = useDispatch();
+  const rootPath = '/site/website/index.xml';
+  // If the current item is not a page (e.g. a component), selectedItem will be null
+  // The SingleItemSelector's selectedItem prop is optional, if it doesn't exist, it handles actions using the rootPath.
+  const selectedItem = useMemo(() => {
+    if (item && item.path.includes(withoutIndex(rootPath))) {
+      return item;
+    } else {
+      return null;
+    }
+  }, [item]);
 
   const onOptions = (e) => {
     const anchorRect = e.currentTarget.getBoundingClientRect();
@@ -272,8 +282,8 @@ export function PreviewAddressBar(props: AddressBarProps) {
         </Tooltip>
       </Paper>
       <SingleItemSelector
-        rootPath="/site/website/index.xml"
-        selectedItem={item as DetailedItem}
+        rootPath={rootPath}
+        selectedItem={selectedItem}
         open={openSelector}
         onClose={() => setOpenSelector(false)}
         onDropdownClick={() => setOpenSelector(!openSelector)}
