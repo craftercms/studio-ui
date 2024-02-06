@@ -128,7 +128,9 @@ const init: (props: SingleItemSelectorProps) => SingleItemSelectorState = (props
   total: 0,
   rootPath: props.rootPath,
   // If path is not a child of the rootPath (or the rootPath itself), then set the currentPath to be the rootPath
-  currentPath: (props.selectedItem?.path ?? '').includes(props.rootPath) ? props.selectedItem?.path : props.rootPath
+  currentPath: (props.selectedItem?.path ?? '').includes(withoutIndex(props.rootPath))
+    ? props.selectedItem?.path
+    : props.rootPath
 });
 
 type SingleItemSelectorReducer = React.Reducer<SingleItemSelectorState, StandardAction>;
