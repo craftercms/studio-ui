@@ -217,7 +217,7 @@ export function hasPermissions(site: string, ...permissions: string[]): Observab
 }
 
 export function hasPermission(site: string, permission: string): Observable<boolean> {
-  return hasPermissions(site, permission).pipe(map((response) => response?.permission));
+  return hasPermissions(site, permission).pipe(map((response) => response[permission]));
 }
 
 export function fetchGlobalPermissions(): Observable<string[]> {
@@ -231,5 +231,5 @@ export function hasGlobalPermissions(...permissions: string[]): Observable<Looku
 }
 
 export function hasGlobalPermission(permission: string): Observable<boolean> {
-  return hasGlobalPermissions(permission).pipe(map((response) => response?.permission));
+  return hasGlobalPermissions(permission).pipe(map((response) => response[permission]));
 }

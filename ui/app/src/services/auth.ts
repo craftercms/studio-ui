@@ -96,9 +96,9 @@ export function validatePasswordResetToken(token: string): Observable<boolean> {
 export type ObtainAuthTokenResponse = { expiresAt: number; token: string };
 
 export function obtainAuthToken(): Observable<ObtainAuthTokenResponse> {
-  return get<{ auth: ObtainAuthTokenResponse }>('/studio/refresh.json').pipe(
+  return get<ObtainAuthTokenResponse>('/studio/refresh.json').pipe(
     map((response) => {
-      const auth = response?.response?.auth;
+      const auth = response?.response;
       return { token: auth.token, expiresAt: new Date(auth.expiresAt).getTime() };
     })
   );
