@@ -171,7 +171,7 @@ CStudioAuthoring.Module.requireModule(
           this.value = value;
 
           try {
-            tinymce.activeEditor.setContent(value, { format: 'raw' });
+            tinymce.activeEditor.setContent(value, { format: 'html' });
           } catch (err) {}
 
           this.updateModel(value);
@@ -399,7 +399,7 @@ CStudioAuthoring.Module.requireModule(
                 _thisControl.editorId = editor.id;
                 _thisControl.editor = editor;
                 if (_thisControl.value && _thisControl.value !== '_not-set') {
-                  editor.setContent(_thisControl.value, { format: 'raw' });
+                  editor.setContent(_thisControl.value, { format: 'html' });
                 }
                 _thisControl._onChange(null, _thisControl);
               });
