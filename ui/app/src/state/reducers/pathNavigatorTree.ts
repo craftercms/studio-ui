@@ -212,9 +212,16 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         ...state[id].offsetByPath,
         [path]: 0
       };
+      // When the item contains a levelDescriptor, it is rendered as another child. When children length equals or
+      // surpasses the limit, the amount of children rendered is the limit + 1, to account for the levelDescriptor.
+      // So, when collapsing and doing a splice of the childrenByParentPath, we need to consider the levelDescriptor.
+      const containsDescriptor = state[id].childrenByParentPath[path].some((path) =>
+        path.includes('crafter-level-descriptor.level.xml')
+      );
+      const spliceLimit = containsDescriptor ? state[id].limit + 1 : state[id].limit;
       state[id].childrenByParentPath = {
         ...state[id].childrenByParentPath,
-        [path]: state[id].childrenByParentPath[path].splice(0, state[id].limit)
+        [path]: state[id].childrenByParentPath[path].splice(0, spliceLimit)
       };
     },
     [pathNavigatorTreeToggleCollapsed.type]: (state, { payload: { id, collapsed } }) => {
