@@ -52,14 +52,14 @@ const updatePath = (state, payload) => {
   const chunk = state[id];
   chunk.totalByPath[parentPath] = children.total;
   chunk.childrenByParentPath[parentPath] = [];
-  children.forEach((item) => {
-    chunk.childrenByParentPath[parentPath].push(item.path);
-    chunk.totalByPath[item.path] = item.childrenCount;
-  });
   if (children.levelDescriptor) {
     chunk.childrenByParentPath[parentPath].push(children.levelDescriptor.path);
     chunk.totalByPath[children.levelDescriptor.path] = 0;
   }
+  children.forEach((item) => {
+    chunk.childrenByParentPath[parentPath].push(item.path);
+    chunk.totalByPath[item.path] = item.childrenCount;
+  });
   // If the expanded node has no children and is not filtered, it's a
   // leaf node and there's no point keeping it in `expanded`
   if (children.length === 0 && !options?.keyword) {
@@ -208,14 +208,6 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
     [pathNavigatorTreeExpandPath.type]: expandPath,
     [pathNavigatorTreeCollapsePath.type]: (state, { payload: { id, path } }) => {
       state[id].expanded = state[id].expanded.filter((expanded) => !expanded.startsWith(path));
-      state[id].offsetByPath = {
-        ...state[id].offsetByPath,
-        [path]: 0
-      };
-      state[id].childrenByParentPath = {
-        ...state[id].childrenByParentPath,
-        [path]: state[id].childrenByParentPath[path].splice(0, state[id].limit)
-      };
     },
     [pathNavigatorTreeToggleCollapsed.type]: (state, { payload: { id, collapsed } }) => {
       state[id].collapsed = collapsed;

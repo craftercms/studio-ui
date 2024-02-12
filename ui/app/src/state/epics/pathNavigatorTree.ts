@@ -210,9 +210,9 @@ export default [
           optionsByPath = {
             ...optionsByPath,
             ...createPresenceTable(expanded, (value) => ({
+              ...createGetChildrenOptions(chunk, pluckProps(payload, true, 'limit', 'excludes')),
               ...(keywordByPath[value] ? { keyword: keywordByPath[value] } : {}),
-              ...(offsetByPath[value] ? { limit: limit + offsetByPath[value] } : {}),
-              ...createGetChildrenOptions(chunk, pluckProps(payload, true, 'limit', 'excludes'))
+              ...(offsetByPath[value] ? { limit: limit + offsetByPath[value] } : {})
             }))
           };
         });
