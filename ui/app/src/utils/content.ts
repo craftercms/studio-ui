@@ -389,6 +389,7 @@ export function parseContentXML(
       dateCreated: null,
       dateModified: null,
       contentTypeId: contentTypeId,
+      disabled: false,
       sourceMap: {}
     }
   };

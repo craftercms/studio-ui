@@ -115,7 +115,9 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
           locale: null,
           dateCreated: null,
           dateModified: null,
-          contentTypeId: null
+          contentTypeId: null,
+          disabled: false,
+          sourceMap: {}
         },
         ...data
       };
@@ -143,7 +145,9 @@ export function deserializeActiveTargetingModelData<T extends Object>(
       label: null,
       dateCreated: null,
       dateModified: null,
-      contentTypeId: null
+      contentTypeId: null,
+      disabled: false,
+      sourceMap: {}
     },
     ...data
   };
