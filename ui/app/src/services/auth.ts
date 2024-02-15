@@ -104,7 +104,7 @@ export function obtainAuthToken(): Observable<ObtainAuthTokenResponse> {
   );
 }
 
-export type FetchAuthTypeResponse = 'db' | 'ldap' | 'headers' | 'saml';
+export type FetchAuthTypeResponse = 'db' | 'ldap' | 'auth_headers' | 'saml';
 
 export function fetchAuthenticationType(): Observable<FetchAuthTypeResponse> {
   return get<{ authType: FetchAuthTypeResponse }>('/studio/authType.json').pipe(
