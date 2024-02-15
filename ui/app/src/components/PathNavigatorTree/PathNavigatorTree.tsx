@@ -235,12 +235,15 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     if (state.expanded.includes(path)) {
       dispatch(pathNavigatorTreeCollapsePath({ id, path }));
     } else {
-      // If the item's children have been loaded, should simply be expanded
-      if (childrenByParentPath[path]) {
-        dispatch(pathNavigatorTreeExpandPath({ id, path }));
-      } else {
-        // Children not fetched yet, should be fetched
-        dispatch(pathNavigatorTreeFetchPathChildren({ id, path }));
+      const childrenCount = itemsByPath[path].childrenCount;
+      if (childrenCount) {
+        // If the item's children have been loaded, should simply be expanded
+        if (childrenByParentPath[path]) {
+          dispatch(pathNavigatorTreeExpandPath({ id, path }));
+        } else {
+          // Children not fetched yet, should be fetched
+          dispatch(pathNavigatorTreeFetchPathChildren({ id, path }));
+        }
       }
     }
   };
