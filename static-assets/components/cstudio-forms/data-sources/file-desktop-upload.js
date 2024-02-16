@@ -101,7 +101,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
   },
 
   edit: function (key, control) {
-    var getContentItemCb = {
+    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
       success: function (contentTO) {
         CStudioAuthoring.Operations.editContent(
           contentTO.item.contentType,
@@ -112,9 +112,7 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
           false
         );
       }
-    };
-
-    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, getContentItemCb);
+    });
   },
 
   getLabel: function () {
