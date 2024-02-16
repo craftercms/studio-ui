@@ -2598,7 +2598,12 @@ var CStudioForms =
               }
 
               const defaultValue = moduleConfig.config.field.defaultValue;
-              if (!value && defaultValue && typeof defaultValue === 'string' && !noDefaultLookup[formField.id]) {
+              if (
+                craftercms.utils.object.nou(value) &&
+                defaultValue &&
+                typeof defaultValue === 'string' &&
+                !noDefaultLookup[formField.id]
+              ) {
                 value = moduleConfig.config.field.defaultValue;
               }
 
