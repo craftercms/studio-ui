@@ -376,8 +376,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       const deleteBtn = $(
         '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
       );
-
-      if (this.allowEdit) {
+      const isEditable =
+        this.allowEdit && (item.key.startsWith('/site/') || craftercms.utils.content.isEditableAsset(item.key));
+      if (isEditable) {
         if (isComponent || !this.readonly) {
           $actionsContainer.append(editBtn);
           editBtn.on('click', function () {
