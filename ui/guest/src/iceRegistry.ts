@@ -62,7 +62,7 @@ const validationChecks: Partial<Record<ValidationKeys, Function>> = {
 let rid = 0;
 
 /* private */
-const registry: Map<number, ICERecord> = new Map();
+export const registry: Map<number, ICERecord> = new Map();
 
 let refCount: LookupTable<number> = {};
 
