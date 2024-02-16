@@ -355,10 +355,12 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       $(itemEl).append(`<span class="name">${item.value}</span>`);
       if (item.include) {
         $(itemEl).append(`<span class="path">${item.include}</span>`);
-      } else {
+      } else if (item.inline) {
         $(itemEl).append(
           `<span class="path">(${this.formatMessage(this.formEngineMessages.embeddedComponent)})</span>`
         );
+      } else {
+        $(itemEl).append(`<span class="path">${item.key}</span>`);
       }
 
       if (this.readonly === true) {
