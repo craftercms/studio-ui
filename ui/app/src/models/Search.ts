@@ -91,6 +91,7 @@ export interface SearchResult {
 
 export interface ComponentsContentTypeParams extends PaginationOptions {
   keywords?: string;
+  maxExpansions?: number;
 }
 
 export interface ContentInstancePage {

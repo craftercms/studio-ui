@@ -30,11 +30,11 @@ import {
   fetchContentTypesFailed,
   setContentTypeFilter
 } from '../actions/preview';
-import { exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { fetchItemsByContentType } from '../../services/content';
 import { catchAjaxError } from '../../utils/ajax';
 import GlobalState from '../../models/GlobalState';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
   associateTemplate as associateTemplateService,
   dissociateTemplate as dissociateTemplateService,
@@ -42,6 +42,10 @@ import {
 } from '../../services/contentTypes';
 import { CrafterCMSEpic } from '../store';
 import ContentType from '../../models/ContentType';
+import { AjaxError } from 'rxjs/ajax';
+import { reversePluckProps } from '../../utils/object';
+import { sessionTimeout } from '../actions/user';
+import { ComponentsContentTypeParams, LookupTable } from '../../models';
 
 export default [
   // region fetchContentTypes
@@ -65,8 +69,15 @@ export default [
     action$.pipe(
       ofType(fetchComponentsByContentType.type, setContentTypeFilter.type),
       withLatestFrom(state$),
-      switchMap(([, state]) =>
-        fetchItemsByContentType(
+      switchMap(([, state]) => {
+        let currentMaxExpansions = 50;
+        let query = { ...state.preview.components.query };
+        let serviceArgs: [
+          site: string,
+          contentTypes: string[],
+          contentTypesLookup: LookupTable<ContentType>,
+          options?: ComponentsContentTypeParams
+        ] = [
           state.sites.active,
           state.preview.components.contentTypeFilter === 'all'
             ? Object.values(state.contentTypes.byId)
@@ -77,9 +88,49 @@ export default [
                 .map((contentType) => contentType.id)
             : state.preview.components.contentTypeFilter,
           state.contentTypes.byId,
-          state.preview.components.query
-        ).pipe(map(fetchComponentsByContentTypeComplete), catchAjaxError(fetchComponentsByContentTypeFailed))
-      )
+          query
+        ];
+        let catchErrorFn, createServiceObservable;
+        catchErrorFn = (error) => {
+          if (error.name === 'AjaxError') {
+            // TODO: Awaiting search-specific code and backend updates. Must update the `1000` to the new search-specific code.
+            // const studioResponseCode = error.response?.response?.code;
+            if (
+              // studioResponseCode === 1000 &&
+              currentMaxExpansions > 1
+            ) {
+              currentMaxExpansions = Math.floor(currentMaxExpansions / 2);
+              serviceArgs[3].maxExpansions = currentMaxExpansions || 1;
+              return createServiceObservable();
+            } else {
+              const ajaxError: Partial<AjaxError> = reversePluckProps(error, 'xhr', 'request') as any;
+              ajaxError.response = ajaxError.response?.response ?? {
+                code: ajaxError.status,
+                message: 'An unknown error has occurred.'
+              };
+              const actions = [fetchComponentsByContentTypeFailed(ajaxError)];
+              if (ajaxError.status === 401) {
+                actions.push(sessionTimeout());
+              }
+              return of(...actions);
+            }
+          } else {
+            return [
+              fetchComponentsByContentTypeFailed({
+                response: {
+                  code: '1000',
+                  message: 'An unknown error has occurred.'
+                }
+              })
+            ];
+          }
+        };
+        createServiceObservable = () =>
+          fetchItemsByContentType
+            .apply(null, serviceArgs)
+            .pipe(map(fetchComponentsByContentTypeComplete), catchError(catchErrorFn));
+        return createServiceObservable();
+      })
     ),
   // endregion
   // region associateTemplate

@@ -31,6 +31,7 @@ import { ContentEventPayload, WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
+import { AjaxError } from 'rxjs/ajax';
 
 interface CommonOperationProps {
   modelId: string;
@@ -364,7 +365,9 @@ export const fetchComponentsByContentTypeComplete = /*#__PURE__*/ createAction<C
   'FETCH_COMPONENTS_BY_CONTENT_TYPE_COMPLETE'
 );
 
-export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction('FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED');
+export const fetchComponentsByContentTypeFailed = /*#__PURE__*/ createAction<Partial<AjaxError>>(
+  'FETCH_COMPONENTS_BY_CONTENT_TYPE_FAILED'
+);
 
 export const clearDropTargets = /*#__PURE__*/ createAction(CLEAR_DROP_TARGETS);
 
