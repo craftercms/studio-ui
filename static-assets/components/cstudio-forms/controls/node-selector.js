@@ -365,7 +365,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         itemEl.classList.add('disabled');
       }
 
-      const isComponent = item.key.includes('/site') || item.inline;
+      const isComponent = item.key.startsWith('/site') || item.inline;
       const editBtnLabel = this.readonly ? 'View' : 'Edit';
       const editBtnIconClass = this.readonly ? 'fa-eye' : 'fa-pencil';
 
@@ -377,7 +377,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
         '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
       );
 
-      if (this.allowEdit) {
+      const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
+      if (isEditable) {
         if (isComponent || !this.readonly) {
           $actionsContainer.append(editBtn);
           editBtn.on('click', function () {
