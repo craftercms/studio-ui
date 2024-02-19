@@ -256,9 +256,15 @@ const issueDescriptorRequest = (props) => {
       const normalizedModel = normalizedModels[model.craftercms.id];
       const modelIdByPath = {};
       Object.values(modelLookup).forEach((model) => {
-        // Embedded components don't have a path.
-        // Items that weren't flattened would come with a `null` id.
-        if (model.craftercms.path && model.craftercms.id) {
+        if (
+          // Embedded components don't have a path.
+          model.craftercms.path &&
+          // Items that weren't flattened and their path doesn't contain their id, would come with a `null` id.
+          model.craftercms.id &&
+          // Not-flattened items whose file name is their id, would have id/path filled up but the rest of props null.
+          // Technically, just this line might be sufficient. Could evaluate remove the id check.
+          model.craftercms.contentTypeId
+        ) {
           modelIdByPath[model.craftercms.path] = model.craftercms.id;
         }
       });
@@ -757,8 +763,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             create = false
           } = payload as InsertComponentOperationPayload;
           let { modelId, parentModelId } = payload;
+          const model = models[parentModelId ?? modelId];
           const path = models[modelId ?? parentModelId].craftercms.path;
-          const contentType = contentTypes[instance.craftercms.contentTypeId];
+          const instanceContentType = contentTypes[instance.craftercms.contentTypeId];
+          const parentContentType = contentTypes[model.craftercms.contentTypeId];
 
           if (isInheritedField(models[modelId], fieldId)) {
             modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
@@ -777,12 +785,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             ? // region insertComponent
               insertComponent(
                 siteId,
+                models[parentModelId ? parentModelId : modelId].craftercms.path,
                 modelId,
                 fieldId,
                 targetIndex,
-                contentType,
+                parentContentType,
                 instance,
-                models[parentModelId ? parentModelId : modelId].craftercms.path,
+                instanceContentType,
                 shared,
                 shouldSerializeFn
               )
@@ -790,18 +799,19 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               // region insertInstance
               insertInstance(
                 siteId,
+                models[parentModelId ? parentModelId : modelId].craftercms.path,
                 modelId,
                 fieldId,
                 targetIndex,
-                instance,
-                models[parentModelId ? parentModelId : modelId].craftercms.path
+                parentContentType,
+                instance
               );
           // endregion
 
           // Writing the xml document for the component being inserted only applies to new & shared.
           if (shared && create) {
             let postWriteObs = serviceObservable;
-            serviceObservable = writeInstance(siteId, instance, contentType, shouldSerializeFn).pipe(
+            serviceObservable = writeInstance(siteId, instance, instanceContentType, shouldSerializeFn).pipe(
               switchMap(() => postWriteObs)
             );
           }

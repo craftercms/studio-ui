@@ -778,7 +778,15 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
           mhm[id] = hierarchyMap[id];
         }
       });
-      models$.next({ ...models$.value, ...modelLookup });
+      const nextModels: Record<string, ContentInstance> = { ...models$.value };
+      // Partial models (non-flattened references) can create instability.
+      // Take only those that seem complete and let the system fetch those that aren't.
+      Object.entries(modelLookup).forEach(([id, instance]) => {
+        if ((instance.craftercms.id || instance.craftercms.path) && instance.craftercms.contentTypeId) {
+          nextModels[id] = instance;
+        }
+      });
+      models$.next(nextModels);
       paths$.next({ ...paths$.value, ...modelIdByPath });
       items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
       permissions$.next(permissions);

@@ -234,16 +234,27 @@ export const legacyLoadFormDefinition = (siteId: string, contentType: string): O
 export const fetchAndInsertContentInstance = (
   siteId: string,
   parentPath: string,
-  path: string,
+  childPath: string,
   fieldId: string,
   index: number,
   datasource: string,
   contentTypesLookup: LookupTable<ContentType>,
-  parentModelId: string
+  parentModelId: string,
+  parentContentTypeId: string
 ): Observable<any> => {
-  return fetchContentInstance(siteId, path, contentTypesLookup).pipe(
-    switchMap((contentInstance) =>
-      insertInstance(siteId, parentModelId, fieldId, index, contentInstance, parentPath, datasource)
-    )
+  return fetchContentInstance(siteId, childPath, contentTypesLookup).pipe(
+    switchMap((contentInstance) => {
+      const parentContentType: ContentType = contentTypesLookup[parentContentTypeId];
+      return insertInstance(
+        siteId,
+        parentPath,
+        parentModelId,
+        fieldId,
+        index,
+        parentContentType,
+        contentInstance,
+        datasource
+      );
+    })
   );
 };

@@ -62,7 +62,7 @@ const validationChecks: Partial<Record<ValidationKeys, Function>> = {
 let rid = 0;
 
 /* private */
-const registry: Map<number, ICERecord> = new Map();
+export const registry: Map<number, ICERecord> = new Map();
 
 let refCount: LookupTable<number> = {};
 
@@ -311,8 +311,8 @@ export function isTypeAcceptedAsByField(
     (storedAs === 'shared'
       ? receiverField?.validations?.allowedSharedContentTypes?.value
       : storedAs === 'embedded'
-      ? receiverField?.validations?.allowedEmbeddedContentTypes?.value
-      : receiverField?.validations?.allowedContentTypes?.value) ?? [];
+        ? receiverField?.validations?.allowedEmbeddedContentTypes?.value
+        : receiverField?.validations?.allowedContentTypes?.value) ?? [];
   return acceptedTypes.some((typeId) => typeId === contentTypeId || typeId === '*');
 }
 
