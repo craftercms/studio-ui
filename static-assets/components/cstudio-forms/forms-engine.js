@@ -2598,8 +2598,11 @@ var CStudioForms =
               }
 
               const defaultValue = moduleConfig.config.field.defaultValue;
+              // When value is of type string, an empty string is considered unset (unless it is contained in the
+              // `noDefaultLookup`, where it means that an empty string was the value set).
+              const unsetStoredValue = typeof value === 'string' ? !value : craftercms.utils.object.nou(value);
               if (
-                craftercms.utils.object.nou(value) &&
+                unsetStoredValue &&
                 defaultValue &&
                 typeof defaultValue === 'string' &&
                 !noDefaultLookup[formField.id]
