@@ -71,7 +71,7 @@ var CStudioForms =
     // lookup to check the controls with default values
     const defaultValuesLookup = {};
     // lookup to check the fields that have the `no-default` attribute set
-    const noDefaultLookup = {};
+    let noDefaultLookup = {};
     let disableClose = false;
 
     // This sets the dropup class to bootstrap dropdowns (used to display datasources selected for controls) when
@@ -2498,6 +2498,11 @@ var CStudioForms =
                   var itemArray = form.model[repeat.id];
                   var repeatArrayIndex = this.parentNode._repeatIndex;
                   itemArray.splice(repeatArrayIndex, 1);
+                  // Remove noDefaultLookup entry
+                  const itemBaseId = repeat.id + '|' + repeatArrayIndex;
+                  noDefaultLookup = Object.fromEntries(
+                    Object.entries(noDefaultLookup).filter(([key]) => !key.startsWith(itemBaseId))
+                  );
                   containerEl.reRender(containerEl);
 
                   if (repeatArrayIndex) {
@@ -2598,11 +2603,8 @@ var CStudioForms =
               }
 
               const defaultValue = moduleConfig.config.field.defaultValue;
-              // When value is of type string, an empty string is considered unset (unless it is contained in the
-              // `noDefaultLookup`, where it means that an empty string was the value set).
-              const unsetStoredValue = typeof value === 'string' ? !value : craftercms.utils.object.nou(value);
               if (
-                unsetStoredValue &&
+                craftercms.utils.object.nou(value) &&
                 defaultValue &&
                 typeof defaultValue === 'string' &&
                 !noDefaultLookup[formField.id]
