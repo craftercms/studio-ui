@@ -2609,7 +2609,7 @@ var CStudioForms =
                 typeof defaultValue === 'string' &&
                 !noDefaultLookup[formField.id]
               ) {
-                value = moduleConfig.config.field.defaultValue;
+                value = defaultValue;
               }
 
               if (value) {
