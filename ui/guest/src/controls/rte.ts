@@ -138,6 +138,7 @@ export function initTinyMCE(
     media_live_embeds: true,
     file_picker_types: 'image media',
     craftercms_paste_cleanup: rteSetup?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
+    deprecation_warnings: false,
     file_picker_callback: function (cb, value, meta) {
       // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
       // meta.filetype === 'file | image | media'
