@@ -263,6 +263,7 @@ export function initTinyMCE(
           changed = changed || getContent() !== initialTinyContent;
           if (
             !relatedTarget?.closest('.tox-tinymce') &&
+            !relatedTarget?.closest('.tox') &&
             !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
           ) {
             if (validations?.required && !getContent().trim()) {
