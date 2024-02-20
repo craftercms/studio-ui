@@ -1757,7 +1757,7 @@ __metadata:
     "@types/react-swipeable-views": "npm:^0.13.5"
     "@types/video.js": "npm:^7.3.56"
     "@types/zxcvbn": "npm:^4.4.4"
-    "@typescript-eslint/eslint-plugin": "npm:^6.20.0"
+    "@typescript-eslint/eslint-plugin": "npm:^7.0.2"
     "@typescript-eslint/parser": "npm:^6.20.0"
     "@videojs/vhs-utils": "npm:^4.1.0"
     autosuggest-highlight: "npm:^3.3.4"
