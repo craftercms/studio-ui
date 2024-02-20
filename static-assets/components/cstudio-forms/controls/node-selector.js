@@ -355,17 +355,19 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       $(itemEl).append(`<span class="name">${item.value}</span>`);
       if (item.include) {
         $(itemEl).append(`<span class="path">${item.include}</span>`);
-      } else {
+      } else if (item.inline === 'true') {
         $(itemEl).append(
           `<span class="path">(${this.formatMessage(this.formEngineMessages.embeddedComponent)})</span>`
         );
+      } else {
+        $(itemEl).append(`<span class="path">${item.key}</span>`);
       }
 
       if (this.readonly === true) {
         itemEl.classList.add('disabled');
       }
 
-      const isComponent = item.key.includes('/site') || item.inline;
+      const isComponent = item.key.startsWith('/site') || item.inline;
       const editBtnLabel = this.readonly ? 'View' : 'Edit';
       const editBtnIconClass = this.readonly ? 'fa-eye' : 'fa-pencil';
 
@@ -376,8 +378,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       const deleteBtn = $(
         '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
       );
-
-      if (this.allowEdit) {
+      const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
+      if (isEditable) {
         if (isComponent || !this.readonly) {
           $actionsContainer.append(editBtn);
           editBtn.on('click', function () {
