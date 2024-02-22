@@ -20,7 +20,6 @@ import { Resource } from '../../models/Resource';
 import { Site } from '../../models/Site';
 import SiteCard from '../SiteCard/SiteCard';
 import { useSitesGridStyles } from './styles';
-import LookupTable from '../../models/LookupTable';
 import { PublishingStatus } from '../../models/Publishing';
 
 interface SitesGridProps {
@@ -28,10 +27,13 @@ interface SitesGridProps {
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
-  onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
+  onPublishButtonClick(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    site: Site,
+    status: PublishingStatus
+  ): void;
   onDuplicateSiteClick(siteId: string): void;
   currentView: 'grid' | 'list';
-  publishingStatusLookup: LookupTable<PublishingStatus>;
 }
 
 export function SitesGrid(props: SitesGridProps) {
@@ -42,7 +44,6 @@ export function SitesGrid(props: SitesGridProps) {
     onEditSiteClick,
     onDuplicateSiteClick,
     currentView,
-    publishingStatusLookup,
     onPublishButtonClick
   } = props;
   const sites = resource.read();
@@ -54,7 +55,6 @@ export function SitesGrid(props: SitesGridProps) {
           <Grid item key={site.id}>
             <SiteCard
               site={site}
-              publishingStatus={publishingStatusLookup[site.id]}
               onSiteClick={onSiteClick}
               onDeleteSiteClick={onDeleteSiteClick}
               onEditSiteClick={onEditSiteClick}
