@@ -34,6 +34,8 @@ import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { fetchStatus } from '../../services/publishing';
+import { catchError, delay, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface SiteCardProps {
   site: Site;
@@ -83,25 +85,39 @@ export function SiteCard(props: SiteCardProps) {
   const isSiteReady = site.state === 'READY';
 
   useEffect(() => {
-    setIsFetching(true);
-    const subscription = fetchStatus(site.id).subscribe((status) => {
-      setPublishingStatus(status);
-      setIsFetching(false);
-    });
-    return () => {
-      subscription?.unsubscribe();
-      setIsFetching(false);
-    };
-  }, [site.id]);
+    if (isSiteReady) {
+      setIsFetching(true);
+      const subscription = fetchStatus(site.id)
+        .pipe(
+          // The back seems to 400 to checking publishing status right after creating a very large site.
+          // This attempts to retry the request once after a delay.
+          catchError((e, c) =>
+            of(null).pipe(
+              delay(1000),
+              switchMap(() => fetchStatus(site.id))
+            )
+          )
+        )
+        .subscribe({
+          next: (status) => {
+            setPublishingStatus(status);
+            setIsFetching(false);
+          },
+          error: (error) => {
+            console.log(error);
+            setIsFetching(false);
+          }
+        });
+      return () => {
+        subscription?.unsubscribe();
+        setIsFetching(false);
+      };
+    }
+  }, [site.id, isSiteReady]);
 
   return (
     <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
-      <CardActionArea
-        onClick={() => onSiteClick(site)}
-        component="div"
-        disabled={!isSiteReady}
-        sx={{ paddingRight: isSiteReady ? undefined : '35px' }}
-      >
+      <CardActionArea onClick={() => onSiteClick(site)} component="div" disabled={!isSiteReady}>
         <CardHeader
           title={site.name}
           className={classes.cardHeader}
@@ -126,7 +142,10 @@ export function SiteCard(props: SiteCardProps) {
           sx={{
             [`.${cardHeaderClasses.action}`]: {
               alignSelf: 'center'
-            }
+            },
+            ...(!isSiteReady && {
+              paddingRight: '55px'
+            })
           }}
         />
         {!compact && (
@@ -180,7 +199,9 @@ export function SiteCard(props: SiteCardProps) {
           />
         )}
       </CardActions>
-      {!isSiteReady && <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: 22, right: 10 }} />}
+      {!isSiteReady && (
+        <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: '22px', right: '20px' }} />
+      )}
     </Card>
   );
 }

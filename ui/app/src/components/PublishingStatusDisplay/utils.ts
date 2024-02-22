@@ -138,7 +138,7 @@ export function getPublishingStatusMessage(
   formatMessage: IntlShape['formatMessage']
 ): string {
   if (nou(props.enabled)) {
-    return formatMessage({ defaultMessage: 'The publish status details did not load correctly.' });
+    return formatMessage({ defaultMessage: 'The publisher status details did not load correctly.' });
   } else if (!props.enabled) {
     return formatMessage(publishingStatusMessages.disabledMessage);
   }
