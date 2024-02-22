@@ -37,6 +37,7 @@ import {
   createContentInstance,
   getCachedModel,
   getCachedModels,
+  getCachedModelsByPath,
   getCachedSandboxItem,
   getModelIdFromInheritedField,
   isInheritedField,
@@ -99,6 +100,7 @@ import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
 import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
+import { getIdsFromField } from '@craftercms/studio-ui/utils/content';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -678,22 +680,26 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       tap(([action, state]) => {
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
-
-        const { username, activeSite } = state;
         const models = getCachedModels();
+        const modelsByPath = getCachedModelsByPath();
         let parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
-        let path = models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
+        const { username, activeSite } = state;
 
-        if (isInheritedField(modelId, fieldId)) {
-          const modelIdToLock = getModelIdFromInheritedField(modelId, fieldId);
-          const parentModelId = getParentModelId(modelIdToLock, models, modelHierarchyMap);
-          path = models[parentModelId ?? modelIdToLock].craftercms.path;
-        }
+        ({ modelId, parentModelId } = getIdsFromField(
+          fieldId,
+          models,
+          modelId,
+          parentModelId,
+          modelsByPath,
+          modelHierarchyMap
+        ));
+        const pathToLock = models[parentModelId ? parentModelId : modelId].craftercms.path;
+
         beforeWrite$({
-          path,
+          path: pathToLock,
           site: activeSite,
           username,
-          localItem: getCachedSandboxItem(path)
+          localItem: getCachedSandboxItem(pathToLock)
         }).subscribe(() => {
           contentController.deleteItem(modelId, fieldId, index);
         });

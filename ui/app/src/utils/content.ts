@@ -76,6 +76,7 @@ import slugify from 'slugify';
 import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
+import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
 
 export function isEditableAsset(path: string) {
   return (
@@ -1075,4 +1076,23 @@ export function generateComponentBasePath(contentType: string) {
 
 export function generateComponentPath(modelId: string, contentType: string) {
   return `${generateComponentBasePath(contentType)}/${modelId}.xml`;
+}
+
+export function getIdsFromField(
+  fieldId: string,
+  models,
+  modelId,
+  parentModelId,
+  modelIdByPath,
+  hierarchyMap
+): { modelId: string; parentModelId: string } {
+  const ids = {
+    modelId,
+    parentModelId
+  };
+  if (isInheritedField(models[modelId], fieldId)) {
+    ids.modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
+    ids.parentModelId = findParentModelId(modelId, hierarchyMap, models);
+  }
+  return ids;
 }
