@@ -669,15 +669,34 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   },
   // endregion
   // region trashed
-  (action$: Observable<GuestStandardAction<{ iceId: number }>>) => {
+  (action$: Observable<GuestStandardAction<{ iceId: number }>>, state$) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
       ofType(trashed.type),
-      tap((action) => {
+      withLatestFrom(state$),
+      tap(([action, state]) => {
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
-        contentController.deleteItem(modelId, fieldId, index);
+
+        const { username, activeSite } = state;
+        const models = getCachedModels();
+        let parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+        let path = models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
+
+        if (isInheritedField(modelId, fieldId)) {
+          const modelIdToLock = getModelIdFromInheritedField(modelId, fieldId);
+          const parentModelId = getParentModelId(modelIdToLock, models, modelHierarchyMap);
+          path = models[parentModelId ?? modelIdToLock].craftercms.path;
+        }
+        beforeWrite$({
+          path,
+          site: activeSite,
+          username,
+          localItem: getCachedSandboxItem(path)
+        }).subscribe(() => {
+          contentController.deleteItem(modelId, fieldId, index);
+        });
         post(instanceDragEnded());
       }),
       // There's a raise condition where sometimes the dragend is
