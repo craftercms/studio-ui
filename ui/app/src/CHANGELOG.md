@@ -1,4 +1,6 @@
-# 4.1.3
+# Changelog: `@craftercms/studio-ui` 
+
+## 4.1.3
 
 * HostUI removed and merged into Host
 * Upgraded yarn
@@ -9,6 +11,16 @@
   * ace
   * bootstrap
 * Replace Navigators to work with new bulk children fetcher api
+* **Breaking Changes** 
+  * `services/content/insertComponent`: function now requires the parent document content type and the path argument moves to being earlier in the argument list.
+    The shifting of the arguments seeks a more coherent argument order, grouping parent-related arguments first, followed by inserted instance related arguments, and finally supportive arguments last.
+    * **Previously**: siteId, parentModelId, parentFieldId, targetIndex, **_insertedItemContentType_**, **_insertedContentInstance_**, _**parentDocPath**_, isSharedInstance, shouldSerializeValueFn?
+    * **Now**: siteId, _**parentDocPath**_, parentModelId, parentFieldId, targetIndex, _**parentContentType**_, _**insertedContentInstance**_, _**insertedItemContentType**_, isSharedInstance, shouldSerializeValueFn?
+  * `services/content/insertInstance`: function now requires the parent document content type and the path argument moves to being earlier in the argument list.
+    The shifting of the arguments seeks a more coherent argument order, grouping parent-related arguments first, followed by inserted instance related arguments, and finally supportive arguments last.
+    * **Previously**: siteId, parentModelId, parentFieldId, targetIndex, insertedInstance, _**parentDocPath**_, datasource?
+    * **Now**: siteId, _**parentDocPath**_, parentModelId, parentFieldId, targetIndex, _**parentContentType**_, insertedInstance, datasource?
+  * `components/LegacyComponentsPanel/utils/fetchAndInsertContentInstance`: the function now requires the parent content type id as its last argument. Note this whole component module is likely to be removed in the future.
 
 ## 4.1.2
 

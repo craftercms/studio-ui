@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
@@ -33,6 +33,9 @@ import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
+import { fetchStatus } from '../../services/publishing';
+import { catchError, delay, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface SiteCardProps {
   site: Site;
@@ -40,10 +43,13 @@ interface SiteCardProps {
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
   onDuplicateSiteClick(siteId: string): void;
-  onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
+  onPublishButtonClick(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    site: Site,
+    status: PublishingStatus
+  ): void;
   fallbackImageSrc?: string;
   compact?: boolean;
-  publishingStatus: PublishingStatus | false;
 }
 
 const translations = defineMessages({
@@ -70,21 +76,48 @@ export function SiteCard(props: SiteCardProps) {
     onDuplicateSiteClick,
     fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg',
     compact = false,
-    publishingStatus,
     onPublishButtonClick
   } = props;
   const { classes, cx: clsx } = useSiteCardStyles();
   const { formatMessage } = useIntl();
+  const [publishingStatus, setPublishingStatus] = useState<PublishingStatus>();
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const isSiteReady = site.state === 'READY';
+
+  useEffect(() => {
+    if (isSiteReady) {
+      setIsFetching(true);
+      const subscription = fetchStatus(site.id)
+        .pipe(
+          // The back seems to 400 to checking publishing status right after creating a very large site.
+          // This attempts to retry the request once after a delay.
+          catchError((e, c) =>
+            of(null).pipe(
+              delay(1000),
+              switchMap(() => fetchStatus(site.id))
+            )
+          )
+        )
+        .subscribe({
+          next: (status) => {
+            setPublishingStatus(status);
+            setIsFetching(false);
+          },
+          error: (error) => {
+            console.log(error);
+            setIsFetching(false);
+          }
+        });
+      return () => {
+        subscription?.unsubscribe();
+        setIsFetching(false);
+      };
+    }
+  }, [site.id, isSiteReady]);
 
   return (
     <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
-      <CardActionArea
-        onClick={() => onSiteClick(site)}
-        component="div"
-        disabled={!isSiteReady}
-        sx={{ paddingRight: isSiteReady ? undefined : '35px' }}
-      >
+      <CardActionArea onClick={() => onSiteClick(site)} component="div" disabled={!isSiteReady}>
         <CardHeader
           title={site.name}
           className={classes.cardHeader}
@@ -109,7 +142,10 @@ export function SiteCard(props: SiteCardProps) {
           sx={{
             [`.${cardHeaderClasses.action}`]: {
               alignSelf: 'center'
-            }
+            },
+            ...(!isSiteReady && {
+              paddingRight: '55px'
+            })
           }}
         />
         {!compact && (
@@ -123,16 +159,16 @@ export function SiteCard(props: SiteCardProps) {
         )}
       </CardActionArea>
       <CardActions className={classes.cardActions} sx={compact ? undefined : { minHeight: '64px' }} disableSpacing>
-        {isSiteReady && publishingStatus !== false && (
+        {isSiteReady /* && publishingStatus !== false */ && (
           <PublishingStatusButtonUI
-            isFetching={!publishingStatus}
+            isFetching={isFetching}
             enabled={publishingStatus?.enabled}
             status={publishingStatus?.status}
             totalItems={publishingStatus?.totalItems}
             numberOfItems={publishingStatus?.numberOfItems}
             variant="icon"
             size={compact ? 'small' : 'medium'}
-            onClick={(e) => onPublishButtonClick(e, site)}
+            onClick={(e) => onPublishButtonClick(e, site, publishingStatus)}
           />
         )}
         {isSiteReady && onEditSiteClick && (
@@ -163,7 +199,9 @@ export function SiteCard(props: SiteCardProps) {
           />
         )}
       </CardActions>
-      {!isSiteReady && <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: 22, right: 10 }} />}
+      {!isSiteReady && (
+        <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: '22px', right: '20px' }} />
+      )}
     </Card>
   );
 }
