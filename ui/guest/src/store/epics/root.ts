@@ -100,7 +100,7 @@ import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
 import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
-import { getIdsFromField } from '@craftercms/studio-ui/utils/content';
+import { getInheritanceParentIdsForField } from '@craftercms/studio-ui/utils/content';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -681,15 +681,14 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
         const models = getCachedModels();
-        const modelsByPath = getCachedModelsByPath();
         let parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
         const { username, activeSite } = state;
-        ({ modelId, parentModelId } = getIdsFromField(
+        ({ modelId, parentModelId } = getInheritanceParentIdsForField(
           fieldId,
           models,
           modelId,
           parentModelId,
-          modelsByPath,
+          getCachedModelsByPath(),
           modelHierarchyMap
         ));
         const pathToLock = models[parentModelId ? parentModelId : modelId].craftercms.path;

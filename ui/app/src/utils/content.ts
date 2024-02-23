@@ -1078,21 +1078,21 @@ export function generateComponentPath(modelId: string, contentType: string) {
   return `${generateComponentBasePath(contentType)}/${modelId}.xml`;
 }
 
-export function getIdsFromField(
+/**
+ * If the field is inherited, swaps the modelId and parentModelId with
+ * the inheritance parent's. */
+export function getInheritanceParentIdsForField(
   fieldId: string,
-  models,
-  modelId,
-  parentModelId,
-  modelIdByPath,
-  hierarchyMap
+  modelLookup: LookupTable<ContentInstance>,
+  modelId: string,
+  parentModelId: string,
+  modelIdByPath: LookupTable<string>,
+  hierarchyMap: ModelHierarchyMap
 ): { modelId: string; parentModelId: string } {
-  const ids = {
-    modelId,
-    parentModelId
-  };
-  if (isInheritedField(models[modelId], fieldId)) {
-    ids.modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-    ids.parentModelId = findParentModelId(modelId, hierarchyMap, models);
+  const ids = { modelId, parentModelId };
+  if (isInheritedField(modelLookup[modelId], fieldId)) {
+    ids.modelId = getModelIdFromInheritedField(modelLookup[modelId], fieldId, modelIdByPath);
+    ids.parentModelId = findParentModelId(modelId, hierarchyMap, modelLookup);
   }
   return ids;
 }
