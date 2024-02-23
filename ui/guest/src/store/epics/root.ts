@@ -702,6 +702,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           switchMap(() => {
             contentController.deleteItem(modelId, fieldId, index);
             post(instanceDragEnded());
+            // There's a raise condition where sometimes the dragend is
+            // fired and sometimes is not upon dropping on the rubbish bin.
+            // Manually firing here may incur in double firing of computed_dragend
+            // in those occasions.
             return of(computedDragEnd());
           })
         );
