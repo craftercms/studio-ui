@@ -117,6 +117,7 @@ import EditFormPanel from '../EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
   getComputedEditMode,
+  getInheritanceParentIdsForField,
   getNumOfMenuOptionsForItem,
   hasEditAction,
   isItemLockedForMe,
@@ -949,10 +950,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           let { modelId, parentModelId } = payload;
           const path = models[modelId ?? parentModelId].craftercms.path;
 
-          if (isInheritedField(models[modelId], fieldId)) {
-            modelId = getModelIdFromInheritedField(models[modelId], fieldId, modelIdByPath);
-            parentModelId = findParentModelId(modelId, hierarchyMap, models);
-          }
+          ({ modelId, parentModelId } = getInheritanceParentIdsForField(
+            fieldId,
+            models,
+            modelId,
+            parentModelId,
+            modelIdByPath,
+            hierarchyMap
+          ));
 
           deleteItem(
             siteId,

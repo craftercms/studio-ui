@@ -116,6 +116,10 @@ export function getCachedModels(): LookupTable<ContentInstance> {
   return models$.value;
 }
 
+export function getCachedModelsByPath(): LookupTable<string> {
+  return paths$.value;
+}
+
 export function getCachedSandboxItems(): LookupTable<SandboxItem> {
   return items$.value;
 }
