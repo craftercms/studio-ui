@@ -677,14 +677,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     return action$.pipe(
       ofType(trashed.type),
       withLatestFrom(state$),
-      tap(([action, state]) => {
+      switchMap(([action, state]) => {
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
         const models = getCachedModels();
         const modelsByPath = getCachedModelsByPath();
         let parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
         const { username, activeSite } = state;
-
         ({ modelId, parentModelId } = getIdsFromField(
           fieldId,
           models,
@@ -694,22 +693,19 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           modelHierarchyMap
         ));
         const pathToLock = models[parentModelId ? parentModelId : modelId].craftercms.path;
-
-        beforeWrite$({
+        return beforeWrite$({
           path: pathToLock,
           site: activeSite,
           username,
           localItem: getCachedSandboxItem(pathToLock)
-        }).subscribe(() => {
-          contentController.deleteItem(modelId, fieldId, index);
-        });
-        post(instanceDragEnded());
-      }),
-      // There's a raise condition where sometimes the dragend is
-      // fired and sometimes is not upon dropping on the rubbish bin.
-      // Manually firing here may incur in double firing of computed_dragend
-      // in those occasions.
-      map(() => computedDragEnd())
+        }).pipe(
+          switchMap(() => {
+            contentController.deleteItem(modelId, fieldId, index);
+            post(instanceDragEnded());
+            return of(computedDragEnd());
+          })
+        );
+      })
     );
   },
   // endregion
