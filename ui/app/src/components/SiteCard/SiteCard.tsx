@@ -178,7 +178,7 @@ export function SiteCard(props: SiteCardProps) {
         )}
       </CardActionArea>
       <CardActions className={classes.cardActions} sx={compact ? undefined : { minHeight: '64px' }} disableSpacing>
-        {isSiteReady /* && publishingStatus !== false */ && (
+        {isSiteReady && (
           <PublishingStatusButtonUI
             isFetching={isFetching}
             enabled={publishingStatus?.enabled}
