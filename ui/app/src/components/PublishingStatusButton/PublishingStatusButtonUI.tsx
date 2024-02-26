@@ -32,8 +32,8 @@ export interface PublishingStatusButtonUIProps extends IconButtonProps {
 }
 
 export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, PublishingStatusButtonUIProps>((props, ref) => {
-  const isInProgressPublishingStatus = ['publishing', 'processing'].includes(props.status);
   const { enabled, numberOfItems, totalItems, status, isFetching, style, onClick, variant, ...rest } = props;
+  const isInProgressPublishingStatus = status && ['publishing', 'processing'].includes(status);
   const { formatMessage } = useIntl();
   return (
     <Tooltip
@@ -72,7 +72,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
               // size (which is this component's default) needs a larger spinner
               ['medium', void 0].includes(rest.size) ? 48 : void 0
             }
-            value={Math.round((numberOfItems / totalItems) * 100)}
+            value={isInProgressPublishingStatus ? Math.round((numberOfItems / totalItems) * 100) : undefined}
             variant={isInProgressPublishingStatus ? 'determinate' : 'indeterminate'}
             style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
           />
