@@ -679,35 +679,31 @@ export function deleteItem(
   indexToDelete: number | string,
   path: string
 ): Observable<any> {
-  return lock(site, path).pipe(
-    switchMap(() => {
-      return performMutation(
-        site,
-        path,
-        (element) => {
-          let index = indexToDelete;
-          let fieldNode = element.querySelector(`:scope > ${fieldId}`);
+  return performMutation(
+    site,
+    path,
+    (element) => {
+      let index = indexToDelete;
+      let fieldNode = element.querySelector(`:scope > ${fieldId}`);
 
-          if (typeof indexToDelete === 'string') {
-            index = parseInt(popPiece(indexToDelete));
-            // A fieldId can be in the form of `a.b`, which translates to `a > item > b` on the XML.
-            // In terms of index, since all it should ever arrive here is collection items,
-            // this assumes the index path points to the item itself, not the collection.
-            // By calling removeLastPiece(indexToDelete), we should get the collection node here.
-            fieldNode = extractNode(element, fieldId, removeLastPiece(`${indexToDelete}`));
-          }
+      if (typeof indexToDelete === 'string') {
+        index = parseInt(popPiece(indexToDelete));
+        // A fieldId can be in the form of `a.b`, which translates to `a > item > b` on the XML.
+        // In terms of index, since all it should ever arrive here is collection items,
+        // this assumes the index path points to the item itself, not the collection.
+        // By calling removeLastPiece(indexToDelete), we should get the collection node here.
+        fieldNode = extractNode(element, fieldId, removeLastPiece(`${indexToDelete}`));
+      }
 
-          fieldNode.children[index as number].remove();
+      fieldNode.children[index as number].remove();
 
-          if (fieldNode.children.length === 0) {
-            // If the node isn't completely blank, the xml formatter won't do it's job in converting to a self-closing tag.
-            // Also, later on, when retrieved, some *legacy* functions would impaired as the deserializing into JSON had unexpected content
-            fieldNode.innerHTML = '';
-          }
-        },
-        modelId
-      );
-    })
+      if (fieldNode.children.length === 0) {
+        // If the node isn't completely blank, the xml formatter won't do it's job in converting to a self-closing tag.
+        // Also, later on, when retrieved, some *legacy* functions would impaired as the deserializing into JSON had unexpected content
+        fieldNode.innerHTML = '';
+      }
+    },
+    modelId
   );
 }
 
