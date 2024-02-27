@@ -19,12 +19,15 @@ import { ContentTypeField } from '../../models/ContentType';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { CrafterCMSModules } from '../../services/configuration';
 
 export interface CodeEditorDialogBaseProps {
   path: string;
   mode?: string;
   contentType?: string;
   readonly?: boolean;
+  isConfig?: boolean;
+  module?: CrafterCMSModules;
 }
 
 export interface CodeEditorDialogProps extends CodeEditorDialogBaseProps, EnhancedDialogProps {

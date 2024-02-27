@@ -97,7 +97,13 @@ YAHOO.extend(
           var contentType = _self.contentType,
             path = '/config/studio/content-types' + contentType + '/config.xml';
 
-          CStudioAuthoring.Operations.openCodeEditor({ path, contentType, mode: 'xml' });
+          CStudioAuthoring.Operations.openCodeEditor({
+            path,
+            contentType,
+            mode: 'xml',
+            isConfig: true,
+            module: 'studio'
+          });
         };
       }
     }

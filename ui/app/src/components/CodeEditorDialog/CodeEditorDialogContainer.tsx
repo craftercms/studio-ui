@@ -49,9 +49,10 @@ import { batchActions } from '../../state/actions/misc';
 import { MultiChoiceSaveButton } from '../MultiChoiceSaveButton';
 import useUpToDateRefs from '../../hooks/useUpdateRefs';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
+import { writeConfiguration } from '../../services/configuration';
 
 export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps) {
-  const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess } = props;
+  const { path, onMinimize, onClose, mode, readonly, contentType, onFullScreen, onSuccess, isConfig, module } = props;
   const { open, isSubmitting } = useEnhancedDialogContext();
   const item = useDetailedItem(path);
   const site = useActiveSiteId();
@@ -91,7 +92,8 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const save = (callback?: Function) => {
     if (!isLockedForMe && !readonly) {
       dispatch(updateCodeEditorDialog({ isSubmitting: true }));
-      writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe({
+
+      const onSaved = {
         next() {
           dispatch(
             batchActions([
@@ -106,7 +108,14 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         error({ response }) {
           dispatch(showErrorDialog({ error: response }));
         }
-      });
+      };
+
+      if (isConfig) {
+        const configPath = path.replace(`/config/${module}`, '');
+        writeConfiguration(site, configPath, module, editorRef.current.getValue()).subscribe(onSaved);
+      } else {
+        writeContent(site, path, editorRef.current.getValue(), { unlock: false }).subscribe(onSaved);
+      }
     }
   };
 
