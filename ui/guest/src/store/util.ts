@@ -108,3 +108,39 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
   const isExternallyModified = Boolean(state.externallyModifiedPaths[path]);
   return { isLocked, isExternallyModified, model, parentModelId, parentModel, path };
 };
+
+export const checkIfMovedToSameZone = (dragContext: GuestState['dragContext']): boolean => {
+  let { dropZone, dropZones } = dragContext,
+    originDropZone = dropZones.find((dropZone) => dropZone.origin),
+    currentDZ = dropZone.element;
+
+  return currentDZ === originDropZone.element;
+};
+
+export const checkIfMovedToSamePosition = (dragContext: GuestState['dragContext']): boolean => {
+  let { dragged, targetIndex } = dragContext,
+    record = dragged,
+    draggedElementIndex = record.index;
+
+  if (typeof draggedElementIndex === 'string') {
+    // If the index is a string, it's a nested index with dot notation.
+    // At this point, we only care for the last index piece, which is
+    // the index of this item in the collection that's being manipulated.
+    draggedElementIndex = parseInt(draggedElementIndex.substr(draggedElementIndex.lastIndexOf('.') + 1), 10);
+  }
+
+  // If same dropzone
+  if (checkIfMovedToSameZone(dragContext)) {
+    // If moving the item down the array of items, need to account
+    // for all the originally subsequent items shifting up.
+    if (draggedElementIndex < targetIndex) {
+      // Hence the final target index in reality is
+      // the drop marker's index minus 1
+      --targetIndex;
+    }
+    return draggedElementIndex === targetIndex;
+  } else {
+    // Not same dropzone => different position
+    return false;
+  }
+};
