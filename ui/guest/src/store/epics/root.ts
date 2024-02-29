@@ -34,7 +34,7 @@ import { getById, getReferentialEntries, isTypeAcceptedAsByField } from '../../i
 import {
   beforeWrite$,
   checkIfLockedOrModified,
-  checkIfMovedToSamePosition,
+  movedToSamePosition,
   movedToSameZone,
   dragOk,
   unwrapEvent
@@ -244,7 +244,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             : path;
 
           // If moving to the same position, there is no need of locking and other requests.
-          if (checkIfMovedToSamePosition(dragContext)) {
+          if (movedToSamePosition(dragContext)) {
             post(instanceDragEnded());
             return of(computedDragEnd());
           } else {
@@ -942,7 +942,7 @@ const moveComponent = (dragContext) => {
       --targetIndex;
     }
 
-    if (!checkIfMovedToSamePosition(dragContext)) {
+    if (!movedToSamePosition(dragContext)) {
       setTimeout(() => {
         contentController.sortItem(
           containerRecord.modelId,
