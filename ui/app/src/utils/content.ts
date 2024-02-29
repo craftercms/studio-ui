@@ -934,7 +934,7 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
 });
 
 export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {
-  return lookupTable[withoutIndex(path)] ?? lookupTable[withIndex(path)];
+  return lookupTable[withIndex(path)] ?? lookupTable[withoutIndex(path)];
 }
 
 export function modelsToLookup(models: ContentInstance[]): LookupTable<ContentInstance> {
