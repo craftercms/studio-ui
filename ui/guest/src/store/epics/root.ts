@@ -31,7 +31,14 @@ import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
 import { getById, getReferentialEntries, isTypeAcceptedAsByField } from '../../iceRegistry';
-import { beforeWrite$, checkIfLockedOrModified, checkIfMovedToSamePosition, dragOk, unwrapEvent } from '../util';
+import {
+  beforeWrite$,
+  checkIfLockedOrModified,
+  movedToSamePosition,
+  dragOk,
+  unwrapEvent,
+  movedToSameZone
+} from '../util';
 import * as contentController from '../../contentController';
 import {
   createContentInstance,
@@ -236,7 +243,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             : path;
 
           // If moving to the same position, there is no need of locking and other requests.
-          if (checkIfMovedToSamePosition(dragContext)) {
+          if (movedToSamePosition(dragContext)) {
             post(instanceDragEnded());
             return of(computedDragEnd());
           } else {
@@ -882,10 +889,8 @@ const moveComponent = (dragContext) => {
   let { dragged, dropZone, dropZones, targetIndex } = dragContext,
     record = dragged,
     draggedElementIndex = record.index,
-    originDropZone = dropZones.find((dropZone) => dropZone.origin),
-    currentDZ = dropZone.element;
+    originDropZone = dropZones.find((dropZone) => dropZone.origin);
 
-  // TODO: use new utils
   if (typeof draggedElementIndex === 'string') {
     // If the index is a string, it's a nested index with dot notation.
     // At this point, we only care for the last index piece, which is
@@ -896,7 +901,7 @@ const moveComponent = (dragContext) => {
   const containerRecord = iceRegistry.getById(originDropZone.iceId);
 
   // Determine whether the component is to be sorted or moved.
-  if (currentDZ === originDropZone.element) {
+  if (movedToSameZone(dragContext)) {
     // Same drop zone: Sort identified
 
     // If moving the item down the array of items, need to account
@@ -907,7 +912,7 @@ const moveComponent = (dragContext) => {
       --targetIndex;
     }
 
-    if (draggedElementIndex !== targetIndex) {
+    if (!movedToSamePosition(dragContext)) {
       setTimeout(() => {
         contentController.sortItem(
           containerRecord.modelId,

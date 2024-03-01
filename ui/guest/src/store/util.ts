@@ -109,7 +109,10 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
   return { isLocked, isExternallyModified, model, parentModelId, parentModel, path };
 };
 
-export const checkIfMovedToSameZone = (dragContext: GuestState['dragContext']): boolean => {
+/**
+ * Checks if item is being moved to same drop zone
+ * */
+export const movedToSameZone = (dragContext: GuestState['dragContext']): boolean => {
   let { dropZone, dropZones } = dragContext,
     originDropZone = dropZones.find((dropZone) => dropZone.origin),
     currentDZ = dropZone.element;
@@ -117,7 +120,10 @@ export const checkIfMovedToSameZone = (dragContext: GuestState['dragContext']): 
   return currentDZ === originDropZone.element;
 };
 
-export const checkIfMovedToSamePosition = (dragContext: GuestState['dragContext']): boolean => {
+/**
+ * Checks if item is being moved to same position under its origin drop zone.
+ * */
+export const movedToSamePosition = (dragContext: GuestState['dragContext']): boolean => {
   let { dragged, targetIndex } = dragContext,
     record = dragged,
     draggedElementIndex = record.index;
@@ -130,7 +136,7 @@ export const checkIfMovedToSamePosition = (dragContext: GuestState['dragContext'
   }
 
   // If same dropzone
-  if (checkIfMovedToSameZone(dragContext)) {
+  if (movedToSameZone(dragContext)) {
     // If moving the item down the array of items, need to account
     // for all the originally subsequent items shifting up.
     if (draggedElementIndex < targetIndex) {
