@@ -17,10 +17,11 @@
 import React from 'react';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { Control } from '../../models/FormsEngine';
 import useStyles from './styles';
+import FormGroup from '@mui/material/FormGroup';
+import FormLabel from '@mui/material/FormLabel';
 
 export function CheckboxGroup(props: Control) {
   const { field, value = [], onChange, disabled } = props;
@@ -30,26 +31,30 @@ export function CheckboxGroup(props: Control) {
     onChange(e.target.checked ? value.concat(e.target.value) : value.filter((val) => val !== e.target.value));
 
   return (
-    <FormControl variant="outlined" className={classes.formControl} fullWidth>
-      <InputLabel className={classes.inputLabel} htmlFor={field.id}>
+    <>
+      <FormLabel className={classes.inputLabel} htmlFor={field.id}>
         {field.name}
-      </InputLabel>
-      {field.values?.map((possibleValue: any) => (
-        <FormControlLabel
-          key={possibleValue.value}
-          control={
-            <Checkbox
-              value={possibleValue.value}
-              color="primary"
-              checked={value.includes(possibleValue.value)}
-              onChange={handleChange}
-              disabled={disabled}
+      </FormLabel>
+      <FormControl variant="outlined" className={classes.formControl} fullWidth>
+        <FormGroup>
+          {field.values?.map((possibleValue: any) => (
+            <FormControlLabel
+              key={possibleValue.value}
+              control={
+                <Checkbox
+                  value={possibleValue.value}
+                  color="primary"
+                  checked={value.includes(possibleValue.value)}
+                  onChange={handleChange}
+                  disabled={disabled}
+                />
+              }
+              label={possibleValue.label}
             />
-          }
-          label={possibleValue.label}
-        />
-      ))}
-    </FormControl>
+          ))}
+        </FormGroup>
+      </FormControl>
+    </>
   );
 }
 

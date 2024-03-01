@@ -24,8 +24,9 @@ import {
   reloadRequest,
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
+  SET_ACTIVE_TARGETING_MODEL_FAILED,
   setActiveTargetingModelComplete as setActiveTargetingModelCompleteAction,
-  setActiveTargetingModelFailed
+  setActiveTargetingModelFailed as setActiveTargetingModelFailedAction
 } from '../actions/preview';
 import {
   deserializeActiveTargetingModelData,
@@ -35,6 +36,7 @@ import {
 import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../utils/subjects';
+import { showErrorDialog } from '../reducers/dialogs/error';
 
 const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) =>
   action$.pipe(
@@ -55,9 +57,15 @@ const setActiveTargetingModel: Epic = (action$, state$: Observable<GlobalState>)
     switchMap(([, state]) =>
       setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
         map((response) => setActiveTargetingModelCompleteAction(response)),
-        catchAjaxError(setActiveTargetingModelFailed)
+        catchAjaxError(setActiveTargetingModelFailedAction)
       )
     )
+  );
+
+const setActiveTargetingModelFailed: Epic = (action$) =>
+  action$.pipe(
+    ofType(SET_ACTIVE_TARGETING_MODEL_FAILED),
+    map(({ payload }) => showErrorDialog({ error: payload.response }))
   );
 
 const setActiveTargetingModelComplete: Epic = (action$) =>
@@ -67,4 +75,9 @@ const setActiveTargetingModelComplete: Epic = (action$) =>
     ignoreElements()
   );
 
-export default [fetchAudiencesPanel, setActiveTargetingModel, setActiveTargetingModelComplete] as Epic[];
+export default [
+  fetchAudiencesPanel,
+  setActiveTargetingModel,
+  setActiveTargetingModelComplete,
+  setActiveTargetingModelFailed
+] as Epic[];
