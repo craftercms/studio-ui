@@ -142,6 +142,12 @@ export const guestMessages = defineMessages({
     id: 'datasourceActionList.videoFromDesktopLabel',
     defaultMessage: 'Upload video from desktop'
   },
+  allowAudioUpload: {
+    defaultMessage: 'Upload audio from desktop'
+  },
+  allowAudioFromRepo: {
+    defaultMessage: 'Audio from repository'
+  },
   noDataSourcesSet: {
     id: 'validations.noDataSourcesSet',
     defaultMessage: 'There are no data sources set for this field'

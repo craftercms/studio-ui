@@ -1136,7 +1136,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           const typedPayload: ShowRtePickerActionsPayload = payload;
           const { setDataSourceActionsListState, showToolsPanel, toolsPanelWidth, browseFilesDialogState } =
             upToDateRefs.current;
-          const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'media') => {
+          const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'audio' | 'video') => {
             setDataSourceActionsListState(dataSourceActionsListInitialState);
 
             if (path) {
@@ -1144,7 +1144,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 showSingleFileUploadDialog({
                   site: siteId,
                   path,
-                  fileTypes: type === 'image' ? ['image/*'] : ['video/*'],
+                  fileTypes: type === 'image' ? ['image/*'] : type === 'video' ? ['video/*'] : ['audio/*'],
                   onClose: batchActions([
                     closeSingleFileUploadDialog(),
                     dispatchDOMEvent({ id: 'fileUploadCanceled' })
@@ -1176,8 +1176,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             }
           };
 
-          const onShowBrowseFilesDialog = (path: string, type: 'image' | 'media') => {
-            const mimeTypes = type === 'image' ? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg'] : ['video/mp4'];
+          const onShowBrowseFilesDialog = (path: string, type: 'image' | 'audio' | 'video') => {
+            const mimeTypes =
+              type === 'image'
+                ? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg']
+                : type === 'video'
+                ? ['video/mp4']
+                : ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav'];
             setDataSourceActionsListState(dataSourceActionsListInitialState);
 
             if (path) {
@@ -1195,7 +1200,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           const dataSourcesByType = {
             image: ['allowImageUpload', 'allowImagesFromRepo'],
-            media: ['allowVideoUpload', 'allowVideosFromRepo']
+            media: ['allowVideoUpload', 'allowVideosFromRepo', 'allowAudioUpload', 'allowAudioFromRepo']
+          };
+
+          // Tinymce handles both audio and video as 'media' types. This lookup is used to determine which type of media to handle.
+          const mediaTypes = {
+            allowAudioUpload: 'audio',
+            allowAudioFromRepo: 'audio',
+            allowVideoUpload: 'video',
+            allowVideosFromRepo: 'video'
           };
 
           // filter data sources to only the ones that match the type
@@ -1212,10 +1225,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               objectId: typedPayload.model.craftercms.id,
               objectGroupId: typedPayload.model.objectGroupId
             });
-            if (key === 'allowImageUpload' || key === 'allowVideoUpload') {
-              onShowSingleFileUploadDialog(processedPath, typedPayload.type);
+            if (key === 'allowImageUpload' || key === 'allowVideoUpload' || 'allowAudioUpload') {
+              onShowSingleFileUploadDialog(processedPath, mediaTypes[key] ?? typedPayload.type);
             } else {
-              onShowBrowseFilesDialog(processedPath, typedPayload.type);
+              onShowBrowseFilesDialog(processedPath, mediaTypes[key] ?? typedPayload.type);
             }
           } else if (dataSourcesKeys.length > 1) {
             // create items for DataSourcesActionsList
@@ -1229,10 +1242,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                   objectGroupId: typedPayload.model.objectGroupId
                 }),
                 action:
-                  dataSourceKey === 'allowImageUpload' || dataSourceKey === 'allowVideoUpload'
+                  dataSourceKey === 'allowImageUpload' ||
+                  dataSourceKey === 'allowVideoUpload' ||
+                  dataSourceKey === 'allowAudioUpload'
                     ? onShowSingleFileUploadDialog
                     : onShowBrowseFilesDialog,
-                type: typedPayload.type
+                type: mediaTypes[dataSourceKey] ?? typedPayload.type
               });
             });
 

@@ -96,6 +96,11 @@ CStudioAuthoring.Module.requireModule(
     moduleLoaded: function () {
       const YDom = YAHOO.util.Dom;
       const tinymce = window.tinymce;
+      const interfaceMap = {
+        video: 'media',
+        audio: 'media',
+        file: 'item'
+      };
       YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
         getLabel: function () {
           return CMgs.format(langBundle, 'rte');
@@ -247,6 +252,11 @@ CStudioAuthoring.Module.requireModule(
               type: 'datasource:video'
             },
             {
+              label: this.formatMessage(this.contentTypesMessages.audioManager),
+              name: 'audioManager',
+              type: 'datasource:audio'
+            },
+            {
               label: this.formatMessage(this.contentTypesMessages.fileManager),
               name: 'fileManager',
               type: 'datasource:item'
@@ -293,6 +303,9 @@ CStudioAuthoring.Module.requireModule(
                 break;
               case 'videoManager':
                 this.videoManagerName = prop.value && prop.Value != '' ? prop.value : null;
+                break;
+              case 'audioManager':
+                this.audioManagerName = prop.value && prop.Value !== '' ? prop.value : null;
                 break;
               case 'fileManager':
                 this.fileManagerName = prop.value && prop.Value != '' ? prop.value : null;
@@ -526,34 +539,49 @@ CStudioAuthoring.Module.requireModule(
           _thisControl.form.registerBeforeSaveCallback(callback);
         },
 
+        _onInsertError: function (message) {
+          CStudioAuthoring.Operations.showSimpleDialog(
+            'message-dialog',
+            CStudioAuthoring.Operations.simpleDialogTypeINFO,
+            CMgs.format(langBundle, 'notification'),
+            message,
+            null,
+            YAHOO.widget.SimpleDialog.ICON_BLOCK,
+            'studioDialog'
+          );
+        },
+
         createControl: function (cb, meta) {
           var datasourcesNames = '',
             imageManagerNames = this.imageManagerName, // List of image datasource IDs, could be an array or a string
-            videoManagerNames = this.videoManagerName,
+            mediaManagerNames = [
+              ...(this.videoManagerName?.split(',') ?? []),
+              ...(this.audioManagerName?.split(',') ?? [])
+            ],
             fileManagerNames = this.fileManagerName,
             addContainerEl,
             tinyMCEContainer = $('.tox-dialog'),
             _self = this,
-            type = meta.filetype == 'media' ? 'video' : meta.filetype == 'file' ? 'item' : meta.filetype;
+            type = meta.filetype === 'file' ? 'item' : meta.filetype;
 
           imageManagerNames = !imageManagerNames
             ? ''
             : Array.isArray(imageManagerNames)
             ? imageManagerNames.join(',')
             : imageManagerNames; // Turn the list into a string
-          videoManagerNames = !videoManagerNames
+          mediaManagerNames = !mediaManagerNames
             ? ''
-            : Array.isArray(videoManagerNames)
-            ? videoManagerNames.join(',')
-            : videoManagerNames;
+            : Array.isArray(mediaManagerNames)
+            ? mediaManagerNames.join(',')
+            : mediaManagerNames;
           fileManagerNames = !fileManagerNames
             ? ''
             : Array.isArray(fileManagerNames)
             ? fileManagerNames.join(',')
             : fileManagerNames;
 
-          if (videoManagerNames !== '') {
-            datasourcesNames = videoManagerNames;
+          if (mediaManagerNames !== '') {
+            datasourcesNames = mediaManagerNames;
           }
           if (imageManagerNames !== '') {
             if (datasourcesNames !== '') {
@@ -590,8 +618,8 @@ CStudioAuthoring.Module.requireModule(
               case 'image':
                 addFunction = _self.addManagedImage;
                 break;
-              case 'video':
-                addFunction = _self.addManagedVideo;
+              case 'media':
+                addFunction = _self.addManagedMedia;
                 break;
               default:
                 addFunction = _self.addManagedFile;
@@ -603,13 +631,14 @@ CStudioAuthoring.Module.requireModule(
               var regexpr = new RegExp('(' + el.id + ')[\\s,]|(' + el.id + ')$'),
                 mapDatasource;
 
-              if (datasourcesNames.indexOf(el.id) != -1 && el.interface === type) {
+              if (datasourcesNames.indexOf(el.id) !== -1 && (interfaceMap[el.interface] ?? el.interface) === type) {
                 mapDatasource = datasourceMap[el.id];
 
                 var itemEl = document.createElement('div');
                 YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
                 itemEl.textContent = el.title;
                 addContainerEl.appendChild(itemEl);
+                mapDatasource.interface = el.interface;
 
                 YAHOO.util.Event.on(
                   itemEl,
@@ -684,26 +713,28 @@ CStudioAuthoring.Module.requireModule(
           }
         },
 
-        addManagedVideo(datasource, cb) {
-          if (datasource && datasource.insertVideoAction) {
-            datasource.insertVideoAction({
-              success: function (videoData) {
-                cb(videoData.relativeUrl, { title: videoData.fileName });
-
-                // var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
-              },
-              failure: function (message) {
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  'message-dialog',
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(langBundle, 'notification'),
-                  message,
-                  null,
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
-                );
-              }
-            });
+        addManagedMedia(datasource, cb) {
+          const mediaType = datasource.interface;
+          const onInsertMedia = {
+            success: function (videoData) {
+              cb(videoData.relativeUrl, { title: videoData.fileName });
+            },
+            failure: function (message) {
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'message-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(langBundle, 'notification'),
+                message,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+            }
+          };
+          if (mediaType === 'video') {
+            datasource?.insertVideoAction(onInsertMedia);
+          } else if (mediaType === 'audio') {
+            datasource?.insertAudioAction(onInsertMedia);
           }
         },
 
