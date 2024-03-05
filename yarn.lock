@@ -1758,7 +1758,7 @@ __metadata:
     "@types/video.js": "npm:^7.3.56"
     "@types/zxcvbn": "npm:^4.4.4"
     "@typescript-eslint/eslint-plugin": "npm:^6.20.0"
-    "@typescript-eslint/parser": "npm:^6.20.0"
+    "@typescript-eslint/parser": "npm:^7.1.1"
     "@videojs/vhs-utils": "npm:^4.1.0"
     autosuggest-highlight: "npm:^3.3.4"
     babel-plugin-formatjs: "npm:^10.5.13"
