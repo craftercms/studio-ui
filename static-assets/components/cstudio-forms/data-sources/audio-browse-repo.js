@@ -31,6 +31,7 @@ CStudioForms.Datasources.AudioBrowseRepo =
         this.useSearch = properties[i].value === 'true';
       }
     }
+    this.mimeTypes = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav'];
 
     return this;
   };
@@ -43,7 +44,7 @@ YAHOO.extend(CStudioForms.Datasources.AudioBrowseRepo, CStudioForms.CStudioFormD
       const searchContext = {
         keywords: '',
         filters: {
-          'mime-type': ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav']
+          'mime-type': this.mimeTypes
         },
         sortBy: 'internalName',
         sortOrder: 'asc',
@@ -78,6 +79,7 @@ YAHOO.extend(CStudioForms.Datasources.AudioBrowseRepo, CStudioForms.CStudioFormD
       CStudioAuthoring.Operations.openBrowseFilesDialog({
         path: _self.processPathsForMacros(_self.repoPath),
         multiSelect,
+        mimeTypes: this.mimeTypes,
         onSuccess: (result) => {
           const items = Array.isArray(result) ? result : [result];
           items.forEach(({ path }) => {

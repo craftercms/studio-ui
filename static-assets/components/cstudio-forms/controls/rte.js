@@ -552,33 +552,23 @@ CStudioAuthoring.Module.requireModule(
         },
 
         createControl: function (cb, meta) {
+          // The {x}ManagerName (e.g. this.imageManagerName) property may come as a comma-separated string or an array,
+          // so we need to handle both cases and always return a comma-separated string for later handling. If datasources
+          // is null or undefined, it will be an empty string.
+          const getDatasourcesNames = function (datasources) {
+            return Array.isArray(datasources) ? datasources.join(',') : datasources ?? '';
+          };
+
           var datasourcesNames = '',
-            imageManagerNames = this.imageManagerName, // List of image datasource IDs, could be an array or a string
-            mediaManagerNames = [
-              ...(this.videoManagerName?.split(',') ?? []),
-              ...(this.audioManagerName?.split(',') ?? [])
-            ],
-            fileManagerNames = this.fileManagerName,
+            imageManagerNames = getDatasourcesNames(this.imageManagerName),
+            audioManagerNames = getDatasourcesNames(this.audioManagerName),
+            videoManagerNames = getDatasourcesNames(this.videoManagerName),
+            mediaManagerNames = `${audioManagerNames},${videoManagerNames}`.split(',').filter(Boolean).join(','),
+            fileManagerNames = getDatasourcesNames(this.fileManagerName),
             addContainerEl,
             tinyMCEContainer = $('.tox-dialog'),
             _self = this,
             type = meta.filetype === 'file' ? 'item' : meta.filetype;
-
-          imageManagerNames = !imageManagerNames
-            ? ''
-            : Array.isArray(imageManagerNames)
-            ? imageManagerNames.join(',')
-            : imageManagerNames; // Turn the list into a string
-          mediaManagerNames = !mediaManagerNames
-            ? ''
-            : Array.isArray(mediaManagerNames)
-            ? mediaManagerNames.join(',')
-            : mediaManagerNames;
-          fileManagerNames = !fileManagerNames
-            ? ''
-            : Array.isArray(fileManagerNames)
-            ? fileManagerNames.join(',')
-            : fileManagerNames;
 
           if (mediaManagerNames !== '') {
             datasourcesNames = mediaManagerNames;
