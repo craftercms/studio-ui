@@ -194,7 +194,16 @@ export function fetchContentInstanceDescriptor(
   path: string,
   options?: Partial<GetDescriptorOptions>,
   contentTypeLookup?: LookupTable<ContentType>
-): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
+): Observable<{
+  model: ContentInstance;
+  modelLookup: LookupTable<ContentInstance>;
+  /**
+   * A lookup table directly completed/mutated by this function indexed by path of those objects
+   * that are incomplete/unflattened.
+   */
+  unflattenedPaths: LookupTable<ContentInstance>;
+}> {
+  const unflattenedPaths = {};
   return (
     contentTypeLookup
       ? of(contentTypeLookup)
@@ -204,8 +213,8 @@ export function fetchContentInstanceDescriptor(
       fetchDescriptorDOM(site, path, options).pipe(
         map((doc) => {
           const modelLookup = {};
-          const model = parseContentXML(doc, path, contentTypeLookup, modelLookup);
-          return { model, modelLookup };
+          const model = parseContentXML(doc, path, contentTypeLookup, modelLookup, unflattenedPaths);
+          return { model, modelLookup, unflattenedPaths };
         })
       )
     )

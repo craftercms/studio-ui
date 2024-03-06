@@ -102,7 +102,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
   const { classes, cx } = useStyles();
   const onSearch$ = useSubject<string>();
   const site = useActiveSiteId();
-  const contentTypes = useContentTypeList((contentType) => contentType.id.startsWith('/page'));
+  const contentTypes = useContentTypeList((contentType) => contentType.id?.startsWith('/page'));
   const [keyword, setKeyword] = useState('');
   const [isFetching, setIsFetching] = useState(false);
   const [items, setItems] = useState(null);
