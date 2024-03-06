@@ -153,6 +153,7 @@ export const showEditDialog = /*#__PURE__*/ createAction<LegacyFormDialogStatePr
 export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
 export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');
+// TODO: rename to updateEditDialog[Config], type payload, update constant
 export const updateEditConfig = /*#__PURE__*/ createAction<any>('UPDATE_EDIT_CONFIG');
 // endregion
 
