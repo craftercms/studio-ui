@@ -145,7 +145,14 @@ export function initTinyMCE(
       const datasources = {};
       Object.values(field.validations).forEach((validation) => {
         if (
-          ['allowImageUpload', 'allowImagesFromRepo', 'allowVideoUpload', 'allowVideosFromRepo'].includes(validation.id)
+          [
+            'allowImageUpload',
+            'allowImagesFromRepo',
+            'allowVideoUpload',
+            'allowVideosFromRepo',
+            'allowAudioUpload',
+            'allowAudioFromRepo'
+          ].includes(validation.id)
         ) {
           datasources[validation.id] = validation;
         }
