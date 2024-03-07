@@ -128,12 +128,14 @@ function unauthenticated(excludeClient?: MessagePort) {
   broadcast(sharedWorkerUnauthenticated(), excludeClient);
 }
 
+let retries = 0;
 function retrieve() {
   clearTimeout(timeout);
   if (!isRetrieving) {
     isRetrieving = true;
     return obtainAuthToken().subscribe({
       next(response) {
+        retries = 0;
         isRetrieving = false;
         if (response) {
           log('New token received');
@@ -158,12 +160,13 @@ function retrieve() {
         clearTimeout(timeout);
         log('Error retrieving token', e);
         if (e.status === 401) {
+          retries = 0;
           unauthenticated();
         } else {
           status = 'error';
           broadcast(sharedWorkerError({ status: e.status, message: e.message }));
           // If there are clients connected try again.
-          if (clients.length) {
+          if (clients.length && retries++ < 3) {
             timeout = self.setTimeout(retrieve, Math.floor(refreshInterval * 0.9));
           }
         }
