@@ -539,18 +539,6 @@ CStudioAuthoring.Module.requireModule(
           _thisControl.form.registerBeforeSaveCallback(callback);
         },
 
-        _onInsertError: function (message) {
-          CStudioAuthoring.Operations.showSimpleDialog(
-            'message-dialog',
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            CMgs.format(langBundle, 'notification'),
-            message,
-            null,
-            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
-          );
-        },
-
         createControl: function (cb, meta) {
           // The {x}ManagerName (e.g. this.imageManagerName) property may come as a comma-separated string or an array,
           // so we need to handle both cases and always return a comma-separated string for later handling. If datasources
