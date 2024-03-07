@@ -29,7 +29,7 @@ CStudioForms.Datasources.AudioDesktopUpload =
 
 YAHOO.extend(CStudioForms.Datasources.AudioDesktopUpload, CStudioForms.CStudioFormDatasource, {
   getLabel: function () {
-    return this.formatMessage(this.messages.label);
+    return this.formatMessage(this.messages.uploadLabel);
   },
 
   /**

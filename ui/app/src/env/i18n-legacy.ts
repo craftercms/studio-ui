@@ -851,8 +851,11 @@ export const itemSuccessMessages = defineMessages({
 });
 
 export const audioDSMessages = defineMessages({
-  label: {
+  uploadLabel: {
     defaultMessage: 'Audio Uploaded from Desktop'
+  },
+  browseLabel: {
+    defaultMessage: 'Audio From Repository'
   },
   uploadError: {
     defaultMessage: 'An error occurred while uploading the audio file.'
