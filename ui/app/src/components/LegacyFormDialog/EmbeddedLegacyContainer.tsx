@@ -41,7 +41,7 @@ import {
   reloadRequest
 } from '../../state/actions/preview';
 import { getHostToGuestBus } from '../../utils/subjects';
-import { updateEditConfig } from '../../state/actions/dialogs';
+import { updateEditDialogConfig } from '../../state/actions/dialogs';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useUnmount } from '../../hooks/useUnmount';
 import LoadingState from '../LoadingState/LoadingState';
@@ -151,7 +151,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         case EMBEDDED_LEGACY_FORM_SUCCESS: {
           onSave(e.data);
           getHostToGuestBus().next({ type: reloadRequest.type });
-          dispatch(updateEditConfig({ pendingChanges: false }));
+          dispatch(updateEditDialogConfig({ pendingChanges: false }));
           switch (e.data.action) {
             case 'save': {
               break;
@@ -179,24 +179,24 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         }
         case EMBEDDED_LEGACY_FORM_RENDERED: {
           if (inProgress) {
-            dispatch(updateEditConfig({ inProgress: false }));
+            dispatch(updateEditDialogConfig({ inProgress: false }));
           }
           break;
         }
         case EMBEDDED_LEGACY_FORM_ENABLE_ON_CLOSE: {
-          dispatch(updateEditConfig({ isSubmitting: false }));
+          dispatch(updateEditDialogConfig({ isSubmitting: false }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_DISABLE_ON_CLOSE: {
-          dispatch(updateEditConfig({ isSubmitting: true }));
+          dispatch(updateEditDialogConfig({ isSubmitting: true }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_ENABLE_HEADER: {
-          dispatch(updateEditConfig({ disableHeader: false }));
+          dispatch(updateEditDialogConfig({ disableHeader: false }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_DISABLE_HEADER: {
-          dispatch(updateEditConfig({ disableHeader: true }));
+          dispatch(updateEditDialogConfig({ disableHeader: true }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_RENDER_FAILED: {
@@ -206,7 +206,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         }
         case EMBEDDED_LEGACY_FORM_SAVE: {
           onSave(e.data);
-          dispatch(updateEditConfig({ pendingChanges: false }));
+          dispatch(updateEditDialogConfig({ pendingChanges: false }));
           if (e.data.refresh) {
             getHostToGuestBus().next({ type: reloadRequest.type });
           }
@@ -233,7 +233,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           break;
         }
         case EMBEDDED_LEGACY_FORM_PENDING_CHANGES: {
-          dispatch(updateEditConfig({ pendingChanges: true }));
+          dispatch(updateEditDialogConfig({ pendingChanges: true }));
           break;
         }
         case EMBEDDED_LEGACY_MINIMIZE_REQUEST: {
@@ -241,15 +241,15 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           break;
         }
         case EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE: {
-          dispatch(updateEditConfig({ readonly: false }));
+          dispatch(updateEditDialogConfig({ readonly: false }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE_START: {
-          dispatch(updateEditConfig({ isSubmitting: true }));
+          dispatch(updateEditDialogConfig({ isSubmitting: true }));
           break;
         }
         case EMBEDDED_LEGACY_FORM_SAVE_END: {
-          dispatch(updateEditConfig({ isSubmitting: false }));
+          dispatch(updateEditDialogConfig({ isSubmitting: false }));
           break;
         }
       }
