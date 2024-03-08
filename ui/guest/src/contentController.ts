@@ -407,7 +407,9 @@ export function createContentInstance(contentType: ContentType, path: string = n
       label: `New ${contentType.name}`,
       contentTypeId: contentType.id,
       dateCreated: now,
-      dateModified: now
+      dateModified: now,
+      disabled: false,
+      sourceMap: {}
     }
   };
   Object.entries(contentType.fields).forEach(([id, field]) => {
