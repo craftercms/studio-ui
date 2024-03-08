@@ -101,48 +101,18 @@ YAHOO.extend(CStudioForms.Datasources.FileDesktopUpload, CStudioForms.CStudioFor
   },
 
   edit: function (key, control) {
-    this._self = this;
-    var me = this;
-
-    var site = CStudioAuthoringContext.site;
-    var path = this._self.repoPath;
-    var isUploadOverwrite = true;
-
-    for (var i = 0; i < this.properties.length; i++) {
-      if (this.properties[i].name === 'repoPath') {
-        path = this.properties[i].value;
-
-        path = this.processPathsForMacros(path);
+    CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
+      success: function (contentTO) {
+        CStudioAuthoring.Operations.editContent(
+          contentTO.item.contentType,
+          CStudioAuthoringContext.siteId,
+          contentTO.item.mimeType,
+          contentTO.item.nodeRef,
+          contentTO.item.uri,
+          false
+        );
       }
-    }
-
-    var callback = {
-      success: function (fileData) {
-        if (control) {
-          control.deleteItem(key);
-          control.insertItem(
-            path + '/' + fileData.fileName,
-            path + '/' + fileData.fileName,
-            fileData.fileExtension,
-            fileData.size,
-            me.id
-          );
-          if (control._renderItems) {
-            control._renderItems();
-          }
-        }
-      },
-
-      failure: function () {
-        if (control) {
-          control.failure('An error occurred while uploading the file.');
-        }
-      },
-
-      context: this
-    };
-
-    CStudioAuthoring.Operations.uploadAsset(site, path, isUploadOverwrite, callback);
+    });
   },
 
   getLabel: function () {
