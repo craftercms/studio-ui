@@ -21,7 +21,6 @@ libsDirectory=../../static-assets/libs
 # ace build
 rm -rf "$libsDirectory/ace"
 rsync -ar --delete ../../node_modules/ace-builds/src-min-noconflict/ "$libsDirectory/ace/"
-cat src/ace/ace-append.js >> "$libsDirectory/ace/ace.js"
 cp src/ace/mode-yaml/* "$libsDirectory/ace"
 echo "Ace build complete"
 
