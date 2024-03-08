@@ -28,10 +28,13 @@ interface SitesGridProps {
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
-  onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
+  onPublishButtonClick(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    site: Site,
+    status: PublishingStatus
+  ): void;
   onDuplicateSiteClick(siteId: string): void;
   currentView: 'grid' | 'list';
-  publishingStatusLookup: LookupTable<PublishingStatus>;
   disabledSitesLookup: LookupTable<boolean>;
 }
 
@@ -43,7 +46,6 @@ export function SitesGrid(props: SitesGridProps) {
     onEditSiteClick,
     onDuplicateSiteClick,
     currentView,
-    publishingStatusLookup,
     onPublishButtonClick,
     disabledSitesLookup
   } = props;
@@ -56,7 +58,6 @@ export function SitesGrid(props: SitesGridProps) {
           <Grid item key={site.id}>
             <SiteCard
               site={site}
-              publishingStatus={publishingStatusLookup[site.id]}
               onSiteClick={onSiteClick}
               onDeleteSiteClick={onDeleteSiteClick}
               onEditSiteClick={onEditSiteClick}

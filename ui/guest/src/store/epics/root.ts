@@ -37,6 +37,7 @@ import {
   createContentInstance,
   getCachedModel,
   getCachedModels,
+  getCachedModelsByPath,
   getCachedSandboxItem,
   getModelIdFromInheritedField,
   isInheritedField,
@@ -66,7 +67,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { MouseEventActionObservable } from '../models/Actions';
 import { GuestState } from '../models/GuestStore';
-import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { ElementRecord, ICEProps } from '../../models/InContextEditing';
 import * as ElementRegistry from '../../elementRegistry';
 import { get, getElementFromICEProps } from '../../elementRegistry';
@@ -98,6 +99,7 @@ import { processPathMacros } from '@craftercms/studio-ui/utils/path';
 import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
 import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
+import { getInheritanceParentIdsForField } from '@craftercms/studio-ui/utils/content';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -663,22 +665,44 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   },
   // endregion
   // region trashed
-  (action$: Observable<GuestStandardAction<{ iceId: number }>>) => {
+  (action$: Observable<GuestStandardAction<{ iceId: number }>>, state$) => {
     // onDrop doesn't execute when trashing on host side
     // Consider behaviour when running Host Guest-side
     return action$.pipe(
       ofType(trashed.type),
-      tap((action) => {
+      withLatestFrom(state$),
+      switchMap(([action, state]) => {
         const { iceId } = action.payload;
         let { modelId, fieldId, index } = iceRegistry.getById(iceId);
-        contentController.deleteItem(modelId, fieldId, index);
-        post(instanceDragEnded());
-      }),
-      // There's a raise condition where sometimes the dragend is
-      // fired and sometimes is not upon dropping on the rubbish bin.
-      // Manually firing here may incur in double firing of computed_dragend
-      // in those occasions.
-      map(() => computedDragEnd())
+        const models = getCachedModels();
+        let parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+        const { username, activeSite } = state;
+        ({ modelId, parentModelId } = getInheritanceParentIdsForField(
+          fieldId,
+          models,
+          modelId,
+          parentModelId,
+          getCachedModelsByPath(),
+          modelHierarchyMap
+        ));
+        const pathToLock = models[parentModelId ? parentModelId : modelId].craftercms.path;
+        return beforeWrite$({
+          path: pathToLock,
+          site: activeSite,
+          username,
+          localItem: getCachedSandboxItem(pathToLock)
+        }).pipe(
+          switchMap(() => {
+            contentController.deleteItem(modelId, fieldId, index);
+            post(instanceDragEnded());
+            // There's a raise condition where sometimes the dragend is
+            // fired and sometimes is not upon dropping on the rubbish bin.
+            // Manually firing here may incur in double firing of computed_dragend
+            // in those occasions.
+            return of(computedDragEnd());
+          })
+        );
+      })
     );
   },
   // endregion

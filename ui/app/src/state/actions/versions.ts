@@ -41,4 +41,6 @@ export const compareBothVersionsFailed = /*#__PURE__*/ createAction<any>('COMPAR
 export const revertContent = /*#__PURE__*/ createAction<FetchContentVersion>('REVERT_CONTENT');
 export const revertContentComplete = /*#__PURE__*/ createAction<{ path: string }>('REVERT_CONTENT_COMPLETE');
 export const revertContentFailed = /*#__PURE__*/ createAction<AjaxResponse<unknown>>('REVERT_CONTENT_FAILED');
-export const revertToPreviousVersion = /*#__PURE__*/ createAction<{ id: string }>('REVERT_TO_PREVIOUS_VERSION');
+export const revertToPreviousVersion = /*#__PURE__*/ createAction<{ id: string; path: string }>(
+  'REVERT_TO_PREVIOUS_VERSION'
+);
