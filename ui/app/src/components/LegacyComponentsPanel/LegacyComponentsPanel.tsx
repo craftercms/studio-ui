@@ -162,9 +162,9 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
       let fieldId = zonesKeys[0];
       let zone = zones[fieldId];
       const parentPath = compPath ?? guestPath;
-      const parentModelId = guest.modelIdByPath[parentPath];
-      const model = guest.models[parentModelId];
-      const parentContentTypeId = model.craftercms.contentTypeId;
+      const parentModelId = guest?.modelIdByPath[parentPath];
+      const model = guest?.models[parentModelId];
+      const parentContentTypeId = model?.craftercms.contentTypeId;
 
       if (isNew) {
         if (isNew === true) {
@@ -424,15 +424,15 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
       }
     },
     [
-      guestPath,
-      guest.modelIdByPath,
-      guest.models,
-      dispatch,
-      siteId,
       authoringBase,
+      contentTypesLookup,
+      dispatch,
       formatMessage,
+      guestPath,
       hostToGuest$,
-      contentTypesLookup
+      siteId,
+      guest?.modelIdByPath,
+      guest?.models
     ]
   );
 
