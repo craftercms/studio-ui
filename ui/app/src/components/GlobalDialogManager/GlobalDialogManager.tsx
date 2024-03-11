@@ -181,10 +181,10 @@ function GlobalDialogManager() {
       timeout = setTimeout(() => {
         fetch(`${authoringBase}/help/socket-connection-error`)
           .then((r) => {
-            if (!r.ok) {
-              throw new Error('socket-connection-error fetch failed');
-            } else {
+            if (r.ok) {
               return r.text();
+            } else {
+              throw new Error('socket-connection-error fetch failed');
             }
           })
           .then(() => {
