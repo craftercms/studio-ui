@@ -54,7 +54,6 @@ export const guestCheckIn = /*#__PURE__*/ createAction<{
   location: Partial<Location>;
   path: string;
   site: string;
-  documentDomain?: string;
   version?: string;
   __CRAFTERCMS_GUEST_LANDING__?: string;
 }>('GUEST_CHECK_IN');

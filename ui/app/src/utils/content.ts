@@ -19,7 +19,7 @@ import { getStateMapFromLegacyItem } from './state';
 import { nnou, nou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
-import ContentInstance from '../models/ContentInstance';
+import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
@@ -379,19 +379,19 @@ export function parseContentXML(
     id = null;
   }
   const contentTypeId = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > content-type')) : null;
-  const current = {
+  const current: ContentInstanceBase = {
     craftercms: {
       id,
       path,
       label: null,
-      locale: null,
       dateCreated: null,
       dateModified: null,
-      contentTypeId: contentTypeId,
+      contentTypeId,
       sourceMap: {}
     }
   };
-  if (id === null && unflattenedPaths) {
+  // We're assuming that contentTypeId is null when the content is not flattened
+  if (contentTypeId === null && unflattenedPaths) {
     unflattenedPaths[path] = current;
   }
   if (nnou(doc)) {

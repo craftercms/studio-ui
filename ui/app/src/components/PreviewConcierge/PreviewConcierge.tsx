@@ -185,8 +185,6 @@ import { isSameDay } from '../../utils/datetime';
 import compatibilityList from './compatibilityList';
 import ContentType from '../../models/ContentType';
 
-const originalDocDomain = document.domain;
-
 // region const issueDescriptorRequest = () => {...}
 const issueDescriptorRequest = (props) => {
   const {
@@ -495,13 +493,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     }
   }, [rteConfig]);
 
-  // Document domain restoring.
-  useMount(() => {
-    return () => {
-      document.domain = originalDocDomain;
-    };
-  });
-
   // Retrieve stored site clipboard, retrieve stored tools panel page.
   useEffect(() => {
     const localClipboard = getStoredClipboard(uuid, username);
@@ -650,17 +641,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             })
           );
           dispatch(guestCheckIn(payload));
-
-          // TODO: Remove *all* document domain related stuff for `develop`
-          if (payload.documentDomain) {
-            try {
-              document.domain = payload.documentDomain;
-            } catch (e) {
-              console.error(e);
-            }
-          } else if (document.domain !== originalDocDomain) {
-            document.domain = originalDocDomain;
-          }
 
           if (payload.__CRAFTERCMS_GUEST_LANDING__) {
             nnou(siteId) && dispatch(changeCurrentUrl('/'));
