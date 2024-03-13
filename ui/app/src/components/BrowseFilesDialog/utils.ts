@@ -18,6 +18,7 @@ import { ElasticParams, MediaItem, SearchItem } from '../../models/Search';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import React from 'react';
+import { MediaCardViewModes } from '../MediaCard';
 
 export interface BrowseFilesDialogBaseProps {
   path: string;
@@ -48,7 +49,7 @@ export interface BrowseFilesDialogUIProps {
   selectedCard: MediaItem;
   selectedArray: string[];
   multiSelect?: boolean;
-  compact?: boolean;
+  viewMode?: MediaCardViewModes;
   path: string;
   currentPath: string;
   searchParameters: ElasticParams;

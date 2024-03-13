@@ -23,6 +23,7 @@ import ToolsPanelTarget from '../models/ToolsPanelTarget';
 import { EnhancedDialogState } from '../hooks/useEnhancedDialogState';
 import { HighlightMode } from '../models/GlobalState';
 import { PathNavInitPayload } from '../state/actions/pathNavigator';
+import { MediaCardViewModes } from '../components';
 
 export function setStoredGlobalMenuSiteViewPreference(value: 'grid' | 'list', user: string) {
   window.localStorage.setItem(`craftercms.${user}.globalMenuSiteViewPreference`, value);
@@ -357,6 +358,20 @@ export function setStoredBrowseDialogCompactMode(username: string, compact: bool
 
 export function getStoredBrowseDialogCompactMode(username: string): boolean {
   return JSON.parse(localStorage.getItem(`craftercms.${username}.browseDialog.compactMode`)) ?? false;
+}
+
+export function setStoredBrowseDialogViewMode(username: string, mode: MediaCardViewModes): void {
+  localStorage.setItem(`craftercms.${username}.browseDialog.viewMode`, mode);
+}
+
+export function getStoredBrowseDialogViewMode(username: string): MediaCardViewModes {
+  // The viewMode field used to be compactMode (boolean). For backwards compatibility, if the viewMode is not set and
+  // compactMode exists, set value accordingly.
+  const backwardsCompatibilityValue = getStoredBrowseDialogCompactMode(username) ? 'compact' : 'card';
+  return (
+    (localStorage.getItem(`craftercms.${username}.browseDialog.viewMode`) as MediaCardViewModes) ??
+    backwardsCompatibilityValue
+  );
 }
 
 export function removeStoredBrowseDialogCompactMode(username: string): void {
