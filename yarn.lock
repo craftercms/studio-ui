@@ -2468,16 +2468,16 @@ __metadata:
   linkType: hard
 
 "@graphiql/plugin-explorer@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@graphiql/plugin-explorer@npm:1.0.2"
+  version: 1.0.3
+  resolution: "@graphiql/plugin-explorer@npm:1.0.3"
   dependencies:
     graphiql-explorer: "npm:^0.9.0"
   peerDependencies:
-    "@graphiql/react": ^0.20.2
+    "@graphiql/react": ^0.20.3
     graphql: ^15.5.0 || ^16.0.0
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
-  checksum: 2a02a7a681552f9219cb2325da28f1baec9fdfb025f39f6c43fa7f958e9850202c14cc8b81ef022d548cef6893c02dfece3d2b20c1505e7446428e562da74995
+  checksum: e08063c02d10c68f1a6759102acafb07fb08a47c8f0f1a4fa66be299b4f59381d7894d68ae644f552976388b14098c538f7290c79860c9f73ea5102eccf1dc6a
   languageName: node
   linkType: hard
 
