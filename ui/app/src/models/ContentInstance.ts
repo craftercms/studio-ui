@@ -24,6 +24,9 @@ export interface ContentInstanceSystemProps {
   dateModified: string;
   contentTypeId: string;
   sourceMap?: Record<string, string>; // { fieldId: path }
+  disabled: boolean;
+  orderInNav?: number;
+  placeInNav?: boolean;
 }
 
 export interface ContentInstanceBase {

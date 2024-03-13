@@ -117,6 +117,10 @@ export function getCachedModels(): LookupTable<ContentInstance> {
   return models$.value;
 }
 
+export function getCachedModelsByPath(): LookupTable<string> {
+  return paths$.value;
+}
+
 export function getCachedSandboxItems(): LookupTable<SandboxItem> {
   return items$.value;
 }
@@ -404,7 +408,9 @@ export function createContentInstance(contentType: ContentType, path: string = n
       label: `New ${contentType.name}`,
       contentTypeId: contentType.id,
       dateCreated: now,
-      dateModified: now
+      dateModified: now,
+      disabled: false,
+      sourceMap: {}
     }
   };
   Object.entries(contentType.fields).forEach(([id, field]) => {
