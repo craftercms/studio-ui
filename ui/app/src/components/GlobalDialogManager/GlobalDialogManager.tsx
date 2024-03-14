@@ -69,6 +69,7 @@ const PathSelectionDialog = lazy(() => import('../PathSelectionDialog'));
 const UnlockPublisherDialog = lazy(() => import('../UnlockPublisherDialog'));
 const WidgetDialog = lazy(() => import('../WidgetDialog'));
 const CodeEditorDialog = lazy(() => import('../CodeEditorDialog'));
+const BrokenReferencesDialog = lazy(() => import('../BrokenReferencesDialog'));
 // endregion
 
 // @formatter:off
@@ -386,6 +387,15 @@ function GlobalDialogManager() {
         onClose={createCallback(state.workflowCancellation.onClose, dispatch)}
         onClosed={createCallback(state.workflowCancellation.onClosed, dispatch)}
         onContinue={createCallback(state.workflowCancellation.onContinue, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Broken References */}
+      <BrokenReferencesDialog
+        {...state.brokenReferences}
+        onClose={createCallback(state.brokenReferences.onClose, dispatch)}
+        onClosed={createCallback(state.brokenReferences.onClosed, dispatch)}
+        onContinue={createCallback(state.brokenReferences.onContinue, dispatch)}
       />
       {/* endregion */}
 

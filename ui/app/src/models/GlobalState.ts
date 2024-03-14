@@ -65,6 +65,7 @@ import { ModelHierarchyMap } from '../utils/content';
 import { UIBlockerStateProps } from '../components/UIBlocker';
 import { RenameAssetStateProps } from '../components/RenameAssetDialog';
 import Person from './Person';
+import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/utils';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -239,6 +240,7 @@ export interface GlobalState {
     unlockPublisher: UnlockPublisherDialogStateProps;
     widget: WidgetDialogStateProps;
     uiBlocker: UIBlockerStateProps;
+    brokenReferences: BrokenReferencesDialogStateProps;
   };
   uiConfig: {
     error: ApiResponse;

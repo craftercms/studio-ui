@@ -48,6 +48,7 @@ import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUpl
 import ContentInstance from '../../models/ContentInstance';
 import { ContentTypeFieldValidation, DetailedItem } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
+import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/utils';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -302,4 +303,24 @@ export const showRtePickerActions = /*#__PURE__*/ createAction<ShowRtePickerActi
 export const rtePickerActionResult = /*#__PURE__*/ createAction<{ path: string; name: string }>(
   'RTE_PICKER_ACTION_RESULT'
 );
+// endregion
+
+// region BrokenReferences Cancellation
+
+export const showBrokenReferencesDialog = /*#__PURE__*/ createAction<Partial<BrokenReferencesDialogStateProps>>(
+  'SHOW_BROKEN_REFERENCES_DIALOG'
+);
+
+export const closeBrokenReferencesDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_BROKEN_REFERENCES_DIALOG');
+
+export const brokenReferencesDialogClosed = /*#__PURE__*/ createAction('BROKEN_REFERENCES_DIALOG_CLOSED');
+
+export const fetchBrokenReferences = /*#__PURE__*/ createAction('FETCH_BROKEN_REFERENCES');
+
+export const fetchBrokenReferencesFailed = /*#__PURE__*/ createAction('FETCH_BROKEN_REFERENCES_FAILED');
+
+export const updateBrokenReferencesDialog = /*#__PURE__*/ createAction<Partial<BrokenReferencesDialogStateProps>>(
+  'UPDATE_BROKEN_REFERENCES_DIALOG'
+);
+
 // endregion
