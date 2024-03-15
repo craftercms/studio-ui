@@ -109,11 +109,13 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
   return { isLocked, isExternallyModified, model, parentModelId, parentModel, path };
 };
 
-// From a dragContext of a component being moved, returns an object with the following properties:
-// movedToSameZone: boolean
-// movedToSamePosition: boolean
-// draggedElementIndex: number
-// targetIndex: number
+/**
+ * From a dragContext of a component being moved, returns an object with the following properties:
+ * movedToSameZone: boolean
+ * movedToSamePosition: boolean
+ * draggedElementIndex: number
+ * targetIndex: number
+ */
 export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => {
   let { dragged, targetIndex, dropZone, dropZones } = dragContext,
     record = dragged,
