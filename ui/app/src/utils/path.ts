@@ -102,6 +102,14 @@ export function removeExtension(name: string) {
   return name.replace(/\.[^/.]+$/, '');
 }
 
+/**
+ * Takes in a path and calculates its *logical* parent path, which in the case of pages, the parent
+ * path is not the index.xml directory container, but the parent of that directory. For example,
+ * `/site/website/articles/2021/1/men-styles-for-winter/index.xml` => '/site/website/articles/2021/1'.
+ * For other non-page paths, the parent path would be the regular natural parent. For example,
+ * '/site/components/497a7071.xml' => '/site/components'.
+ * @param path {string} The path to calculate the parent path for.
+ */
 export function getParentPath(path: string): string {
   let splitPath = withoutIndex(path).split('/');
   splitPath.pop();
