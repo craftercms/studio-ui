@@ -15,12 +15,11 @@
  */
 
 import { makeStyles } from 'tss-react/mui';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import { WorkflowCancellationDialogUI } from './WorkflowCancellationDialogUI';
 import React from 'react';
-import { Return, Source, WorkflowCancellationDialogContainerProps } from './utils';
+import { WorkflowCancellationDialogContainerProps } from './utils';
+import { EmptyState } from '../EmptyState';
 
 const useStyles = makeStyles()((theme) => ({
   suspense: {
@@ -37,48 +36,23 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 export function WorkflowCancellationDialogContainer(props: WorkflowCancellationDialogContainerProps) {
-  const { items, onClose, onContinue } = props;
+  const { items = [], onClose, onContinue } = props;
   const { classes } = useStyles();
-
-  const resource = useLogicResource<Return, Source>(items, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: (source) => null
-  });
 
   const onContinueClick = (e) => {
     onClose(e, null);
     onContinue();
   };
 
-  return (
-    <SuspenseWithEmptyState
-      resource={resource}
-      withEmptyStateProps={{
-        emptyStateProps: {
-          title: (
-            <FormattedMessage
-              id="workflowCancellationDialog.noAffectedFiles"
-              defaultMessage="There are no affected files"
-            />
-          )
-        }
-      }}
-      loadingStateProps={{
-        classes: {
-          root: classes.suspense
-        }
-      }}
-    >
-      <WorkflowCancellationDialogUI
-        resource={resource}
-        onCloseButtonClick={(e) => onClose(e, null)}
-        onContinue={onContinueClick}
-        classes={classes}
-      />
-    </SuspenseWithEmptyState>
+  return items.length > 0 ? (
+    <WorkflowCancellationDialogUI
+      items={items}
+      onCloseButtonClick={(e) => onClose(e, null)}
+      onContinue={onContinueClick}
+      classes={classes}
+    />
+  ) : (
+    <EmptyState title={<FormattedMessage defaultMessage="No items." />} />
   );
 }
 
