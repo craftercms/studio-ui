@@ -167,7 +167,7 @@ export function register(payload: ElementRecordRegistration): number {
     }
   }
 
-  // If the relevant model is loaded, complete it's registration, otherwise,
+  // If the relevant model is loaded, complete its registration, otherwise,
   // request it and complete registration when it does load.
   if (hasCachedModel(modelId)) {
     completeRegistration(id);

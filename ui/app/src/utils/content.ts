@@ -577,6 +577,8 @@ export const createModelHierarchyDescriptor: (
 });
 // endregion
 
+let contentTypeMissingWarningQueue = [];
+let contentTypeMissingWarningTimeout: NodeJS.Timeout;
 export function createModelHierarchyDescriptorMap(
   normalizedModels: LookupTable<ContentInstance>,
   contentTypes: LookupTable<ContentType>
@@ -587,11 +589,21 @@ export function createModelHierarchyDescriptorMap(
     contentTypes[contentTypeId]?.fields ? Object.values(contentTypes[contentTypeId]?.fields) : null;
   const cleanCarryOver = (carryOver: string) => carryOver.replace(/(^\.+)|(\.+$)/g, '').replace(/\.{2,}/g, '.');
   const contentTypeMissingWarning = (model: ContentInstance) => {
-    if (!contentTypes[model.craftercms.contentTypeId]) {
-      console.error(
-        `[createModelHierarchyDescriptorMap] Content type with id ${model.craftercms.contentTypeId} was not found. ` +
-          `Unable to fully process model at '${model.craftercms.path}' with id ${model.craftercms.id}`
+    // Show this warning only if the model has a content type id defined (not null),
+    // but it's not present in the content type lookup table.
+    if (model.craftercms.contentTypeId && !contentTypes[model.craftercms.contentTypeId]) {
+      contentTypeMissingWarningQueue.push(
+        `Content type with id "${model.craftercms.contentTypeId}" was not found. ` +
+          `Unable to fully process model at "${model.craftercms.path}" with id "${model.craftercms.id}"`
       );
+      clearTimeout(contentTypeMissingWarningTimeout);
+      contentTypeMissingWarningTimeout = setTimeout(() => {
+        console.log(
+          `%c[createModelHierarchyDescriptorMap]: \n- ${contentTypeMissingWarningQueue.join('\n- ')}`,
+          'color: #f00'
+        );
+        contentTypeMissingWarningQueue = [];
+      }, 200);
     }
   };
   // endregion

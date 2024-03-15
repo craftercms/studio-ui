@@ -355,41 +355,46 @@ function performMutation(
  * updates the target content item field to include the reference, does not create/write the shared component document.
  * */
 export function insertComponent(
-  site: string,
-  modelId: string,
-  fieldId: string,
+  siteId: string,
+  parentDocPath: string,
+  parentModelId: string,
+  parentFieldId: string,
   targetIndex: string | number,
-  contentType: ContentType,
-  instance: ContentInstance,
-  path: string,
-  shared = false,
+  parentContentType: ContentType,
+  insertedContentInstance: ContentInstance,
+  insertedItemContentType: ContentType,
+  isSharedInstance = false,
   shouldSerializeValueFn?: (fieldId: string) => boolean
 ): Observable<any> {
   return performMutation(
-    site,
-    path,
+    siteId,
+    parentDocPath,
     (element) => {
-      const id = instance.craftercms.id;
-      const path = shared
-        ? instance.craftercms.path ?? generateComponentPath(id, instance.craftercms.contentTypeId)
+      const id = insertedContentInstance.craftercms.id;
+      const path = isSharedInstance
+        ? insertedContentInstance.craftercms.path ??
+          generateComponentPath(id, insertedContentInstance.craftercms.contentTypeId)
         : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = createElement('item');
+      const field = parentContentType.fields[parentFieldId];
 
       // Add the child elements into the `item` node
       createElements(newItem, {
-        '@attributes': { inline: !shared },
-        key: shared ? path : id,
-        value: cdataWrap(instance.craftercms.label),
-        ...(shared
-          ? { include: path, disableFlattening: 'false' }
-          : { component: createComponentObject(instance, contentType, shouldSerializeValueFn) })
+        '@attributes': { inline: !isSharedInstance },
+        key: isSharedInstance ? path : id,
+        value: cdataWrap(insertedContentInstance.craftercms.label),
+        ...(isSharedInstance
+          ? { include: path, disableFlattening: String(field?.properties?.disableFlattening?.value ?? 'false') }
+          : {
+              component: createComponentObject(insertedContentInstance, insertedItemContentType, shouldSerializeValueFn)
+            })
       });
 
-      insertCollectionItem(element, fieldId, targetIndex, newItem);
+      insertCollectionItem(element, parentFieldId, targetIndex, newItem);
     },
-    modelId
+    parentModelId
   );
 }
 // endregion
@@ -399,21 +404,22 @@ export function insertComponent(
  * Insert an *existing* (i.e. shared) component on to the document
  * */
 export function insertInstance(
-  site: string,
-  modelId: string,
-  fieldId: string,
+  siteId: string,
+  parentDocPath: string,
+  parentModelId: string,
+  parentFieldId: string,
   targetIndex: string | number,
-  instance: ContentInstance,
-  path: string,
+  parentContentType: ContentType,
+  insertedInstance: ContentInstance,
   datasource?: string
 ): Observable<any> {
   return performMutation(
-    site,
-    path,
+    siteId,
+    parentDocPath,
     (element) => {
-      const path = instance.craftercms.path;
-
+      const path = insertedInstance.craftercms.path;
       const newItem = createElement('item');
+      const field = parentContentType.fields[parentFieldId];
 
       createElements(newItem, {
         '@attributes': {
@@ -421,14 +427,14 @@ export function insertInstance(
           datasource: datasource ?? ''
         },
         key: path,
-        value: cdataWrap(instance.craftercms.label),
+        value: cdataWrap(insertedInstance.craftercms.label),
         include: path,
-        disableFlattening: 'false'
+        disableFlattening: String(field?.properties?.disableFlattening?.value ?? 'false')
       });
 
-      insertCollectionItem(element, fieldId, targetIndex, newItem);
+      insertCollectionItem(element, parentFieldId, targetIndex, newItem);
     },
-    modelId
+    parentModelId
   );
 }
 // endregion
@@ -467,6 +473,7 @@ export function insertItem(
 }
 // endregion
 
+// region duplicateItem
 export function duplicateItem(
   site: string,
   modelId: string,
@@ -564,7 +571,9 @@ export function duplicateItem(
     })
   );
 }
+// endregion
 
+// region sortItem
 export function sortItem(
   site: string,
   modelId: string,
@@ -583,7 +592,9 @@ export function sortItem(
     modelId
   );
 }
+// endregion
 
+// region moveItem
 export function moveItem(
   site: string,
   originalModelId: string,
@@ -671,7 +682,9 @@ export function moveItem(
     );
   }
 }
+// endregion
 
+// region deleteItem
 export function deleteItem(
   site: string,
   modelId: string,
@@ -706,6 +719,7 @@ export function deleteItem(
     modelId
   );
 }
+// endregion
 
 interface SearchServiceResponse {
   response: ApiResponse;
@@ -735,6 +749,7 @@ interface SearchServiceResponse {
   };
 }
 
+// region fetchItemsByContentType
 export function fetchItemsByContentType(
   site: string,
   contentType: string,
@@ -789,6 +804,7 @@ export function fetchItemsByContentType(
     })
   );
 }
+// endregion
 
 export function formatXML(site: string, path: string): Observable<boolean> {
   return fetchContentDOM(site, path).pipe(
