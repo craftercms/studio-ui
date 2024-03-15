@@ -36,7 +36,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 export function WorkflowCancellationDialogContainer(props: WorkflowCancellationDialogContainerProps) {
-  const { items = [], onClose, onContinue } = props;
+  const { items, onClose, onContinue } = props;
   const { classes } = useStyles();
 
   const onContinueClick = (e) => {
@@ -44,22 +44,26 @@ export function WorkflowCancellationDialogContainer(props: WorkflowCancellationD
     onContinue();
   };
 
-  return items.length > 0 ? (
-    <WorkflowCancellationDialogUI
-      items={items}
-      onCloseButtonClick={(e) => onClose(e, null)}
-      onContinue={onContinueClick}
-      classes={classes}
-    />
+  return items ? (
+    items.length > 0 ? (
+      <WorkflowCancellationDialogUI
+        items={items}
+        onCloseButtonClick={(e) => onClose(e, null)}
+        onContinue={onContinueClick}
+        classes={classes}
+      />
+    ) : (
+      <EmptyState
+        title={
+          <FormattedMessage
+            id="workflowCancellationDialog.noAffectedFiles"
+            defaultMessage="There are no affected files"
+          />
+        }
+      />
+    )
   ) : (
-    <EmptyState
-      title={
-        <FormattedMessage
-          id="workflowCancellationDialog.noAffectedFiles"
-          defaultMessage="There are no affected files"
-        />
-      }
-    />
+    <EmptyState title={<FormattedMessage defaultMessage="No items were provided as input" />} />
   );
 }
 
