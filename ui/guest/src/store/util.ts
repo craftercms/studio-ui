@@ -112,23 +112,21 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
 };
 
 /**
- * Checks if item is being moved to same drop zone
- * */
-export const movedToSameZone = (dragContext: GuestState['dragContext']): boolean => {
-  let { dropZone, dropZones } = dragContext,
-    originDropZone = dropZones.find((dropZone) => dropZone.origin),
-    currentDZ = dropZone.element;
-
-  return currentDZ === originDropZone.element;
-};
-
-/**
- * Checks if item is being moved to same position under its origin drop zone.
- * */
-export const movedToSamePosition = (dragContext: GuestState['dragContext']): boolean => {
-  let { dragged, targetIndex } = dragContext,
+ * From a dragContext of a component being moved, returns an object with the following properties:
+ * movedToSameZone: boolean
+ * movedToSamePosition: boolean
+ * draggedElementIndex: number
+ * targetIndex: number
+ */
+export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => {
+  let { dragged, targetIndex, dropZone, dropZones } = dragContext,
     record = dragged,
-    draggedElementIndex = record.index;
+    newTargetIndex = targetIndex,
+    draggedElementIndex = record.index,
+    originDropZone = dropZones.find((dropZone) => dropZone.origin),
+    currentDZ = dropZone.element,
+    movedToSameZone = currentDZ === originDropZone.element,
+    movedToSamePosition: boolean;
 
   if (typeof draggedElementIndex === 'string') {
     // If the index is a string, it's a nested index with dot notation.
@@ -138,17 +136,24 @@ export const movedToSamePosition = (dragContext: GuestState['dragContext']): boo
   }
 
   // If same dropzone
-  if (movedToSameZone(dragContext)) {
+  if (movedToSameZone) {
     // If moving the item down the array of items, need to account
     // for all the originally subsequent items shifting up.
     if (draggedElementIndex < targetIndex) {
       // Hence the final target index in reality is
       // the drop marker's index minus 1
-      --targetIndex;
+      newTargetIndex = targetIndex--;
     }
-    return draggedElementIndex === targetIndex;
+    movedToSamePosition = draggedElementIndex === targetIndex;
   } else {
     // Not same dropzone => different position
-    return false;
+    movedToSamePosition = false;
   }
+
+  return {
+    movedToSameZone,
+    movedToSamePosition,
+    draggedElementIndex,
+    targetIndex: newTargetIndex
+  };
 };

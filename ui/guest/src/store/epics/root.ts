@@ -31,14 +31,7 @@ import { not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
 import { getById, getReferentialEntries, isTypeAcceptedAsByField } from '../../iceRegistry';
-import {
-  beforeWrite$,
-  checkIfLockedOrModified,
-  movedToSamePosition,
-  movedToSameZone,
-  dragOk,
-  unwrapEvent
-} from '../util';
+import { beforeWrite$, checkIfLockedOrModified, dragOk, unwrapEvent, getMoveComponentInfo } from '../util';
 import * as contentController from '../../contentController';
 import {
   createContentInstance,
@@ -242,9 +235,10 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           const pathToLock = record.inherited
             ? models[getModelIdFromInheritedField(modelId, record.fieldId)].craftercms.path
             : path;
+          const { movedToSamePosition } = getMoveComponentInfo(dragContext);
 
           // If moving to the same position, there is no need of locking and other requests.
-          if (movedToSamePosition(dragContext)) {
+          if (movedToSamePosition) {
             post(instanceDragEnded());
             return of(computedDragEnd());
           } else {
@@ -917,32 +911,20 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 
 const moveComponent = (dragContext) => {
   let { dragged, dropZone, dropZones, targetIndex } = dragContext,
-    record = dragged,
-    draggedElementIndex = record.index,
     originDropZone = dropZones.find((dropZone) => dropZone.origin);
-
-  if (typeof draggedElementIndex === 'string') {
-    // If the index is a string, it's a nested index with dot notation.
-    // At this point, we only care for the last index piece, which is
-    // the index of this item in the collection that's being manipulated.
-    draggedElementIndex = parseInt(draggedElementIndex.substr(draggedElementIndex.lastIndexOf('.') + 1), 10);
-  }
-
   const containerRecord = iceRegistry.getById(originDropZone.iceId);
+  const {
+    movedToSameZone,
+    movedToSamePosition,
+    draggedElementIndex,
+    targetIndex: newTargetIndex
+  } = getMoveComponentInfo(dragContext);
+  targetIndex = newTargetIndex;
 
   // Determine whether the component is to be sorted or moved.
-  if (movedToSameZone(dragContext)) {
+  if (movedToSameZone) {
     // Same drop zone: Sort identified
-
-    // If moving the item down the array of items, need to account
-    // for all the originally subsequent items shifting up.
-    if (draggedElementIndex < targetIndex) {
-      // Hence the final target index in reality is
-      // the drop marker's index minus 1
-      --targetIndex;
-    }
-
-    if (!movedToSamePosition(dragContext)) {
+    if (!movedToSamePosition) {
       setTimeout(() => {
         contentController.sortItem(
           containerRecord.modelId,
