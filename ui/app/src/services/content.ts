@@ -165,12 +165,14 @@ export function writeContent(
   options?: { unlock: boolean }
 ): Observable<boolean> {
   options = Object.assign({ unlock: true }, options);
+  const fileName = getFileNameFromPath(path);
+  const pathToWrite = path.replace(`/${fileName}`, '');
   return post(
     writeContentUrl({
       site,
-      path: getParentPath(path),
+      path: pathToWrite,
       unlock: options.unlock ? 'true' : 'false',
-      fileName: getFileNameFromPath(path)
+      fileName
     }),
     content
   ).pipe(
