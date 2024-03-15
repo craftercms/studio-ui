@@ -52,7 +52,14 @@ export function WorkflowCancellationDialogContainer(props: WorkflowCancellationD
       classes={classes}
     />
   ) : (
-    <EmptyState title={<FormattedMessage defaultMessage="No items." />} />
+    <EmptyState
+      title={
+        <FormattedMessage
+          id="workflowCancellationDialog.noAffectedFiles"
+          defaultMessage="There are no affected files"
+        />
+      }
+    />
   );
 }
 
