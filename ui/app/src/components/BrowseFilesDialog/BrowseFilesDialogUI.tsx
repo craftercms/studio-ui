@@ -270,7 +270,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                       onPreview={onPreviewImage ? () => onPreviewImage(item) : null}
                       previewAppBaseUri={guestBase}
                       onClick={() => onCardSelected(item)}
-                      showPath={false}
+                      showPath={true}
                     />
                   ))
                 : new Array(numOfLoaderItems).fill(null).map((x, i) => <MediaSkeletonCard key={i} />)}

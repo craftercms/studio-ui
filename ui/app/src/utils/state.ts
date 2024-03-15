@@ -352,30 +352,31 @@ export function removeStoredPreviewBackgroundMode(username: string): void {
   localStorage.removeItem(`craftercms.${username}.previewDialog.backgroundMode`);
 }
 
-export function setStoredBrowseDialogCompactMode(username: string, compact: boolean): void {
-  localStorage.setItem(`craftercms.${username}.browseDialog.compactMode`, String(compact));
-}
-
-export function getStoredBrowseDialogCompactMode(username: string): boolean {
-  return JSON.parse(localStorage.getItem(`craftercms.${username}.browseDialog.compactMode`)) ?? false;
-}
-
 export function setStoredBrowseDialogViewMode(username: string, mode: MediaCardViewModes): void {
+  // TODO: Remove the item removal for old key in later versions.
+  const oldKey = `craftercms.${username}.browseDialog.compactMode`;
+  if (localStorage.getItem(oldKey)) {
+    localStorage.removeItem(oldKey);
+  }
   localStorage.setItem(`craftercms.${username}.browseDialog.viewMode`, mode);
 }
 
 export function getStoredBrowseDialogViewMode(username: string): MediaCardViewModes {
   // The viewMode field used to be compactMode (boolean). For backwards compatibility, if the viewMode is not set and
   // compactMode exists, set value accordingly.
-  const backwardsCompatibilityValue = getStoredBrowseDialogCompactMode(username) ? 'compact' : 'card';
+  // TODO: Remove compactMode in later versions.
+  const compactMode = JSON.parse(localStorage.getItem(`craftercms.${username}.browseDialog.compactMode`));
+  const backwardsCompatibilityValue: MediaCardViewModes = compactMode ? 'compact' : 'card';
   return (
     (localStorage.getItem(`craftercms.${username}.browseDialog.viewMode`) as MediaCardViewModes) ??
     backwardsCompatibilityValue
   );
 }
 
-export function removeStoredBrowseDialogCompactMode(username: string): void {
+export function removeStoredBrowseDialogViewMode(username: string): void {
+  // TODO: Remove oldKey removal in later versions.
   localStorage.removeItem(`craftercms.${username}.browseDialog.compactMode`);
+  localStorage.removeItem(`craftercms.${username}.browseDialog.viewMode`);
 }
 
 export function getStoredOutdatedXBValidationDate(siteId: string, username: string): Date {
