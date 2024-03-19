@@ -50,14 +50,14 @@ import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
-import { getFileNameFromPath, getParentPath, getPasteItemFromPath } from '../utils/path';
+import { getFileNameFromPath, getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
 import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
-import { isPdfDocument, isMediaContent, isTextContent } from '../components/PathNavigator/utils';
+import { isMediaContent, isPdfDocument, isTextContent } from '../components/PathNavigator/utils';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html${toQueryString({ path })}`).pipe(pluck('response'));
