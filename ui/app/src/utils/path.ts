@@ -48,8 +48,20 @@ export function getPathFromPreviewURL(previewURL: string): string {
   return `/site/website${pagePath}`;
 }
 
+/**
+ * Computes and returns the preview URL from a path. Notice non-previewable paths will not be transformed.
+ * @param path {string} The path to compute the preview URL from
+ * @returns {string} The preview URL
+ */
 export function getPreviewURLFromPath(path: string): string {
-  return withoutIndex(path).replace('/site/website', '') || '/';
+  // Transform only paths that start with `/site/website`. Preview url and path for static assets is the same.
+  // Non-previewable paths are not transformed by this function.
+  // It is known that for some existing platform users, paths do not end with `/index.xml`. For example in
+  // `/site/website/folder/article.xml` previewUrl should be `/folder/article`. In these cases, the file
+  // name cannot be striped off.
+  return /^\/site\/website/.test(path)
+    ? path.replace(/^\/site\/website|\/(index|default).xml$|.xml$/g, '') || '/'
+    : path;
 }
 
 export function getFileNameFromPath(path: string): string {
