@@ -132,7 +132,7 @@ export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => 
     // If the index is a string, it's a nested index with dot notation.
     // At this point, we only care for the last index piece, which is
     // the index of this item in the collection that's being manipulated.
-    draggedElementIndex = parseInt(draggedElementIndex.substr(draggedElementIndex.lastIndexOf('.') + 1), 10);
+    draggedElementIndex = parseInt(draggedElementIndex.substring(draggedElementIndex.lastIndexOf('.') + 1));
   }
 
   // If same dropzone
