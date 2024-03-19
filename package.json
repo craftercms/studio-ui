@@ -69,7 +69,7 @@
     "nth-check": "^2.0.1",
     "semver": "^7.5.2"
   },
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.1.1",
   "scripts": {
     "prettier:raw": "node scripts/prettier.js",
     "prettier:all": "node scripts/prettier.js write",
@@ -82,7 +82,8 @@
     "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
     "format-pom": "prettier --use-tabs --write pom.xml",
     "lint:ci": "eslint --ext .ts,.tsx .",
-    "upgrade-yarn": "yarn set version latest"
+    "update:yarn": "yarn set version latest",
+    "update:caniuse": "yarn up -R caniuse-lite"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.1.0",
