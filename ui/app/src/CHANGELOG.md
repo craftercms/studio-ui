@@ -14,6 +14,7 @@
     * `LegacyRecentActivityDashlet`
     * `LegacyRecentlyPublishedDashlet`
     * `LegacyUnpublishedDashlet`
+  * `WorkflowCancellationDialogUI`: prop `items` type changed from an async Resource to sync SandboxItem array.
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`
