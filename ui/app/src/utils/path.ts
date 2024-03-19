@@ -21,6 +21,7 @@ import LookupTable from '../models/LookupTable';
 import ContentType from '../models/ContentType';
 import { SystemType } from '../models';
 import { v4 as uuid } from 'uuid';
+import { ensureSingleSlash } from './string';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -350,3 +351,26 @@ export const getFileNameWithExtensionForItemType = (type: string, name: string) 
   `${name}.${pickExtensionForItemType(type)}`
     .replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3')
     .replace(/\.{2,}/g, '.');
+
+export const getPathParts = (basePath: string, value: string) => {
+  let valuePath = '',
+    name;
+  const nameRegex = new RegExp('/([^\\/:*?"<>|]+)$');
+  const match = nameRegex.exec(value);
+
+  // basePath example '/site/website/'
+  if (match) {
+    name = match[1];
+    valuePath = value.replace(name, '');
+  } else {
+    name = value;
+  }
+
+  return {
+    value,
+    name,
+    valuePath,
+    // basePath may or may not have a trailing slash
+    fullPath: ensureSingleSlash(`${basePath}/${valuePath}`)
+  };
+};

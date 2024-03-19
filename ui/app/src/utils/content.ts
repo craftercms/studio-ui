@@ -1034,6 +1034,10 @@ export function applyAssetNameRules(name: string, options?: { allowBraces: boole
   return name.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '').replace(/\.{1,}/g, '.');
 }
 
+export function applyPathNameRules(name: string, options?: { allowBraces: boolean }): string {
+  return name.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}./]/g : /[^a-zA-Z0-9-_./]/g, '').replace(/\.{1,}/g, '.');
+}
+
 /**
  * Utility to clean up a content name (pages/components/taxonomies). It removes any character that is not a lowercase
  * letter, number, dash or underscore.
