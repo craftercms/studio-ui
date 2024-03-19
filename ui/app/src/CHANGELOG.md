@@ -24,6 +24,8 @@
   * `getUserPermissions`
     * Use `fetchMyPermissions` instead
   * [services/contentTypes] Add `fetchContentType` service
+* [state]
+  * `actions/dialogs`: Renamed `updateEditConfig` action to `updateEditDialogConfig`
 * Removed deprecated `aws-file-upload` and `aws-video` upload controls.
 
 ## 4.1.3
