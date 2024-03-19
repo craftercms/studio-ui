@@ -60,7 +60,10 @@ export function getPreviewURLFromPath(path: string): string {
   // `/site/website/folder/article.xml` previewUrl should be `/folder/article`. In these cases, the file
   // name cannot be striped off.
   return /^\/site\/website/.test(path)
-    ? path.replace(/^\/site\/website|\/(index|default).xml$|.xml$/g, '') || '/'
+    ? path
+        .replace(/^\/site\/website/, '')
+        .replace(/\/(index|default).xml$/, '')
+        .replace(/(.xml|\/)$/, '') || '/'
     : path;
 }
 
