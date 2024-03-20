@@ -1030,12 +1030,24 @@ export function applyFolderNameRules(name: string, options?: { allowBraces: bool
   return cleanedUpName.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '');
 }
 
+// Separate the path into sections, apply the folder rules to each section and join them back together.
+export function applyFolderPathRules(path: string, options?: { allowBraces: boolean }): string {
+  return path
+    .split('/')
+    .map((section) => applyFolderNameRules(section, options))
+    .join('/');
+}
+
 export function applyAssetNameRules(name: string, options?: { allowBraces: boolean }): string {
   return name.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}.]/g : /[^a-zA-Z0-9-_.]/g, '').replace(/\.{1,}/g, '.');
 }
 
-export function applyPathNameRules(name: string, options?: { allowBraces: boolean }): string {
-  return name.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}./]/g : /[^a-zA-Z0-9-_./]/g, '').replace(/\.{1,}/g, '.');
+// Separate the path into sections, apply the asset rules to each section and join them back together.
+export function applyAssetPathRules(path: string, options?: { allowBraces: boolean }): string {
+  return path
+    .split('/')
+    .map((section) => applyAssetNameRules(section, options))
+    .join('/');
 }
 
 /**

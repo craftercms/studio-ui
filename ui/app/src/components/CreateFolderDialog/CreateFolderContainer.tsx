@@ -37,7 +37,7 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
-import { applyFolderNameRules, applyPathNameRules, lookupItemByPath } from '../../utils/content';
+import { applyFolderNameRules, applyFolderPathRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import ApiResponse from '../../models/ApiResponse';
 
@@ -69,9 +69,9 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   // folderExists const.
   const [itemExists, setItemExists] = useState(false);
   const folderExists = rename
-    ? name !== value && (itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED)
+    ? value !== initialValue && (itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED)
     : itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED;
-  const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
+  const isValid = !isBlank(value) && !folderExists && (!rename || value !== initialValue);
 
   useEffect(() => {
     if (item && rename === false) {
@@ -243,9 +243,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             onChange={(event) =>
               onInputChanges(
                 rename
-                  ? // TODO: Need to adjust PathNameRules to allow slashes in the name/path (only on create)
-                    applyFolderNameRules(event.target.value, { allowBraces })
-                  : applyPathNameRules(event.target.value, { allowBraces })
+                  ? applyFolderNameRules(event.target.value, { allowBraces })
+                  : applyFolderPathRules(event.target.value, { allowBraces })
               )
             }
           />

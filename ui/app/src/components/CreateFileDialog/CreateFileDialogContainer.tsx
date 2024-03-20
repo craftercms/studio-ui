@@ -35,7 +35,7 @@ import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
-import { applyPathNameRules } from '../../utils/content';
+import { applyAssetPathRules } from '../../utils/content';
 import { getFileNameWithExtensionForItemType, getPathParts, pickExtensionForItemType } from '../../utils/path';
 import ApiResponse from '../../models/ApiResponse';
 
@@ -200,7 +200,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) => onInputChanges(applyPathNameRules(event.target.value, { allowBraces }))}
+            onChange={(event) => onInputChanges(applyAssetPathRules(event.target.value, { allowBraces }))}
           />
         </form>
       </DialogBody>
