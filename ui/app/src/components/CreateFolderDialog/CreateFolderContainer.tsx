@@ -182,22 +182,21 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   return (
     <>
       <DialogBody>
-        {selectedItem && (
-          <SingleItemSelector
-            label={<FormattedMessage id="words.location" defaultMessage="Location" />}
-            open={openSelector}
-            onClose={() => setOpenSelector(false)}
-            onDropdownClick={() => setOpenSelector(!openSelector)}
-            rootPath={getRootPath(basePath)}
-            selectedItem={selectedItem}
-            canSelectFolders
-            onItemClicked={(item) => {
-              setOpenSelector(false);
-              setSelectedItem(item);
-            }}
-            filterChildren={itemSelectorFilterChildren}
-          />
-        )}
+        <SingleItemSelector
+          label={<FormattedMessage id="words.location" defaultMessage="Location" />}
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          onDropdownClick={selectedItem ? () => setOpenSelector(!openSelector) : null}
+          rootPath={getRootPath(basePath)}
+          selectedItem={rename ? item : selectedItem}
+          canSelectFolders
+          onItemClicked={(item) => {
+            setOpenSelector(false);
+            setSelectedItem(item);
+          }}
+          filterChildren={itemSelectorFilterChildren}
+          showPath={true}
+        />
         <form
           onSubmit={(e) => {
             e.preventDefault();
