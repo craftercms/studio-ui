@@ -43,6 +43,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import ItemDisplay from '../ItemDisplay';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
 import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles()((theme) => ({
   popoverRoot: {
@@ -97,6 +98,7 @@ interface SingleItemSelectorProps {
   disabled?: boolean;
   buttonSize?: IconButtonProps['size'];
   tooltip?: string;
+  showPath?: boolean;
   onClose?(): void;
   onItemClicked(item: DetailedItem): void;
   onDropdownClick?(): void;
@@ -272,7 +274,8 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     canSelectFolders = false,
     filterChildren = () => true,
     buttonSize = 'large',
-    tooltip = ''
+    tooltip = '',
+    showPath = false
   } = props;
   // endregion
   const { classes, cx } = useStyles();
@@ -414,9 +417,24 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
             </Typography>
           )}
           {selectedItem && (
-            <div className={classes.selectedItem}>
+            <Box className={classes.selectedItem} sx={{ flexDirection: 'column', flex: 1 }}>
               <ItemDisplay item={selectedItem} showNavigableAsLinks={false} />
-            </div>
+              {showPath && (
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  sx={{
+                    overflow: 'hidden',
+                    direction: 'rtl',
+                    textAlign: 'left',
+                    textOverflow: 'ellipsis'
+                  }}
+                  title={selectedItem.path}
+                >
+                  {selectedItem.path}
+                </Typography>
+              )}
+            </Box>
           )}
         </>
       )}
