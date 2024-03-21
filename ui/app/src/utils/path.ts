@@ -371,6 +371,6 @@ export const getPathParts = (basePath: string, value: string) => {
     name,
     valuePath,
     // basePath may or may not have a trailing slash
-    fullPath: ensureSingleSlash(`${basePath}/${valuePath}`)
+    fullPath: ensureSingleSlash(`${basePath}/${valuePath}`).replace(/\/$/, '')
   };
 };
