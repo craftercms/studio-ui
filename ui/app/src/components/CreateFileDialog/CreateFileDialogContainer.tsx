@@ -36,8 +36,15 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { applyAssetPathRules } from '../../utils/content';
-import { getFileNameWithExtensionForItemType, getPathParts, pickExtensionForItemType } from '../../utils/path';
+import {
+  getFileNameWithExtensionForItemType,
+  getPathParts,
+  getRootPath,
+  pickExtensionForItemType
+} from '../../utils/path';
 import ApiResponse from '../../models/ApiResponse';
+import useFetchItem from '../../hooks/useFetchItem';
+import SingleItemSelector from '../SingleItemSelector';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const { onClose, onCreated, type, path: basePath, allowBraces } = props;
@@ -53,6 +60,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const itemLookup = useItemsByPath();
+  const item = useFetchItem(basePath);
   const computedFilePath = ensureSingleSlash(`${fullPath}/${getFileNameWithExtensionForItemType(type, name)}`);
   // When calling the validation API, we need to check if the item with the suggested name exists. This is an extra validation for the
   // fileExists const.
@@ -150,7 +158,6 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 
   const onInputChanges = (value: string) => {
     setPathData(getPathParts(basePath, value));
-    // setName(value);
     setItemExists(false);
     const newHasPending = !isBlank(value);
     hasPendingChanges !== newHasPending &&
@@ -164,6 +171,15 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   return (
     <>
       <DialogBody>
+        <SingleItemSelector
+          label={<FormattedMessage id="words.location" defaultMessage="Location" />}
+          open={false}
+          rootPath={getRootPath(basePath)}
+          selectedItem={item}
+          showPath={true}
+          onClose={null}
+          onItemClicked={null}
+        />
         <form
           onSubmit={(e) => {
             e.preventDefault();
