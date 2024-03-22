@@ -92,6 +92,7 @@ const epics = [
               items?.length > 0
                 ? batchActions([
                     showWorkflowCancellationDialog({
+                      items,
                       onContinue: showCodeEditorDialog({
                         path,
                         mode,

@@ -27,8 +27,7 @@ import React from 'react';
 import { WorkflowCancellationDialogUIProps } from './utils';
 
 export function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) {
-  const { resource, onCloseButtonClick, onContinue, classes } = props;
-  const items = resource.read();
+  const { items, onCloseButtonClick, onContinue, classes } = props;
   return (
     <>
       <DialogBody>
