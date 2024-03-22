@@ -47,7 +47,10 @@ import {
   updateCodeEditorDialog,
   updateEditConfig,
   updatePreviewDialog,
-  closeRenameAssetDialog
+  closeRenameAssetDialog,
+  fetchBrokenReferences,
+  updateBrokenReferencesDialog,
+  fetchBrokenReferencesFailed
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
@@ -64,6 +67,7 @@ import { getHostToGuestBus } from '../../utils/subjects';
 import { unlockItem } from '../actions/content';
 import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import { LegacyItem } from '../../models';
+import { parseLegacyItemToSandBoxItem } from '../../utils/content';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -257,8 +261,23 @@ const dialogEpics: CrafterCMSEpic[] = [
           catchAjaxError(fetchRenameAssetDependantsFailed)
         )
       )
-    )
+    ),
   // endregion
+  // region fetchBrokenReferences
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchBrokenReferences.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        fetchDependant(state.sites.active, state.dialogs.brokenReferences.path).pipe(
+          map((response: LegacyItem[]) => {
+            const references = parseLegacyItemToSandBoxItem(response);
+            return updateBrokenReferencesDialog({ references });
+          }),
+          catchAjaxError(fetchBrokenReferencesFailed)
+        )
+      )
+    )
 ] as CrafterCMSEpic[];
 
 export default dialogEpics;
