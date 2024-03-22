@@ -353,18 +353,10 @@ export const getFileNameWithExtensionForItemType = (type: string, name: string) 
     .replace(/\.{2,}/g, '.');
 
 export const getPathParts = (basePath: string, value: string) => {
-  let valuePath = '',
-    name;
-  const nameRegex = new RegExp('/([^\\/:*?"<>|]+)$');
-  const match = nameRegex.exec(value);
-
-  // basePath example '/site/website/'
-  if (match) {
-    name = match[1];
-    valuePath = value.replace(name, '');
-  } else {
-    name = value;
-  }
+  const noTrailingSlashValue = value.replace(/\/$/, '');
+  const parts = noTrailingSlashValue.split('/'); // Split by path separator (adjust for \ on Windows)
+  const name = parts.pop(); // Get the last element (file name)
+  const valuePath = parts.join('/'); // Join the remaining parts for the path
 
   return {
     value,
