@@ -21,7 +21,7 @@ import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
 import ContentInstance from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
-import { fileNameFromPath, unescapeHTML } from './string';
+import { ensureSingleSlash, fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import {
@@ -1032,10 +1032,13 @@ export function applyFolderNameRules(name: string, options?: { allowBraces: bool
 
 // Separate the path into sections, apply the folder rules to each section and join them back together.
 export function applyFolderPathRules(path: string, options?: { allowBraces: boolean }): string {
-  return path
-    .split('/')
-    .map((section) => applyFolderNameRules(section, options))
-    .join('/');
+  return ensureSingleSlash(
+    path
+      .replace(/^\/+/, '') // Remove leading slash
+      .split('/')
+      .map((section) => applyFolderNameRules(section, options))
+      .join('/')
+  );
 }
 
 export function applyAssetNameRules(name: string, options?: { allowBraces: boolean }): string {
@@ -1044,10 +1047,13 @@ export function applyAssetNameRules(name: string, options?: { allowBraces: boole
 
 // Separate the path into sections, apply the asset rules to each section and join them back together.
 export function applyAssetPathRules(path: string, options?: { allowBraces: boolean }): string {
-  return path
-    .split('/')
-    .map((section) => applyAssetNameRules(section, options))
-    .join('/');
+  return ensureSingleSlash(
+    path
+      .replace(/^\/+/, '') // Remove leading slash
+      .split('/')
+      .map((section) => applyAssetNameRules(section, options))
+      .join('/')
+  );
 }
 
 /**
