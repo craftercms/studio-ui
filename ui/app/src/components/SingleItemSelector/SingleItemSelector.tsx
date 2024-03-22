@@ -44,6 +44,7 @@ import ItemDisplay from '../ItemDisplay';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
+import { PartialSxRecord } from '../../models';
 
 const useStyles = makeStyles()((theme) => ({
   popoverRoot: {
@@ -103,6 +104,7 @@ interface SingleItemSelectorProps {
   onItemClicked(item: DetailedItem): void;
   onDropdownClick?(): void;
   filterChildren?(item: SandboxItem): boolean;
+  sxs?: PartialSxRecord<'root' | 'popoverRoot' | 'selectedItem' | 'title' | 'changeBtn' | 'itemName' | 'selectIcon'>;
 }
 
 interface SingleItemSelectorState extends PaginationOptions {
@@ -275,7 +277,8 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     filterChildren = () => true,
     buttonSize = 'large',
     tooltip = '',
-    showPath = false
+    showPath = false,
+    sxs
   } = props;
   // endregion
   const { classes, cx } = useStyles();
@@ -404,7 +407,8 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     ? {}
     : {
         elevation: 0,
-        className: cx(classes.root, !onDropdownClick && 'disable', propClasses?.root)
+        className: cx(classes.root, disabled && 'disable', propClasses?.root),
+        sx: sxs?.root
       };
 
   return (
@@ -412,12 +416,12 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
       {!hideUI && (
         <>
           {label && (
-            <Typography variant={titleVariant} className={cx(classes.title, propClasses?.title)}>
+            <Typography variant={titleVariant} className={cx(classes.title, propClasses?.title)} sx={sxs?.title}>
               {label}
             </Typography>
           )}
           {selectedItem && (
-            <Box className={classes.selectedItem} sx={{ flexDirection: 'column', flex: 1 }}>
+            <Box className={classes.selectedItem} sx={{ flexDirection: 'column', flex: 1, ...sxs?.selectedItem }}>
               <ItemDisplay item={selectedItem} showNavigableAsLinks={false} />
               {showPath && (
                 <Typography
@@ -446,8 +450,9 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
             disabled={disabled}
             onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
             size={buttonSize}
+            sx={sxs?.changeBtn}
           >
-            <SelectIcon className={cx(classes.selectIcon, propClasses?.selectIcon)} />
+            <SelectIcon className={cx(classes.selectIcon, propClasses?.selectIcon)} sx={sxs?.selectIcon} />
           </IconButton>
         </Tooltip>
       )}
@@ -464,6 +469,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
           vertical: 'top',
           horizontal: 'right'
         }}
+        sx={sxs?.popoverRoot}
       >
         <Breadcrumbs
           keyword={state?.keywords}
