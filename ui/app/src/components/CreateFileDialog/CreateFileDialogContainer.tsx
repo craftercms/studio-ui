@@ -179,6 +179,11 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
           showPath={true}
           onClose={null}
           onItemClicked={null}
+          sxs={{
+            root: {
+              width: '100%'
+            }
+          }}
         />
         <form
           onSubmit={(e) => {

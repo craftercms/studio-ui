@@ -196,6 +196,11 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
           }}
           filterChildren={itemSelectorFilterChildren}
           showPath={true}
+          sxs={{
+            root: {
+              width: '100%'
+            }
+          }}
         />
         <form
           onSubmit={(e) => {
