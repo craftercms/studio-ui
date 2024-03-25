@@ -90,6 +90,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const [environment, setEnvironment] = useState<string>();
   const [files, setFiles] = useState<SiteConfigurationFileWithId[]>();
   const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFileWithId>(null);
+  const ignoreEnv = selectedConfigFile?.path === 'site-policy-config.xml';
   const [selectedConfigFileXml, setSelectedConfigFileXml] = useState(null);
   const [configError, setConfigError] = useState(null);
   const [selectedSampleConfigFileXml, setSelectedSampleConfigFileXml] = useState(null);
@@ -169,7 +170,12 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   useEffect(() => {
     if (selectedConfigFile && environment) {
       setConfigError(null);
-      fetchConfigurationXML(site, selectedConfigFile.path, selectedConfigFile.module, environment).subscribe({
+      fetchConfigurationXML(
+        site,
+        selectedConfigFile.path,
+        selectedConfigFile.module,
+        ignoreEnv ? null : environment
+      ).subscribe({
         next(xml) {
           setSelectedConfigFileXml(xml ?? '');
           setLoadingXml(false);
@@ -184,7 +190,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         }
       });
     }
-  }, [selectedConfigFile, environment, site]);
+  }, [selectedConfigFile, environment, site, ignoreEnv]);
 
   // Item Revert Propagation
   useEffect(() => {
@@ -448,7 +454,13 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
     } else {
       if (unencryptedItems.length === 0) {
         functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: true });
-        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe({
+        writeConfiguration(
+          site,
+          selectedConfigFile.path,
+          selectedConfigFile.module,
+          content,
+          ignoreEnv ? null : environment
+        ).subscribe({
           next: () => {
             functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false, hasPendingChanges: false });
             dispatch(
