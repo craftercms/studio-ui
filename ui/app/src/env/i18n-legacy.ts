@@ -307,6 +307,9 @@ export const contentTypesMessages = defineMessages({
   stayEditing: {
     id: 'contentType.stayEditing',
     defaultMessage: 'Stay & continue editing'
+  },
+  audioManager: {
+    defaultMessage: 'Audio Manager'
   }
 });
 
@@ -844,5 +847,17 @@ export const itemSuccessMessages = defineMessages({
   folderCreated: {
     id: 'folder.created',
     defaultMessage: 'Folder created successfully'
+  }
+});
+
+export const audioDSMessages = defineMessages({
+  uploadLabel: {
+    defaultMessage: 'Audio Uploaded from Desktop'
+  },
+  browseLabel: {
+    defaultMessage: 'Audio From Repository'
+  },
+  uploadError: {
+    defaultMessage: 'An error occurred while uploading the audio file.'
   }
 });

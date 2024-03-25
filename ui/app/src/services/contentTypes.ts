@@ -65,7 +65,9 @@ const systemValidationsNames = [
   'imgRepositoryUpload',
   'imgDesktopUpload',
   'videoDesktopUpload',
-  'videoBrowseRepo'
+  'videoBrowseRepo',
+  'audioDesktopUpload',
+  'audioBrowseRepo'
 ];
 
 const systemValidationsKeysMap = {
@@ -86,7 +88,9 @@ const systemValidationsKeysMap = {
   imgRepositoryUpload: 'allowImagesFromRepo',
   imgDesktopUpload: 'allowImageUpload',
   videoDesktopUpload: 'allowVideoUpload',
-  videoBrowseRepo: 'allowVideosFromRepo'
+  videoBrowseRepo: 'allowVideosFromRepo',
+  audioDesktopUpload: 'allowAudioUpload',
+  audioBrowseRepo: 'allowAudioFromRepo'
 };
 
 function bestGuessParse(value: any) {
@@ -200,11 +204,11 @@ function getFieldDataSourceValidations(
   if (
     dataSources &&
     dataSources.length > 0 &&
-    asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager'].includes(prop.name))
+    asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager', 'audioManager'].includes(prop.name))
   ) {
     validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
       (table, prop) => {
-        if (prop.name === 'imageManager' || prop.name === 'videoManager') {
+        if (prop.name === 'imageManager' || prop.name === 'videoManager' || prop.name === 'audioManager') {
           const dataSourcesIds = prop.value.trim() !== '' ? prop.value.split(',') : null;
           dataSourcesIds?.forEach((id) => {
             const dataSource = dataSources.find((datasource) => datasource.id === id);

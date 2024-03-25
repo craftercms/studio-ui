@@ -52,7 +52,9 @@ export type ValidationKeys =
   | 'allowImagesFromRepo'
   | 'allowImageUpload'
   | 'allowVideosFromRepo'
-  | 'allowVideoUpload';
+  | 'allowVideoUpload'
+  | 'allowAudioUpload'
+  | 'allowAudioFromRepo';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;
