@@ -113,7 +113,6 @@ import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
-  documentDomain?: string;
   themeOptions?: ThemeOptions;
   sxOverrides?: DeepPartial<GuestStylesSx>;
   globalStyleOverrides?: GuestGlobalStylesProps['styles'];
@@ -139,8 +138,6 @@ type GenericXBProps<T> = PropsWithChildren<BaseXBProps & T>;
 
 export type ExperienceBuilderProps = GenericXBProps<{ model: ContentInstance } | { path: string }>;
 
-const initialDocumentDomain = typeof document === 'undefined' ? void 0 : document.domain;
-
 function bypassKeyStroke(e, refs) {
   const isKeyDown = e.type === 'keydown';
   refs.current.keysPressed['z'] = isKeyDown;
@@ -156,7 +153,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     themeOptions,
     sxOverrides,
     children,
-    documentDomain,
     scrollElement = 'html, body',
     isHeadlessMode = false,
     globalStyleOverrides
@@ -313,19 +309,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       };
     }
   }, [editMode, editModePadding]);
-
-  // Sets document domain
-  useEffect(() => {
-    if (documentDomain) {
-      try {
-        document.domain = documentDomain;
-      } catch (e) {
-        console.error(e);
-      }
-    } else if (document.domain !== initialDocumentDomain) {
-      document.domain = initialDocumentDomain;
-    }
-  }, [documentDomain]);
 
   // Add/remove edit on class
   useEffect(() => {
@@ -513,7 +496,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         dispatch(contentReady());
       });
 
-    post(guestCheckIn({ location, path, site, documentDomain, version: process.env.VERSION }));
+    post(guestCheckIn({ location, path, site, version: process.env.VERSION }));
 
     return () => {
       post(guestCheckOut({ path }));
@@ -523,7 +506,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       flushRequestedPaths();
       operationsSubscription.unsubscribe();
     };
-  }, [dispatch, documentDomain, path]);
+  }, [dispatch, path]);
 
   // Listen for desktop asset drag & drop
   const shouldNotBypass = hasHost && editMode;

@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { closeEditDialog, editDialogClosed, showEditDialog, updateEditConfig } from '../../actions/dialogs';
+import { closeEditDialog, editDialogClosed, showEditDialog, updateEditDialogConfig } from '../../actions/dialogs';
 import { nnou } from '../../../utils/object';
 import { LegacyFormDialogStateProps } from '../../../components/LegacyFormDialog/utils';
 import { changeSiteComplete } from '../../actions/sites';
@@ -43,13 +43,13 @@ export default createReducer<GlobalState['dialogs']['edit']>(initialState, (buil
             ...state,
             onClose: closeEditDialog(),
             onClosed: editDialogClosed(),
-            onMinimize: updateEditConfig({ isMinimized: true }),
-            onMaximize: updateEditConfig({ isMinimized: false }),
+            onMinimize: updateEditDialogConfig({ isMinimized: true }),
+            onMaximize: updateEditDialogConfig({ isMinimized: false }),
             ...payload,
             open: true
           };
     })
-    .addCase(updateEditConfig, (state, { payload }) => ({
+    .addCase(updateEditDialogConfig, (state, { payload }: { payload: Partial<LegacyFormDialogStateProps> }) => ({
       ...state,
       ...payload
     }))

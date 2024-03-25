@@ -27,7 +27,7 @@
     "jquery-ui": "^1.13.2",
     "jquery-ui-css": "^1.11.5",
     "js-yaml": "^4.1.0",
-    "monaco-editor": "0.45.0",
+    "monaco-editor": "0.47.0",
     "style-loader": "^3.3.4",
     "tinymce": "^6.8.2"
   },

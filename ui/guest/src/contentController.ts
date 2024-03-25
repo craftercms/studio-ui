@@ -28,6 +28,7 @@ import {
   contentTypesResponse,
   deleteItemOperation,
   duplicateItemOperation,
+  fetchGuestModel,
   insertComponentOperation,
   insertItemOperation,
   moveItemOperation,
@@ -201,7 +202,7 @@ export function fetchByPath(
   path: string
 ): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
   return of('nothing').pipe(
-    tap(() => post({ type: 'FETCH_GUEST_MODEL', payload: { path } })),
+    tap(() => post(fetchGuestModel({ path }))),
     switchMap(() =>
       fromTopic('FETCH_GUEST_MODEL_COMPLETE').pipe(
         map((e) => e?.payload),

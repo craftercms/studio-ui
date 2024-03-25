@@ -19,7 +19,7 @@ import { getStateMapFromLegacyItem } from './state';
 import { nnou, nou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
-import ContentInstance from '../models/ContentInstance';
+import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
@@ -360,11 +360,19 @@ const systemPropsList = [
   'lastModifiedDate_dt'
 ];
 
+/**
+ * doc {XMLDocument}
+ * path {string}
+ * contentTypesLookup {LookupTable<ContentType>}
+ * instanceLookup {LookupTable<ContentInstance>}
+ * unflattenedPaths {LookupTable<ContentInstance>} A lookup table directly completed/mutated by this function indexed by path of those objects that are incomplete/unflattened
+ */
 export function parseContentXML(
   doc: XMLDocument,
   path: string = null,
   contentTypesLookup: LookupTable<ContentType>,
-  instanceLookup: LookupTable<ContentInstance>
+  instanceLookup: LookupTable<ContentInstance>,
+  unflattenedPaths?: LookupTable<ContentInstance>
 ): ContentInstance {
   let id = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > objectId')) : null;
   if (id === null && !/^[a-f\d]{4}(?:[a-f\d]{4}-){4}[a-f\d]{12}$/i.test((id = fileNameFromPath(path)))) {
@@ -372,19 +380,22 @@ export function parseContentXML(
     id = null;
   }
   const contentTypeId = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > content-type')) : null;
-  const current = {
+  const current: ContentInstanceBase = {
     craftercms: {
       id,
       path,
       label: null,
-      locale: null,
       dateCreated: null,
       dateModified: null,
-      contentTypeId: contentTypeId,
+      contentTypeId,
       disabled: false,
       sourceMap: {}
     }
   };
+  // We're assuming that contentTypeId is null when the content is not flattened
+  if (contentTypeId === null && unflattenedPaths) {
+    unflattenedPaths[path] = current;
+  }
   if (nnou(doc)) {
     current.craftercms.label = getInnerHtml(
       doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name'),
@@ -393,7 +404,7 @@ export function parseContentXML(
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
   }
-  instanceLookup[id ?? path] = current;
+  id && (instanceLookup[id] = current);
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
       const tagName = element.tagName;
@@ -426,18 +437,32 @@ export function parseContentXML(
             );
           }
         }
-        current[tagName] = parseElementByContentType(element, field, contentTypesLookup, instanceLookup);
+        current[tagName] = parseElementByContentType(
+          element,
+          field,
+          contentTypesLookup,
+          instanceLookup,
+          unflattenedPaths
+        );
       }
     });
   }
   return current;
 }
 
+/**
+ * element {Element}
+ * field {ContentTypeField}
+ * contentTypesLookup {LookupTable<ContentType>}
+ * instanceLookup {LookupTable<ContentInstance>}
+ * unflattenedPaths {LookupTable<ContentInstance>} A lookup table directly completed/mutated by this function indexed by path of those objects that are incomplete/unflattened
+ */
 function parseElementByContentType(
   element: Element,
   field: ContentTypeField,
   contentTypesLookup: LookupTable<ContentType>,
-  instanceLookup: LookupTable<ContentInstance>
+  instanceLookup: LookupTable<ContentInstance>,
+  unflattenedPaths?: LookupTable<ContentInstance>
 ) {
   if (!field) {
     return getInnerHtml(element) ?? '';
@@ -459,7 +484,8 @@ function parseElementByContentType(
             fieldTag,
             field.fields[fieldTagName],
             contentTypesLookup,
-            instanceLookup
+            instanceLookup,
+            unflattenedPaths
           );
         });
         array.push(repeatItem);
@@ -500,7 +526,8 @@ function parseElementByContentType(
                 component ? wrapElementInAuxDocument(component) : null,
                 path,
                 contentTypesLookup,
-                instanceLookup
+                instanceLookup,
+                unflattenedPaths
               );
               array.push(instance);
             }
@@ -754,7 +781,7 @@ export function createChildModelLookup(
   return lookup;
 }
 
-export function normalizeModelsLookup(models: LookupTable<ContentInstance>) {
+export function normalizeModelsLookup(models: LookupTable<ContentInstance>): LookupTable<ContentInstance> {
   const lookup = {};
   Object.entries(models).forEach(([id, model]) => {
     lookup[id] = normalizeModel(model);

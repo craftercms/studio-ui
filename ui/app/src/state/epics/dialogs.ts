@@ -45,7 +45,7 @@ import {
   showEditDialog,
   showPreviewDialog,
   updateCodeEditorDialog,
-  updateEditConfig,
+  updateEditDialogConfig,
   updatePreviewDialog,
   closeRenameAssetDialog
 } from '../actions/dialogs';
@@ -185,7 +185,7 @@ const dialogEpics: CrafterCMSEpic[] = [
           // which is used to check if it's the same form that's getting opened.
           const { isMinimized, updateDialogAction } =
             type === showEditDialog.type
-              ? { isMinimized: state.dialogs.edit.isMinimized, updateDialogAction: updateEditConfig }
+              ? { isMinimized: state.dialogs.edit.isMinimized, updateDialogAction: updateEditDialogConfig }
               : { isMinimized: state.dialogs.codeEditor.isMinimized, updateDialogAction: updateCodeEditorDialog };
           if (isMinimized === true) {
             return of(updateDialogAction({ isMinimized: false }));
