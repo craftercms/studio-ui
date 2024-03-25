@@ -15,6 +15,7 @@
     * `LegacyRecentlyPublishedDashlet`
     * `LegacyUnpublishedDashlet`
   * Removed `documentDomain` property from ExperienceBuilder component and its usage in `PreviewConcierge` component
+  * `WorkflowCancellationDialogUI`: prop `items` type changed from an async Resource to sync SandboxItem array.
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`
