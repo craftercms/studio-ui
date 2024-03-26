@@ -34,21 +34,34 @@ import { batchActions } from '../../state/actions/misc';
 import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
-import { isBlank } from '../../utils/string';
-import { applyAssetNameRules } from '../../utils/content';
-import { getFileNameWithExtensionForItemType, pickExtensionForItemType } from '../../utils/path';
+import { ensureSingleSlash, isBlank } from '../../utils/string';
+import { applyAssetPathRules, applyAssetNameRules } from '../../utils/content';
+import {
+  getFileNameWithExtensionForItemType,
+  getPathParts,
+  getRootPath,
+  pickExtensionForItemType
+} from '../../utils/path';
 import ApiResponse from '../../models/ApiResponse';
+import useFetchItem from '../../hooks/useFetchItem';
+import SingleItemSelector from '../SingleItemSelector';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
-  const { onClose, onCreated, type, path, allowBraces } = props;
+  const { onClose, onCreated, type, path: basePath, allowBraces, allowSubFolders = true } = props;
   const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
-  const [name, setName] = useState('');
+  const [{ value, name, fullPath }, setPathData] = useState({
+    value: '',
+    name: '',
+    valuePath: '',
+    fullPath: ''
+  });
   const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const itemLookup = useItemsByPath();
-  const computedFilePath = `${path}/${getFileNameWithExtensionForItemType(type, name)}`;
+  const item = useFetchItem(basePath);
+  const computedFilePath = ensureSingleSlash(`${fullPath}/${getFileNameWithExtensionForItemType(type, name)}`);
   // When calling the validation API, we need to check if the item with the suggested name exists. This is an extra validation for the
   // fileExists const.
   const [itemExists, setItemExists] = useState(false);
@@ -90,12 +103,12 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
     if (name) {
       validateActionPolicy(site, {
         type: 'CREATE',
-        target: `${path}/${name}`
+        target: ensureSingleSlash(`${fullPath}/${name}`)
       }).subscribe({
         next: ({ allowed, modifiedValue, message }) => {
           if (allowed) {
             const fileName = getFileNameWithExtensionForItemType(type, name);
-            const pathToCheckExists = modifiedValue ?? `${path}/${fileName}`;
+            const pathToCheckExists = modifiedValue ?? ensureSingleSlash(`${fullPath}/${fileName}`);
             setItemExists(false);
             fetchSandboxItem(site, pathToCheckExists).subscribe({
               next: (item) => {
@@ -106,7 +119,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
                   if (modifiedValue) {
                     setConfirm({ body: message });
                   } else {
-                    onCreateFile(site, path, fileName);
+                    onCreateFile(site, fullPath, fileName);
                   }
                 }
               },
@@ -131,7 +144,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
 
   const onConfirm = () => {
     const fileName = getFileNameWithExtensionForItemType(type, name);
-    onCreateFile(site, path, fileName);
+    onCreateFile(site, fullPath, fileName);
   };
 
   const onConfirmCancel = () => {
@@ -144,7 +157,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   };
 
   const onInputChanges = (value: string) => {
-    setName(value);
+    setPathData(getPathParts(basePath, value));
     setItemExists(false);
     const newHasPending = !isBlank(value);
     hasPendingChanges !== newHasPending &&
@@ -158,6 +171,20 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
   return (
     <>
       <DialogBody>
+        <SingleItemSelector
+          label={<FormattedMessage id="words.location" defaultMessage="Location" />}
+          open={false}
+          rootPath={getRootPath(basePath)}
+          selectedItem={item}
+          showPath={true}
+          onClose={null}
+          onItemClicked={null}
+          sxs={{
+            root: {
+              width: '100%'
+            }
+          }}
+        />
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -168,11 +195,11 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
         >
           <TextField
             label={<FormattedMessage id="createFileDialog.fileName" defaultMessage="File Name" />}
-            value={name}
+            value={value}
             fullWidth
             autoFocus
             required
-            error={(!name && isSubmitting !== null) || fileExists}
+            error={(!value && isSubmitting !== null) || fileExists}
             placeholder={formatMessage(translations.placeholder)}
             helperText={
               fileExists ? (
@@ -180,7 +207,7 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
                   id="createFileDialog.fileAlreadyExists"
                   defaultMessage="A file with that name already exists"
                 />
-              ) : !name && isSubmitting ? (
+              ) : !value && isSubmitting ? (
                 <FormattedMessage id="createFileDialog.fileNameRequired" defaultMessage="File name is required." />
               ) : (
                 <FormattedMessage
@@ -194,7 +221,13 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) => onInputChanges(applyAssetNameRules(event.target.value, { allowBraces }))}
+            onChange={(event) =>
+              onInputChanges(
+                allowSubFolders
+                  ? applyAssetPathRules(event.target.value, { allowBraces })
+                  : applyAssetNameRules(event.target.value, { allowBraces })
+              )
+            }
           />
         </form>
       </DialogBody>

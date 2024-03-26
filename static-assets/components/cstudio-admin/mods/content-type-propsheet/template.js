@@ -128,7 +128,7 @@ YAHOO.extend(
             CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
               const { openOnSuccess, fileName, path, type } = response;
               if (type === 'onCreated') {
-                const templatePath = `${path}/${fileName}`;
+                const templatePath = craftercms.utils.string.ensureSingleSlash(`${path}/${fileName}`);
                 _self.valueEl.value = templatePath;
                 _self.value = templatePath;
                 _self.updateFn(null, _self.valueEl);
@@ -138,18 +138,20 @@ YAHOO.extend(
               }
             });
           } else {
-            const fileName = CrafterCMSNext.util.path.getFileNameFromPath(path);
-            const pathNoFileName = path.replace(fileName, '');
-
+            const customEventId = 'editTemplateCreateSuccess';
             CrafterCMSNext.system.store.dispatch({
-              type: 'EDIT_TEMPLATE',
+              type: 'EDIT_CONTENT_TYPE_TEMPLATE',
               payload: {
-                path: pathNoFileName,
-                fileName,
-                mode: 'ftl',
-                contentType,
-                openOnSuccess: true
+                contentTypeId: contentType
               }
+            });
+
+            CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
+              const { path, fileName } = response;
+              const templatePath = craftercms.utils.string.ensureSingleSlash(`${path}/${fileName}`);
+              _self.valueEl.value = templatePath;
+              _self.value = templatePath;
+              _self.updateFn(null, _self.valueEl);
             });
           }
         };

@@ -22,7 +22,9 @@ import Typography from '@mui/material/Typography';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Fab from '@mui/material/Fab';
 import crack from '../../assets/warning.svg';
+import crackDarkMode from '../../assets/warning-dark-mode.svg';
 import { nnou } from '../../utils/object';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 type ErrorStateClassKey = 'root' | 'image' | 'title' | 'message' | 'button';
 
@@ -76,13 +78,14 @@ const useStyles = makeStyles<ErrorStateStyles, ErrorStateClassKey>()(
 
 export function ErrorState(props: ErrorStateProps) {
   const { classes, cx } = useStyles(props.styles);
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const {
     title,
     message,
     buttonText = 'Back',
     buttonIcon = <ArrowBackIcon />,
     onButtonClick,
-    imageUrl = crack,
+    imageUrl = prefersDarkMode ? crackDarkMode : crack,
     children
   } = props;
   return (
