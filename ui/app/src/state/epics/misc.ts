@@ -21,6 +21,7 @@ import GlobalState from '../../models/GlobalState';
 import {
   batchActions,
   changeContentType as changeContentTypeAction,
+  dispatchDOMEvent,
   editContentTypeTemplate,
   editController,
   editTemplate,
@@ -138,7 +139,9 @@ const epics = [
                         type !== editController.type && editTemplateCreateSuccess({ contentTypeId: contentType }),
                         closeCreateFileDialog(),
                         showCreateItemSuccessNotification(),
-                        type === editController.type ? editController() : editTemplate()
+                        type === editController.type ? editController() : editTemplate(),
+                        // Action for legacy code createSuccess handling
+                        type !== editController.type && dispatchDOMEvent({ id: 'editTemplateCreateSuccess' })
                       ]),
                       onClose: closeCreateFileDialog()
                     })
