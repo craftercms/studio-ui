@@ -133,6 +133,7 @@ const epics = [
                     showCreateFileDialog({
                       path: destinationPath,
                       type: type === editController.type ? 'controller' : 'template',
+                      allowSubFolders: !(type === editController.type),
                       onCreated: batchActions([
                         type !== editController.type && editTemplateCreateSuccess({ contentTypeId: contentType }),
                         closeCreateFileDialog(),

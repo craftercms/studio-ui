@@ -35,7 +35,7 @@ import useEnhancedDialogContext from '../EnhancedDialog/useEnhancedDialogContext
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
-import { applyAssetPathRules } from '../../utils/content';
+import { applyAssetPathRules, applyAssetNameRules } from '../../utils/content';
 import {
   getFileNameWithExtensionForItemType,
   getPathParts,
@@ -47,7 +47,7 @@ import useFetchItem from '../../hooks/useFetchItem';
 import SingleItemSelector from '../SingleItemSelector';
 
 export function CreateFileDialogContainer(props: CreateFileContainerProps) {
-  const { onClose, onCreated, type, path: basePath, allowBraces } = props;
+  const { onClose, onCreated, type, path: basePath, allowBraces, allowSubFolders = true } = props;
   const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
   const [{ value, name, fullPath }, setPathData] = useState({
     value: '',
@@ -221,7 +221,13 @@ export function CreateFileDialogContainer(props: CreateFileContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) => onInputChanges(applyAssetPathRules(event.target.value, { allowBraces }))}
+            onChange={(event) =>
+              onInputChanges(
+                allowSubFolders
+                  ? applyAssetPathRules(event.target.value, { allowBraces })
+                  : applyAssetNameRules(event.target.value, { allowBraces })
+              )
+            }
           />
         </form>
       </DialogBody>
