@@ -432,8 +432,6 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
                   variant="body2"
                   sx={{
                     overflow: 'hidden',
-                    direction: 'rtl',
-                    textAlign: 'left',
                     textOverflow: 'ellipsis'
                   }}
                   title={selectedItem.path}
