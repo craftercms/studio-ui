@@ -421,7 +421,10 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
             </Typography>
           )}
           {selectedItem && (
-            <Box className={classes.selectedItem} sx={{ flexDirection: 'column', flex: 1, ...sxs?.selectedItem }}>
+            <Box
+              className={classes.selectedItem}
+              sx={{ flexDirection: 'column', flex: 1, ...(showPath && { pt: 1, pb: 1 }), ...sxs?.selectedItem }}
+            >
               <ItemDisplay item={selectedItem} showNavigableAsLinks={false} />
               {showPath && (
                 <Typography
