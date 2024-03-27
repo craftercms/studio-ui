@@ -30,7 +30,9 @@ export const minLengthMap = {
 };
 
 export const isInvalidEmail = (email: string) => {
-  const emailRegex = /^([\w\d._\-#])+@([\w\d._\-#]+[.][\w\d._\-#]+)+$/g;
+  // From https://emailregex.com/, according to the RFC 5322 standard
+  const emailRegex =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return Boolean(email) && !emailRegex.test(email);
 };
 
