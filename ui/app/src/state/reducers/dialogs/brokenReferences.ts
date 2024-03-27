@@ -16,7 +16,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
-import { BrokenReferencesDialogStateProps } from '../../../components/BrokenReferencesDialog/utils';
+import { BrokenReferencesDialogStateProps } from '../../../components/BrokenReferencesDialog/types';
 import {
   brokenReferencesDialogClosed,
   closeBrokenReferencesDialog,
