@@ -720,7 +720,12 @@ CStudioAuthoring.Module.requireModule(
           if (datasource && datasource.add) {
             datasource.add(
               {
+                // Search backend doesn't populate `previewUrl` so we're computing the previewUrl in the callback.
+                // returnProp: 'previewUrl',
                 insertItem: function (fileData) {
+                  if (typeof fileData === 'string') {
+                    fileData = craftercms.utils.path.getPreviewURLFromPath(fileData);
+                  }
                   cb(fileData, {});
                 },
                 failure: function (message) {
