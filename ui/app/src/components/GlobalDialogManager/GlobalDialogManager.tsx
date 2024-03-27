@@ -180,7 +180,13 @@ function GlobalDialogManager() {
       let timeout: NodeJS.Timeout, key: SnackbarKey;
       timeout = setTimeout(() => {
         fetch(`${authoringBase}/help/socket-connection-error`)
-          .then((r) => r.text())
+          .then((r) => {
+            if (r.ok) {
+              return r.text();
+            } else {
+              throw new Error('socket-connection-error fetch failed');
+            }
+          })
           .then(() => {
             key = enqueueSnackbar(<FormattedMessage defaultMessage="Studio will continue to retry the connection." />, {
               variant: 'warning',
