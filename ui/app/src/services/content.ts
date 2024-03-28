@@ -50,7 +50,7 @@ import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
-import { getFileNameFromPath, getParentPath, getPasteItemFromPath } from '../utils/path';
+import { getFileNameFromPath, getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
@@ -166,12 +166,14 @@ export function writeContent(
   options?: { unlock: boolean }
 ): Observable<boolean> {
   options = Object.assign({ unlock: true }, options);
+  const fileName = getFileNameFromPath(path);
+  const pathToWrite = path.replace(`/${fileName}`, '');
   return post(
     writeContentUrl({
       site,
-      path: getParentPath(path),
+      path: pathToWrite,
       unlock: options.unlock ? 'true' : 'false',
-      fileName: getFileNameFromPath(path)
+      fileName
     }),
     content
   ).pipe(
