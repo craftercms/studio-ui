@@ -49,6 +49,7 @@ import InputLabel from '@mui/material/InputLabel';
 import { inputBaseClasses } from '@mui/material/InputBase';
 import ListViewIcon from '@mui/icons-material/ViewStreamRounded';
 import GridViewIcon from '@mui/icons-material/GridOnRounded';
+import ReorderRoundedIcon from '@mui/icons-material/ReorderRounded';
 
 export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   // region const { ... } = props;
@@ -80,7 +81,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     onRefresh,
     onUpload,
     allowUpload = true,
-    compact = false,
+    viewMode = 'card',
     onToggleViewMode
   } = props;
   // endregion
@@ -217,9 +218,15 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                   <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
                 </Box>
                 <Box sx={{ display: 'flex', flexGrow: 0 }}>
-                  <Tooltip title={<FormattedMessage defaultMessage="Toggle compact view" />}>
+                  <Tooltip title={<FormattedMessage defaultMessage="Switch view mode" />}>
                     <IconButton onClick={onToggleViewMode} sx={{ mr: 1 }}>
-                      {compact ? <GridViewIcon /> : <ListViewIcon />}
+                      {viewMode === 'card' ? (
+                        <ListViewIcon />
+                      ) : viewMode === 'compact' ? (
+                        <ReorderRoundedIcon />
+                      ) : (
+                        <GridViewIcon />
+                      )}
                     </IconButton>
                   </Tooltip>
                   <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
@@ -245,11 +252,14 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                 </Box>
               </Toolbar>
             </Paper>
-            <div className={classes.cardsContainer}>
+            <Box
+              className={classes.cardsContainer}
+              sx={viewMode === 'row' && { display: 'flex !important', flexFlow: 'wrap' }}
+            >
               {items
                 ? items.map((item: SearchItem) => (
                     <MediaCard
-                      compact={compact}
+                      viewMode={viewMode}
                       classes={{
                         root: clsx(classes.mediaCardRoot, item.path === selectedCard?.path && classes.selectedCard)
                       }}
@@ -260,11 +270,11 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                       onPreview={onPreviewImage ? () => onPreviewImage(item) : null}
                       previewAppBaseUri={guestBase}
                       onClick={() => onCardSelected(item)}
-                      showPath={false}
+                      showPath={true}
                     />
                   ))
                 : new Array(numOfLoaderItems).fill(null).map((x, i) => <MediaSkeletonCard key={i} />)}
-            </div>
+            </Box>
             {items && items.length === 0 && (
               <EmptyState
                 styles={{ root: { flexGrow: 1 } }}
