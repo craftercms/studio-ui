@@ -20,6 +20,7 @@ import { BrokenReferencesDialogStateProps } from '../../../components/BrokenRefe
 import {
   brokenReferencesDialogClosed,
   closeBrokenReferencesDialog,
+  fetchBrokenReferencesFailed,
   showBrokenReferencesDialog,
   updateBrokenReferencesDialog
 } from '../../actions/dialogs';
@@ -28,7 +29,8 @@ const initialState: BrokenReferencesDialogStateProps = {
   open: false,
   isSubmitting: null,
   isMinimized: null,
-  hasPendingChanges: null
+  hasPendingChanges: null,
+  error: null
 };
 
 export default createReducer<GlobalState['dialogs']['brokenReferences']>(initialState, (builder) => {
@@ -45,5 +47,9 @@ export default createReducer<GlobalState['dialogs']['brokenReferences']>(initial
     .addCase(updateBrokenReferencesDialog, (state, { payload }) => ({
       ...state,
       ...(payload as Partial<BrokenReferencesDialogStateProps>)
+    }))
+    .addCase(fetchBrokenReferencesFailed, (state, { payload }) => ({
+      ...state,
+      error: payload.response
     }));
 });

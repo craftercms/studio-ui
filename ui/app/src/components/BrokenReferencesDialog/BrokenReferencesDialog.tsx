@@ -21,7 +21,7 @@ import { FormattedMessage } from 'react-intl';
 import BrokenReferencesDialogContainer from './BrokenReferencesDialogContainer';
 
 export function BrokenReferencesDialog(props: BrokenReferencesDialogProps) {
-  const { path, references, onContinue, ...rest } = props;
+  const { path, references, error, onContinue, ...rest } = props;
 
   return (
     <EnhancedDialog
@@ -29,7 +29,7 @@ export function BrokenReferencesDialog(props: BrokenReferencesDialogProps) {
       {...rest}
       maxWidth="sm"
     >
-      <BrokenReferencesDialogContainer path={path} references={references} onContinue={onContinue} />
+      <BrokenReferencesDialogContainer path={path} references={references} onContinue={onContinue} error={error} />
     </EnhancedDialog>
   );
 }

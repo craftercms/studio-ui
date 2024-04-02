@@ -313,11 +313,13 @@ export const showBrokenReferencesDialog = /*#__PURE__*/ createAction<Partial<Bro
 
 export const closeBrokenReferencesDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_BROKEN_REFERENCES_DIALOG');
 
-export const brokenReferencesDialogClosed = /*#__PURE__*/ createAction('BROKEN_REFERENCES_DIALOG_CLOSED');
+export const brokenReferencesDialogClosed = /*#__PURE__*/ createAction<StandardAction>(
+  'BROKEN_REFERENCES_DIALOG_CLOSED'
+);
 
-export const fetchBrokenReferences = /*#__PURE__*/ createAction('FETCH_BROKEN_REFERENCES');
+export const fetchBrokenReferences = /*#__PURE__*/ createAction<StandardAction>('FETCH_BROKEN_REFERENCES');
 
-export const fetchBrokenReferencesFailed = /*#__PURE__*/ createAction('FETCH_BROKEN_REFERENCES_FAILED');
+export const fetchBrokenReferencesFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_BROKEN_REFERENCES_FAILED');
 
 export const updateBrokenReferencesDialog = /*#__PURE__*/ createAction<Partial<BrokenReferencesDialogStateProps>>(
   'UPDATE_BROKEN_REFERENCES_DIALOG'
