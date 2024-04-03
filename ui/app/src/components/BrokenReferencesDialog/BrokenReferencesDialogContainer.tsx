@@ -112,7 +112,7 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
       </DialogFooter>
     </>
   ) : (
-    <EmptyState title={<FormattedMessage defaultMessage="There won't be broken references" />} />
+    <EmptyState title={<FormattedMessage defaultMessage="No broken references have been detected" />} />
   );
 }
 
