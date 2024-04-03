@@ -25,7 +25,10 @@ export function BrokenReferencesDialog(props: BrokenReferencesDialogProps) {
 
   return (
     <EnhancedDialog
-      title={<FormattedMessage defaultMessage="Warning: Will have broken references" />}
+      title={<FormattedMessage defaultMessage="Broken References Warning" />}
+      subtitle={
+        <FormattedMessage defaultMessage="Proceeding would cause items listed below to have broken references" />
+      }
       {...rest}
       maxWidth="sm"
     >
