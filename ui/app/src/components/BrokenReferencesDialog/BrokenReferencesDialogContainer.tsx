@@ -32,9 +32,10 @@ import Button from '@mui/material/Button';
 import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
+import ApiResponseErrorState from '../ApiResponseErrorState';
 
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
-  const { references, onClose, onContinue } = props;
+  const { references, error, onClose, onContinue } = props;
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
@@ -48,7 +49,9 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
     dispatch(showEditDialog({ path, authoringBase, site, onSaveSuccess: fetchBrokenReferences() }));
   };
 
-  return references.length > 0 ? (
+  return error ? (
+    <ApiResponseErrorState error={error} />
+  ) : references.length > 0 ? (
     <>
       <DialogBody>
         <Grid container spacing={3}>
