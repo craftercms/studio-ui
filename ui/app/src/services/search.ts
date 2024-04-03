@@ -16,7 +16,7 @@
 
 import { post } from '../utils/ajax';
 import { Observable } from 'rxjs';
-import { pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { SearchResult } from '../models/Search';
 import { toQueryString } from '../utils/object';
 
@@ -26,5 +26,5 @@ export function search(site: string, parameters: any = {}): Observable<SearchRes
   });
   return post(`/studio/api/2/search/search.json${qs}`, parameters, {
     'Content-Type': 'application/json'
-  }).pipe(pluck('response', 'result'));
+  }).pipe(map((response) => response?.response?.result));
 }

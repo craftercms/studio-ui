@@ -113,7 +113,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
         type: rename ? 'RENAME' : 'CREATE',
         target: `${parentPath}/${name}`
       }).subscribe({
-        next: ({ allowed, modifiedValue }) => {
+        next: ({ allowed, modifiedValue, message }) => {
           if (allowed) {
             const pathToCheckExists = modifiedValue ?? `${parentPath}/${name}`;
             setItemExists(false);
@@ -124,9 +124,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
                   dispatch(updateCreateFolderDialog({ isSubmitting: false }));
                 } else {
                   if (modifiedValue) {
-                    setConfirm({
-                      body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
-                    });
+                    setConfirm({ body: message });
                   } else {
                     if (rename) {
                       onRenameFolder(site, path, name);
@@ -141,7 +139,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
           } else {
             setConfirm({
               error: true,
-              body: formatMessage(translations.policyError)
+              body: formatMessage(translations.policyError, { fileName: name, detail: message })
             });
             dispatch(updateCreateFolderDialog({ isSubmitting: false }));
           }

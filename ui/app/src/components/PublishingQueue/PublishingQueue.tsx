@@ -257,7 +257,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   }, [selected]);
 
   useEffect(() => {
-    const events = [workflowEvent.type, publishEvent.type];
+    const events: string[] = [workflowEvent.type, publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       getPackages(siteId);

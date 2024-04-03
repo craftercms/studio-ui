@@ -66,6 +66,7 @@ import { SingleFileUploadDialogStateProps } from '../components/SingleFileUpload
 import { ModelHierarchyMap } from '../utils/content';
 import { UIBlockerStateProps } from '../components/UIBlocker';
 import { RenameAssetStateProps } from '../components/RenameAssetDialog';
+import Person from './Person';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -92,7 +93,12 @@ export interface GuestData {
   modelId: string;
   path: string;
   selected: EditSelection[];
-  itemBeingDragged: boolean;
+  itemBeingDragged: number;
+  /**
+   * Stores the modifier person for the main XB model from the moment is loaded (guest check's in) onwards.
+   * used to determine if the content item was modified in the background and it editing should be disabled.
+   */
+  mainModelModifier: Person;
 }
 
 // TODO:
@@ -106,7 +112,7 @@ export interface GuestData {
 
 export interface Clipboard {
   type: 'CUT' | 'COPY';
-  paths: string[];
+  paths?: string[];
   sourcePath: string;
 }
 
@@ -266,6 +272,7 @@ export interface GlobalState {
     cdataEscapedFieldPatterns: string[];
     references: LookupTable;
     xml: string;
+    remoteGitBranch: string;
   };
   pathNavigator: LookupTable<PathNavigatorStateProps>;
   pathNavigatorTree: LookupTable<PathNavigatorTreeStateProps>;

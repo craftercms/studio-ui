@@ -15,9 +15,10 @@
  */
 
 import { ofType, StateObservable } from 'redux-observable';
-import { debounceTime, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { debounceTime, filter, ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
   closeToolsPanel,
+  mainModelModifiedExternally,
   openToolsPanel,
   popIcePanelPage,
   popToolsPanelPage,
@@ -50,8 +51,10 @@ import GlobalState from '../../models/GlobalState';
 import { setClipboard } from '../actions/content';
 import { CrafterCMSEpic } from '../store';
 import { getSystemLink } from '../../utils/system';
-import { storeInitialized } from '../actions/system';
-import { fromEvent } from 'rxjs';
+import { contentEvent, storeInitialized } from '../actions/system';
+import { fromEvent, Observable } from 'rxjs';
+import StandardAction from '../../models/StandardAction';
+import { SocketEventBase } from '../../models';
 
 export default [
   // region storeInitialized
@@ -240,6 +243,19 @@ export default [
         setStoredPreviewToolsPanelWidth(sites.active, state.user.username, preview.toolsPanelWidth);
       }),
       ignoreElements()
+    ),
+  // endregion
+  // region contentEvent
+  (action$: Observable<StandardAction<SocketEventBase>>, state$) =>
+    action$.pipe(
+      ofType(contentEvent.type),
+      withLatestFrom(state$),
+      filter(
+        ([action, state]) =>
+          action.payload.targetPath === state.preview.guest?.path &&
+          action.payload.user.username !== state.user.username
+      ),
+      map(([action]) => mainModelModifiedExternally(action.payload))
     )
   // endregion
 ] as CrafterCMSEpic[];

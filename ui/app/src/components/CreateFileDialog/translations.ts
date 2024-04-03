@@ -21,14 +21,8 @@ export const translations = defineMessages({
     id: 'createFileDialog.placeholder',
     defaultMessage: 'Please type a name'
   },
-  createPolicy: {
-    id: 'createFileDialog.createPolicy',
-    defaultMessage:
-      'The supplied name goes against project policies. Suggested modified name is: "{name}". Would you like to use the suggested name?'
-  },
   policyError: {
-    id: 'createFileDialog.policyError',
-    defaultMessage: 'The supplied name goes against project policies.'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
   },
   fetchingDependentItems: {
     id: 'renameAssetDialog.fetchingDependentItems',

@@ -39,6 +39,11 @@ export function NotDevelopedDefault() {
   return <section>The page you've selected needs to be created by the site developers.</section>;
 }
 
+export const defaultContentTypeMap: Record<string, ElementType<any>> = {
+  null: NotFoundDefault,
+  undefined: NotFoundDefault
+};
+
 export const ContentType = forwardRef<any, ContentTypeProps>(function (props, ref) {
   if (!props.contentTypeMap) {
     console.error(
@@ -51,13 +56,13 @@ export const ContentType = forwardRef<any, ContentTypeProps>(function (props, re
   }
   const {
     model,
-    contentTypeMap = {},
+    contentTypeMap = defaultContentTypeMap,
     notMappedComponent: NotDeveloped = NotDevelopedDefault,
     notFoundComponent: NotFound = NotFoundDefault,
     ...rest
   } = props;
 
-  const Component = model === null ? NotFound : contentTypeMap[model.craftercms.contentTypeId] ?? NotDeveloped;
+  const Component = model === null ? NotFound : contentTypeMap[model?.craftercms?.contentTypeId] ?? NotDeveloped;
 
   const finalProps: any = rest;
   if (typeof Component !== 'string') {

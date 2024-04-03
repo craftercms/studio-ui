@@ -96,6 +96,11 @@ CStudioAuthoring.Module.requireModule(
     moduleLoaded: function () {
       const YDom = YAHOO.util.Dom;
       const tinymce = window.tinymce;
+      const interfaceMap = {
+        video: 'media',
+        audio: 'media',
+        file: 'item'
+      };
       YAHOO.extend(CStudioForms.Controls.RTE, CStudioForms.CStudioFormField, {
         getLabel: function () {
           return CMgs.format(langBundle, 'rte');
@@ -171,7 +176,7 @@ CStudioAuthoring.Module.requireModule(
           this.value = value;
 
           try {
-            tinymce.activeEditor.setContent(value, { format: 'raw' });
+            tinymce.activeEditor.setContent(value, { format: 'html' });
           } catch (err) {}
 
           this.updateModel(value);
@@ -247,6 +252,11 @@ CStudioAuthoring.Module.requireModule(
               type: 'datasource:video'
             },
             {
+              label: this.formatMessage(this.contentTypesMessages.audioManager),
+              name: 'audioManager',
+              type: 'datasource:audio'
+            },
+            {
               label: this.formatMessage(this.contentTypesMessages.fileManager),
               name: 'fileManager',
               type: 'datasource:item'
@@ -294,6 +304,9 @@ CStudioAuthoring.Module.requireModule(
               case 'videoManager':
                 this.videoManagerName = prop.value && prop.Value != '' ? prop.value : null;
                 break;
+              case 'audioManager':
+                this.audioManagerName = prop.value && prop.Value !== '' ? prop.value : null;
+                break;
               case 'fileManager':
                 this.fileManagerName = prop.value && prop.Value != '' ? prop.value : null;
                 break;
@@ -321,9 +334,7 @@ CStudioAuthoring.Module.requireModule(
           // https://www.tiny.cloud/docs/plugins/
           // paste plugin is hardcoded in order to enable drag and drop functionality (and avoid it being removed from
           // configuration file).
-          pluginList = [rteConfig.tinymceOptions?.plugins, 'paste', this.autoGrow && 'autoresize']
-            .filter(Boolean)
-            .join(' ');
+          pluginList = [rteConfig.tinymceOptions?.plugins, this.autoGrow && 'autoresize'].filter(Boolean).join(' ');
 
           const $editorContainer = $(`#${rteId}`).parent(),
             editorContainerWidth = $editorContainer.width(),
@@ -350,7 +361,11 @@ CStudioAuthoring.Module.requireModule(
           };
 
           tinymce.init({
-            selector: '#' + rteId,
+            selector: `#${CSS.escape(rteId)}`,
+            promotion: false,
+            // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
+            // note that it will become premium on version 7.
+            deprecation_warnings: false,
             width: _thisControl.rteWidth,
             // As of 3.1.14, the toolbar is moved to be part of the editor text field (not stuck/floating at the top of the window).
             // Adding 78px (toolbar's height) so that the toolbar doesn't eat up on the height set on the content modelling tool.
@@ -368,8 +383,6 @@ CStudioAuthoring.Module.requireModule(
             forced_root_block: forceRootBlockPTag, // comes from control props (not xml config)
             remove_trailing_brs: false,
             media_live_embeds: true,
-            autoresize_on_init: false,
-            autoresize_bottom_margin: 0,
             contextmenu: !this.enableSpellCheck, // comes from control props (not xml config)
             image_uploadtab: this.editorImageDatasources.length > 0, // comes from control props (not xml config)
             craftercms_paste_cleanup: rteConfig?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
@@ -380,8 +393,8 @@ CStudioAuthoring.Module.requireModule(
             content_css: Boolean(rteConfig.tinymceOptions?.content_css?.length)
               ? rteConfig.tinymceOptions.content_css
               : window.matchMedia('(prefers-color-scheme: dark)').matches
-              ? 'dark'
-              : 'default',
+                ? 'dark'
+                : 'default',
             external_plugins: external,
 
             file_picker_callback: function (cb, value, meta) {
@@ -399,7 +412,7 @@ CStudioAuthoring.Module.requireModule(
                 _thisControl.editorId = editor.id;
                 _thisControl.editor = editor;
                 if (_thisControl.value && _thisControl.value !== '_not-set') {
-                  editor.setContent(_thisControl.value, { format: 'raw' });
+                  editor.setContent(_thisControl.value, { format: 'html' });
                 }
                 _thisControl._onChange(null, _thisControl);
               });
@@ -527,33 +540,26 @@ CStudioAuthoring.Module.requireModule(
         },
 
         createControl: function (cb, meta) {
+          // The {x}ManagerName (e.g. this.imageManagerName) property may come as a comma-separated string or an array,
+          // so we need to handle both cases and always return a comma-separated string for later handling. If datasources
+          // is null or undefined, it will be an empty string.
+          const getDatasourcesNames = function (datasources) {
+            return Array.isArray(datasources) ? datasources.join(',') : datasources ?? '';
+          };
+
           var datasourcesNames = '',
-            imageManagerNames = this.imageManagerName, // List of image datasource IDs, could be an array or a string
-            videoManagerNames = this.videoManagerName,
-            fileManagerNames = this.fileManagerName,
+            imageManagerNames = getDatasourcesNames(this.imageManagerName),
+            audioManagerNames = getDatasourcesNames(this.audioManagerName),
+            videoManagerNames = getDatasourcesNames(this.videoManagerName),
+            mediaManagerNames = `${audioManagerNames},${videoManagerNames}`.split(',').filter(Boolean).join(','),
+            fileManagerNames = getDatasourcesNames(this.fileManagerName),
             addContainerEl,
             tinyMCEContainer = $('.tox-dialog'),
             _self = this,
-            type = meta.filetype == 'media' ? 'video' : meta.filetype == 'file' ? 'item' : meta.filetype;
+            type = meta.filetype === 'file' ? 'item' : meta.filetype;
 
-          imageManagerNames = !imageManagerNames
-            ? ''
-            : Array.isArray(imageManagerNames)
-            ? imageManagerNames.join(',')
-            : imageManagerNames; // Turn the list into a string
-          videoManagerNames = !videoManagerNames
-            ? ''
-            : Array.isArray(videoManagerNames)
-            ? videoManagerNames.join(',')
-            : videoManagerNames;
-          fileManagerNames = !fileManagerNames
-            ? ''
-            : Array.isArray(fileManagerNames)
-            ? fileManagerNames.join(',')
-            : fileManagerNames;
-
-          if (videoManagerNames !== '') {
-            datasourcesNames = videoManagerNames;
+          if (mediaManagerNames !== '') {
+            datasourcesNames = mediaManagerNames;
           }
           if (imageManagerNames !== '') {
             if (datasourcesNames !== '') {
@@ -590,8 +596,8 @@ CStudioAuthoring.Module.requireModule(
               case 'image':
                 addFunction = _self.addManagedImage;
                 break;
-              case 'video':
-                addFunction = _self.addManagedVideo;
+              case 'media':
+                addFunction = _self.addManagedMedia;
                 break;
               default:
                 addFunction = _self.addManagedFile;
@@ -603,13 +609,14 @@ CStudioAuthoring.Module.requireModule(
               var regexpr = new RegExp('(' + el.id + ')[\\s,]|(' + el.id + ')$'),
                 mapDatasource;
 
-              if (datasourcesNames.indexOf(el.id) != -1 && el.interface === type) {
+              if (datasourcesNames.indexOf(el.id) !== -1 && (interfaceMap[el.interface] ?? el.interface) === type) {
                 mapDatasource = datasourceMap[el.id];
 
                 var itemEl = document.createElement('div');
                 YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-image-picker-add-container-item');
                 itemEl.textContent = el.title;
                 addContainerEl.appendChild(itemEl);
+                mapDatasource.interface = el.interface;
 
                 YAHOO.util.Event.on(
                   itemEl,
@@ -684,26 +691,28 @@ CStudioAuthoring.Module.requireModule(
           }
         },
 
-        addManagedVideo(datasource, cb) {
-          if (datasource && datasource.insertVideoAction) {
-            datasource.insertVideoAction({
-              success: function (videoData) {
-                cb(videoData.relativeUrl, { title: videoData.fileName });
-
-                // var cleanUrl = imageData.previewUrl.replace(/^(.+?\.(png|jpe?g)).*$/i, '$1');   //remove timestamp
-              },
-              failure: function (message) {
-                CStudioAuthoring.Operations.showSimpleDialog(
-                  'message-dialog',
-                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
-                  CMgs.format(langBundle, 'notification'),
-                  message,
-                  null,
-                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
-                  'studioDialog'
-                );
-              }
-            });
+        addManagedMedia(datasource, cb) {
+          const mediaType = datasource.interface;
+          const onInsertMedia = {
+            success: function (videoData) {
+              cb(videoData.relativeUrl, { title: videoData.fileName });
+            },
+            failure: function (message) {
+              CStudioAuthoring.Operations.showSimpleDialog(
+                'message-dialog',
+                CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                CMgs.format(langBundle, 'notification'),
+                message,
+                null,
+                YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                'studioDialog'
+              );
+            }
+          };
+          if (mediaType === 'video') {
+            datasource?.insertVideoAction(onInsertMedia);
+          } else if (mediaType === 'audio') {
+            datasource?.insertAudioAction(onInsertMedia);
           }
         },
 
@@ -711,7 +720,12 @@ CStudioAuthoring.Module.requireModule(
           if (datasource && datasource.add) {
             datasource.add(
               {
+                // Search backend doesn't populate `previewUrl` so we're computing the previewUrl in the callback.
+                // returnProp: 'previewUrl',
                 insertItem: function (fileData) {
+                  if (typeof fileData === 'string') {
+                    fileData = craftercms.utils.path.getPreviewURLFromPath(fileData);
+                  }
                   cb(fileData, {});
                 },
                 failure: function (message) {

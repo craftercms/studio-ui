@@ -24,15 +24,16 @@ import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material/styles';
 
 export interface UIBlockerProps extends Omit<ModalProps, 'children' | 'components' | 'componentsProps' | 'container'> {
+  title?: string;
   message?: string;
   progress?: 'indeterminate' | number;
 }
 
 export interface UIBlockerStateProps
-  extends Pick<UIBlockerProps, 'progress' | 'open' | 'className' | 'sx' | 'style' | 'message'> {}
+  extends Pick<UIBlockerProps, 'progress' | 'open' | 'className' | 'sx' | 'style' | 'message' | 'title'> {}
 
 export function UIBlocker(props: UIBlockerProps) {
-  const { message, progress = 'indeterminate', ...modalProps } = props;
+  const { message, progress = 'indeterminate', title, ...modalProps } = props;
   const hasMessage = Boolean(message);
   const isIndeterminateProgress = progress === 'indeterminate';
   const ProgressComponent = hasMessage ? LinearProgress : CircularProgress;
@@ -60,6 +61,7 @@ export function UIBlocker(props: UIBlockerProps) {
           transform: 'translate(-50%, -50%)'
         }}
       >
+        {title && <Typography variant="h6">{title}</Typography>}
         <Typography id="uiBlockerModalModalTitle">{message}</Typography>
         {(progress || !hasMessage) && (
           <ProgressComponent variant={progressVariant} value={progressValue} sx={progressSx} />

@@ -142,7 +142,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onChangeCollapsed,
     onHeaderButtonClick,
     onCurrentParentMenu,
-    siteLocales,
     onSearch,
     keyword,
     onBreadcrumbSelected,
@@ -185,11 +184,6 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         // @see https://github.com/craftercms/craftercms/issues/5360
         menuButtonIcon={<RefreshRounded />}
         onMenuButtonClick={onHeaderButtonClick ? (anchor) => onHeaderButtonClick(anchor, 'options') : null}
-        onLanguageMenu={
-          onHeaderButtonClick && siteLocales?.localeCodes?.length
-            ? (anchor) => onHeaderButtonClick(anchor, 'language')
-            : null
-        }
         collapsed={state.collapsed}
       />
       {/* endregion */}
@@ -265,11 +259,13 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
               </>
             )}
             {/* region Pagination */}
-            {state.total !== null && state.total > 0 && (
+            {state.total !== null && state.total > 0 && !(state.total === 1 && state.levelDescriptor) && (
               <Pagination
                 showBottomBorder
                 classes={{ root: props.classes?.paginationRoot }}
-                count={state.total}
+                // Do not consider levelDescriptor in pagination, as it will always be rendered at the beginning of the
+                // PathNav view, indistinctly of the current page.
+                count={state.levelDescriptor ? state.total - 1 : state.total}
                 rowsPerPage={state.limit}
                 page={state && Math.ceil(state.offset / state.limit)}
                 onRowsPerPageChange={onRowsPerPageChange}

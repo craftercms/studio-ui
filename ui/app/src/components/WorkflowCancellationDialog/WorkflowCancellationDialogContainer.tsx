@@ -15,12 +15,11 @@
  */
 
 import { makeStyles } from 'tss-react/mui';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { FormattedMessage } from 'react-intl';
 import { WorkflowCancellationDialogUI } from './WorkflowCancellationDialogUI';
 import React from 'react';
-import { Return, Source, WorkflowCancellationDialogContainerProps } from './utils';
+import { WorkflowCancellationDialogContainerProps } from './utils';
+import { EmptyState } from '../EmptyState';
 
 const useStyles = makeStyles()((theme) => ({
   suspense: {
@@ -40,45 +39,31 @@ export function WorkflowCancellationDialogContainer(props: WorkflowCancellationD
   const { items, onClose, onContinue } = props;
   const { classes } = useStyles();
 
-  const resource = useLogicResource<Return, Source>(items, {
-    shouldResolve: (source) => Boolean(source),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) => source,
-    errorSelector: (source) => null
-  });
-
   const onContinueClick = (e) => {
     onClose(e, null);
     onContinue();
   };
 
-  return (
-    <SuspenseWithEmptyState
-      resource={resource}
-      withEmptyStateProps={{
-        emptyStateProps: {
-          title: (
-            <FormattedMessage
-              id="workflowCancellationDialog.noAffectedFiles"
-              defaultMessage="There are no affected files"
-            />
-          )
-        }
-      }}
-      loadingStateProps={{
-        classes: {
-          root: classes.suspense
-        }
-      }}
-    >
+  return items ? (
+    items.length > 0 ? (
       <WorkflowCancellationDialogUI
-        resource={resource}
+        items={items}
         onCloseButtonClick={(e) => onClose(e, null)}
         onContinue={onContinueClick}
         classes={classes}
       />
-    </SuspenseWithEmptyState>
+    ) : (
+      <EmptyState
+        title={
+          <FormattedMessage
+            id="workflowCancellationDialog.noAffectedFiles"
+            defaultMessage="There are no affected files"
+          />
+        }
+      />
+    )
+  ) : (
+    <EmptyState title={<FormattedMessage defaultMessage="No items were provided as input" />} />
   );
 }
 

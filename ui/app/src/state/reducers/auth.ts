@@ -35,47 +35,48 @@ export const initialState: GlobalState['auth'] = {
   isFetching: false
 };
 
-const reducer = createReducer<GlobalState['auth']>(initialState, {
-  [storeInitialized.type]: (state, { payload }) => ({
-    ...state,
-    active: true,
-    expiresAt: payload.auth.expiresAt
-  }),
-  [refreshAuthToken.type]: (state) => ({
-    ...state,
-    isFetching: true
-  }),
-  [refreshAuthTokenComplete.type]: (state, { payload }) => ({
-    ...state,
-    active: true,
-    isFetching: false,
-    expiresAt: payload.expiresAt
-  }),
-  [refreshAuthTokenFailed.type]: (state) => ({
-    ...state,
-    active: false,
-    isFetching: false
-  }),
-  [sessionTimeout.type]: () => initialState,
-  [sharedWorkerUnauthenticated.type]: () => initialState,
-  [login.type]: (state) => ({ ...state, isFetching: true }),
-  [loginFailed.type]: (state, action) => ({
-    ...state,
-    isFetching: false,
-    error:
-      action.payload.status === 401
-        ? {
-            code: 6004,
-            message: 'Incorrect password',
-            remedialAction: 'Please use correct password'
-          }
-        : {
-            code: 1000,
-            message: 'Internal System Failure',
-            remedialAction: 'Please try again momentarily or contact support'
-          }
-  }),
-  [logoutComplete.type]: () => initialState
+const reducer = createReducer<GlobalState['auth']>(initialState, (builder) => {
+  builder
+    .addCase(storeInitialized, (state, { payload }) => ({
+      ...state,
+      active: true,
+      expiresAt: payload.auth.expiresAt
+    }))
+    .addCase(refreshAuthToken, (state) => ({
+      ...state,
+      isFetching: true
+    }))
+    .addCase(refreshAuthTokenComplete, (state, { payload }) => ({
+      ...state,
+      active: true,
+      isFetching: false,
+      expiresAt: payload.expiresAt
+    }))
+    .addCase(refreshAuthTokenFailed, (state) => ({
+      ...state,
+      active: false,
+      isFetching: false
+    }))
+    .addCase(sessionTimeout, () => initialState)
+    .addCase(sharedWorkerUnauthenticated, () => initialState)
+    .addCase(login, (state) => ({ ...state, isFetching: true }))
+    .addCase(loginFailed, (state, action) => ({
+      ...state,
+      isFetching: false,
+      error:
+        action.payload?.status === 401
+          ? {
+              code: 6004,
+              message: 'Incorrect password',
+              remedialAction: 'Please use correct password'
+            }
+          : {
+              code: 1000,
+              message: 'Internal System Failure',
+              remedialAction: 'Please try again momentarily or contact support'
+            }
+    }))
+    .addCase(logoutComplete, () => initialState);
 });
 
 export default reducer;

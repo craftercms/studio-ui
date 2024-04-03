@@ -18,7 +18,7 @@ import { CommonDashletProps, getCurrentPage } from '../SiteDashboard/utils';
 import DashletCard from '../DashletCard/DashletCard';
 import palette from '../../styles/palette';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useCallback, useEffect } from 'react';
+import React, { ReactNode, useCallback, useEffect } from 'react';
 import {
   DashletEmptyMessage,
   getItemSkeleton,
@@ -120,7 +120,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [publishEvent.type];
+    const events: string[] = [publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       loadPage(getCurrentPage(offset, limit), true);
@@ -195,15 +195,17 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
                       name: item.submitter.firstName,
                       publishingTarget: item.publishingTarget,
                       date: item.schedule,
-                      render_target(target: string[]) {
+                      render_target(target: ReactNode[]) {
                         return (
                           <Typography component="span" color={target[0] === 'live' ? LIVE_COLOUR : STAGING_COLOUR}>
-                            {messages[target[0]] ? formatMessage(messages[target[0]]).toLowerCase() : target[0]}
+                            {messages[target[0] as string]
+                              ? formatMessage(messages[target[0] as string]).toLowerCase()
+                              : target[0]}
                           </Typography>
                         );
                       },
-                      render_date(date: string[]) {
-                        return renderActivityTimestamp(date[0], locale);
+                      render_date(date: ReactNode[]) {
+                        return renderActivityTimestamp(date[0] as string, locale);
                       },
                       render_package_link(message) {
                         return (

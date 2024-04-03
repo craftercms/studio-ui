@@ -49,10 +49,10 @@ export default function Login(props: LoginViewProps) {
       'SharedWorker' in window
         ? UNDEFINED
         : ['iPad Simulator', 'iPhone Simulator', 'iPod Simulator', 'iPad', 'iPhone', 'iPod'].includes(
-            navigator.platform
-          )
-        ? 'iOS is not supported as it lacks essential features. Please use Chrome or Firefox browsers on your desktop.'
-        : 'Your browser is not supported as it lacks essential features. Please use Chrome or Firefox.',
+              navigator.platform
+            )
+          ? 'iOS is not supported as it lacks essential features. Please use Chrome or Firefox browsers on your desktop.'
+          : 'Your browser is not supported as it lacks essential features. Please use Chrome or Firefox.',
     []
   );
   // **************************************************************************

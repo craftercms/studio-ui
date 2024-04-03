@@ -23,22 +23,6 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 export type Source = { site: Site; error: Error };
 export type Return = Omit<Source, 'error'>;
 
-export interface EditSiteDialogUIProps {
-  siteId: string;
-  siteName: string;
-  siteDescription: string;
-  siteImage: string;
-  submitting: boolean;
-  submitDisabled: boolean;
-  onKeyPress: (e: React.KeyboardEvent) => void;
-  fallbackImageSrc: string;
-  onSiteNameChange(event: React.ChangeEvent): void;
-  onSiteDescriptionChange(value: string): void;
-  onSubmit(): void;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-  onEditSiteImage?(): void;
-}
-
 export interface EditSiteDialogBaseProps {
   site: Site;
 }
@@ -58,12 +42,3 @@ export interface EditSiteDialogStateProps extends EditSiteDialogBaseProps, Enhan
 export interface EditSiteDialogContainerProps
   extends EditSiteDialogBaseProps,
     Pick<EditSiteDialogProps, 'isSubmitting' | 'onSaveSuccess' | 'onSiteImageChange' | 'onClose'> {}
-
-export interface EditSiteDialogUIContainerProps {
-  site: Site;
-  submitting: boolean;
-  submitDisabled: boolean;
-  checkSiteName(event: React.ChangeEvent, currentSiteName: string): void;
-  onSubmit(id: string, name: string, description: string): void;
-  onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-}

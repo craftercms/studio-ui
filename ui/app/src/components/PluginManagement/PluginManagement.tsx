@@ -39,7 +39,6 @@ import ListItemText from '@mui/material/ListItemText';
 import { useDispatch } from 'react-redux';
 import { fetchInstalledMarketplacePlugins } from '../../services/marketplace';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { getUserPermissions } from '../../services/security';
 import {
   emitSystemEvent,
   pluginInstalled,
@@ -65,6 +64,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import UninstallPluginDialog from '../DeletePluginDialog';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsOutlined';
 import { PluginConfigDialog } from '../PluginConfigDialog';
+import { fetchMyPermissions } from '../../services/users';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -124,7 +124,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
   const [pluginToConfig, setPluginToConfig] = useState(null);
 
   useMount(() => {
-    getUserPermissions(siteId, '/').subscribe((permissions) => {
+    fetchMyPermissions(siteId).subscribe((permissions) => {
       setPermissions(permissions);
     });
   });

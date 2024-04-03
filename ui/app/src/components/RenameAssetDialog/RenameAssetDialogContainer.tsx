@@ -100,17 +100,15 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
       validateActionPolicy(siteId, {
         type: 'RENAME',
         target: newAssetPath
-      }).subscribe(({ allowed, modifiedValue }) => {
+      }).subscribe(({ allowed, modifiedValue, message }) => {
         if (allowed && modifiedValue) {
-          setConfirm({
-            body: formatMessage(translations.createPolicy, { name: modifiedValue.replace(`${path}/`, '') })
-          });
+          setConfirm({ body: message });
         } else if (allowed) {
           onRenameAsset(siteId, path, name);
         } else {
           setConfirm({
             error: true,
-            body: formatMessage(translations.policyError)
+            body: formatMessage(translations.policyError, { fileName: name, detail: message })
           });
         }
       });

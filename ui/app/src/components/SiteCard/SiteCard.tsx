@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
@@ -25,14 +25,20 @@ import { Site } from '../../models/Site';
 import CardMedia from '@mui/material/CardMedia';
 import CardActions from '@mui/material/CardActions';
 import Tooltip from '@mui/material/Tooltip';
-import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import CardActionArea from '@mui/material/CardActionArea';
-import { Typography } from '@mui/material';
-import ConfirmDropdown from '../ConfirmDropdown';
+import { alpha, Typography } from '@mui/material';
 import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
+import { toColor } from '../../utils/string';
+import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
+import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
+import { Subscription } from 'rxjs';
+import { fetchStatus } from '../../services/publishing';
+import { catchError, delay, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface SiteCardProps {
   site: Site;
@@ -40,26 +46,15 @@ interface SiteCardProps {
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
   onDuplicateSiteClick(siteId: string): void;
-  onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
+  onPublishButtonClick(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    site: Site,
+    status: PublishingStatus
+  ): void;
   fallbackImageSrc?: string;
   compact?: boolean;
-  publishingStatus: PublishingStatus | false;
+  disabled?: boolean;
 }
-
-const translations = defineMessages({
-  confirmHelperText: {
-    id: 'siteCard.helperText',
-    defaultMessage: 'Delete "{site}" project?'
-  },
-  confirmOk: {
-    id: 'words.yes',
-    defaultMessage: 'Yes'
-  },
-  confirmCancel: {
-    id: 'words.no',
-    defaultMessage: 'No'
-  }
-});
 
 export function SiteCard(props: SiteCardProps) {
   const {
@@ -68,23 +63,64 @@ export function SiteCard(props: SiteCardProps) {
     onDeleteSiteClick,
     onEditSiteClick,
     onDuplicateSiteClick,
-    fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg',
+    fallbackImageSrc,
     compact = false,
-    publishingStatus,
+    disabled,
     onPublishButtonClick
   } = props;
   const { classes, cx: clsx } = useSiteCardStyles();
-  const { formatMessage } = useIntl();
+  const [publishingStatus, setPublishingStatus] = useState<PublishingStatus>();
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const isSiteReady = site.state === 'READY';
+  const [dataUrl, fetch] = useProjectPreviewImage(site.id, fallbackImageSrc);
+  const color = useMemo(() => toColor(site.name), [site.name]);
+
+  useEffect(() => {
+    if (isSiteReady) {
+      setIsFetching(true);
+      const subscription = fetchStatus(site.id)
+        .pipe(
+          // The back seems to 400 to checking publishing status right after creating a very large site.
+          // This attempts to retry the request once after a delay.
+          catchError((e, c) =>
+            of(null).pipe(
+              delay(1000),
+              switchMap(() => fetchStatus(site.id))
+            )
+          )
+        )
+        .subscribe({
+          next: (status) => {
+            setPublishingStatus(status);
+            setIsFetching(false);
+          },
+          error: (error) => {
+            console.log(error);
+            setIsFetching(false);
+          }
+        });
+      return () => {
+        subscription?.unsubscribe();
+        setIsFetching(false);
+      };
+    }
+  }, [site.id, isSiteReady]);
+
+  useEffect(() => {
+    let subscription: Subscription | undefined;
+    const callback = () => {
+      subscription = fetch();
+    };
+    document.addEventListener(PROJECT_PREVIEW_IMAGE_UPDATED, callback);
+    return () => {
+      subscription?.unsubscribe();
+      document.removeEventListener(PROJECT_PREVIEW_IMAGE_UPDATED, callback);
+    };
+  }, [fetch]);
 
   return (
     <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
-      <CardActionArea
-        onClick={() => onSiteClick(site)}
-        component="div"
-        disabled={!isSiteReady}
-        sx={{ paddingRight: isSiteReady ? undefined : '35px' }}
-      >
+      <CardActionArea onClick={() => onSiteClick(site)} component="div" disabled={disabled || !isSiteReady}>
         <CardHeader
           title={site.name}
           className={classes.cardHeader}
@@ -109,61 +145,81 @@ export function SiteCard(props: SiteCardProps) {
           sx={{
             [`.${cardHeaderClasses.action}`]: {
               alignSelf: 'center'
-            }
+            },
+            ...(!isSiteReady && {
+              paddingRight: '55px'
+            })
           }}
         />
         {!compact && (
           <CardMedia
-            component="img"
+            component={dataUrl ? 'img' : 'div'}
             className={classes.media}
-            image={site.imageUrl}
+            image={dataUrl}
             title={site.name}
-            onError={(event) => ((event.target as HTMLImageElement).src = fallbackImageSrc)}
+            sx={(theme) => ({
+              display: 'flex',
+              alignItems: 'center',
+              placeContent: 'center',
+              backgroundColor: theme.palette.mode === 'light' ? color : alpha(color, 0.6)
+            })}
+            children={
+              dataUrl ? undefined : (
+                <Typography
+                  variant="h6"
+                  component="span"
+                  sx={(theme) => ({ color: theme.palette.getContrastText(color) })}
+                >
+                  {site.name}
+                </Typography>
+              )
+            }
           />
         )}
       </CardActionArea>
       <CardActions className={classes.cardActions} sx={compact ? undefined : { minHeight: '64px' }} disableSpacing>
-        {isSiteReady && publishingStatus !== false && (
+        {isSiteReady && (
           <PublishingStatusButtonUI
-            isFetching={!publishingStatus}
+            isFetching={isFetching}
             enabled={publishingStatus?.enabled}
             status={publishingStatus?.status}
             totalItems={publishingStatus?.totalItems}
             numberOfItems={publishingStatus?.numberOfItems}
             variant="icon"
             size={compact ? 'small' : 'medium'}
-            onClick={(e) => onPublishButtonClick(e, site)}
+            onClick={(e) => onPublishButtonClick(e, site, publishingStatus)}
+            disabled={disabled}
           />
         )}
         {isSiteReady && onEditSiteClick && (
           <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
-            <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'}>
+            <IconButton onClick={() => onEditSiteClick(site)} size={compact ? 'small' : 'medium'} disabled={disabled}>
               <EditRoundedIcon />
             </IconButton>
           </Tooltip>
         )}
         {isSiteReady && onDuplicateSiteClick && (
           <Tooltip title={<FormattedMessage defaultMessage="Duplicate" />}>
-            <IconButton onClick={() => onDuplicateSiteClick(site.id)} size={compact ? 'small' : 'medium'}>
+            <IconButton
+              onClick={() => onDuplicateSiteClick(site.id)}
+              size={compact ? 'small' : 'medium'}
+              disabled={disabled}
+            >
               <ContentCopyIcon />
             </IconButton>
           </Tooltip>
         )}
         {isSiteReady && onDeleteSiteClick && (
-          <ConfirmDropdown
-            size={compact ? 'small' : 'medium'}
-            cancelText={formatMessage(translations.confirmCancel)}
-            confirmText={formatMessage(translations.confirmOk)}
-            confirmHelperText={formatMessage(translations.confirmHelperText, { site: site.name })}
-            iconTooltip={<FormattedMessage id="words.delete" defaultMessage="Delete" />}
-            icon={DeleteRoundedIcon}
-            onConfirm={() => {
-              onDeleteSiteClick(site);
-            }}
-          />
+          <Tooltip title={<FormattedMessage defaultMessage="Delete" />}>
+            <IconButton onClick={() => onDeleteSiteClick(site)} size={compact ? 'small' : 'medium'} disabled={disabled}>
+              <DeleteRoundedIcon />
+            </IconButton>
+          </Tooltip>
         )}
       </CardActions>
-      {!isSiteReady && <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: 22, right: 10 }} />}
+      {!isSiteReady && (
+        <SiteStatusIndicator state={site.state} sx={{ position: 'absolute', top: '22px', right: '20px' }} />
+      )}
     </Card>
   );
 }

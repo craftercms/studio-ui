@@ -101,6 +101,10 @@ export function ToolsPanel() {
       maxWidth={windowSize}
       classes={{ drawerBody: classes.drawerBody }}
       onWidthChange={onWidthChange}
+      styles={{
+        resizeHandle: { backgroundColor: 'transparent' },
+        drawerPaperBelowToolbar: { top: '64px' }
+      }}
     >
       <SuspenseWithEmptyState
         resource={resource}

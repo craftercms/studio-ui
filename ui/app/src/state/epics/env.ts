@@ -14,11 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { map, switchMap } from 'rxjs/operators';
 import { fetchVersion } from '../../services/monitoring';
 import { catchAjaxError } from '../../utils/ajax';
 import { fetchSystemVersion, fetchSystemVersionComplete, fetchSystemVersionFailed } from '../actions/env';
+import { CrafterCMSEpic } from '../store';
 
 export default [
   (action$) =>
@@ -31,4 +32,4 @@ export default [
         )
       )
     )
-] as Epic[];
+] as CrafterCMSEpic[];

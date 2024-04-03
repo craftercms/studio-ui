@@ -16,25 +16,32 @@
 
 import * as React from 'react';
 import { ElementType, forwardRef } from 'react';
-import ContentType from './ContentType';
+import ContentType, { defaultContentTypeMap } from './ContentType';
 import RenderRepeat, { RenderRepeatProps } from './RenderRepeat';
 import { ContentInstance } from '@craftercms/studio-ui/models';
 import PropTypes from 'prop-types';
 
-export interface RenderComponentsProps<
+export type RenderComponentsProps<
   RootProps = {},
   ItemProps = {},
   ItemType extends ContentInstance = ContentInstance
-> extends Omit<RenderRepeatProps<RootProps, ItemProps, ItemType>, 'renderItem'> {
-  contentTypeMap: Record<string, ElementType>;
-  renderItem?: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
+> = Omit<RenderRepeatProps<RootProps, ItemProps, ItemType>, 'renderItem'> & {
   contentTypeProps?: Record<string, any>;
   nthContentTypeProps?: Record<number, any>;
-}
+} & (
+    | {
+        contentTypeMap: Record<string, ElementType>;
+        renderItem?: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
+      }
+    | {
+        contentTypeMap?: Record<string, ElementType>;
+        renderItem: RenderRepeatProps<RootProps, ItemProps, ItemType>['renderItem'];
+      }
+  );
 
 export const RenderComponents = forwardRef<any, RenderComponentsProps>((props, ref) => {
   const {
-    contentTypeMap,
+    contentTypeMap = defaultContentTypeMap,
     contentTypeProps = {},
     nthContentTypeProps = {},
     renderItem = (component, index) => (

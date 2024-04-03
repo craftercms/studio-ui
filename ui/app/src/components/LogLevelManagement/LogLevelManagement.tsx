@@ -63,8 +63,8 @@ export function LogLevelManagement() {
             ? (logger) =>
                 logger.level.toLowerCase().includes(levelQuery) && logger.name.toLowerCase().includes(loggerQuery)
             : levelQuery
-            ? (logger) => logger.level.toLowerCase().includes(levelQuery)
-            : (logger) => logger.name.toLowerCase().includes(loggerQuery);
+              ? (logger) => logger.level.toLowerCase().includes(levelQuery)
+              : (logger) => logger.name.toLowerCase().includes(loggerQuery);
         filtered = loggers.filter(filter);
       }
       setFilteredLoggers(filtered);

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { MouseEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import { LookupTable } from '../../models/LookupTable';
@@ -30,42 +30,57 @@ import {
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
-import { EditSiteDialogUI } from './EditSiteDialogUI';
-import { createCustomDocumentEventListener } from '../../utils/dom';
+import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { FormattedMessage, useIntl } from 'react-intl';
+import DialogBody from '../DialogBody';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardActions from '@mui/material/CardActions';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import DialogFooter from '../DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
+import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
+import { showSystemNotification } from '../../state/actions/system';
 
 export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
   const { site, onClose, onSaveSuccess, onSiteImageChange, isSubmitting } = props;
-  const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [hasNameConflict, setHasNameConflict] = useState(false);
   const sites = useSelector<GlobalState, LookupTable>((state) => state.sites.byId);
   const dispatch = useDispatch();
-  const [name, setName] = useState(site.name);
-  const [description, setDescription] = useState(site.description);
-  const [siteImageCounter, setSiteImageCounter] = useState(0);
-  const idEditSiteImageComplete = 'editSiteImageComplete';
-  const fallbackImageSrc = '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
+  const originalName = site.name;
+  const [name, setName] = useState(originalName);
+  const originalDescription = site.description ?? '';
+  const [description, setDescription] = useState(originalDescription);
+  const [imageUrl, fetch] = useProjectPreviewImage(
+    site.id,
+    '/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg'
+  );
+  const disableSubmit =
+    hasNameConflict || (originalName === name.trim() && originalDescription === description.trim()) || isBlank(name);
+  const { formatMessage } = useIntl();
 
-  function checkSiteName(event: React.ChangeEvent<HTMLInputElement>, currentSiteName: string) {
+  function checkSiteName(value: string) {
     if (
-      (currentSiteName !== event.target.value &&
-        sites &&
-        Object.keys(sites).filter((key) => sites[key].name === event.target.value).length) ||
-      event.target.value.trim() === ''
+      (originalName !== value && sites && Object.keys(sites).filter((key) => sites[key].name === value).length) ||
+      value.trim() === ''
     ) {
-      setSubmitDisabled(true);
+      setHasNameConflict(true);
     } else {
-      setSubmitDisabled(false);
+      setHasNameConflict(false);
     }
   }
 
   const handleSubmit = (id: string, name: string, description: string) => {
-    if (!isBlank(name) && !submitDisabled) {
-      dispatch(
-        updateEditSiteDialog({
-          isSubmitting: true
-        })
-      );
-      update({ id, name, description }).subscribe(
-        (response) => {
+    if (!disableSubmit) {
+      dispatch(updateEditSiteDialog({ isSubmitting: true }));
+      update({ id, name: name.trim(), description: description.trim() }).subscribe({
+        next(response) {
           dispatch(
             batchActions([
               updateEditSiteDialog({
@@ -77,30 +92,21 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
           );
           onSaveSuccess?.(response);
         },
-        ({ response: { response } }) => {
-          dispatch(
-            batchActions([
-              updateEditSiteDialog({
-                isSubmitting: false
-              }),
-              showErrorDialog({
-                error: response
-              })
-            ])
-          );
+        error({ response: { response } }) {
+          dispatch(batchActions([updateEditSiteDialog({ isSubmitting: false }), showErrorDialog({ error: response })]));
         }
-      );
+      });
     }
   };
 
-  const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
+  const onCloseButtonClick = (e: MouseEvent<HTMLButtonElement>) => onClose(e, null);
 
-  const onSiteNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    checkSiteName(event, site.name);
-    setName(event.target.value);
+  const onSiteNameChange = (value: string) => {
+    checkSiteName(value);
+    setName(value);
     dispatch(
       updateEditSiteDialog({
-        hasPendingChanges: true
+        hasPendingChanges: originalDescription !== description.trim() || originalName !== value.trim()
       })
     );
   };
@@ -114,9 +120,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
   const onSiteDescriptionChange = (value: string) => {
     setDescription(value);
     dispatch(
-      updateEditSiteDialog({
-        hasPendingChanges: true
-      })
+      updateEditSiteDialog({ hasPendingChanges: originalName !== name.trim() || originalDescription !== value.trim() })
     );
   };
 
@@ -130,34 +134,138 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
         onClose: closeSingleFileUploadDialog(),
         onUploadComplete: batchActions([
           closeSingleFileUploadDialog(),
-          dispatchDOMEvent({ id: idEditSiteImageComplete })
+          dispatchDOMEvent({ id: PROJECT_PREVIEW_IMAGE_UPDATED })
         ])
       })
     );
   };
 
-  createCustomDocumentEventListener(idEditSiteImageComplete, () => {
+  const handleEditSiteImageCompleteRef = useUpdateRefs(() => {
+    dispatch(
+      showSystemNotification({ message: formatMessage({ defaultMessage: 'Preview image updated successfully.' }) })
+    );
     onSiteImageChange?.();
-    setSiteImageCounter(siteImageCounter + 1);
+    fetch();
   });
+
+  const onSubmit = () => handleSubmit(site.id, name, description);
+
+  useEffect(() => {
+    const callback = () => {
+      handleEditSiteImageCompleteRef.current();
+    };
+    document.addEventListener(PROJECT_PREVIEW_IMAGE_UPDATED, callback);
+    return () => {
+      document.removeEventListener(PROJECT_PREVIEW_IMAGE_UPDATED, callback);
+    };
+  }, [handleEditSiteImageCompleteRef]);
 
   return (
     <ConditionalLoadingState isLoading={!site}>
-      <EditSiteDialogUI
-        siteId={site.id}
-        siteName={name}
-        siteDescription={description}
-        siteImage={`${site.imageUrl}&v=${siteImageCounter}`}
-        onSiteNameChange={onSiteNameChange}
-        onSiteDescriptionChange={onSiteDescriptionChange}
-        submitting={isSubmitting}
-        submitDisabled={submitDisabled}
-        fallbackImageSrc={fallbackImageSrc}
-        onKeyPress={onKeyPress}
-        onSubmit={() => handleSubmit(site.id, name, description)}
-        onCloseButtonClick={onCloseButtonClick}
-        onEditSiteImage={onEditSiteImage}
-      />
+      <>
+        <DialogBody>
+          <Grid container spacing={2}>
+            <Grid item sm={6}>
+              <Card elevation={2}>
+                <CardMedia component="img" image={imageUrl} title={name} sx={{ height: '234px' }} />
+                <CardActions sx={{ placeContent: 'center' }} disableSpacing>
+                  <Tooltip title={<FormattedMessage id="words.edit" defaultMessage="Edit" />}>
+                    <IconButton onClick={onEditSiteImage}>
+                      <EditRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
+                </CardActions>
+              </Card>
+            </Grid>
+            <Grid item sm={6}>
+              <Grid container spacing={1} component="form">
+                <Grid item xs={12}>
+                  <TextField
+                    autoFocus
+                    fullWidth
+                    id="name"
+                    name="name"
+                    label={<FormattedMessage id="editSiteDialog.siteName" defaultMessage="Project Name" />}
+                    onChange={(event) => onSiteNameChange(event.target.value)}
+                    onKeyDown={onKeyPress}
+                    value={name}
+                    inputProps={{ maxLength: 255 }}
+                    error={hasNameConflict}
+                    helperText={
+                      !name.trim()
+                        ? formatMessage({
+                            id: 'editSiteDialog.siteNameRequired',
+                            defaultMessage: 'Project Name is required.'
+                          })
+                        : hasNameConflict
+                          ? formatMessage({
+                              id: 'editSiteDialog.sitenameExists',
+                              defaultMessage: 'The name already exist.'
+                            })
+                          : ''
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    id="siteId"
+                    name="id"
+                    label={<FormattedMessage id="editSiteDialog.siteId" defaultMessage="Project ID" />}
+                    fullWidth
+                    value={site.id}
+                    disabled
+                    helperText={
+                      <FormattedMessage
+                        id="editSiteDialog.notEditable"
+                        defaultMessage="The project id is not editable"
+                      />
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    id="description"
+                    name="description"
+                    label={
+                      <FormattedMessage id="editSiteDialog.siteDescription" defaultMessage="Project Description" />
+                    }
+                    fullWidth
+                    multiline
+                    onChange={(event) => onSiteDescriptionChange(event.target.value)}
+                    onKeyPress={(e) => {
+                      // This behaviour is kind of backwards from how it's usually seen in text editors.
+                      // Perhaps we should flip it to shift/ctrl + enter creating new lines and only enter submitting?
+                      if (e.key !== 'Enter' || e.ctrlKey || e.shiftKey) {
+                        onKeyPress?.(e);
+                      }
+                    }}
+                    value={description ?? ''}
+                    inputProps={{ maxLength: 4000 }}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </DialogBody>
+        <DialogFooter>
+          {onCloseButtonClick && (
+            <SecondaryButton onClick={onCloseButtonClick} variant="contained" disabled={isSubmitting}>
+              <FormattedMessage id="editSiteDialog.cancel" defaultMessage="Cancel" />
+            </SecondaryButton>
+          )}
+          {onSubmit && (
+            <PrimaryButton
+              onClick={() => onSubmit()}
+              variant="contained"
+              color="primary"
+              loading={isSubmitting}
+              disabled={disableSubmit}
+            >
+              <FormattedMessage id="words.submit" defaultMessage="Submit" />
+            </PrimaryButton>
+          )}
+        </DialogFooter>
+      </>
     </ConditionalLoadingState>
   );
 }

@@ -15,9 +15,9 @@
  */
 
 import { errorSelectorApi1, get, postJSON } from '../utils/ajax';
-import { catchError, map, pluck } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { deserialize, fromString, getInnerHtml } from '../utils/xml';
+import { deserialize, entityEncodingTagValueProcessor, fromString, getInnerHtml } from '../utils/xml';
 import { ContentTypeField } from '../models/ContentType';
 import { reversePluckProps, toQueryString } from '../utils/object';
 import ContentInstance from '../models/ContentInstance';
@@ -41,7 +41,7 @@ export function fetchConfigurationXML(
     path: configPath,
     environment
   });
-  return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(pluck('response', 'content'));
+  return get(`/studio/api/2/configuration/get_configuration${qs}`).pipe(map((response) => response?.response?.content));
 }
 
 export function fetchConfigurationDOM(
@@ -53,6 +53,13 @@ export function fetchConfigurationDOM(
   return fetchConfigurationXML(site, configPath, module, environment).pipe(map(fromString));
 }
 
+/**
+ * Fetches the requested configPath XML and deserializes such XML into JSON
+ * @param site {string} The site id from which to fetch the configuration from
+ * @param configPath {string} The path — inside the module — to the configuration file to fetch
+ * @param module {engine | studio} The module from which to fetch the configuration from
+ * @param environment {string} Optional environment to fetch the configuration from
+ */
 export function fetchConfigurationJSON(
   site: string,
   configPath: string,
@@ -63,20 +70,23 @@ export function fetchConfigurationJSON(
     map((conf) => {
       return deserialize(conf, {
         parseTagValue: false,
-        tagValueProcessor: (tag, value) =>
-          value
-            .replace(/&lt;/g, '<')
-            .replace(/&gt;/g, '>')
-            .replace(/&quot;/g, '"')
-            .replace(/&amp;/g, '&')
+        tagValueProcessor: entityEncodingTagValueProcessor
       });
     })
   );
 }
 
+/**
+ * Persists the content of a configuration file.
+ * @param site {string} The site id from which to fetch the configuration from.
+ * @param partialPath {string} The path *inside the module*, excluding root (/config) and module (/studio|engine). If full path is `/config/studio/ui.xml`, partial path `/ui.xml`.
+ * @param module {engine | studio} The module that owns this configuration file.
+ * @param content {string} The content to write.
+ * @param environment {string} Optional environment to write to.
+ **/
 export function writeConfiguration(
   site: string,
-  path: string,
+  partialPath: string,
   module: CrafterCMSModules,
   content: string,
   environment?: string
@@ -84,7 +94,7 @@ export function writeConfiguration(
   return postJSON('/studio/api/2/configuration/write_configuration', {
     siteId: site,
     module,
-    path,
+    path: partialPath,
     content,
     ...(environment && { environment })
   }).pipe(map(() => true));
@@ -92,7 +102,7 @@ export function writeConfiguration(
 
 // region AudiencesPanelConfig
 
-interface ActiveTargetingModel {
+export interface ActiveTargetingModel {
   id: string;
 
   [prop: string]: string;
@@ -113,7 +123,9 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
           locale: null,
           dateCreated: null,
           dateModified: null,
-          contentTypeId: null
+          contentTypeId: null,
+          disabled: false,
+          sourceMap: {}
         },
         ...data
       };
@@ -141,7 +153,9 @@ export function deserializeActiveTargetingModelData<T extends Object>(
       label: null,
       dateCreated: null,
       dateModified: null,
-      contentTypeId: null
+      contentTypeId: null,
+      disabled: false,
+      sourceMap: {}
     },
     ...data
   };
@@ -150,7 +164,7 @@ export function deserializeActiveTargetingModelData<T extends Object>(
 export function setActiveTargetingModel(data): Observable<ActiveTargetingModel> {
   const model = reversePluckProps(data, 'craftercms');
   const qs = toQueryString({ id: data.craftercms.id });
-  return postJSON(`/api/1/profile/set${qs}`, model).pipe(pluck('response'));
+  return postJSON(`/api/1/profile/set${qs}`, model).pipe(map((response) => response?.response));
 }
 
 // endregion
@@ -174,22 +188,26 @@ const legacyToNextMenuIconMap = {
 
 export function fetchGlobalMenuItems(): Observable<GlobalState['globalNavigation']['items']> {
   return get('/studio/api/2/ui/views/global_menu.json').pipe(
-    pluck('response', 'menuItems'),
-    map((items) => [
-      ...items.map((item) => ({
-        ...item,
-        icon: legacyToNextMenuIconMap[item.icon]
-          ? { id: legacyToNextMenuIconMap[item.icon] }
-          : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
-      })),
-      { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.About' }, label: 'About' },
-      { id: 'home.globalMenu.settings', icon: { id: '@mui/icons-material/AccountCircleRounded' }, label: 'Account' }
-    ])
+    map((response) => {
+      const menuItems = response?.response?.menuItems ?? [];
+      return [
+        ...menuItems.map((item) => ({
+          ...item,
+          icon: legacyToNextMenuIconMap[item.icon]
+            ? { id: legacyToNextMenuIconMap[item.icon] }
+            : { baseClass: item.icon.includes('fa') ? `fa ${item.icon}` : item.icon }
+        })),
+        { id: 'home.globalMenu.about-us', icon: { id: 'craftercms.icons.About' }, label: 'About' },
+        { id: 'home.globalMenu.settings', icon: { id: '@mui/icons-material/AccountCircleRounded' }, label: 'Account' }
+      ];
+    })
   );
 }
 
 export function fetchProductLanguages(): Observable<{ id: string; label: string }[]> {
-  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(pluck('response'));
+  return get('/studio/api/1/services/api/1/server/get-available-languages.json').pipe(
+    map((response) => response?.response)
+  );
 }
 
 export function fetchHistory(
@@ -202,13 +220,16 @@ export function fetchHistory(
 
   return get(
     `/studio/api/2/configuration/get_configuration_history.json?siteId=${site}&path=${parsedPath}&environment=${environment}&module=${module}`
-  ).pipe(pluck('response', 'history', 'versions'));
+  ).pipe(map((response) => response?.response.history.versions));
 }
 
 export function fetchCannedMessage(site: string, locale: string, type: string): Observable<string> {
   return get(
     `/studio/api/1/services/api/1/site/get-canned-message.json?site=${site}&locale=${locale}&type=${type}`
-  ).pipe(pluck('response'), catchError(errorSelectorApi1));
+  ).pipe(
+    map((response) => response?.response),
+    catchError(errorSelectorApi1)
+  );
 }
 
 export function fetchSiteLocale(site: string, environment: string): Observable<any> {
@@ -241,24 +262,12 @@ export function fetchSiteConfigurationFiles(site: string, environment?: string):
   );
 }
 
-export interface StudioSiteConfig {
+export interface StudioSiteConfig
+  extends Pick<
+    GlobalState['uiConfig'],
+    'cdataEscapedFieldPatterns' | 'upload' | 'locale' | 'publishing' | 'remoteGitBranch'
+  > {
   site: string;
-  cdataEscapedFieldPatterns: string[];
-  upload: {
-    timeout: number;
-    maxActiveUploads: number;
-    maxSimultaneousUploads: number;
-  };
-  locale: {
-    localeCode: string;
-    dateTimeFormatOptions: Intl.DateTimeFormatOptions;
-  };
-  publishing: {
-    publishCommentRequired: boolean;
-    deleteCommentRequired: boolean;
-    bulkPublishCommentRequired: boolean;
-    publishByCommitCommentRequired: boolean;
-  };
 }
 
 export function fetchSiteConfig(site: string, environment: string): Observable<StudioSiteConfig> {
@@ -270,6 +279,9 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
         .filter(Boolean),
       upload: ((node) => (node ? deserialize(node).upload : {}))(dom.querySelector(':scope > upload')),
       locale: ((node) => (node ? deserialize(node).locale : {}))(dom.querySelector(':scope > locale')),
+      remoteGitBranch: ((node) => (node ? deserialize(node).remoteGitBranch : null))(
+        dom.querySelector(':scope > remoteGitBranch')
+      ),
       publishing: ((node) => {
         const commentSettings = Object.assign({ required: false }, deserialize(node)?.publishing?.comments);
         return {
@@ -277,7 +289,8 @@ export function fetchSiteConfig(site: string, environment: string): Observable<S
           deleteCommentRequired: commentSettings['delete-required'] ?? commentSettings.required,
           bulkPublishCommentRequired: commentSettings['bulk-publish-required'] ?? commentSettings.required,
           publishByCommitCommentRequired: commentSettings['publish-by-commit-required'] ?? commentSettings.required,
-          publishEverythingCommentRequired: commentSettings['publish-everything-required'] ?? commentSettings.required
+          publishEverythingCommentRequired: commentSettings['publish-everything-required'] ?? commentSettings.required,
+          submissionCommentMaxLength: commentSettings['submission-max-length'] ?? 500
         };
       })(dom.querySelector(':scope > publishing'))
     }))

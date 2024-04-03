@@ -23,10 +23,13 @@ export function changeSite(nextSite: string, nextUrl: string = '/'): StandardAct
     payload: { nextSite, nextUrl }
   };
 }
+export const changeSiteComplete = /*#__PURE__*/ createAction<{ nextSite: string; nextUrl: string }>(
+  'CHANGE_SITE_COMPLETE'
+);
 
 changeSite.type = 'CHANGE_SITE';
 
 export const fetchSites = /*#__PURE__*/ createAction('FETCH_SITES');
 export const fetchSitesComplete = /*#__PURE__*/ createAction<Site[]>('FETCH_SITES_COMPLETE');
 export const fetchSitesFailed = /*#__PURE__*/ createAction('FETCH_SITES_FAILED');
-export const popSite = /*#__PURE__*/ createAction<{ siteId: string }>('POP_SITE');
+export const popSite = /*#__PURE__*/ createAction<{ siteId: string; isActive: boolean }>('POP_SITE');

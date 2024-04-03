@@ -32,8 +32,12 @@ import EmptyState from '../EmptyState';
 import BrowseFilesDialogContainerSkeleton from './BrowseFilesDialogContainerSkeleton';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { createCustomDocumentEventListener } from '../../utils/dom';
-import { getStoredBrowseDialogCompactMode, setStoredBrowseDialogCompactMode } from '../../utils/state';
+import { getStoredBrowseDialogViewMode, setStoredBrowseDialogViewMode } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
+import { withIndex, withoutIndex } from '../../utils/path';
+import { MediaCardViewModes } from '../MediaCard';
+
+const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];
 
 export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProps) {
   const {
@@ -69,11 +73,18 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [browsePathExists, setBrowsePathExists] = useState(false);
   const [sortKeys, setSortKeys] = useState([]);
   const { username } = useActiveUser();
-  const [compact, setCompact] = useState(() => getStoredBrowseDialogCompactMode(username));
+  const [viewMode, setViewMode] = useState<MediaCardViewModes>(getStoredBrowseDialogViewMode(username));
 
   const fetchItems = useCallback(
     () =>
-      search(site, { ...searchParameters, path: `${currentPath}/[^/]+(/index\\.xml)?` }).subscribe((response) => {
+      // Since lookahead regex is not supported by opensearch, we are excluding the current path from the search using a
+      // negative filter in a query. This scenario only happens with pages, hence the `withIndex` function wrapping the
+      // current path.
+      search(site, {
+        ...searchParameters,
+        path: `${currentPath}/[^/]+(/index\\.xml)?`,
+        query: `-localId:"${withIndex(currentPath)}"`
+      }).subscribe((response) => {
         setTotal(response.total);
         setItems(response.items);
         setSortKeys(response.facets.map((facet) => facet.name));
@@ -140,7 +151,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   };
 
   const onPathSelected = (path: string) => {
-    setCurrentPath(path);
+    setCurrentPath(withoutIndex(path));
   };
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
@@ -167,17 +178,25 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
     fetchItems();
   };
 
-  const toggleCompact = () => {
-    setStoredBrowseDialogCompactMode(username, !compact);
-    setCompact(!compact);
+  const switchViewMode = () => {
+    let currentIndex = viewModes.indexOf(viewMode);
+    let nextIndex;
+
+    if (currentIndex === viewModes.length - 1) {
+      nextIndex = 0;
+    } else {
+      nextIndex = currentIndex + 1;
+    }
+    setStoredBrowseDialogViewMode(username, viewModes[nextIndex]);
+    setViewMode(viewModes[nextIndex]);
   };
 
   return fetchingBrowsePathExists ? (
     <BrowseFilesDialogContainerSkeleton />
   ) : browsePathExists ? (
     <BrowseFilesDialogUI
-      compact={compact}
-      onToggleViewMode={toggleCompact}
+      viewMode={viewMode}
+      onToggleViewMode={switchViewMode}
       currentPath={currentPath}
       items={items}
       path={browsePath}

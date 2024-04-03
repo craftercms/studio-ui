@@ -44,11 +44,23 @@
       }
     });
 
+    // On the type editor, the constructor arguments are gibberish. The `form`arg is nullish.
+    if (form?.definition?.datasources) {
+      craftercms.utils.array.asArray(form.definition.datasources).forEach((ds) => {
+        if (ds.id === id) {
+          this.title = ds.title;
+        }
+      });
+    }
+
     return this;
   }
 
   Components.prototype = {
     add: function (control) {
+      control.$dropdownMenu.append(
+        `<li><div class="cstudio-form-control-node-selector-add-container-item-block-label">${this.title}</div></li>`
+      );
       const self = this;
       if (this.contentTypes) {
         this.contentTypes.split(',').forEach((contentType) => {
@@ -78,6 +90,9 @@
           })
         );
       }
+      control.$dropdownMenu.append(
+        `<li class="cstudio-form-control-node-selector-add-container-item-block-divider"></li>`
+      );
     },
 
     edit: function (key, control, index) {
@@ -236,7 +251,7 @@
         true,
         type === 'embedded',
         (item) => item.type === 'component',
-        this.baseRepoPath ?? this.defaultBaseRepoPath
+        this.baseRepoPath ? this._processPathsForMacros(this.baseRepoPath) : this.defaultBaseRepoPath
       );
     },
 
@@ -316,19 +331,19 @@
       const self = this;
 
       if (self.allowEmbedded) {
-        let message = `${formatMessage('createNewEmbedded')} ${self._getContentTypeName(contentType)}`;
+        let message = `${formatMessage('createNewEmbedded')} "${self._getContentTypeName(contentType)}"`;
         let type = 'embedded';
         control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
       if (self.allowShared) {
-        let message = `${formatMessage('createNewShared')} ${self._getContentTypeName(contentType)}`;
+        let message = `${formatMessage('createNewShared')} "${self._getContentTypeName(contentType)}"`;
         let type = 'shared';
         control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
       if (self.allowShared && self.enableBrowse) {
-        let message = `${formatMessage('browseExisting')} ${self._getContentTypeName(contentType)}`;
+        let message = `${formatMessage('browseExisting')} "${self._getContentTypeName(contentType)}"`;
         control.$dropdownMenu.append(
           self._createOption(message, () => {
             self._openBrowse(contentType, control);
@@ -357,7 +372,9 @@
 
     _openContentTypeForm(contentType, type, control) {
       const self = this;
-      const path = this.baseRepoPath ?? craftercms.utils.content.generateComponentBasePath(contentType);
+      const path = this.baseRepoPath
+        ? this._processPathsForMacros(this.baseRepoPath)
+        : craftercms.utils.content.generateComponentBasePath(contentType);
 
       let parentPath = self.form.path;
       CStudioAuthoring.Operations.openContentWebForm(

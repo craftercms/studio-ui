@@ -15,6 +15,7 @@
  */
 
 import { LookupTable } from './LookupTable';
+import { FetchAuthTypeResponse } from '../services/auth';
 
 export interface User {
   id: number;
@@ -24,7 +25,7 @@ export interface User {
   username: string;
   enabled: boolean;
   externallyManaged: boolean;
-  authenticationType?: 'db' | 'ldap' | 'headers' | 'saml';
+  authenticationType?: FetchAuthTypeResponse;
 }
 
 export interface EnhancedUser extends User {

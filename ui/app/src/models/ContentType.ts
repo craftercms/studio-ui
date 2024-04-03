@@ -52,21 +52,16 @@ export type ValidationKeys =
   | 'allowImagesFromRepo'
   | 'allowImageUpload'
   | 'allowVideosFromRepo'
-  | 'allowVideoUpload';
+  | 'allowVideoUpload'
+  | 'allowAudioUpload'
+  | 'allowAudioFromRepo';
 
 export type ContentTypeFieldValidations = {
   [key in ValidationKeys]: ContentTypeFieldValidation;
 };
 
 export interface ValidationResult {
-  id:
-    | ValidationKeys
-    | 'outOfSyncContent'
-    | 'itemLocked'
-    | 'noPolicyComply'
-    | 'fileNameChangedPolicy'
-    | 'uploadError'
-    | 'assetUploadStarted';
+  id: string;
   level?: 'required' | 'suggestion' | 'info';
   values?: object;
 }
@@ -103,12 +98,12 @@ export interface DataSource {
   [prop: string]: any;
 }
 
-type LegacyComponentTypes = 'component' | 'page' | 'file';
+export type LegacyComponentType = 'component' | 'page' | 'file';
 
 export interface ContentType {
   id: string;
   name: string;
-  type: LegacyComponentTypes;
+  type: LegacyComponentType;
   quickCreate: boolean;
   quickCreatePath: string;
   displayTemplate: string;
@@ -116,10 +111,6 @@ export interface ContentType {
   fields: LookupTable<ContentTypeField>;
   dataSources: DataSource[];
   mergeStrategy: string;
-}
-
-export interface LegacyFormConfigPattern {
-  pattern: string;
 }
 
 export interface LegacyFormDefinitionProperty {
@@ -186,22 +177,6 @@ export interface LegacyFormDefinition {
   datasources: { datasource: LegacyDataSource | Array<LegacyDataSource> };
 }
 
-export interface LegacyFormConfig {
-  // As returned by `/studio/api/1/services/api/1/site/get-configuration.json?site=${site}&path=/content-types/.../config.xml`
-  contentAsFolder: 'true' | 'false';
-  fileExtension: 'xml';
-  form: string;
-  formPath: string;
-  imageThumbnail: string;
-  label: string;
-  modelInstancePath: string;
-  noThumbnail: 'true' | 'false';
-  paths: { excludes: LegacyFormConfigPattern | Array<LegacyFormConfigPattern> };
-  previewable: 'true' | 'false';
-  quickCreate: 'true' | 'false';
-  quickCreatePath: string;
-}
-
 // As returned by `/studio/api/1/services/api/1/content/get-content-types.json?site=${site}`
 export interface LegacyContentType {
   allowedRoles: string[];
@@ -222,7 +197,7 @@ export interface LegacyContentType {
   previewable: boolean;
   quickCreate: boolean;
   quickCreatePath: string;
-  type: LegacyComponentTypes;
+  type: LegacyComponentType;
   useRoundedFolder: string;
 }
 

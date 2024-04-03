@@ -59,16 +59,20 @@
     }
   },
   "resolutions": {
-    "@types/react": "^18.0.28",
-    "browserslist": "^4.21.5",
-    "caniuse-lite": "^1.0.30001451",
-    "react-is": "^18.2.0",
-    "ansi-regex": "^5.0.1",
-    "json5": "^2.2.2",
+    "@babel/runtime": "^7",
+    "@typescript-eslint/eslint-plugin": "^6",
+    "@typescript-eslint/parser": "^6",
+    "@typescript-eslint/scope-manager": "^6",
+    "@typescript-eslint/type-utils": "^6",
+    "@typescript-eslint/types": "^6",
+    "@typescript-eslint/typescript-": "^6",
+    "@typescript-eslint/utils": "^6",
+    "@typescript-eslint/visitor-keys": "^6",
+    "clsx": "^2.0.0",
     "nth-check": "^2.0.1",
-    "semver": "^7.5.2"
+    "react-is": "^18.2.0"
   },
-  "packageManager": "yarn@3.1.0",
+  "packageManager": "yarn@4.0.2",
   "scripts": {
     "prettier:raw": "node scripts/prettier.js",
     "prettier:all": "node scripts/prettier.js write",
@@ -81,26 +85,27 @@
     "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
     "format-pom": "prettier --use-tabs --write pom.xml",
     "lint:ci": "eslint --ext .ts,.tsx .",
-    "upgrade-yarn": "yarn set version latest"
+    "upgrade-yarn": "yarn set version latest",
+    "update:caniuse": "yarn up -R caniuse-lite"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^21.1.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-replace": "^3.1.0",
-    "@types/node": "^16.11.13",
-    "@types/rimraf": "^3.0.2",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@types/node": "^20.11.13",
+    "@types/rimraf": "^4.0.5",
     "build-if-changed": "^1.5.5",
-    "eslint": "^8.3.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "glob-gitignore": "^1.0.14",
     "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.2",
-    "rollup": "^2.79.1",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.9.6",
     "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-ts-treeshaking": "^1.0.2",
-    "yargs": "^15.4.1"
+    "yargs": "^17.7.2"
   }
 }

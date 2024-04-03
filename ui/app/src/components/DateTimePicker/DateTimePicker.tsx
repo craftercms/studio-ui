@@ -108,7 +108,19 @@ function DateTimePicker(props: DateTimePickerProps) {
     dateTimeFormatOptions
   } = props;
   const timeZones = getTimezones();
-  const offset = value ? moment.parseZone(value).format().slice(-6) : null;
+  let offset = null;
+  // MomentJS format returns a UTC string. When the timezone is GMT (zero), the formatted string will end with `Z`
+  // instead of the offset string (+-HH:mm). We need to handle this case separately.
+  if (value) {
+    const formattedValue = moment.parseZone(value).format();
+    if (formattedValue.endsWith('Z')) {
+      // If the UTC string ends with `Z`, then the offset is `+00:00`.
+      offset = '+00:00';
+    } else {
+      // Otherwise, the offset is the last 6 characters of the UTC string.
+      offset = formattedValue.slice(-6);
+    }
+  }
   const timeZone = offset
     ? timeZones.find((tz) => tz.offset === offset).name
     : locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone();
@@ -199,29 +211,25 @@ function DateTimePicker(props: DateTimePickerProps) {
         <DatePicker
           open={datePickerOpen}
           views={['year', 'month', 'day']}
-          renderInput={(props) => (
-            <TextField
-              size="small"
-              margin="normal"
-              placeholder={formatMessage(translations.datePlaceholder)}
-              error={!pickerState.dateValid}
-              helperText={pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage)}
-              onClick={
-                disabled
-                  ? null
-                  : () => {
-                      setDatePickerOpen(true);
-                    }
-              }
-              {...props}
-              inputProps={{
-                ...props.inputProps,
+          slotProps={{
+            textField: {
+              size: 'small',
+              margin: 'normal',
+              placeholder: formatMessage(translations.datePlaceholder),
+              error: !pickerState.dateValid,
+              helperText: pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage),
+              onClick: disabled
+                ? null
+                : () => {
+                    setDatePickerOpen(true);
+                  },
+              inputProps: {
                 value: internalDate ? asLocalizedDateTime(internalDate, localeCode) : '',
                 onChange: handlePopupOnlyInputChange
-              }}
-            />
-          )}
-          value={internalDate}
+              }
+            }
+          }}
+          value={moment(internalDate)}
           onChange={createOnDateChange('date')}
           disabled={disabled}
           disablePast={disablePast}
@@ -236,44 +244,38 @@ function DateTimePicker(props: DateTimePickerProps) {
         {showTimeSelector && (
           <TimePicker
             open={timePickerOpen}
-            value={internalDate}
+            value={moment(internalDate)}
             onChange={createOnDateChange('time')}
             disabled={disabled}
             ampm={hour12}
             onOpen={() => setTimePickerOpen(true)}
             onAccept={() => setTimePickerOpen(false)}
             onClose={() => setTimePickerOpen(false)}
-            renderInput={(props) => (
-              <TextField
-                size="small"
-                margin="normal"
-                helperText={pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage)}
-                placeholder={formatMessage(translations.timePlaceholder)}
-                onClick={
-                  disabled
-                    ? null
-                    : () => {
-                        setTimePickerOpen(true);
-                      }
-                }
-                {...props}
-                inputProps={{
-                  ...props.inputProps,
+            slotProps={{
+              textField: {
+                size: 'small',
+                margin: 'normal',
+                helperText: pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage),
+                placeholder: formatMessage(translations.timePlaceholder),
+                onClick: disabled
+                  ? null
+                  : () => {
+                      setTimePickerOpen(true);
+                    },
+                inputProps: {
                   onChange: handlePopupOnlyInputChange,
-                  value: internalDate
-                    ? asLocalizedDateTime(internalDate, localeCode, {
-                        hour12,
-                        hour: dateTimeFormatOptions?.hour || '2-digit',
-                        minute: dateTimeFormatOptions?.minute || '2-digit',
-                        // If the timezone control isn't displayed, the time displayed may
-                        // be misleading/unexpected to the user, so if timezone isn't displayed,
-                        // display timezone here.
-                        timeZoneName: showTimeZoneSelector ? UNDEFINED : 'short'
-                      })
-                    : ''
-                }}
-              />
-            )}
+                  value: asLocalizedDateTime(internalDate, localeCode, {
+                    hour12,
+                    hour: dateTimeFormatOptions?.hour || '2-digit',
+                    minute: dateTimeFormatOptions?.minute || '2-digit',
+                    // If the timezone control isn't displayed, the time displayed may
+                    // be misleading/unexpected to the user, so if timezone isn't displayed,
+                    // display timezone here.
+                    timeZoneName: showTimeZoneSelector ? UNDEFINED : 'short'
+                  })
+                }
+              }
+            }}
           />
         )}
       </LocalizationProvider>
@@ -284,8 +286,8 @@ function DateTimePicker(props: DateTimePickerProps) {
             return currentTimeZoneDesc.name === timezone.name
               ? `GMT${timezone.offset}`
               : typeof timezone === 'string'
-              ? timezone
-              : `${timezone.name} (GMT${timezone.offset})`;
+                ? timezone
+                : `${timezone.name} (GMT${timezone.offset})`;
           }}
           value={currentTimeZoneDesc}
           onChange={handleTimezoneChange}

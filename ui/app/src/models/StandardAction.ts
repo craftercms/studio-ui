@@ -14,8 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface StandardAction<PayloadType = any, ActionType extends string = any> {
-  type: ActionType;
+import { Action } from 'redux';
+
+export interface StandardAction<PayloadType = any, ActionType extends string = string> extends Action<ActionType> {
+  [extraProps: string]: unknown;
   payload?: PayloadType;
 }
 

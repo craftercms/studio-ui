@@ -37,34 +37,35 @@ const initialState: ViewVersionDialogStateProps = {
   version: null
 };
 
-export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState, {
-  [showViewVersionDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeViewVersionDialog(),
-    onClosed: viewVersionDialogClosed(),
-    ...payload,
-    open: true
-  }),
-  [closeViewVersionDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [viewVersionDialogClosed.type]: () => initialState,
-  [fetchContentVersion.type]: (state) => ({
-    ...state,
-    isFetching: true
-  }),
-  [fetchContentVersionComplete.type]: (state, { payload }) => ({
-    ...state,
-    isFetching: false,
-    version: payload
-  }),
-  [fetchContentVersionFailed.type]: (state) => ({
-    ...state,
-    isFetching: false
-  }),
-  [showHistoryDialog.type]: (state) => ({
-    ...state,
-    open: false
-  })
+export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState, (builder) => {
+  builder
+    .addCase(showViewVersionDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeViewVersionDialog(),
+      onClosed: viewVersionDialogClosed(),
+      ...(payload as Partial<ViewVersionDialogStateProps>),
+      open: true
+    }))
+    .addCase(closeViewVersionDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(viewVersionDialogClosed, () => initialState)
+    .addCase(fetchContentVersion, (state) => ({
+      ...state,
+      isFetching: true
+    }))
+    .addCase(fetchContentVersionComplete, (state, { payload }) => ({
+      ...state,
+      isFetching: false,
+      version: payload
+    }))
+    .addCase(fetchContentVersionFailed, (state) => ({
+      ...state,
+      isFetching: false
+    }))
+    .addCase(showHistoryDialog, (state) => ({
+      ...state,
+      open: false
+    }));
 });

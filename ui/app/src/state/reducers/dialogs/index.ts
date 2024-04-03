@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineReducers } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 import confirm from './confirm';
 import error from './error';
 import newContent from './newContent';

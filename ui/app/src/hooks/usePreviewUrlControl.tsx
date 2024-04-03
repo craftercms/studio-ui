@@ -16,18 +16,15 @@
 
 import { useDispatch } from 'react-redux';
 import { useCallback, useEffect, useRef } from 'react';
-import { parse, stringify } from 'query-string';
+import queryString from 'query-string';
 import { LookupTable } from '../models/LookupTable';
 import { changeCurrentUrl } from '../state/actions/preview';
-import { changeSite, popSite } from '../state/actions/sites';
+import { changeSite } from '../state/actions/sites';
 import { useActiveSiteId } from './useActiveSiteId';
 import { useEnv } from './useEnv';
 import { usePreviewNavigation } from './usePreviewNavigation';
 import useSiteLookup from './useSiteLookup';
 import { defineMessages, useIntl } from 'react-intl';
-import { getHostToHostBus } from '../utils/subjects';
-import { filter } from 'rxjs/operators';
-import { projectDeleted } from '../state/actions/system';
 
 const messages = defineMessages({
   siteNotFound: {
@@ -35,9 +32,6 @@ const messages = defineMessages({
   },
   siteNotReady: {
     defaultMessage: 'Project not initialized yet. Redirecting to projects list.'
-  },
-  siteDeleted: {
-    defaultMessage: "This project has been deleted, you'll be redirected to projects list."
   }
 });
 
@@ -86,19 +80,6 @@ export function usePreviewUrlControl(history) {
   );
 
   useEffect(() => {
-    const hostToHost$ = getHostToHostBus();
-    const subscription = hostToHost$.pipe(filter((e) => e.type === projectDeleted.type)).subscribe(({ payload }) => {
-      if (payload.siteId === site) {
-        notValidSiteRedirect(formatMessage(messages.siteDeleted), `${authoringBase}#/sites`);
-        dispatch(popSite({ siteId: payload.siteId }));
-      }
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [authoringBase, formatMessage, site, dispatch]);
-
-  useEffect(() => {
     const prev = priorState.current;
 
     // Retrieve the stored query string (QS)
@@ -106,7 +87,7 @@ export function usePreviewUrlControl(history) {
     // If nothing is stored or the search portion has changed...
     if (!qs || prev.search !== search) {
       // Parse the current QS
-      qs = parse(search) as LookupTable<string>;
+      qs = queryString.parse(search) as LookupTable<string>;
       // In case somehow 2 site or page arguments ended on the
       // URL, only use the first one and issue a warning on the console
       if (Array.isArray(qs.site)) {
@@ -150,7 +131,7 @@ export function usePreviewUrlControl(history) {
       // Not the first render. Something changed and we're updating.
 
       // Check if either the QS or the state has changed
-      const qsSiteChanged = qs.site !== prev.qsSite && qs.site !== site;
+      const qsSiteChanged = qs.site !== prev.qsSite || qs.site !== site;
       const siteChanged = site !== prev.site;
       const qsUrlChanged = qs.page !== prev.qsPage && qs.page !== currentUrlPath;
       const urlChanged = currentUrlPath !== prev.currentUrlPath;
@@ -162,7 +143,7 @@ export function usePreviewUrlControl(history) {
         if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
           const page = currentUrlPath;
           if (page !== previewLandingBase) {
-            push({ search: stringify({ site, page }, { encode: false }) });
+            push({ search: queryString.stringify({ site, page }, { encode: false }) });
           }
         } else if (qsSiteChanged && qsUrlChanged) {
           dispatch(changeSite(qs.site, qs.page));

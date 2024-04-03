@@ -24,7 +24,7 @@
   <script src="/studio/static-assets/yui/container/container-min.js"></script>
   <script src="/studio/static-assets/yui/json/json-min.js"></script>
   <script src="/studio/static-assets/yui/yahoo/yahoo-min.js"></script>
-  <script src="/studio/static-assets/libs/jquery/dist/jquery-3.4.1.min.js"></script>
+  <script src="/studio/static-assets/libs/jquery/jquery.min.js"></script>
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
   <script src="/studio/static-assets/components/cstudio-common/common-api.js"></script>
   <script src="/studio/static-assets/scripts/crafter.js"></script>
@@ -36,7 +36,7 @@
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js"></script>
-  <script src="${path}kr/base.js"></script>
+  <script src="${path}ko/base.js"></script>
   <script src="${path}es/base.js"></script>
   <script src="${path}de/base.js"></script>
 
@@ -155,7 +155,7 @@
                     CStudioAuthoring.InContextEdit.messageDialogs({
                       type: 'OPEN_CHILD_COMPONENT',
                       key: Boolean(modelId) ? modelId : null,
-                      iceId: null,
+                      iceId: selectedFields ? JSON.parse(decodeURIComponent(selectedFields)) : iceId,
                       contentType: embeddedData ? embeddedData.contentType : null,
                       edit: Boolean(modelId),
                       selectorId: embeddedData ? embeddedData.fieldId : null,
@@ -262,6 +262,9 @@
   window.addEventListener("message", (event) => {
     if(event.data.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
       CStudioAuthoring.InContextEdit.messageDialogs({ type: LEGACY_FORM_DIALOG_CANCEL_REQUEST })
+    }
+    if(event.data.type === 'LEGACY_FORM_DIALOG_RENAMED_CONTENT') {
+      CStudioAuthoring.InContextEdit.messageDialogs(event.data, '*');
     }
   }, false);
 

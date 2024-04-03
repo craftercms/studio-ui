@@ -25,7 +25,8 @@ export type SystemType =
   | 'page'
   | 'renderingTemplate'
   | 'script'
-  | 'taxonomy';
+  | 'taxonomy'
+  | 'configuration';
 
 export type FilterSystemTypeGroups = 'all' | 'item' | 'asset' | 'contentType' | 'template' | 'script' | 'other';
 

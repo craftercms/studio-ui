@@ -33,22 +33,23 @@ const initialState: CompareVersionsDialogStateProps = {
   error: null
 };
 
-export default createReducer<GlobalState['dialogs']['compareVersions']>(initialState, {
-  [showCompareVersionsDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeCompareVersionsDialog(),
-    onClosed: compareVersionsDialogClosed(),
-    ...payload,
-    open: true,
-    isFetching: true
-  }),
-  [closeCompareVersionsDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [compareVersionsDialogClosed.type]: () => initialState,
-  [showHistoryDialog.type]: (state) => ({
-    ...state,
-    open: false
-  })
+export default createReducer<GlobalState['dialogs']['compareVersions']>(initialState, (builder) => {
+  builder
+    .addCase(showCompareVersionsDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeCompareVersionsDialog(),
+      onClosed: compareVersionsDialogClosed(),
+      ...(payload as Partial<CompareVersionsDialogStateProps>),
+      open: true,
+      isFetching: true
+    }))
+    .addCase(closeCompareVersionsDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(compareVersionsDialogClosed, () => initialState)
+    .addCase(showHistoryDialog, (state) => ({
+      ...state,
+      open: false
+    }));
 });

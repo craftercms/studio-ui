@@ -1,5 +1,5 @@
 version: "~> 1.0"
-dist: focal
+dist: jammy
 language: java
 git:
   depth: 1
@@ -12,7 +12,8 @@ cache:
 branches:
   only:
   - develop
-  - support/.*
+  - support/4.1.x
+  - support/4.0.x
   - master
 notifications:
   irc:
@@ -26,11 +27,4 @@ before_install:
   - cp .travis-settings.xml $HOME/.m2/settings.xml
 install: skip
 script:
-- wget -q https://raw.githubusercontent.com/craftercms/craftercms/develop/.travis-prep-jdk.sh
-- chmod +x .travis-prep-jdk.sh
-- "./.travis-prep-jdk.sh"
-- export JAVA_HOME=$HOME/jdk
-- export PATH=$HOME/jdk/bin:$PATH
-- which java
-- java -version
-- mvn -Dmaven.javadoc.skip=true clean package
+  - mvn -Dmaven.javadoc.skip=true clean package

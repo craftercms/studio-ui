@@ -29,17 +29,18 @@ import {
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
 import { camelize, capitalize, isBlank } from '../utils/string';
-import { forkJoin, Observable, of, zip } from 'rxjs';
-import { errorSelectorApi1, get, getBinary, postJSON } from '../utils/ajax';
-import { catchError, map, pluck, switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of } from 'rxjs';
+import { errorSelectorApi1, get, getBinary, post, postJSON } from '../utils/ajax';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { createLookupTable, nou, toQueryString } from '../utils/object';
 import { fetchItemsByPath } from './content';
 import { SandboxItem } from '../models/Item';
 import { fetchConfigurationDOM, fetchConfigurationJSON, writeConfiguration } from './configuration';
-import { beautify, serialize } from '../utils/xml';
+import { beautify, deserialize, entityEncodingTagValueProcessor, serialize } from '../utils/xml';
 import { stripDuplicateSlashes } from '../utils/path';
 import { Api2ResponseFormat } from '../models/ApiResponse';
 import { asArray } from '../utils/array';
+import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 const typeMap = {
   input: 'text',
@@ -65,7 +66,9 @@ const systemValidationsNames = [
   'imgRepositoryUpload',
   'imgDesktopUpload',
   'videoDesktopUpload',
-  'videoBrowseRepo'
+  'videoBrowseRepo',
+  'audioDesktopUpload',
+  'audioBrowseRepo'
 ];
 
 const systemValidationsKeysMap = {
@@ -86,7 +89,9 @@ const systemValidationsKeysMap = {
   imgRepositoryUpload: 'allowImagesFromRepo',
   imgDesktopUpload: 'allowImageUpload',
   videoDesktopUpload: 'allowVideoUpload',
-  videoBrowseRepo: 'allowVideosFromRepo'
+  videoBrowseRepo: 'allowVideosFromRepo',
+  audioDesktopUpload: 'allowAudioUpload',
+  audioBrowseRepo: 'allowAudioFromRepo'
 };
 
 function bestGuessParse(value: any) {
@@ -200,11 +205,11 @@ function getFieldDataSourceValidations(
   if (
     dataSources &&
     dataSources.length > 0 &&
-    asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager'].includes(prop.name))
+    asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager', 'audioManager'].includes(prop.name))
   ) {
     validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
       (table, prop) => {
-        if (prop.name === 'imageManager' || prop.name === 'videoManager') {
+        if (prop.name === 'imageManager' || prop.name === 'videoManager' || prop.name === 'audioManager') {
           const dataSourcesIds = prop.value.trim() !== '' ? prop.value.split(',') : null;
           dataSourcesIds?.forEach((id) => {
             const dataSource = dataSources.find((datasource) => datasource.id === id);
@@ -346,9 +351,9 @@ function parseLegacyFormDefinitionFields(
   });
 }
 
-function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<ContentType> {
+function parseLegacyFormDefinition(definition: LegacyFormDefinition): ContentType {
   if (nou(definition)) {
-    return {};
+    return {} as ContentType;
   }
 
   const fields: LookupTable<ContentTypeField> = {};
@@ -401,7 +406,11 @@ function parseLegacyFormDefinition(definition: LegacyFormDefinition): Partial<Co
   const topLevelProps: LegacyFormDefinitionProperty[] = asArray(definition.properties?.property);
 
   return {
-    // Find display template
+    id: definition['content-type'],
+    name: definition.title,
+    quickCreate: (definition.quickCreate ?? '').trim() === 'true',
+    quickCreatePath: definition.quickCreatePath,
+    type: definition.objectType as LegacyContentType['type'],
     displayTemplate: topLevelProps.find((prop) => prop.name === 'display-template')?.value,
     mergeStrategy: topLevelProps.find((prop) => prop.name === 'merge-strategy')?.value,
     dataSources: Object.values(dataSources),
@@ -425,7 +434,7 @@ function parseLegacyContentType(legacy: LegacyContentType): ContentType {
   };
 }
 
-function fetchFormDefinition(site: string, contentTypeId: string): Observable<Partial<ContentType>> {
+function fetchFormDefinition(site: string, contentTypeId: string): Observable<ContentType> {
   const path = `/content-types${contentTypeId}/form-definition.xml`;
   return fetchConfigurationJSON(site, path, 'studio').pipe(map((def) => parseLegacyFormDefinition(def.form)));
 }
@@ -442,32 +451,17 @@ export function fetchContentType(site: string, contentTypeId: string): Observabl
   );
 }
 
-export function fetchContentTypes(site: string, query?: any): Observable<ContentType[]> {
-  return fetchLegacyContentTypes(site).pipe(
-    map((response) =>
-      (query?.type
-        ? response.filter(
-            (contentType) => contentType.type === query.type && contentType.name !== '/component/level-descriptor'
-          )
-        : response
-      ).map(parseLegacyContentType)
-    ),
-    switchMap((contentTypes) =>
-      zip(
-        of(contentTypes),
-        forkJoin(
-          contentTypes.reduce((hash, contentType) => {
-            hash[contentType.id] = fetchFormDefinition(site, contentType.id);
-            return hash;
-          }, {} as LookupTable<Observable<Partial<ContentType>>>)
+export function fetchContentTypes(site: string): Observable<ContentType[]> {
+  return post(`/studio/api/2/model/${site}/definitions`).pipe(
+    map(({ response }) =>
+      response.types.map((xmlStr) =>
+        parseLegacyFormDefinition(
+          deserialize(xmlStr, {
+            parseTagValue: false,
+            tagValueProcessor: entityEncodingTagValueProcessor
+          }).form
         )
       )
-    ),
-    map(([contentTypes, formDefinitions]) =>
-      contentTypes.map((contentType) => ({
-        ...contentType,
-        ...formDefinitions[contentType.id]
-      }))
     )
   );
 }
@@ -475,13 +469,13 @@ export function fetchContentTypes(site: string, query?: any): Observable<Content
 export function fetchLegacyContentType(site: string, contentTypeId: string): Observable<LegacyContentType> {
   return get<LegacyContentType>(
     `/studio/api/1/services/api/1/content/get-content-type.json?site_id=${site}&type=${contentTypeId}`
-  ).pipe(pluck('response'));
+  ).pipe(map((response) => response?.response));
 }
 
 export function fetchLegacyContentTypes(site: string, path?: string): Observable<LegacyContentType[]> {
   const qs = toQueryString({ site, path });
   return get<LegacyContentType[]>(`/studio/api/1/services/api/1/content/get-content-types.json${qs}`).pipe(
-    pluck('response'),
+    map((response) => response?.response),
     catchError(errorSelectorApi1)
   );
 }
@@ -497,7 +491,7 @@ export function fetchContentTypeUsage(site: string, contentTypeId: string): Obse
   return get<Api2ResponseFormat<{ usage: FetchContentTypeUsageResponse<string> }>>(
     `/studio/api/2/configuration/content-type/usage${qs}`
   ).pipe(
-    pluck('response', 'usage'),
+    map((response) => response?.response.usage),
     switchMap((usage: FetchContentTypeUsageResponse<string>) =>
       usage.templates.length + usage.scripts.length + usage.content.length === 0
         ? // @ts-ignore - avoiding creating new object with the exact same structure just for typescript's sake
@@ -552,7 +546,9 @@ export function associateTemplate(site: string, contentTypeId: string, displayTe
         property.appendChild(type);
         doc.querySelector('properties').appendChild(property);
       }
-      return writeConfiguration(site, path, module, beautify(serialize(doc)));
+      return fromPromise(beautify(serialize(doc))).pipe(
+        switchMap((xml) => writeConfiguration(site, path, module, xml))
+      );
     })
   );
 }
@@ -568,7 +564,9 @@ export function dissociateTemplate(site: string, contentTypeId: string): Observa
       );
       if (property) {
         property.querySelector('value').innerHTML = '';
-        return writeConfiguration(site, path, module, beautify(serialize(doc)));
+        return fromPromise(beautify(serialize(doc))).pipe(
+          switchMap((xml) => writeConfiguration(site, path, module, xml))
+        );
       } else {
         return of(false);
       }

@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from 'jquery';
 import { message$, post } from './utils/communicator';
 import { guestCheckIn, guestCheckOut, navigationRequest } from '@craftercms/studio-ui/state/actions/preview';
 import { createLocationArgument } from './utils/util';
+import { fadeIn } from './utils/dom';
 
 message$.subscribe(function ({ type, payload }) {
   switch (type) {
@@ -33,7 +33,9 @@ const location = createLocationArgument();
 post(guestCheckIn.type, { location, __CRAFTERCMS_GUEST_LANDING__: true, version: process.env.VERSION });
 
 setTimeout(() => {
-  $('img').fadeIn();
+  document.querySelectorAll('img').forEach((img) => {
+    fadeIn(img);
+  });
 }, 700);
 
 window.onbeforeunload = () => {

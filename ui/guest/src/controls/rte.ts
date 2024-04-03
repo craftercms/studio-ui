@@ -23,7 +23,6 @@ import { post, message$ } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
 import { startWith } from 'rxjs/operators';
-import $ from 'jquery';
 import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
@@ -43,7 +42,9 @@ export function initTinyMCE(
   const type = field?.type;
   const inlineElsRegex =
     /^(B|BIG|I|SMALL|TT|ABBR|ACRINYM|CITE|CODE|DFN|EM|KBD|STRONG|SAMP|VAR|A|BDO|BR|IMG|MAP|OBJECT|Q|SCRIPT|SPAN|SUB|SUP|BUTTON|INPUT|LABEL|SELECT|TEXTAREA)$/;
-  let rteEl = record.element;
+  const originalElement = record.element;
+  const originalRawContent = originalElement.innerHTML;
+  let rteEl = originalElement;
   const isRecordElInline = record.element.tagName.match(inlineElsRegex);
 
   // If record element is of type inline (doesn't matter the display prop), replace it with a block element (div).
@@ -107,15 +108,17 @@ export function initTinyMCE(
     craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
   };
 
-  const $element = $(record.element);
-  $element.removeClass(emptyFieldClass);
+  record.element.classList.remove(emptyFieldClass);
 
   window.tinymce.init({
-    mode: 'none',
     target: rteEl,
+    promotion: false,
+    // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
+    // note that it will become premium on version 7.
+    deprecation_warnings: false,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
-    plugins: ['paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' & 'paste' plugins will always be loaded
+    plugins: ['editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
     paste_as_text: type !== 'html',
     paste_data_images: type === 'html',
     paste_preprocess(plugin, args) {
@@ -128,7 +131,7 @@ export function initTinyMCE(
     forced_root_block: type === 'html',
     menubar: false,
     inline: true,
-    base_url: '/studio/static-assets/modules/editors/tinymce/v5/tinymce',
+    base_url: '/studio/static-assets/libs/tinymce',
     suffix: '.min',
     external_plugins: external,
     code_editor_inline: false,
@@ -142,7 +145,14 @@ export function initTinyMCE(
       const datasources = {};
       Object.values(field.validations).forEach((validation) => {
         if (
-          ['allowImageUpload', 'allowImagesFromRepo', 'allowVideoUpload', 'allowVideosFromRepo'].includes(validation.id)
+          [
+            'allowImageUpload',
+            'allowImagesFromRepo',
+            'allowVideoUpload',
+            'allowVideosFromRepo',
+            'allowAudioUpload',
+            'allowAudioFromRepo'
+          ].includes(validation.id)
         ) {
           datasources[validation.id] = validation;
         }
@@ -171,8 +181,25 @@ export function initTinyMCE(
     },
     setup(editor: Editor) {
       let changed = false;
-      let originalContent;
-      let pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
+      const pluginManager = window.tinymce.util.Tools.resolve('tinymce.PluginManager');
+      const nonChars = [
+        'Meta',
+        'Alt',
+        'Control',
+        'Shift',
+        'CapsLock',
+        'Tab',
+        'Escape',
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowUp',
+        'ArrowDown',
+        'Dead',
+        'Delete'
+        // Added as needed when using this array...
+        // 'Backspace',
+        // 'Enter'
+      ].filter(Boolean);
 
       function save() {
         const content = getContent();
@@ -182,11 +209,11 @@ export function initTinyMCE(
       }
 
       function getContent() {
-        return type === 'html' ? editor.getContent() : editor.getContent({ format: 'text' });
+        return editor.getContent({ format: type === 'html' ? 'html' : 'text' });
       }
 
       function getSelectionContent() {
-        return type === 'html' ? editor.selection.getContent() : editor.selection.getContent({ format: 'text' });
+        return editor.selection.getContent({ format: type === 'html' ? 'html' : 'text' });
       }
 
       function destroyEditor() {
@@ -194,23 +221,20 @@ export function initTinyMCE(
       }
 
       function cancel({ saved }: { saved: boolean }) {
-        const content = getContent();
+        const finalContent = saved ? getContent() : originalRawContent;
+
         destroyEditor();
 
-        // In case the user did some text bolding or other formatting which won't
-        // be honoured on plain text, revert the content to the edited plain text
-        // version of the input.
-        changed && type === 'text' && $element.html(content);
+        originalElement.innerHTML = finalContent;
 
         if (isRecordElInline) {
-          // Update original element and remove created blockElement
-          record.element.innerHTML = rteEl.innerHTML;
+          // Remove the created blockElement and remove the display: none on original element
           rteEl.remove();
-          $element.css('display', '');
+          record.element.style.display = '';
         }
 
-        if ($element.html().trim() === '') {
-          $element.addClass(emptyFieldClass);
+        if (finalContent.trim() === '') {
+          record.element.classList.add(emptyFieldClass);
         }
 
         // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
@@ -222,8 +246,22 @@ export function initTinyMCE(
         }, 150);
       }
 
+      function replaceLineBreaksIfApplicable(content: string) {
+        if (type === 'textarea') {
+          // Replace line breaks with <br> for textarea fields
+          // Address line breaks in textarea fields: https://github.com/craftercms/craftercms/issues/6432
+          editor.setContent(content.replaceAll('\n', '<br>'), { format: 'html' });
+        } else if (type === 'html') {
+          // Set content in 'html' format for the editor to exec its internal cleanup mechanisms
+          // For example, removal of potentially problematic line breaks which we're seeing cause the list plugin to crash (https://github.com/craftercms/craftercms/issues/6514)
+          editor.setContent(content, { format: 'html' });
+        }
+      }
+
       editor.on('init', function () {
-        originalContent = getContent();
+        const initialTinyContent = getContent();
+
+        replaceLineBreaksIfApplicable(originalRawContent);
 
         editor.focus(false);
         editor.selection.select(editor.getBody(), true);
@@ -233,9 +271,12 @@ export function initTinyMCE(
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
           let saved = false;
-          let relatedTarget = e.relatedTarget;
+          let relatedTarget = e.relatedTarget as HTMLElement;
+          // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
+          changed = changed || getContent() !== initialTinyContent;
           if (
             !relatedTarget?.closest('.tox-tinymce') &&
+            !relatedTarget?.closest('.tox') &&
             !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
           ) {
             if (validations?.required && !getContent().trim()) {
@@ -246,16 +287,9 @@ export function initTinyMCE(
                   values: { field: record.label }
                 })
               );
-              editor.setContent(originalContent);
-            } else {
-              // Replace new line char which is not honoured if the field is not html type
-              if (type !== 'html') {
-                editor.setContent(getContent().replace(/\n+/g, ' '));
-              }
-              if (getContent() !== originalContent) {
-                saved = true;
-                save();
-              }
+            } else if (changed) {
+              saved = true;
+              save();
             }
             e.stopImmediatePropagation();
             cancel({ saved });
@@ -280,37 +314,74 @@ export function initTinyMCE(
         }
       });
 
-      // TODO: The max-length can be bypassed by pasting.
-      // editor.on('paste', (e) => {
-      //   // ...
-      // });
+      editor.on('paste', (e) => {
+        const maxLength = validations?.maxLength ? parseInt(validations.maxLength.value) : null;
+        const text = (
+          e.clipboardData ||
+          // @ts-ignore
+          window.clipboardData
+        ).getData('text');
+        console.log(`"${text}"`, text.length, maxLength);
+        if (maxLength && text.length > maxLength) {
+          post(
+            snackGuestMessage({
+              id: 'maxLength',
+              level: 'required',
+              values: { maxLength: text.length === maxLength ? text.length : `${text.length}/${maxLength}` }
+            })
+          );
+        }
+        if (type === 'textarea') {
+          // Doing this immediately (without the timeout) causes the content to be duplicated.
+          // TinyMCE seems to be doing something internally that causes this.
+          setTimeout(() => {
+            replaceLineBreaksIfApplicable(text);
+            editor.selection.select(editor.getBody(), true);
+            editor.selection.collapse(false);
+          }, 10);
+        }
+        // TODO: It'd be great to be able to select the piece of the pasted content that falls out of the max-length.
+      });
+
+      editor.on('keyup', (e) => {
+        let content = getContent();
+        if (validations?.required && content.trim() === '' && !nonChars.concat('Enter').includes(e.key)) {
+          post(
+            snackGuestMessage({
+              id: 'required',
+              level: 'suggestion',
+              values: { field: record.label }
+            })
+          );
+        }
+      });
 
       editor.on('keydown', (e) => {
+        let content: string, selection: string, numMaxLength: number;
         if (e.key === 'Escape') {
           e.stopImmediatePropagation();
-          editor.setContent(originalContent);
           cancel({ saved: false });
         } else if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
           e.preventDefault();
           // Timeout to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"
           // Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
           setTimeout(() => editor.fire('focusout'));
-        } else if (e.key === 'Enter' && type !== 'html') {
+        } else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
+          // Avoid new line in plain text fields
           e.preventDefault();
         } else if (
           validations?.maxLength &&
-          // TODO: Check/improve regex
-          /[a-zA-Z0-9-_ ]/.test(String.fromCharCode(e.keyCode)) &&
-          getContent().length + 1 > parseInt(validations.maxLength.value) &&
+          !nonChars.concat('Backspace').includes(e.key) &&
+          (content = getContent()).length + 1 > (numMaxLength = parseInt(validations.maxLength.value)) &&
           // If everything is selected and a key is pressed, essentially, it will
           // delete everything so no max-length problem
-          getContent() !== getSelectionContent()
+          ((selection = getSelectionContent()) === '' || content.length - (selection.length + 1) > numMaxLength)
         ) {
           post(
             snackGuestMessage({
               id: 'maxLength',
               level: 'required',
-              values: { maxLength: validations.maxLength.value }
+              values: { maxLength: `${content.length}/${validations.maxLength.value}` }
             })
           );
           e.stopPropagation();

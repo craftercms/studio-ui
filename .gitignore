@@ -123,6 +123,7 @@ ui/app/public/craftercms-xb.umd.js
 ui/app/public/preview-landing.umd.js
 ui/app/public/shared-worker.js
 ui/guest/dist
+ui/guest/src/jquery
 ui/app/src/test
 ui/app/src/tests
 static-assets/components/cstudio-admin/mods/encrypt-tool.js
@@ -132,10 +133,12 @@ static-assets/components/cstudio-forms/controls/locale-selector.js
 static-assets/components/cstudio-forms/data-sources/receptacles.js
 static-assets/libs/monaco
 static-assets/libs/ace
+static-assets/libs/tinymce
 static-assets/images/blueprints
 static-assets/libs/js-yaml
 static-assets/libs/bootstrap
 static-assets/libs/jquery-ui
+static-assets/libs/jquery
 static-assets/components/cstudio-admin/mods/plugin-management.js
 static-assets/components/cstudio-forms/data-sources/components.js
 

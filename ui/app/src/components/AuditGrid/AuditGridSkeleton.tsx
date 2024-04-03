@@ -173,12 +173,12 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         }}
         onCellClick={() => {}}
         className={classes.gridRoot}
-        disableSelectionOnClick
+        disableRowSelectionOnClick
         disableColumnSelector
         hideFooterPagination={true}
         rows={rows}
         columns={columns}
-        pageSize={numOfItems}
+        paginationModel={{ page: 0, pageSize: numOfItems }}
         rowCount={numOfItems}
       />
     </Box>

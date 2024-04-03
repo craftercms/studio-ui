@@ -71,7 +71,7 @@ var CStudioForms =
     // lookup to check the controls with default values
     const defaultValuesLookup = {};
     // lookup to check the fields that have the `no-default` attribute set
-    const noDefaultLookup = {};
+    let noDefaultLookup = {};
     let disableClose = false;
 
     // This sets the dropup class to bootstrap dropdowns (used to display datasources selected for controls) when
@@ -216,7 +216,7 @@ var CStudioForms =
       renderValidation: function (onOff) {
         var valid = true;
 
-        for (key in this.errors) {
+        for (let key in this.errors) {
           valid = false;
           break;
         }
@@ -692,7 +692,7 @@ var CStudioForms =
         if (formField && formField.edited) {
           var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
           var iceWindowCallback = CStudioAuthoring.InContextEdit.getIceCallback(editorId);
-          if (iceWindowCallback.pendingChanges) {
+          if (iceWindowCallback?.pendingChanges) {
             let callback = getCustomCallback(iceWindowCallback.pendingChanges);
             callback();
           }
@@ -1898,6 +1898,17 @@ var CStudioForms =
                   saveFn(type === 'saveAndPreview', type !== 'saveAndClose', null, type);
                 };
 
+                document.addEventListener('keydown', (e) => {
+                  const isOSX = /mac/i.test(navigator.platform);
+                  if ((isOSX ? e.metaKey : e.ctrlKey) && e.key === 's') {
+                    // Prevent the Save dialog to open
+                    e.preventDefault();
+                    // Blur current focused element for the model to update before saving
+                    document.activeElement.blur();
+                    saveFn(false, true, null, 'save');
+                  }
+                });
+
                 const React = craftercms.libs.React;
                 const MultiChoiceSaveButton = craftercms.components.MultiChoiceSaveButton;
 
@@ -2498,6 +2509,11 @@ var CStudioForms =
                   var itemArray = form.model[repeat.id];
                   var repeatArrayIndex = this.parentNode._repeatIndex;
                   itemArray.splice(repeatArrayIndex, 1);
+                  // Remove noDefaultLookup entry
+                  const itemBaseId = repeat.id + '|' + repeatArrayIndex;
+                  noDefaultLookup = Object.fromEntries(
+                    Object.entries(noDefaultLookup).filter(([key]) => !key.startsWith(itemBaseId))
+                  );
                   containerEl.reRender(containerEl);
 
                   if (repeatArrayIndex) {
@@ -2598,7 +2614,12 @@ var CStudioForms =
               }
 
               const defaultValue = moduleConfig.config.field.defaultValue;
-              if (!value && defaultValue && typeof defaultValue === 'string' && !noDefaultLookup[formField.id]) {
+              if (
+                craftercms.utils.object.nou(value) &&
+                defaultValue &&
+                typeof defaultValue === 'string' &&
+                !noDefaultLookup[formField.id]
+              ) {
                 value = moduleConfig.config.field.defaultValue;
               }
 

@@ -14,6 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const list = ['4.1.1', '4.1.0', '4.0.3'];
+const list = ['4.1.2', '4.1.1', '4.1.0', '4.0.3'];
 
 export default list;

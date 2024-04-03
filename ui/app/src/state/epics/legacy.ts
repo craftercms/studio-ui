@@ -14,9 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { ignoreElements, tap } from 'rxjs/operators';
 import { dispatchDOMEvent } from '../actions/misc';
+import { CrafterCMSEpic } from '../store';
 
 export default [
   (action$) =>
@@ -28,4 +29,4 @@ export default [
       }),
       ignoreElements()
     )
-] as Epic[];
+] as CrafterCMSEpic[];

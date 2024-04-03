@@ -33,6 +33,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
+import { toQueryString } from '../../utils/object';
 
 const messages = defineMessages({
   chooseFile: {
@@ -55,14 +56,8 @@ const messages = defineMessages({
     id: 'fileUpload.selectFileMessage',
     defaultMessage: 'Please select a file to upload'
   },
-  createPolicy: {
-    id: 'fileUpload.createPolicy',
-    defaultMessage:
-      'The upload file name goes against project policies. Suggested modified file name is: "{name}". Would you like to use the suggested name?'
-  },
   policyError: {
-    id: 'fileUpload.policyError',
-    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies and can\'t be uploaded'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
   }
 });
 
@@ -111,7 +106,7 @@ export interface SingleFileUploadProps {
   site: string;
   formTarget?: string;
   url?: string;
-  path?: string;
+  path: string;
   customFileName?: string;
   fileTypes?: [string];
   onUploadStart?(): void;
@@ -205,7 +200,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         hideAfterFinish: false
       })
       .use(XHRUpload, {
-        endpoint: url,
+        endpoint: `${url}${toQueryString({ path, site })}`,
         formData: true,
         fieldName: 'file',
         timeout: upload.timeout,
@@ -218,7 +213,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       instance.cancelAll();
       instance.close();
     };
-  }, [uppy, formTarget, url, upload.timeout]);
+  }, [uppy, formTarget, url, upload.timeout, path, site]);
 
   useEffect(() => {
     const onUploadSuccess = (file) => {
@@ -265,13 +260,12 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         contentMetadata: {
           fileSize: file.size
         }
-      }).subscribe(({ allowed, modifiedValue }) => {
+      }).subscribe(({ allowed, modifiedValue, message }) => {
         if (allowed) {
           if (modifiedValue) {
-            const modifiedName = modifiedValue.replace(path, '');
-            setConfirm({
-              body: formatMessage(messages.createPolicy, { name: modifiedName })
-            });
+            // Modified value is expected to be a path.
+            const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
+            setConfirm({ body: message });
             setSuggestedName(modifiedName);
           } else {
             setDisableInput(true);
@@ -282,7 +276,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         } else {
           setConfirm({
             error: true,
-            body: formatMessage(messages.policyError, { fileName: file.name })
+            body: formatMessage(messages.policyError, { fileName: file.name, detail: message })
           });
         }
       });
@@ -349,7 +343,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
               className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
               title={file.name}
             >
-              {file.name}
+              {' ' + file.name}
             </em>
           )}
         </Typography>

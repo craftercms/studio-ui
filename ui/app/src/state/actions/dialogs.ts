@@ -48,6 +48,7 @@ import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUpl
 import ContentInstance from '../../models/ContentInstance';
 import { ContentTypeFieldValidation, DetailedItem } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
+import { AjaxError } from 'rxjs/ajax';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -100,7 +101,7 @@ export const fetchDeleteDependencies = /*#__PURE__*/ createAction<{ paths: strin
 export const fetchDeleteDependenciesComplete = /*#__PURE__*/ createAction<FetchDeleteDependenciesResponse>(
   'FETCH_DELETE_DEPENDENCIES_COMPLETE'
 );
-export const fetchDeleteDependenciesFailed = /*#__PURE__*/ createAction('FETCH_DELETE_DEPENDENCIES_FAILED');
+export const fetchDeleteDependenciesFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_DELETE_DEPENDENCIES_FAILED');
 // endregion
 
 // region New Content
@@ -153,7 +154,8 @@ export const showEditDialog = /*#__PURE__*/ createAction<LegacyFormDialogStatePr
 export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
 export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');
-export const updateEditConfig = /*#__PURE__*/ createAction<any>('UPDATE_EDIT_CONFIG');
+export const updateEditDialogConfig =
+  /*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('UPDATE_EDIT_DIALOG_CONFIG');
 // endregion
 
 // region Legacy Code Editor

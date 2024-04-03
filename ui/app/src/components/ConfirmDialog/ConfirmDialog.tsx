@@ -27,6 +27,8 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
   const { formatMessage } = useIntl();
   return (
     <AlertDialog
+      disableBackdropClick
+      disableEscapeKeyDown
       {...rest}
       buttons={
         <>

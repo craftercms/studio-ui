@@ -37,7 +37,7 @@ const dialogTitleStyles = makeStyles()((theme) => ({
     display: 'flex',
     flex: '0 0 auto',
     flexWrap: 'wrap',
-    borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
+    borderBottom: `1px solid ${theme.palette.divider}`,
     padding: theme.spacing(1),
     background: theme.palette.background.paper,
     ...(theme.mixins.toolbar as CSSObject)

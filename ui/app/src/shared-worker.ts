@@ -15,7 +15,13 @@ import {
 import { AjaxError } from 'rxjs/ajax';
 import { SHARED_WORKER_NAME, XSRF_TOKEN_HEADER_NAME } from './utils/constants';
 import { Client, StompSubscription } from '@stomp/stompjs';
-import { emitSystemEvent, globalSocketStatus, openSiteSocket, siteSocketStatus } from './state/actions/system';
+import {
+  closeSiteSocket,
+  emitSystemEvent,
+  globalSocketStatus,
+  openSiteSocket,
+  siteSocketStatus
+} from './state/actions/system';
 
 declare const self: SharedWorkerGlobalScope;
 
@@ -94,6 +100,9 @@ function onmessage(event) {
     case openSiteSocket.type:
       openSocket(event.data.payload);
       break;
+    case closeSiteSocket.type:
+      closeSocket(event.data.payload.site);
+      break;
     default:
       log(`Received unknown action: "${type}"`);
       break;
@@ -119,12 +128,14 @@ function unauthenticated(excludeClient?: MessagePort) {
   broadcast(sharedWorkerUnauthenticated(), excludeClient);
 }
 
+let retries = 0;
 function retrieve() {
   clearTimeout(timeout);
   if (!isRetrieving) {
     isRetrieving = true;
     return obtainAuthToken().subscribe({
       next(response) {
+        retries = 0;
         isRetrieving = false;
         if (response) {
           log('New token received');
@@ -149,12 +160,13 @@ function retrieve() {
         clearTimeout(timeout);
         log('Error retrieving token', e);
         if (e.status === 401) {
+          retries = 0;
           unauthenticated();
         } else {
           status = 'error';
           broadcast(sharedWorkerError({ status: e.status, message: e.message }));
           // If there are clients connected try again.
-          if (clients.length) {
+          if (clients.length && retries++ < 3) {
             timeout = self.setTimeout(retrieve, Math.floor(refreshInterval * 0.9));
           }
         }
@@ -169,20 +181,22 @@ function broadcast(message: StandardAction, excludedClient?: MessagePort) {
   });
 }
 
+function broadcastSocketConnection(connected: boolean, siteId: string = null) {
+  broadcast(siteId ? siteSocketStatus({ siteId, connected }) : globalSocketStatus({ connected }));
+}
+
 function openSocket({ site, xsrfToken }) {
   let isSiteSocket = !!site;
   let socketClient = isSiteSocket ? siteSocketClient : rootSocketClient;
   socketClient?.deactivate();
   let subscription: StompSubscription;
   let protocol = self.location.protocol === 'https:' ? 'wss' : 'ws';
-  let broadcastConnection = (connected: boolean) =>
-    broadcast(isSiteSocket ? siteSocketStatus({ siteId: site, connected }) : globalSocketStatus({ connected }));
   socketClient = new Client({
     brokerURL: `${protocol}://${isProduction ? self.location.host : 'localhost:8080'}/studio/events`,
     ...(!isProduction && { debug: log }),
     connectHeaders: { [XSRF_TOKEN_HEADER_NAME]: xsrfToken },
     onConnect() {
-      broadcastConnection(true);
+      broadcastSocketConnection(true, site);
       const topicUrl = isSiteSocket ? `/topic/studio/${site}` : '/topic/studio';
       subscription = socketClient.subscribe(topicUrl, (message) => {
         if (message.body) {
@@ -203,10 +217,10 @@ function openSocket({ site, xsrfToken }) {
     onStompError() {
       // Will be invoked in case of error encountered at Broker
       // Bad login/passcode typically will cause an error
-      broadcastConnection(false);
+      broadcastSocketConnection(false, site);
     },
     onWebSocketError() {
-      broadcastConnection(false);
+      broadcastSocketConnection(false, site);
     },
     onDisconnect() {
       subscription?.unsubscribe();
@@ -218,6 +232,18 @@ function openSocket({ site, xsrfToken }) {
     siteSocketClient = socketClient;
   } else {
     rootSocketClient = socketClient;
+  }
+}
+
+function closeSocket(siteId?: string) {
+  if (siteId) {
+    siteSocketClient?.deactivate();
+    siteSocketClient = null;
+    broadcastSocketConnection(false, siteId);
+  } else {
+    rootSocketClient?.deactivate();
+    rootSocketClient = null;
+    broadcastSocketConnection(false);
   }
 }
 

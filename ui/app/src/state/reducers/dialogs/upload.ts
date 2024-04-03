@@ -26,18 +26,19 @@ const initialState: UploadDialogStateProps = {
   site: null
 };
 
-export default createReducer<GlobalState['dialogs']['upload']>(initialState, {
-  [showUploadDialog.type]: (state, { payload }) => ({
-    ...state,
-    onClose: closeUploadDialog(),
-    onClosed: uploadDialogClosed(),
-    onCreate: closeUploadDialog(),
-    ...payload,
-    open: true
-  }),
-  [closeUploadDialog.type]: (state) => ({
-    ...state,
-    open: false
-  }),
-  [uploadDialogClosed.type]: () => initialState
+export default createReducer<GlobalState['dialogs']['upload']>(initialState, (builder) => {
+  builder
+    .addCase(showUploadDialog, (state, { payload }) => ({
+      ...state,
+      onClose: closeUploadDialog(),
+      onClosed: uploadDialogClosed(),
+      onCreate: closeUploadDialog(),
+      ...(payload as Partial<UploadDialogStateProps>),
+      open: true
+    }))
+    .addCase(closeUploadDialog, (state) => ({
+      ...state,
+      open: false
+    }))
+    .addCase(uploadDialogClosed, () => initialState);
 });

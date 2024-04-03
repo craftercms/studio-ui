@@ -15,11 +15,10 @@
  */
 
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
-import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
-import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
-import { contentTypes$, flushRequestedPaths, operations$ } from '../contentController';
+import { contentTypes$, FetchGuestModelCompletePayload, flushRequestedPaths, operations$ } from '../contentController';
 import * as elementRegistry from '../elementRegistry';
 import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -73,13 +72,12 @@ import { clearAndListen$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
-import { dragOk } from '../store/util';
+import { checkIfLockedOrModified, dragOk } from '../store/util';
 import { createLocationArgument } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { Snackbar, SnackbarProps, ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
-import { DeepPartial } from 'redux';
 import ZoneMenu from './ZoneMenu';
 import {
   contentReady,
@@ -93,6 +91,7 @@ import {
   dropzoneEnter,
   dropzoneLeave,
   setDropPosition,
+  setLockedItems,
   startListening
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
@@ -108,10 +107,12 @@ import {
 import { setJwt } from '@craftercms/studio-ui/utils/auth';
 import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
+import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
+import { emitSystemEvent } from '@craftercms/studio-ui/state/actions/system';
+import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
-  documentDomain?: string;
   themeOptions?: ThemeOptions;
   sxOverrides?: DeepPartial<GuestStylesSx>;
   globalStyleOverrides?: GuestGlobalStylesProps['styles'];
@@ -137,12 +138,11 @@ type GenericXBProps<T> = PropsWithChildren<BaseXBProps & T>;
 
 export type ExperienceBuilderProps = GenericXBProps<{ model: ContentInstance } | { path: string }>;
 
-const initialDocumentDomain = typeof document === 'undefined' ? void 0 : document.domain;
-
 function bypassKeyStroke(e, refs) {
   const isKeyDown = e.type === 'keydown';
   refs.current.keysPressed['z'] = isKeyDown;
-  $('html')[isKeyDown ? 'addClass' : 'removeClass'](iceBypassKeyClass);
+  const html = document.documentElement;
+  html.classList[isKeyDown ? 'add' : 'remove'](iceBypassKeyClass);
   document.dispatchEvent(new CustomEvent(editModeIceBypassEvent, { detail: isKeyDown }));
 }
 
@@ -153,7 +153,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     themeOptions,
     sxOverrides,
     children,
-    documentDomain,
     scrollElement = 'html, body',
     isHeadlessMode = false,
     globalStyleOverrides
@@ -162,7 +161,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   const theme = useGuestTheme(themeOptions);
   const [snack, setSnack] = useState<Partial<SnackbarProps>>();
   const dispatch = useDispatch();
-  const state = useSelector<GuestState>((state) => state);
+  const state = useSelector<GuestState>((state) => state) as GuestState;
   const { editMode, highlightMode, editModePadding, status, hostCheckedIn: hasHost, draggable, authoringBase } = state;
   const refs = useRef({
     contentReady: false,
@@ -225,11 +224,17 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       const unload = () => worker.port.postMessage(sharedWorkerDisconnect());
       window.addEventListener('beforeunload', unload);
       const subscription = fromEvent<MessageEvent>(worker.port, 'message').subscribe((event) => {
-        const { type, payload } = event.data;
-        switch (type) {
-          case sharedWorkerToken.type: {
-            setJwt(payload.token);
-            break;
+        if (event.data?.type) {
+          const { type, payload } = event.data;
+          switch (type) {
+            case sharedWorkerToken.type: {
+              setJwt(payload.token);
+              break;
+            }
+            case emitSystemEvent.type: {
+              dispatch(payload);
+              break;
+            }
           }
         }
       });
@@ -240,7 +245,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         worker.port.close();
       };
     }
-  }, [authoringBase, hasHost]);
+  }, [authoringBase, hasHost, dispatch]);
 
   const sxStylesConfig = useMemo(() => deepmerge(styleSxDefaults, sxOverrides), [sxOverrides]);
 
@@ -248,7 +253,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // This requires maintenance as key shortcuts evolve/change.
   useHotkeys(
-    'a,r,m,e,p,shift+/,shift+e',
+    'a,r,m,e,p,shift+/,shift,/,shift+e',
     (e) => {
       post(hotKey({ key: e.key, type: 'keyup', shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, metaKey: e.metaKey }));
     },
@@ -284,51 +289,39 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // Add/remove edit mode highlight mode classes
   useEffect(() => {
-    const $html = $('html');
+    const html = document.documentElement;
     const cls = highlightMode === HighlightMode.MOVE_TARGETS ? moveModeClass : editModeClass;
     if (editMode) {
-      $html.addClass(cls);
+      html.classList.add(cls);
       return () => {
-        $html.removeClass(cls);
+        html.classList.remove(cls);
       };
     }
   }, [editMode, highlightMode]);
 
   // Add/remove edit mode padding mode classes
   useEffect(() => {
-    const $html = $('html');
+    const html = document.documentElement;
     if (editMode && editModePadding) {
-      $html.addClass(editModePaddingClass);
+      html.classList.add(editModePaddingClass);
       return () => {
-        $html.removeClass(editModePaddingClass);
+        html.classList.remove(editModePaddingClass);
       };
     }
   }, [editMode, editModePadding]);
 
-  // Sets document domain
-  useEffect(() => {
-    if (documentDomain) {
-      try {
-        document.domain = documentDomain;
-      } catch (e) {
-        console.error(e);
-      }
-    } else if (document.domain !== initialDocumentDomain) {
-      document.domain = initialDocumentDomain;
-    }
-  }, [documentDomain]);
-
   // Add/remove edit on class
   useEffect(() => {
+    const html = document.documentElement;
     if (editMode === false) {
-      $('html').removeClass(editOnClass);
+      html.classList.remove(editOnClass);
       document.dispatchEvent(new CustomEvent(editModeEvent, { detail: false }));
       // Refreshing the page for now. Will revisit on a later release.
       if (!refs.current.firstRender && refs.current.hasChanges) {
         window.location.reload();
       }
     } else {
-      $('html').addClass(editOnClass);
+      html.classList.add(editOnClass);
       document.dispatchEvent(new CustomEvent(editModeEvent, { detail: true }));
     }
     if (refs.current.firstRender) {
@@ -448,7 +441,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   useEffect(() => {
     if (hasHost && !window.tinymce) {
       const script = document.createElement('script');
-      script.src = '/studio/static-assets/modules/editors/tinymce/v5/tinymce/tinymce.min.js';
+      script.src = '/studio/static-assets/libs/tinymce/tinymce.min.js';
       // script.onload = () => ...;
       document.head.appendChild(script);
     }
@@ -487,8 +480,13 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
     fromTopic('FETCH_GUEST_MODEL_COMPLETE')
       .pipe(
+        // Collect locked items to update locked lookup table on state...
+        tap(({ payload }: StandardAction<FetchGuestModelCompletePayload>) => {
+          const locked = payload.sandboxItems.filter((item) => item.stateMap.locked);
+          locked.length && dispatch(setLockedItems(locked));
+        }),
         filter(({ payload }) => payload.path === path),
-        pluck('payload', 'model'),
+        map((action) => action?.payload?.model),
         withLatestFrom(contentTypes$),
         take(1)
       )
@@ -498,7 +496,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         dispatch(contentReady());
       });
 
-    post(guestCheckIn({ location, path, site, documentDomain, version: process.env.VERSION }));
+    post(guestCheckIn({ location, path, site, version: process.env.VERSION }));
 
     return () => {
       post(guestCheckOut({ path }));
@@ -508,7 +506,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       flushRequestedPaths();
       operationsSubscription.unsubscribe();
     };
-  }, [dispatch, documentDomain, path]);
+  }, [dispatch, path]);
 
   // Listen for desktop asset drag & drop
   const shouldNotBypass = hasHost && editMode;
@@ -621,12 +619,15 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
               const elementRecord = elementRegistry.get(highlight.id);
+              const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, elementRecord);
               return (
                 <ZoneMarker
                   key={highlight.id}
                   label={highlight.label}
                   rect={highlight.rect}
                   inherited={highlight.inherited}
+                  lockInfo={state.lockedPaths[path]?.user}
+                  isStale={isExternallyModified}
                   onPopperClick={
                     isMoveMode && isFieldSelectedMode
                       ? (e) => {
@@ -636,8 +637,13 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                       : null
                   }
                   menuItems={
-                    isFieldSelectedMode ? (
-                      <ZoneMenu record={elementRecord} dispatch={dispatch} isHeadlessMode={isHeadlessMode} />
+                    isFieldSelectedMode && !isExternallyModified ? (
+                      <ZoneMenu
+                        record={elementRecord}
+                        dispatch={dispatch}
+                        isHeadlessMode={isHeadlessMode}
+                        isLockedItem={isLocked}
+                      />
                     ) : (
                       void 0
                     )
@@ -650,8 +656,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                         : sxStylesConfig.zoneMarker.selectModeHighlight,
                       { clone: true }
                     ),
-                    hasValidations
-                      ? hasFailedRequired
+                    hasValidations || isLocked || isExternallyModified
+                      ? hasFailedRequired || isExternallyModified
                         ? sxStylesConfig.zoneMarker.errorHighlight
                         : sxStylesConfig.zoneMarker.warnHighlight
                       : null,

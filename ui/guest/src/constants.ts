@@ -14,6 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+export type EditingStatuses =
+  | 'LISTENING'
+  | 'SORTING_COMPONENT'
+  | 'PLACING_NEW_COMPONENT'
+  | 'PLACING_DETACHED_COMPONENT'
+  | 'PLACING_DETACHED_ASSET'
+  | 'EDITING_COMPONENT'
+  | 'EDITING_COMPONENT_INLINE'
+  | 'UPLOAD_ASSET_FROM_DESKTOP'
+  | 'SHOW_DROP_TARGETS'
+  | 'FIELD_SELECTED'
+  | 'HIGHLIGHT_MOVE_TARGETS';
+
+export type HighlightModes = 'all' | 'move';
+
 export enum EditingStatus {
   LISTENING = 'LISTENING',
   SORTING_COMPONENT = 'SORTING_COMPONENT',
@@ -33,15 +48,27 @@ export enum HighlightMode {
   MOVE_TARGETS = 'move'
 }
 
-export const editOnClass = 'craftercms-ice-on';
-export const iceBypassKeyClass = 'craftercms-ice-bypass';
+export type XbUtilityClasses =
+  | 'craftercms-ice-on'
+  | 'craftercms-ice-bypass'
+  | 'data-craftercms-event-capture-overlay'
+  | `craftercms-highlight-${HighlightModes}`
+  | 'craftercms-empty-collection'
+  | 'craftercms-empty-field'
+  | 'craftercms-drag-n-drop-active'
+  | 'craftercms-edit-mode-padding';
+
+export const editOnClass: XbUtilityClasses = 'craftercms-ice-on';
+export const iceBypassKeyClass: XbUtilityClasses = 'craftercms-ice-bypass';
+export const moveModeClass: XbUtilityClasses = `craftercms-highlight-${HighlightMode.MOVE_TARGETS}`;
+export const editModeClass: XbUtilityClasses = `craftercms-highlight-${HighlightMode.ALL}`;
+export const emptyCollectionClass: XbUtilityClasses = 'craftercms-empty-collection';
+export const emptyFieldClass: XbUtilityClasses = 'craftercms-empty-field';
+export const dragAndDropActiveClass: XbUtilityClasses = 'craftercms-drag-n-drop-active';
+export const editModePaddingClass: XbUtilityClasses = 'craftercms-edit-mode-padding';
+
 export const eventCaptureOverlayAttribute = 'data-craftercms-event-capture-overlay';
-export const moveModeClass = `craftercms-highlight-${HighlightMode.MOVE_TARGETS}`;
-export const editModeClass = `craftercms-highlight-${HighlightMode.ALL}`;
-export const emptyCollectionClass = 'craftercms-empty-collection';
-export const emptyFieldClass = 'craftercms-empty-field';
-export const dragAndDropActiveClass = 'craftercms-drag-n-drop-active';
-export const editModePaddingClass = 'craftercms-edit-mode-padding';
-export const editModeIceBypassEvent = 'craftercms.iceBypass';
+
 export const editModeEvent = 'craftercms.editMode';
 export const xbLoadedEvent = 'craftercms.xb:loaded';
+export const editModeIceBypassEvent = 'craftercms.iceBypass';

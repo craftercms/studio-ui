@@ -35,73 +35,6 @@ export function translateElements(
   });
 }
 
-export const approveDialogMessages = defineMessages({
-  approveForPublish: {
-    id: 'publishDialog.approveForPublish',
-    defaultMessage: 'Approve for Publish'
-  },
-  differentPublishDateWarning: {
-    id: 'publishDialog.differentPublishDateWarning',
-    defaultMessage:
-      '<strong>Warning</strong> The items you have selected for approval were submitted with different requested publish dates/times.'
-  },
-  publishingScheduleTitle: {
-    id: 'publishDialog.publishingScheduleTitle',
-    defaultMessage: 'Selected Item Scheduling'
-  },
-  introductoryText: {
-    id: 'publishDialog.introductoryText',
-    defaultMessage:
-      'Selected files will be published. Hard dependencies are automatically included. Soft dependencies are optional and you may choose which to include.'
-  },
-  submissionCommentFieldError: {
-    id: 'publishDialog.submissionCommentFieldError',
-    defaultMessage: 'Please write submission comment.'
-  }
-});
-
-export const deleteDialogMessages = defineMessages({
-  submissionCommentFieldError: {
-    id: 'deleteDialog.submissionCommentFieldError',
-    defaultMessage: 'Please write submission comment.'
-  }
-});
-
-export const usersAdminMessages = defineMessages({
-  maxLengthError: {
-    id: 'usersAdmin.maxLengthError',
-    defaultMessage: "{field} can't be longer than {size} characters"
-  },
-  userName: {
-    id: 'usersAdmin.userName',
-    defaultMessage: 'User Name'
-  },
-  firstName: {
-    id: 'usersAdmin.firstName',
-    defaultMessage: 'First Name'
-  },
-  lastName: {
-    id: 'usersAdmin.lastName',
-    defaultMessage: 'Last Name'
-  },
-  userCreated: {
-    id: 'usersAdmin.userCreated',
-    defaultMessage: '{username} created.'
-  },
-  userEdited: {
-    id: 'usersAdmin.userEdited',
-    defaultMessage: '{username} edited.'
-  },
-  userDeleted: {
-    id: 'usersAdmin.userDeleted',
-    defaultMessage: '{username} deleted.'
-  },
-  passwordChangeSuccess: {
-    id: 'usersAdmin.passwordChangeSuccessMessage',
-    defaultMessage: 'Password changed successfully'
-  }
-});
-
 export const passwordRequirementMessages = defineMessages({
   hasNumbers: {
     id: 'passwordRequirement.hasNumbers',
@@ -169,72 +102,6 @@ export const passwordRequirementMessages = defineMessages({
   }
 });
 
-export const groupsAdminMessages = defineMessages({
-  maxLengthError: {
-    id: 'groupsAdmin.maxLengthError',
-    defaultMessage: "{field} can't be longer than {size} characters"
-  },
-  displayName: {
-    id: 'groupsAdmin.displayName',
-    defaultMessage: 'Display Name'
-  },
-  groupCreated: {
-    id: 'groupsAdmin.groupCreated',
-    defaultMessage: '{group} created.'
-  },
-  groupEdited: {
-    id: 'groupsAdmin.groupEdited',
-    defaultMessage: '{group} edited.'
-  },
-  groupDeleted: {
-    id: 'groupsAdmin.groupDeleted',
-    defaultMessage: '{group} deleted.'
-  },
-  usersAdded: {
-    id: 'groupsAdmin.usersAdded',
-    defaultMessage: 'User(s) successfully added.'
-  },
-  userRemoved: {
-    id: 'groupsAdmin.usereRemoved',
-    defaultMessage: '{username} successfully removed from {group}'
-  }
-});
-
-export const profileSettingsMessages = defineMessages({
-  password: {
-    id: 'profileSettings.password',
-    defaultMessage: 'Password'
-  },
-  currentPassword: {
-    id: 'profileSettings.currentPassword',
-    defaultMessage: 'Current password'
-  },
-  isRequired: {
-    id: 'profileSettings.isRequired',
-    defaultMessage: 'is required'
-  },
-  mustMatchPreviousEntry: {
-    id: 'profileSettings.mustMatchPreviousEntry',
-    defaultMessage: 'Must match the previous entry'
-  },
-  languageSaveSuccesfully: {
-    id: 'profileSettings.languageUpdatedSuccessfully',
-    defaultMessage: 'Language Updated Successfully.'
-  },
-  languageSaveFailedWarning: {
-    id: 'profileSettings.languageUpdateFailedWarning',
-    defaultMessage: 'Language update has failed. Please retry momentarily.'
-  },
-  unSavedConfirmation: {
-    id: 'profileSettings.unsavedConfirmation',
-    defaultMessage: 'You have unsaved changes. Discard changes?'
-  },
-  unSavedConfirmationTitle: {
-    id: 'profileSettings.unsavedConfirmationTitle',
-    defaultMessage: 'Unsaved Changes'
-  }
-});
-
 export const numericInputControlMessages = defineMessages({
   minimun: {
     id: 'numericInputControl.childContent',
@@ -250,27 +117,6 @@ export const numericInputControlMessages = defineMessages({
   }
 });
 
-export const reposAdminMessages = defineMessages({
-  pendingCommit: {
-    id: 'reposAdmin.pendingCommit',
-    defaultMessage: 'Repo contains files pending commit. See Repository status below for details.'
-  },
-  unstagedFiles: {
-    id: 'reposAdmin.unstagedFilesMessage',
-    defaultMessage: 'There are unstaged files in your repository.'
-  },
-  unreachableRemote: {
-    id: 'reposAdmin.unreachableRemote',
-    defaultMessage: 'Remote "{name}" is currently unreachable.'
-  },
-  repositoriesNote: {
-    id: 'reposAdmin.repositoriesNote',
-    defaultMessage:
-      'Do not use Studio as a git merge and conflict resolution platform. ' +
-      'All merge conflicts should be resolved upstream before getting pulled into Studio.'
-  }
-});
-
 export const sharedContentDSMessages = defineMessages({
   sharedContent: {
     id: 'sharedContentDS.sharedContent',
@@ -282,13 +128,6 @@ export const embeddedContentDSMessages = defineMessages({
   embeddedContent: {
     id: 'embeddedContentDS.embeddedContent',
     defaultMessage: 'Embedded Content'
-  }
-});
-
-export const childContentDSMessages = defineMessages({
-  childContent: {
-    id: 'childContentDS.childContent',
-    defaultMessage: 'Child Content (Deprecated)'
   }
 });
 
@@ -468,17 +307,9 @@ export const contentTypesMessages = defineMessages({
   stayEditing: {
     id: 'contentType.stayEditing',
     defaultMessage: 'Stay & continue editing'
-  }
-});
-
-export const targetingDialog = defineMessages({
-  setNow: {
-    id: 'targetingDialog.setNow',
-    defaultMessage: 'Set Now'
   },
-  defaults: {
-    id: 'words.defaults',
-    defaultMessage: 'Defaults'
+  audioManager: {
+    defaultMessage: 'Audio Manager'
   }
 });
 
@@ -589,115 +420,6 @@ export const simpleTaxonomyDSMessages = defineMessages({
   simpleTaxonomy: {
     id: 'simpleTaxonomyDS.simpleTaxonomy',
     defaultMessage: 'Simple Taxonomy'
-  }
-});
-
-export const codeEditorMessages = defineMessages({
-  inProgressConfirmation: {
-    id: 'codeEditor.inProgressConfirmation',
-    defaultMessage:
-      'Another editor is currently open & minimized. Please close the current editor before opening another'
-  },
-  confirm: {
-    id: 'codeEditor.confirm',
-    defaultMessage: 'Confirm Close'
-  },
-  stay: {
-    id: 'codeEditor.stay',
-    defaultMessage: 'No, stay'
-  },
-  base: {
-    id: 'words.base',
-    defaultMessage: 'Base'
-  },
-  copy: {
-    id: 'words.copy',
-    defaultMessage: 'Copy'
-  },
-  save: {
-    id: 'words.save',
-    defaultMessage: 'Save'
-  },
-  insertCode: {
-    id: 'codeEditor.insertCode',
-    defaultMessage: 'Insert Code'
-  },
-  saved: {
-    id: 'codeEditor.saved',
-    defaultMessage: 'Item saved successfully'
-  },
-  saveAndClose: {
-    id: 'codeEditor.saveAndClose',
-    defaultMessage: 'Save & Close'
-  },
-  saveAndMinimize: {
-    id: 'codeEditor.saveAndMinimize',
-    defaultMessage: 'Save & Minimize'
-  },
-  localesHelperText: {
-    id: 'codeEditor.localesHelperText',
-    defaultMessage:
-      "Select the locale for which to create/edit a template. Locales, like 'en' will cover sub-locales like 'en_us' or 'en_uk'."
-  },
-  localesConfirmTitle: {
-    id: 'codeEditor.localesConfirmTitle',
-    defaultMessage: 'Create Template'
-  },
-  localesConfirmBody: {
-    id: 'codeEditor.localesConfirmBody',
-    defaultMessage: 'The template for the locale you selected does not exist. Do you want to create it now?'
-  },
-  localesSnackBarTitle: {
-    id: 'codeEditor.localesSnackBarTitle',
-    defaultMessage: 'Template Created. Do you want to copy the base template?'
-  }
-});
-
-export const globalConfigMessages = defineMessages({
-  unSavedConfirmation: {
-    id: 'globalConfig.unsavedConfirmation',
-    defaultMessage: 'You have unsaved changes, do you want to leave?'
-  },
-  unSavedConfirmationTitle: {
-    id: 'globalConfig.unsavedConfirmationTitle',
-    defaultMessage: 'Unsaved changes'
-  }
-});
-
-export const publishingMessages = defineMessages({
-  idle: {
-    id: 'publishing.idle',
-    defaultMessage: 'Idle'
-  },
-  busy: {
-    id: 'publishing.busy',
-    defaultMessage: 'Busy'
-  },
-  ready: {
-    id: 'publishing.ready',
-    defaultMessage: 'Ready'
-  },
-  stopped: {
-    id: 'publishing.stopped',
-    defaultMessage: 'Stopped'
-  },
-  started: {
-    id: 'publishing.started',
-    defaultMessage: 'Started'
-  },
-  queued: {
-    id: 'publishing.queued',
-    defaultMessage: 'Queued'
-  },
-  bulkPublishNote: {
-    id: 'publishing.bulkPublishNote',
-    defaultMessage:
-      'Bulk publish should be used to publish changes made in Studio via the UI. For changes made via direct git actions, use the "Publish by..." feature.'
-  },
-  publishByNote: {
-    id: 'publishing.publishByNote',
-    defaultMessage:
-      '"Publish by..." feature must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use "Bulk Publish".'
   }
 });
 
@@ -936,33 +658,6 @@ export const globalMenuMessages = defineMessages({
 globalMenuMessages['home.globalMenu.about-us'] = globalMenuMessages['home.about-us'];
 globalMenuMessages['home.globalMenu.settings'] = globalMenuMessages['home.settings'];
 
-export const encryptToolMessages = defineMessages({
-  pageTitle: {
-    id: 'encryptTool.pageTitle',
-    defaultMessage: 'Encryption Tool'
-  },
-  inputLabel: {
-    id: 'encryptTool.inputLabel',
-    defaultMessage: 'Raw Text'
-  },
-  buttonText: {
-    id: 'encryptTool.buttonText',
-    defaultMessage: 'Encrypt Text'
-  },
-  successMessage: {
-    id: 'encryptTool.successMessage',
-    defaultMessage: 'Encrypted text copied to clipboard.'
-  },
-  errorMessage: {
-    id: 'encryptTool.errorMessage',
-    defaultMessage: 'Text encryption failed. Please try again momentarily.'
-  },
-  clearResultButtonText: {
-    id: 'encryptTool.clearResultButtonText',
-    defaultMessage: 'Clear'
-  }
-});
-
 export const fileNameControlMessages = defineMessages({
   urlChangeWaring: {
     id: 'fileNameControl.urlChangeWarning',
@@ -995,31 +690,6 @@ export const rteControlMessages = defineMessages({
   dropImageUploaded: {
     id: 'rteControlMessages.dropImageUploaded',
     defaultMessage: '{title} was successfully uploaded.'
-  }
-});
-
-export const ossAttribution = defineMessages({
-  attribution: {
-    id: 'aboutView.attribution',
-    defaultMessage: 'CrafterCMS is made possible by these other <a>open source software projects</a>.'
-  }
-});
-
-export const dashboardWidgetsMessages = defineMessages({
-  publishingTarget: {
-    id: 'common.publishingTarget',
-    defaultMessage: 'Publishing Target'
-  }
-});
-
-export const bulkUploadConfirmDialogMessages = defineMessages({
-  title: {
-    id: 'bulkUploadConfirmDialogMessages.title',
-    defaultMessage: 'Upload in progress'
-  },
-  description: {
-    id: 'bulkUploadConfirmDialogMessages.description',
-    defaultMessage: 'There is still a bulk upload in progress. Only one bulk upload can be executed at the same time.'
   }
 });
 
@@ -1086,13 +756,6 @@ export const componentsMessages = defineMessages({
   }
 });
 
-export const wcmRootFolder = defineMessages({
-  pathNotFound: {
-    id: 'wcmRootFolder.pathNotFound',
-    defaultMessage: 'Folder {path} not found.'
-  }
-});
-
 export const localeSelectorControlMessages = defineMessages({
   label: {
     id: 'localeSelectorControl.label',
@@ -1104,287 +767,11 @@ export const localeSelectorControlMessages = defineMessages({
   }
 });
 
-export const adminDashboardMessages = defineMessages({
-  siteUpdated: {
-    id: 'sitesAdmin.siteUpdated',
-    defaultMessage: 'Project Updated.'
-  }
-});
-
 export const controlsCommonMessages = defineMessages({
   escapeContent: {
     id: 'controlsCommonMessages.escapeContent',
     defaultMessage: 'Escape Content'
   }
-});
-
-export const languages = defineMessages({
-  af: { id: 'languages.af', defaultMessage: 'Afrikaans' },
-  sq: { id: 'languages.sq', defaultMessage: 'Albanian' },
-  am: { id: 'languages.am', defaultMessage: 'Amharic' },
-  ar_dz: { id: 'languages.ar_dz', defaultMessage: 'Arabic - Algeria' },
-  ar_bh: { id: 'languages.ar_bh', defaultMessage: 'Arabic - Bahrain' },
-  ar_eg: { id: 'languages.ar_eg', defaultMessage: 'Arabic - Egypt' },
-  ar_iq: { id: 'languages.ar_iq', defaultMessage: 'Arabic - Iraq' },
-  ar_jo: { id: 'languages.ar_jo', defaultMessage: 'Arabic - Jordan' },
-  ar_kw: { id: 'languages.ar_kw', defaultMessage: 'Arabic - Kuwait' },
-  ar_lb: { id: 'languages.ar_lb', defaultMessage: 'Arabic - Lebanon' },
-  ar_ly: { id: 'languages.ar_ly', defaultMessage: 'Arabic - Libya' },
-  ar_ma: { id: 'languages.ar_ma', defaultMessage: 'Arabic - Morocco' },
-  ar_om: { id: 'languages.ar_om', defaultMessage: 'Arabic - Oman' },
-  ar_qa: { id: 'languages.ar_qa', defaultMessage: 'Arabic - Qatar' },
-  ar_sa: { id: 'languages.ar_sa', defaultMessage: 'Arabic - Saudi Arabia' },
-  ar_sy: { id: 'languages.ar_sy', defaultMessage: 'Arabic - Syria' },
-  ar_tn: { id: 'languages.ar_tn', defaultMessage: 'Arabic - Tunisia' },
-  ar_ae: { id: 'languages.ar_ae', defaultMessage: 'Arabic - United Arab Emirates' },
-  ar_ye: { id: 'languages.ar_ye', defaultMessage: 'Arabic - Yemen' },
-  hy: { id: 'languages.hy', defaultMessage: 'Armenian' },
-  as: { id: 'languages.as', defaultMessage: 'Assamese' },
-  az_az: { id: 'languages.az_az', defaultMessage: 'Azeri - Cyrillic' },
-  eu: { id: 'languages.eu', defaultMessage: 'Basque' },
-  be: { id: 'languages.be', defaultMessage: 'Belarusian' },
-  bn: { id: 'languages.bn', defaultMessage: 'Bengali - Bangladesh' },
-  bs: { id: 'languages.bs', defaultMessage: 'Bosnian' },
-  bg: { id: 'languages.bg', defaultMessage: 'Bulgarian' },
-  my: { id: 'languages.my', defaultMessage: 'Burmese' },
-  ca: { id: 'languages.ca', defaultMessage: 'Catalan' },
-  zh_cn: { id: 'languages.zh_cn', defaultMessage: 'Chinese - China' },
-  zh_hk: { id: 'languages.zh_hk', defaultMessage: 'Chinese - Hong Kong SAR' },
-  zh_mo: { id: 'languages.zh_mo', defaultMessage: 'Chinese - Macau SAR' },
-  zh_sg: { id: 'languages.zh_sg', defaultMessage: 'Chinese - Singapore' },
-  zh_tw: { id: 'languages.zh_tw', defaultMessage: 'Chinese - Taiwan' },
-  hr: { id: 'languages.hr', defaultMessage: 'Croatian' },
-  cs: { id: 'languages.cs', defaultMessage: 'Czech' },
-  da: { id: 'languages.da', defaultMessage: 'Danish' },
-  Maldivian: { id: 'languages.Maldivian', defaultMessage: 'Divehi' },
-  nl_be: { id: 'languages.nl_be', defaultMessage: 'Dutch - Belgium' },
-  nl_nl: { id: 'languages.nl_nl', defaultMessage: 'Dutch - Netherlands' },
-  en_au: { id: 'languages.en_au', defaultMessage: 'English - Australia' },
-  en_bz: { id: 'languages.en_bz', defaultMessage: 'English - Belize' },
-  en_ca: { id: 'languages.en_ca', defaultMessage: 'English - Canada' },
-  en_cb: { id: 'languages.en_cb', defaultMessage: 'English - Caribbean' },
-  en_gb: { id: 'languages.en_gb', defaultMessage: 'English - Great Britain' },
-  en_in: { id: 'languages.en_in', defaultMessage: 'English - India' },
-  en_ie: { id: 'languages.en_ie', defaultMessage: 'English - Ireland' },
-  en_jm: { id: 'languages.en_jm', defaultMessage: 'English - Jamaica' },
-  en_nz: { id: 'languages.en_nz', defaultMessage: 'English - New Zealand' },
-  en_ph: { id: 'languages.en_ph', defaultMessage: 'English - Philippines' },
-  en_za: { id: 'languages.en_za', defaultMessage: 'English - Southern Africa' },
-  en_tt: { id: 'languages.en_tt', defaultMessage: 'English - Trinidad' },
-  en_us: { id: 'languages.en_us', defaultMessage: 'English - United States' },
-  et: { id: 'languages.et', defaultMessage: 'Estonian' },
-  mk: { id: 'languages.mk', defaultMessage: 'FYRO Macedonia' },
-  fo: { id: 'languages.fo', defaultMessage: 'Faroese' },
-  fa: { id: 'languages.fa', defaultMessage: 'Farsi - Persian' },
-  fi: { id: 'languages.fi', defaultMessage: 'Finnish' },
-  fr_be: { id: 'languages.fr_be', defaultMessage: 'French - Belgium' },
-  fr_ca: { id: 'languages.fr_ca', defaultMessage: 'French - Canada' },
-  fr_fr: { id: 'languages.fr_fr', defaultMessage: 'French - France' },
-  fr_lu: { id: 'languages.fr_lu', defaultMessage: 'French - Luxembourg' },
-  fr_ch: { id: 'languages.fr_ch', defaultMessage: 'French - Switzerland' },
-  gd_ie: { id: 'languages.gd_ie', defaultMessage: 'Gaelic - Ireland' },
-  gd: { id: 'languages.gd', defaultMessage: 'Gaelic - Scotland' },
-  de_at: { id: 'languages.de_at', defaultMessage: 'German - Austria' },
-  de_de: { id: 'languages.de_de', defaultMessage: 'German - Germany' },
-  de_li: { id: 'languages.de_li', defaultMessage: 'German - Liechtenstein' },
-  de_lu: { id: 'languages.de_lu', defaultMessage: 'German - Luxembourg' },
-  de_ch: { id: 'languages.de_ch', defaultMessage: 'German - Switzerland' },
-  el: { id: 'languages.el', defaultMessage: 'Greek' },
-  gn: { id: 'languages.gn', defaultMessage: 'Guarani - Paraguay' },
-  gu: { id: 'languages.gu', defaultMessage: 'Gujarati' },
-  he: { id: 'languages.he', defaultMessage: 'Hebrew' },
-  hi: { id: 'languages.hi', defaultMessage: 'Hindi' },
-  hu: { id: 'languages.hu', defaultMessage: 'Hungarian' },
-  is: { id: 'languages.is', defaultMessage: 'Icelandic' },
-  id: { id: 'languages.id', defaultMessage: 'Indonesian' },
-  it_it: { id: 'languages.it_it', defaultMessage: 'Italian - Italy' },
-  it_ch: { id: 'languages.it_ch', defaultMessage: 'Italian - Switzerland' },
-  ja: { id: 'languages.ja', defaultMessage: 'Japanese' },
-  kn: { id: 'languages.kn', defaultMessage: 'Kannada' },
-  ks: { id: 'languages.ks', defaultMessage: 'Kashmiri' },
-  kk: { id: 'languages.kk', defaultMessage: 'Kazakh' },
-  km: { id: 'languages.km', defaultMessage: 'Khmer' },
-  ko: { id: 'languages.ko', defaultMessage: 'Korean' },
-  lo: { id: 'languages.lo', defaultMessage: 'Lao' },
-  la: { id: 'languages.la', defaultMessage: 'Latin' },
-  lv: { id: 'languages.lv', defaultMessage: 'Latvian' },
-  lt: { id: 'languages.lt', defaultMessage: 'Lithuanian' },
-  ms_bn: { id: 'languages.ms_bn', defaultMessage: 'Malay - Brunei' },
-  ms_my: { id: 'languages.ms_my', defaultMessage: 'Malay - Malaysia' },
-  ml: { id: 'languages.ml', defaultMessage: 'Malayalam' },
-  mt: { id: 'languages.mt', defaultMessage: 'Maltese' },
-  mi: { id: 'languages.mi', defaultMessage: 'Maori' },
-  mr: { id: 'languages.mr', defaultMessage: 'Marathi' },
-  mn: { id: 'languages.mn', defaultMessage: 'Mongolian' },
-  ne: { id: 'languages.ne', defaultMessage: 'Nepali' },
-  no_no: { id: 'languages.no_no', defaultMessage: 'Norwegian - Bokml' },
-  or: { id: 'languages.or', defaultMessage: 'Oriya' },
-  pl: { id: 'languages.pl', defaultMessage: 'Polish' },
-  pt_br: { id: 'languages.pt_br', defaultMessage: 'Portuguese - Brazil' },
-  pt_pt: { id: 'languages.pt_pt', defaultMessage: 'Portuguese - Portugal' },
-  pa: { id: 'languages.pa', defaultMessage: 'Punjabi' },
-  rm: { id: 'languages.rm', defaultMessage: 'Raeto-Romance' },
-  ro_mo: { id: 'languages.ro_mo', defaultMessage: 'Romanian - Moldova' },
-  ro: { id: 'languages.ro', defaultMessage: 'Romanian - Romania' },
-  ru: { id: 'languages.ru', defaultMessage: 'Russian' },
-  ru_mo: { id: 'languages.ru_mo', defaultMessage: 'Russian - Moldova' },
-  sa: { id: 'languages.sa', defaultMessage: 'Sanskrit' },
-  sr_sp: { id: 'languages.sr_sp', defaultMessage: 'Serbian - Cyrillic' },
-  tn: { id: 'languages.tn', defaultMessage: 'Setsuana' },
-  sd: { id: 'languages.sd', defaultMessage: 'Sindhi' },
-  si: { id: 'languages.si', defaultMessage: 'Sinhala' },
-  sk: { id: 'languages.sk', defaultMessage: 'Slovak' },
-  sl: { id: 'languages.sl', defaultMessage: 'Slovenian' },
-  so: { id: 'languages.so', defaultMessage: 'Somali' },
-  sb: { id: 'languages.sb', defaultMessage: 'Sorbian' },
-  es_ar: { id: 'languages.es_ar', defaultMessage: 'Spanish - Argentina' },
-  es_bo: { id: 'languages.es_bo', defaultMessage: 'Spanish - Bolivia' },
-  es_cl: { id: 'languages.es_cl', defaultMessage: 'Spanish - Chile' },
-  es_co: { id: 'languages.es_co', defaultMessage: 'Spanish - Colombia' },
-  es_cr: { id: 'languages.es_cr', defaultMessage: 'Spanish - Costa Rica' },
-  es_do: { id: 'languages.es_do', defaultMessage: 'Spanish - Dominican Republic' },
-  es_ec: { id: 'languages.es_ec', defaultMessage: 'Spanish - Ecuador' },
-  es_sv: { id: 'languages.es_sv', defaultMessage: 'Spanish - El Salvador' },
-  es_gt: { id: 'languages.es_gt', defaultMessage: 'Spanish - Guatemala' },
-  es_hn: { id: 'languages.es_hn', defaultMessage: 'Spanish - Honduras' },
-  es_mx: { id: 'languages.es_mx', defaultMessage: 'Spanish - Mexico' },
-  es_ni: { id: 'languages.es_ni', defaultMessage: 'Spanish - Nicaragua' },
-  es_pa: { id: 'languages.es_pa', defaultMessage: 'Spanish - Panama' },
-  es_py: { id: 'languages.es_py', defaultMessage: 'Spanish - Paraguay' },
-  es_pe: { id: 'languages.es_pe', defaultMessage: 'Spanish - Peru' },
-  es_pr: { id: 'languages.es_pr', defaultMessage: 'Spanish - Puerto Rico' },
-  es_es: { id: 'languages.es_es', defaultMessage: 'Spanish - Spain (Traditional)' },
-  es_uy: { id: 'languages.es_uy', defaultMessage: 'Spanish - Uruguay' },
-  es_ve: { id: 'languages.es_ve', defaultMessage: 'Spanish - Venezuela' },
-  sw: { id: 'languages.sw', defaultMessage: 'Swahili' },
-  sv_fi: { id: 'languages.sv_fi', defaultMessage: 'Swedish - Finland' },
-  sv_se: { id: 'languages.sv_se', defaultMessage: 'Swedish - Sweden' },
-  tg: { id: 'languages.tg', defaultMessage: 'Tajik' },
-  ta: { id: 'languages.ta', defaultMessage: 'Tamil' },
-  tt: { id: 'languages.tt', defaultMessage: 'Tatar' },
-  te: { id: 'languages.te', defaultMessage: 'Telugu' },
-  th: { id: 'languages.th', defaultMessage: 'Thai' },
-  bo: { id: 'languages.bo', defaultMessage: 'Tibetan' },
-  ts: { id: 'languages.ts', defaultMessage: 'Tsonga' },
-  tr: { id: 'languages.tr', defaultMessage: 'Turkish' },
-  tk: { id: 'languages.tk', defaultMessage: 'Turkmen' },
-  uk: { id: 'languages.uk', defaultMessage: 'Ukrainian' },
-  ur: { id: 'languages.ur', defaultMessage: 'Urdu' },
-  uz_uz: { id: 'languages.uz_uz', defaultMessage: 'Uzbek - Cyrillic' },
-  vi: { id: 'languages.vi', defaultMessage: 'Vietnamese' },
-  cy: { id: 'languages.cy', defaultMessage: 'Welsh' },
-  xh: { id: 'languages.xh', defaultMessage: 'Xhosa' },
-  yi: { id: 'languages.yi', defaultMessage: 'Yiddish' },
-  zu: { id: 'languages.zu', defaultMessage: 'Zulu' },
-  aa: { id: 'languages.aa', defaultMessage: 'Afar' },
-  ab: { id: 'languages.ab', defaultMessage: 'Abkhazian' },
-  ae: { id: 'languages.ae', defaultMessage: 'Avestan' },
-  ak: { id: 'languages.ak', defaultMessage: 'Akan' },
-  an: { id: 'languages.an', defaultMessage: 'Aragonese' },
-  ar: { id: 'languages.ar', defaultMessage: 'Arabic' },
-  av: { id: 'languages.av', defaultMessage: 'Avaric' },
-  ay: { id: 'languages.ay', defaultMessage: 'Aymara' },
-  az: { id: 'languages.az', defaultMessage: 'Azerbaijani' },
-  ba: { id: 'languages.ba', defaultMessage: 'Bashkir' },
-  bh: { id: 'languages.bh', defaultMessage: 'Bihari languages' },
-  bi: { id: 'languages.bi', defaultMessage: 'Bislama' },
-  bm: { id: 'languages.bm', defaultMessage: 'Bambara' },
-  br: { id: 'languages.br', defaultMessage: 'Breton' },
-  ce: { id: 'languages.ce', defaultMessage: 'Chechen' },
-  ch: { id: 'languages.ch', defaultMessage: 'Chamorro' },
-  co: { id: 'languages.co', defaultMessage: 'Corsican' },
-  cr: { id: 'languages.cr', defaultMessage: 'Cree' },
-  cu: { id: 'languages.cu', defaultMessage: 'Church Slavic; Slavonic; Old Bulgarian' },
-  cv: { id: 'languages.cv', defaultMessage: 'Chuvash' },
-  de: { id: 'languages.de', defaultMessage: 'German' },
-  dv: { id: 'languages.dv', defaultMessage: 'Divehi; Dhivehi; Maldivian' },
-  dz: { id: 'languages.dz', defaultMessage: 'Dzongkha' },
-  ee: { id: 'languages.ee', defaultMessage: 'Ewe' },
-  en: { id: 'languages.en', defaultMessage: 'English' },
-  eo: { id: 'languages.eo', defaultMessage: 'Esperanto' },
-  es: { id: 'languages.es', defaultMessage: 'Spanish; Castilian' },
-  ff: { id: 'languages.ff', defaultMessage: 'Fulah' },
-  fj: { id: 'languages.fj', defaultMessage: 'Fijian' },
-  fr: { id: 'languages.fr', defaultMessage: 'French' },
-  fy: { id: 'languages.fy', defaultMessage: 'Western Frisian' },
-  ga: { id: 'languages.ga', defaultMessage: 'Irish' },
-  gl: { id: 'languages.gl', defaultMessage: 'Galician' },
-  gv: { id: 'languages.gv', defaultMessage: 'Manx' },
-  ha: { id: 'languages.ha', defaultMessage: 'Hausa' },
-  ho: { id: 'languages.ho', defaultMessage: 'Hiri Motu' },
-  ht: { id: 'languages.ht', defaultMessage: 'Haitian; Haitian Creole' },
-  hz: { id: 'languages.hz', defaultMessage: 'Herero' },
-  ia: { id: 'languages.ia', defaultMessage: 'Interlingua' },
-  ie: { id: 'languages.ie', defaultMessage: 'Interlingue; Occidental' },
-  ig: { id: 'languages.ig', defaultMessage: 'Igbo' },
-  ii: { id: 'languages.ii', defaultMessage: 'Sichuan Yi; Nuosu' },
-  ik: { id: 'languages.ik', defaultMessage: 'Inupiaq' },
-  io: { id: 'languages.io', defaultMessage: 'Ido' },
-  it: { id: 'languages.it', defaultMessage: 'Italian' },
-  iu: { id: 'languages.iu', defaultMessage: 'Inuktitut' },
-  jv: { id: 'languages.jv', defaultMessage: 'Javanese' },
-  ka: { id: 'languages.ka', defaultMessage: 'Georgian' },
-  kg: { id: 'languages.kg', defaultMessage: 'Kongo' },
-  ki: { id: 'languages.ki', defaultMessage: 'Kikuyu; Gikuyu' },
-  kj: { id: 'languages.kj', defaultMessage: 'Kuanyama; Kwanyama' },
-  kl: { id: 'languages.kl', defaultMessage: 'Kalaallisut; Greenlandic' },
-  kr: { id: 'languages.kr', defaultMessage: 'Kanuri' },
-  ku: { id: 'languages.ku', defaultMessage: 'Kurdish' },
-  kv: { id: 'languages.kv', defaultMessage: 'Komi' },
-  kw: { id: 'languages.kw', defaultMessage: 'Cornish' },
-  ky: { id: 'languages.ky', defaultMessage: 'Kirghiz; Kyrgyz' },
-  lb: { id: 'languages.lb', defaultMessage: 'Luxembourgish; Letzeburgesch' },
-  lg: { id: 'languages.lg', defaultMessage: 'Ganda' },
-  li: { id: 'languages.li', defaultMessage: 'Limburgan; Limburger; Limburgish' },
-  ln: { id: 'languages.ln', defaultMessage: 'Lingala' },
-  lu: { id: 'languages.lu', defaultMessage: 'Luba-Katanga' },
-  mg: { id: 'languages.mg', defaultMessage: 'Malagasy' },
-  mh: { id: 'languages.mh', defaultMessage: 'Marshallese' },
-  ms: { id: 'languages.ms', defaultMessage: 'Malay' },
-  na: { id: 'languages.na', defaultMessage: 'Nauru' },
-  nb: { id: 'languages.nb', defaultMessage: 'Bokmål, Norwegian; Norwegian Bokmål' },
-  nd: { id: 'languages.nd', defaultMessage: 'Ndebele, North; North Ndebele' },
-  ng: { id: 'languages.ng', defaultMessage: 'Ndonga' },
-  nl: { id: 'languages.nl', defaultMessage: 'Dutch; Flemish' },
-  nn: { id: 'languages.nn', defaultMessage: 'Norwegian Nynorsk; Nynorsk, Norwegian' },
-  no: { id: 'languages.no', defaultMessage: 'Norwegian' },
-  nr: { id: 'languages.nr', defaultMessage: 'Ndebele, South; South Ndebele' },
-  nv: { id: 'languages.nv', defaultMessage: 'Navajo; Navaho' },
-  ny: { id: 'languages.ny', defaultMessage: 'Chichewa; Chewa; Nyanja' },
-  oc: { id: 'languages.oc', defaultMessage: 'Occitan (post 1500)' },
-  oj: { id: 'languages.oj', defaultMessage: 'Ojibwa' },
-  om: { id: 'languages.om', defaultMessage: 'Oromo' },
-  os: { id: 'languages.os', defaultMessage: 'Ossetian; Ossetic' },
-  pi: { id: 'languages.pi', defaultMessage: 'Pali' },
-  ps: { id: 'languages.ps', defaultMessage: 'Pushto; Pashto' },
-  pt: { id: 'languages.pt', defaultMessage: 'Portuguese' },
-  qu: { id: 'languages.qu', defaultMessage: 'Quechua' },
-  rn: { id: 'languages.rn', defaultMessage: 'Rundi' },
-  rw: { id: 'languages.rw', defaultMessage: 'Kinyarwanda' },
-  sc: { id: 'languages.sc', defaultMessage: 'Sardinian' },
-  se: { id: 'languages.se', defaultMessage: 'Northern Sami' },
-  sg: { id: 'languages.sg', defaultMessage: 'Sango' },
-  sm: { id: 'languages.sm', defaultMessage: 'Samoan' },
-  sn: { id: 'languages.sn', defaultMessage: 'Shona' },
-  sr: { id: 'languages.sr', defaultMessage: 'Serbian' },
-  ss: { id: 'languages.ss', defaultMessage: 'Swati' },
-  st: { id: 'languages.st', defaultMessage: 'Sotho, Southern' },
-  su: { id: 'languages.su', defaultMessage: 'Sundanese' },
-  sv: { id: 'languages.sv', defaultMessage: 'Swedish' },
-  ti: { id: 'languages.ti', defaultMessage: 'Tigrinya' },
-  tl: { id: 'languages.tl', defaultMessage: 'Tagalog' },
-  to: { id: 'languages.to', defaultMessage: 'Tonga (Tonga Islands)' },
-  tw: { id: 'languages.tw', defaultMessage: 'Twi' },
-  ty: { id: 'languages.ty', defaultMessage: 'Tahitian' },
-  ug: { id: 'languages.ug', defaultMessage: 'Uighur; Uyghur' },
-  uz: { id: 'languages.uz', defaultMessage: 'Uzbek' },
-  ve: { id: 'languages.ve', defaultMessage: 'Venda' },
-  vo: { id: 'languages.vo', defaultMessage: 'Volapük' },
-  wa: { id: 'languages.wa', defaultMessage: 'Walloon' },
-  wo: { id: 'languages.wo', defaultMessage: 'Wolof' },
-  yo: { id: 'languages.yo', defaultMessage: 'Yoruba' },
-  za: { id: 'languages.za', defaultMessage: 'Zhuang; Chuang' },
-  zh: { id: 'languages.zh', defaultMessage: 'Chinese' }
 });
 
 export const itemSuccessMessages = defineMessages({
@@ -1463,9 +850,14 @@ export const itemSuccessMessages = defineMessages({
   }
 });
 
-export const siteSuccessMessages = defineMessages({
-  siteDeleted: {
-    id: 'site.deleted',
-    defaultMessage: 'Project deleted successfully'
+export const audioDSMessages = defineMessages({
+  uploadLabel: {
+    defaultMessage: 'Audio Uploaded from Desktop'
+  },
+  browseLabel: {
+    defaultMessage: 'Audio From Repository'
+  },
+  uploadError: {
+    defaultMessage: 'An error occurred while uploading the audio file.'
   }
 });

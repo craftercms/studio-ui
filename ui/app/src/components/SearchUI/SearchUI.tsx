@@ -15,7 +15,7 @@
  */
 
 import SiteSearchToolBar from '../SiteSearchToolbar';
-import React, { useRef } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import SiteSearchFilters from '../SiteSearchFilters';
 import { makeStyles } from 'tss-react/mui';
@@ -52,7 +52,7 @@ export interface SearchUIProps {
   guestBase: string;
   sortBy?: string;
   sortOrder?: string;
-  keyword: string[] | string;
+  keyword: string;
   mode: 'select' | 'default';
   drawerOpen: boolean;
   embedded: boolean;
@@ -398,9 +398,9 @@ export function SearchUI(props: SearchUIProps) {
                     from,
                     to,
                     count,
-                    keyword: Array.isArray(keyword) ? keyword.join(' ') : keyword,
+                    keyword: keyword.length > 18 ? keyword.substring(0, 15).trim() + '...' : keyword,
                     keywordLength: keyword.length,
-                    b: (content: string[]) => <strong key={content[0]}>{content[0]}</strong>
+                    b: (content: ReactNode[]) => <strong key={content[0] as string}>{content[0]}</strong>
                   }}
                 />
                 {(Object.keys(checkedFilters).length > 0 || Boolean(selectedPath)) && (
@@ -409,8 +409,8 @@ export function SearchUI(props: SearchUIProps) {
                       id="search.filtersActive"
                       defaultMessage=" • <span>Filters Active</span>"
                       values={{
-                        span: (content: string[]) => (
-                          <span key={content[0]} className={classes.filtersActive}>
+                        span: (content: ReactNode[]) => (
+                          <span key={content[0] as string} className={classes.filtersActive}>
                             {content[0]}
                           </span>
                         )

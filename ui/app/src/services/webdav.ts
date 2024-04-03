@@ -16,7 +16,7 @@
 
 import { get } from '../utils/ajax';
 import { toQueryString } from '../utils/object';
-import { pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { WebDAVItem } from '../models/WebDAV';
 import { Observable } from 'rxjs';
 
@@ -31,5 +31,5 @@ export function list(
     ...options
   });
 
-  return get(`/studio/api/2/webdav/list${qs}`).pipe(pluck('response', 'items'));
+  return get(`/studio/api/2/webdav/list${qs}`).pipe(map((response) => response?.response?.items));
 }

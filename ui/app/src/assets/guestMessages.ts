@@ -142,6 +142,12 @@ export const guestMessages = defineMessages({
     id: 'datasourceActionList.videoFromDesktopLabel',
     defaultMessage: 'Upload video from desktop'
   },
+  allowAudioUpload: {
+    defaultMessage: 'Upload audio from desktop'
+  },
+  allowAudioFromRepo: {
+    defaultMessage: 'Audio from repository'
+  },
   noDataSourcesSet: {
     id: 'validations.noDataSourcesSet',
     defaultMessage: 'There are no data sources set for this field'
@@ -152,11 +158,7 @@ export const guestMessages = defineMessages({
   },
   noPolicyComply: {
     id: 'desktopAssetUpload.noPolicyComply',
-    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies and can\'t be uploaded'
-  },
-  fileNameChangedPolicy: {
-    id: 'desktopAssetUpload.fileNameChangedPolicy',
-    defaultMessage: 'File "{fileName}" was renamed to "{modifiedFileName}" to comply with project policies'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
   },
   uploadError: {
     id: 'desktopAssetUpload.uploadError',

@@ -62,7 +62,7 @@ export function withMonaco(onReady: (api: Monaco) => void): void {
   if (!monaco$) {
     monaco$ = new ReplaySubject(1);
     const script = document.createElement('script');
-    script.src = '/studio/static-assets/libs/monaco/monaco.0.35.0.js';
+    script.src = '/studio/static-assets/libs/monaco/monaco.0.44.0.js';
     script.onload = () => {
       // @ts-ignore
       monaco$.next(window.monaco);
@@ -73,4 +73,16 @@ export function withMonaco(onReady: (api: Monaco) => void): void {
     document.head.appendChild(script);
   }
   monaco$.asObservable().pipe(take(1)).subscribe(onReady);
+}
+
+export function isPreviewAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(`/preview`);
+}
+
+export function isDashboardAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(`/site-dashboard`);
+}
+
+export function isProjectToolsAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(`/site-config`);
 }

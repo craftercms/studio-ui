@@ -16,7 +16,7 @@
       "@mui/material": ["../../../node_modules/@mui/material"],
       "@mui/material/*": ["../../../node_modules/@mui/material/*"],
       "@mui/styled-engine": ["../../../node_modules/@mui/styled-engine"],
-      "@mui/styled-engine/*": ["../../../node_modules/@mui/styled-engine/*"]
+      "@mui/styled-engine/*": ["../../../node_modules/@mui/styled-engine/*"],
     }
   },
   "references": [
@@ -27,6 +27,7 @@
   "include": ["./src"],
   "exclude": [
     "./src/hooks.bak.ts",
-    "node_modules"
+    "node_modules",
+    "./src/jquery"
   ]
 }

@@ -21,7 +21,7 @@ import { createEpicMiddleware, Epic } from 'redux-observable';
 import { StandardAction } from '../models/StandardAction';
 import epic from './epics/root';
 import { BehaviorSubject, forkJoin, fromEvent, Observable, of } from 'rxjs';
-import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
+import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { fetchGlobalProperties, me } from '../services/users';
 import { exists, fetchAll } from '../services/sites';
 import LookupTable from '../models/LookupTable';
@@ -43,11 +43,14 @@ import { Site } from '../models/Site';
 import {
   sharedWorkerConnect,
   sharedWorkerDisconnect,
+  sharedWorkerError,
   sharedWorkerToken,
   sharedWorkerUnauthenticated
 } from './actions/auth';
 import { SHARED_WORKER_NAME } from '../utils/constants';
 import { fetchActiveEnvironment } from '../services/environment';
+import { batchActions, dispatchDOMEvent } from './actions/misc';
+import { closeSingleFileUploadDialog } from './actions/dialogs';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
@@ -77,14 +80,23 @@ export function getStore(): Observable<CrafterCMSStore> {
                     const state = store.getState();
                     const action = e.data;
                     // System socket events come wrapped in `emitSystemEvent` action.
-                    const payload = action.type === emitSystemEvent.type ? action.payload.payload : action.payload;
+                    const payload =
+                      (action.type === emitSystemEvent.type ? action.payload.payload : action.payload) ?? {};
                     // When a site is switched on a different tab, the socket that powers this tab will switch to that
                     // socket "topic". Need to avoid widgets refreshing with data that's not relevant to them.
                     if (
-                      action.type === globalSocketStatus.type ||
-                      // The `siteSocketStatus` event needs to go through for the site switch detection to be successful.
-                      action.type === siteSocketStatus.type ||
-                      // projects events
+                      [
+                        // * * * *
+                        // Events sent by the worker for global purposes should always go through
+                        // * * * *
+                        sharedWorkerToken.type,
+                        sharedWorkerUnauthenticated.type,
+                        sharedWorkerError.type,
+                        sharedWorkerUnauthenticated.type,
+                        globalSocketStatus.type,
+                        siteSocketStatus.type
+                      ].includes(action.type) ||
+                      // Projects lifecycle events (created, deleted, etc.) should always go through.
                       payload.eventType === newProjectReady.type ||
                       payload.eventType === projectBeingDeleted.type ||
                       payload.eventType === projectDeleted.type ||
@@ -135,8 +147,7 @@ function registerSharedWorker(): Observable<ObtainAuthTokenResponse & { worker: 
       }),
       filter((e) => e.data?.type === sharedWorkerToken.type),
       take(1),
-      pluck('data', 'payload'),
-      map((response) => ({ ...response, worker }))
+      map((e) => ({ ...e?.data?.payload, worker }))
     );
   } else {
     return new Observable((observer) => {
@@ -160,7 +171,19 @@ export function createStoreSync(args: { preloadedState?: any; dependencies?: any
   });
   const store = configureStore({
     reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: false }).concat(epicMiddleware as Middleware),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        thunk: false,
+        serializableCheck: {
+          ignoredActions: [
+            // The SingleFileUpload dialog used via the global dialog manager will dispatch non-serializables.
+            // It is often used with dispatchDOMEvent and batchActions.
+            batchActions.type,
+            dispatchDOMEvent.type,
+            closeSingleFileUploadDialog.type
+          ]
+        }
+      }).concat(epicMiddleware as Middleware),
     preloadedState,
     devTools: { name: 'Studio Store' }
     // devTools: process.env.NODE_ENV === 'production' ? false : { name: 'Studio Store' }
@@ -173,6 +196,8 @@ export function fetchStateInitialization(): Observable<{
   user: User;
   sites: Site[];
   properties: LookupTable<any>;
+  activeSiteId: string;
+  activeEnvironment: string;
 }> {
   const siteCookieValue = getSiteCookie();
   return forkJoin({

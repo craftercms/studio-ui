@@ -40,7 +40,6 @@ import { LookupTable } from '@craftercms/studio-ui/models/LookupTable';
 import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { getChildArrangement, sibling } from './utils/dom';
-import $ from 'jquery';
 import { isSimple, isSymmetricCombination, popPiece } from '@craftercms/studio-ui/utils/string';
 
 let seq = 0;
@@ -168,7 +167,7 @@ export function register(payload: ElementRecordRegistration): number {
     }
   }
 
-  // If the relevant model is loaded, complete it's registration, otherwise,
+  // If the relevant model is loaded, complete its registration, otherwise,
   // request it and complete registration when it does load.
   if (hasCachedModel(modelId)) {
     completeRegistration(id);
@@ -426,25 +425,17 @@ export function getElementFromICEProps(modelId: string, fieldId: string, index: 
 /**
  * Retrieves the parent node (drop target/zone) of an item
  */
-export function getParentElementFromICEProps(
-  modelId: string,
-  fieldId: string,
-  index: string | number
-): JQuery<Element> {
+export function getParentElementFromICEProps(modelId: string, fieldId: string, index: string | number): HTMLElement {
   const recordId = findContainerRecord(modelId, fieldId, index)?.id ?? null;
-  return recordId === null ? null : $(fromICEId(recordId).element);
+  return recordId === null ? null : (fromICEId(recordId).element as HTMLElement);
 }
 
 /**
  * Retrieves all the drop targets elements that host a give ice record
  */
-export function getParentsElementFromICEProps(
-  modelId: string,
-  fieldId: string,
-  index: string | number
-): JQuery<Element>[] {
+export function getParentsElementFromICEProps(modelId: string, fieldId: string, index: string | number): Element[] {
   const recordId = findContainerRecord(modelId, fieldId, index)?.id ?? null;
-  return recordId === null ? null : getRecordsFromIceId(recordId).map((registryEntry) => $(registryEntry.element));
+  return recordId === null ? null : getRecordsFromIceId(recordId).map((registryEntry) => registryEntry.element);
 }
 
 export function flush(): void {

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as React from 'react';
+import React, { ReactNode } from 'react';
 import { useEffect, useId, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
@@ -206,24 +206,24 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     selectedMode === 'studio'
       ? publishStudioFormData
       : selectedMode === 'git'
-      ? publishGitFormData
-      : publishEverythingFormData;
+        ? publishGitFormData
+        : publishEverythingFormData;
   // endregion
   // region currentSetFormData
   const currentSetFormData =
     selectedMode === 'studio'
       ? setPublishStudioFormData
       : selectedMode === 'git'
-      ? setPublishGitFormData
-      : setPublishEverythingFormData;
+        ? setPublishGitFormData
+        : setPublishEverythingFormData;
   // endregion
   // region currentFormValid
   const currentFormValid =
     selectedMode === 'studio'
       ? publishStudioFormValid
       : selectedMode === 'git'
-      ? publishGitFormValid
-      : publishEverythingFormValid;
+        ? publishGitFormValid
+        : publishEverythingFormValid;
   // endregion
   // region hasChanges
   const hasChanges =
@@ -232,11 +232,11 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
         publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
         publishStudioFormData.publishingTarget !== initialPublishingTarget
       : selectedMode === 'git'
-      ? publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
-        publishGitFormData.comment !== initialPublishGitFormData.comment ||
-        publishGitFormData.publishingTarget !== initialPublishingTarget
-      : publishEverythingFormData.comment !== initialPublishEverythingFormData.comment ||
-        publishEverythingFormData.publishingTarget !== initialPublishingTarget;
+        ? publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
+          publishGitFormData.comment !== initialPublishGitFormData.comment ||
+          publishGitFormData.publishingTarget !== initialPublishingTarget
+        : publishEverythingFormData.comment !== initialPublishEverythingFormData.comment ||
+          publishEverythingFormData.publishingTarget !== initialPublishingTarget;
   // endregion
   const bottomElId = useId();
 
@@ -542,7 +542,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                         id="publishingDashboard.studioNote"
                         defaultMessage="Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>."
                         values={{
-                          a: (msg: string[]) => (
+                          a: (msg: ReactNode[]) => (
                             <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
                               {msg[0]}
                             </Link>
@@ -554,7 +554,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                         id="publishingDashboard.gitNote"
                         defaultMessage="Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please <a>publish by path</a>."
                         values={{
-                          a: (msg: string[]) => (
+                          a: (msg: ReactNode[]) => (
                             <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
                               {msg[0]}
                             </Link>

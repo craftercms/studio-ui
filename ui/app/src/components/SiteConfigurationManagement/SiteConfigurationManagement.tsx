@@ -70,9 +70,10 @@ import { ConfirmDialogProps } from '../ConfirmDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { findPendingEncryption } from './utils';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-import { UNDEFINED } from '../../utils/constants';
+import { MAX_CONFIG_SIZE, UNDEFINED } from '../../utils/constants';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { nnou } from '../../utils/object';
+import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -90,6 +91,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const [environment, setEnvironment] = useState<string>();
   const [files, setFiles] = useState<SiteConfigurationFileWithId[]>();
   const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFileWithId>(null);
+  const ignoreEnv = selectedConfigFile?.path === 'site-policy-config.xml';
   const [selectedConfigFileXml, setSelectedConfigFileXml] = useState(null);
   const [configError, setConfigError] = useState(null);
   const [selectedSampleConfigFileXml, setSelectedSampleConfigFileXml] = useState(null);
@@ -113,6 +115,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const editorRef = useRef<any>({
     container: null
   });
+  const [contentSize, setContentSize] = useState(0);
 
   useEffect(() => {
     history?.block((props) => {
@@ -169,9 +172,15 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   useEffect(() => {
     if (selectedConfigFile && environment) {
       setConfigError(null);
-      fetchConfigurationXML(site, selectedConfigFile.path, selectedConfigFile.module, environment).subscribe({
+      fetchConfigurationXML(
+        site,
+        selectedConfigFile.path,
+        selectedConfigFile.module,
+        ignoreEnv ? null : environment
+      ).subscribe({
         next(xml) {
           setSelectedConfigFileXml(xml ?? '');
+          setContentSize(xml?.length ?? 0);
           setLoadingXml(false);
         },
         error({ response }) {
@@ -184,7 +193,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         }
       });
     }
-  }, [selectedConfigFile, environment, site]);
+  }, [selectedConfigFile, environment, site, ignoreEnv]);
 
   // Item Revert Propagation
   useEffect(() => {
@@ -375,13 +384,15 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   };
 
   const onEditorChanges = () => {
-    if (selectedConfigFileXml !== editorRef.current.getValue()) {
+    const currentEditorValue = editorRef.current.getValue();
+    if (selectedConfigFileXml !== currentEditorValue) {
       setDisabledSaveButton(false);
       functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: true });
     } else {
       setDisabledSaveButton(true);
       functionRefs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: false });
     }
+    setContentSize(currentEditorValue.length);
   };
 
   const onShowHistory = () => {
@@ -448,7 +459,13 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
     } else {
       if (unencryptedItems.length === 0) {
         functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: true });
-        writeConfiguration(site, selectedConfigFile.path, selectedConfigFile.module, content, environment).subscribe({
+        writeConfiguration(
+          site,
+          selectedConfigFile.path,
+          selectedConfigFile.module,
+          content,
+          ignoreEnv ? null : environment
+        ).subscribe({
           next: () => {
             functionRefs.current.onSubmittingAndOrPendingChange?.({ isSubmitting: false, hasPendingChanges: false });
             dispatch(
@@ -510,6 +527,15 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const tags = { lt: '<', gt: '>' };
 
   const tagsAndCurls = Object.assign({ lc: '{', rc: '}' }, tags);
+
+  const onAceInit = (editor: AceAjax.Editor) => {
+    editor.commands.addCommand({
+      name: 'saveToCrafter',
+      bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+      exec: () => onSave(),
+      readOnly: false
+    });
+  };
 
   return (
     <section className={classes.root}>
@@ -692,6 +718,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                   autoFocus={true}
                   onChange={onEditorChanges}
                   value={selectedConfigFileXml}
+                  onInit={onAceInit}
                 />
                 {showSampleEditor && (
                   <>
@@ -722,9 +749,18 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                 <SecondaryButton disabled={encrypting} onClick={onCancel}>
                   <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                 </SecondaryButton>
-                <PrimaryButton disabled={disabledSaveButton || encrypting || isSubmitting} onClick={onSave}>
+                <PrimaryButton
+                  disabled={disabledSaveButton || encrypting || isSubmitting || contentSize > MAX_CONFIG_SIZE}
+                  onClick={onSave}
+                >
                   <FormattedMessage id="words.save" defaultMessage="Save" />
                 </PrimaryButton>
+                <MaxLengthCircularProgress
+                  sxs={{ circularProgress: { width: '35px !important', height: '35px !important' } }}
+                  max={MAX_CONFIG_SIZE}
+                  current={contentSize}
+                  renderThresholdPercentage={90}
+                />
               </DialogFooter>
             </>
           ) : (

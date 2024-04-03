@@ -48,6 +48,7 @@ export const useStyles = makeStyles()((theme) => ({
   },
   leftWrapper: {
     width: '270px',
+    minWidth: '270px',
     padding: '16px',
     overflow: 'auto',
     rowGap: theme.spacing(1)

@@ -110,8 +110,8 @@ export function EditModeSwitch(props: EditModeSwitchProps) {
             ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner.username })
             : ''
           : !write
-          ? formatMessage(translations.editNotAvailable)
-          : formatMessage(translations.toggleEditMode)
+            ? formatMessage(translations.editNotAvailable)
+            : formatMessage(translations.toggleEditMode)
       }
     >
       <span>

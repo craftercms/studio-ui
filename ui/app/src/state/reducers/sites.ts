@@ -18,7 +18,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { GlobalState } from '../../models/GlobalState';
 import { createLookupTable, reversePluckProps } from '../../utils/object';
 import { storeInitialized } from '../actions/system';
-import { changeSite, fetchSites, fetchSitesComplete, fetchSitesFailed, popSite } from '../actions/sites';
+import { changeSiteComplete, fetchSites, fetchSitesComplete, fetchSitesFailed, popSite } from '../actions/sites';
 
 export const initialState: GlobalState['sites'] = {
   byId: {},
@@ -26,39 +26,43 @@ export const initialState: GlobalState['sites'] = {
   isFetching: false
 };
 
-const reducer = /*#__PURE__*/ createReducer<GlobalState['sites']>(initialState, {
-  [storeInitialized.type]: (state, { payload }) => ({
-    ...state,
-    byId: createLookupTable(payload.sites),
-    active: payload.activeSiteId
-  }),
-  [changeSite.type]: (state, { payload }) =>
-    payload.nextSite === state.active
-      ? state
-      : {
-          ...state,
-          active: payload.nextSite
-        },
-  [fetchSites.type]: (state, action) => ({
-    ...state,
-    isFetching: true
-  }),
-  [fetchSitesComplete.type]: (state, { payload }) => ({
-    ...state,
-    byId: createLookupTable(payload),
-    isFetching: false
-  }),
-  [fetchSitesFailed.type]: (state, action) => ({
-    ...state,
-    isFetching: false
-  }),
-  [popSite.type]: (state, { payload }) =>
-    !payload?.site
-      ? state
-      : {
-          ...state,
-          byId: reversePluckProps(state.byId, payload.site)
+const reducer = createReducer<GlobalState['sites']>(initialState, (builder) => {
+  builder
+    .addCase(storeInitialized, (state, { payload }) => ({
+      ...state,
+      byId: createLookupTable(payload.sites),
+      active: payload.activeSiteId
+    }))
+    .addCase(changeSiteComplete, (state, { payload }) =>
+      payload.nextSite === state.active
+        ? state
+        : {
+            ...state,
+            active: payload.nextSite
+          }
+    )
+    .addCase(fetchSites, (state, action) => ({
+      ...state,
+      isFetching: true
+    }))
+    .addCase(fetchSitesComplete, (state, { payload }) => ({
+      ...state,
+      byId: createLookupTable(payload),
+      isFetching: false
+    }))
+    .addCase(fetchSitesFailed, (state, action) => ({
+      ...state,
+      isFetching: false
+    }))
+    .addCase(popSite, (state, { payload }) => {
+      if (payload?.siteId) {
+        const site = payload?.siteId;
+        state.byId = reversePluckProps(state.byId, site);
+        if (state.active === site) {
+          state.active = null;
         }
+      }
+    });
 });
 
 export default reducer;

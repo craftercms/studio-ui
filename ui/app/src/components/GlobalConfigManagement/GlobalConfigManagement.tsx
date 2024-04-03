@@ -33,6 +33,8 @@ import { useHistory } from 'react-router';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
+import { MAX_CONFIG_SIZE } from '../../utils/constants';
+import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 
 const translations = defineMessages({
   configSaved: {
@@ -56,6 +58,7 @@ export function GlobalConfigManagement() {
   const [nextRoute, setNextRoute] = useState<string>();
   const history = useHistory();
   const { classes } = useStyles();
+  const [contentSize, setContentSize] = useState(0);
 
   const aceEditorRef = useRef<any>();
   const dispatch = useDispatch();
@@ -85,6 +88,7 @@ export function GlobalConfigManagement() {
     forkJoin(requests).subscribe(([sample, content]) => {
       setLastSavedContent(content);
       setContent(content);
+      setContentSize(content.length);
       setSample(sample);
       setEnable(false);
     });
@@ -106,6 +110,7 @@ export function GlobalConfigManagement() {
   };
 
   const onSaveClick = () => {
+    const value = aceEditorRef.current.getValue();
     const errors = aceEditorRef.current
       .getSession()
       .getAnnotations()
@@ -123,7 +128,6 @@ export function GlobalConfigManagement() {
         })
       );
     } else {
-      const value = aceEditorRef.current.getValue();
       writeConfiguration('studio_root', '/configuration/studio-config-override.yaml', 'studio', value).subscribe(
         () => {
           setLastSavedContent(value);
@@ -149,8 +153,10 @@ export function GlobalConfigManagement() {
     }
   };
 
-  const onChange = (e) => {
-    const hasChanges = lastSavedContent !== aceEditorRef.current.getValue();
+  const onChange = () => {
+    const currentEditorValue = aceEditorRef.current.getValue();
+    const hasChanges = lastSavedContent !== currentEditorValue;
+    setContentSize(currentEditorValue.length);
     setHasChanges(hasChanges);
   };
 
@@ -160,6 +166,15 @@ export function GlobalConfigManagement() {
     // timeout needed to avoid running the useEffect on line:64 with hasChanges on true
     setTimeout(() => {
       history.push(nextRoute);
+    });
+  };
+
+  const onAceInit = (editor: AceAjax.Editor) => {
+    editor.commands.addCommand({
+      name: 'saveToCrafter',
+      bindKey: { win: 'Ctrl-S', mac: 'Command-S' },
+      exec: () => onSaveClick(),
+      readOnly: false
     });
   };
 
@@ -179,6 +194,7 @@ export function GlobalConfigManagement() {
             theme="ace/theme/textmate"
             autoFocus={true}
             readOnly={enable}
+            onInit={onAceInit}
           />
           <Box p="10px" display="flex" justifyContent="space-between">
             <SecondaryButton onClick={() => setViewSample(true)}>
@@ -195,9 +211,15 @@ export function GlobalConfigManagement() {
               }
               onConfirm={onResetClick}
             />
-            <PrimaryButton disabled={!hasChanges} onClick={onSaveClick}>
+            <PrimaryButton disabled={!hasChanges || contentSize > MAX_CONFIG_SIZE} onClick={onSaveClick}>
               <FormattedMessage id="words.save" defaultMessage="Save" />
             </PrimaryButton>
+            <MaxLengthCircularProgress
+              sxs={{ root: { ml: 1 }, circularProgress: { width: '35px !important', height: '35px !important' } }}
+              max={MAX_CONFIG_SIZE}
+              current={contentSize}
+              renderThresholdPercentage={90}
+            />
           </Box>
         </section>
       </ConditionalLoadingState>

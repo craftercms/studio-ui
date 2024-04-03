@@ -17,6 +17,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
+import * as reactJsxRuntime from 'react/jsx-runtime';
 import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
@@ -57,9 +58,11 @@ export interface CrafterCMSGlobal {
     // Include also package name aliases for builds that might use those
     // when invoking require('...') or define([...], factory).
     react: typeof React;
+    reactJsxRuntime: typeof reactJsxRuntime;
     rxjs: typeof rxjs;
     'react-dom': typeof ReactDOM;
     'react-dom/client': CrafterCMSGlobal['libs']['ReactDOMClient'];
+    'react/jsx-runtime': typeof reactJsxRuntime;
     'react-redux': typeof ReactRedux;
     'react-intl': typeof ReactIntl;
     '@mui/material': typeof MaterialUI;
@@ -93,6 +96,8 @@ export const libs: CrafterCMSGlobal['libs'] = {
   ReduxToolkit,
   createEmotion,
   react: React,
+  reactJsxRuntime,
+  'react/jsx-runtime': reactJsxRuntime,
   'react-dom': ReactDOM,
   'react-dom/client': ReactDOMClient,
   'react-redux': ReactRedux,

@@ -229,8 +229,8 @@ export function PasswordStrengthDisplay(props: PasswordStrengthDisplayProps) {
           ...(passwordScore > 0 && passwordScore < minScore
             ? { ...sx.yourScoreTextInvalid }
             : passwordScore >= minScore
-            ? { ...sx.yourScoreTextValid }
-            : {})
+              ? { ...sx.yourScoreTextValid }
+              : {})
         }}
       >
         {passwordScore === minScore ? (

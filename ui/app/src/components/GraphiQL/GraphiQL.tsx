@@ -15,9 +15,9 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import GraphiQLComponent, { FetcherOpts, FetcherParams, ToolbarButton } from 'graphiql';
+import GraphiQLComponent from 'graphiql';
 import 'graphiql/graphiql.min.css';
-import GraphiQLExplorer from 'graphiql-explorer';
+import { explorerPlugin } from '@graphiql/plugin-explorer';
 import { buildClientSchema, getIntrospectionQuery, GraphQLSchema } from 'graphql';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { FormattedMessage } from 'react-intl';
@@ -29,6 +29,7 @@ import { isBlank } from '../../utils/string';
 import { defaultQuery } from './utils';
 import useEnv from '../../hooks/useEnv';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { GlobalStyles } from '@mui/material';
 
 export interface GraphiQLProps {
   url?: string;
@@ -55,14 +56,13 @@ function GraphiQL(props: GraphiQLProps) {
   const initialQuery = useMemo(() => window.localStorage.getItem(`${storageKey}graphiql:query`) ?? defaultQuery, []);
   const [query, setQuery] = useState(initialQuery);
   const [schema, setSchema] = useState<GraphQLSchema>(null);
-  const [explorerIsOpen, setExplorerIsOpen] = useState<boolean>(false);
   const storage = useMemo(
     () =>
       ({
         setItem: (key: string, value: any) => window.localStorage.setItem(`${storageKey}${key}`, value),
         getItem: (key: string) => window.localStorage.getItem(`${storageKey}${key}`),
         removeItem: (key: string) => window.localStorage.removeItem(`${storageKey}${key}`)
-      } as Storage),
+      }) as Storage,
     [storageKey]
   );
   const graphQLFetcher = useMemo(() => {
@@ -75,7 +75,7 @@ function GraphiQL(props: GraphiQLProps) {
       }
     };
     if (lowercaseMethod === 'get') {
-      return (graphQLParams: FetcherParams, opts?: FetcherOpts) => {
+      return (graphQLParams, opts?) => {
         return fetch(
           `${url}${toQueryString({
             query: encodeURIComponent(graphQLParams.query),
@@ -88,7 +88,7 @@ function GraphiQL(props: GraphiQLProps) {
         ).then(then);
       };
     } else {
-      return (graphQLParams: FetcherParams, opts?: FetcherOpts) => {
+      return (graphQLParams, opts?) => {
         return fetch(url, {
           method: 'post',
           headers: { 'Content-Type': 'application/json' },
@@ -97,13 +97,15 @@ function GraphiQL(props: GraphiQLProps) {
       };
     }
   }, [url, method]);
-  const handleToggleExplorer = () => setExplorerIsOpen(!explorerIsOpen);
   const refs = useUpdateRefs({ onSubmittingAndOrPendingChange, graphiql: null });
   const hasChanges = isBlank(query) ? false : initialQuery !== query;
   const onEditQuery = (newQuery: string) => {
     setQuery(newQuery);
     window.localStorage.setItem(`${storageKey}graphiql:query`, newQuery);
   };
+  const explorer = explorerPlugin({
+    showAttribution: false
+  });
 
   useEffect(() => {
     refs.current.onSubmittingAndOrPendingChange?.({ hasPendingChanges: hasChanges });
@@ -118,53 +120,72 @@ function GraphiQL(props: GraphiQLProps) {
   }, [graphQLFetcher]);
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%'
-      }}
-    >
-      {!embedded && (
-        <GlobalAppToolbar
-          title={<FormattedMessage id="words.graphQL" defaultMessage="GraphQL" />}
-          showAppsButton={showAppsButton}
-        />
-      )}
-      <Box
-        className="graphiql-container"
-        sx={{
-          height: 'calc(100% - 65px)',
-          position: 'relative',
-          '.title': {
-            display: 'none'
-          },
-          '.doc-explorer-title-bar, .history-title-bar': {
-            height: 'auto!important'
+    <>
+      <GlobalStyles
+        styles={{
+          '[data-radix-popper-content-wrapper], react-portal [data-reach-tooltip], .graphiql-dialog': {
+            zIndex: '1301 !important'
           }
         }}
+      />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%'
+        }}
       >
-        <GraphiQLExplorer
-          schema={schema}
-          query={query}
-          onEdit={onEditQuery}
-          onRunOperation={(operationName: any) => refs.current.graphiql.handleRunQuery(operationName)}
-          explorerIsOpen={explorerIsOpen}
-          onToggleExplorer={handleToggleExplorer}
-        />
-        <GraphiQLComponent
-          ref={(ref) => (refs.current.graphiql = ref)}
-          fetcher={graphQLFetcher}
-          schema={schema}
-          query={query}
-          storage={storage}
-          onEditQuery={onEditQuery}
-          toolbar={{
-            additionalContent: <ToolbarButton onClick={handleToggleExplorer} label="Explorer" title="Toggle Explorer" />
+        {!embedded && (
+          <GlobalAppToolbar
+            title={<FormattedMessage id="words.graphQL" defaultMessage="GraphQL" />}
+            showAppsButton={showAppsButton}
+          />
+        )}
+        <Box
+          className="graphiql-container"
+          sx={{
+            height: 'calc(100% - 65px)',
+            position: 'relative',
+            '.title': {
+              display: 'none'
+            },
+            '.doc-explorer-title-bar, .history-title-bar': {
+              height: 'auto!important'
+            },
+            '.graphiql-plugin': {
+              '.docExplorerWrap': {
+                minWidth: '273px !important',
+                maxWidth: '100%'
+              },
+              '.doc-explorer-title-bar .doc-explorer-rhs': {
+                display: 'none'
+              },
+              '.graphiql-explorer-root': {
+                padding: '0 !important',
+                '& > div:first-child': {
+                  overflow: 'auto !important'
+                },
+                '.graphiql-operation-title-bar span input': {
+                  width: 'unset !important'
+                }
+              },
+              '.doc-explorer-contents': {
+                overflowY: 'hidden !important'
+              }
+            }
           }}
-        />
+        >
+          <GraphiQLComponent
+            fetcher={graphQLFetcher}
+            schema={schema}
+            query={query}
+            storage={storage}
+            onEditQuery={onEditQuery}
+            plugins={[explorer]}
+          />
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }
 
