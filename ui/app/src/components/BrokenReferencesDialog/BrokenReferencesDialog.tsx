@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { BrokenReferencesDialogProps } from './utils';
+import { BrokenReferencesDialogProps } from './types';
 import EnhancedDialog from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import BrokenReferencesDialogContainer from './BrokenReferencesDialogContainer';

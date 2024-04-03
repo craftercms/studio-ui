@@ -17,5 +17,3 @@
 export { default } from './BrokenReferencesDialog';
 
 export * from './BrokenReferencesDialog';
-
-export * from './BrokenReferencesDialogUI';

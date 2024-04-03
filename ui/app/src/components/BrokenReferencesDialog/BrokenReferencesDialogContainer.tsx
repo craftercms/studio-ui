@@ -15,14 +15,23 @@
  */
 
 import React from 'react';
-import { BrokenReferencesDialogContainerProps } from './utils';
+import { BrokenReferencesDialogContainerProps } from './types';
 import { FormattedMessage } from 'react-intl';
 import { EmptyState } from '../EmptyState';
-import BrokenReferencesDialogUI from './BrokenReferencesDialogUI';
 import { useDispatch } from 'react-redux';
 import { fetchBrokenReferences, showEditDialog } from '../../state/actions/dialogs';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnv from '../../hooks/useEnv';
+import { DialogBody } from '../DialogBody';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Button from '@mui/material/Button';
+import DialogFooter from '../DialogFooter';
+import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogContainerProps) {
   const { references, onClose, onContinue } = props;
@@ -40,12 +49,65 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
   };
 
   return references.length > 0 ? (
-    <BrokenReferencesDialogUI
-      references={references}
-      onContinue={onContinueClick}
-      onEditReferenceClick={onEditReferenceClick}
-      onClose={(e) => onClose(e, null)}
-    />
+    <>
+      <DialogBody>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <List
+              sx={{
+                border: (theme) => `1px solid ${theme.palette.divider}`,
+                background: (theme) => theme.palette.background.paper
+              }}
+            >
+              {references.map((reference, index) => (
+                <ListItem key={reference.path} divider={references.length - 1 !== index}>
+                  <ListItemText
+                    primary={reference.label}
+                    secondary={reference.path}
+                    primaryTypographyProps={{
+                      title: reference.path,
+                      sx: {
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis'
+                      }
+                    }}
+                  />
+                  <ListItemSecondaryAction>
+                    <Button
+                      color="primary"
+                      onClick={() => {
+                        onEditReferenceClick?.(reference.path);
+                      }}
+                      size="small"
+                      sx={{
+                        marginLeft: 'auto',
+                        fontWeight: 'bold',
+                        verticalAlign: 'baseline'
+                      }}
+                    >
+                      <FormattedMessage defaultMessage="Edit" />
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+        </Grid>
+      </DialogBody>
+      <DialogFooter>
+        {onClose && (
+          <SecondaryButton onClick={(e) => onClose(e, null)}>
+            <FormattedMessage defaultMessage="Cancel" />
+          </SecondaryButton>
+        )}
+        {onContinue && (
+          <PrimaryButton onClick={onContinueClick} autoFocus>
+            <FormattedMessage defaultMessage="Continue" />
+          </PrimaryButton>
+        )}
+      </DialogFooter>
+    </>
   ) : (
     <EmptyState title={<FormattedMessage defaultMessage="There won't be broken references" />} />
   );

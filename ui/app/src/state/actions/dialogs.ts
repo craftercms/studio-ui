@@ -48,7 +48,7 @@ import { SingleFileUploadDialogStateProps } from '../../components/SingleFileUpl
 import ContentInstance from '../../models/ContentInstance';
 import { ContentTypeFieldValidation, DetailedItem } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
-import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/utils';
+import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/types';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');

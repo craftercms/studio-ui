@@ -38,9 +38,3 @@ export interface BrokenReferencesDialogStateProps extends BrokenReferencesDialog
 export interface BrokenReferencesDialogContainerProps
   extends BrokenReferencesDialogBaseProps,
     Pick<BrokenReferencesDialogProps, 'onContinue' | 'onClose'> {}
-
-export interface BrokenReferencesDialogUIProps extends BrokenReferencesDialogBaseProps {
-  onEditReferenceClick(path: string): void;
-  onContinue?(response?: any): any;
-  onClose?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
-}

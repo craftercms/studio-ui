@@ -65,7 +65,7 @@ import { ModelHierarchyMap } from '../utils/content';
 import { UIBlockerStateProps } from '../components/UIBlocker';
 import { RenameAssetStateProps } from '../components/RenameAssetDialog';
 import Person from './Person';
-import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/utils';
+import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/types';
 
 export type HighlightMode = 'all' | 'move';
 
