@@ -29,8 +29,8 @@ import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import { makeStyles } from 'tss-react/mui';
-
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
+import { foo, fooFn } from '../../utils/object';
 
 const useStyles = makeStyles()(() => ({
   rootTitle: {
@@ -55,26 +55,60 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const expiresAt = useSelection((state) => state.auth.expiresAt);
   const { upload } = useSiteUIConfig();
   const { classes } = useStyles();
-  const { site, path, onClose, onClosed, maxSimultaneousUploads, onMinimized, hasPendingChanges, setPendingChanges } =
-    props;
+  const {
+    site,
+    path,
+    onClose,
+    onClosed,
+    maxSimultaneousUploads,
+    onMinimized,
+    hasPendingChanges,
+    setPendingChanges,
+    headers = foo,
+    method = 'post',
+    meta = foo,
+    allowedMetaFields,
+    endpoint,
+    useFormData = true,
+    fieldName = 'file',
+    onFileAdded = fooFn
+  } = props;
 
   const uppy = React.useMemo(() => {
-    return new Uppy({
-      meta: { site },
-      locale: {
-        strings: {
-          noDuplicates: formatMessage(translations.noDuplicates)
-        }
-      }
+    const instance = new Uppy({
+      meta: Object.assign({ site }, meta),
+      locale: { strings: { noDuplicates: formatMessage(translations.noDuplicates) } }
     }).use(XHRUpload, {
-      endpoint: getBulkUploadUrl(site, path),
-      formData: true,
-      fieldName: 'file',
+      endpoint: endpoint ?? getBulkUploadUrl(site, path),
+      formData: useFormData,
+      fieldName,
       limit: maxSimultaneousUploads ? maxSimultaneousUploads : upload.maxSimultaneousUploads,
       timeout: upload.timeout,
-      headers: getGlobalHeaders()
+      headers: Object.assign({}, getGlobalHeaders(), headers),
+      allowedMetaFields,
+      method
     });
-  }, [formatMessage, maxSimultaneousUploads, path, site, upload]);
+    onFileAdded &&
+      instance.on('file-added', (file) => {
+        onFileAdded(file, instance);
+      });
+    return instance;
+  }, [
+    formatMessage,
+    maxSimultaneousUploads,
+    path,
+    site,
+    upload.maxSimultaneousUploads,
+    upload.timeout,
+    endpoint,
+    headers,
+    meta,
+    method,
+    fieldName,
+    useFormData,
+    onFileAdded,
+    allowedMetaFields
+  ]);
 
   useUnmount(() => {
     uppy.close();

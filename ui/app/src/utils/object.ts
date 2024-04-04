@@ -267,6 +267,8 @@ export function deepCopy<T extends object = any>(target: T): T {
 
 export const foo = {};
 
+export const fooFn = () => undefined;
+
 export function isApiResponse(source: object): boolean {
   source = source ?? {};
   return (
