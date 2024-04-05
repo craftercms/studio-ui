@@ -1126,3 +1126,49 @@ export function getInheritanceParentIdsForField(
   }
   return ids;
 }
+
+export interface GeneratePlaceholderImageDataUrlArgs {
+  width: number;
+  height: number;
+  fillStyle: string;
+  textFillStyle: string;
+  text: string;
+  textPositionX: number;
+  textPositionY: number;
+  font: string;
+  textAlign: CanvasTextAlign;
+}
+
+export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePlaceholderImageDataUrlArgs>): string {
+  let attrs: GeneratePlaceholderImageDataUrlArgs = Object.assign(
+    {
+      width: 300,
+      height: 150,
+      fillStyle: '#f0f0f0',
+      text: 'Sample Image',
+      textPositionX: 150,
+      textPositionY: 88.24,
+      textFillStyle: 'black',
+      font: '30px Arial',
+      textAlign: 'center'
+    },
+    attributes
+  );
+
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  canvas.width = attrs.width;
+  canvas.height = attrs.height;
+
+  // Set background color
+  context.fillStyle = attrs.fillStyle;
+  context.fillRect(0, 0, attrs.width, attrs.height);
+
+  // Render text
+  context.font = attrs.font;
+  context.fillStyle = attrs.textFillStyle;
+  context.textAlign = attrs.textAlign;
+  context.fillText(attrs.text, attrs.textPositionX, attrs.textPositionY);
+
+  return canvas.toDataURL();
+}
