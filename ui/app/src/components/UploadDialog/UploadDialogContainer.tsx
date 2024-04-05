@@ -32,6 +32,7 @@ import { makeStyles } from 'tss-react/mui';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { XHRUploadOptions } from '@uppy/xhr-upload';
 import ApiResponse from '../../models/ApiResponse';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const useStyles = makeStyles()(() => ({
   rootTitle: {
@@ -51,13 +52,14 @@ const useStyles = makeStyles()(() => ({
   }
 }));
 
-const mixHeaders = (headers) => Object.assign({}, getGlobalHeaders(), headers);
+const mixHeaders = (headers: Record<string, any>) => Object.assign({}, getGlobalHeaders(), headers);
 
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const { formatMessage } = useIntl();
   const expiresAt = useSelection((state) => state.auth.expiresAt);
   const { upload } = useSiteUIConfig();
   const { classes } = useStyles();
+  // region const { ... } = props
   const {
     site,
     path,
@@ -80,8 +82,31 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
     getResponseData,
     getResponseError
   } = props;
+  // endregion
+  const propRefs = useUpdateRefs({
+    headers,
+    meta,
+    allowedMetaFields,
+    onFileAdded,
+    onUploadSuccess,
+    validateStatus,
+    getResponseData,
+    getResponseError
+  });
 
+  // TODO: Currently unknown if recreating the Uppy instance works properly down the component tree.
   const uppy = React.useMemo(() => {
+    // Want to avoid memo renewal on every render due to these various props not being memoized up in the tree.
+    const {
+      headers,
+      allowedMetaFields,
+      validateStatus,
+      getResponseData,
+      getResponseError,
+      onFileAdded,
+      onUploadSuccess,
+      meta
+    } = propRefs.current;
     const xhrOptions: XHRUploadOptions = {
       endpoint: endpoint ?? getBulkUploadUrl(site, path),
       formData: useFormData,
@@ -106,11 +131,9 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
       }
     };
     allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
-    // https://uppy.io/docs/xhr-upload/#validatestatus
+    // These (validateStatus, getResponseData, getResponseError) are unlikely to have closures inside them that would go stale.
     validateStatus && (xhrOptions.validateStatus = validateStatus);
-    // https://uppy.io/docs/xhr-upload/#getresponsedata
     getResponseData && (xhrOptions.getResponseData = getResponseData);
-    // https://uppy.io/docs/xhr-upload/#getresponseerror
     getResponseError && (xhrOptions.getResponseError = getResponseError);
     const instance = new Uppy({
       meta: Object.assign({ site }, meta),
@@ -118,32 +141,25 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
     }).use(XHRUpload, xhrOptions);
     onFileAdded &&
       instance.on('file-added', (file) => {
-        onFileAdded({ file, uppy: instance });
+        propRefs.current.onFileAdded({ file, uppy: instance });
       });
     onUploadSuccess &&
       instance.on('upload-success', (file, response) => {
-        onUploadSuccess({ file, response });
+        propRefs.current.onUploadSuccess({ file, response });
       });
     return instance;
   }, [
-    formatMessage,
-    maxSimultaneousUploads,
-    path,
+    propRefs,
+    endpoint,
     site,
+    path,
+    useFormData,
+    fieldName,
+    maxSimultaneousUploads,
     upload.maxSimultaneousUploads,
     upload.timeout,
-    endpoint,
-    headers,
-    meta,
     method,
-    fieldName,
-    useFormData,
-    onFileAdded,
-    onUploadSuccess,
-    allowedMetaFields,
-    validateStatus,
-    getResponseData,
-    getResponseError
+    formatMessage
   ]);
 
   useUnmount(() => {
