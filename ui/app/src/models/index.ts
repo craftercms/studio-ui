@@ -50,6 +50,7 @@ export * from './Plugin';
 export * from './PluginDescriptor';
 export * from './PluginDescriptorWithSource';
 export * from './PluginFileBuilder';
+export * from './ProjectLifecycleEvent';
 export * from './Publishing';
 export * from './Repository';
 export * from './Resource';
