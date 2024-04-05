@@ -189,7 +189,8 @@
     },
 
     _openSearch: function (control) {
-      const searchPath = craftercms.utils.string.ensureSingleSlash(`${this.baseBrowsePath}/.+`);
+      let searchPath = this._processPathsForMacros(this.baseBrowsePath);
+      searchPath = craftercms.utils.string.ensureSingleSlash(`${searchPath}/.+`);
       const searchContext = {
         path: searchPath,
         searchId: null,
