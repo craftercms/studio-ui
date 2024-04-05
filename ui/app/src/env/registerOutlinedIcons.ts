@@ -206,6 +206,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/AdminPanelSettingsOutlined'))
   );
   components.set(
+    '@mui/icons-material/AdsClickOutlined',
+    lazy(() => import('@mui/icons-material/AdsClickOutlined'))
+  );
+  components.set(
     '@mui/icons-material/AgricultureOutlined',
     lazy(() => import('@mui/icons-material/AgricultureOutlined'))
   );
@@ -628,6 +632,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/BabyChangingStationOutlined',
     lazy(() => import('@mui/icons-material/BabyChangingStationOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/BackHandOutlined',
+    lazy(() => import('@mui/icons-material/BackHandOutlined'))
   );
   components.set(
     '@mui/icons-material/BackpackOutlined',
@@ -1364,6 +1372,14 @@ export default function register() {
   components.set(
     '@mui/icons-material/CheckOutlined',
     lazy(() => import('@mui/icons-material/CheckOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/ChecklistOutlined',
+    lazy(() => import('@mui/icons-material/ChecklistOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/ChecklistRtlOutlined',
+    lazy(() => import('@mui/icons-material/ChecklistRtlOutlined'))
   );
   components.set(
     '@mui/icons-material/CheckroomOutlined',
@@ -2234,6 +2250,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/DragIndicatorOutlined'))
   );
   components.set(
+    '@mui/icons-material/DrawOutlined',
+    lazy(() => import('@mui/icons-material/DrawOutlined'))
+  );
+  components.set(
     '@mui/icons-material/DriveEtaOutlined',
     lazy(() => import('@mui/icons-material/DriveEtaOutlined'))
   );
@@ -2302,12 +2322,20 @@ export default function register() {
     lazy(() => import('@mui/icons-material/EditAttributesOutlined'))
   );
   components.set(
+    '@mui/icons-material/EditCalendarOutlined',
+    lazy(() => import('@mui/icons-material/EditCalendarOutlined'))
+  );
+  components.set(
     '@mui/icons-material/EditLocationAltOutlined',
     lazy(() => import('@mui/icons-material/EditLocationAltOutlined'))
   );
   components.set(
     '@mui/icons-material/EditLocationOutlined',
     lazy(() => import('@mui/icons-material/EditLocationOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/EditNoteOutlined',
+    lazy(() => import('@mui/icons-material/EditNoteOutlined'))
   );
   components.set(
     '@mui/icons-material/EditNotificationsOutlined',
@@ -5890,6 +5918,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/RectangleOutlined'))
   );
   components.set(
+    '@mui/icons-material/RecyclingOutlined',
+    lazy(() => import('@mui/icons-material/RecyclingOutlined'))
+  );
+  components.set(
     '@mui/icons-material/RedeemOutlined',
     lazy(() => import('@mui/icons-material/RedeemOutlined'))
   );
@@ -6908,6 +6940,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/SpaceBarOutlined',
     lazy(() => import('@mui/icons-material/SpaceBarOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/SpaceDashboardOutlined',
+    lazy(() => import('@mui/icons-material/SpaceDashboardOutlined'))
   );
   components.set(
     '@mui/icons-material/SpatialAudioOffOutlined',
@@ -8242,6 +8278,10 @@ export default function register() {
     lazy(() => import('@mui/icons-material/WaterDamageOutlined'))
   );
   components.set(
+    '@mui/icons-material/WaterDropOutlined',
+    lazy(() => import('@mui/icons-material/WaterDropOutlined'))
+  );
+  components.set(
     '@mui/icons-material/WaterOutlined',
     lazy(() => import('@mui/icons-material/WaterOutlined'))
   );
@@ -8252,6 +8292,10 @@ export default function register() {
   components.set(
     '@mui/icons-material/WavesOutlined',
     lazy(() => import('@mui/icons-material/WavesOutlined'))
+  );
+  components.set(
+    '@mui/icons-material/WavingHandOutlined',
+    lazy(() => import('@mui/icons-material/WavingHandOutlined'))
   );
   components.set(
     '@mui/icons-material/WbAutoOutlined',

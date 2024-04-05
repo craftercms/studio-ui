@@ -30,7 +30,8 @@ import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import { makeStyles } from 'tss-react/mui';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
-import { foo, fooFn } from '../../utils/object';
+import { XHRUploadOptions } from '@uppy/xhr-upload';
+import ApiResponse from '../../models/ApiResponse';
 
 const useStyles = makeStyles()(() => ({
   rootTitle: {
@@ -50,6 +51,8 @@ const useStyles = makeStyles()(() => ({
   }
 }));
 
+const mixHeaders = (headers) => Object.assign({}, getGlobalHeaders(), headers);
+
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const { formatMessage } = useIntl();
   const expiresAt = useSelection((state) => state.auth.expiresAt);
@@ -64,33 +67,62 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
     onMinimized,
     hasPendingChanges,
     setPendingChanges,
-    headers = foo,
+    headers,
     method = 'post',
-    meta = foo,
+    meta,
     allowedMetaFields,
     endpoint,
     useFormData = true,
     fieldName = 'file',
-    onFileAdded = fooFn
+    onFileAdded,
+    onUploadSuccess,
+    validateStatus,
+    getResponseData,
+    getResponseError
   } = props;
 
   const uppy = React.useMemo(() => {
-    const instance = new Uppy({
-      meta: Object.assign({ site }, meta),
-      locale: { strings: { noDuplicates: formatMessage(translations.noDuplicates) } }
-    }).use(XHRUpload, {
+    const xhrOptions: XHRUploadOptions = {
       endpoint: endpoint ?? getBulkUploadUrl(site, path),
       formData: useFormData,
       fieldName,
       limit: maxSimultaneousUploads ? maxSimultaneousUploads : upload.maxSimultaneousUploads,
       timeout: upload.timeout,
-      headers: Object.assign({}, getGlobalHeaders(), headers),
-      allowedMetaFields,
-      method
-    });
+      headers: mixHeaders(headers),
+      method,
+      getResponseError(responseText) {
+        try {
+          const parsed = JSON.parse(responseText);
+          const error: ApiResponse = parsed.response;
+          // TODO: Test this with Studio error responses.
+          return new Error(
+            `[${error.code}] ${error.message}. ${error.remedialAction}. ${error.documentationUrl}.`
+              .replace('. .', '.')
+              .replace('. .', '.')
+          );
+        } catch {
+          return new Error(formatMessage({ defaultMessage: 'An error occurred uploading the file.' }));
+        }
+      }
+    };
+    allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
+    // https://uppy.io/docs/xhr-upload/#validatestatus
+    validateStatus && (xhrOptions.validateStatus = validateStatus);
+    // https://uppy.io/docs/xhr-upload/#getresponsedata
+    getResponseData && (xhrOptions.getResponseData = getResponseData);
+    // https://uppy.io/docs/xhr-upload/#getresponseerror
+    getResponseError && (xhrOptions.getResponseError = getResponseError);
+    const instance = new Uppy({
+      meta: Object.assign({ site }, meta),
+      locale: { strings: { noDuplicates: formatMessage(translations.noDuplicates) } }
+    }).use(XHRUpload, xhrOptions);
     onFileAdded &&
       instance.on('file-added', (file) => {
-        onFileAdded(file, instance);
+        onFileAdded({ file, uppy: instance });
+      });
+    onUploadSuccess &&
+      instance.on('upload-success', (file, response) => {
+        onUploadSuccess({ file, response });
       });
     return instance;
   }, [
@@ -107,12 +139,16 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
     fieldName,
     useFormData,
     onFileAdded,
-    allowedMetaFields
+    onUploadSuccess,
+    allowedMetaFields,
+    validateStatus,
+    getResponseData,
+    getResponseError
   ]);
 
   useUnmount(() => {
     uppy.close();
-    onClosed();
+    onClosed?.();
   });
 
   useEffect(() => {
@@ -133,8 +169,8 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 
   useEffect(() => {
     const plugin = uppy.getPlugin('XHRUpload');
-    plugin.setOptions({ headers: getGlobalHeaders() });
-  }, [expiresAt, uppy]);
+    plugin.setOptions({ headers: mixHeaders(headers) });
+  }, [expiresAt, uppy, headers]);
 
   return (
     <>

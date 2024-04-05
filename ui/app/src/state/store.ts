@@ -49,6 +49,7 @@ import {
 } from './actions/auth';
 import { SHARED_WORKER_NAME } from '../utils/constants';
 import { fetchActiveEnvironment } from '../services/environment';
+import { dispatchDOMEvent } from './actions/misc';
 
 export type EpicMiddlewareDependencies = { getIntl: () => IntlShape; worker: SharedWorker };
 
@@ -170,7 +171,11 @@ export function createStoreSync(args: { preloadedState?: any; dependencies?: any
   });
   const store = configureStore({
     reducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: false }).concat(epicMiddleware as Middleware),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        thunk: false,
+        serializableCheck: { ignoredActions: [dispatchDOMEvent.type] }
+      }).concat(epicMiddleware as Middleware),
     preloadedState,
     devTools: { name: 'Studio Store' }
     // devTools: process.env.NODE_ENV === 'production' ? false : { name: 'Studio Store' }
