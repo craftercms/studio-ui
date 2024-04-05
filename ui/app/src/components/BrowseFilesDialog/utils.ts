@@ -27,6 +27,7 @@ export interface BrowseFilesDialogBaseProps {
   mimeTypes?: string[];
   numOfLoaderItems?: number;
   allowUpload?: boolean;
+  initialParameters?: Partial<ElasticParams>;
 }
 
 export interface BrowseFilesDialogProps extends BrowseFilesDialogBaseProps, EnhancedDialogProps {

@@ -48,7 +48,8 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
     mimeTypes,
     contentTypes,
     numOfLoaderItems,
-    allowUpload = true
+    allowUpload = true,
+    initialParameters: initialParametersProp
   } = props;
   const [items, setItems] = useState<SearchItem[]>();
   const site = useActiveSiteId();
@@ -58,8 +59,10 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
   const [selectedCard, setSelectedCard] = useState<MediaItem>();
   const [searchParameters, setSearchParameters] = useSpreadState({
     ...initialParameters,
+    ...initialParametersProp,
     filters: {
       ...initialParameters.filters,
+      ...initialParametersProp?.filters,
       ...(mimeTypes && { 'mime-type': mimeTypes }),
       ...(contentTypes && { 'content-type': contentTypes })
     }
