@@ -68,7 +68,8 @@ export default ({
   pauseUpload,
   cancelUpload,
   removeFile,
-  externalMessages
+  externalMessages,
+  successfulUploadButton
 }) => {
   const rowHeight = totalFileCount ? (totalFileCount * 140 - 20) / totalFileCount : 140;
 
@@ -105,6 +106,7 @@ export default ({
           hideCancelButton={hideCancelButton}
           showLinkToFileUploadResult={showLinkToFileUploadResult}
           showRemoveButtonAfterComplete={showRemoveButtonAfterComplete}
+          successfulUploadButton={successfulUploadButton}
           isWide={isWide}
           metaFields={metaFields}
           recoveredState={recoveredState}
