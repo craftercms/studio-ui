@@ -559,16 +559,20 @@ function parseElementByContentType(
       return getInnerHtml(element) === 'true';
     case 'numeric-input':
       return getInnerHtmlNumber(element, parseFloat);
-    case 'transcoded-video-picker':
-    case 'taxonomy-selector':
-      return getInnerHtml(element);
     default:
-      console.log(
-        `%c[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
-        'color: blue',
-        element
-      );
-      return getInnerHtml(element);
+      !['transcoded-video', 'transcoded-video-picker', 'taxonomy-selector'].includes(type) &&
+        console.log(
+          `%c[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
+          'color: blue',
+          element
+        );
+      try {
+        const extract: any = deserialize(element)?.[element.tagName] ?? '';
+        return extract.item ? (Array.isArray(extract.item) ? extract.item : [extract.item]) : extract;
+      } catch (e) {
+        console.error('[parseElementByContentType] Error deserializing element', element, e);
+        return getInnerHtml(element);
+      }
   }
 }
 
