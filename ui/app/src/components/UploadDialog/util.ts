@@ -19,6 +19,7 @@ import { PropsWithChildren } from 'react';
 import { XHRUploadOptions } from '@uppy/xhr-upload';
 import { SuccessResponse, Uppy } from '@uppy/core';
 import { UppyFile } from '@uppy/utils';
+import UppyDashboardProps from '../UppyDashboard/UppyDashboardProps';
 
 export interface UploadDialogBaseProps {
   open: boolean;
@@ -32,6 +33,10 @@ export interface UploadDialogBaseProps {
   allowedMetaFields?: XHRUploadOptions['allowedMetaFields'];
   useFormData?: boolean;
   fieldName?: string;
+  showRemoveButtonAfterComplete?: boolean;
+  successfulUploadButton?: UppyDashboardProps['options']['successfulUploadButton'];
+  // TODO: autoProceed doesn't work with at the Dashboard plugin level
+  // autoProceed?: boolean;
 }
 
 export type UploadDialogProps = PropsWithChildren<
