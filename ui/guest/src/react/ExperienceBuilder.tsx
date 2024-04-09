@@ -342,7 +342,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           dispatch(action);
           break;
         case assetDragStarted.type:
-          dispatch(assetDragStarted({ asset: payload }));
+          dispatch(assetDragStarted(payload));
           break;
         case assetDragEnded.type:
           dragOk(status) && dispatch(action);
