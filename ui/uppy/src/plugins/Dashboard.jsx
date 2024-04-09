@@ -489,7 +489,8 @@ export class Dashboard extends UppyDashboard {
       handleDragOver: this.handleDragOver,
       handleDragLeave: this.handleDragLeave,
       handleDrop: this.handleDrop,
-      externalMessages: this.opts.externalMessages
+      externalMessages: this.opts.externalMessages,
+      successfulUploadButton: this.opts.successfulUploadButton
     });
   };
 

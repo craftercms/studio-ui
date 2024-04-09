@@ -16,7 +16,6 @@
 
 import { Dashboard } from '@craftercms/uppy';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Uppy } from '@uppy/core';
 import { makeStyles } from 'tss-react/mui';
 
 import palette from '../../styles/palette';
@@ -24,25 +23,13 @@ import { validateActionPolicy } from '../../services/sites';
 import { defineMessages, useIntl } from 'react-intl';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import { DashboardOptions } from '@uppy/dashboard';
 import { alpha } from '@mui/material';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { UppyFile } from '@uppy/utils';
 import { CSSObject } from 'tss-react';
 import { ensureSingleSlash } from '../../utils/string';
-
-interface UppyDashboardProps {
-  uppy: Uppy;
-  site: string;
-  path: string;
-  title: string;
-  maxActiveUploads: number;
-  onMinimized?(): void;
-  onPendingChanges?(pending: boolean): void;
-  onClose?(): void;
-  options?: DashboardOptions;
-}
+import { UppyDashboardProps } from './UppyDashboardProps';
 
 const useStyles = makeStyles()((theme) => ({
   dashboard: {
@@ -164,8 +151,14 @@ const useStyles = makeStyles()((theme) => ({
         }
       }
     },
+    '& .uppy-Dashboard-Item-statusSize': {
+      marginBottom: 0
+    },
+    '& .uppy-Dashboard-Item-errorDetails': {
+      display: 'inline-block'
+    },
     '& .item-name-valid': {
-      color: theme.palette.success.main
+      color: theme.palette.success.dark
     },
     '& .item-name-invalid': {
       textDecoration: 'line-through',
@@ -391,6 +384,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
     width: '100%',
     height: '60vh',
     fileManagerSelectionType: 'both',
+    showRemoveButtonAfterComplete: false,
     ...props.options
   };
   const { classes } = useStyles();
