@@ -132,7 +132,6 @@ import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { useActiveUser } from '../../hooks/useActiveUser';
-import { useMount } from '../../hooks/useMount';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import { useActiveSite } from '../../hooks/useActiveSite';
 import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils/path';

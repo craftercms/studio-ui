@@ -180,6 +180,10 @@
         contentTypes: [contentType],
         multiSelect,
         allowUpload: false,
+        initialParameters: {
+          sortBy: 'internalName',
+          sortOrder: 'asc'
+        },
         onSuccess: (result) => {
           (Array.isArray(result) ? result : [result]).forEach(({ name, path }) => {
             const value = name && name !== '' ? name : path;
