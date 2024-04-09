@@ -24,7 +24,7 @@ export interface ContentTypeSection {
 }
 
 export interface ContentTypeFieldValidation<T = any> {
-  id: string;
+  id: ValidationKeys;
   value: T;
   level: 'required' | 'suggestion';
 }
@@ -34,6 +34,7 @@ export type ValidationKeys =
   | 'allowedContentTypes' // TODO: assess removing this validation in favour of keeping allowedEmbeddedContentTypes & allowedSharedContentTypes only
   | 'allowedEmbeddedContentTypes'
   | 'allowedSharedContentTypes'
+  | 'allowedSharedExistingContentTypes'
   | 'minCount'
   | 'maxCount'
   | 'maxLength'

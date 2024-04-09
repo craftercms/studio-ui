@@ -227,11 +227,15 @@ export function PreviewSearchPanel() {
     }
     if (item.type === 'Component') {
       const instance: ContentInstance = state.contentInstanceLookup[item.path];
-      hostToGuest$.next({
-        type: componentInstanceDragStarted.type,
-        payload: { instance, contentType: contentTypesLookup[instance.craftercms.contentTypeId] }
-      });
+      hostToGuest$.next(
+        componentInstanceDragStarted({
+          instance,
+          contentType: contentTypesLookup[instance.craftercms.contentTypeId]
+        })
+      );
     } else {
+      // TODO: This action's payload doesn't match the payload definition on the action typing.
+      //   Fix/match typing and usages, both from dispatchers and handlers of this action.
       hostToGuest$.next({
         type: assetDragStarted.type,
         payload: item

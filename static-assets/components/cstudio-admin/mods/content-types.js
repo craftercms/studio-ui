@@ -2885,7 +2885,9 @@
             try {
               var propControl = new moduleClass(fName, propertyContainerEl, this.self.form, type);
               propControl.render(value, fn, fName, itemId, defaultValue, typeControl, disabled, properties);
-            } catch (e) {}
+            } catch (e) {
+              console.error(e);
+            }
           },
           self: this
         };
