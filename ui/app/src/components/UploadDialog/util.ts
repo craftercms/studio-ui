@@ -16,12 +16,23 @@
 
 import StandardAction from '../../models/StandardAction';
 import { PropsWithChildren } from 'react';
+import { XHRUploadOptions } from '@uppy/xhr-upload';
+import { Uppy } from '@uppy/core';
+import { UppyFile } from '@uppy/utils';
 
 export interface UploadDialogBaseProps {
   open: boolean;
   path: string;
   site: string;
   maxSimultaneousUploads?: number;
+  endpoint?: string;
+  method?: XHRUploadOptions['method'];
+  headers?: XHRUploadOptions['headers'];
+  meta?: Record<string, unknown>;
+  allowedMetaFields?: XHRUploadOptions['allowedMetaFields'];
+  useFormData?: boolean;
+  fieldName?: string;
+  onFileAdded?(file: UppyFile, uppy: Uppy): void;
 }
 
 export type UploadDialogProps = PropsWithChildren<
