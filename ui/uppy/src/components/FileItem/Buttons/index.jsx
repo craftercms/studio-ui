@@ -96,6 +96,7 @@ function AcceptSuggestedNameIcon({ i18n, onClick }) {
 
 export default function Buttons(props) {
   const {
+    uppy,
     file,
     showRemoveButton,
     i18n,
@@ -110,7 +111,7 @@ export default function Buttons(props) {
   return (
     <div className="uppy-Dashboard-Item-actionWrapper">
       {error && !hideRetryButton && !file.meta.validating && (
-        <RetryButton i18n={i18n} onClick={() => retryUpload(file.id)} />
+        <RetryButton i18n={i18n} onClick={() => uppy.retryUpload(file.id)} />
       )}
       {file.progress.uploadComplete && successfulUploadButton && (
         <button

@@ -35,6 +35,7 @@ function chunks(list, size) {
 }
 
 export default ({
+  uppy,
   id,
   error,
   i18n,
@@ -89,6 +90,7 @@ export default ({
     <div class="uppy-Dashboard-filesInner" role="presentation" key={row[0]}>
       {row.map((fileID) => (
         <FileItem
+          uppy={uppy}
           key={fileID}
           log={log}
           info={info}

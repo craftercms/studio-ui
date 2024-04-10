@@ -67,6 +67,7 @@ export default class FileItem extends Component {
             externalMessages={this.props.externalMessages}
           />
           <Buttons
+            uppy={this.props.uppy}
             file={file}
             error={error}
             hideRetryButton={this.props.hideRetryButton}
