@@ -4309,8 +4309,13 @@ var nodeOpen = false,
         if (!this.arrayContains(script, this.addedJs)) {
           this.addedJs.push(script);
 
-          if (script.indexOf('http') == -1) {
+          if (!script.includes('http')) {
             script = CStudioAuthoringContext.baseUri + script;
+            // The `buildFileUrl` util returns a full api url (without the origin).
+            // Passing it to `addJavascript` method, for example from requireModule(), the url ends up with `/studio` twice.
+            // Prefer not to detect simply `/studio/studio`, and avoiding hard coding api urls, I'm using buildFileUrl() result to detect this issue.
+            const pluginFileApiUrlBase = craftercms.services.plugin.buildFileUrl('', '', '', '', '').split('?')[0];
+            script = script.replace(`/studio${pluginFileApiUrlBase}`, pluginFileApiUrlBase);
           }
 
           var headID = document.getElementsByTagName('head')[0];
