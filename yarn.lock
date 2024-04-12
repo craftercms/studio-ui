@@ -1686,7 +1686,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     rimraf: "npm:^5.0.5"
     style-loader: "npm:^3.3.4"
-    tinymce: "npm:^6.8.2"
+    tinymce: "npm:^7.0.1"
     webpack: "npm:^5.90.0"
     webpack-cli: "npm:^5.1.4"
   languageName: unknown
@@ -17353,10 +17353,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinymce@npm:^6.8.2":
-  version: 6.8.3
-  resolution: "tinymce@npm:6.8.3"
-  checksum: 0aea048f5729432c9c11654a0017ee13ac772c9bab0c5817b72a718aa19a68c7d1f0406c9e56e33297c8e49c6c234db5a4f8e569de752e7cb7bce15e0ad05df8
+"tinymce@npm:^7.0.1":
+  version: 7.0.1
+  resolution: "tinymce@npm:7.0.1"
+  checksum: c32599259199c9d179a9cd589ef09f9f57231556dbcd18ff5fb37d4bd3f7352651a3849d8439ac749b0ae25f0c7b4d6f54f82dbb669d55aaa63d57dd0270d5b6
   languageName: node
   linkType: hard
 
