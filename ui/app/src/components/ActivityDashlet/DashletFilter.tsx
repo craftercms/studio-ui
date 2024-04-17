@@ -80,7 +80,6 @@ export function DashletFilter(props: DashletFilterProps) {
       options={options}
       closeOnSelection={false}
       menuProps={{ sx: { minWidth: 180 } }}
-      listItemProps={{ dense: true }}
     >
       {selectedKeys.includes('all') ? (
         <FormattedMessage defaultMessage="Show all" />

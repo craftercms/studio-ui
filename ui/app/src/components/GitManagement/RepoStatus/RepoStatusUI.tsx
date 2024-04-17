@@ -113,7 +113,6 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
                 }
               ]}
               menuProps={{ sx: { minWidth: 180 } }}
-              listItemProps={{ dense: true }}
               sx={{ mr: 2 }}
             >
               <FormattedMessage defaultMessage="Bulk actions" />
