@@ -854,6 +854,6 @@ export const audioDSMessages = defineMessages({
     defaultMessage: 'Audio From Repository'
   },
   uploadError: {
-    defaultMessage: 'An error occurred while uploading the audio file.'
+    defaultMessage: 'An error occurred uploading the file.'
   }
 });

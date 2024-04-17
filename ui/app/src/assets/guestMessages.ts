@@ -146,7 +146,7 @@ export const guestMessages = defineMessages({
     defaultMessage: 'Upload audio from desktop'
   },
   allowAudioFromRepo: {
-    defaultMessage: 'Audio from repository'
+    defaultMessage: 'Audio From Repository'
   },
   noDataSourcesSet: {
     id: 'validations.noDataSourcesSet',
