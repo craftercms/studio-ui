@@ -223,7 +223,7 @@ export function fetchContentInstanceDescriptor(
   );
 }
 
-function writeContentUrl(qs: object): string {
+export function writeContentUrl(qs: object): string {
   qs = new URLSearchParams(qs as URLSearchParams);
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }
