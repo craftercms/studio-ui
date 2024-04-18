@@ -18,6 +18,7 @@ import { createLookupTable } from './object';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import Jabber from 'jabber';
 import LookupTable from '../models/LookupTable';
+import { generatePlaceholderImageDataUrl } from './content';
 
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
   return Object.values(contentType.fields).reduce((accumulator, field) => {
@@ -104,7 +105,14 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
       case 'image': {
         const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
         const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
-        return `https://via.placeholder.com/${width}x${height}`;
+        return generatePlaceholderImageDataUrl({
+          width,
+          height,
+          font: `24px Arial`,
+          text: width > 100 ? `${width} x ${height}` : ':)',
+          textPositionY: height / 2,
+          textPositionX: width / 2
+        });
       }
       case 'text':
       case 'textarea': {
