@@ -50,7 +50,6 @@ export function WidgetsAccordion(props: WidgetsAccordionProps) {
   const theme = useTheme();
   const expandedClass = accordionClasses.expanded;
   const contentClass = accordionSummaryClasses.content;
-  // TODO: Incorporate widgets accordion preference removal in user settings
   useEffect(() => {
     if (id) {
       setStoredWidgetsAccordion(uuid, user.username, id, { open });
