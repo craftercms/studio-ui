@@ -96,6 +96,21 @@ function PanelTopBar(props) {
         />
       </div>
 
+      {!props.autoProceed && (
+        <button
+          className="uppy-dashboard-button-base uppy-dashboard-text-button"
+          type="button"
+          aria-label={props.i18n('cancelPending')}
+          title={props.i18n('cancelPending')}
+          disabled={props.isAllComplete && props.state.totalProgress === 100}
+          onClick={() => {
+            props.validateFilesPolicy(Object.values(props.files));
+          }}
+        >
+          {props.i18n('uploadFiles')}
+        </button>
+      )}
+
       <button
         className="uppy-dashboard-button-base uppy-dashboard-text-button"
         type="button"

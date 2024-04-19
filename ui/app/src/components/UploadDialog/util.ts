@@ -35,8 +35,7 @@ export interface UploadDialogBaseProps {
   fieldName?: string;
   showRemoveButtonAfterComplete?: boolean;
   successfulUploadButton?: UppyDashboardProps['options']['successfulUploadButton'];
-  // TODO: autoProceed doesn't work with at the Dashboard plugin level
-  // autoProceed?: boolean;
+  autoProceed?: boolean;
 }
 
 export type UploadDialogProps = PropsWithChildren<

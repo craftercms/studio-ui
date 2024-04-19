@@ -35,6 +35,7 @@ export interface UppyDashboardProps {
       label: string;
       onClick(event: React.MouseEvent, file: UppyFile, api: { remove(): void }): void;
     };
+    autoProceed: boolean;
   };
 }
 

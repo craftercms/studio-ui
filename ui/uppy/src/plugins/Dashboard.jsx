@@ -284,7 +284,12 @@ export class Dashboard extends UppyDashboard {
     if (this.opts.autoOpenFileEditor) {
       this.uppy.on('files-added', this.#openFileEditorWhenFilesAdded);
     } else {
-      this.uppy.on('files-added', this.validateFilesPolicy);
+      if (this.opts.autoProceed) {
+        this.uppy.on('files-added', this.validateFilesPolicy);
+      } else {
+        this.uppy.on('files-added', this.#generateLargeThumbnailIfSingleFile);
+        this.uppy.on('file-removed', this.#generateLargeThumbnailIfSingleFile);
+      }
     }
   };
 
@@ -348,6 +353,26 @@ export class Dashboard extends UppyDashboard {
   #getEditors = memoize((targets) => {
     return targets.filter((target) => target.type === 'editor').map(this.#attachRenderFunctionToTarget);
   });
+
+  #generateLargeThumbnailIfSingleFile = () => {
+    if (this.opts.disableThumbnailGenerator) {
+      return;
+    }
+
+    const LARGE_THUMBNAIL = 600;
+    const files = this.uppy.getFiles();
+
+    if (files.length === 1) {
+      const thumbnailGenerator = this.uppy.getPlugin(`${this.id}:ThumbnailGenerator`);
+      thumbnailGenerator?.setOptions({ thumbnailWidth: LARGE_THUMBNAIL });
+      const fileForThumbnail = { ...files[0], preview: undefined };
+      thumbnailGenerator?.requestThumbnail(fileForThumbnail).then(() => {
+        thumbnailGenerator?.setOptions({
+          thumbnailWidth: this.opts.thumbnailWidth
+        });
+      });
+    }
+  };
 
   render = (state) => {
     const pluginState = this.getPluginState();
@@ -417,7 +442,7 @@ export class Dashboard extends UppyDashboard {
       // getPlugin: this.uppy.getPlugin,
       progressindicators: progressindicators,
       editors: editors,
-      autoProceed: this.uppy.opts.autoProceed,
+      autoProceed: this.opts.autoProceed,
       id: this.id,
       closeModal: this.requestCloseModal,
       handleClickOutside: this.handleClickOutside,
@@ -490,7 +515,8 @@ export class Dashboard extends UppyDashboard {
       handleDragLeave: this.handleDragLeave,
       handleDrop: this.handleDrop,
       externalMessages: this.opts.externalMessages,
-      successfulUploadButton: this.opts.successfulUploadButton
+      successfulUploadButton: this.opts.successfulUploadButton,
+      validateFilesPolicy: this.validateFilesPolicy
     });
   };
 

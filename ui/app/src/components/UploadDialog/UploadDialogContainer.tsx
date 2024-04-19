@@ -82,7 +82,8 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
     getResponseData,
     getResponseError,
     successfulUploadButton,
-    showRemoveButtonAfterComplete = false
+    showRemoveButtonAfterComplete = false,
+    autoProceed = true
   } = props;
   // endregion
   const propRefs = useUpdateRefs({
@@ -209,7 +210,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
           onClose={onClose}
           title={formatMessage(translations.title)}
           maxActiveUploads={upload.maxActiveUploads}
-          options={{ successfulUploadButton, showRemoveButtonAfterComplete }}
+          options={{ successfulUploadButton, showRemoveButtonAfterComplete, autoProceed }}
         />
       </DialogBody>
     </>
