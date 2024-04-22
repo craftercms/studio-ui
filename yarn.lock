@@ -1757,8 +1757,8 @@ __metadata:
     "@types/react-swipeable-views": "npm:^0.13.5"
     "@types/video.js": "npm:^7.3.56"
     "@types/zxcvbn": "npm:^4.4.4"
-    "@typescript-eslint/eslint-plugin": "npm:^6.20.0"
-    "@typescript-eslint/parser": "npm:^6.20.0"
+    "@typescript-eslint/eslint-plugin": "npm:^7.7.0"
+    "@typescript-eslint/parser": "npm:^7.7.0"
     "@videojs/vhs-utils": "npm:^4.1.0"
     autosuggest-highlight: "npm:^3.3.4"
     babel-plugin-formatjs: "npm:^10.5.13"
@@ -5724,24 +5724,6 @@ __metadata:
   peerDependencies:
     "@uppy/core": ^3.8.0
   checksum: 42c4cef95f578fd093b7f15f26b29dc0b89a8bd459969d50ccc04f40fc65473a90577c043032a4d310b24b99a8e123ce3b90584fc8b6aface88231a610d68e89
-  languageName: node
-  linkType: hard
-
-"@videojs/http-streaming@npm:3.10.0":
-  version: 3.10.0
-  resolution: "@videojs/http-streaming@npm:3.10.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    "@videojs/vhs-utils": "npm:4.0.0"
-    aes-decrypter: "npm:4.0.1"
-    global: "npm:^4.4.0"
-    m3u8-parser: "npm:^7.1.0"
-    mpd-parser: "npm:^1.3.0"
-    mux.js: "npm:7.0.2"
-    video.js: "npm:^7 || ^8"
-  peerDependencies:
-    video.js: ^7 || ^8
-  checksum: f1facd5ac1e3bb41ef32d47c5ca6858cbebf3e4346e652bd2e4d215c3425c15ae63ad4858267ec40d12e313822523e23004d49138081f183dfb0ad3c38112974
   languageName: node
   linkType: hard
 
@@ -13100,19 +13082,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mux.js@npm:7.0.2, mux.js@npm:^7.0.1":
-  version: 7.0.2
-  resolution: "mux.js@npm:7.0.2"
-  dependencies:
-    "@babel/runtime": "npm:^7.11.2"
-    global: "npm:^4.4.0"
-  bin:
-    muxjs-transmux: bin/transmux.js
-  checksum: fd8c7fa9dec408f8655d1db590598bdae79e18ba119edba76d12ae5af9e4a2181d3368948d6e280587e6fd2295074ac3c0462c89e7e256888d902a826ba35557
-  languageName: node
-  linkType: hard
-
-"mux.js@npm:7.0.3":
+"mux.js@npm:7.0.3, mux.js@npm:^7.0.1":
   version: 7.0.3
   resolution: "mux.js@npm:7.0.3"
   dependencies:
@@ -18081,29 +18051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"video.js@npm:^7 || ^8":
-  version: 8.11.1
-  resolution: "video.js@npm:8.11.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    "@videojs/http-streaming": "npm:3.10.0"
-    "@videojs/vhs-utils": "npm:^4.0.0"
-    "@videojs/xhr": "npm:2.6.0"
-    aes-decrypter: "npm:^4.0.1"
-    global: "npm:4.4.0"
-    keycode: "npm:2.2.0"
-    m3u8-parser: "npm:^7.1.0"
-    mpd-parser: "npm:^1.2.2"
-    mux.js: "npm:^7.0.1"
-    safe-json-parse: "npm:4.0.0"
-    videojs-contrib-quality-levels: "npm:4.0.0"
-    videojs-font: "npm:4.1.0"
-    videojs-vtt.js: "npm:0.15.5"
-  checksum: da1a24781ab4a06622dcf1e77c4b27803f8233e65b34e66726c2409222e72e9d643c8313afb131291ca8bb3912a053a0ae235ed8d537f6da8e2d36a1cc32f4a6
-  languageName: node
-  linkType: hard
-
-"video.js@npm:^8.12.0":
+"video.js@npm:^7 || ^8, video.js@npm:^8.12.0":
   version: 8.12.0
   resolution: "video.js@npm:8.12.0"
   dependencies:
@@ -18122,17 +18070,6 @@ __metadata:
     videojs-font: "npm:4.1.0"
     videojs-vtt.js: "npm:0.15.5"
   checksum: 0a00716bbc82c12c9c1ab902fead26eca230834b20e4af83819ed6800e8e48897573ec343efbb4a72d8e24dffb891a170c7139346c33269df1f4c25cc70e80fa
-  languageName: node
-  linkType: hard
-
-"videojs-contrib-quality-levels@npm:4.0.0":
-  version: 4.0.0
-  resolution: "videojs-contrib-quality-levels@npm:4.0.0"
-  dependencies:
-    global: "npm:^4.4.0"
-  peerDependencies:
-    video.js: ^8
-  checksum: a84519939bb102c327bf9ef95497e69cebcbff49087ca29c0b97ce56910d519672dd4c9e4bab20d3683fcd69e6e62b819044210731ba1fc466c8287dc039c02a
   languageName: node
   linkType: hard
 
