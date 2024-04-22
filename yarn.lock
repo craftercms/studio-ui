@@ -1734,7 +1734,7 @@ __metadata:
     "@emotion/css": "npm:^11.11.2"
     "@emotion/react": "npm:^11.11.3"
     "@emotion/styled": "npm:^11.11.0"
-    "@formatjs/cli": "npm:^6.2.7"
+    "@formatjs/cli": "npm:^6.2.9"
     "@graphiql/plugin-explorer": "npm:^1.0.2"
     "@mui/icons-material": "npm:^5.15.7"
     "@mui/lab": "npm:^5.0.0-alpha.163"
@@ -2310,17 +2310,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/cli@npm:^6.2.7":
-  version: 6.2.7
-  resolution: "@formatjs/cli@npm:6.2.7"
+"@formatjs/cli@npm:^6.2.9":
+  version: 6.2.9
+  resolution: "@formatjs/cli@npm:6.2.9"
   peerDependencies:
-    vue: ^3.3.4
+    vue: ^3.4.0
   peerDependenciesMeta:
     vue:
       optional: true
   bin:
     formatjs: bin/formatjs
-  checksum: 65ce96e61b6225c495e21ed2083357e15c6c0da95f242b5cc7e1ac0caa0ba450c9115a74a700e34f00ff49ee7a85f48cd7b7555423d4fd3f032d5d6972e5bebd
+  checksum: a39e5344ffd120d573876fb5d8f786e6d53bcc5a1b35fecb3f0befb021b39ae9f86cf48d6268fe3c0ed835f834d411f5235c64a3af7ec0e99f028e7c996cc73b
   languageName: node
   linkType: hard
 
