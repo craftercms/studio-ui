@@ -20,7 +20,15 @@ import React, { useState, lazy, Suspense, useEffect, useMemo } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { useStyles } from './styles';
-import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import {
+  createHashRouter,
+  createRoutesFromElements,
+  Navigate,
+  Route,
+  RouterProvider,
+  useLocation,
+  Outlet
+} from 'react-router-dom';
 import SiteManagement from '../SiteManagement';
 import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
 import EmptyState from '../EmptyState/EmptyState';
@@ -52,11 +60,79 @@ interface GlobalAppProps {
   footerHtml: string;
 }
 
+export function GlobalAppRouterProvider(props: GlobalAppProps) {
+  const { passwordRequirementsMinComplexity } = props;
+  const globalNavigation = useGlobalNavigation();
+  const { classes } = useStyles();
+
+  const router = createHashRouter(
+    createRoutesFromElements(
+      <Route path="/" element={<GlobalApp {...props} />}>
+        <Route path="/sites" element={<SiteManagement />} />
+        <Route
+          path="/users"
+          element={<UserManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
+        />
+        <Route path="/groups" element={<GroupManagement />} />
+        <Route path="/audit" element={<AuditManagement />} />
+        <Route path="/logging" element={<LogLevelManagement />} />
+        <Route path="/log" element={<LogConsole />} />
+        <Route path="/global-config" element={<GlobalConfigManagement />} />
+        <Route path="/encryption-tool" element={<EncryptTool />} />
+        <Route path="/token-management" element={<TokenManagement />} />
+        <Route path="/about-us" element={<AboutCrafterCMSView />} />
+        <Route
+          path="/settings"
+          element={<AccountManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
+        />
+        <Route
+          path="/"
+          element={
+            globalNavigation.items ? (
+              <Navigate to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
+            ) : (
+              <LoadingState
+                styles={{
+                  root: {
+                    height: '100%',
+                    margin: 0
+                  }
+                }}
+              />
+            )
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <Box display="flex" flexDirection="column" height="100%">
+              <section className={classes.launcher}>
+                <LauncherOpenerButton />
+              </section>
+              <EmptyState
+                styles={{
+                  root: {
+                    height: '100%',
+                    margin: 0
+                  }
+                }}
+                title="404"
+                subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
+              />
+            </Box>
+          }
+        />
+      </Route>
+    )
+  );
+
+  return <RouterProvider router={router} />;
+}
+
 export function GlobalApp(props: GlobalAppProps) {
   const { classes } = useStyles();
-  const { passwordRequirementsMinComplexity, footerHtml } = props;
+  const { footerHtml } = props;
   const [width, setWidth] = useState(240);
-  const globalNavigation = useGlobalNavigation();
   const [{ openSidebar }] = useGlobalAppState();
   const { items } = useGlobalNavigation();
   const { formatMessage } = useIntl();
@@ -134,61 +210,7 @@ export function GlobalApp(props: GlobalAppProps) {
             </>
           }
         >
-          <Switch>
-            <Route path="/sites" component={SiteManagement} />
-            <Route
-              path="/users"
-              render={() => <UserManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
-            />
-            <Route path="/groups" component={GroupManagement} />
-            <Route path="/audit" component={AuditManagement} />
-            <Route path="/logging" component={LogLevelManagement} />
-            <Route path="/log" component={LogConsole} />
-            <Route path="/global-config" component={GlobalConfigManagement} />
-            <Route path="/encryption-tool" component={EncryptTool} />
-            <Route path="/token-management" component={TokenManagement} />
-            <Route path="/about-us" component={AboutCrafterCMSView} />
-            <Route
-              path="/settings"
-              render={() => <AccountManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
-            />
-            <Route path="/globalMenu/:id" render={(props) => <Redirect to={`/${props.match.params.id}`} />} />
-            <Route exact path="/">
-              {globalNavigation.items ? (
-                <Redirect to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
-              ) : (
-                <LoadingState
-                  styles={{
-                    root: {
-                      height: '100%',
-                      margin: 0
-                    }
-                  }}
-                />
-              )}
-            </Route>
-            <Route
-              render={() => {
-                return (
-                  <Box display="flex" flexDirection="column" height="100%">
-                    <section className={classes.launcher}>
-                      <LauncherOpenerButton />
-                    </section>
-                    <EmptyState
-                      styles={{
-                        root: {
-                          height: '100%',
-                          margin: 0
-                        }
-                      }}
-                      title="404"
-                      subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
-                    />
-                  </Box>
-                );
-              }}
-            />
-          </Switch>
+          <Outlet />
         </Suspense>
       </Box>
     </Paper>

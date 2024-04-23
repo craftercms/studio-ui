@@ -51,8 +51,8 @@ import { fetchItemVersions } from '../../state/actions/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../SearchBar/SearchBar';
 import Alert from '@mui/material/Alert';
-import { showHistoryDialog } from '../../state/actions/dialogs';
-import { batchActions } from '../../state/actions/misc';
+import { closeConfirmDialog, showConfirmDialog, showHistoryDialog } from '../../state/actions/dialogs';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { capitalize, stripCData } from '../../utils/string';
 import { itemReverted, showSystemNotification } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
@@ -62,7 +62,6 @@ import { forkJoin } from 'rxjs';
 import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import ResizeBar from '../ResizeBar';
-import { useHistory } from 'react-router';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useMount } from '../../hooks/useMount';
@@ -74,23 +73,33 @@ import { MAX_CONFIG_SIZE, UNDEFINED } from '../../utils/constants';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { nnou } from '../../utils/object';
 import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
+import useUnmount from '../../hooks/useUnmount';
+import useActiveUser from '../../hooks/useActiveUser';
+import { createCustomDocumentEventListener } from '../../utils/dom';
+import { useNavigate } from 'react-router-dom';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
   showAppsButton?: boolean;
   isSubmitting?: boolean;
+  mountMode?: 'page' | 'dialog';
   onSubmittingAndOrPendingChange?(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function SiteConfigurationManagement(props: SiteConfigurationManagementProps) {
-  const { embedded, showAppsButton, onSubmittingAndOrPendingChange, isSubmitting } = props;
+  const { embedded, showAppsButton, onSubmittingAndOrPendingChange, isSubmitting, mountMode } = props;
   const site = useActiveSiteId();
+  const { username } = useActiveUser();
+  const sessionStorageKey = `craftercms.${username}.projectToolsConfigurationData.${site}`;
+  const sessionData = JSON.parse(sessionStorage.getItem(sessionStorageKey) ?? '{}');
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const [environment, setEnvironment] = useState<string>();
   const [files, setFiles] = useState<SiteConfigurationFileWithId[]>();
-  const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFileWithId>(null);
+  const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFileWithId>(
+    sessionData.selectedConfigFile ?? null
+  );
   const ignoreEnv = selectedConfigFile?.path === 'site-policy-config.xml';
   const [selectedConfigFileXml, setSelectedConfigFileXml] = useState(null);
   const [configError, setConfigError] = useState(null);
@@ -106,9 +115,12 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const [disabledSaveButton, setDisabledSaveButton] = useState(true);
   const [confirmDialogProps, setConfirmDialogProps] = useState<ConfirmDialogProps>(null);
   const [keyword, setKeyword] = useState('');
-  const history = useHistory();
   const dispatch = useDispatch();
-  const disableBlocking = useRef(false);
+  const refs = useUpdateRefs({
+    disabledSaveButton,
+    selectedConfigFile,
+    sessionData
+  });
   const functionRefs = useUpdateRefs({
     onSubmittingAndOrPendingChange
   });
@@ -116,34 +128,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
     container: null
   });
   const [contentSize, setContentSize] = useState(0);
-
-  useEffect(() => {
-    history?.block((props) => {
-      if (!disabledSaveButton && !disableBlocking.current && history.location.pathname !== props.pathname) {
-        setConfirmDialogProps({
-          open: true,
-          title: (
-            <FormattedMessage id="siteConfigurationManagement.unsavedChangesTitle" defaultMessage="Unsaved changes" />
-          ),
-          body: (
-            <FormattedMessage
-              id="siteConfigurationManagement.unsavedChangesSubtitle"
-              defaultMessage="You have unsaved changes, do you want to leave?"
-            />
-          ),
-          onClosed: () => setConfirmDialogProps(null),
-          onOk: () => {
-            disableBlocking.current = true;
-            history.push(props.pathname, { disableBlocking: true });
-          },
-          onCancel: () => {
-            setConfirmDialogProps({ ...confirmDialogProps, open: false });
-          }
-        });
-        return false;
-      }
-    });
-  }, [confirmDialogProps, disabledSaveButton, history]);
+  const navigate = useNavigate();
 
   useMount(() => {
     fetchActiveEnvironment().subscribe({
@@ -154,6 +139,35 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         dispatch(showErrorDialog({ error: response }));
       }
     });
+  });
+
+  useUnmount(() => {
+    if (!refs.current.disabledSaveButton && mountMode === 'page') {
+      sessionStorage.setItem(
+        sessionStorageKey,
+        JSON.stringify({
+          content: editorRef.current.getValue(),
+          selectedConfigFile: refs.current.selectedConfigFile
+        })
+      );
+      const eventId = 'unsavedConfigurationChangesConfirmation';
+      dispatch(
+        showConfirmDialog({
+          body: <FormattedMessage defaultMessage="You left unsaved changes. Go back and continue editing?" />,
+          onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
+          onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })]),
+          okButtonText: <FormattedMessage defaultMessage="Continue editing" />,
+          cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+        })
+      );
+      createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
+        if (button === 'ok') {
+          navigate('/configuration');
+        } else {
+          sessionStorage.removeItem(sessionStorageKey);
+        }
+      });
+    }
   });
 
   useEffect(() => {
@@ -179,8 +193,15 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         ignoreEnv ? null : environment
       ).subscribe({
         next(xml) {
-          setSelectedConfigFileXml(xml ?? '');
-          setContentSize(xml?.length ?? 0);
+          if (refs.current.sessionData.content) {
+            setSelectedConfigFileXml(refs.current.sessionData.content);
+            setContentSize(refs.current.sessionData.content.length);
+            setDisabledSaveButton(false);
+            sessionStorage.removeItem(sessionStorageKey);
+          } else {
+            setSelectedConfigFileXml(xml ?? '');
+            setContentSize(xml?.length ?? 0);
+          }
           setLoadingXml(false);
         },
         error({ response }) {
@@ -193,7 +214,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         }
       });
     }
-  }, [selectedConfigFile, environment, site, ignoreEnv]);
+  }, [selectedConfigFile, environment, site, ignoreEnv, refs, sessionStorageKey]);
 
   // Item Revert Propagation
   useEffect(() => {
