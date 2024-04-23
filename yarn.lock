@@ -1805,7 +1805,7 @@ __metadata:
     tss-react: "npm:^4.9.3"
     typescript: "npm:^5.3.3"
     uppy: "npm:^3.21.0"
-    video.js: "npm:^8.12.0"
+    video.js: "npm:^8.13.0"
     web-vitals: "npm:^3.5.2"
     zxcvbn: "npm:^4.4.2"
   languageName: unknown
@@ -5734,9 +5734,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@videojs/http-streaming@npm:3.12.1":
-  version: 3.12.1
-  resolution: "@videojs/http-streaming@npm:3.12.1"
+"@videojs/http-streaming@npm:3.12.2":
+  version: 3.12.2
+  resolution: "@videojs/http-streaming@npm:3.12.2"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
     "@videojs/vhs-utils": "npm:4.0.0"
@@ -5748,7 +5748,7 @@ __metadata:
     video.js: "npm:^7 || ^8"
   peerDependencies:
     video.js: ^8.11.0
-  checksum: 7541c19cef5451741630b2cdd15df7b8bf55f33d2e92830aad45c5f86c4342044859015dc46e97bdceb32cfe025911226453a413a42b1e61124cc8eabf828f7f
+  checksum: e2d41781cd1a8b17fc0c1a05c9d9d7eea3f37118a8885fc276aa11979a0b155016ade8d4ee170916ef1f98378480f8c05b35d40ff703d5cbe935087570cec54d
   languageName: node
   linkType: hard
 
@@ -17995,12 +17995,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"video.js@npm:^7 || ^8, video.js@npm:^8.12.0":
-  version: 8.12.0
-  resolution: "video.js@npm:8.12.0"
+"video.js@npm:^7 || ^8, video.js@npm:^8.13.0":
+  version: 8.13.0
+  resolution: "video.js@npm:8.13.0"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
-    "@videojs/http-streaming": "npm:3.12.1"
+    "@videojs/http-streaming": "npm:3.12.2"
     "@videojs/vhs-utils": "npm:^4.0.0"
     "@videojs/xhr": "npm:2.6.0"
     aes-decrypter: "npm:^4.0.1"
@@ -18013,7 +18013,7 @@ __metadata:
     videojs-contrib-quality-levels: "npm:4.1.0"
     videojs-font: "npm:4.1.0"
     videojs-vtt.js: "npm:0.15.5"
-  checksum: 0a00716bbc82c12c9c1ab902fead26eca230834b20e4af83819ed6800e8e48897573ec343efbb4a72d8e24dffb891a170c7139346c33269df1f4c25cc70e80fa
+  checksum: 1aa74641d57b14e6f454ec4d5606f76779c0c536862e3a9187063dc300b5455c1ae3a73ecc060a8fa9ba7e62eee2b8fea4ca4718eb6ce82c48e2605c9ee2f6cb
   languageName: node
   linkType: hard
 
