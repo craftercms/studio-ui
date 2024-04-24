@@ -42,6 +42,7 @@ import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Skeleton from '@mui/material/Skeleton';
 import { globalMenuMessages } from '../../env/i18n-legacy';
+import { Routes } from '../../utils/constants';
 
 // Site management loaded normally above as it is usually where people first land.
 const UserManagement = lazy(() => import('../UserManagement'));
@@ -68,23 +69,23 @@ export function GlobalAppRouterProvider(props: GlobalAppProps) {
   const router = createHashRouter(
     createRoutesFromElements(
       <Route path="/" element={<GlobalApp {...props} />}>
-        <Route path="/projects" element={<SiteManagement />} />
+        <Route path={Routes.Projects} element={<SiteManagement />} />
         {/* Leaving this route for backwards compatibility. Main route is now 'projects' */}
         <Route path="/sites" element={<SiteManagement />} />
         <Route
-          path="/users"
+          path={Routes.Users}
           element={<UserManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
         />
-        <Route path="/groups" element={<GroupManagement />} />
-        <Route path="/audit" element={<AuditManagement />} />
-        <Route path="/logging" element={<LogLevelManagement />} />
-        <Route path="/log" element={<LogConsole />} />
-        <Route path="/global-config" element={<GlobalConfigManagement />} />
-        <Route path="/encryption-tool" element={<EncryptTool />} />
-        <Route path="/token-management" element={<TokenManagement />} />
-        <Route path="/about-us" element={<AboutCrafterCMSView />} />
+        <Route path={Routes.Groups} element={<GroupManagement />} />
+        <Route path={Routes.Audit} element={<AuditManagement />} />
+        <Route path={Routes.LogLevel} element={<LogLevelManagement />} />
+        <Route path={Routes.LogConsole} element={<LogConsole />} />
+        <Route path={Routes.GlobalConfig} element={<GlobalConfigManagement />} />
+        <Route path={Routes.EncryptTool} element={<EncryptTool />} />
+        <Route path={Routes.TokenManagement} element={<TokenManagement />} />
+        <Route path={Routes.About} element={<AboutCrafterCMSView />} />
         <Route
-          path="/settings"
+          path={Routes.Settings}
           element={<AccountManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
         />
         <Route

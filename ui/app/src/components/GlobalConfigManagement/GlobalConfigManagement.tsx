@@ -31,7 +31,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
-import { MAX_CONFIG_SIZE } from '../../utils/constants';
+import { MAX_CONFIG_SIZE, Routes } from '../../utils/constants';
 import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 import useUnmount from '../../hooks/useUnmount';
 import useActiveUser from '../../hooks/useActiveUser';
@@ -108,7 +108,7 @@ export function GlobalConfigManagement() {
       );
       createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
         if (button === 'ok') {
-          navigate('/global-config');
+          navigate(Routes.GlobalConfig);
         } else {
           sessionStorage.removeItem(sessionStorageKey);
         }
