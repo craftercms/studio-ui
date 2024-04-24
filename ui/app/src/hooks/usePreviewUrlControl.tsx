@@ -70,9 +70,9 @@ export function usePreviewUrlControl(history) {
 
         // If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
         if (!siteExists) {
-          notValidSiteRedirect(formatMessage(messages.siteNotFound), `${authoringBase}#/sites`);
+          notValidSiteRedirect(formatMessage(messages.siteNotFound), `${authoringBase}#/projects`);
         } else if (sites[siteId].state !== 'READY') {
-          notValidSiteRedirect(formatMessage(messages.siteNotReady), `${authoringBase}#/sites`);
+          notValidSiteRedirect(formatMessage(messages.siteNotReady), `${authoringBase}#/projects`);
         }
       }
     },

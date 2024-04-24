@@ -475,7 +475,7 @@ const systemEpics: CrafterCMSEpic[] = [
             alert(
               formatMessage({ defaultMessage: "This project has been deleted, you'll be redirected to projects list." })
             );
-            window.location.href = `${authoringBase}#/sites`;
+            window.location.href = `${authoringBase}#/projects`;
             return NEVER;
           } else {
             return [popSite({ siteId: site, isActive: true }), messageSharedWorker(closeSiteSocket({ site }))];

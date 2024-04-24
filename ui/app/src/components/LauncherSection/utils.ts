@@ -21,7 +21,7 @@ export const urlMapping = {
   'home.globalMenu.logging-levels': '#/logging',
   'home.globalMenu.log-console': '#/log',
   'home.globalMenu.users': '#/users',
-  'home.globalMenu.sites': '#/sites',
+  'home.globalMenu.sites': '#/projects',
   'home.globalMenu.audit': '#/audit',
   'home.globalMenu.groups': '#/groups',
   'home.globalMenu.globalConfig': '#/global-config',

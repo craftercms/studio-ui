@@ -68,6 +68,8 @@ export function GlobalAppRouterProvider(props: GlobalAppProps) {
   const router = createHashRouter(
     createRoutesFromElements(
       <Route path="/" element={<GlobalApp {...props} />}>
+        <Route path="/projects" element={<SiteManagement />} />
+        {/* Leaving this route for backwards compatibility. Main route is now 'projects' */}
         <Route path="/sites" element={<SiteManagement />} />
         <Route
           path="/users"
