@@ -25,6 +25,7 @@ import { useEnv } from './useEnv';
 import { usePreviewNavigation } from './usePreviewNavigation';
 import useSiteLookup from './useSiteLookup';
 import { defineMessages, useIntl } from 'react-intl';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const messages = defineMessages({
   siteNotFound: {
@@ -40,12 +41,9 @@ const notValidSiteRedirect = (message: string, url: string) => {
   window.location.href = url;
 };
 
-export function usePreviewUrlControl(history) {
-  const {
-    location: { search },
-    push
-  } = history;
-
+export function usePreviewUrlControl() {
+  const { search } = useLocation();
+  const navigate = useNavigate();
   const { currentUrlPath } = usePreviewNavigation();
   const { previewLandingBase } = useEnv();
   const { authoringBase } = useEnv();
@@ -143,7 +141,7 @@ export function usePreviewUrlControl(history) {
         if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
           const page = currentUrlPath;
           if (page !== previewLandingBase) {
-            push({ search: queryString.stringify({ site, page }, { encode: false }) });
+            navigate({ search: queryString.stringify({ site, page }, { encode: false }) });
           }
         } else if (qsSiteChanged && qsUrlChanged) {
           dispatch(changeSite(qs.site, qs.page));
@@ -162,7 +160,7 @@ export function usePreviewUrlControl(history) {
       prev.qsPage = qs.page;
       prev.qsSite = qs.site;
     }
-  }, [currentUrlPath, dispatch, previewLandingBase, push, search, site, sites, validateSite]);
+  }, [currentUrlPath, dispatch, previewLandingBase, navigate, search, site, sites, validateSite]);
 }
 
 export default usePreviewUrlControl;

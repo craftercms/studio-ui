@@ -25,9 +25,7 @@ import Box from '@mui/material/Box';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function Preview(props) {
-  const location = useLocation();
-  const push = useNavigate();
-  usePreviewUrlControl({ location, push });
+  usePreviewUrlControl();
   return (
     <PreviewConcierge>
       <Box
