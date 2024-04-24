@@ -91,14 +91,13 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const site = useActiveSiteId();
   const { username } = useActiveUser();
   const sessionStorageKey = `craftercms.${username}.projectToolsConfigurationData.${site}`;
-  const sessionData = JSON.parse(sessionStorage.getItem(sessionStorageKey) ?? '{}');
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const [environment, setEnvironment] = useState<string>();
   const [files, setFiles] = useState<SiteConfigurationFileWithId[]>();
   const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFileWithId>(
-    sessionData.selectedConfigFile ?? null
+    () => JSON.parse(sessionStorage.getItem(sessionStorageKey))?.selectedConfigFile ?? null
   );
   const ignoreEnv = selectedConfigFile?.path === 'site-policy-config.xml';
   const [selectedConfigFileXml, setSelectedConfigFileXml] = useState(null);
@@ -118,8 +117,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const dispatch = useDispatch();
   const refs = useUpdateRefs({
     disabledSaveButton,
-    selectedConfigFile,
-    sessionData
+    selectedConfigFile
   });
   const functionRefs = useUpdateRefs({
     onSubmittingAndOrPendingChange
@@ -193,9 +191,10 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         ignoreEnv ? null : environment
       ).subscribe({
         next(xml) {
-          if (refs.current.sessionData.content) {
-            setSelectedConfigFileXml(refs.current.sessionData.content);
-            setContentSize(refs.current.sessionData.content.length);
+          const sessionData = JSON.parse(sessionStorage.getItem(sessionStorageKey));
+          if (sessionData.content) {
+            setSelectedConfigFileXml(sessionData.content);
+            setContentSize(sessionData.content.length);
             setDisabledSaveButton(false);
             sessionStorage.removeItem(sessionStorageKey);
           } else {
