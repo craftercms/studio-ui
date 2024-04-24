@@ -20,7 +20,8 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import { ListItemProps, ListItemText, ListItemTextProps } from '@mui/material';
 import { CheckRounded, KeyboardArrowDownRounded } from '@mui/icons-material';
 import { UNDEFINED } from '../../utils/constants';
-import ListItemButton from '@mui/material/ListItemButton';
+import ListItemButton, { ListItemButtonProps } from '@mui/material/ListItemButton';
+import ListItem from '@mui/material/ListItem';
 
 interface DropDownMenuProps extends ButtonProps {
   onMenuItemClick(e, optionId: string): void;
@@ -34,6 +35,7 @@ interface DropDownMenuProps extends ButtonProps {
   }>;
   menuProps?: Partial<Omit<MenuProps, 'open' | 'anchorEl' | 'onClose'>>;
   listItemProps?: Partial<Omit<ListItemProps, 'button'>>;
+  listItemButtonProps?: Partial<ListItemButtonProps>;
   listItemTextProps?: Partial<Omit<ListItemTextProps, 'primary' | 'secondary'>>;
 }
 
@@ -46,6 +48,7 @@ export function DropDownMenu(props: DropDownMenuProps) {
     menuProps,
     listItemProps,
     listItemTextProps,
+    listItemButtonProps,
     ...buttonProps
   } = props;
   const buttonRef = useRef<HTMLButtonElement>();
@@ -70,17 +73,22 @@ export function DropDownMenu(props: DropDownMenuProps) {
       />
       <Menu {...menuProps} open={open} anchorEl={buttonRef.current} onClose={onClose}>
         {options?.map((option) => (
-          <ListItemButton
+          <ListItem
             key={option.id}
-            component="li"
-            selected={option.selected}
+            disablePadding
             secondaryAction={option.selected ? <CheckRounded /> : UNDEFINED}
             {...listItemProps}
-            onClick={(e) => onMenuItemClick(e, option)}
-            disabled={option.disabled}
           >
-            <ListItemText primary={option.primaryText} secondary={option.secondaryText} {...listItemTextProps} />
-          </ListItemButton>
+            <ListItemButton
+              dense
+              {...listItemButtonProps}
+              selected={option.selected}
+              disabled={option.disabled}
+              onClick={(e) => onMenuItemClick(e, option)}
+            >
+              <ListItemText primary={option.primaryText} secondary={option.secondaryText} {...listItemTextProps} />
+            </ListItemButton>
+          </ListItem>
         ))}
       </Menu>
     </>

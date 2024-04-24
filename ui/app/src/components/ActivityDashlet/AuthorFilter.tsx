@@ -17,23 +17,43 @@
 import React, { useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Popover from '@mui/material/Popover';
-import UsersAutocomplete, { UsersAutocompleteProps } from './UsersAutocomplete';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import ReplyRounded from '@mui/icons-material/ReplyRounded';
+
+// TODO: With the autocomplete removal, this component is less useful standalone. Move into the ActivityDashlet?
 
 export interface AuthorFilterProps {
-  onChange: UsersAutocompleteProps['onChange'];
+  onChange(value: { username: string }[]): void;
 }
 
 export function AuthorFilter(props: AuthorFilterProps) {
   const { onChange } = props;
   const [open, setOpen] = React.useState(false);
   const buttonRef = useRef<HTMLButtonElement>();
-  const [value, setValue] = useState([]);
+  const [value, setValue] = useState('');
+  const { formatMessage } = useIntl();
 
-  const onFilterChange = (value) => {
-    onChange(value);
-    setValue(value);
+  const submitChanges = () => {
+    if (!value.trim()) return;
+    const usernames = value
+      .split(',')
+      .filter(Boolean)
+      .map((username) => ({ username: username.trim() }));
+    usernames.length && onChange(usernames);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+
+  const handleKeyUp = (e) => {
+    if (e.key === 'Enter') {
+      submitChanges();
+    }
   };
 
   return (
@@ -53,9 +73,31 @@ export function AuthorFilter(props: AuthorFilterProps) {
         open={open}
         anchorEl={buttonRef.current}
         onClose={() => setOpen(false)}
-        PaperProps={{ sx: { width: 300, p: 1 } }}
+        slotProps={{ paper: { sx: { width: 300, p: 1 } } }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
-        <UsersAutocomplete onChange={onFilterChange} value={value} />
+        <TextField
+          fullWidth
+          autoFocus
+          value={value}
+          onChange={handleInputChange}
+          placeholder={formatMessage({ defaultMessage: 'Comma-separated partial usernames' })}
+          onKeyUp={handleKeyUp}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label={formatMessage({ defaultMessage: 'Submit' })}
+                  edge="end"
+                  onClick={submitChanges}
+                  size="small"
+                >
+                  <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+        />
       </Popover>
     </>
   );

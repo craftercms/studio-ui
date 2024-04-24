@@ -60,6 +60,8 @@ import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '.
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import LoadingIconButton from '../LoadingIconButton';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { AjaxError } from 'rxjs/ajax';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -77,6 +79,7 @@ interface ActivityDashletState {
   total: number;
   loadingFeed: boolean;
   loadingChunk: boolean;
+  error: AjaxError;
 }
 
 type FeedTypes = 'timeline' | 'range';
@@ -138,6 +141,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const widgetDialogContext = useWidgetDialogContext();
+  // region const { ... } = state
   const [
     {
       feed,
@@ -152,8 +156,10 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       loadingFeed,
       loadingChunk,
       selectedPackageId,
-      openPackageDetailsDialog
+      openPackageDetailsDialog,
+      error
     },
+    // endregion
     setState
   ] = useSpreadState<ActivityDashletState>({
     loadingChunk: false,
@@ -168,7 +174,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     dateTo: null,
     limit: 50,
     offset: 0,
-    total: null
+    total: null,
+    error: null
   });
   const [selectedActivities, setSelectedActivities, activities] = useSelectionLookupState<ActivitiesAndAll>({
     ALL: true
@@ -208,23 +215,29 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   );
   // endregion
   // region onRefresh
-  const onLoad = useMemo(
-    () => (backgroundRefresh?: boolean) => {
-      if (!backgroundRefresh) {
-        setState({ feed: null, total: null, offset: 0, loadingFeed: true });
+  const fetchFeed = useCallback(() => {
+    setState({ feed: null, total: null, offset: 0, loadingFeed: true, error: null });
+    return fetchActivity(site, {
+      actions: activities.filter((key) => key !== 'ALL'),
+      usernames,
+      dateTo,
+      dateFrom,
+      limit
+    }).subscribe({
+      next: (feed) => {
+        setState({
+          feed,
+          total: feed.total,
+          loadingFeed: false,
+          loadingChunk: false,
+          error: null
+        });
+      },
+      error(error) {
+        setState({ loadingFeed: false, loadingChunk: false, error: error });
       }
-      fetchActivity(site, {
-        actions: activities.filter((key) => key !== 'ALL'),
-        usernames,
-        dateTo,
-        dateFrom,
-        limit
-      }).subscribe((feed) => {
-        setState({ feed, total: feed.total, ...(!backgroundRefresh && { loadingFeed: false }) });
-      });
-    },
-    [site, activities, dateFrom, dateTo, limit, setState, usernames]
-  );
+    });
+  }, [activities, dateFrom, dateTo, limit, setState, site, usernames]);
   // endregion
   const listRef = useRef();
   const loadNextPage = () => {
@@ -237,13 +250,18 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       dateFrom,
       limit,
       offset: newOffset
-    }).subscribe((nextFeedChunk) => {
-      setState({
-        feed: feed.concat(nextFeedChunk),
-        total: nextFeedChunk.total,
-        offset: newOffset,
-        loadingChunk: false
-      });
+    }).subscribe({
+      next: (nextFeedChunk) => {
+        setState({
+          feed: feed.concat(nextFeedChunk),
+          total: nextFeedChunk.total,
+          offset: newOffset,
+          loadingChunk: false
+        });
+      },
+      error(error) {
+        setState({ loadingFeed: false, loadingChunk: false, error: error });
+      }
     });
   };
   const onRefresh = useCallback(() => {
@@ -257,8 +275,13 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       dateFrom,
       offset: 0,
       limit: offset + limit
-    }).subscribe((feed) => {
-      setState({ feed, total: feed.total, loadingChunk: false });
+    }).subscribe({
+      next: (feed) => {
+        setState({ feed, total: feed.total, loadingChunk: false });
+      },
+      error(error) {
+        setState({ loadingFeed: false, loadingChunk: false, error: error });
+      }
     });
   }, [activities, dateFrom, dateTo, limit, offset, setState, site, usernames]);
   const onItemClick = (previewUrl, e) => {
@@ -280,8 +303,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   };
   const hasMoreItemsToLoad = total > 0 && limit + offset < total;
   useEffect(() => {
-    onLoad();
-  }, [onLoad, setState]);
+    fetchFeed();
+  }, [fetchFeed, setState]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -295,14 +318,13 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     };
   }, [onRefresh]);
   // endregion
-
   return (
     <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <LoadingIconButton onClick={() => onRefresh()} loading={loadingChunk}>
+        <LoadingIconButton onClick={() => onRefresh()} loading={loadingChunk || loadingFeed}>
           <RefreshRounded />
         </LoadingIconButton>
       }
@@ -315,7 +337,6 @@ export function ActivityDashlet(props: ActivityDashletProps) {
             options={activityFilterOptions}
             closeOnSelection={false}
             menuProps={{ sx: { minWidth: 180 } }}
-            listItemProps={{ dense: true }}
           >
             {selectedActivities.ALL ? (
               <FormattedMessage id="activityDashlet.showActivityByEveryone" defaultMessage="All activities" />
@@ -341,11 +362,9 @@ export function ActivityDashlet(props: ActivityDashletProps) {
             }}
             options={feedTypeOptions}
             menuProps={{ sx: { minWidth: 200 } }}
-            listItemProps={{ dense: true }}
             onClick={() => {
               if (feedType === 'range') {
                 setState({ openRangePicker: true });
-                return false;
               }
             }}
           >
@@ -355,6 +374,22 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       }
       cardContentProps={{ ref: listRef }}
     >
+      {error && (
+        <ApiResponseErrorState
+          error={error.response?.response}
+          validationErrors={error.response?.validationErrors?.map((error) => {
+            // `error.field` looks like getActivitiesForUsers.usernames[1].<list element>
+            const match = error.field.match(/usernames\[(\d)]/);
+            if (match) {
+              error.message = formatMessage(
+                { defaultMessage: '"{value}" is not a valid username.' },
+                { value: usernames[match[1]] }
+              );
+            }
+            return error;
+          })}
+        />
+      )}
       {loadingFeed && (
         <Timeline position="right">
           <CustomTimelineItem>
@@ -405,7 +440,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               loadNextPage();
             }}
             hasMore={hasMoreItemsToLoad}
-            loader={<Box key={0}>{getSkeletonTimelineItems({ items: 3 })}</Box>}
+            loader={<Box key="infiniteScrollLoaderSkeleton">{getSkeletonTimelineItems({ items: 3 })}</Box>}
             useWindow={false}
             getScrollParent={() => listRef.current}
           >
