@@ -61,14 +61,14 @@ interface GlobalAppProps {
   footerHtml: string;
 }
 
-export function GlobalAppRouterProvider(props: GlobalAppProps) {
+export function GlobalApp(props: GlobalAppProps) {
   const { passwordRequirementsMinComplexity } = props;
   const globalNavigation = useGlobalNavigation();
   const { classes } = useStyles();
 
   const router = createHashRouter(
     createRoutesFromElements(
-      <Route path="/" element={<GlobalApp {...props} />}>
+      <Route path="/" element={<GlobalAppInternal {...props} />}>
         <Route path={Routes.Projects} element={<SiteManagement />} />
         {/* Leaving this route for backwards compatibility. Main route is now 'projects' */}
         <Route path="/sites" element={<SiteManagement />} />
@@ -132,7 +132,7 @@ export function GlobalAppRouterProvider(props: GlobalAppProps) {
   return <RouterProvider router={router} />;
 }
 
-export function GlobalApp(props: GlobalAppProps) {
+export function GlobalAppInternal(props: GlobalAppProps) {
   const { classes } = useStyles();
   const { footerHtml } = props;
   const [width, setWidth] = useState(240);
