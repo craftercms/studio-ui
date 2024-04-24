@@ -16,6 +16,11 @@
     * `LegacyUnpublishedDashlet`
   * Removed `documentDomain` property from ExperienceBuilder component and its usage in `PreviewConcierge` component
   * `WorkflowCancellationDialogUI`: prop `items` type changed from an async Resource to sync SandboxItem array.
+  * AuthorFilter removed, merged with ActivityDashlet
+  * UsersAutocomplete removed
+  * `DropDownMenuButton` component:
+    * Internal structure changed so that ListItem wraps the ListItemButton
+    * Added `listItemButtonProps` property
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`
