@@ -302,6 +302,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
   };
   const hasMoreItemsToLoad = total > 0 && limit + offset < total;
+  const isFetching = loadingChunk || loadingFeed;
   useEffect(() => {
     fetchFeed();
   }, [fetchFeed, setState]);
@@ -324,7 +325,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <LoadingIconButton onClick={() => onRefresh()} loading={loadingChunk || loadingFeed}>
+        <LoadingIconButton onClick={() => onRefresh()} loading={isFetching}>
           <RefreshRounded />
         </LoadingIconButton>
       }
@@ -348,7 +349,13 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               />
             )}
           </DropDownMenu>
-          <AuthorFilter onChange={(users) => setState({ usernames: users.map(({ username }) => username) })} />
+          <AuthorFilter
+            loading={isFetching}
+            onChange={(users) => {
+              if (users.length === 0 && (usernames === null || usernames.length === 0)) return;
+              setState({ usernames: users.map(({ username }) => username) });
+            }}
+          />
           <DropDownMenu
             size="small"
             variant="text"

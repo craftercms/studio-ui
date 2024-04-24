@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -23,27 +23,36 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import ReplyRounded from '@mui/icons-material/ReplyRounded';
+import ClearRounded from '@mui/icons-material/ClearRounded';
 
 // TODO: With the autocomplete removal, this component is less useful standalone. Move into the ActivityDashlet?
 
 export interface AuthorFilterProps {
+  disabled?: boolean;
+  loading?: boolean;
   onChange(value: { username: string }[]): void;
 }
 
 export function AuthorFilter(props: AuthorFilterProps) {
-  const { onChange } = props;
-  const [open, setOpen] = React.useState(false);
-  const buttonRef = useRef<HTMLButtonElement>();
+  const { onChange, disabled = false, loading = false } = props;
+  const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
+  const buttonRef = useRef<HTMLButtonElement>();
+  const inputRef = useRef<HTMLInputElement>();
   const { formatMessage } = useIntl();
 
   const submitChanges = () => {
-    if (!value.trim()) return;
     const usernames = value
       .split(',')
       .filter(Boolean)
       .map((username) => ({ username: username.trim() }));
-    usernames.length && onChange(usernames);
+    onChange(usernames);
+  };
+
+  const clearValue = () => {
+    setOpen(false);
+    setValue('');
+    onChange([]);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,9 +65,18 @@ export function AuthorFilter(props: AuthorFilterProps) {
     }
   };
 
+  useEffect(() => {
+    if (open && !loading && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current.focus();
+      });
+    }
+  }, [open, loading]);
+
   return (
     <>
       <Button
+        disabled={disabled}
         ref={buttonRef}
         variant="text"
         size="small"
@@ -73,26 +91,38 @@ export function AuthorFilter(props: AuthorFilterProps) {
         open={open}
         anchorEl={buttonRef.current}
         onClose={() => setOpen(false)}
-        slotProps={{ paper: { sx: { width: 300, p: 1 } } }}
+        slotProps={{ paper: { sx: { width: 350, p: 1 } } }}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <TextField
           fullWidth
           autoFocus
           value={value}
+          disabled={loading}
           onChange={handleInputChange}
-          placeholder={formatMessage({ defaultMessage: 'Comma-separated partial usernames' })}
+          placeholder='e.g. "jon.doe, jdoe, jane@example.com"'
           onKeyUp={handleKeyUp}
           InputProps={{
+            inputRef,
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
-                  aria-label={formatMessage({ defaultMessage: 'Submit' })}
+                  disabled={loading}
+                  title={formatMessage({ defaultMessage: 'Submit' })}
                   edge="end"
                   onClick={submitChanges}
                   size="small"
                 >
                   <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
+                </IconButton>
+                <IconButton
+                  disabled={loading}
+                  title={formatMessage({ defaultMessage: 'Clear & close' })}
+                  edge="end"
+                  onClick={clearValue}
+                  size="small"
+                >
+                  <ClearRounded />
                 </IconButton>
               </InputAdornment>
             )
