@@ -297,8 +297,13 @@ export function processPathMacros(dependencies: {
   useUUID?: boolean;
   fullParentPath?: string;
 }): string {
-  const { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
+  let { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
   let processedPath = path;
+
+  // The objectGroupId is the first 4 characters of the objectId, so compute if not provided.
+  if (objectGroupId === undefined && objectId) {
+    objectGroupId = objectId.substring(0, 4);
+  }
 
   if (processedPath.includes('{objectId}')) {
     if (useUUID) {

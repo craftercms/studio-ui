@@ -341,9 +341,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           }
           dispatch(action);
           break;
-        case assetDragStarted.type:
-          dispatch(assetDragStarted({ asset: payload }));
-          break;
         case assetDragEnded.type:
           dragOk(status) && dispatch(action);
           break;
@@ -403,6 +400,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
         case desktopAssetUploadComplete.type:
         case updateRteConfig.type:
         case setEditModePadding.type:
+        case assetDragStarted.type:
           dispatch(action);
           break;
         // endregion

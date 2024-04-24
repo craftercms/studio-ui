@@ -82,7 +82,7 @@
           }
         });
       }
-      if (this.allowShared && this.enableSearch) {
+      if (this.enableSearch) {
         let message = formatMessage('searchExisting');
         $(control.$dropdownMenu).append(
           self._createOption(message, () => {
@@ -121,14 +121,14 @@
     getSupportedProperties: function () {
       return [
         {
-          label: formatMessage('allowShared'),
-          name: 'allowShared',
+          label: formatMessage('allowEmbedded'),
+          name: 'allowEmbedded',
           type: 'boolean',
           defaultValue: 'true'
         },
         {
-          label: formatMessage('allowEmbedded'),
-          name: 'allowEmbedded',
+          label: formatMessage('allowShared'),
+          name: 'allowShared',
           type: 'boolean',
           defaultValue: 'true'
         },
@@ -136,15 +136,13 @@
           label: formatMessage('enableBrowse'),
           name: 'enableBrowse',
           type: 'boolean',
-          defaultValue: 'false',
-          dependsOn: 'allowShared'
+          defaultValue: 'true'
         },
         {
           label: formatMessage('enableSearch'),
           name: 'enableSearch',
           type: 'boolean',
-          defaultValue: 'false',
-          dependsOn: 'allowShared'
+          defaultValue: 'false'
         },
         {
           label: formatMessage('baseRepositoryPath'),
@@ -195,7 +193,8 @@
     },
 
     _openSearch: function (control) {
-      const searchPath = craftercms.utils.string.ensureSingleSlash(`${this.baseBrowsePath}/.+`);
+      let searchPath = this._processPathsForMacros(this.baseBrowsePath);
+      searchPath = craftercms.utils.string.ensureSingleSlash(`${searchPath}/.+`);
       const searchContext = {
         path: searchPath,
         searchId: null,
@@ -346,7 +345,7 @@
         control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
-      if (self.allowShared && self.enableBrowse) {
+      if (self.enableBrowse) {
         let message = `${formatMessage('browseExisting')} "${self._getContentTypeName(contentType)}"`;
         control.$dropdownMenu.append(
           self._createOption(message, () => {

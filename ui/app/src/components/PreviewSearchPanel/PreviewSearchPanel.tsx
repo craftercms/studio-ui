@@ -227,15 +227,14 @@ export function PreviewSearchPanel() {
     }
     if (item.type === 'Component') {
       const instance: ContentInstance = state.contentInstanceLookup[item.path];
-      hostToGuest$.next({
-        type: componentInstanceDragStarted.type,
-        payload: { instance, contentType: contentTypesLookup[instance.craftercms.contentTypeId] }
-      });
+      hostToGuest$.next(
+        componentInstanceDragStarted({
+          instance,
+          contentType: contentTypesLookup[instance.craftercms.contentTypeId]
+        })
+      );
     } else {
-      hostToGuest$.next({
-        type: assetDragStarted.type,
-        payload: item
-      });
+      hostToGuest$.next(assetDragStarted({ asset: item }));
     }
   };
 
