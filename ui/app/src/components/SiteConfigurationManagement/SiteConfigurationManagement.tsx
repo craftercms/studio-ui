@@ -192,7 +192,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
       ).subscribe({
         next(xml) {
           const sessionData = JSON.parse(sessionStorage.getItem(sessionStorageKey));
-          if (sessionData.content) {
+          if (sessionData?.content) {
             setSelectedConfigFileXml(sessionData.content);
             setContentSize(sessionData.content.length);
             setDisabledSaveButton(false);
