@@ -399,61 +399,59 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               />
             )}
           </DropDownMenu>
-          <>
-            <Button
-              ref={authorFilterButtonRef}
-              variant="text"
-              size="small"
-              endIcon={<KeyboardArrowDownRounded />}
-              onClick={(e) => {
-                setAuthorFilterOpen(true);
+          <Button
+            ref={authorFilterButtonRef}
+            variant="text"
+            size="small"
+            endIcon={<KeyboardArrowDownRounded />}
+            onClick={(e) => {
+              setAuthorFilterOpen(true);
+            }}
+          >
+            <FormattedMessage id="words.author" defaultMessage="Author" />
+          </Button>
+          <Popover
+            open={authorFilterOpen}
+            anchorEl={authorFilterButtonRef.current}
+            onClose={() => setAuthorFilterOpen(false)}
+            slotProps={{ paper: { sx: { width: 350, p: 1 } } }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          >
+            <TextField
+              fullWidth
+              autoFocus
+              value={authorFilterValue}
+              disabled={isFetching}
+              onChange={handleAuthorFilterInputChange}
+              placeholder='e.g. "jon.doe, jdoe, jane@example.com"'
+              onKeyUp={handleAuthorFilterKeyUp}
+              InputProps={{
+                inputRef: authorFilterInputRef,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      disabled={isFetching}
+                      title={formatMessage({ defaultMessage: 'Submit' })}
+                      edge="end"
+                      onClick={submitAuthorFilterChanges}
+                      size="small"
+                    >
+                      <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
+                    </IconButton>
+                    <IconButton
+                      disabled={isFetching}
+                      title={formatMessage({ defaultMessage: 'Clear & close' })}
+                      edge="end"
+                      onClick={clearAuthorFilterValue}
+                      size="small"
+                    >
+                      <ClearRounded />
+                    </IconButton>
+                  </InputAdornment>
+                )
               }}
-            >
-              <FormattedMessage id="words.author" defaultMessage="Author" />
-            </Button>
-            <Popover
-              open={authorFilterOpen}
-              anchorEl={authorFilterButtonRef.current}
-              onClose={() => setAuthorFilterOpen(false)}
-              slotProps={{ paper: { sx: { width: 350, p: 1 } } }}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-            >
-              <TextField
-                fullWidth
-                autoFocus
-                value={authorFilterValue}
-                disabled={isFetching}
-                onChange={handleAuthorFilterInputChange}
-                placeholder='e.g. "jon.doe, jdoe, jane@example.com"'
-                onKeyUp={handleAuthorFilterKeyUp}
-                InputProps={{
-                  inputRef: authorFilterInputRef,
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        disabled={isFetching}
-                        title={formatMessage({ defaultMessage: 'Submit' })}
-                        edge="end"
-                        onClick={submitAuthorFilterChanges}
-                        size="small"
-                      >
-                        <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
-                      </IconButton>
-                      <IconButton
-                        disabled={isFetching}
-                        title={formatMessage({ defaultMessage: 'Clear & close' })}
-                        edge="end"
-                        onClick={clearAuthorFilterValue}
-                        size="small"
-                      >
-                        <ClearRounded />
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Popover>
-          </>
+            />
+          </Popover>
           <DropDownMenu
             size="small"
             variant="text"
