@@ -286,9 +286,6 @@ export class Dashboard extends UppyDashboard {
     } else {
       if (this.opts.autoProceed) {
         this.uppy.on('files-added', this.validateFilesPolicy);
-      } else {
-        this.uppy.on('files-added', this.#generateLargeThumbnailIfSingleFile);
-        this.uppy.on('file-removed', this.#generateLargeThumbnailIfSingleFile);
       }
     }
   };
@@ -353,26 +350,6 @@ export class Dashboard extends UppyDashboard {
   #getEditors = memoize((targets) => {
     return targets.filter((target) => target.type === 'editor').map(this.#attachRenderFunctionToTarget);
   });
-
-  #generateLargeThumbnailIfSingleFile = () => {
-    if (this.opts.disableThumbnailGenerator) {
-      return;
-    }
-
-    const LARGE_THUMBNAIL = 600;
-    const files = this.uppy.getFiles();
-
-    if (files.length === 1) {
-      const thumbnailGenerator = this.uppy.getPlugin(`${this.id}:ThumbnailGenerator`);
-      thumbnailGenerator?.setOptions({ thumbnailWidth: LARGE_THUMBNAIL });
-      const fileForThumbnail = { ...files[0], preview: undefined };
-      thumbnailGenerator?.requestThumbnail(fileForThumbnail).then(() => {
-        thumbnailGenerator?.setOptions({
-          thumbnailWidth: this.opts.thumbnailWidth
-        });
-      });
-    }
-  };
 
   render = (state) => {
     const pluginState = this.getPluginState();
