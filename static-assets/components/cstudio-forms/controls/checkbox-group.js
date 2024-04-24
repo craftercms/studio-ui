@@ -485,7 +485,11 @@
       this.value = value;
       this.form.updateModel(this.id, this.getValue());
       this.render(this.config, this.containerEl, false, true);
-      this.hiddenEl.value = this.valueToString();
+      if (this.hiddenEl) {
+        this.hiddenEl.value = this.valueToString();
+      } else {
+        console.error('[checkbox-group.js] setValue: Trying to set value of `hiddenEl` but it is not defined yet.');
+      }
     },
 
     valueToString: function () {
