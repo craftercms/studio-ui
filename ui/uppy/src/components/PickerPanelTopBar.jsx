@@ -76,7 +76,30 @@ function UploadStatus({
 }
 
 function PanelTopBar(props) {
-  const { i18n, isAllComplete, hideCancelButton, maxNumberOfFiles, toggleAddFilesPanel, uppy } = props;
+  const {
+    i18n,
+    isAllComplete,
+    isAllErrored,
+    isAllPaused,
+    files,
+    invalidFiles,
+    newFiles,
+    hideCancelButton,
+    maxNumberOfFiles,
+    toggleAddFilesPanel,
+    uppy
+  } = props;
+  const uploadingState = getUploadingState(isAllErrored, isAllComplete, isAllPaused, files);
+  const invalidFilesCount = Object.values(invalidFiles).filter((invalid) => invalid).length;
+  const newFilesCount = newFiles.length;
+  const disableProceed =
+    // if there are active uploads
+    uploadingState === 'uploading' ||
+    // there are no new files to upload (all files already uploaded)
+    !newFilesCount ||
+    // if there are invalid files (due to site policies) waiting to be uploaded
+    (invalidFilesCount && uploadingState === 'waiting');
+
   let { allowNewUpload } = props;
   // TODO maybe this should be done in ../Dashboard.jsx, then just pass that down as `allowNewUpload`
   if (allowNewUpload && maxNumberOfFiles) {
@@ -147,9 +170,9 @@ function PanelTopBar(props) {
           <button
             className="uppy-dashboard-button-base uppy-dashboard-text-button"
             type="button"
-            disabled={props.isAllComplete && props.state.totalProgress === 100}
+            disabled={disableProceed}
             onClick={() => {
-              props.validateFilesPolicy(Object.values(props.files));
+              props.validateFilesPolicy(Object.values(props.newFiles));
             }}
           >
             {props.i18n('proceed')}
