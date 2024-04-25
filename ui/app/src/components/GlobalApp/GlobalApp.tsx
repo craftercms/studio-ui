@@ -42,7 +42,7 @@ import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import Skeleton from '@mui/material/Skeleton';
 import { globalMenuMessages } from '../../env/i18n-legacy';
-import { Routes } from '../../utils/constants';
+import { GlobalRoutes } from '../../env/routes';
 
 const routeWrapper = (module) => {
   module.Component = module.default;
@@ -73,23 +73,23 @@ export function GlobalApp(props: GlobalAppProps) {
   const router = createHashRouter(
     createRoutesFromElements(
       <Route path="/" element={<GlobalAppInternal {...props} />}>
-        <Route path={Routes.Projects} element={<SiteManagement />} />
+        <Route path={GlobalRoutes.Projects} element={<SiteManagement />} />
         {/* Leaving this route for backwards compatibility. Main route is now 'projects' */}
         <Route path="/sites" element={<SiteManagement />} />
         <Route
-          path={Routes.Users}
+          path={GlobalRoutes.Users}
           element={<UserManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
         />
-        <Route path={Routes.Groups} lazy={GroupManagement} />
-        <Route path={Routes.Audit} lazy={AuditManagement} />
-        <Route path={Routes.LogLevel} lazy={LogLevelManagement} />
-        <Route path={Routes.LogConsole} lazy={LogConsole} />
-        <Route path={Routes.GlobalConfig} lazy={GlobalConfigManagement} />
-        <Route path={Routes.EncryptTool} lazy={EncryptTool} />
-        <Route path={Routes.TokenManagement} lazy={TokenManagement} />
-        <Route path={Routes.About} lazy={AboutCrafterCMSView} />
+        <Route path={GlobalRoutes.Groups} lazy={GroupManagement} />
+        <Route path={GlobalRoutes.Audit} lazy={AuditManagement} />
+        <Route path={GlobalRoutes.LogLevel} lazy={LogLevelManagement} />
+        <Route path={GlobalRoutes.LogConsole} lazy={LogConsole} />
+        <Route path={GlobalRoutes.GlobalConfig} lazy={GlobalConfigManagement} />
+        <Route path={GlobalRoutes.EncryptTool} lazy={EncryptTool} />
+        <Route path={GlobalRoutes.TokenManagement} lazy={TokenManagement} />
+        <Route path={GlobalRoutes.About} lazy={AboutCrafterCMSView} />
         <Route
-          path={Routes.Settings}
+          path={GlobalRoutes.Settings}
           element={<AccountManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
         />
         <Route

@@ -77,6 +77,7 @@ import useUnmount from '../../hooks/useUnmount';
 import useActiveUser from '../../hooks/useActiveUser';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { useNavigate } from 'react-router-dom';
+import { ProjectToolsRoutes } from '../../env/routes';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -160,7 +161,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
       );
       createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
         if (button === 'ok') {
-          navigate('/configuration');
+          navigate(ProjectToolsRoutes.Configuration);
         } else {
           sessionStorage.removeItem(sessionStorageKey);
         }

@@ -31,7 +31,7 @@ import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
-import { MAX_CONFIG_SIZE, Routes } from '../../utils/constants';
+import { MAX_CONFIG_SIZE } from '../../utils/constants';
 import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 import useUnmount from '../../hooks/useUnmount';
 import useActiveUser from '../../hooks/useActiveUser';
@@ -39,6 +39,7 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { useBeforeUnload, useNavigate } from 'react-router-dom';
+import { GlobalRoutes } from '../../env/routes';
 
 const translations = defineMessages({
   configSaved: {
@@ -108,7 +109,7 @@ export function GlobalConfigManagement() {
       );
       createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
         if (button === 'ok') {
-          navigate(Routes.GlobalConfig);
+          navigate(GlobalRoutes.GlobalConfig);
         } else {
           sessionStorage.removeItem(sessionStorageKey);
         }

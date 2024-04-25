@@ -103,17 +103,3 @@ export const components = new Map<string, WidgetRecord>();
 export const MAX_CONFIG_SIZE = 524288; // Max configuration file size allowed (in bytes) (512 * 1024 = 524288)
 
 export const PROJECT_PREVIEW_IMAGE_UPDATED = 'ProjectPreviewImageUpdated';
-
-export enum Routes {
-  Projects = '/projects',
-  Users = '/users',
-  Groups = '/groups',
-  Audit = '/audit',
-  LogLevel = '/logging',
-  LogConsole = '/log',
-  GlobalConfig = '/global-config',
-  EncryptTool = '/encryption-tool',
-  TokenManagement = '/token-management',
-  About = '/about-us',
-  Settings = '/settings'
-}
