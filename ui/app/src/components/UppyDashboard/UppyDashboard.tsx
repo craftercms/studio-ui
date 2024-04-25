@@ -375,8 +375,8 @@ const translations = defineMessages({
   projectPoliciesNoComply: {
     defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
   },
-  uploadFiles: {
-    defaultMessage: 'Upload file(s)'
+  proceed: {
+    defaultMessage: 'Start Uploads'
   }
 });
 
@@ -453,7 +453,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
           renamingFromTo: formatMessage(translations.renamingFromTo),
           minimize: formatMessage(translations.minimize),
           close: formatMessage(translations.close),
-          uploadFiles: formatMessage(translations.uploadFiles)
+          proceed: formatMessage(translations.proceed)
         }
       },
       maxActiveUploads,
