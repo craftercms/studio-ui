@@ -95,6 +95,7 @@ function PanelTopBar(props) {
           style={{ width: `${props.state.totalProgress}%` }}
         />
       </div>
+
       <button
         className="uppy-dashboard-button-base uppy-dashboard-text-button"
         type="button"
