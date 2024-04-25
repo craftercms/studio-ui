@@ -30,6 +30,7 @@ import { UppyFile } from '@uppy/utils';
 import { CSSObject } from 'tss-react';
 import { ensureSingleSlash } from '../../utils/string';
 import { UppyDashboardProps } from './UppyDashboardProps';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const useStyles = makeStyles()((theme) => ({
   dashboard: {
@@ -382,12 +383,14 @@ const translations = defineMessages({
 
 export function UppyDashboard(props: UppyDashboardProps) {
   const { uppy, site, path, onClose, onMinimized, title, onPendingChanges, maxActiveUploads } = props;
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const options = {
     replaceTargetContent: true,
     width: '100%',
     height: '60vh',
     fileManagerSelectionType: 'both',
     showRemoveButtonAfterComplete: false,
+    theme: prefersDarkMode ? 'dark' : 'light',
     ...props.options
   };
   const { classes } = useStyles();
