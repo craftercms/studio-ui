@@ -44,16 +44,21 @@ import Skeleton from '@mui/material/Skeleton';
 import { globalMenuMessages } from '../../env/i18n-legacy';
 import { Routes } from '../../utils/constants';
 
+const routeWrapper = (module) => {
+  module.Component = module.default;
+  return module;
+};
+
 // Site management loaded normally above as it is usually where people first land.
 const UserManagement = lazy(() => import('../UserManagement'));
-const GroupManagement = lazy(() => import('../GroupManagement'));
-const AuditManagement = lazy(() => import('../AuditManagement'));
-const LogLevelManagement = lazy(() => import('../LogLevelManagement'));
-const LogConsole = lazy(() => import('../LogConsole'));
-const GlobalConfigManagement = lazy(() => import('../GlobalConfigManagement'));
-const EncryptTool = lazy(() => import('../EncryptTool'));
-const TokenManagement = lazy(() => import('../TokenManagement'));
-const AboutCrafterCMSView = lazy(() => import('../AboutCrafterCMSView'));
+const GroupManagement = () => import('../GroupManagement/GroupManagement').then(routeWrapper);
+const AuditManagement = () => import('../AuditManagement').then(routeWrapper);
+const LogLevelManagement = () => import('../LogLevelManagement').then(routeWrapper);
+const LogConsole = () => import('../LogConsole').then(routeWrapper);
+const GlobalConfigManagement = () => import('../GlobalConfigManagement').then(routeWrapper);
+const EncryptTool = () => import('../EncryptTool').then(routeWrapper);
+const TokenManagement = () => import('../TokenManagement').then(routeWrapper);
+const AboutCrafterCMSView = () => import('../AboutCrafterCMSView').then(routeWrapper);
 const AccountManagement = lazy(() => import('../AccountManagement'));
 
 interface GlobalAppProps {
@@ -64,7 +69,6 @@ interface GlobalAppProps {
 export function GlobalApp(props: GlobalAppProps) {
   const { passwordRequirementsMinComplexity } = props;
   const globalNavigation = useGlobalNavigation();
-  const { classes } = useStyles();
 
   const router = createHashRouter(
     createRoutesFromElements(
@@ -76,14 +80,14 @@ export function GlobalApp(props: GlobalAppProps) {
           path={Routes.Users}
           element={<UserManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
         />
-        <Route path={Routes.Groups} element={<GroupManagement />} />
-        <Route path={Routes.Audit} element={<AuditManagement />} />
-        <Route path={Routes.LogLevel} element={<LogLevelManagement />} />
-        <Route path={Routes.LogConsole} element={<LogConsole />} />
-        <Route path={Routes.GlobalConfig} element={<GlobalConfigManagement />} />
-        <Route path={Routes.EncryptTool} element={<EncryptTool />} />
-        <Route path={Routes.TokenManagement} element={<TokenManagement />} />
-        <Route path={Routes.About} element={<AboutCrafterCMSView />} />
+        <Route path={Routes.Groups} lazy={GroupManagement} />
+        <Route path={Routes.Audit} lazy={AuditManagement} />
+        <Route path={Routes.LogLevel} lazy={LogLevelManagement} />
+        <Route path={Routes.LogConsole} lazy={LogConsole} />
+        <Route path={Routes.GlobalConfig} lazy={GlobalConfigManagement} />
+        <Route path={Routes.EncryptTool} lazy={EncryptTool} />
+        <Route path={Routes.TokenManagement} lazy={TokenManagement} />
+        <Route path={Routes.About} lazy={AboutCrafterCMSView} />
         <Route
           path={Routes.Settings}
           element={<AccountManagement passwordRequirementsMinComplexity={passwordRequirementsMinComplexity} />}
@@ -105,31 +109,39 @@ export function GlobalApp(props: GlobalAppProps) {
             )
           }
         />
-        <Route
-          path="*"
-          element={
-            <Box display="flex" flexDirection="column" height="100%">
-              <section className={classes.launcher}>
-                <LauncherOpenerButton />
-              </section>
-              <EmptyState
-                styles={{
-                  root: {
-                    height: '100%',
-                    margin: 0
-                  }
-                }}
-                title="404"
-                subtitle={<FormattedMessage id={'globalApp.routeNotFound'} defaultMessage={'Route not found'} />}
-              />
-            </Box>
-          }
-        />
+        <Route path="*" element={<RouteNotFound />} />
       </Route>
     )
   );
 
   return <RouterProvider router={router} />;
+}
+
+function RouteNotFound() {
+  const { pathname } = useLocation();
+  return (
+    <Box display="flex" flexDirection="column" height="100%">
+      <Box component="section" sx={{ margin: '10px 12px 0 auto' }}>
+        <LauncherOpenerButton />
+      </Box>
+      <EmptyState
+        styles={{
+          root: {
+            height: '100%',
+            margin: 0
+          }
+        }}
+        title="404"
+        subtitle={
+          <FormattedMessage
+            id={'globalApp.routeNotFound'}
+            defaultMessage={'Route "{pathname}" not found'}
+            values={{ pathname }}
+          />
+        }
+      />
+    </Box>
+  );
 }
 
 export function GlobalAppInternal(props: GlobalAppProps) {
