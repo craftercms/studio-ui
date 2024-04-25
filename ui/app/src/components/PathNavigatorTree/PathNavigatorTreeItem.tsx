@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import React, { useState } from 'react';
 import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
@@ -295,27 +295,25 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     // region <TreeItem ... />
     <TreeItem
       key={path}
-      nodeId={path}
-      expandIcon={
-        // region
-        <ArrowRightRoundedIcon
-          role="button"
-          aria-label={formatMessage(translations.expand)}
-          aria-hidden="false"
-          onClick={() => onIconClick(path)}
-        />
-        // endregion
-      }
-      collapseIcon={
-        // region
-        <ArrowDropDownRoundedIcon
-          role="button"
-          aria-label={formatMessage(translations.collapse)}
-          aria-hidden="false"
-          onClick={() => onIconClick(path)}
-        />
-        // endregion
-      }
+      itemId={path}
+      slots={{
+        expandIcon: ArrowRightRoundedIcon,
+        collapseIcon: ArrowDropDownRoundedIcon
+      }}
+      slotProps={{
+        expandIcon: {
+          role: 'button',
+          'aria-label': formatMessage(translations.expand),
+          'aria-hidden': 'false',
+          onClick: () => onIconClick(path)
+        },
+        collapseIcon: {
+          role: 'button',
+          'aria-label': formatMessage(translations.collapse),
+          'aria-hidden': 'false',
+          onClick: () => onIconClick(path)
+        }
+      }}
       label={
         <>
           <section
@@ -417,6 +415,12 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
         label: cx(classes.labelContainer, active[path] && classes.active),
         iconContainer: classes.iconContainer,
         focused: classes.focused
+      }}
+      sx={{
+        [`& .${treeItemClasses.content}`]: {
+          pt: 0,
+          pb: 0
+        }
       }}
       {...propsForTreeItem}
     />

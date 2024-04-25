@@ -102,7 +102,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.7",
-    "@mui/material": "^5.15.7",
+    "@mui/material": "^5.15.15",
     "@reduxjs/toolkit": "^2.1.0",
     "@types/react-dom": "^18.2.18",
     "js-cookie": "^3.0.5",
