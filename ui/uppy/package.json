@@ -34,8 +34,8 @@
     "watch": "babel src -d lib --watch"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/plugin-transform-object-assign": "^7.23.3",
+    "@babel/cli": "^7.24.1",
+    "@babel/plugin-transform-object-assign": "^7.24.1",
     "@types/eslint": "^8.56.2",
     "babel-plugin-inline-package-json": "^2.0.0",
     "build-if-changed": "^1.5.5",
