@@ -1671,7 +1671,7 @@ __metadata:
     "@types/bootstrap": "npm:^5.2.10"
     "@types/jquery": "npm:^3.5.29"
     "@types/rimraf": "npm:^4.0.5"
-    ace-builds: "npm:^1.32.5"
+    ace-builds: "npm:^1.33.1"
     bootstrap: "npm:^5.3.2"
     build-if-changed: "npm:^1.5.5"
     css-loader: "npm:^6.10.0"
@@ -6066,10 +6066,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ace-builds@npm:^1.32.5":
-  version: 1.32.5
-  resolution: "ace-builds@npm:1.32.5"
-  checksum: 2b3d90ab4dd09b02a1bbdbd2da6d0b740b8f590c2ca6d81754681c3fe10fa57cb14f4eafea7133b600107f20841998b9f802f7dd853f3fba785249737ec69941
+"ace-builds@npm:^1.33.1":
+  version: 1.33.1
+  resolution: "ace-builds@npm:1.33.1"
+  checksum: 5af47d318f7b85b5b515d482179153b8e772b49e658198d4e72dbdc42b35fa0780e5a8768388a239b76006fcae656e453a2f5e3f930c1f00a1027449ff03578b
   languageName: node
   linkType: hard
 
