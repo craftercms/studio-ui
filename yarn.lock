@@ -1761,7 +1761,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^7.7.1"
     "@videojs/vhs-utils": "npm:^4.1.0"
     autosuggest-highlight: "npm:^3.3.4"
-    babel-plugin-formatjs: "npm:^10.5.13"
+    babel-plugin-formatjs: "npm:^10.5.14"
     babel-plugin-react-intl: "npm:^8.2.25"
     build-if-changed: "npm:^1.5.5"
     clsx: "npm:^2.1.1"
@@ -6637,9 +6637,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-formatjs@npm:^10.5.13":
-  version: 10.5.13
-  resolution: "babel-plugin-formatjs@npm:10.5.13"
+"babel-plugin-formatjs@npm:^10.5.14":
+  version: 10.5.14
+  resolution: "babel-plugin-formatjs@npm:10.5.14"
   dependencies:
     "@babel/core": "npm:^7.10.4"
     "@babel/helper-plugin-utils": "npm:^7.10.4"
@@ -6652,7 +6652,7 @@ __metadata:
     "@types/babel__helper-plugin-utils": "npm:^7.10.0"
     "@types/babel__traverse": "npm:^7.1.7"
     tslib: "npm:^2.4.0"
-  checksum: d92167ce5f76c974fad1b266d23abb62d0738526d863b09d69a229063469350a5c31dc1c437128757750cdb08dfec882646b9f545d33e38d2f25287fb5989ef1
+  checksum: 4ff6f95ef94a2ef54e56e4ced7aed28f5bb34624986f566c5e5ce6df697b34ceff8f671b0c064305b5482f578d44f66c5663141b9fff7b6dd5a365242f756609
   languageName: node
   linkType: hard
 

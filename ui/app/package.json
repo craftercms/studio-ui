@@ -187,7 +187,7 @@
     "@types/zxcvbn": "^4.4.4",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
-    "babel-plugin-formatjs": "^10.5.13",
+    "babel-plugin-formatjs": "^10.5.14",
     "babel-plugin-react-intl": "^8.2.25",
     "build-if-changed": "^1.5.5",
     "eslint": "^8.56.0",
