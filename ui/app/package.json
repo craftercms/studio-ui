@@ -141,7 +141,7 @@
     "@videojs/vhs-utils": "^4.1.0",
     "autosuggest-highlight": "^3.3.4",
     "clsx": "^2.1.1",
-    "fast-xml-parser": "^4.3.4",
+    "fast-xml-parser": "^4.3.6",
     "graphiql": "^3.2.0",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.16.0",

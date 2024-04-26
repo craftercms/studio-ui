@@ -1767,7 +1767,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     eslint: "npm:^8.56.0"
     eslint-config-react-app: "npm:^7.0.1"
-    fast-xml-parser: "npm:^4.3.4"
+    fast-xml-parser: "npm:^4.3.6"
     graphiql: "npm:^3.2.0"
     graphql: "npm:^16.8.1"
     graphql-ws: "npm:^5.16.0"
@@ -9308,14 +9308,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.3.4":
-  version: 4.3.4
-  resolution: "fast-xml-parser@npm:4.3.4"
+"fast-xml-parser@npm:^4.3.6":
+  version: 4.3.6
+  resolution: "fast-xml-parser@npm:4.3.6"
   dependencies:
     strnum: "npm:^1.0.5"
   bin:
     fxparser: src/cli/cli.js
-  checksum: ef859101980cdd02b111fce09e25949a80e373654a6c424091355930f0d364abec144d8bb722d250a0c070416566518e621e198204a6b976db68f20c16d9300b
+  checksum: 3e431e594960f04996e60a01fb51d8f4346138a7ba60d97244bf7866a3072eaf2f6dc73008d7b07871b98b606a8d7db955efdeae787992f685dd0e5bcc67c36a
   languageName: node
   linkType: hard
 
