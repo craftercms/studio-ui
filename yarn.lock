@@ -1678,7 +1678,7 @@ __metadata:
     file-loader: "npm:^6.2.0"
     grunt: "npm:^1.6.1"
     jquery: "npm:^3.7.1"
-    jquery-ui: "npm:^1.13.2"
+    jquery-ui: "npm:^1.13.3"
     jquery-ui-css: "npm:^1.11.5"
     js-yaml: "npm:^4.1.0"
     monaco-editor: "npm:0.47.0"
@@ -1764,7 +1764,7 @@ __metadata:
     babel-plugin-formatjs: "npm:^10.5.13"
     babel-plugin-react-intl: "npm:^8.2.25"
     build-if-changed: "npm:^1.5.5"
-    clsx: "npm:^2.1.0"
+    clsx: "npm:^2.1.1"
     eslint: "npm:^8.56.0"
     eslint-config-react-app: "npm:^7.0.1"
     fast-xml-parser: "npm:^4.3.4"
@@ -1775,9 +1775,9 @@ __metadata:
     jabber: "npm:^1.5.3"
     js-cookie: "npm:^3.0.5"
     marked: "npm:^11.2.0"
-    marked-highlight: "npm:^2.1.0"
-    moment-timezone: "npm:^0.5.44"
-    nanoid: "npm:^5.0.4"
+    marked-highlight: "npm:^2.1.1"
+    moment-timezone: "npm:^0.5.45"
+    nanoid: "npm:^5.0.7"
     ncp: "npm:^2.0.0"
     notistack: "npm:3.0.1"
     npm-run-all: "npm:^4.1.5"
@@ -11985,12 +11985,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jquery-ui@npm:^1.13.2":
-  version: 1.13.2
-  resolution: "jquery-ui@npm:1.13.2"
+"jquery-ui@npm:^1.13.3":
+  version: 1.13.3
+  resolution: "jquery-ui@npm:1.13.3"
   dependencies:
     jquery: "npm:>=1.8.0 <4.0.0"
-  checksum: 0a870411c6dbed95b7cd3461f71f95c8b9d8f15af2975b54dd25e7ead79bbbe6fbf1f6aab0bca35773bb37e1c84cb933cd59171fa8ab62ec79bf7ad0701f9922
+  checksum: 96db237438e5fb1b9f49d18c086134de9dcdff970d6385679b8fa16fbb5c95be861c84be2d07f0efca57a534a50b31bebc497f0314cf85e6f64d8553264d4983
   languageName: node
   linkType: hard
 
@@ -12692,12 +12692,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked-highlight@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "marked-highlight@npm:2.1.0"
+"marked-highlight@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "marked-highlight@npm:2.1.1"
   peerDependencies:
-    marked: ">=4 <12"
-  checksum: 2f9a8cf4a4bddc690060e9bdb6b9fcfd3efff4ddaa0fbed2d39057738fea1c6d5a9b108fb96cca2acdc92f646e3ea972546ade5c1cc7ec0fe2df1356c62c3193
+    marked: ">=4 <13"
+  checksum: 0ddf79b5cc0aad11fc5ea10d572b53f5569579be010efa2ab7e50209a95226690d8359c773b59bc5b126869511e0561cee559c945ebbbeab5f26d417a0729d61
   languageName: node
   linkType: hard
 
@@ -13026,12 +13026,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.44":
-  version: 0.5.44
-  resolution: "moment-timezone@npm:0.5.44"
+"moment-timezone@npm:^0.5.45":
+  version: 0.5.45
+  resolution: "moment-timezone@npm:0.5.45"
   dependencies:
     moment: "npm:^2.29.4"
-  checksum: 72f0a425c52a858cca76d5ab35dfb02d68ac7292b60e4b34fb432c1fae07e32ad7f67de7ff5d2d2c868eee8052c9981fc3244f5fc9a2f454fc4fd15db2ec45a7
+  checksum: 45e3793d44bea8e826c934a335ebf0b92c6d6dae562fdb59d8c45a16d5c11de4d6692b5fa7eebca969881f06b81b55f8535883bfbc727b597d601709fa5a2bb2
   languageName: node
   linkType: hard
 
@@ -13145,12 +13145,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^5.0.4":
-  version: 5.0.4
-  resolution: "nanoid@npm:5.0.4"
+"nanoid@npm:^5.0.7":
+  version: 5.0.7
+  resolution: "nanoid@npm:5.0.7"
   bin:
     nanoid: bin/nanoid.js
-  checksum: cf09cca3774f3147100948f7478f75f4c9ee97a4af65c328dd9abbd83b12f8bb35cf9f89a21c330f3b759d667a4cd0140ed84aa5fdd522c61e0d341aeaa7fb6f
+  checksum: 25ab0b0cf9082ae6747f0f55cec930e6c1cc5975103aa3a5fda44be5720eff57d9b25a8a9850274bfdde8def964b49bf03def71c6aa7ad1cba32787819b79f60
   languageName: node
   linkType: hard
 

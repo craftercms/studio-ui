@@ -24,7 +24,7 @@
     "css-loader": "^6.10.0",
     "file-loader": "^6.2.0",
     "jquery": "^3.7.1",
-    "jquery-ui": "^1.13.2",
+    "jquery-ui": "^1.13.3",
     "jquery-ui-css": "^1.11.5",
     "js-yaml": "^4.1.0",
     "monaco-editor": "0.47.0",
