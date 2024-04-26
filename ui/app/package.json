@@ -154,7 +154,7 @@
     "nanoid": "^5.0.7",
     "notistack": "3.0.1",
     "prettier": "^3.2.4",
-    "query-string": "^8.1.0",
+    "query-string": "^9.0.0",
     "react": "18.3.1",
     "react-animations": "^1.0.0",
     "react-dom": "18.3.1",

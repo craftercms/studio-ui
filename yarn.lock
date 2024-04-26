@@ -1775,7 +1775,7 @@ __metadata:
     postcss-normalize: "npm:^10.0.1"
     prettier: "npm:^3.2.4"
     prop-types: "npm:^15.8.1"
-    query-string: "npm:^8.1.0"
+    query-string: "npm:^9.0.0"
     react: "npm:18.3.1"
     react-animations: "npm:^1.0.0"
     react-dom: "npm:18.3.1"
@@ -15101,14 +15101,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"query-string@npm:^8.1.0":
-  version: 8.1.0
-  resolution: "query-string@npm:8.1.0"
+"query-string@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "query-string@npm:9.0.0"
   dependencies:
     decode-uri-component: "npm:^0.4.1"
     filter-obj: "npm:^5.1.0"
     split-on-first: "npm:^3.0.0"
-  checksum: f693d77bc3e8c5cb7bda9c928e9c625bf8adacb1ebd63fd97c9ffd3f65c7df0cfc86aebf92588b5caddccfcb379bc7f4d81fcc4e64c64e4e75eabaca823c2293
+  checksum: ea71a81a192743b633ab6acc27a917d9d868c16ef50d3985bddebf5e9b525012e450220b2bad6c208f29c013d34bd2c1e925362979d19f716c74a5fe3ebf4b21
   languageName: node
   linkType: hard
 
