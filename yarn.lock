@@ -1765,7 +1765,7 @@ __metadata:
     highlight.js: "npm:^11.9.0"
     jabber: "npm:^1.5.3"
     js-cookie: "npm:^3.0.5"
-    marked: "npm:^11.2.0"
+    marked: "npm:^12.0.2"
     marked-highlight: "npm:^2.1.1"
     moment-timezone: "npm:^0.5.45"
     nanoid: "npm:^5.0.7"
@@ -12731,12 +12731,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:*, marked@npm:^11.2.0":
-  version: 11.2.0
-  resolution: "marked@npm:11.2.0"
+"marked@npm:*, marked@npm:^12.0.2":
+  version: 12.0.2
+  resolution: "marked@npm:12.0.2"
   bin:
     marked: bin/marked.js
-  checksum: 0c8c0d263617a04f066db6f5adfed811a8eb78a685850d4d0b8b9ef351e416fb871813ea7ee7f94f4d5f67da98c3a2a4259b8684e4f93a6a673733fe9d9f2868
+  checksum: 24d4fc58d37c1779197fa7f93c504d8c71d4df54eb69cbbc14a55ba2a8e2ad83d723801fc25452c21ce74b38a483c5863c53449f130253a597be9e9c1d3e7e2b
   languageName: node
   linkType: hard
 
@@ -14478,16 +14478,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-modules-extract-imports@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "postcss-modules-extract-imports@npm:3.0.0"
-  peerDependencies:
-    postcss: ^8.1.0
-  checksum: 8d68bb735cef4d43f9cdc1053581e6c1c864860b77fcfb670372b39c5feeee018dc5ddb2be4b07fef9bcd601edded4262418bbaeaf1bd4af744446300cebe358
-  languageName: node
-  linkType: hard
-
-"postcss-modules-extract-imports@npm:^3.1.0":
+"postcss-modules-extract-imports@npm:^3.0.0, postcss-modules-extract-imports@npm:^3.1.0":
   version: 3.1.0
   resolution: "postcss-modules-extract-imports@npm:3.1.0"
   peerDependencies:
@@ -14496,20 +14487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-modules-local-by-default@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "postcss-modules-local-by-default@npm:4.0.4"
-  dependencies:
-    icss-utils: "npm:^5.0.0"
-    postcss-selector-parser: "npm:^6.0.2"
-    postcss-value-parser: "npm:^4.1.0"
-  peerDependencies:
-    postcss: ^8.1.0
-  checksum: 45790af417b2ed6ed26e9922724cf3502569995833a2489abcfc2bb44166096762825cc02f6132cc6a2fb235165e76b859f9d90e8a057bc188a1b2c17f2d7af0
-  languageName: node
-  linkType: hard
-
-"postcss-modules-local-by-default@npm:^4.0.5":
+"postcss-modules-local-by-default@npm:^4.0.4, postcss-modules-local-by-default@npm:^4.0.5":
   version: 4.0.5
   resolution: "postcss-modules-local-by-default@npm:4.0.5"
   dependencies:
@@ -14522,18 +14500,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-modules-scope@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "postcss-modules-scope@npm:3.1.1"
-  dependencies:
-    postcss-selector-parser: "npm:^6.0.4"
-  peerDependencies:
-    postcss: ^8.1.0
-  checksum: ca035969eba62cf126864b10d7722e49c0d4f050cbd4618b6e9714d81b879cf4c53a5682501e00f9622e8f4ea6d7d7d53af295ae935fa833e0cc0bda416a287b
-  languageName: node
-  linkType: hard
-
-"postcss-modules-scope@npm:^3.2.0":
+"postcss-modules-scope@npm:^3.1.1, postcss-modules-scope@npm:^3.2.0":
   version: 3.2.0
   resolution: "postcss-modules-scope@npm:3.2.0"
   dependencies:
