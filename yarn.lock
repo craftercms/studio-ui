@@ -1673,7 +1673,7 @@ __metadata:
     jquery-ui: "npm:^1.13.3"
     jquery-ui-css: "npm:^1.11.5"
     js-yaml: "npm:^4.1.0"
-    monaco-editor: "npm:0.47.0"
+    monaco-editor: "npm:0.48.0"
     monaco-editor-webpack-plugin: "npm:^7.1.0"
     npm-run-all: "npm:^4.1.5"
     rimraf: "npm:^5.0.5"
@@ -13084,10 +13084,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"monaco-editor@npm:0.47.0":
-  version: 0.47.0
-  resolution: "monaco-editor@npm:0.47.0"
-  checksum: d4c21c9011dbe419f9474ccec525f29089f3d785314cf5643259d339e374d6bfde9db651cb084d4ea8942028f242cfe05d726c29a26894a827c368e9ec41e80e
+"monaco-editor@npm:0.48.0":
+  version: 0.48.0
+  resolution: "monaco-editor@npm:0.48.0"
+  checksum: 19de201705a60695c42cca65157654da3881ed24882e6d5dce33e063c6c9505c9fa6bd42be4d6807d5b1c5d3ad18e2d019c4f7f6adbe66ce8a9428a78d74b3f6
   languageName: node
   linkType: hard
 
