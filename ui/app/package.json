@@ -197,6 +197,6 @@
     "postcss-normalize": "^10.0.1",
     "prop-types": "^15.8.1",
     "rimraf": "^5.0.5",
-    "rollup": "^4.9.6"
+    "rollup": "^4.16.4"
   }
 }
