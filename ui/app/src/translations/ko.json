@@ -1541,6 +1541,7 @@
   "workflowStates.setState": " {count, plural, one {Set State for \"{name}\"} other {Set State for Items ({count})}}",
   "workflowStates.title": "워크플로 상태",
   "wtIWaL": "일괄 작업",
+  "XFGYn8": "\"{name}\" 사이트를 만드는 동안 오류가 발생했습니다.",
   "XorYN0": "설명이 제공되지 않았습니다",
   "XqHKCc": "내 활동",
   "XrLqSq": "모두 되돌리기",
