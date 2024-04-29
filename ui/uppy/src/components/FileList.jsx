@@ -70,7 +70,8 @@ export default ({
   cancelUpload,
   removeFile,
   externalMessages,
-  successfulUploadButton
+  successfulUploadButton,
+  validateFilesPolicy
 }) => {
   const rowHeight = totalFileCount ? (totalFileCount * 140 - 20) / totalFileCount : 140;
 
@@ -129,6 +130,7 @@ export default ({
           pauseUpload={pauseUpload}
           cancelUpload={cancelUpload}
           removeFile={removeFile}
+          validateFilesPolicy={validateFilesPolicy}
         />
       ))}
     </div>

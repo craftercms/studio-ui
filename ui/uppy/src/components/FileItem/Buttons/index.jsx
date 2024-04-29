@@ -100,6 +100,22 @@ function AcceptSuggestedNameIcon({ i18n, onClick }) {
   );
 }
 
+function UploadButton({ i18n, onClick }) {
+  return (
+    <button
+      className="uppy-dashboard-button-base uppy-dashboard-icon-button edgeEnd"
+      tabIndex="0"
+      type="button"
+      title={i18n('proceedSingle')}
+      onClick={() => onClick()}
+    >
+      <svg className="uppy-dashboard-svg-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M10 16h4c.55 0 1-.45 1-1v-5h1.59c.89 0 1.34-1.08.71-1.71L12.71 3.7a.9959.9959 0 0 0-1.41 0L6.71 8.29c-.63.63-.19 1.71.7 1.71H9v5c0 .55.45 1 1 1m-4 2h12c.55 0 1 .45 1 1s-.45 1-1 1H6c-.55 0-1-.45-1-1s.45-1 1-1"></path>
+      </svg>
+    </button>
+  );
+}
+
 export default function Buttons(props) {
   const {
     uppy,
@@ -111,8 +127,10 @@ export default function Buttons(props) {
     hideRetryButton,
     retryUpload,
     validateAndRetry,
-    successfulUploadButton
+    successfulUploadButton,
+    validateFilesPolicy
   } = props;
+  console.log('props', props);
   const removeFileFn = () => removeFile(file.id, 'removed-by-user');
   return (
     <div className="uppy-Dashboard-Item-actionWrapper">
@@ -134,7 +152,12 @@ export default function Buttons(props) {
         </button>
       )}
       {showRemoveButton && !file.meta.validating ? <RemoveButton i18n={i18n} onClick={removeFileFn} /> : null}
-      {file.meta.validating && <ValidateIcon i18n={i18n} />}
+      {file.meta.validating &&
+        (uppy.opts.autoProceed ? (
+          <ValidateIcon i18n={i18n} />
+        ) : (
+          <UploadButton i18n={i18n} onClick={() => validateFilesPolicy([file])} />
+        ))}
       {file.meta.validating === false && file.meta.allowed && file.meta.suggestedName && (
         <AcceptSuggestedNameIcon i18n={i18n} onClick={() => validateAndRetry(file.id)} />
       )}

@@ -77,6 +77,7 @@ export default class FileItem extends Component {
             removeFile={this.props.removeFile}
             retryUpload={this.props.retryUpload}
             i18n={this.props.i18n}
+            validateFilesPolicy={this.props.validateFilesPolicy}
           />
         </div>
         <FileProgress file={file} error={error} isUploaded={isUploaded} />

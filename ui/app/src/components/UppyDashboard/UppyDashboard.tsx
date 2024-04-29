@@ -378,6 +378,9 @@ const translations = defineMessages({
   },
   proceed: {
     defaultMessage: 'Start Uploads'
+  },
+  proceedSingle: {
+    defaultMessage: 'Start Upload'
   }
 });
 
@@ -456,7 +459,8 @@ export function UppyDashboard(props: UppyDashboardProps) {
           renamingFromTo: formatMessage(translations.renamingFromTo),
           minimize: formatMessage(translations.minimize),
           close: formatMessage(translations.close),
-          proceed: formatMessage(translations.proceed)
+          proceed: formatMessage(translations.proceed),
+          proceedSingle: formatMessage(translations.proceedSingle)
         }
       },
       maxActiveUploads,

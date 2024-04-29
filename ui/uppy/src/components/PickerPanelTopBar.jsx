@@ -83,22 +83,17 @@ function PanelTopBar(props) {
     isAllPaused,
     files,
     invalidFiles,
-    newFiles,
+    newFiles: notUploadedFiles,
     hideCancelButton,
     maxNumberOfFiles,
     toggleAddFilesPanel,
     uppy
   } = props;
-  const uploadingState = getUploadingState(isAllErrored, isAllComplete, isAllPaused, files);
-  const invalidFilesCount = Object.values(invalidFiles).filter((invalid) => invalid).length;
+  // `notUploadedFiles` includes those files that are not yet uploaded due to site policies, but they're already in the
+  // process of being uploaded. `newFiles` includes only files that haven't been started to upload yet.
+  const newFiles = notUploadedFiles.filter((file) => !Object.keys(invalidFiles).includes(file.id));
   const newFilesCount = newFiles.length;
-  const disableProceed =
-    // if there are active uploads
-    uploadingState === 'uploading' ||
-    // there are no new files to upload (all files already uploaded)
-    !newFilesCount ||
-    // if there are invalid files (due to site policies) waiting to be uploaded
-    (invalidFilesCount && uploadingState === 'waiting');
+  const disableProceed = newFilesCount === 0;
 
   let { allowNewUpload } = props;
   // TODO maybe this should be done in ../Dashboard.jsx, then just pass that down as `allowNewUpload`
