@@ -29,7 +29,7 @@ CStudioForms.Controls.Dropdown =
     this.form = form;
     this.id = id;
     this.readonly = readonly;
-    this.supportedPostFixes = ['_s'];
+    this.supportedPostFixes = ['_s', '_i', '_f'];
 
     amplify.subscribe('/datasource/loaded', this, this.onDatasourceLoaded);
 
