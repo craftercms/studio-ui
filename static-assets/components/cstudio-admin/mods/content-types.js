@@ -3878,7 +3878,7 @@
       const $input = $(identifier).parent().find('input');
       $input.val($input.val() + $button.attr('data-insert'));
 
-      $input.change();
+      $input.trigger('update_variable');
     };
 
     CStudioAdminConsole.cleanPostfix = (identifier, type) => {
