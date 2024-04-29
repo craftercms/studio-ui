@@ -54,6 +54,7 @@ import BaseSiteForm from '../CreateSiteDialog/BaseSiteForm';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Alert from '@mui/material/Alert';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 interface DuplicateSiteDialogContainerProps {
   site: DuplicateSiteState;
@@ -68,19 +69,21 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   const { site, setSite, handleClose, onGoBack, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const [error, setError] = useState(null);
   const { authoringBase, useBaseDomain } = useEnv();
-  const fieldsErrorsLookup: LookupTable<boolean> = useMemo(() => {
-    return {
+  const fieldsErrorsLookup: LookupTable<boolean> = useMemo(
+    () => ({
       sourceSiteId: !site.sourceSiteId,
       siteName: !site.siteName || site.siteNameExist,
       siteId: !site.siteId || site.siteIdExist || site.invalidSiteId,
       description: false,
       gitBranch: false
-    };
-  }, [site]);
+    }),
+    [site.invalidSiteId, site.siteId, site.siteIdExist, site.siteName, site.siteNameExist, site.sourceSiteId]
+  );
   const [sourceSiteHasBlobStores, setSourceSiteHasBlobStores] = useState(null);
   const primaryButtonRef = useRef(null);
   const siteDuplicateSubscription = useRef<Subscription>();
   const [sites, setSites] = useState(null);
+  const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, handleClose });
 
   const validateForm = () => {
     return !(
@@ -105,8 +108,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     }).subscribe({
       next: () => {
         siteDuplicateSubscription.current = null;
-        onSubmittingAndOrPendingChange({ isSubmitting: false });
-        handleClose();
+        fnRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
+        fnRefs.current.handleClose();
         setSiteCookie(site.siteId, useBaseDomain);
         window.location.href = getSystemLink({
           systemLinkId: 'preview',
@@ -117,7 +120,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
       },
       error: ({ response }) => {
         setError(response.response);
-        onSubmittingAndOrPendingChange({ isSubmitting: false });
+        siteDuplicateSubscription.current = null;
+        fnRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
       }
     });
   };
@@ -230,7 +234,11 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   return (
     <>
       <DialogBody>
-        {(isSubmitting && (
+        {error ? (
+          <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
+            <ApiResponseErrorState error={error} onButtonClick={handleErrorBack} />
+          </Box>
+        ) : isSubmitting ? (
           <CreateSiteDialogLoader
             title={<FormattedMessage defaultMessage="Duplicating Project" />}
             handleClose={() => {
@@ -238,121 +246,87 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
               onSubmittingAndOrPendingChange({ hasPendingChanges: false, isSubmitting: false });
             }}
           />
-        )) ||
-          (error && (
-            <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center' }}>
-              <ApiResponseErrorState error={error} onButtonClick={handleErrorBack} />
-            </Box>
-          )) || (
-            <Box
-              sx={{
-                flexWrap: 'wrap',
-                height: '100%',
-                overflow: 'auto',
-                display: 'flex',
-                padding: '25px',
-                animation: `${keyframes`${fadeIn}`} 1s`
-              }}
-            >
-              {site.selectedView === 0 && (
-                <Box component="form" sx={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} data-field-id="sourceSiteId">
-                      <FormControl fullWidth>
-                        <InputLabel>
-                          <FormattedMessage defaultMessage="Project" />
-                        </InputLabel>
-                        <Select
-                          value={site.sourceSiteId}
-                          id="sourceSiteId"
-                          name="sourceSiteId"
-                          required
-                          label={<FormattedMessage defaultMessage="Project" />}
-                          onChange={handleInputChange}
-                          error={site.submitted && fieldsErrorsLookup['sourceSiteId']}
-                        >
-                          <MenuItem value="">Select project</MenuItem>
-                          {sites?.map((siteObj) => (
-                            <MenuItem key={siteObj.uuid} value={siteObj.id}>
-                              {siteObj.name}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {site.submitted && !site.sourceSiteId && (
-                          <FormHelperText error>
-                            <FormattedMessage defaultMessage="Source project is required" />
-                          </FormHelperText>
-                        )}
-                      </FormControl>
-                    </Grid>
-                    <BaseSiteForm
-                      inputs={site}
-                      fieldsErrorsLookup={fieldsErrorsLookup}
-                      checkSites={checkSites}
-                      checkSiteNames={checkSiteNames}
-                      handleInputChange={handleInputChange}
-                      onKeyPress={onKeyPress}
-                    />
-                    {sourceSiteHasBlobStores && (
-                      <Grid item xs={12} data-field-id="readOnlyBlobStores">
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              name="readOnlyBlobStores"
-                              checked={site.readOnlyBlobStores}
-                              color="primary"
-                              onChange={handleInputChange}
-                            />
-                          }
-                          label={<FormattedMessage defaultMessage="Read-only Blob Stores" />}
-                        />
-                        <Alert severity={site.readOnlyBlobStores ? 'info' : 'warning'} icon={false} sx={{ mt: 1 }}>
-                          <Typography>
-                            <FormattedMessage defaultMessage="Content stored in blob stores is shared between the original site and the copy" />
-                          </Typography>
-                        </Alert>
-                      </Grid>
-                    )}
-                  </Grid>
-                </Box>
-              )}
-              {site.selectedView === 1 && (
-                <Grid container spacing={3} sx={{ maxWidth: '600px', margin: 'auto' }}>
-                  <Grid item xs={12}>
-                    <Typography variant="h6" gutterBottom sx={{ mb: onGoBack ? 0 : null }}>
-                      <FormattedMessage defaultMessage="Creation Strategy" />
-                      {onGoBack && (
-                        <IconButton
-                          onClick={onGoBack}
-                          size="large"
-                          sx={{
-                            color: (theme) => theme.palette.primary.main,
-                            '& svg': {
-                              fontSize: '1.2rem'
-                            }
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
+        ) : (
+          <Box
+            sx={{
+              flexWrap: 'wrap',
+              height: '100%',
+              overflow: 'auto',
+              display: 'flex',
+              padding: '25px',
+              animation: `${keyframes`${fadeIn}`} 1s`
+            }}
+          >
+            {site.selectedView === 0 && (
+              <Box component="form" sx={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} data-field-id="sourceSiteId">
+                    <FormControl fullWidth>
+                      <InputLabel>
+                        <FormattedMessage defaultMessage="Project" />
+                      </InputLabel>
+                      <Select
+                        value={site.sourceSiteId}
+                        id="sourceSiteId"
+                        name="sourceSiteId"
+                        required
+                        label={<FormattedMessage defaultMessage="Project" />}
+                        onChange={handleInputChange}
+                        error={site.submitted && fieldsErrorsLookup['sourceSiteId']}
+                      >
+                        <MenuItem value="">Select project</MenuItem>
+                        {sites?.map((siteObj) => (
+                          <MenuItem key={siteObj.uuid} value={siteObj.id}>
+                            {siteObj.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {site.submitted && !site.sourceSiteId && (
+                        <FormHelperText error>
+                          <FormattedMessage defaultMessage="Source project is required" />
+                        </FormHelperText>
                       )}
-                    </Typography>
-                    <div>
-                      <Typography variant="body2" gutterBottom>
-                        <FormattedMessage defaultMessage="Duplicate Project" />
-                      </Typography>
-                      <Typography variant="body2" gutterBottom>
-                        <span>
-                          <FormattedMessage defaultMessage="Source project" />:{' '}
-                        </span>{' '}
-                        {site.sourceSiteId}
-                      </Typography>
-                    </div>
+                    </FormControl>
                   </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="h6" gutterBottom>
-                      <FormattedMessage defaultMessage="Project info" />
+                  <BaseSiteForm
+                    inputs={site}
+                    fieldsErrorsLookup={fieldsErrorsLookup}
+                    checkSites={checkSites}
+                    checkSiteNames={checkSiteNames}
+                    handleInputChange={handleInputChange}
+                    onKeyPress={onKeyPress}
+                  />
+                  {sourceSiteHasBlobStores && (
+                    <Grid item xs={12} data-field-id="readOnlyBlobStores">
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            name="readOnlyBlobStores"
+                            checked={site.readOnlyBlobStores}
+                            color="primary"
+                            onChange={handleInputChange}
+                          />
+                        }
+                        label={<FormattedMessage defaultMessage="Read-only Blob Stores" />}
+                      />
+                      <Alert severity={site.readOnlyBlobStores ? 'info' : 'warning'} icon={false} sx={{ mt: 1 }}>
+                        <Typography>
+                          <FormattedMessage defaultMessage="Content stored in blob stores is shared between the original site and the copy" />
+                        </Typography>
+                      </Alert>
+                    </Grid>
+                  )}
+                </Grid>
+              </Box>
+            )}
+            {site.selectedView === 1 && (
+              <Grid container spacing={3} sx={{ maxWidth: '600px', margin: 'auto' }}>
+                <Grid item xs={12}>
+                  <Typography variant="h6" gutterBottom sx={{ mb: onGoBack ? 0 : null }}>
+                    <FormattedMessage defaultMessage="Creation Strategy" />
+                    {onGoBack && (
                       <IconButton
-                        onClick={handleBack}
+                        onClick={onGoBack}
                         size="large"
                         sx={{
                           color: (theme) => theme.palette.primary.main,
@@ -363,54 +337,83 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
                       >
                         <EditIcon />
                       </IconButton>
-                    </Typography>
-                    <Typography variant="body2" gutterBottom noWrap>
-                      <span>
-                        <FormattedMessage defaultMessage="Project Name" />:{' '}
-                      </span>
-                      {site.siteName}
+                    )}
+                  </Typography>
+                  <div>
+                    <Typography variant="body2" gutterBottom>
+                      <FormattedMessage defaultMessage="Duplicate Project" />
                     </Typography>
                     <Typography variant="body2" gutterBottom>
                       <span>
-                        <FormattedMessage defaultMessage="Project ID" />:{' '}
-                      </span>
-                      {site.siteId}
+                        <FormattedMessage defaultMessage="Source project" />:{' '}
+                      </span>{' '}
+                      {site.sourceSiteId}
                     </Typography>
+                  </div>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="h6" gutterBottom>
+                    <FormattedMessage defaultMessage="Project info" />
+                    <IconButton
+                      onClick={handleBack}
+                      size="large"
+                      sx={{
+                        color: (theme) => theme.palette.primary.main,
+                        '& svg': {
+                          fontSize: '1.2rem'
+                        }
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </Typography>
+                  <Typography variant="body2" gutterBottom noWrap>
+                    <span>
+                      <FormattedMessage defaultMessage="Project Name" />:{' '}
+                    </span>
+                    {site.siteName}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    <span>
+                      <FormattedMessage defaultMessage="Project ID" />:{' '}
+                    </span>
+                    {site.siteId}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    <span>
+                      <FormattedMessage defaultMessage="Description" />:{' '}
+                    </span>
+                    {site.description ? (
+                      site.description
+                    ) : (
+                      <span>
+                        (<FormattedMessage defaultMessage="No description supplied" />)
+                      </span>
+                    )}
+                  </Typography>
+                  <Typography variant="body2" gutterBottom>
+                    <span>
+                      <FormattedMessage defaultMessage="Git Branch" />:
+                    </span>
+                    {` ${site.gitBranch ? site.gitBranch : 'master'}`}
+                  </Typography>
+                  {sourceSiteHasBlobStores && (
                     <Typography variant="body2" gutterBottom>
                       <span>
-                        <FormattedMessage defaultMessage="Description" />:{' '}
+                        <FormattedMessage defaultMessage="Blob Stores mode" />:{' '}
                       </span>
-                      {site.description ? (
-                        site.description
+                      {site.readOnlyBlobStores ? (
+                        <FormattedMessage defaultMessage="Read-only" />
                       ) : (
-                        <span>
-                          (<FormattedMessage defaultMessage="No description supplied" />)
-                        </span>
+                        <FormattedMessage defaultMessage="Read-write" />
                       )}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
-                      <span>
-                        <FormattedMessage defaultMessage="Git Branch" />:
-                      </span>
-                      {` ${site.gitBranch ? site.gitBranch : 'master'}`}
-                    </Typography>
-                    {sourceSiteHasBlobStores && (
-                      <Typography variant="body2" gutterBottom>
-                        <span>
-                          <FormattedMessage defaultMessage="Blob Stores mode" />:{' '}
-                        </span>
-                        {site.readOnlyBlobStores ? (
-                          <FormattedMessage defaultMessage="Read-only" />
-                        ) : (
-                          <FormattedMessage defaultMessage="Read-write" />
-                        )}
-                      </Typography>
-                    )}
-                  </Grid>
+                  )}
                 </Grid>
-              )}
-            </Box>
-          )}
+              </Grid>
+            )}
+          </Box>
+        )}
       </DialogBody>
       {!isSubmitting && !error && (
         <DialogFooter>
