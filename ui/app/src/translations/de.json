@@ -1541,6 +1541,7 @@
   "workflowStates.setState": " {count, plural, one {Set State for \"{name}\"} other {Set State for Items ({count})}}",
   "workflowStates.title": "Workflow-Zustände",
   "wtIWaL": "Massenaktionen",
+  "XFGYn8": "Fehler beim Erstellen der Site \"{name}\"",
   "XorYN0": "Keine Beschreibung angegeben",
   "XqHKCc": "Meine Aktivität",
   "XrLqSq": "Alles rückgängig machen",
