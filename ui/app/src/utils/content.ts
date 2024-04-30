@@ -550,10 +550,15 @@ function parseElementByContentType(
     case 'textarea':
       return getInnerHtml(element, { applyLegacyUnescaping: true });
     case 'image':
-    case 'dropdown':
     case 'date-time':
     case 'time':
       return getInnerHtml(element);
+    case 'dropdown':
+      if (field.id.endsWith('_i') || field.id.endsWith('_f')) {
+        return getInnerHtmlNumber(element, parseFloat);
+      } else {
+        return getInnerHtml(element);
+      }
     case 'boolean':
     case 'page-nav-order':
       return getInnerHtml(element) === 'true';
