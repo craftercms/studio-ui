@@ -2300,6 +2300,19 @@
           'string',
           sheetEl,
           function (e, el) {
+            const invalidMacros = ['{objectId}', '{parentPath}'];
+            const newPath = el.value;
+            const containsInvalidMacros = invalidMacros.some((macro) => newPath.includes(macro));
+            if (containsInvalidMacros) {
+              const invalidMacrosInPath = [];
+              invalidMacros.forEach((macro) => {
+                if (newPath.includes(macro)) {
+                  invalidMacrosInPath.push(macro);
+                  el.value = el.value.replace(macro, '');
+                }
+              });
+              console.error(`Path contains invalid macros: ${invalidMacrosInPath.join(', ')}`);
+            }
             item.quickCreatePath = el.value;
             onSetDirty(true);
           },
