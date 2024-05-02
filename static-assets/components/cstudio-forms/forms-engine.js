@@ -1403,7 +1403,7 @@ var CStudioForms =
               saveDraft = true;
             }
             lastDraft = draft;
-            return entityId;
+            return craftercms.utils.string.ensureSingleSlash(entityId);
           };
 
           //If the form is opened in view mode, we don't need show the warn message or unlock the item
