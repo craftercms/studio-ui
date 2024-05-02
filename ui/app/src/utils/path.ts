@@ -300,8 +300,8 @@ const availableMacrosRegex = [
   /{yyyy}/,
   /{mm}/,
   /{dd}/,
-  /parentPath/,
-  /parentPath\[[0-9]+]/
+  /{parentPath}/,
+  /{parentPath\[[0-9]+]}/
 ];
 export function processPathMacros(dependencies: {
   path: string;
@@ -332,7 +332,7 @@ export function processPathMacros(dependencies: {
     if (useUUID) {
       processedPath = processedPath.replace('{objectId}', uuid());
     } else {
-      processedPath = path.replace('{objectId}', objectId);
+      processedPath = processedPath.replace('{objectId}', objectId);
     }
   }
 

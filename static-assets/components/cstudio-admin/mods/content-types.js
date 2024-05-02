@@ -379,8 +379,8 @@
                         type === 'save'
                           ? formatMessage(contentTypesMessages.templateNotRequiredSave)
                           : type === 'saveAndClose'
-                          ? formatMessage(contentTypesMessages.templateNotRequiredSaveAndClose)
-                          : formatMessage(contentTypesMessages.templateNotRequiredSaveAndMinimize)
+                            ? formatMessage(contentTypesMessages.templateNotRequiredSaveAndClose)
+                            : formatMessage(contentTypesMessages.templateNotRequiredSaveAndMinimize)
                       );
 
                       const customEventId = 'createFileDialogEventId';
@@ -2300,17 +2300,20 @@
           'string',
           sheetEl,
           function (e, el) {
-            const invalidMacros = ['{objectId}', '{parentPath}'];
+            const invalidMacros = [
+              { regex: /{objectId}/, macro: '{objectId}' },
+              { regex: /{parentPath}/, macro: '{parentPath}' },
+              { regex: /{parentPath\[[0-9]+]}/, macro: '{parentPath}' }
+            ];
             const newPath = el.value;
-            const containsInvalidMacros = invalidMacros.some((macro) => newPath.includes(macro));
-            if (containsInvalidMacros) {
-              const invalidMacrosInPath = [];
-              invalidMacros.forEach((macro) => {
-                if (newPath.includes(macro)) {
-                  invalidMacrosInPath.push(macro);
-                  el.value = el.value.replace(macro, '');
-                }
-              });
+            const invalidMacrosInPath = [];
+            invalidMacros.forEach(({ macro, regex }) => {
+              if (newPath.match(regex)) {
+                invalidMacrosInPath.push(macro);
+                el.value = el.value.replace(regex, '');
+              }
+            });
+            if (invalidMacrosInPath.length > 0) {
               console.error(`Path contains invalid macros: ${invalidMacrosInPath.join(', ')}`);
             }
             item.quickCreatePath = el.value;
