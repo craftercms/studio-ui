@@ -25,7 +25,8 @@ import {
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   setActiveTargetingModelComplete as setActiveTargetingModelCompleteAction,
-  setActiveTargetingModelFailed
+  setActiveTargetingModelFailed,
+  setActiveTargetingModelFailed as setActiveTargetingModelFailedAction
 } from '../actions/preview';
 import {
   deserializeActiveTargetingModelData,
@@ -36,6 +37,7 @@ import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { CrafterCMSEpic } from '../store';
+import { showErrorDialog } from '../reducers/dialogs/error';
 
 export default [
   (action$, state$: Observable<GlobalState>) =>
@@ -56,9 +58,14 @@ export default [
       switchMap(([, state]) =>
         setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
           map((response) => setActiveTargetingModelCompleteAction(response)),
-          catchAjaxError(setActiveTargetingModelFailed)
+          catchAjaxError(setActiveTargetingModelFailedAction)
         )
       )
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(setActiveTargetingModelFailed.type),
+      map(({ payload }) => showErrorDialog({ error: payload.response }))
     ),
   (action$) =>
     action$.pipe(
