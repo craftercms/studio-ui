@@ -137,15 +137,6 @@ export function deserializeActiveTargetingModelData<T extends Object>(
   data: T,
   contentTypeFields: LookupTable<ContentTypeField>
 ): ContentInstance {
-  Object.keys(data).forEach((modelKey) => {
-    if (contentTypeFields[modelKey]) {
-      // if checkbox-group (Array)
-      if (contentTypeFields[modelKey].type === 'checkbox-group') {
-        data[modelKey] = data[modelKey] ? data[modelKey].split(',') : [];
-      }
-    }
-  });
-
   return {
     craftercms: {
       id: '',
