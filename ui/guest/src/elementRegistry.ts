@@ -23,7 +23,8 @@ import {
   getCachedModel,
   hasCachedModel,
   isInheritedField,
-  model$
+  model$,
+  getModelIdFromInheritedField
 } from './contentController';
 import { take } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
@@ -189,7 +190,12 @@ export function completeDeferredRegistration(id: number): void {
 
   if (fieldIds.length > 0) {
     fieldIds.forEach((fieldId) => {
-      const iceId = iceRegistry.register({ modelId, index, fieldId });
+      let modelIdToRegister = modelId;
+      // If the field is inherited, the modelId to register is the one that contains the field
+      if (isInheritedField(modelId, fieldId)) {
+        modelIdToRegister = getModelIdFromInheritedField(modelId, fieldId);
+      }
+      const iceId = iceRegistry.register({ modelId: modelIdToRegister, index, fieldId });
       if (!registry[iceId]) {
         registry[iceId] = [];
       }

@@ -180,7 +180,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     const itemFieldId = isNodeSelectorItem ? nodeSelectorItemRecord.fieldId : fieldId;
     const itemIndex = isNodeSelectorItem ? nodeSelectorItemRecord.index : index;
     const parentModelId = getParentModelId(itemModelId, models, modelHierarchyMap);
-    const path = models[parentModelId ?? itemModelId].craftercms.path;
+    const path = modelPath;
     return { path, itemModelId, itemFieldId, itemIndex };
   };
 
@@ -263,7 +263,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     e.preventDefault();
     e.stopPropagation();
     execOperation(() => {
-      if (recordType === 'component' && nodeSelectorItemRecord) {
+      if ((recordType === 'component' || recordType === 'node-selector-item') && nodeSelectorItemRecord) {
         sortUpItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
       } else {
         sortUpItem(modelId, fieldId, index);
