@@ -1796,7 +1796,7 @@ __metadata:
     tss-react: "npm:^4.9.7"
     typescript: "npm:^5.4.5"
     uppy: "npm:^3.24.3"
-    video.js: "npm:^8.13.0"
+    video.js: "npm:^8.14.0"
     web-vitals: "npm:^3.5.2"
     zxcvbn: "npm:^4.4.2"
   languageName: unknown
@@ -18097,7 +18097,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"video.js@npm:^7 || ^8, video.js@npm:^8.13.0":
+"video.js@npm:^7 || ^8":
   version: 8.13.0
   resolution: "video.js@npm:8.13.0"
   dependencies:
@@ -18116,6 +18116,28 @@ __metadata:
     videojs-font: "npm:4.1.0"
     videojs-vtt.js: "npm:0.15.5"
   checksum: 1aa74641d57b14e6f454ec4d5606f76779c0c536862e3a9187063dc300b5455c1ae3a73ecc060a8fa9ba7e62eee2b8fea4ca4718eb6ce82c48e2605c9ee2f6cb
+  languageName: node
+  linkType: hard
+
+"video.js@npm:^8.14.0":
+  version: 8.14.0
+  resolution: "video.js@npm:8.14.0"
+  dependencies:
+    "@babel/runtime": "npm:^7.12.5"
+    "@videojs/http-streaming": "npm:3.12.2"
+    "@videojs/vhs-utils": "npm:^4.0.0"
+    "@videojs/xhr": "npm:2.6.0"
+    aes-decrypter: "npm:^4.0.1"
+    global: "npm:4.4.0"
+    keycode: "npm:2.2.0"
+    m3u8-parser: "npm:^7.1.0"
+    mpd-parser: "npm:^1.2.2"
+    mux.js: "npm:^7.0.1"
+    safe-json-parse: "npm:4.0.0"
+    videojs-contrib-quality-levels: "npm:4.1.0"
+    videojs-font: "npm:4.1.0"
+    videojs-vtt.js: "npm:0.15.5"
+  checksum: 4241c16e627516a66c0e30555dde6b0e8d27dc17606bfdabb37958a29d855b1615e7468ede7273731a31ed2222f72e6881cf90b9fbc23c463f19d1f510f36b9d
   languageName: node
   linkType: hard
 
