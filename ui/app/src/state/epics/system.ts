@@ -20,6 +20,7 @@ import {
   filter,
   ignoreElements,
   map,
+  mergeMap,
   startWith,
   switchMap,
   takeUntil,
@@ -52,7 +53,8 @@ import {
   showSystemNotification,
   showUnlockItemSuccessNotification,
   storeInitialized,
-  closeSiteSocket
+  closeSiteSocket,
+  emitSystemEvents
 } from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import {
@@ -140,11 +142,19 @@ const systemEpics: CrafterCMSEpic[] = [
   (action$) =>
     action$.pipe(
       ofType(emitSystemEvent.type),
+      tap(({ payload }) => getHostToHostBus().next(payload)),
+      map(({ payload: action }) => action)
+    ),
+  // endregion
+  // region emitSystemEvents
+  (action$: Observable<StandardAction<ReturnType<typeof emitSystemEvents>['payload']>>) =>
+    action$.pipe(
+      ofType(emitSystemEvents.type),
       tap(({ payload }) => {
         const hostToHost$ = getHostToHostBus();
-        hostToHost$.next(payload);
+        payload.events.forEach((action) => hostToHost$.next(action));
       }),
-      map(({ payload: action }) => action)
+      mergeMap((action) => action.payload.events)
     ),
   // endregion
   // region showDeleteItemSuccessNotification

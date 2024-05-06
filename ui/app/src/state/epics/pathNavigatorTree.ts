@@ -65,16 +65,16 @@ import {
 } from '../../utils/path';
 import { batchActions } from '../actions/misc';
 import {
+  deleteContentEvents,
   contentEvent,
   deleteContentEvent,
   moveContentEvent,
-  MoveContentEventPayload,
   pluginInstalled,
   publishEvent,
   workflowEvent
 } from '../actions/system';
 import StandardAction from '../../models/StandardAction';
-import { GetChildrenOptions, MarketplacePlugin, SocketEventBase } from '../../models';
+import { GetChildrenOptions, MarketplacePlugin, MoveContentEventPayload, SocketEventBase } from '../../models';
 import { contentAndDeleteEventForEachApplicableTree } from '../reducers/pathNavigatorTree';
 import { PathNavigatorTreeStateProps } from '../../components';
 import { pluckProps } from '../../utils/object';
@@ -458,10 +458,10 @@ export default [
       })
     ),
   // endregion
-  // region deleteContentEvent
+  // region deleteContentEvent, deleteContentEvents
   (action$, state$) =>
     action$.pipe(
-      ofType(deleteContentEvent.type),
+      ofType(deleteContentEvent.type, deleteContentEvents.type),
       withLatestFrom(state$),
       tap(([, state]) => {
         Object.values(state.pathNavigatorTree).forEach((tree) => {

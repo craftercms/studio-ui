@@ -57,8 +57,7 @@ import {
   PathNavigatorTreeRestoreCompletePayload
 } from '../actions/pathNavigatorTree';
 import { STATE_LOCKED_MASK } from '../../utils/constants';
-import { deleteContentEvent, lockContentEvent, moveContentEvent, MoveContentEventPayload } from '../actions/system';
-import SocketEventBase from '../../models/SocketEvent';
+import { deleteContentEvent, deleteContentEvents, lockContentEvent, moveContentEvent } from '../actions/system';
 
 type ContentState = GlobalState['content'];
 
@@ -266,7 +265,7 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
       return updateItemByPath(state, { payload: { parent: null, children: payload.items } });
     })
     .addCase(changeSiteComplete, () => initialState)
-    .addCase(lockContentEvent, (state, { payload }: { payload: SocketEventBase & { locked: boolean } }) => {
+    .addCase(lockContentEvent, (state, { payload }) => {
       const { targetPath: path, user, locked } = payload;
       if (
         !state.itemsByPath[path] ||
@@ -291,11 +290,17 @@ const reducer = createReducer<ContentState>(initialState, (builder) => {
       };
       return updatedState;
     })
-    .addCase(deleteContentEvent, (state, { payload: { targetPath } }: StandardAction<SocketEventBase>) => {
+    .addCase(deleteContentEvent, (state, { payload: { targetPath } }) => {
       delete state.itemsByPath[targetPath];
       delete state.itemsBeingFetchedByPath[targetPath];
     })
-    .addCase(moveContentEvent, (state, { payload: { sourcePath } }: StandardAction<MoveContentEventPayload>) => {
+    .addCase(deleteContentEvents, (state, { payload: { targetPaths } }) => {
+      targetPaths.forEach((targetPath) => {
+        delete state.itemsByPath[targetPath];
+        delete state.itemsBeingFetchedByPath[targetPath];
+      });
+    })
+    .addCase(moveContentEvent, (state, { payload: { sourcePath } }) => {
       delete state.itemsByPath[sourcePath];
       delete state.itemsBeingFetchedByPath[sourcePath];
     });
