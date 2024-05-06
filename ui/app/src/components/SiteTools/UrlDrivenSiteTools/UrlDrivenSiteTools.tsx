@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import React, { useEffect, useState } from 'react';
 import { useGlobalAppState } from '../../GlobalApp';
 import useReference from '../../../hooks/useReference';
 import useActiveSiteId from '../../../hooks/useActiveSiteId';
 import useEnv from '../../../hooks/useEnv';
 import SiteTools, { Tool } from '../SiteTools';
 import { getSystemLink } from '../../../utils/system';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface UrlDrivenSiteToolsProps {
   footerHtml: string;
@@ -30,19 +30,20 @@ interface UrlDrivenSiteToolsProps {
 export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
   const { footerHtml } = props;
   const [width, setWidth] = useState(240);
-  const history = useHistory();
-  const [activeToolId, setActiveToolId] = useState(history.location.pathname.replace('/', ''));
+  const location = useLocation();
+  const [activeToolId, setActiveToolId] = useState(location.pathname.replace('/', ''));
   const [{ openSidebar }] = useGlobalAppState();
   const tools: Tool[] = useReference('craftercms.siteTools')?.tools;
   const site = useActiveSiteId();
   const { authoringBase } = useEnv();
+  const push = useNavigate();
 
-  history.listen((location) => {
+  useEffect(() => {
     setActiveToolId(location.pathname.replace('/', ''));
-  });
+  }, [location]);
 
   const onNavItemClick = (id: string) => {
-    history.push(id);
+    push(id);
   };
 
   const onBackClick = () => {

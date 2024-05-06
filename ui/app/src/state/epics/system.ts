@@ -83,6 +83,7 @@ import { batchActions, dispatchDOMEvent } from '../actions/misc';
 import StandardAction from '../../models/StandardAction';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 import { isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl } from '../../utils/system';
+import { GlobalRoutes } from '../../env/routes';
 
 const msgs = defineMessages({
   siteSwitchedOnAnotherTab: {
@@ -485,7 +486,7 @@ const systemEpics: CrafterCMSEpic[] = [
             alert(
               formatMessage({ defaultMessage: "This project has been deleted, you'll be redirected to projects list." })
             );
-            window.location.href = `${authoringBase}#/sites`;
+            window.location.href = `${authoringBase}#${GlobalRoutes.Projects}`;
             return NEVER;
           } else {
             return [popSite({ siteId: site, isActive: true }), messageSharedWorker(closeSiteSocket({ site }))];

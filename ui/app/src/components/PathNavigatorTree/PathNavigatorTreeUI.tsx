@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { TreeView } from '@mui/x-tree-view/TreeView';
 import { makeStyles } from 'tss-react/mui';
 import Accordion from '@mui/material/Accordion';
 import Header from '../PathNavigator/PathNavigatorHeader';
@@ -28,6 +27,7 @@ import { SystemIconDescriptor } from '../SystemIcon';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { FormattedMessage } from 'react-intl';
 import { ErrorState } from '../ErrorState';
+import { SimpleTreeView } from '@mui/x-tree-view';
 
 export interface PathNavigatorTreeUIProps
   extends Pick<
@@ -151,7 +151,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         />
       ) : (
         <AccordionDetails className={cx(classes.accordionDetails, props.classes?.body)}>
-          <TreeView className={classes.root} expanded={expandedNodes} disableSelection>
+          <SimpleTreeView className={classes.root} expandedItems={expandedNodes} disableSelection>
             <PathNavigatorTreeItem
               path={rootPath}
               active={active}
@@ -169,7 +169,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
               showWorkflowState={showWorkflowState}
               showItemMenu={showItemMenu}
             />
-          </TreeView>
+          </SimpleTreeView>
         </AccordionDetails>
       )}
     </Accordion>

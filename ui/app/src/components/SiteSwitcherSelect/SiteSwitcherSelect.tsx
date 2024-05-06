@@ -17,7 +17,7 @@
 import * as React from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage } from 'react-intl';
-import Select, { SelectProps } from '@mui/material/Select';
+import Select from '@mui/material/Select';
 import useStyles from './styles';
 import { isBlank } from '../../utils/string';
 import { changeSite } from '../../state/actions/sites';
@@ -30,8 +30,9 @@ import { PREVIEW_URL_PATH } from '../../utils/constants';
 import useMinimizedDialogWarning from '../../hooks/useMinimizedDialogWarning';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { previewSwitch } from '../../services/security';
+import { BaseSelectProps } from '@mui/material/Select/Select';
 
-export interface SiteSwitcherSelectProps extends SelectProps {
+export interface SiteSwitcherSelectProps extends BaseSelectProps {
   site: string;
 }
 
