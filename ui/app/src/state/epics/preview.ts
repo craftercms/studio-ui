@@ -54,7 +54,7 @@ import { getSystemLink } from '../../utils/system';
 import { contentEvent, storeInitialized } from '../actions/system';
 import { fromEvent, Observable } from 'rxjs';
 import StandardAction from '../../models/StandardAction';
-import { SocketEventBase } from '../../models';
+import { ContentEventPayload } from '../../models/SocketEvent';
 
 export default [
   // region storeInitialized
@@ -246,7 +246,7 @@ export default [
     ),
   // endregion
   // region contentEvent
-  (action$: Observable<StandardAction<SocketEventBase>>, state$) =>
+  (action$: Observable<StandardAction<ContentEventPayload>>, state$) =>
     action$.pipe(
       ofType(contentEvent.type),
       withLatestFrom(state$),
