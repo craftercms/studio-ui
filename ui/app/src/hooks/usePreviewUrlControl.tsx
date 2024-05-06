@@ -26,6 +26,7 @@ import { usePreviewNavigation } from './usePreviewNavigation';
 import useSiteLookup from './useSiteLookup';
 import { defineMessages, useIntl } from 'react-intl';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { GlobalRoutes } from '../env/routes';
 
 const messages = defineMessages({
   siteNotFound: {
@@ -68,9 +69,9 @@ export function usePreviewUrlControl() {
 
         // If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
         if (!siteExists) {
-          notValidSiteRedirect(formatMessage(messages.siteNotFound), `${authoringBase}#/projects`);
+          notValidSiteRedirect(formatMessage(messages.siteNotFound), `${authoringBase}#${GlobalRoutes.Projects}`);
         } else if (sites[siteId].state !== 'READY') {
-          notValidSiteRedirect(formatMessage(messages.siteNotReady), `${authoringBase}#/projects`);
+          notValidSiteRedirect(formatMessage(messages.siteNotReady), `${authoringBase}#${GlobalRoutes.Projects}`);
         }
       }
     },

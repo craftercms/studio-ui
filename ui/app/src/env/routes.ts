@@ -38,5 +38,8 @@ export enum ProjectToolsRoutes {
   Publishing = '/publishing',
   Git = '/git',
   GraphQL = '/graphiql',
-  PluginManagement = '/plugins'
+  PluginManagement = '/plugins',
+  ProjectTools = '/site-config',
+  Search = '/search',
+  SiteDashboard = '/site-dashboard'
 }
