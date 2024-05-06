@@ -403,3 +403,24 @@ export function removeStoredItems(match: (key: string) => boolean): void {
       localStorage.removeItem(key);
     });
 }
+
+export interface StoredWidgetsAccordion {
+  open: boolean;
+}
+
+export function getStoredWidgetsAccordion(siteIdentifier: string, user: string, id: string): StoredWidgetsAccordion {
+  return JSON.parse(window.localStorage.getItem(`craftercms.${user}.widgetsAccordion.${siteIdentifier}.${id}`));
+}
+
+export function setStoredWidgetsAccordion(
+  siteIdentifier: string,
+  user: string,
+  id: string,
+  value: StoredWidgetsAccordion
+) {
+  window.localStorage.setItem(`craftercms.${user}.widgetsAccordion.${siteIdentifier}.${id}`, JSON.stringify(value));
+}
+
+export function removeStoredWidgetsAccordion(siteIdentifier: string, user: string, id: string): void {
+  window.localStorage.removeItem(`craftercms.${user}.widgetsAccordion.${siteIdentifier}.${id}`);
+}

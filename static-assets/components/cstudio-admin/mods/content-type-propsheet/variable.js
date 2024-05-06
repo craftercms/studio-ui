@@ -113,6 +113,10 @@ YAHOO.extend(
           valueEl
         );
 
+        $(valueEl).on('update_variable', function (e) {
+          updateFieldFn(e, this);
+        });
+
         if ((fName == 'id' || fName == 'name') && value !== '') {
           var titleEl = YDom.getElementsByClassName('property-input-title');
           YAHOO.util.Dom.addClass(titleEl, 'no-update');

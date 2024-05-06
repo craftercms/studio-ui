@@ -186,6 +186,23 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   cursor: pointer;
 }
 
+.cstudio-form-control-node-selector-add-container-item-block-label {
+  padding: 5px 10px;
+  font-weight: 600;
+  display: inline-block;
+  color: #666;
+}
+
+.cstudio-form-control-node-selector-add-container-item-block-divider {
+  display: none;
+}
+
+.cstudio-form-control-node-selector-add-container-item-block-divider:not(:last-child) {
+  display: list-item;
+  border-top: 1px solid #eee;
+  margin: 10px 0;
+}
+
 .cstudio-form-control-button {
   margin: 5px 10px 0 5px;
   margin-top: 5px;

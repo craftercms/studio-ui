@@ -2870,7 +2870,9 @@
             try {
               var propControl = new moduleClass(fName, propertyContainerEl, this.self.form, type);
               propControl.render(value, fn, fName, itemId, defaultValue, typeControl, disabled, properties);
-            } catch (e) {}
+            } catch (e) {
+              console.error(e);
+            }
           },
           self: this
         };
@@ -3876,7 +3878,7 @@
       const $input = $(identifier).parent().find('input');
       $input.val($input.val() + $button.attr('data-insert'));
 
-      $input.change();
+      $input.trigger('update_variable');
     };
 
     CStudioAdminConsole.cleanPostfix = (identifier, type) => {

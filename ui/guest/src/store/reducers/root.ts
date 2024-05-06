@@ -513,7 +513,7 @@ const reducer = createReducer(initialState, {
   [componentDragStarted.type]: (state, action) => {
     const { contentType } = action.payload;
     if (notNullOrUndefined(contentType)) {
-      const dropTargets = iceRegistry.getContentTypeDropTargets(contentType);
+      let dropTargets = iceRegistry.getContentTypeDropTargets(contentType, undefined, ['embedded', 'shared']);
       const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
       const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(
         dropTargets,
@@ -553,8 +553,8 @@ const reducer = createReducer(initialState, {
           const instanceId = instance.craftercms.id;
           return hierarchyMap[record.modelId]?.children.includes(instanceId);
         },
-        // This action type ensures we're working with 'shared' components
-        'shared'
+        // This action type ensures we're working with existing 'shared' components
+        'sharedExisting'
       );
       const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
       const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(

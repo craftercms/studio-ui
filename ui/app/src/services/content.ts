@@ -50,14 +50,14 @@ import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
-import { getFileNameFromPath, getParentPath, getPasteItemFromPath } from '../utils/path';
+import { getFileNameFromPath, getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
 import { FetchItemsByPathOptions } from '../models/FetchItemsByPath';
 import { v4 as uuid } from 'uuid';
 import FetchItemsByPathArray from '../models/FetchItemsByPathArray';
-import { isPdfDocument, isMediaContent, isTextContent } from '../components/PathNavigator/utils';
+import { isMediaContent, isPdfDocument, isTextContent } from '../components/PathNavigator/utils';
 
 export function fetchComponentInstanceHTML(path: string): Observable<string> {
   return getText(`/crafter-controller/component.html${toQueryString({ path })}`).pipe(pluck('response'));
@@ -165,12 +165,14 @@ export function writeContent(
   options?: { unlock: boolean }
 ): Observable<boolean> {
   options = Object.assign({ unlock: true }, options);
+  const fileName = getFileNameFromPath(path);
+  const pathToWrite = path.replace(`/${fileName}`, '');
   return post(
     writeContentUrl({
       site,
-      path: getParentPath(path),
+      path: pathToWrite,
       unlock: options.unlock ? 'true' : 'false',
-      fileName: getFileNameFromPath(path)
+      fileName
     }),
     content
   ).pipe(
@@ -194,7 +196,16 @@ export function fetchContentInstanceDescriptor(
   path: string,
   options?: Partial<GetDescriptorOptions>,
   contentTypeLookup?: LookupTable<ContentType>
-): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
+): Observable<{
+  model: ContentInstance;
+  modelLookup: LookupTable<ContentInstance>;
+  /**
+   * A lookup table directly completed/mutated by this function indexed by path of those objects
+   * that are incomplete/unflattened.
+   */
+  unflattenedPaths: LookupTable<ContentInstance>;
+}> {
+  const unflattenedPaths = {};
   return (
     contentTypeLookup
       ? of(contentTypeLookup)
@@ -204,15 +215,15 @@ export function fetchContentInstanceDescriptor(
       fetchDescriptorDOM(site, path, options).pipe(
         map((doc) => {
           const modelLookup = {};
-          const model = parseContentXML(doc, path, contentTypeLookup, modelLookup);
-          return { model, modelLookup };
+          const model = parseContentXML(doc, path, contentTypeLookup, modelLookup, unflattenedPaths);
+          return { model, modelLookup, unflattenedPaths };
         })
       )
     )
   );
 }
 
-function writeContentUrl(qs: object): string {
+export function writeContentUrl(qs: object): string {
   qs = new URLSearchParams(qs as URLSearchParams);
   return `/studio/api/1/services/api/1/content/write-content.json?${qs.toString()}`;
 }

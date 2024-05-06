@@ -65,7 +65,9 @@ const systemValidationsNames = [
   'imgRepositoryUpload',
   'imgDesktopUpload',
   'videoDesktopUpload',
-  'videoBrowseRepo'
+  'videoBrowseRepo',
+  'audioDesktopUpload',
+  'audioBrowseRepo'
 ];
 
 const systemValidationsKeysMap = {
@@ -86,7 +88,9 @@ const systemValidationsKeysMap = {
   imgRepositoryUpload: 'allowImagesFromRepo',
   imgDesktopUpload: 'allowImageUpload',
   videoDesktopUpload: 'allowVideoUpload',
-  videoBrowseRepo: 'allowVideosFromRepo'
+  videoBrowseRepo: 'allowVideosFromRepo',
+  audioDesktopUpload: 'allowAudioUpload',
+  audioBrowseRepo: 'allowAudioFromRepo'
 };
 
 function bestGuessParse(value: any) {
@@ -160,12 +164,34 @@ function getFieldValidations(
                     level: 'required',
                     value: []
                   };
+                  validations.allowedSharedExistingContentTypes = validations.allowedSharedExistingContentTypes ?? {
+                    id: 'allowedSharedExistingContentTypes',
+                    level: 'required',
+                    value: []
+                  };
                   datasource.allowEmbedded &&
                     (validations.allowedEmbeddedContentTypes.value =
                       validations.allowedEmbeddedContentTypes.value.concat(value));
                   datasource.allowShared &&
                     (validations.allowedSharedContentTypes.value =
                       validations.allowedSharedContentTypes.value.concat(value));
+                  (datasource.enableBrowse || datasource.enableSearch) &&
+                    (validations.allowedSharedExistingContentTypes.value =
+                      validations.allowedSharedExistingContentTypes.value.concat(value));
+                  // If someone configures the "components" data source to not allow anything but still select one or more allowed content types,
+                  // it would cause the allowance of those content types to be created as embedded because of the way the checks are done. Even
+                  // though this is not a real use case, this cancels that possibility. See componentDragStarted action reducer and drop epic for
+                  // details on how this would happen.
+                  if (
+                    !(
+                      datasource.allowEmbedded ||
+                      datasource.allowShared ||
+                      datasource.enableBrowse ||
+                      datasource.enableSearch
+                    )
+                  ) {
+                    value = [];
+                  }
                   // If there is more than one Components DS on this type, make sure they don't override each other as they get parsed
                   if (validations[mappedPropName]) {
                     value = validations[mappedPropName].value.concat(value);
@@ -200,11 +226,11 @@ function getFieldDataSourceValidations(
   if (
     dataSources &&
     dataSources.length > 0 &&
-    asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager'].includes(prop.name))
+    asArray(fieldProperty).find((prop) => ['imageManager', 'videoManager', 'audioManager'].includes(prop.name))
   ) {
     validations = asArray<LegacyFormDefinitionProperty>(fieldProperty).reduce<LookupTable<ContentTypeFieldValidation>>(
       (table, prop) => {
-        if (prop.name === 'imageManager' || prop.name === 'videoManager') {
+        if (prop.name === 'imageManager' || prop.name === 'videoManager' || prop.name === 'audioManager') {
           const dataSourcesIds = prop.value.trim() !== '' ? prop.value.split(',') : null;
           dataSourcesIds?.forEach((id) => {
             const dataSource = dataSources.find((datasource) => datasource.id === id);

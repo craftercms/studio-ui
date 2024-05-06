@@ -48,8 +48,23 @@ export function getPathFromPreviewURL(previewURL: string): string {
   return `/site/website${pagePath}`;
 }
 
+/**
+ * Computes and returns the preview URL from a path. Notice non-previewable paths will not be transformed.
+ * @param path {string} The path to compute the preview URL from
+ * @returns {string} The preview URL
+ */
 export function getPreviewURLFromPath(path: string): string {
-  return withoutIndex(path).replace('/site/website', '') || '/';
+  // Transform only paths that start with `/site/website`. Preview url and path for static assets is the same.
+  // Non-previewable paths are not transformed by this function.
+  // It is known that for some existing platform users, paths do not end with `/index.xml`. For example in
+  // `/site/website/folder/article.xml` previewUrl should be `/folder/article`. In these cases, the file
+  // name cannot be striped off.
+  return /^\/site\/website/.test(path)
+    ? path
+        .replace(/^\/site\/website/, '')
+        .replace(/\/(index|default).xml$/, '')
+        .replace(/(.xml|\/)$/, '') || '/'
+    : path;
 }
 
 export function getFileNameFromPath(path: string): string {
@@ -102,6 +117,14 @@ export function removeExtension(name: string) {
   return name.replace(/\.[^/.]+$/, '');
 }
 
+/**
+ * Takes in a path and calculates its *logical* parent path, which in the case of pages, the parent
+ * path is not the index.xml directory container, but the parent of that directory. For example,
+ * `/site/website/articles/2021/1/men-styles-for-winter/index.xml` => '/site/website/articles/2021/1'.
+ * For other non-page paths, the parent path would be the regular natural parent. For example,
+ * '/site/components/497a7071.xml' => '/site/components'.
+ * @param path {string} The path to calculate the parent path for.
+ */
 export function getParentPath(path: string): string {
   let splitPath = withoutIndex(path).split('/');
   splitPath.pop();
@@ -282,8 +305,13 @@ export function processPathMacros(dependencies: {
   useUUID?: boolean;
   fullParentPath?: string;
 }): string {
-  const { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
+  let { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
   let processedPath = path;
+
+  // The objectGroupId is the first 4 characters of the objectId, so compute if not provided.
+  if (objectGroupId === undefined && objectId) {
+    objectGroupId = objectId.substring(0, 4);
+  }
 
   if (processedPath.includes('{objectId}')) {
     if (useUUID) {

@@ -29,8 +29,10 @@ import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
 import { makeStyles } from 'tss-react/mui';
-
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
+import { XHRUploadOptions } from '@uppy/xhr-upload';
+import ApiResponse from '../../models/ApiResponse';
+import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const useStyles = makeStyles()(() => ({
   rootTitle: {
@@ -50,35 +52,121 @@ const useStyles = makeStyles()(() => ({
   }
 }));
 
+const mixHeaders = (headers: Record<string, any>) => Object.assign({}, getGlobalHeaders(), headers);
+
 export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const { formatMessage } = useIntl();
   const expiresAt = useSelection((state) => state.auth.expiresAt);
   const { upload } = useSiteUIConfig();
   const { classes } = useStyles();
-  const { site, path, onClose, onClosed, maxSimultaneousUploads, onMinimized, hasPendingChanges, setPendingChanges } =
-    props;
+  // region const { ... } = props
+  const {
+    site,
+    path,
+    onClose,
+    onClosed,
+    maxSimultaneousUploads,
+    onMinimized,
+    hasPendingChanges,
+    setPendingChanges,
+    headers,
+    method = 'post',
+    meta,
+    allowedMetaFields,
+    endpoint,
+    useFormData = true,
+    fieldName = 'file',
+    onFileAdded,
+    onUploadSuccess,
+    validateStatus,
+    getResponseData,
+    getResponseError,
+    successfulUploadButton,
+    showRemoveButtonAfterComplete = false
+  } = props;
+  // endregion
+  const propRefs = useUpdateRefs({
+    headers,
+    meta,
+    allowedMetaFields,
+    onFileAdded,
+    onUploadSuccess,
+    validateStatus,
+    getResponseData,
+    getResponseError
+  });
 
+  // TODO: Currently unknown if recreating the Uppy instance works properly down the component tree.
   const uppy = React.useMemo(() => {
-    return new Uppy({
-      meta: { site },
-      locale: {
-        strings: {
-          noDuplicates: formatMessage(translations.noDuplicates)
-        }
-      }
-    }).use(XHRUpload, {
-      endpoint: getBulkUploadUrl(site, path),
-      formData: true,
-      fieldName: 'file',
+    // Want to avoid memo renewal on every render due to these various props not being memoized up in the tree.
+    const {
+      headers,
+      allowedMetaFields,
+      validateStatus,
+      getResponseData,
+      getResponseError,
+      onFileAdded,
+      onUploadSuccess,
+      meta
+    } = propRefs.current;
+    const xhrOptions: XHRUploadOptions = {
+      endpoint: endpoint ?? getBulkUploadUrl(site, path),
+      formData: useFormData,
+      fieldName,
       limit: maxSimultaneousUploads ? maxSimultaneousUploads : upload.maxSimultaneousUploads,
       timeout: upload.timeout,
-      headers: getGlobalHeaders()
-    });
-  }, [formatMessage, maxSimultaneousUploads, path, site, upload]);
+      headers: mixHeaders(headers),
+      method,
+      getResponseError(responseText) {
+        try {
+          const parsed = JSON.parse(responseText);
+          const error: ApiResponse = parsed.response;
+          // TODO: Test this with Studio error responses.
+          return new Error(
+            `[${error.code}] ${error.message}. ${error.remedialAction}. ${error.documentationUrl}.`
+              .replace('. .', '.')
+              .replace('. .', '.')
+          );
+        } catch {
+          return new Error(formatMessage({ defaultMessage: 'An error occurred uploading the file.' }));
+        }
+      }
+    };
+    allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
+    // These (validateStatus, getResponseData, getResponseError) are unlikely to have closures inside them that would go stale.
+    validateStatus && (xhrOptions.validateStatus = validateStatus);
+    getResponseData && (xhrOptions.getResponseData = getResponseData);
+    getResponseError && (xhrOptions.getResponseError = getResponseError);
+    const instance = new Uppy({
+      meta: Object.assign({ site }, meta),
+      locale: { strings: { noDuplicates: formatMessage(translations.noDuplicates) } }
+    }).use(XHRUpload, xhrOptions);
+    onFileAdded &&
+      instance.on('file-added', (file) => {
+        propRefs.current.onFileAdded({ file, uppy: instance });
+      });
+    onUploadSuccess &&
+      instance.on('upload-success', (file, response) => {
+        propRefs.current.onUploadSuccess({ file, response });
+      });
+    return instance;
+  }, [
+    propRefs,
+    endpoint,
+    site,
+    path,
+    useFormData,
+    fieldName,
+    maxSimultaneousUploads,
+    upload.maxSimultaneousUploads,
+    upload.timeout,
+    method,
+    formatMessage
+  ]);
 
   useUnmount(() => {
     uppy.close();
-    onClosed();
+    onClosed?.();
   });
 
   useEffect(() => {
@@ -99,8 +187,8 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
 
   useEffect(() => {
     const plugin = uppy.getPlugin('XHRUpload');
-    plugin.setOptions({ headers: getGlobalHeaders() });
-  }, [expiresAt, uppy]);
+    plugin.setOptions({ headers: mixHeaders(headers) });
+  }, [expiresAt, uppy, headers]);
 
   return (
     <>
@@ -118,6 +206,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
           onClose={onClose}
           title={formatMessage(translations.title)}
           maxActiveUploads={upload.maxActiveUploads}
+          options={{ successfulUploadButton, showRemoveButtonAfterComplete }}
         />
       </DialogBody>
     </>

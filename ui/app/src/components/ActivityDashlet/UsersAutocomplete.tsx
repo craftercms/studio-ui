@@ -27,6 +27,8 @@ import User from '../../models/User';
 import { USER_USERNAME_MAX_LENGTH } from '../UserManagement/utils';
 import { createErrorStatePropsFromApiResponse } from '../ApiResponseErrorState';
 
+// TODO: Not in use. Removed ActivityDashlet usage.
+
 export interface UsersAutocompleteProps {
   value: User[];
   onChange(value: User[]): void;

@@ -16,6 +16,21 @@
 
 import { h } from 'preact';
 
+const svgIconPaths = {
+  EditOutlined:
+    'm14.06 9.02.92.92L5.92 19H5v-.92zM17.66 3c-.25 0-.51.1-.7.29l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.2-.2-.45-.29-.71-.29m-3.6 3.19L3 17.25V21h3.75L17.81 9.94z',
+  EditRounded:
+    'M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36M20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z',
+  DownloadRounded:
+    'M16.59 9H15V4c0-.55-.45-1-1-1h-4c-.55 0-1 .45-1 1v5H7.41c-.89 0-1.34 1.08-.71 1.71l4.59 4.59c.39.39 1.02.39 1.41 0l4.59-4.59c.63-.63.19-1.71-.7-1.71M5 19c0 .55.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1H6c-.55 0-1 .45-1 1',
+  MoreVertRounded:
+    'M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2'
+};
+
+svgIconPaths.more = svgIconPaths.MoreVertRounded;
+svgIconPaths.edit = svgIconPaths.EditRounded;
+svgIconPaths.download = svgIconPaths.DownloadRounded;
+
 function RemoveButton({ i18n, onClick, file }) {
   return (
     <button
@@ -78,16 +93,38 @@ function AcceptSuggestedNameIcon({ i18n, onClick }) {
 }
 
 export default function Buttons(props) {
-  const { file, showRemoveButton, i18n, removeFile, error, hideRetryButton, retryUpload, validateAndRetry } = props;
-
+  const {
+    file,
+    showRemoveButton,
+    i18n,
+    removeFile,
+    error,
+    hideRetryButton,
+    retryUpload,
+    validateAndRetry,
+    successfulUploadButton
+  } = props;
+  const removeFileFn = () => removeFile(file.id, 'removed-by-user');
   return (
     <div className="uppy-Dashboard-Item-actionWrapper">
       {error && !hideRetryButton && !file.meta.validating && (
         <RetryButton i18n={i18n} onClick={() => retryUpload(file.id)} />
       )}
-      {showRemoveButton && !file.meta.validating ? (
-        <RemoveButton i18n={i18n} onClick={() => removeFile(file.id, 'removed-by-user')} />
-      ) : null}
+      {file.progress.uploadComplete && successfulUploadButton && (
+        <button
+          className="uppy-dashboard-button-base uppy-dashboard-icon-button edgeEnd"
+          tabIndex="0"
+          type="button"
+          aria-label={successfulUploadButton.label}
+          title={successfulUploadButton.label}
+          onClick={(e) => successfulUploadButton.onClick(e, file, { remove: removeFileFn })}
+        >
+          <svg className="uppy-dashboard-svg-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+            <path d={svgIconPaths[successfulUploadButton.icon] ?? successfulUploadButton.icon} />
+          </svg>
+        </button>
+      )}
+      {showRemoveButton && !file.meta.validating ? <RemoveButton i18n={i18n} onClick={removeFileFn} /> : null}
       {file.meta.validating && <ValidateIcon i18n={i18n} />}
       {file.meta.validating === false && file.meta.allowed && file.meta.suggestedName && (
         <AcceptSuggestedNameIcon i18n={i18n} onClick={() => validateAndRetry(file.id)} />

@@ -282,14 +282,20 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                       // This assumes the validation of the type being accepted by the field has been performed prior
                       // to this running. Hence, create as embedded if accepted, otherwise create as shared.
                       const createAsEmbedded = isTypeAcceptedAsByField(entries.field, contentType.id, 'embedded');
-                      const instance = createContentInstance(
-                        contentType,
-                        createAsEmbedded
-                          ? null
-                          : entries.contentType.dataSources?.find(
-                              (ds) => ds.type === 'components' && ds.contentTypes.split(',').includes(contentType.id)
-                            )?.baseRepoPath ?? null
-                      );
+                      let newComponentPath = null;
+                      if (!createAsEmbedded) {
+                        newComponentPath =
+                          entries.contentType.dataSources?.find(
+                            (ds) => ds.type === 'components' && ds.contentTypes.split(',').includes(contentType.id)
+                          )?.baseRepoPath ?? null;
+                        newComponentPath = processPathMacros({
+                          path: newComponentPath,
+                          objectId: record.modelId,
+                          useUUID: false,
+                          fullParentPath: path
+                        });
+                      }
+                      const instance = createContentInstance(contentType, newComponentPath);
                       setTimeout(() => {
                         contentController.insertComponent(
                           record.modelId,

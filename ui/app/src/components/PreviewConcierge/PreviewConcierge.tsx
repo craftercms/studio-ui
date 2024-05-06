@@ -38,8 +38,10 @@ import {
   hostCheckIn,
   hotKey,
   iceZoneSelected,
+  initPreviewConfig,
   initRichTextEditorConfig,
   insertComponentOperation,
+  InsertComponentOperationPayload,
   insertItemOperation,
   insertItemOperationComplete,
   insertItemOperationFailed,
@@ -59,6 +61,7 @@ import {
   setItemBeingDragged,
   setPreviewEditMode,
   showEditDialog as showEditDialogAction,
+  snackGuestMessage,
   sortItemOperation,
   sortItemOperationComplete,
   sortItemOperationFailed,
@@ -67,13 +70,9 @@ import {
   updateFieldValueOperation,
   updateFieldValueOperationComplete,
   updateFieldValueOperationFailed,
-  updateRteConfig,
-  snackGuestMessage,
-  InsertComponentOperationPayload,
-  initPreviewConfig
+  updateRteConfig
 } from '../../state/actions/preview';
 import {
-  writeInstance,
   deleteItem,
   duplicateItem,
   fetchContentInstance,
@@ -86,7 +85,8 @@ import {
   insertItem,
   moveItem,
   sortItem,
-  updateField
+  updateField,
+  writeInstance
 } from '../../services/content';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
@@ -102,8 +102,8 @@ import {
   getStoredEditModeChoice,
   getStoredEditModePadding,
   getStoredHighlightModeChoice,
-  removeStoredClipboard,
   getStoredOutdatedXBValidationDate,
+  removeStoredClipboard,
   setStoredOutdatedXBValidationDate
 } from '../../utils/state';
 import {
@@ -127,7 +127,6 @@ import {
 } from '../../utils/content';
 import moment from 'moment-timezone';
 import ContentInstance from '../../models/ContentInstance';
-import LookupTable from '../../models/LookupTable';
 import IconButton from '@mui/material/IconButton';
 import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
@@ -209,11 +208,11 @@ const issueDescriptorRequest = (props) => {
       // If another check in comes while loading, this request should be cancelled.
       // This may happen if navigating rapidly from one page to another (guest-side).
       takeUntil(guestToHost$.pipe(filter(({ type }) => [guestCheckIn.type, guestCheckOut.type].includes(type)))),
-      switchMap((obj: { model: ContentInstance; modelLookup: LookupTable<ContentInstance> }) => {
+      switchMap((modelResponse) => {
         let requests: Array<Observable<ContentInstance>> = [];
         let sandboxItemPaths = []; // Used to collect the paths to fetch the sandbox items corresponding to the Content Instances.
         let sandboxItemPathLookup = {};
-        Object.values(obj.modelLookup).forEach((model) => {
+        Object.values(modelResponse.modelLookup).forEach((model) => {
           if (model.craftercms.path) {
             sandboxItemPaths.push(model.craftercms.path);
             sandboxItemPathLookup[model.craftercms.path] = true;
@@ -229,29 +228,37 @@ const issueDescriptorRequest = (props) => {
             });
           }
         });
+        Object.keys(modelResponse.unflattenedPaths).forEach((path) => {
+          sandboxItemPaths.push(path);
+          requests.push(fetchContentInstance(site, path, contentTypes));
+        });
         return forkJoin({
           sandboxItems: fetchItemsByPath(site, sandboxItemPaths),
-          models: requests.length
+          modelResponse: requests.length
             ? forkJoin(requests).pipe(
                 map((response) => {
-                  let lookup = obj.modelLookup;
                   response.forEach((contentInstance) => {
-                    lookup = {
-                      ...lookup,
-                      [contentInstance.craftercms.id]: contentInstance
-                    };
+                    if (contentInstance.craftercms.path in modelResponse.unflattenedPaths) {
+                      // Complete the object reference with the freshly-fetched instance and add it to the modelLookup.
+                      // This relies on object references inside the lookup objects being referenced by the unflattenedPaths.
+                      // i.e. unflattenedPaths is a shortcut to the objects withing the guts of the models on the modelLookup.
+                      modelResponse.modelLookup[contentInstance.craftercms.id] = Object.assign(
+                        modelResponse.unflattenedPaths[contentInstance.craftercms.path],
+                        contentInstance
+                      );
+                    } else {
+                      modelResponse.modelLookup[contentInstance.craftercms.id] = contentInstance;
+                    }
                   });
-                  return {
-                    ...obj,
-                    modelLookup: lookup
-                  };
+                  return modelResponse;
                 })
               )
-            : of(obj)
+            : of(modelResponse)
         });
       })
     )
-    .subscribe(({ sandboxItems, models: { model, modelLookup } }) => {
+    .subscribe(({ sandboxItems, modelResponse }) => {
+      const { model, modelLookup } = modelResponse;
       const normalizedModels = normalizeModelsLookup(modelLookup);
       const hierarchyMap = createModelHierarchyDescriptorMap(normalizedModels, contentTypes);
       const normalizedModel = normalizedModels[model.craftercms.id];
@@ -637,66 +644,66 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // endregion
-        case guestCheckIn.type:
+        case guestCheckIn.type: {
+          getHostToGuestBus().next(
+            hostCheckIn({
+              editMode: false,
+              username: upToDateRefs.current.user.username,
+              highlightMode: upToDateRefs.current.highlightMode,
+              authoringBase: upToDateRefs.current.authoringBase,
+              site: upToDateRefs.current.siteId,
+              editModePadding: upToDateRefs.current.editModePadding,
+              rteConfig: upToDateRefs.current.rteConfig ?? {}
+            })
+          );
+          dispatch(guestCheckIn(payload));
+
+          // TODO: Remove *all* document domain related stuff for `develop`
+          if (payload.documentDomain) {
+            try {
+              document.domain = payload.documentDomain;
+            } catch (e) {
+              console.error(e);
+            }
+          } else if (document.domain !== originalDocDomain) {
+            document.domain = originalDocDomain;
+          }
+
+          if (payload.__CRAFTERCMS_GUEST_LANDING__) {
+            nnou(siteId) && dispatch(changeCurrentUrl('/'));
+          } else {
+            const path = payload.path;
+
+            contentTypes$.subscribe((contentTypes) => {
+              hostToGuest$.next(contentTypesResponse({ contentTypes: Object.values(contentTypes) }));
+              issueDescriptorRequest({
+                site: siteId,
+                path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchPrimaryGuestModelComplete,
+                permissions
+              });
+            });
+          }
+          break;
+        }
         case fetchGuestModel.type: {
-          if (type === guestCheckIn.type) {
-            getHostToGuestBus().next(
-              hostCheckIn({
-                editMode: false,
-                username: upToDateRefs.current.user.username,
-                highlightMode: upToDateRefs.current.highlightMode,
-                authoringBase: upToDateRefs.current.authoringBase,
-                site: upToDateRefs.current.siteId,
-                editModePadding: upToDateRefs.current.editModePadding,
-                rteConfig: upToDateRefs.current.rteConfig ?? {}
-              })
-            );
-            dispatch(guestCheckIn(payload));
-
-            if (payload.documentDomain) {
-              try {
-                document.domain = payload.documentDomain;
-              } catch (e) {
-                console.error(e);
-              }
-            } else if (document.domain !== originalDocDomain) {
-              document.domain = originalDocDomain;
-            }
-
-            if (payload.__CRAFTERCMS_GUEST_LANDING__) {
-              nnou(siteId) && dispatch(changeCurrentUrl('/'));
-            } else {
-              const path = payload.path;
-
-              contentTypes$.subscribe((contentTypes) => {
-                hostToGuest$.next(contentTypesResponse({ contentTypes: Object.values(contentTypes) }));
-                issueDescriptorRequest({
-                  site: siteId,
-                  path,
-                  contentTypes,
-                  requestedSourceMapPaths,
-                  dispatch,
-                  completeAction: fetchPrimaryGuestModelComplete,
-                  permissions
-                });
+          if (payload.path?.startsWith('/')) {
+            contentTypes$.subscribe((contentTypes) => {
+              issueDescriptorRequest({
+                site: siteId,
+                path: payload.path,
+                contentTypes,
+                requestedSourceMapPaths,
+                dispatch,
+                completeAction: fetchGuestModelComplete,
+                permissions
               });
-            }
-          } /* else if (type === FETCH_GUEST_MODEL) */ else {
-            if (payload.path?.startsWith('/')) {
-              contentTypes$.subscribe((contentTypes) => {
-                issueDescriptorRequest({
-                  site: siteId,
-                  path: payload.path,
-                  contentTypes,
-                  requestedSourceMapPaths,
-                  dispatch,
-                  completeAction: fetchGuestModelComplete,
-                  permissions
-                });
-              });
-            } else {
-              return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);
-            }
+            });
+          } else {
+            return console.warn(`Ignoring FETCH_GUEST_MODEL request since "${payload.path}" is not a valid path.`);
           }
           break;
         }
@@ -1136,7 +1143,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           const typedPayload: ShowRtePickerActionsPayload = payload;
           const { setDataSourceActionsListState, showToolsPanel, toolsPanelWidth, browseFilesDialogState } =
             upToDateRefs.current;
-          const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'media') => {
+          const onShowSingleFileUploadDialog = (path: string, type: 'image' | 'audio' | 'video') => {
             setDataSourceActionsListState(dataSourceActionsListInitialState);
 
             if (path) {
@@ -1144,7 +1151,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 showSingleFileUploadDialog({
                   site: siteId,
                   path,
-                  fileTypes: type === 'image' ? ['image/*'] : ['video/*'],
+                  fileTypes: type === 'image' ? ['image/*'] : type === 'video' ? ['video/*'] : ['audio/*'],
                   onClose: batchActions([
                     closeSingleFileUploadDialog(),
                     dispatchDOMEvent({ id: 'fileUploadCanceled' })
@@ -1176,8 +1183,13 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             }
           };
 
-          const onShowBrowseFilesDialog = (path: string, type: 'image' | 'media') => {
-            const mimeTypes = type === 'image' ? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg'] : ['video/mp4'];
+          const onShowBrowseFilesDialog = (path: string, type: 'image' | 'audio' | 'video') => {
+            const mimeTypes =
+              type === 'image'
+                ? ['image/png', 'image/jpeg', 'image/gif', 'image/jpg']
+                : type === 'video'
+                ? ['video/mp4']
+                : ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav'];
             setDataSourceActionsListState(dataSourceActionsListInitialState);
 
             if (path) {
@@ -1195,7 +1207,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
           const dataSourcesByType = {
             image: ['allowImageUpload', 'allowImagesFromRepo'],
-            media: ['allowVideoUpload', 'allowVideosFromRepo']
+            media: ['allowVideoUpload', 'allowVideosFromRepo', 'allowAudioUpload', 'allowAudioFromRepo']
+          };
+
+          // Tinymce handles both audio and video as 'media' types. This lookup is used to determine which type of media to handle.
+          const mediaTypes = {
+            allowAudioUpload: 'audio',
+            allowAudioFromRepo: 'audio',
+            allowVideoUpload: 'video',
+            allowVideosFromRepo: 'video'
           };
 
           // filter data sources to only the ones that match the type
@@ -1212,10 +1232,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               objectId: typedPayload.model.craftercms.id,
               objectGroupId: typedPayload.model.objectGroupId
             });
-            if (key === 'allowImageUpload' || key === 'allowVideoUpload') {
-              onShowSingleFileUploadDialog(processedPath, typedPayload.type);
+            if (key === 'allowImageUpload' || key === 'allowVideoUpload' || 'allowAudioUpload') {
+              onShowSingleFileUploadDialog(processedPath, mediaTypes[key] ?? typedPayload.type);
             } else {
-              onShowBrowseFilesDialog(processedPath, typedPayload.type);
+              onShowBrowseFilesDialog(processedPath, mediaTypes[key] ?? typedPayload.type);
             }
           } else if (dataSourcesKeys.length > 1) {
             // create items for DataSourcesActionsList
@@ -1229,10 +1249,12 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                   objectGroupId: typedPayload.model.objectGroupId
                 }),
                 action:
-                  dataSourceKey === 'allowImageUpload' || dataSourceKey === 'allowVideoUpload'
+                  dataSourceKey === 'allowImageUpload' ||
+                  dataSourceKey === 'allowVideoUpload' ||
+                  dataSourceKey === 'allowAudioUpload'
                     ? onShowSingleFileUploadDialog
                     : onShowBrowseFilesDialog,
-                type: typedPayload.type
+                type: mediaTypes[dataSourceKey] ?? typedPayload.type
               });
             });
 

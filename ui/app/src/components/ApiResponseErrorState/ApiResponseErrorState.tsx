@@ -14,61 +14,72 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ApiResponse } from '../../models/ApiResponse';
-import { nnou } from '../../utils/object';
+import { Api2ResponseFormat, ApiResponse } from '../../models/ApiResponse';
 import Button from '@mui/material/Button';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import ErrorState, { ErrorStateProps } from '../ErrorState/ErrorState';
-
-let UND;
 
 export type ApiResponseErrorStateProps = Omit<ErrorStateProps, 'title' | 'message'> & {
   error: ApiResponse;
+  validationErrors?: Api2ResponseFormat<any>['validationErrors'];
 };
-
-const messages = defineMessages({
-  moreInfo: {
-    id: 'common.moreInfo',
-    defaultMessage: 'More info'
-  },
-  error: {
-    id: 'words.error',
-    defaultMessage: 'Error'
-  },
-  back: {
-    id: 'words.back',
-    defaultMessage: 'Back'
-  }
-});
 
 export function createErrorStatePropsFromApiResponse(
   apiResponse: ApiResponse,
-  formatMessage
+  formatMessage,
+  validationErrors?: Api2ResponseFormat<any>['validationErrors']
 ): Partial<ErrorStateProps> {
-  const { code, message = '', remedialAction, documentationUrl } = apiResponse;
+  const {
+    code,
+    message = '',
+    remedialAction,
+    documentationUrl
+  } = apiResponse ?? {
+    code: '',
+    message: formatMessage({
+      defaultMessage: 'The server is unreachable or your are offline.'
+    })
+  };
   return {
-    title: nnou(code) ? `${formatMessage(messages.error)}${code ? ` ${code}` : ''}` : '',
+    title: [
+      formatMessage({
+        id: 'words.error',
+        defaultMessage: 'Error'
+      }),
+      code
+    ]
+      .filter(Boolean)
+      .join(' '),
     message:
       message +
       (message.endsWith('.') || !remedialAction ? '' : '.') +
       (remedialAction ? ` ${remedialAction}` : '') +
       (remedialAction && message ? (remedialAction.endsWith('.') ? '' : '.') : ''),
-    children: documentationUrl ? (
-      <Button href={documentationUrl} target="_blank" rel="noreferrer" variant="text">
-        {formatMessage(messages.moreInfo)} <OpenInNewIcon />
-      </Button>
-    ) : (
-      UND
+    children: (
+      <>
+        {validationErrors?.map(({ field, message }, index) => (
+          <div key={`${field}_${index}`}>{message}</div>
+        ))}
+        {documentationUrl && (
+          <Button href={documentationUrl} target="_blank" rel="noreferrer" variant="text">
+            {formatMessage({
+              id: 'common.moreInfo',
+              defaultMessage: 'More info'
+            })}{' '}
+            <OpenInNewIcon />
+          </Button>
+        )}
+      </>
     )
   };
 }
 
 export function ApiResponseErrorState(props: ApiResponseErrorStateProps) {
-  const { error } = props;
+  const { error, validationErrors } = props;
   const { formatMessage } = useIntl();
-  return <ErrorState {...props} {...createErrorStatePropsFromApiResponse(error, formatMessage)} />;
+  return <ErrorState {...props} {...createErrorStatePropsFromApiResponse(error, formatMessage, validationErrors)} />;
 }
 
 export default ApiResponseErrorState;

@@ -523,11 +523,11 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
     // parse the value using patterns and retrive the date with format
     if (this.timeEl) {
       let formattedValue;
-      if (!this.hour12) {
+      if (this.hour12 || this.timeEl.value.trim() === '') {
+        formattedValue = this.timeEl.value;
+      } else {
         const timeMomentObj = moment(this.timeEl.value, 'HH:mm:ss');
         formattedValue = timeMomentObj.format('hh:mm:ss a');
-      } else {
-        formattedValue = this.timeEl.value;
       }
 
       this.timeEl.dataset.value = formattedValue;

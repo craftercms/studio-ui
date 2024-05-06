@@ -1,5 +1,7 @@
 # Changelog: `@craftercms/studio-ui` 
 
+[//]: # (TODO: migrate 4.1.x branch changelog to develop)
+
 ## 4.1.3
 
 * HostUI removed and merged into Host
@@ -11,6 +13,8 @@
   * ace
   * bootstrap
 * Replace Navigators to work with new bulk children fetcher api
+* `utils/content/parseContentXML` & `utils/content/parseElementByContentType`: new argument added to the bottom of the arguments list: `unflattenedPaths`. The argument should be an object that will be populated by the method with `path: object` pairs for the unflattened content items whose data is incomplete while processing.
+  * This argument is likely to be required in next versions of the package.
 * **Breaking Changes** 
   * `services/content/insertComponent`: function now requires the parent document content type and the path argument moves to being earlier in the argument list.
     The shifting of the arguments seeks a more coherent argument order, grouping parent-related arguments first, followed by inserted instance related arguments, and finally supportive arguments last.
