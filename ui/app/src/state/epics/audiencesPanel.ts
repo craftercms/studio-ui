@@ -25,8 +25,7 @@ import {
   SET_ACTIVE_TARGETING_MODEL,
   SET_ACTIVE_TARGETING_MODEL_COMPLETE,
   setActiveTargetingModelComplete as setActiveTargetingModelCompleteAction,
-  setActiveTargetingModelFailed,
-  setActiveTargetingModelFailed as setActiveTargetingModelFailedAction
+  setActiveTargetingModelFailed
 } from '../actions/preview';
 import {
   deserializeActiveTargetingModelData,
@@ -58,7 +57,7 @@ export default [
       switchMap(([, state]) =>
         setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
           map((response) => setActiveTargetingModelCompleteAction(response)),
-          catchAjaxError(setActiveTargetingModelFailedAction)
+          catchAjaxError(setActiveTargetingModelFailed)
         )
       )
     ),
