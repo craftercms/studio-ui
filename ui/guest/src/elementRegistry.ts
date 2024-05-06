@@ -49,6 +49,8 @@ let db: LookupTable<ElementRecord> = {};
 // Lookup table of element record id arrays, indexed by iceId
 let registry: LookupTable<number[]> = {};
 
+export const inheritorsModelIdsMap = {};
+
 export function get(id: number): ElementRecord {
   const record = db[id];
   record && nullOrUndefined(record.label) && setLabel(record);
@@ -194,6 +196,7 @@ export function completeDeferredRegistration(id: number): void {
       // If the field is inherited, the modelId to register is the one that contains the field
       if (isInheritedField(modelId, fieldId)) {
         modelIdToRegister = getModelIdFromInheritedField(modelId, fieldId);
+        inheritorsModelIdsMap[`${modelIdToRegister}-${fieldId}`] = modelId;
       }
       const iceId = iceRegistry.register({ modelId: modelIdToRegister, index, fieldId });
       if (!registry[iceId]) {
