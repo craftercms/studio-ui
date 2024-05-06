@@ -2311,16 +2311,37 @@ __metadata:
   linkType: hard
 
 "@formatjs/cli@npm:^6.2.7":
-  version: 6.2.7
-  resolution: "@formatjs/cli@npm:6.2.7"
+  version: 6.2.10
+  resolution: "@formatjs/cli@npm:6.2.10"
   peerDependencies:
-    vue: ^3.3.4
+    "@glimmer/env": ^0.1.7
+    "@glimmer/reference": ^0.91.1
+    "@glimmer/syntax": ^0.91.1
+    "@glimmer/validator": ^0.91.1
+    "@vue/compiler-core": ^3.4.0
+    content-tag: ^2.0.1
+    ember-template-recast: ^6.1.4
+    vue: ^3.4.0
   peerDependenciesMeta:
+    "@glimmer/env":
+      optional: true
+    "@glimmer/reference":
+      optional: true
+    "@glimmer/syntax":
+      optional: true
+    "@glimmer/validator":
+      optional: true
+    "@vue/compiler-core":
+      optional: true
+    content-tag:
+      optional: true
+    ember-template-recast:
+      optional: true
     vue:
       optional: true
   bin:
     formatjs: bin/formatjs
-  checksum: 65ce96e61b6225c495e21ed2083357e15c6c0da95f242b5cc7e1ac0caa0ba450c9115a74a700e34f00ff49ee7a85f48cd7b7555423d4fd3f032d5d6972e5bebd
+  checksum: a4a0828364a68f0347f076125b358cbb891058c136a8e7239ad53749d9bd7da7c093ddc9831e225d37d535733c6206e1cf38a4aa7016953227b6c671d1bf8598
   languageName: node
   linkType: hard
 
