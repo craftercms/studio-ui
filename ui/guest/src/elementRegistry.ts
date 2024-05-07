@@ -23,8 +23,7 @@ import {
   getCachedModel,
   hasCachedModel,
   isInheritedField,
-  model$,
-  getModelIdFromInheritedField
+  model$
 } from './contentController';
 import { take } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
