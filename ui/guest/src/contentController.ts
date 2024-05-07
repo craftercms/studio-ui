@@ -186,7 +186,6 @@ export function getContentInstanceByPath(path: string): ContentInstance {
   return models$.value[modelId];
 }
 
-// TODO: check when value is in actual model and not coming from level-descriptor
 export function isInheritedField(modelId: string, fieldId: string): boolean {
   return !!getCachedModel(modelId).craftercms.sourceMap?.[fieldId];
 }
