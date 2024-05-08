@@ -347,7 +347,10 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   };
 
   const onPreview = (item: MediaItem) => {
-    const { type, name: title, path } = item;
+    let { type, name: title, path } = item;
+    if (item.mimeType.includes('audio/')) {
+      type = 'Audio';
+    }
     switch (type) {
       case 'Image': {
         dispatch(
@@ -374,6 +377,25 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
         dispatch(showEditDialog({ site, path: item.path, authoringBase, readonly: true }));
         break;
       }
+      case 'Video':
+        dispatch(
+          showPreviewDialog({
+            type: 'video',
+            title,
+            url: path
+          })
+        );
+        break;
+      case 'Audio':
+        dispatch(
+          showPreviewDialog({
+            type: 'audio',
+            title,
+            url: path,
+            mimeType: item.mimeType
+          })
+        );
+        break;
       default: {
         let mode = 'txt';
         if (type === 'Template') {

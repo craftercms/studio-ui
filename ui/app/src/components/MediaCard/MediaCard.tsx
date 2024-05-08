@@ -106,7 +106,11 @@ function MediaCard(props: MediaCardProps) {
     compact = false
   } = props;
   // endregion
-  const { name, path, type } = item;
+  let { name, path, type } = item;
+  // TODO: search item type comes as 'Other' in audio files, it needs to be updated to 'Audio'
+  if (item.mimeType.includes('audio/')) {
+    type = 'Audio';
+  }
   let iconMap = {
     Page: '@mui/icons-material/InsertDriveFileOutlined',
     Video: '@mui/icons-material/VideocamOutlined',
@@ -115,7 +119,8 @@ function MediaCard(props: MediaCardProps) {
     Component: '@mui/icons-material/ExtensionOutlined',
     Groovy: '@mui/icons-material/CodeRounded',
     JavaScript: '@mui/icons-material/CodeRounded',
-    CSS: '@mui/icons-material/CodeRounded'
+    CSS: '@mui/icons-material/CodeRounded',
+    Audio: '@mui/icons-material/AudiotrackOutlined'
   };
   let icon = { id: iconMap[type] ?? '@mui/icons-material/InsertDriveFileOutlined' };
   const systemIcon = <SystemIcon icon={icon} svgIconProps={{ className: 'media-icon' }} />;
