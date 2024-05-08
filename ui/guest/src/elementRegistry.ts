@@ -48,7 +48,7 @@ let db: LookupTable<ElementRecord> = {};
 // Lookup table of element record id arrays, indexed by iceId
 let registry: LookupTable<number[]> = {};
 
-export const inheritorsModelIdsMap = {};
+export let inheritorsModelIdsMap = {};
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -446,6 +446,7 @@ export function flush(): void {
   db = {};
   registry = {};
   iceRegistry.flush();
+  inheritorsModelIdsMap = {};
 }
 
 export function getRegistry(): typeof db {
