@@ -2301,9 +2301,8 @@
           sheetEl,
           function (e, el) {
             const invalidMacros = [
-              { regex: /{objectId}/, macro: '{objectId}' },
-              { regex: /{parentPath}/, macro: '{parentPath}' },
-              { regex: /{parentPath\[[0-9]+]}/, macro: '{parentPath}' }
+              { regex: /{objectId}/, macro: 'objectId' },
+              { regex: /{parentPath(\[[0-9]+])?}/, macro: 'parentPath' }
             ];
             const newPath = el.value;
             const invalidMacrosInPath = [];
@@ -2314,7 +2313,14 @@
               }
             });
             if (invalidMacrosInPath.length > 0) {
-              console.error(`Path contains invalid macros: ${invalidMacrosInPath.join(', ')}`);
+              CStudioAuthoring.Utils.showNotification(
+                formatMessage(contentTypesMessages.invalidMacros, { macros: invalidMacrosInPath.join(', ') }),
+                'top',
+                'left',
+                'success',
+                48,
+                197
+              );
             }
             item.quickCreatePath = el.value;
             onSetDirty(true);

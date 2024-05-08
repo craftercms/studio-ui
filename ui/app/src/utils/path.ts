@@ -291,18 +291,7 @@ export function getControllerPath(type: SystemType): string {
   return `/scripts/${type === 'page' ? 'pages' : 'components'}`;
 }
 
-const availableMacrosRegex = [
-  /{objectId}/,
-  /{objectGroupId}/,
-  /{objectGroupId2}/,
-  /{year}/,
-  /{month}/,
-  /{yyyy}/,
-  /{mm}/,
-  /{dd}/,
-  /{parentPath}/,
-  /{parentPath\[[0-9]+]}/
-];
+const availableMacrosRegex = /{(objectId|objectGroupId|objectGroupId2|year|month|yyyy|mm|dd|parentPath(\[[0-9]+])?)}/;
 export function processPathMacros(dependencies: {
   path: string;
   objectId: string;
@@ -316,8 +305,7 @@ export function processPathMacros(dependencies: {
   // Remove unrecognized macros.
   const pathMacros = processedPath.match(/\{([^{}]+)}/g) ?? [];
   pathMacros.forEach((macro) => {
-    const recognized = availableMacrosRegex.some((availableMacroRegex) => availableMacroRegex.test(macro));
-    if (!recognized) {
+    if (!availableMacrosRegex.test(macro)) {
       processedPath = processedPath.replace(macro, '');
     }
   });
