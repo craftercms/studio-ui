@@ -263,7 +263,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     e.preventDefault();
     e.stopPropagation();
     execOperation(() => {
-      if ((recordType === 'component' || recordType === 'node-selector-item') && nodeSelectorItemRecord) {
+      if (recordType === 'component' && nodeSelectorItemRecord) {
         sortUpItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
       } else {
         sortUpItem(modelId, fieldId, index);
@@ -276,7 +276,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     e.preventDefault();
     e.stopPropagation();
     execOperation(() => {
-      if ((recordType === 'component' || recordType === 'node-selector-item') && nodeSelectorItemRecord) {
+      if (recordType === 'component' && nodeSelectorItemRecord) {
         sortDownItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
       } else {
         sortDownItem(modelId, fieldId, index);
