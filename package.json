@@ -72,7 +72,7 @@
     "nth-check": "^2.0.1",
     "react-is": "^18.2.0"
   },
-  "packageManager": "yarn@4.0.2",
+  "packageManager": "yarn@4.2.1",
   "scripts": {
     "prettier:raw": "node scripts/prettier.js",
     "prettier:all": "node scripts/prettier.js write",
@@ -86,7 +86,10 @@
     "format-pom": "prettier --use-tabs --write pom.xml",
     "lint:ci": "eslint --ext .ts,.tsx .",
     "upgrade-yarn": "yarn set version latest",
-    "update:caniuse": "yarn up -R caniuse-lite"
+    "update:caniuse": "yarn up -R caniuse-lite",
+    "bom": "yarn cyclonedx --output-file bom.json",
+    "generate:bom": "yarn workspaces foreach -A run bom",
+    "remove:bom": "rimraf ./**/bom.json"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
