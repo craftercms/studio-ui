@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -13,13 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from 'react';
-import { GlobalAppContextProvider, GlobalApp } from '../components/GlobalApp';
 
-export default function Global(topProps: any) {
-  return (
-    <GlobalAppContextProvider>
-      <GlobalApp {...topProps} />
-    </GlobalAppContextProvider>
-  );
-}
+export { default } from './BrokenReferencesDialog';
+
+export * from './BrokenReferencesDialog';

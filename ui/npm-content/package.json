@@ -19,16 +19,16 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "ace-builds": "^1.32.5",
-    "bootstrap": "^5.3.2",
-    "css-loader": "^6.10.0",
+    "ace-builds": "^1.33.1",
+    "bootstrap": "^5.3.3",
+    "css-loader": "^7.1.1",
     "file-loader": "^6.2.0",
     "jquery": "^3.7.1",
-    "jquery-ui": "^1.13.2",
+    "jquery-ui": "^1.13.3",
     "jquery-ui-css": "^1.11.5",
     "js-yaml": "^4.1.0",
-    "monaco-editor": "0.47.0",
-    "style-loader": "^3.3.4",
+    "monaco-editor": "0.48.0",
+    "style-loader": "^4.0.0",
     "tinymce": "^6.8.2"
   },
   "devDependencies": {
@@ -40,7 +40,7 @@
     "monaco-editor-webpack-plugin": "^7.1.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^5.0.5",
-    "webpack": "^5.90.0",
+    "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4"
   }
 }

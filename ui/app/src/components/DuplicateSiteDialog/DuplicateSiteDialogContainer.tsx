@@ -19,7 +19,7 @@ import { DialogBody } from '../DialogBody';
 import Box from '@mui/material/Box';
 import { DialogFooter } from '../DialogFooter';
 import Button from '@mui/material/Button';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import React, { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
@@ -55,6 +55,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Alert from '@mui/material/Alert';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { useDispatch } from 'react-redux';
+import { showSystemNotification } from '../../state/actions/system';
 
 interface DuplicateSiteDialogContainerProps {
   site: DuplicateSiteState;
@@ -84,6 +86,9 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   const siteDuplicateSubscription = useRef<Subscription>();
   const [sites, setSites] = useState(null);
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, handleClose });
+  const mountedRef = useRef(true);
+  const dispatch = useDispatch();
+  const { formatMessage } = useIntl();
 
   const validateForm = () => {
     return !(
@@ -108,20 +113,32 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
     }).subscribe({
       next: () => {
         siteDuplicateSubscription.current = null;
-        fnRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
-        fnRefs.current.handleClose();
-        setSiteCookie(site.siteId, useBaseDomain);
-        window.location.href = getSystemLink({
-          systemLinkId: 'preview',
-          authoringBase,
-          site: site.siteId,
-          page: '/'
-        });
+        if (mountedRef.current) {
+          fnRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
+          fnRefs.current.handleClose();
+          setSiteCookie(site.siteId, useBaseDomain);
+          window.location.href = getSystemLink({
+            systemLinkId: 'preview',
+            authoringBase,
+            site: site.siteId,
+            page: '/'
+          });
+        }
       },
       error: ({ response }) => {
-        setError(response.response);
         siteDuplicateSubscription.current = null;
-        fnRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
+        if (mountedRef.current) {
+          setError(response.response);
+          fnRefs.current.onSubmittingAndOrPendingChange({ isSubmitting: false });
+        } else {
+          console.error('Error duplicating site', response);
+          dispatch(
+            showSystemNotification({
+              message: formatMessage({ defaultMessage: `Error creating site "{name}"` }, { name: site.siteName }),
+              options: { variant: 'error' }
+            })
+          );
+        }
       }
     });
   };
@@ -204,10 +221,12 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   };
 
   useMount(() => {
+    mountedRef.current = true;
     if (sites === null) {
       fetchAll({ limit: 1000, offset: 0 }).subscribe(setSites);
     }
     return () => {
+      mountedRef.current = false;
       siteDuplicateSubscription.current?.unsubscribe();
     };
   });
@@ -242,6 +261,8 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
           <CreateSiteDialogLoader
             title={<FormattedMessage defaultMessage="Duplicating Project" />}
             handleClose={() => {
+              // Avoid cancelling the request if the user sends to background.
+              siteDuplicateSubscription.current = null;
               handleClose();
               onSubmittingAndOrPendingChange({ hasPendingChanges: false, isSubmitting: false });
             }}

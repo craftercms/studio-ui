@@ -18,7 +18,13 @@ import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from '
 import { fromEvent, interval, merge } from 'rxjs';
 import { filter, map, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
-import { contentTypes$, FetchGuestModelCompletePayload, flushRequestedPaths, operations$ } from '../contentController';
+import {
+  contentTypes$,
+  FetchGuestModelCompletePayload,
+  flushRequestedPaths,
+  getCachedModels,
+  operations$
+} from '../contentController';
 import * as elementRegistry from '../elementRegistry';
 import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -206,6 +212,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     }),
     [dispatch, hasHost, draggable, editMode, highlightMode]
   );
+  const models = getCachedModels();
 
   useUnmount(() => {
     clearAndListen$.next();
@@ -617,14 +624,16 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
               const elementRecord = elementRegistry.get(highlight.id);
+              const elementPath = models[elementRecord.modelId]?.craftercms.path ?? path;
               const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, elementRecord);
+              const lockInfo = isLocked ? state.lockedPaths[elementPath]?.user : null;
               return (
                 <ZoneMarker
                   key={highlight.id}
                   label={highlight.label}
                   rect={highlight.rect}
                   inherited={highlight.inherited}
-                  lockInfo={state.lockedPaths[path]?.user}
+                  lockInfo={lockInfo}
                   isStale={isExternallyModified}
                   onPopperClick={
                     isMoveMode && isFieldSelectedMode

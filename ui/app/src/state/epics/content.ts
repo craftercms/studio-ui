@@ -79,7 +79,6 @@ import {
   contentEvent,
   lockContentEvent,
   moveContentEvent,
-  MoveContentEventPayload,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
@@ -106,7 +105,7 @@ import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
-import SocketEvent from '../../models/SocketEvent';
+import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {

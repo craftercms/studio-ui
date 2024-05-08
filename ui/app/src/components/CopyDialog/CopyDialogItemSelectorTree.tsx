@@ -20,11 +20,11 @@ import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
-import { TreeView } from '@mui/x-tree-view/TreeView';
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
 import { Theme } from '@mui/material/styles';
 import { messages } from './utils';
+import { SimpleTreeView } from '@mui/x-tree-view';
 
 const simpleItemsSelectionsStyles = makeStyles()((theme: Theme) => ({
   simpleItemsSelectionRoot: {
@@ -70,7 +70,7 @@ export function ItemSelectorTree(props: ItemSelectorTreeProps) {
   const renderTree = (nodes: LegacyItem) => (
     <TreeItem
       key={nodes.uri}
-      nodeId={nodes.uri}
+      itemId={nodes.uri}
       label={
         <FormControlLabel
           onFocus={(event) => {
@@ -106,16 +106,18 @@ export function ItemSelectorTree(props: ItemSelectorTreeProps) {
           {paths.length === selected.length ? formatMessage(messages.deselectAll) : formatMessage(messages.selectAll)}
         </Link>
       </header>
-      <TreeView
+      <SimpleTreeView
         className={classes.treeViewRoot}
-        defaultCollapseIcon={null}
-        expanded={paths}
-        onNodeToggle={null}
+        expandedItems={paths}
+        onExpandedItemsChange={null}
         disableSelection={true}
-        defaultExpandIcon={null}
+        slots={{
+          collapseIcon: null,
+          expandIcon: null
+        }}
       >
         {renderTree(item)}
-      </TreeView>
+      </SimpleTreeView>
     </section>
   );
 }
