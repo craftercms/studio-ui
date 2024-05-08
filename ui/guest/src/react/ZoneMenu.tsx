@@ -180,7 +180,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     const itemFieldId = isNodeSelectorItem ? nodeSelectorItemRecord.fieldId : fieldId;
     const itemIndex = isNodeSelectorItem ? nodeSelectorItemRecord.index : index;
     const parentModelId = getParentModelId(itemModelId, models, modelHierarchyMap);
-    const path = models[parentModelId ?? itemModelId].craftercms.path;
+    const path = modelPath;
     return { path, itemModelId, itemFieldId, itemIndex };
   };
 
