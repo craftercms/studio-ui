@@ -276,7 +276,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     e.preventDefault();
     e.stopPropagation();
     execOperation(() => {
-      if (recordType === 'component' && nodeSelectorItemRecord) {
+      if ((recordType === 'component' || recordType === 'node-selector-item') && nodeSelectorItemRecord) {
         sortDownItem(nodeSelectorItemRecord.modelId, nodeSelectorItemRecord.fieldId, nodeSelectorItemRecord.index);
       } else {
         sortDownItem(modelId, fieldId, index);
