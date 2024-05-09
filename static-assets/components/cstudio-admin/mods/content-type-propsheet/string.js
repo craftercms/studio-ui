@@ -59,7 +59,12 @@ YAHOO.extend(
           CStudioAdminConsole.Tool.ContentTypes.visualization.render();
         };
 
-        YAHOO.util.Event.on(valueEl, 'keyup', updateFieldFn, valueEl);
+        YAHOO.util.Event.on(
+          valueEl,
+          'keyup',
+          CStudioAuthoring.Utils.debounce((e) => updateFieldFn(e, valueEl)),
+          valueEl
+        );
         if (validations) {
           if (validations.startsWith) {
             YAHOO.util.Event.on(valueEl, 'blur', onBlur, valueEl);
