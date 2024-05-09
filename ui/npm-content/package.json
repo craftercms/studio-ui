@@ -30,7 +30,7 @@
     "js-yaml": "^4.1.0",
     "monaco-editor": "0.48.0",
     "style-loader": "^4.0.0",
-    "tinymce": "^6.8.2"
+    "tinymce": "^6.8.3"
   },
   "devDependencies": {
     "@types/bootstrap": "^5.2.10",

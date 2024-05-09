@@ -19,7 +19,7 @@ import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useStyles } from './styles';
-import { ColumnMenuPropsOverrides, DataGrid, GridCellParams, GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
