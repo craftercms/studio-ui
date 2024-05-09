@@ -6224,7 +6224,21 @@ var nodeOpen = false,
         $(document).on('click', `.notifyjs-${styleName}-${id} .yes`, onOk);
       },
 
-      showConfirmDialog: function ({ title, body, onOk, onCancel, okButtonText, cancelButtonText }) {
+      showConfirmDialog: function (/*
+        title, body, callback, okButtonText, cancelButtonText
+        { title, body, onOk, onCancel, okButtonText, cancelButtonText }
+      */) {
+        const { title, body, onOk, onCancel, okButtonText, cancelButtonText } =
+          typeof arguments[0] === 'object'
+            ? arguments[0]
+            : {
+                title: arguments[0],
+                body: arguments[1],
+                onOk: arguments[2],
+                okButtonText: arguments[3],
+                cancelButtonText: arguments[4]
+              };
+
         const confirmDialogEvent = 'confirmDialogEvent';
         let unsubscribe;
 
