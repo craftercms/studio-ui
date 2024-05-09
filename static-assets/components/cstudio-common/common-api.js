@@ -6224,12 +6224,11 @@ var nodeOpen = false,
         $(document).on('click', `.notifyjs-${styleName}-${id} .yes`, onOk);
       },
 
-      showConfirmDialog: function (title, body, callback, okButtonText, cancelButtonText) {
-        const onOk = 'confirmDialogOnOk';
-        const onCancel = 'confirmDialogOnCancel';
-        let unsubscribe, cancelUnsubscribe;
+      showConfirmDialog: function ({ title, body, onOk, onCancel, okButtonText, cancelButtonText }) {
+        const confirmDialogEvent = 'confirmDialogEvent';
+        let unsubscribe;
 
-        if (callback) {
+        if (onOk) {
           CrafterCMSNext.system.store.dispatch({
             type: 'SHOW_CONFIRM_DIALOG',
             payload: {
@@ -6243,7 +6242,7 @@ var nodeOpen = false,
                 payload: [
                   {
                     type: 'DISPATCH_DOM_EVENT',
-                    payload: { id: onOk }
+                    payload: { id: confirmDialogEvent, type: 'ok' }
                   },
                   {
                     type: 'CLOSE_CONFIRM_DIALOG'
@@ -6258,7 +6257,7 @@ var nodeOpen = false,
                 payload: [
                   {
                     type: 'DISPATCH_DOM_EVENT',
-                    payload: { id: onCancel }
+                    payload: { id: confirmDialogEvent, type: 'cancel' }
                   },
                   { type: 'CONFIRM_DIALOG_CLOSED' }
                 ]
@@ -6266,12 +6265,12 @@ var nodeOpen = false,
             }
           });
 
-          unsubscribe = CrafterCMSNext.createLegacyCallbackListener(onOk, () => {
-            callback();
-            cancelUnsubscribe();
-          });
-          cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(onCancel, () => {
-            unsubscribe();
+          unsubscribe = CrafterCMSNext.createLegacyCallbackListener(confirmDialogEvent, ({ type }) => {
+            if (type === 'ok') {
+              onOk?.();
+            } else {
+              onCancel?.();
+            }
           });
         } else {
           CrafterCMSNext.system.store.dispatch({
