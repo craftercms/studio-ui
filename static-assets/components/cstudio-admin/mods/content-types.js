@@ -243,15 +243,15 @@
                     class: 'btn-default',
                     fn: function () {
                       if (CStudioAdminConsole.isDirty) {
-                        CStudioAuthoring.Utils.showConfirmDialog(
-                          CMgs.format(langBundle, 'notification'),
-                          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
-                          () => {
+                        CStudioAuthoring.Utils.showConfirmDialog({
+                          title: CMgs.format(langBundle, 'notification'),
+                          body: CMgs.format(langBundle, 'contentTypeModifiedWarn'),
+                          onOk: () => {
                             // Revert state
                             onSetDirty(false);
                             _self.openExistingItemRender(CStudioAdminConsole.contentTypeSelected);
                           }
-                        );
+                        });
                       } else {
                         _self.closeEditor();
                       }

@@ -2,6 +2,10 @@
 
 [//]: # (TODO: migrate 4.1.x branch changelog to develop)
 
+## 4.1.5
+* [common-api.js]
+  * `CStudioAuthoring.Utils.showConfirmDialog`: Updated arguments to support an object with the following properties instead of individual arguments: `title`, `message`, `onOk`, `onCancel`, `okButtonText`, `cancelButtonText`. Also, made it backward compatible (with multiple arguments).
+
 ## 4.1.3
 
 * HostUI removed and merged into Host
