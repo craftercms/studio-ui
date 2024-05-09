@@ -2317,7 +2317,7 @@
                 formatMessage(contentTypesMessages.invalidMacros, { macros: invalidMacrosInPath.join(', ') }),
                 'top',
                 'left',
-                'success',
+                'info',
                 48,
                 197
               );

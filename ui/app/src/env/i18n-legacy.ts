@@ -312,7 +312,7 @@ export const contentTypesMessages = defineMessages({
     defaultMessage: 'Audio Manager'
   },
   invalidMacros: {
-    defaultMessage: 'Path contains invalid macros: {macros}'
+    defaultMessage: 'The following invalid macros were removed: {macros}'
   }
 });
 
