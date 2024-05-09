@@ -6240,7 +6240,6 @@ var nodeOpen = false,
               };
 
         const confirmDialogEvent = 'confirmDialogEvent';
-        let unsubscribe;
 
         if (onOk) {
           CrafterCMSNext.system.store.dispatch({
@@ -6279,7 +6278,7 @@ var nodeOpen = false,
             }
           });
 
-          unsubscribe = CrafterCMSNext.createLegacyCallbackListener(confirmDialogEvent, ({ type }) => {
+          craftercms.utils.dom.createCustomDocumentEventListener(confirmDialogEvent, ({ type }) => {
             if (type === 'ok') {
               onOk?.();
             } else {
