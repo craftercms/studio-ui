@@ -17,12 +17,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from 'tss-react/mui';
-import { TreeView } from '@mui/x-tree-view/TreeView';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import ChevronRightIcon from '@mui/icons-material/ChevronRightRounded';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import { ContentType, ContentTypeField } from '../../models/ContentType';
 import Page from '../../icons/Page';
@@ -58,6 +57,7 @@ import { usePreviewGuest } from '../../hooks/usePreviewGuest';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { useUnmount } from '../../hooks/useUnmount';
 import { useSpreadState } from '../../hooks/useSpreadState';
+import { SimpleTreeView } from '@mui/x-tree-view';
 import { LoadingState } from '../LoadingState';
 
 const rootPrefix = '{root}_';
@@ -412,14 +412,18 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
   return (
     <TreeItem
       key={node.id}
-      nodeId={node.id}
+      itemId={node.id}
       onMouseOver={(e) => setOverState(e, true)}
       onMouseOut={(e) => setOverState(e, false)}
-      icon={
-        isPageOrComponent(node.type) && (
-          <ChevronRightIcon onClick={() => handleClick(node)} className={classes.chevron} />
-        )
-      }
+      slots={{
+        icon: isPageOrComponent(node.type) && ChevronRightIcon
+      }}
+      slotProps={{
+        icon: isPageOrComponent(node.type) && {
+          onClick: () => handleClick(node),
+          className: classes.chevron
+        }
+      }}
       label={
         <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
           <Icon className={classes.icon} />
@@ -454,8 +458,14 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
         ),
         expanded: classes.treeItemExpanded,
         selected: classes.treeItemSelected,
-        group: classes.treeItemGroup,
+        groupTransition: classes.treeItemGroup,
         iconContainer: isRoot(node.id) ? classes.displayNone : classes.treeItemIconContainer
+      }}
+      sx={{
+        [`& .${treeItemClasses.content}`]: {
+          pt: 0,
+          pb: 0
+        }
       }}
     >
       {children?.map((childNodeId, i) => (
@@ -720,13 +730,23 @@ export function PreviewPageExplorerPanel() {
 
   return (
     <>
-      <TreeView
+      <SimpleTreeView
         className={classes.root}
-        defaultCollapseIcon={<ExpandMoreIcon className={cx('toggle', classes.chevron)} />}
-        defaultExpandIcon={<ChevronRightIcon className={cx('toggle', classes.chevron)} />}
+        slots={{
+          collapseIcon: ExpandMoreIcon,
+          expandIcon: ChevronRightIcon
+        }}
+        slotProps={{
+          collapseIcon: {
+            className: cx('toggle', classes.chevron)
+          },
+          expandIcon: {
+            className: cx('toggle', classes.chevron)
+          }
+        }}
         disableSelection
-        expanded={state.expanded}
-        onNodeToggle={handleChange}
+        expandedItems={state.expanded}
+        onExpandedItemsChange={handleChange}
       >
         <div className={classes.searchWrapper}>
           <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
@@ -750,7 +770,7 @@ export function PreviewPageExplorerPanel() {
         ) : (
           <LoadingState title={formatMessage(translations.loading)} />
         )}
-      </TreeView>
+      </SimpleTreeView>
     </>
   );
 }

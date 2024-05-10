@@ -15,8 +15,6 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
-import { PathNavigatorStateProps } from '../../components/PathNavigator';
-import LookupTable from '../../models/LookupTable';
 import { getIndividualPaths, getParentPath, withoutIndex } from '../../utils/path';
 import {
   pathNavigatorBulkFetchPathComplete,
@@ -47,9 +45,11 @@ import {
 } from '../actions/pathNavigator';
 import { changeSiteComplete } from '../actions/sites';
 import { fetchSiteUiConfig } from '../actions/configuration';
-import { contentEvent, deleteContentEvent, moveContentEvent, MoveContentEventPayload } from '../actions/system';
-import SocketEvent from '../../models/SocketEvent';
+import { contentEvent, deleteContentEvent, deleteContentEvents, moveContentEvent } from '../actions/system';
+import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 import StandardAction from '../../models/StandardAction';
+import { CaseReducer } from '@reduxjs/toolkit/src/createReducer';
+import GlobalState from '../../models/GlobalState';
 
 const updatePath = (state, payload) => {
   const { id, parent, children } = payload;
@@ -71,7 +71,27 @@ const updatePath = (state, payload) => {
   }
 };
 
-const reducer = createReducer<LookupTable<PathNavigatorStateProps>>({}, (builder) => {
+const deleteContentEventReducer: CaseReducer<GlobalState['pathNavigator'], StandardAction<SocketEvent>> = (
+  state,
+  { payload: { targetPath } }: StandardAction<SocketEvent>
+) => {
+  Object.values(state).forEach((navigator) => {
+    const parentPath = getParentPath(targetPath);
+    if (targetPath === navigator.rootPath || navigator.rootPath.startsWith(targetPath)) {
+      navigator.isRootPathMissing = true;
+    } else if (parentPath === navigator.currentPath) {
+      if (!navigator.excludes?.includes(targetPath)) {
+        navigator.total = navigator.total - 1;
+      }
+      navigator.itemsInPath = navigator.itemsInPath.filter((path) => path !== targetPath);
+      navigator.selectedItems = navigator.selectedItems.filter((path) => path !== targetPath);
+    } else if (navigator.levelDescriptor === targetPath) {
+      navigator.levelDescriptor = null;
+    }
+  });
+};
+
+const reducer = createReducer<GlobalState['pathNavigator']>({}, (builder) => {
   builder
     .addCase(pathNavigatorInit, (state, action: StandardAction<PathNavInitPayload>) => {
       const {
@@ -241,20 +261,12 @@ const reducer = createReducer<LookupTable<PathNavigatorStateProps>>({}, (builder
         }
       });
     })
-    .addCase(deleteContentEvent, (state, { payload: { targetPath } }: StandardAction<SocketEvent>) => {
-      Object.values(state).forEach((navigator) => {
-        const parentPath = getParentPath(targetPath);
-        if (targetPath === navigator.rootPath || navigator.rootPath.startsWith(targetPath)) {
-          navigator.isRootPathMissing = true;
-        } else if (parentPath === navigator.currentPath) {
-          if (!navigator.excludes?.includes(targetPath)) {
-            navigator.total = navigator.total - 1;
-          }
-          navigator.itemsInPath = navigator.itemsInPath.filter((path) => path !== targetPath);
-          navigator.selectedItems = navigator.selectedItems.filter((path) => path !== targetPath);
-        } else if (navigator.levelDescriptor === targetPath) {
-          navigator.levelDescriptor = null;
-        }
+    .addCase(deleteContentEvent, deleteContentEventReducer)
+    .addCase(deleteContentEvents, (state, action) => {
+      const auxAction = deleteContentEvent({ ...action.payload, targetPath: '' });
+      action.payload.targetPaths.forEach((targetPath) => {
+        auxAction.payload.targetPath = targetPath;
+        deleteContentEventReducer(state, auxAction);
       });
     });
 });

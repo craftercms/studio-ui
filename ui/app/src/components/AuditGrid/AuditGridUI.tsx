@@ -139,7 +139,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'operationTimestamp', sort: 'desc' }]);
   const localeBranch = useLocale();
 
-  const onFilterSelected = (props: GridColumnMenuProps) => {
+  const onFilterSelected = (props) => {
     if (props.open && anchorPosition === null) {
       setTimeout(() => {
         setOpenedFilter(props.colDef.field);
@@ -355,9 +355,9 @@ export function AuditGridUI(props: AuditGridUIProps) {
         autoHeight={Boolean(auditLogs.length)}
         disableColumnFilter
         className={classes.gridRoot}
-        components={{
-          ColumnMenu: onFilterSelected,
-          NoRowsOverlay: () => (
+        slots={{
+          columnMenu: onFilterSelected,
+          noRowsOverlay: () => (
             <Box height="100%">
               <EmptyState
                 styles={{

@@ -1005,6 +1005,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               },
               error(error) {
                 console.error(`${type} failed`, error);
+                dispatch(unlockItem({ path }));
                 hostToGuest$.next(updateFieldValueOperationFailed());
                 enqueueSnackbar(formatMessage(guestMessages.updateOperationFailed), { variant: 'error' });
               }

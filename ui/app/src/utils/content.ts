@@ -550,10 +550,15 @@ function parseElementByContentType(
     case 'textarea':
       return getInnerHtml(element, { applyLegacyUnescaping: true });
     case 'image':
-    case 'dropdown':
     case 'date-time':
     case 'time':
       return getInnerHtml(element);
+    case 'dropdown':
+      if (field.id.endsWith('_i') || field.id.endsWith('_f')) {
+        return getInnerHtmlNumber(element, parseFloat);
+      } else {
+        return getInnerHtml(element);
+      }
     case 'boolean':
     case 'page-nav-order':
       return getInnerHtml(element) === 'true';
@@ -1141,6 +1146,7 @@ export interface GeneratePlaceholderImageDataUrlArgs {
   textPositionY: number;
   font: string;
   textAlign: CanvasTextAlign;
+  textBaseline: CanvasTextBaseline;
 }
 
 export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePlaceholderImageDataUrlArgs>): string {
@@ -1154,7 +1160,8 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
       textPositionY: 88.24,
       textFillStyle: 'black',
       font: '30px Arial',
-      textAlign: 'center'
+      textAlign: 'center',
+      textBaseline: 'middle'
     },
     attributes
   );
@@ -1172,6 +1179,7 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
   context.font = attrs.font;
   context.fillStyle = attrs.textFillStyle;
   context.textAlign = attrs.textAlign;
+  context.textBaseline = attrs.textBaseline;
   context.fillText(attrs.text, attrs.textPositionX, attrs.textPositionY);
 
   return canvas.toDataURL();

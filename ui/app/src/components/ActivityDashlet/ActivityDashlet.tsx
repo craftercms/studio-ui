@@ -15,7 +15,7 @@
  */
 
 import { Activity } from '../../models/Activity';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { PREVIEW_URL_PATH, UNDEFINED } from '../../utils/constants';
@@ -41,7 +41,6 @@ import {
   renderActivityTimestamp,
   useSelectionLookupState
 } from './utils';
-import { AuthorFilter } from './AuthorFilter';
 import Skeleton from '@mui/material/Skeleton';
 import { styled } from '@mui/material/styles';
 import { RangePickerModal } from './RangePickerModal';
@@ -60,6 +59,15 @@ import { contentEvent, deleteContentEvent, publishEvent, workflowEvent } from '.
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import LoadingIconButton from '../LoadingIconButton';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { AjaxError } from 'rxjs/ajax';
+import Button from '@mui/material/Button';
+import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
+import Popover from '@mui/material/Popover';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import ReplyRounded from '@mui/icons-material/ReplyRounded';
+import ClearRounded from '@mui/icons-material/ClearRounded';
 
 export interface ActivityDashletProps extends Partial<DashletCardProps> {}
 
@@ -77,6 +85,7 @@ interface ActivityDashletState {
   total: number;
   loadingFeed: boolean;
   loadingChunk: boolean;
+  error: AjaxError;
 }
 
 type FeedTypes = 'timeline' | 'range';
@@ -138,6 +147,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const widgetDialogContext = useWidgetDialogContext();
+  // region const { ... } = state
   const [
     {
       feed,
@@ -152,8 +162,10 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       loadingFeed,
       loadingChunk,
       selectedPackageId,
-      openPackageDetailsDialog
+      openPackageDetailsDialog,
+      error
     },
+    // endregion
     setState
   ] = useSpreadState<ActivityDashletState>({
     loadingChunk: false,
@@ -168,7 +180,8 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     dateTo: null,
     limit: 50,
     offset: 0,
-    total: null
+    total: null,
+    error: null
   });
   const [selectedActivities, setSelectedActivities, activities] = useSelectionLookupState<ActivitiesAndAll>({
     ALL: true
@@ -208,23 +221,29 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   );
   // endregion
   // region onRefresh
-  const onLoad = useMemo(
-    () => (backgroundRefresh?: boolean) => {
-      if (!backgroundRefresh) {
-        setState({ feed: null, total: null, offset: 0, loadingFeed: true });
+  const fetchFeed = useCallback(() => {
+    setState({ feed: null, total: null, offset: 0, loadingFeed: true, error: null });
+    return fetchActivity(site, {
+      actions: activities.filter((key) => key !== 'ALL'),
+      usernames,
+      dateTo,
+      dateFrom,
+      limit
+    }).subscribe({
+      next: (feed) => {
+        setState({
+          feed,
+          total: feed.total,
+          loadingFeed: false,
+          loadingChunk: false,
+          error: null
+        });
+      },
+      error(error) {
+        setState({ loadingFeed: false, loadingChunk: false, error: error });
       }
-      fetchActivity(site, {
-        actions: activities.filter((key) => key !== 'ALL'),
-        usernames,
-        dateTo,
-        dateFrom,
-        limit
-      }).subscribe((feed) => {
-        setState({ feed, total: feed.total, ...(!backgroundRefresh && { loadingFeed: false }) });
-      });
-    },
-    [site, activities, dateFrom, dateTo, limit, setState, usernames]
-  );
+    });
+  }, [activities, dateFrom, dateTo, limit, setState, site, usernames]);
   // endregion
   const listRef = useRef();
   const loadNextPage = () => {
@@ -237,13 +256,18 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       dateFrom,
       limit,
       offset: newOffset
-    }).subscribe((nextFeedChunk) => {
-      setState({
-        feed: feed.concat(nextFeedChunk),
-        total: nextFeedChunk.total,
-        offset: newOffset,
-        loadingChunk: false
-      });
+    }).subscribe({
+      next: (nextFeedChunk) => {
+        setState({
+          feed: feed.concat(nextFeedChunk),
+          total: nextFeedChunk.total,
+          offset: newOffset,
+          loadingChunk: false
+        });
+      },
+      error(error) {
+        setState({ loadingFeed: false, loadingChunk: false, error: error });
+      }
     });
   };
   const onRefresh = useCallback(() => {
@@ -257,8 +281,13 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       dateFrom,
       offset: 0,
       limit: offset + limit
-    }).subscribe((feed) => {
-      setState({ feed, total: feed.total, loadingChunk: false });
+    }).subscribe({
+      next: (feed) => {
+        setState({ feed, total: feed.total, loadingChunk: false });
+      },
+      error(error) {
+        setState({ loadingFeed: false, loadingChunk: false, error: error });
+      }
     });
   }, [activities, dateFrom, dateTo, limit, offset, setState, site, usernames]);
   const onItemClick = (previewUrl, e) => {
@@ -279,9 +308,10 @@ export function ActivityDashlet(props: ActivityDashletProps) {
     setState({ openPackageDetailsDialog: true, selectedPackageId: pkg.id });
   };
   const hasMoreItemsToLoad = total > 0 && limit + offset < total;
+  const isFetching = loadingChunk || loadingFeed;
   useEffect(() => {
-    onLoad();
-  }, [onLoad, setState]);
+    fetchFeed();
+  }, [fetchFeed, setState]);
 
   // region Item Updates Propagation
   useEffect(() => {
@@ -296,13 +326,56 @@ export function ActivityDashlet(props: ActivityDashletProps) {
   }, [onRefresh]);
   // endregion
 
+  // region author filter
+  const [authorFilterOpen, setAuthorFilterOpen] = useState(false);
+  const [authorFilterValue, setAuthorFilterValue] = useState('');
+  const authorFilterButtonRef = useRef<HTMLButtonElement>();
+  const authorFilterInputRef = useRef<HTMLInputElement>();
+
+  const onAuthorFilterChange = (users) => {
+    if (users.length === 0 && (usernames === null || usernames.length === 0)) return;
+    setState({ usernames: users.map(({ username }) => username) });
+  };
+
+  const submitAuthorFilterChanges = () => {
+    const usernames = authorFilterValue
+      .split(',')
+      .filter(Boolean)
+      .map((username) => ({ username: username.trim() }));
+    onAuthorFilterChange(usernames);
+  };
+
+  const clearAuthorFilterValue = () => {
+    setAuthorFilterOpen(false);
+    setAuthorFilterValue('');
+    onAuthorFilterChange([]);
+  };
+
+  const handleAuthorFilterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAuthorFilterValue(e.target.value);
+  };
+
+  const handleAuthorFilterKeyUp = (e) => {
+    if (e.key === 'Enter') {
+      submitAuthorFilterChanges();
+    }
+  };
+
+  useEffect(() => {
+    if (authorFilterOpen && !isFetching && authorFilterInputRef.current) {
+      setTimeout(() => {
+        authorFilterInputRef.current.focus();
+      });
+    }
+  }, [authorFilterOpen, isFetching]);
+  // endregion
   return (
     <DashletCard
       {...props}
       borderLeftColor={borderLeftColor}
       title={<FormattedMessage id="words.activity" defaultMessage="Activity" />}
       headerAction={
-        <LoadingIconButton onClick={() => onRefresh()} loading={loadingChunk}>
+        <LoadingIconButton onClick={() => onRefresh()} loading={isFetching}>
           <RefreshRounded />
         </LoadingIconButton>
       }
@@ -315,7 +388,6 @@ export function ActivityDashlet(props: ActivityDashletProps) {
             options={activityFilterOptions}
             closeOnSelection={false}
             menuProps={{ sx: { minWidth: 180 } }}
-            listItemProps={{ dense: true }}
           >
             {selectedActivities.ALL ? (
               <FormattedMessage id="activityDashlet.showActivityByEveryone" defaultMessage="All activities" />
@@ -327,7 +399,59 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               />
             )}
           </DropDownMenu>
-          <AuthorFilter onChange={(users) => setState({ usernames: users.map(({ username }) => username) })} />
+          <Button
+            ref={authorFilterButtonRef}
+            variant="text"
+            size="small"
+            endIcon={<KeyboardArrowDownRounded />}
+            onClick={(e) => {
+              setAuthorFilterOpen(true);
+            }}
+          >
+            <FormattedMessage id="words.author" defaultMessage="Author" />
+          </Button>
+          <Popover
+            open={authorFilterOpen}
+            anchorEl={authorFilterButtonRef.current}
+            onClose={() => setAuthorFilterOpen(false)}
+            slotProps={{ paper: { sx: { width: 350, p: 1 } } }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+          >
+            <TextField
+              fullWidth
+              autoFocus
+              value={authorFilterValue}
+              disabled={isFetching}
+              onChange={handleAuthorFilterInputChange}
+              placeholder='e.g. "jon.doe, jdoe, jane@example.com"'
+              onKeyUp={handleAuthorFilterKeyUp}
+              InputProps={{
+                inputRef: authorFilterInputRef,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      disabled={isFetching}
+                      title={formatMessage({ defaultMessage: 'Submit' })}
+                      edge="end"
+                      onClick={submitAuthorFilterChanges}
+                      size="small"
+                    >
+                      <ReplyRounded sx={{ transform: 'scaleX(-1)' }} />
+                    </IconButton>
+                    <IconButton
+                      disabled={isFetching}
+                      title={formatMessage({ defaultMessage: 'Clear & close' })}
+                      edge="end"
+                      onClick={clearAuthorFilterValue}
+                      size="small"
+                    >
+                      <ClearRounded />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+          </Popover>
           <DropDownMenu
             size="small"
             variant="text"
@@ -341,11 +465,9 @@ export function ActivityDashlet(props: ActivityDashletProps) {
             }}
             options={feedTypeOptions}
             menuProps={{ sx: { minWidth: 200 } }}
-            listItemProps={{ dense: true }}
             onClick={() => {
               if (feedType === 'range') {
                 setState({ openRangePicker: true });
-                return false;
               }
             }}
           >
@@ -355,6 +477,22 @@ export function ActivityDashlet(props: ActivityDashletProps) {
       }
       cardContentProps={{ ref: listRef }}
     >
+      {error && (
+        <ApiResponseErrorState
+          error={error.response?.response}
+          validationErrors={error.response?.validationErrors?.map((error) => {
+            // `error.field` looks like getActivitiesForUsers.usernames[1].<list element>
+            const match = error.field.match(/usernames\[(\d)]/);
+            if (match) {
+              error.message = formatMessage(
+                { defaultMessage: '"{value}" is not a valid username.' },
+                { value: usernames[match[1]] }
+              );
+            }
+            return error;
+          })}
+        />
+      )}
       {loadingFeed && (
         <Timeline position="right">
           <CustomTimelineItem>
@@ -405,7 +543,7 @@ export function ActivityDashlet(props: ActivityDashletProps) {
               loadNextPage();
             }}
             hasMore={hasMoreItemsToLoad}
-            loader={<Box key={0}>{getSkeletonTimelineItems({ items: 3 })}</Box>}
+            loader={<Box key="infiniteScrollLoaderSkeleton">{getSkeletonTimelineItems({ items: 3 })}</Box>}
             useWindow={false}
             getScrollParent={() => listRef.current}
           >

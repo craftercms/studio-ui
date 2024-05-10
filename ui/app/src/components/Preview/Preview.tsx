@@ -24,7 +24,7 @@ import ICEToolsPanel from '../ICEToolsPanel';
 import Box from '@mui/material/Box';
 
 function Preview(props) {
-  usePreviewUrlControl(props.history);
+  usePreviewUrlControl();
   return (
     <PreviewConcierge>
       <Box

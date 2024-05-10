@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddRounded';
@@ -42,6 +42,7 @@ import { useQuickCreateListResource } from '../../hooks/useQuickCreateListResour
 import { useSystemVersionResource } from '../../hooks/useSystemVersionResource';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { lookupItemByPath } from '../../utils/content';
+import { processPathMacros } from '../../utils/path';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -137,11 +138,16 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const itemNewContentButton = item?.availableActionsMap.createContent;
 
-  const onFormDisplay = ({ contentTypeId, path }: QuickCreateItem) => {
-    const today = new Date();
-    const formatPath = path
-      .replace('{year}', `${today.getFullYear()}`)
-      .replace('{month}', ('0' + (today.getMonth() + 1)).slice(-2));
+  const onFormDisplay = (item: QuickCreateItem) => {
+    const { contentTypeId, path } = item;
+    const formatPath = processPathMacros({
+      path,
+      // Since we can't support these at this stage of creation, at least this will avoid the form opening with an error
+      objectId: '(objectId)',
+      objectGroupId: '(objectGroupId)',
+      fullParentPath: '',
+      useUUID: false
+    });
     onQuickCreateItemSelected?.({
       path: formatPath,
       contentTypeId,
@@ -217,7 +223,7 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
   );
 }
 
-const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMenuButtonProps>(function (props, ref) {
+const QuickCreateMenuButton = forwardRef<HTMLButtonElement, QuickCreateMenuButtonProps>((props, ref) => {
   const { onMenuBtnClick, disabled = false } = props;
   const { formatMessage } = useIntl();
   return (
@@ -236,7 +242,7 @@ const QuickCreateMenuButton = React.forwardRef<HTMLButtonElement, QuickCreateMen
   );
 });
 
-const QuickCreate = React.forwardRef<HTMLButtonElement, { item?: DetailedItem }>(function (props, ref) {
+const QuickCreate = forwardRef<HTMLButtonElement, { item?: DetailedItem }>((props, ref) => {
   const { item } = props;
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentPreviewItemPath, setCurrentPreviewItemPath] = useState<string>(null);

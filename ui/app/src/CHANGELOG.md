@@ -16,6 +16,12 @@
     * `LegacyUnpublishedDashlet`
   * Removed `documentDomain` property from ExperienceBuilder component and its usage in `PreviewConcierge` component
   * `WorkflowCancellationDialogUI`: prop `items` type changed from an async Resource to sync SandboxItem array.
+  * `AuthorFilter` removed, merged with ActivityDashlet
+  * `UsersAutocomplete` removed
+  * `DropDownMenuButton` component:
+    * Internal structure changed so that ListItem wraps the ListItemButton
+    * `listItemProps` are routed to the list `ListItem` component instead of the `ListItemButton`
+    * Added `listItemButtonProps` property
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`
@@ -27,7 +33,13 @@
   * [services/contentTypes] Add `fetchContentType` service
 * [state]
   * `actions/dialogs`: Renamed `updateEditConfig` action to `updateEditDialogConfig`
+* [hooks]
+  * `usePreviewUrlControl`: Removed `history` prop. Retrieval of search and navigate (previously called 'push') is now done internally.
 * Removed deprecated `aws-file-upload` and `aws-video` upload controls.
+
+## 4.1.5
+* [common-api.js]
+  * `CStudioAuthoring.Utils.showConfirmDialog`: Added function overload to receive a `props` style object as first and only argument. The props argument would contain all ConfirmDialog props. Original set of arguments still supported for backward compatibility.
 
 ## 4.1.3
 

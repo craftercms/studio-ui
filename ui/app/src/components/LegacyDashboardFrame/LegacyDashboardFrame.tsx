@@ -16,6 +16,7 @@
 
 import React from 'react';
 import LegacyIFrame, { LegacyIFrameProps } from '../LegacyIFrame/LegacyIFrame';
+import { ProjectToolsRoutes } from '../../env/routes';
 
 interface LegacyDashboardFrameProps {
   dashboardOnly?: boolean;
@@ -24,7 +25,7 @@ interface LegacyDashboardFrameProps {
 
 function LegacyDashboardFrame(props: LegacyDashboardFrameProps) {
   const { dashboardOnly = true, iframeProps } = props;
-  const path = `/site-dashboard${[dashboardOnly && '?mode=embedded'].filter(Boolean).join('')}`;
+  const path = `${ProjectToolsRoutes.SiteDashboard}${[dashboardOnly && '?mode=embedded'].filter(Boolean).join('')}`;
   return <LegacyIFrame path={path} title="Site Dashboard" iframeProps={iframeProps} />;
 }
 

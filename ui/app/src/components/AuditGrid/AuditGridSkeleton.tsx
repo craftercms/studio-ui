@@ -168,8 +168,8 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
       <DataGrid
         autoHeight
         disableColumnFilter
-        components={{
-          ColumnMenuIcon: () => <Skeleton variant="circular" width={20} height={20} />
+        slots={{
+          columnMenuIcon: () => <Skeleton variant="circular" width={20} height={20} />
         }}
         onCellClick={() => {}}
         className={classes.gridRoot}

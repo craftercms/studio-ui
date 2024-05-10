@@ -5,7 +5,7 @@
     "rootDir": "src",
     "outDir": "build_tsc",
     "module": "esnext",
-    "target": "ES6",
+    "target": "es6",
     "removeComments": false,
     "sourceMap": false,
     "noEmit": false,

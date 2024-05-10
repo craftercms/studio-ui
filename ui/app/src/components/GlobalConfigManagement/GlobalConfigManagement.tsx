@@ -16,7 +16,7 @@
 
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { fetchConfigurationXML, writeConfiguration } from '../../services/configuration';
 import AceEditor from '../AceEditor/AceEditor';
@@ -29,12 +29,17 @@ import ConfigurationSamplePreviewDialog from '../ConfigurationSamplePreviewDialo
 import ConfirmDropdown from '../ConfirmDropdown';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import { useHistory } from 'react-router';
-import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { useMount } from '../../hooks/useMount';
 import Paper from '@mui/material/Paper';
 import { MAX_CONFIG_SIZE } from '../../utils/constants';
 import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
+import useUnmount from '../../hooks/useUnmount';
+import useActiveUser from '../../hooks/useActiveUser';
+import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { closeConfirmDialog, showConfirmDialog } from '../../state/actions/dialogs';
+import { createCustomDocumentEventListener } from '../../utils/dom';
+import { useBeforeUnload, useNavigate } from 'react-router-dom';
+import { GlobalRoutes } from '../../env/routes';
 
 const translations = defineMessages({
   configSaved: {
@@ -54,30 +59,16 @@ export function GlobalConfigManagement() {
   const [enable, setEnable] = useState(true);
   const [viewSample, setViewSample] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [nextRoute, setNextRoute] = useState<string>();
-  const history = useHistory();
+  const hasChangesRef = useRef(hasChanges);
+  hasChangesRef.current = hasChanges;
   const { classes } = useStyles();
   const [contentSize, setContentSize] = useState(0);
-
   const aceEditorRef = useRef<any>();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-
-  useEffect(() => {
-    const historyBlock = history.block;
-    history.block((props) => {
-      if (hasChanges) {
-        history.goBack();
-        setNextRoute(props.pathname);
-        setShowConfirmDialog(true);
-        return false;
-      }
-    });
-    return () => {
-      history.block = historyBlock;
-    };
-  }, [hasChanges, history]);
+  const { username } = useActiveUser();
+  const navigate = useNavigate();
+  const sessionStorageKey = `craftercms.${username}.globalConfigContent`;
 
   useMount(() => {
     const requests = [
@@ -86,12 +77,50 @@ export function GlobalConfigManagement() {
     ];
 
     forkJoin(requests).subscribe(([sample, content]) => {
+      const sessionContent = sessionStorage.getItem(sessionStorageKey);
+
       setLastSavedContent(content);
-      setContent(content);
-      setContentSize(content.length);
+      if (sessionContent) {
+        setContent(sessionContent);
+        setContentSize(sessionContent.length);
+        setHasChanges(true);
+        sessionStorage.removeItem(sessionStorageKey);
+      } else {
+        setContent(content);
+        setContentSize(content.length);
+      }
       setSample(sample);
       setEnable(false);
     });
+  });
+
+  useUnmount(() => {
+    if (hasChangesRef.current) {
+      sessionStorage.setItem(sessionStorageKey, aceEditorRef.current.getValue());
+      const eventId = 'unsavedConfigManagementChangesConfirmation';
+      dispatch(
+        showConfirmDialog({
+          body: <FormattedMessage defaultMessage="You left unsaved changes. Go back and continue editing?" />,
+          onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
+          onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })]),
+          okButtonText: <FormattedMessage defaultMessage="Continue editing" />,
+          cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+        })
+      );
+      createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
+        if (button === 'ok') {
+          navigate(GlobalRoutes.GlobalConfig);
+        } else {
+          sessionStorage.removeItem(sessionStorageKey);
+        }
+      });
+    }
+  });
+
+  useBeforeUnload((event) => {
+    if (hasChangesRef.current) {
+      event.preventDefault();
+    }
   });
 
   const onUseSampleClick = (type: 'replace' | 'append') => {
@@ -160,15 +189,6 @@ export function GlobalConfigManagement() {
     setHasChanges(hasChanges);
   };
 
-  const onConfirmOk = () => {
-    setHasChanges(false);
-    setShowConfirmDialog(false);
-    // timeout needed to avoid running the useEffect on line:64 with hasChanges on true
-    setTimeout(() => {
-      history.push(nextRoute);
-    });
-  };
-
   const onAceInit = (editor: AceAjax.Editor) => {
     editor.commands.addCommand({
       name: 'saveToCrafter',
@@ -229,19 +249,6 @@ export function GlobalConfigManagement() {
         onClose={() => setViewSample(false)}
         onClosed={() => aceEditorRef.current.focus()}
         content={sample}
-      />
-      <ConfirmDialog
-        open={showConfirmDialog}
-        title={
-          <FormattedMessage
-            id="globalConfigManagement.pendingChanges"
-            defaultMessage="You have unsaved changes. Discard changes?"
-          />
-        }
-        onOk={onConfirmOk}
-        onCancel={() => {
-          setShowConfirmDialog(false);
-        }}
       />
     </Paper>
   );

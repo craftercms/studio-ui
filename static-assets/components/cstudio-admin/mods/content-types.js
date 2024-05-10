@@ -379,8 +379,8 @@
                         type === 'save'
                           ? formatMessage(contentTypesMessages.templateNotRequiredSave)
                           : type === 'saveAndClose'
-                          ? formatMessage(contentTypesMessages.templateNotRequiredSaveAndClose)
-                          : formatMessage(contentTypesMessages.templateNotRequiredSaveAndMinimize)
+                            ? formatMessage(contentTypesMessages.templateNotRequiredSaveAndClose)
+                            : formatMessage(contentTypesMessages.templateNotRequiredSaveAndMinimize)
                       );
 
                       const customEventId = 'createFileDialogEventId';
@@ -492,15 +492,15 @@
                     class: 'btn-default',
                     fn: function () {
                       if (CStudioAdminConsole.isDirty) {
-                        CStudioAuthoring.Utils.showConfirmDialog(
-                          CMgs.format(langBundle, 'notification'),
-                          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
-                          () => {
+                        CStudioAuthoring.Utils.showConfirmDialog({
+                          title: CMgs.format(langBundle, 'notification'),
+                          body: CMgs.format(langBundle, 'contentTypeModifiedWarn'),
+                          onOk: () => {
                             // Revert state
                             onSetDirty(false);
                             _self.openExistingItemRender(CStudioAdminConsole.contentTypeSelected);
                           }
-                        );
+                        });
                       } else {
                         _self.closeEditor();
                       }
@@ -2885,7 +2885,9 @@
             try {
               var propControl = new moduleClass(fName, propertyContainerEl, this.self.form, type);
               propControl.render(value, fn, fName, itemId, defaultValue, typeControl, disabled, properties);
-            } catch (e) {}
+            } catch (e) {
+              console.error(e);
+            }
           },
           self: this
         };
@@ -3891,7 +3893,7 @@
       const $input = $(identifier).parent().find('input');
       $input.val($input.val() + $button.attr('data-insert'));
 
-      $input.change();
+      $input.trigger('update_variable');
     };
 
     CStudioAdminConsole.cleanPostfix = (identifier, type) => {

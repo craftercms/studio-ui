@@ -1403,7 +1403,7 @@ var CStudioForms =
               saveDraft = true;
             }
             lastDraft = draft;
-            return entityId;
+            return craftercms.utils.string.ensureSingleSlash(entityId);
           };
 
           //If the form is opened in view mode, we don't need show the warn message or unlock the item
@@ -1460,7 +1460,9 @@ var CStudioForms =
             try {
               form.onBeforeSave({ preview: preview });
             } catch (e) {
-              CStudioAuthoring.Utils.showConfirmDialog(null, formatMessage(formEngineMessages.formNotReadyForSaving));
+              CStudioAuthoring.Utils.showConfirmDialog({
+                body: formatMessage(formEngineMessages.formNotReadyForSaving)
+              });
               return;
             }
 
@@ -1680,21 +1682,26 @@ var CStudioForms =
                 .subscribe(({ allowed, modifiedValue, target }) => {
                   if (allowed) {
                     if (modifiedValue) {
-                      CStudioAuthoring.Utils.showConfirmDialog(
-                        null,
-                        formatMessage(formEngineMessages.createPolicy, { originalPath: entityId, path: modifiedValue }),
-                        () => {
+                      CStudioAuthoring.Utils.showConfirmDialog({
+                        body: formatMessage(formEngineMessages.createPolicy, {
+                          originalPath: entityId,
+                          path: modifiedValue
+                        }),
+                        onOk: () => {
                           saveContent();
+                        },
+                        onCancel: () => {
+                          setButtonsEnabled(true);
                         }
-                      );
+                      });
                     } else {
                       saveContent();
                     }
                   } else {
-                    CStudioAuthoring.Utils.showConfirmDialog(
-                      null,
-                      formatMessage(formEngineMessages.policyError, { path: target })
-                    );
+                    setButtonsEnabled(true);
+                    CStudioAuthoring.Utils.showConfirmDialog({
+                      body: formatMessage(formEngineMessages.policyError, { path: target })
+                    });
                   }
                 });
             }
@@ -1798,24 +1805,27 @@ var CStudioForms =
                 }
                 $(document).trigger('CloseFormWithChangesUserWarningDialogShown');
 
-                CStudioAuthoring.Utils.showConfirmDialog(null, message, () => {
-                  if (iceWindowCallback && iceWindowCallback.cancelled) {
-                    iceWindowCallback.cancelled();
-                  }
-                  sendMessage({ type: FORM_CANCEL });
-                  var entityId = buildEntityIdFn(null);
-                  showWarnMsg = false;
+                CStudioAuthoring.Utils.showConfirmDialog({
+                  body: message,
+                  onOk: () => {
+                    if (iceWindowCallback && iceWindowCallback.cancelled) {
+                      iceWindowCallback.cancelled();
+                    }
+                    sendMessage({ type: FORM_CANCEL });
+                    var entityId = buildEntityIdFn(null);
+                    showWarnMsg = false;
 
-                  var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
-                  if (path && path.indexOf('.xml') != -1) {
-                    unlockBeforeCancel(path);
-                  } else {
-                    _notifyServer = false;
-                    var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                    CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                    var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
+                    if (path && path.indexOf('.xml') != -1) {
+                      unlockBeforeCancel(path);
+                    } else {
+                      _notifyServer = false;
+                      var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                      CStudioAuthoring.InContextEdit.unstackDialog(editorId);
 
-                    if (path == '/site/components/page') {
-                      CStudioAuthoring.Operations.refreshPreview();
+                      if (path == '/site/components/page') {
+                        CStudioAuthoring.Operations.refreshPreview();
+                      }
                     }
                   }
                 });
