@@ -12,7 +12,8 @@
   },
   "scripts": {
     "build": "babel ./src -d ../../static-assets",
-    "watch": "babel -w ./src -d ../../static-assets"
+    "watch": "babel -w ./src -d ../../static-assets",
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.5",

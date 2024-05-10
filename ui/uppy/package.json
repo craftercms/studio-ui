@@ -31,7 +31,8 @@
   },
   "scripts": {
     "build": "babel src -d lib",
-    "watch": "babel src -d lib --watch"
+    "watch": "babel src -d lib --watch",
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.5",
