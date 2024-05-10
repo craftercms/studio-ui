@@ -6410,7 +6410,7 @@ var nodeOpen = false,
                 okButtonText: arguments[3],
                 cancelButtonText: arguments[4]
               };
-        const confirmDialogEvent = 'confirmDialogEvent';
+        const confirmDialogEvent = 'commonAPIConfirmDialogEvent';
 
         if (onOk) {
           CrafterCMSNext.system.store.dispatch({
