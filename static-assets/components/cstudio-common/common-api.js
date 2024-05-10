@@ -6239,7 +6239,7 @@ var nodeOpen = false,
                 cancelButtonText: arguments[4]
               };
 
-        const confirmDialogEvent = 'confirmDialogEvent';
+        const confirmDialogEvent = 'commonAPIConfirmDialogEvent';
 
         if (onOk) {
           CrafterCMSNext.system.store.dispatch({
