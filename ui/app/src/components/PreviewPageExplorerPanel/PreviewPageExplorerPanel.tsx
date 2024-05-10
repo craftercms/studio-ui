@@ -43,8 +43,6 @@ import {
   sortItemOperationComplete
 } from '../../state/actions/preview';
 import { getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
-import Suspencified from '../Suspencified/Suspencified';
-import { Resource } from '../../models/Resource';
 import palette from '../../styles/palette';
 import { useDispatch } from 'react-redux';
 import Typography from '@mui/material/Typography';
@@ -60,6 +58,7 @@ import { usePreviewGuest } from '../../hooks/usePreviewGuest';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { useUnmount } from '../../hooks/useUnmount';
 import { useSpreadState } from '../../hooks/useSpreadState';
+import { LoadingState } from '../LoadingState';
 
 const rootPrefix = '{root}_';
 
@@ -733,7 +732,7 @@ export function PreviewPageExplorerPanel() {
           <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
           <Divider className={classes.divider} />
         </div>
-        <Suspencified loadingStateProps={{ title: formatMessage(translations.loading) }}>
+        {models && ContentTypesById ? (
           <PageExplorerUI
             handleBreadCrumbClick={handleBreadCrumbClick}
             handleClick={handleClick}
@@ -742,21 +741,21 @@ export function PreviewPageExplorerPanel() {
             optionsMenu={optionsMenu}
             rootPrefix={rootPrefix}
             handleOptions={handleOptions}
-            resource={resource}
             keyword={keyword}
             nodeLookup={nodeLookup}
             selected={state.selected}
             breadcrumbs={state.breadcrumbs}
             rootChildren={Object.keys(processedModels.current)}
           />
-        </Suspencified>
+        ) : (
+          <LoadingState title={formatMessage(translations.loading)} />
+        )}
       </TreeView>
     </>
   );
 }
 
 interface PageExplorerUIProps {
-  resource: Resource<any>;
   optionsMenu: {
     modelId: string;
     anchorEl: Element;
@@ -777,7 +776,6 @@ interface PageExplorerUIProps {
 
 function PageExplorerUI(props: PageExplorerUIProps) {
   const {
-    resource,
     handleScroll,
     handleClick,
     handleOptions,
@@ -793,8 +791,6 @@ function PageExplorerUI(props: PageExplorerUIProps) {
   } = props;
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
-
-  resource.read();
 
   let node: any = null;
 
