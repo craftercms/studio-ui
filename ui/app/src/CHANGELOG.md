@@ -37,6 +37,10 @@
   * `usePreviewUrlControl`: Removed `history` prop. Retrieval of search and navigate (previously called 'push') is now done internally.
 * Removed deprecated `aws-file-upload` and `aws-video` upload controls.
 
+## 4.1.5
+* [common-api.js]
+  * `CStudioAuthoring.Utils.showConfirmDialog`: Added function overload to receive a `props` style object as first and only argument. The props argument would contain all ConfirmDialog props. Original set of arguments still supported for backward compatibility.
+
 ## 4.1.3
 
 * HostUI removed and merged into Host
