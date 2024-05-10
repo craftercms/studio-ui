@@ -3453,13 +3453,13 @@ __metadata:
   linkType: hard
 
 "@prettier/plugin-xml@npm:^3.2.2":
-  version: 3.2.2
-  resolution: "@prettier/plugin-xml@npm:3.2.2"
+  version: 3.4.1
+  resolution: "@prettier/plugin-xml@npm:3.4.1"
   dependencies:
     "@xml-tools/parser": "npm:^1.0.11"
   peerDependencies:
     prettier: ^3.0.0
-  checksum: d2199a275b5062fa9fc9ab18fee0a4b5385e4319058a8acac1c834bcc1e692d9409a4ab0372d9f2989bb4e7896a3835413bffc83c74db31569de8ce292ae7957
+  checksum: 3b90eb7e04747be40b7755003e502ec821e2349678fdc8b46ff58ebfa2ba86399e29545126a3df5e53e9ef450956ecd8ec66bb3a61c9e0ed47a05053b0ad8c18
   languageName: node
   linkType: hard
 
