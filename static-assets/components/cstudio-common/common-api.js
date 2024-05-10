@@ -6224,12 +6224,24 @@ var nodeOpen = false,
         $(document).on('click', `.notifyjs-${styleName}-${id} .yes`, onOk);
       },
 
-      showConfirmDialog: function (title, body, callback, okButtonText, cancelButtonText) {
-        const onOk = 'confirmDialogOnOk';
-        const onCancel = 'confirmDialogOnCancel';
-        let unsubscribe, cancelUnsubscribe;
+      showConfirmDialog: function (/*
+        title, body, callback, okButtonText, cancelButtonText
+        { title, body, onOk, onCancel, okButtonText, cancelButtonText }
+      */) {
+        const { title, body, onOk, onCancel, okButtonText, cancelButtonText } =
+          typeof arguments[0] === 'object'
+            ? arguments[0]
+            : {
+                title: arguments[0],
+                body: arguments[1],
+                onOk: arguments[2],
+                okButtonText: arguments[3],
+                cancelButtonText: arguments[4]
+              };
 
-        if (callback) {
+        const confirmDialogEvent = 'commonAPIConfirmDialogEvent';
+
+        if (onOk) {
           CrafterCMSNext.system.store.dispatch({
             type: 'SHOW_CONFIRM_DIALOG',
             payload: {
@@ -6243,7 +6255,7 @@ var nodeOpen = false,
                 payload: [
                   {
                     type: 'DISPATCH_DOM_EVENT',
-                    payload: { id: onOk }
+                    payload: { id: confirmDialogEvent, type: 'ok' }
                   },
                   {
                     type: 'CLOSE_CONFIRM_DIALOG'
@@ -6258,7 +6270,7 @@ var nodeOpen = false,
                 payload: [
                   {
                     type: 'DISPATCH_DOM_EVENT',
-                    payload: { id: onCancel }
+                    payload: { id: confirmDialogEvent, type: 'cancel' }
                   },
                   { type: 'CONFIRM_DIALOG_CLOSED' }
                 ]
@@ -6266,12 +6278,12 @@ var nodeOpen = false,
             }
           });
 
-          unsubscribe = CrafterCMSNext.createLegacyCallbackListener(onOk, () => {
-            callback();
-            cancelUnsubscribe();
-          });
-          cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(onCancel, () => {
-            unsubscribe();
+          craftercms.utils.dom.createCustomDocumentEventListener(confirmDialogEvent, ({ type }) => {
+            if (type === 'ok') {
+              onOk?.();
+            } else {
+              onCancel?.();
+            }
           });
         } else {
           CrafterCMSNext.system.store.dispatch({

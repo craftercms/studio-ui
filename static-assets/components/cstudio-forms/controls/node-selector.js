@@ -390,19 +390,18 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             selectedDatasource.edit(item.key, _self, elIndex, {
               failure: function (error) {
                 if (error.status === 404) {
-                  CStudioAuthoring.Utils.showConfirmDialog(
-                    null,
-                    _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
+                  CStudioAuthoring.Utils.showConfirmDialog({
+                    body: _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
                       internalName: _self.items[elIndex].value
                     }),
-                    () => {
+                    onOk: () => {
                       _self.deleteItem(elIndex);
                     },
-                    _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
+                    okButtonText: _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
                       controlLabel: _self.fieldDef.title
                     }),
-                    _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
-                  );
+                    cancelButtonText: _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
+                  });
                 } else {
                   craftercms.getStore().dispatch({
                     type: 'SHOW_ERROR_DIALOG',
