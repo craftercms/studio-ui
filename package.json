@@ -88,8 +88,8 @@
     "upgrade-yarn": "yarn set version latest",
     "update:caniuse": "yarn up -R caniuse-lite",
     "bom": "yarn cyclonedx --output-file bom.json",
-    "generate:bom": "yarn workspaces foreach -A run bom",
-    "remove:bom": "rimraf ./**/bom.json"
+    "bom:generate": "yarn workspaces foreach -A run bom",
+    "bom:remove": "rimraf ./**/bom.json"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",

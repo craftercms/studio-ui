@@ -207,7 +207,7 @@
                   <goal>yarn</goal>
                 </goals>
                 <configuration>
-                  <arguments>generate:bom</arguments>
+                  <arguments>bom:generate</arguments>
                 </configuration>
               </execution>
             </executions>
