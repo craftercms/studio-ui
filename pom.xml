@@ -191,6 +191,32 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>generate-bom</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>${frontend.maven.version}</version>
+            <executions>
+              <execution>
+                <id>generate</id>
+                <goals>
+                  <goal>yarn</goal>
+                </goals>
+                <configuration>
+                  <arguments>generate:bom</arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <repositories>
     <repository>
       <id>sonatype-snapshots</id>
