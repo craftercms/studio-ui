@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
 import SkeletonSitesGrid from '../SitesGrid/SitesGridSkeleton';
@@ -35,7 +35,6 @@ import { fetchSites, popSite } from '../../state/actions/sites';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { showEditSiteDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import SitesGrid from '../SitesGrid/SitesGrid';
 import PublishingStatusDialog from '../PublishingStatusDialog';
 import GlobalAppToolbar from '../GlobalAppToolbar';
@@ -45,7 +44,6 @@ import { hasGlobalPermissions } from '../../services/users';
 import { foo } from '../../utils/object';
 import { useEnv } from '../../hooks/useEnv';
 import { useActiveUser } from '../../hooks/useActiveUser';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import Paper from '@mui/material/Paper';
@@ -60,6 +58,7 @@ import Alert from '@mui/material/Alert';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { ConfirmDialog } from '../ConfirmDialog';
+import EmptyState from '../EmptyState';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -84,6 +83,7 @@ export function SiteManagement() {
     getStoredGlobalMenuSiteViewPreference(user.username) ?? 'grid'
   );
   const { byId: sitesById, isFetching, active } = useSitesBranch();
+  const sitesList = sitesById ? Object.values(sitesById) : null;
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
   const duplicateSiteDialogState = useEnhancedDialogState();
@@ -98,17 +98,6 @@ export function SiteManagement() {
     );
     return () => subscription.unsubscribe();
   }, []);
-
-  const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
-    useMemo(() => ({ sitesById, isFetching, permissionsLookup }), [sitesById, isFetching, permissionsLookup]),
-    {
-      shouldResolve: (source) => Boolean(source.sitesById) && permissionsLookup !== foo && !isFetching,
-      shouldReject: () => false,
-      shouldRenew: (source, resource) => resource.complete,
-      resultSelector: () => Object.values(sitesById),
-      errorSelector: () => null
-    }
-  );
 
   const onSiteClick = (site: Site) => {
     setSiteCookie(site.id, useBaseDomain);
@@ -221,16 +210,25 @@ export function SiteManagement() {
         }
       />
       <ErrorBoundary>
-        <SuspenseWithEmptyState
-          resource={resource}
-          suspenseProps={{
-            fallback: <SkeletonSitesGrid numOfItems={3} currentView={currentView} />
-          }}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: <FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />,
-              styles: { root: { margin: undefined } },
-              sxs: {
+        {isFetching ? (
+          <SkeletonSitesGrid numOfItems={3} currentView={currentView} />
+        ) : sitesList ? (
+          sitesList.length > 0 ? (
+            <SitesGrid
+              sites={sitesList}
+              onSiteClick={onSiteClick}
+              onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
+              onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
+              currentView={currentView}
+              onPublishButtonClick={onPublishButtonClick}
+              onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
+              disabledSitesLookup={disabledSitesLookup}
+            />
+          ) : (
+            <EmptyState
+              title={<FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />}
+              styles={{ root: { margin: undefined } }}
+              sxs={{
                 root: {
                   p: 5,
                   bgcolor: 'background.default',
@@ -240,40 +238,30 @@ export function SiteManagement() {
                   marginLeft: 'auto',
                   marginRight: 'auto'
                 }
-              },
-              children: (
-                <Card
-                  elevation={hasCreateSitePermission ? 2 : 0}
-                  sx={{
-                    mt: 1,
-                    textAlign: 'center',
-                    ...(!hasCreateSitePermission && {
-                      border: '1px solid',
-                      borderColor: 'divider'
-                    })
-                  }}
-                >
-                  {hasCreateSitePermission ? (
-                    <CardActionArea onClick={handleCreateSiteClick}>{cardHeaderBlock}</CardActionArea>
-                  ) : (
-                    cardHeaderBlock
-                  )}
-                </Card>
-              )
-            }
-          }}
-        >
-          <SitesGrid
-            resource={resource}
-            onSiteClick={onSiteClick}
-            onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
-            onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
-            currentView={currentView}
-            onPublishButtonClick={onPublishButtonClick}
-            onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
-            disabledSitesLookup={disabledSitesLookup}
-          />
-        </SuspenseWithEmptyState>
+              }}
+            >
+              <Card
+                elevation={hasCreateSitePermission ? 2 : 0}
+                sx={{
+                  mt: 1,
+                  textAlign: 'center',
+                  ...(!hasCreateSitePermission && {
+                    border: '1px solid',
+                    borderColor: 'divider'
+                  })
+                }}
+              >
+                {hasCreateSitePermission ? (
+                  <CardActionArea onClick={handleCreateSiteClick}>{cardHeaderBlock}</CardActionArea>
+                ) : (
+                  cardHeaderBlock
+                )}
+              </Card>
+            </EmptyState>
+          )
+        ) : (
+          <></>
+        )}
       </ErrorBoundary>
       <PublishingStatusDialog
         open={publishingStatusDialogState.open}
