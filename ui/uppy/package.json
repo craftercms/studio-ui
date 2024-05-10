@@ -35,7 +35,7 @@
     "bom": "yarn cyclonedx --output-file bom.json"
   },
   "devDependencies": {
-    "@babel/cli": "^7.24.1",
+    "@babel/cli": "^7.24.5",
     "@babel/plugin-transform-object-assign": "^7.24.1",
     "@types/eslint": "^8.56.10",
     "babel-plugin-inline-package-json": "^2.0.0",

@@ -16,7 +16,7 @@
     "bom": "yarn cyclonedx --output-file bom.json"
   },
   "devDependencies": {
-    "@babel/cli": "^7.24.1",
+    "@babel/cli": "^7.24.5",
     "build-if-changed": "^1.5.5"
   }
 }
