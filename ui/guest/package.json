@@ -91,7 +91,7 @@
     "replace-env-version": "node ./scripts/replaceEnvVersion.js",
     "build:npm": "run-s clean:npm build:modern replace-env-version create-package-file copy-jquery-npm",
     "copy-jquery-npm": "cp -r ./src/jquery ./build_tsc/jquery",
-    "bom": "yarn cyclonedx --output-file bom.json"
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "dependencies": {
     "@craftercms/classes": "4.1.4",

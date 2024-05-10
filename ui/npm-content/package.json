@@ -16,7 +16,7 @@
     "build": "chmod +x build.sh; ./build.sh",
     "build:monaco": "webpack --config ./src/monaco/webpack.config.js",
     "build:jquery": "grunt --base ./jquery-src --gruntfile ./jquery-src/Gruntfile.js custom:-ajax,-css,-deprecated,-dimensions,-effects,-event/trigger,-offset,-wrap,-core/ready,-deferred,-selector",
-    "bom": "yarn cyclonedx --output-file bom.json"
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",

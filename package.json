@@ -88,9 +88,9 @@
     "lint:ci": "eslint --ext .ts,.tsx .",
     "upgrade-yarn": "yarn set version latest",
     "update:caniuse": "yarn up -R caniuse-lite",
-    "bom": "yarn cyclonedx --output-file bom.json",
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json",
     "bom:generate": "yarn workspaces foreach -A run bom",
-    "bom:remove": "rimraf ./**/bom.json"
+    "bom:remove": "rimraf ./target/bom.json ./ui/**/target"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",

@@ -115,7 +115,7 @@
     "i18n:compile-ko": "formatjs compile './src/translations/ko.json' --ast --out-file './src/translations/ko.ast.json' --format simple",
     "i18n-clean": "rimraf ./src/translations/{*.ast}.json",
     "custom-prettier": "node ../../scripts/prettier.js",
-    "bom": "yarn cyclonedx --output-file bom.json"
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "dependencies": {
     "@craftercms/uppy": "workspace:^",

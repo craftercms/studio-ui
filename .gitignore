@@ -154,8 +154,6 @@ ui/app/.env.development
 ui/app/src/translations/src.json
 ui/app/src/translations/whitelists
 
-bom.json
-
 # Yarn
 .pnp.*
 .yarn/*

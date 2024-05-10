@@ -7,7 +7,7 @@
     "start": "node scripts/watch.js",
     "build": "node scripts/index.js",
     "dev-build": "node scripts/withSourceMaps.js",
-    "bom": "yarn cyclonedx --output-file bom.json"
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "devDependencies": {
     "build-if-changed": "^1.5.5",
