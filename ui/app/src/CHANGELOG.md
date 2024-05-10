@@ -4,7 +4,7 @@
 
 ## 4.1.5
 * [common-api.js]
-  * `CStudioAuthoring.Utils.showConfirmDialog`: Updated arguments to support an object with the following properties instead of individual arguments: `title`, `message`, `onOk`, `onCancel`, `okButtonText`, `cancelButtonText`. Also, made it backward compatible (with multiple arguments).
+  * `CStudioAuthoring.Utils.showConfirmDialog`: Added function overload to receive a `props` style object as first and only argument. The props argument would contain all ConfirmDialog props. Original set of arguments still supported for backward compatibility.
 
 ## 4.1.3
 
