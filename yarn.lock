@@ -1738,7 +1738,7 @@ __metadata:
     "@emotion/css": "npm:^11.11.2"
     "@emotion/react": "npm:^11.11.3"
     "@emotion/styled": "npm:^11.11.0"
-    "@formatjs/cli": "npm:^5.0.6"
+    "@formatjs/cli": "npm:^6.2.10"
     "@mui/icons-material": "npm:^5.15.7"
     "@mui/lab": "npm:^5.0.0-alpha.163"
     "@mui/material": "npm:^5.15.7"
@@ -2359,17 +2359,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@formatjs/cli@npm:^5.0.6":
-  version: 5.0.6
-  resolution: "@formatjs/cli@npm:5.0.6"
+"@formatjs/cli@npm:^6.2.10":
+  version: 6.2.10
+  resolution: "@formatjs/cli@npm:6.2.10"
   peerDependencies:
-    "@vue/compiler-sfc": ^3.2.34
+    "@glimmer/env": ^0.1.7
+    "@glimmer/reference": ^0.91.1
+    "@glimmer/syntax": ^0.91.1
+    "@glimmer/validator": ^0.91.1
+    "@vue/compiler-core": ^3.4.0
+    content-tag: ^2.0.1
+    ember-template-recast: ^6.1.4
+    vue: ^3.4.0
   peerDependenciesMeta:
-    "@vue/compiler-sfc":
+    "@glimmer/env":
+      optional: true
+    "@glimmer/reference":
+      optional: true
+    "@glimmer/syntax":
+      optional: true
+    "@glimmer/validator":
+      optional: true
+    "@vue/compiler-core":
+      optional: true
+    content-tag:
+      optional: true
+    ember-template-recast:
+      optional: true
+    vue:
       optional: true
   bin:
     formatjs: bin/formatjs
-  checksum: 10/e603117262a488241ef75dd240aaf5aaac655dc2578d0392cc60afa30c182ffbf9f30964bf246525164f6110f515e129374685948c770c5ede9bc9d451fce59a
+  checksum: 10/a4a0828364a68f0347f076125b358cbb891058c136a8e7239ad53749d9bd7da7c093ddc9831e225d37d535733c6206e1cf38a4aa7016953227b6c671d1bf8598
   languageName: node
   linkType: hard
 
@@ -11650,13 +11671,6 @@ __metadata:
   dependencies:
     yallist: "npm:^4.0.0"
   checksum: 10/e41da4d983814a8d610b05bcf1cdd2a7cb873fb0c05915820c3dab1070e92a5e0c60f91da351027397b9a619821c42a38dcb6f1016a36b7c47ecf3adabb555e9
-  languageName: node
-  linkType: hard
-
-"minipass@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "minipass@npm:5.0.0"
-  checksum: 61682162d29f45d3152b78b08bab7fb32ca10899bc5991ffe98afc18c9e9543bd1e3be94f8b8373ba6262497db63607079dc242ea62e43e7b2270837b7347c93
   languageName: node
   linkType: hard
 

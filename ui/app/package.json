@@ -179,7 +179,7 @@
   },
   "devDependencies": {
     "@craco/craco": "7.0.0",
-    "@formatjs/cli": "^5.0.6",
+    "@formatjs/cli": "^6.2.10",
     "@rollup/plugin-typescript": "^8.5.0",
     "@types/jquery": "^3.5.29",
     "@types/js-cookie": "^3.0.6",
