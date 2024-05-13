@@ -3301,15 +3301,15 @@ __metadata:
   linkType: hard
 
 "@mui/x-tree-view@npm:^7.3.1":
-  version: 7.3.1
-  resolution: "@mui/x-tree-view@npm:7.3.1"
+  version: 7.4.0
+  resolution: "@mui/x-tree-view@npm:7.4.0"
   dependencies:
     "@babel/runtime": "npm:^7.24.0"
     "@mui/base": "npm:^5.0.0-beta.40"
     "@mui/system": "npm:^5.15.14"
     "@mui/utils": "npm:^5.15.14"
     "@types/react-transition-group": "npm:^4.4.10"
-    clsx: "npm:^2.1.0"
+    clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
     react-transition-group: "npm:^4.4.5"
   peerDependencies:
@@ -3318,7 +3318,7 @@ __metadata:
     "@mui/material": ^5.15.14
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: 10/eac48eed467ddf5248ad0024f06e2d280da4a1270efe249ec8a85fd6e9b0ff8788bf1baffb869a42ec12aaed2f175ee0dd0bf59232df94228027054172073c21
+  checksum: 10/df444a8fad2965dcb8963bb4d7d3e0bbf223cd6ef49cc54318cb9f277d8afea1633476b74984f529abe3bec5a259e78abb9aebc28e83fc521628c10d3231ade8
   languageName: node
   linkType: hard
 
