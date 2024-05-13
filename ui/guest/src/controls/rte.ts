@@ -271,29 +271,32 @@ export function initTinyMCE(
         // In some cases the 'blur' event is getting caught somewhere along
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
-          let saved = false;
-          let relatedTarget = e.relatedTarget as HTMLElement;
-          // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
-          changed = changed || getContent() !== initialTinyContent;
-          if (
-            !relatedTarget?.closest('.tox-tinymce') &&
-            !relatedTarget?.closest('.tox') &&
-            !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
-          ) {
-            if (validations?.required && !getContent().trim()) {
-              post(
-                snackGuestMessage({
-                  id: 'required',
-                  level: 'required',
-                  values: { field: record.label }
-                })
-              );
-            } else if (changed) {
-              saved = true;
-              save();
+          // Only consider 'focusout' events that are trusted and not at the bubbling phase.
+          if (e.isTrusted && e.eventPhase !== 3) {
+            let relatedTarget = e.relatedTarget as HTMLElement;
+            let saved = false;
+            // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
+            changed = changed || getContent() !== initialTinyContent;
+            if (
+              !relatedTarget?.closest('.tox-tinymce') &&
+              !relatedTarget?.closest('.tox') &&
+              !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
+            ) {
+              if (validations?.required && !getContent().trim()) {
+                post(
+                  snackGuestMessage({
+                    id: 'required',
+                    level: 'required',
+                    values: { field: record.label }
+                  })
+                );
+              } else if (changed) {
+                saved = true;
+                save();
+              }
+              e.stopImmediatePropagation();
+              cancel({ saved });
             }
-            e.stopImmediatePropagation();
-            cancel({ saved });
           }
         });
 
