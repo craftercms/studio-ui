@@ -105,7 +105,8 @@ export function initTinyMCE(
     ...rteSetup?.tinymceOptions?.external_plugins,
     acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
     editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js',
-    craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
+    craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
+    template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js'
   };
 
   record.element.classList.remove(emptyFieldClass);
