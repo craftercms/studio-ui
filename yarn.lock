@@ -6093,9 +6093,9 @@ __metadata:
   linkType: hard
 
 "ace-builds@npm:^1.33.1":
-  version: 1.33.1
-  resolution: "ace-builds@npm:1.33.1"
-  checksum: 10/5af47d318f7b85b5b515d482179153b8e772b49e658198d4e72dbdc42b35fa0780e5a8768388a239b76006fcae656e453a2f5e3f930c1f00a1027449ff03578b
+  version: 1.33.2
+  resolution: "ace-builds@npm:1.33.2"
+  checksum: 10/0478efd91c3ef679ca0150b1ee7535da8a1f9bee3de26ff98432ab55482809ff1184e287dfaedc4d35462fce39053897b4fb6dbf7bf364084a50225aecaf5789
   languageName: node
   linkType: hard
 
