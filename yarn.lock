@@ -1733,7 +1733,7 @@ __metadata:
     "@mui/x-data-grid": "npm:^7.3.2"
     "@mui/x-date-pickers": "npm:^7.3.2"
     "@mui/x-tree-view": "npm:^7.3.1"
-    "@prettier/plugin-xml": "npm:^3.3.0"
+    "@prettier/plugin-xml": "npm:3.3.0"
     "@reduxjs/toolkit": "npm:^2.2.4"
     "@rollup/plugin-typescript": "npm:^11.1.6"
     "@stomp/stompjs": "npm:^7.0.0"
@@ -3422,7 +3422,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prettier/plugin-xml@npm:^3.3.0":
+"@prettier/plugin-xml@npm:3.3.0":
   version: 3.3.0
   resolution: "@prettier/plugin-xml@npm:3.3.0"
   dependencies:
