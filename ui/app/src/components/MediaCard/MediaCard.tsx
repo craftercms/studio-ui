@@ -107,7 +107,6 @@ function MediaCard(props: MediaCardProps) {
   } = props;
   // endregion
   let { name, path, type } = item;
-  // TODO: search item type comes as 'Other' in audio files, it needs to be updated to 'Audio'
   if (item.mimeType.includes('audio/')) {
     type = 'Audio';
   }
