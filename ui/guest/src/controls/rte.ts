@@ -112,6 +112,7 @@ export function initTinyMCE(
   record.element.classList.remove(emptyFieldClass);
 
   window.tinymce.init({
+    license_key: 'gpl',
     target: rteEl,
     promotion: false,
     // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please

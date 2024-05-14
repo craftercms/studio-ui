@@ -362,6 +362,7 @@ CStudioAuthoring.Module.requireModule(
           };
 
           tinymce.init({
+            license_key: 'gpl',
             selector: `#${CSS.escape(rteId)}`,
             promotion: false,
             // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
