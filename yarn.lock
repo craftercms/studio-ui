@@ -3253,15 +3253,15 @@ __metadata:
   linkType: hard
 
 "@mui/x-date-pickers@npm:^7.3.2":
-  version: 7.3.2
-  resolution: "@mui/x-date-pickers@npm:7.3.2"
+  version: 7.4.0
+  resolution: "@mui/x-date-pickers@npm:7.4.0"
   dependencies:
     "@babel/runtime": "npm:^7.24.0"
     "@mui/base": "npm:^5.0.0-beta.40"
     "@mui/system": "npm:^5.15.14"
     "@mui/utils": "npm:^5.15.14"
     "@types/react-transition-group": "npm:^4.4.10"
-    clsx: "npm:^2.1.0"
+    clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
     react-transition-group: "npm:^4.4.5"
   peerDependencies:
@@ -3269,7 +3269,7 @@ __metadata:
     "@emotion/styled": ^11.8.1
     "@mui/material": ^5.15.14
     date-fns: ^2.25.0 || ^3.2.0
-    date-fns-jalali: ^2.13.0-0
+    date-fns-jalali: ^2.13.0-0 || ^3.2.0-0
     dayjs: ^1.10.7
     luxon: ^3.0.2
     moment: ^2.29.4
@@ -3296,7 +3296,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/12dfa2999d32505d1672f92cb3371c8e7ee3967eae069f36fba517137e48a2fa5244381e2137b7623899d518138af03139d3988d461675ac7411b9899b1edbda
+  checksum: 10/94816a43effbe8d0ceb5c62a3efca3f98695cca035caf7ac256a94b75003769470cc6fdb967ed5ebe9e1939016cc520ea6dcfb5a31e263ce271accd4a0d65c48
   languageName: node
   linkType: hard
 
