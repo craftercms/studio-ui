@@ -71,7 +71,7 @@ var CStudioForms =
     // lookup to check the controls with default values
     const defaultValuesLookup = {};
     // lookup to check the fields that have the `no-default` attribute set
-    const noDefaultLookup = {};
+    let noDefaultLookup = {};
     let disableClose = false;
 
     // This sets the dropup class to bootstrap dropdowns (used to display datasources selected for controls) when
@@ -1403,7 +1403,7 @@ var CStudioForms =
               saveDraft = true;
             }
             lastDraft = draft;
-            return entityId;
+            return craftercms.utils.string.ensureSingleSlash(entityId);
           };
 
           //If the form is opened in view mode, we don't need show the warn message or unlock the item
@@ -1460,7 +1460,9 @@ var CStudioForms =
             try {
               form.onBeforeSave({ preview: preview });
             } catch (e) {
-              CStudioAuthoring.Utils.showConfirmDialog(null, formatMessage(formEngineMessages.formNotReadyForSaving));
+              CStudioAuthoring.Utils.showConfirmDialog({
+                body: formatMessage(formEngineMessages.formNotReadyForSaving)
+              });
               return;
             }
 
@@ -1680,21 +1682,26 @@ var CStudioForms =
                 .subscribe(({ allowed, modifiedValue, target }) => {
                   if (allowed) {
                     if (modifiedValue) {
-                      CStudioAuthoring.Utils.showConfirmDialog(
-                        null,
-                        formatMessage(formEngineMessages.createPolicy, { originalPath: entityId, path: modifiedValue }),
-                        () => {
+                      CStudioAuthoring.Utils.showConfirmDialog({
+                        body: formatMessage(formEngineMessages.createPolicy, {
+                          originalPath: entityId,
+                          path: modifiedValue
+                        }),
+                        onOk: () => {
                           saveContent();
+                        },
+                        onCancel: () => {
+                          setButtonsEnabled(true);
                         }
-                      );
+                      });
                     } else {
                       saveContent();
                     }
                   } else {
-                    CStudioAuthoring.Utils.showConfirmDialog(
-                      null,
-                      formatMessage(formEngineMessages.policyError, { path: target })
-                    );
+                    setButtonsEnabled(true);
+                    CStudioAuthoring.Utils.showConfirmDialog({
+                      body: formatMessage(formEngineMessages.policyError, { path: target })
+                    });
                   }
                 });
             }
@@ -1798,24 +1805,27 @@ var CStudioForms =
                 }
                 $(document).trigger('CloseFormWithChangesUserWarningDialogShown');
 
-                CStudioAuthoring.Utils.showConfirmDialog(null, message, () => {
-                  if (iceWindowCallback && iceWindowCallback.cancelled) {
-                    iceWindowCallback.cancelled();
-                  }
-                  sendMessage({ type: FORM_CANCEL });
-                  var entityId = buildEntityIdFn(null);
-                  showWarnMsg = false;
+                CStudioAuthoring.Utils.showConfirmDialog({
+                  body: message,
+                  onOk: () => {
+                    if (iceWindowCallback && iceWindowCallback.cancelled) {
+                      iceWindowCallback.cancelled();
+                    }
+                    sendMessage({ type: FORM_CANCEL });
+                    var entityId = buildEntityIdFn(null);
+                    showWarnMsg = false;
 
-                  var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
-                  if (path && path.indexOf('.xml') != -1) {
-                    unlockBeforeCancel(path);
-                  } else {
-                    _notifyServer = false;
-                    var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
-                    CStudioAuthoring.InContextEdit.unstackDialog(editorId);
+                    var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
+                    if (path && path.indexOf('.xml') != -1) {
+                      unlockBeforeCancel(path);
+                    } else {
+                      _notifyServer = false;
+                      var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                      CStudioAuthoring.InContextEdit.unstackDialog(editorId);
 
-                    if (path == '/site/components/page') {
-                      CStudioAuthoring.Operations.refreshPreview();
+                      if (path == '/site/components/page') {
+                        CStudioAuthoring.Operations.refreshPreview();
+                      }
                     }
                   }
                 });
@@ -2509,6 +2519,11 @@ var CStudioForms =
                   var itemArray = form.model[repeat.id];
                   var repeatArrayIndex = this.parentNode._repeatIndex;
                   itemArray.splice(repeatArrayIndex, 1);
+                  // Remove noDefaultLookup entry
+                  const itemBaseId = repeat.id + '|' + repeatArrayIndex;
+                  noDefaultLookup = Object.fromEntries(
+                    Object.entries(noDefaultLookup).filter(([key]) => !key.startsWith(itemBaseId))
+                  );
                   containerEl.reRender(containerEl);
 
                   if (repeatArrayIndex) {
@@ -2609,7 +2624,12 @@ var CStudioForms =
               }
 
               const defaultValue = moduleConfig.config.field.defaultValue;
-              if (!value && defaultValue && typeof defaultValue === 'string' && !noDefaultLookup[formField.id]) {
+              if (
+                craftercms.utils.object.nou(value) &&
+                defaultValue &&
+                typeof defaultValue === 'string' &&
+                !noDefaultLookup[formField.id]
+              ) {
                 value = moduleConfig.config.field.defaultValue;
               }
 

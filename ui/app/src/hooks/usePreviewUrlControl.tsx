@@ -25,6 +25,8 @@ import { useEnv } from './useEnv';
 import { usePreviewNavigation } from './usePreviewNavigation';
 import useSiteLookup from './useSiteLookup';
 import { defineMessages, useIntl } from 'react-intl';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { GlobalRoutes } from '../env/routes';
 
 const messages = defineMessages({
   siteNotFound: {
@@ -40,12 +42,9 @@ const notValidSiteRedirect = (message: string, url: string) => {
   window.location.href = url;
 };
 
-export function usePreviewUrlControl(history) {
-  const {
-    location: { search },
-    push
-  } = history;
-
+export function usePreviewUrlControl() {
+  const { search } = useLocation();
+  const navigate = useNavigate();
   const { currentUrlPath } = usePreviewNavigation();
   const { previewLandingBase } = useEnv();
   const { authoringBase } = useEnv();
@@ -70,9 +69,9 @@ export function usePreviewUrlControl(history) {
 
         // If site doesn't exist, or its state is not 'READY', alert and navigate to sites page.
         if (!siteExists) {
-          notValidSiteRedirect(formatMessage(messages.siteNotFound), `${authoringBase}#/sites`);
+          notValidSiteRedirect(formatMessage(messages.siteNotFound), `${authoringBase}#${GlobalRoutes.Projects}`);
         } else if (sites[siteId].state !== 'READY') {
-          notValidSiteRedirect(formatMessage(messages.siteNotReady), `${authoringBase}#/sites`);
+          notValidSiteRedirect(formatMessage(messages.siteNotReady), `${authoringBase}#${GlobalRoutes.Projects}`);
         }
       }
     },
@@ -143,7 +142,7 @@ export function usePreviewUrlControl(history) {
         if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
           const page = currentUrlPath;
           if (page !== previewLandingBase) {
-            push({ search: queryString.stringify({ site, page }, { encode: false }) });
+            navigate({ search: queryString.stringify({ site, page }, { encode: false }) });
           }
         } else if (qsSiteChanged && qsUrlChanged) {
           dispatch(changeSite(qs.site, qs.page));
@@ -162,7 +161,7 @@ export function usePreviewUrlControl(history) {
       prev.qsPage = qs.page;
       prev.qsSite = qs.site;
     }
-  }, [currentUrlPath, dispatch, previewLandingBase, push, search, site, sites, validateSite]);
+  }, [currentUrlPath, dispatch, previewLandingBase, navigate, search, site, sites, validateSite]);
 }
 
 export default usePreviewUrlControl;

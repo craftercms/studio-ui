@@ -62,7 +62,7 @@ const validationChecks: Partial<Record<ValidationKeys, Function>> = {
 let rid = 0;
 
 /* private */
-const registry: Map<number, ICERecord> = new Map();
+export const registry: Map<number, ICERecord> = new Map();
 
 let refCount: LookupTable<number> = {};
 
@@ -258,19 +258,19 @@ export function getComponentItemDropTargets(record: ICERecord): number[] {
  * Returns a list of ICE records that matches a content type
  * @param contentType {string | ContentType} The content type that the records should match.
  * @param excludeFn {(record: ICERecord, hierarchyMap: ModelHierarchyMap) => boolean} function that returns true if record has to be excluded, and false it not.
- * @param storedAs {shared | embedded} Check if the content is accepted based on a particular storage format (i.e. shared or embedded)
+ * @param createMode {embedded | shared | sharedExisting | Array<embedded | shared | sharedExisting>} Check if the content is accepted based on a particular storage format (i.e. shared or embedded)
  */
 export function getContentTypeDropTargets(
   contentType: string | ContentType,
   excludeFn?: (record: ICERecord, hierarchyMap: ModelHierarchyMap) => boolean,
-  storedAs?: 'shared' | 'embedded'
+  createMode?: CreateMode | CreateMode[] | undefined
 ): ICERecord[] {
   const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
   return Array.from(registry.values()).filter((record) => {
     const { fieldId, index } = record;
     if (notNullOrUndefined(fieldId) && !excludeFn?.(record, contentController.modelHierarchyMap)) {
       const { field, contentType: _contentType, model } = getReferentialEntries(record);
-      const accepts = isTypeAcceptedAsByField(field, contentTypeId, storedAs);
+      const accepts = isTypeAcceptedAsByField(field, contentTypeId, createMode);
       if (!accepts) {
         return false;
       } else if (nullOrUndefined(index)) {
@@ -296,23 +296,31 @@ export function getContentTypeDropTargets(
   });
 }
 
+export type CreateMode = 'embedded' | 'shared' | 'sharedExisting';
+
 /**
  * Checks if a content type is accepted (as shared, embedded or at-all) by a specific receiver field
  * @param receiverField {ContentTypeField}
  * @param contentTypeId {string}
- * @param storedAs {embedded | shared}
+ * @param createMode {embedded | shared | sharedExisting | Array<embedded | shared | sharedExisting>}
  */
 export function isTypeAcceptedAsByField(
   receiverField: ContentTypeField,
   contentTypeId: string,
-  storedAs?: 'embedded' | 'shared'
+  // shared == sharedNew, sharedExisting
+  createMode?: CreateMode | CreateMode[] | undefined
 ): boolean {
-  const acceptedTypes: string[] =
-    (storedAs === 'shared'
+  const processCreateMode = (mode: CreateMode) =>
+    (mode === 'shared'
       ? receiverField?.validations?.allowedSharedContentTypes?.value
-      : storedAs === 'embedded'
-      ? receiverField?.validations?.allowedEmbeddedContentTypes?.value
-      : receiverField?.validations?.allowedContentTypes?.value) ?? [];
+      : mode === 'embedded'
+        ? receiverField?.validations?.allowedEmbeddedContentTypes?.value
+        : mode === 'sharedExisting'
+          ? receiverField?.validations?.allowedSharedExistingContentTypes?.value
+          : receiverField?.validations?.allowedContentTypes?.value) ?? [];
+  let acceptedTypes: string[] = Array.isArray(createMode)
+    ? createMode.flatMap((mode) => processCreateMode(mode))
+    : processCreateMode(createMode);
   return acceptedTypes.some((typeId) => typeId === contentTypeId || typeId === '*');
 }
 

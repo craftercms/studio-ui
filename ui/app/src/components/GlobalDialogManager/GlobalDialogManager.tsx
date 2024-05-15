@@ -69,6 +69,7 @@ const PathSelectionDialog = lazy(() => import('../PathSelectionDialog'));
 const UnlockPublisherDialog = lazy(() => import('../UnlockPublisherDialog'));
 const WidgetDialog = lazy(() => import('../WidgetDialog'));
 const CodeEditorDialog = lazy(() => import('../CodeEditorDialog'));
+const BrokenReferencesDialog = lazy(() => import('../BrokenReferencesDialog'));
 // endregion
 
 // @formatter:off
@@ -180,7 +181,13 @@ function GlobalDialogManager() {
       let timeout: NodeJS.Timeout, key: SnackbarKey;
       timeout = setTimeout(() => {
         fetch(`${authoringBase}/help/socket-connection-error`)
-          .then((r) => r.text())
+          .then((r) => {
+            if (r.ok) {
+              return r.text();
+            } else {
+              throw new Error('socket-connection-error fetch failed');
+            }
+          })
           .then(() => {
             key = enqueueSnackbar(<FormattedMessage defaultMessage="Studio will continue to retry the connection." />, {
               variant: 'warning',
@@ -386,6 +393,15 @@ function GlobalDialogManager() {
         onClose={createCallback(state.workflowCancellation.onClose, dispatch)}
         onClosed={createCallback(state.workflowCancellation.onClosed, dispatch)}
         onContinue={createCallback(state.workflowCancellation.onContinue, dispatch)}
+      />
+      {/* endregion */}
+
+      {/* region Broken References */}
+      <BrokenReferencesDialog
+        {...state.brokenReferences}
+        onClose={createCallback(state.brokenReferences.onClose, dispatch)}
+        onClosed={createCallback(state.brokenReferences.onClosed, dispatch)}
+        onContinue={createCallback(state.brokenReferences.onContinue, dispatch)}
       />
       {/* endregion */}
 

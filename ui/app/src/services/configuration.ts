@@ -76,9 +76,17 @@ export function fetchConfigurationJSON(
   );
 }
 
+/**
+ * Persists the content of a configuration file.
+ * @param site {string} The site id from which to fetch the configuration from.
+ * @param partialPath {string} The path *inside the module*, excluding root (/config) and module (/studio|engine). If full path is `/config/studio/ui.xml`, partial path `/ui.xml`.
+ * @param module {engine | studio} The module that owns this configuration file.
+ * @param content {string} The content to write.
+ * @param environment {string} Optional environment to write to.
+ **/
 export function writeConfiguration(
   site: string,
-  path: string,
+  partialPath: string,
   module: CrafterCMSModules,
   content: string,
   environment?: string
@@ -86,7 +94,7 @@ export function writeConfiguration(
   return postJSON('/studio/api/2/configuration/write_configuration', {
     siteId: site,
     module,
-    path,
+    path: partialPath,
     content,
     ...(environment && { environment })
   }).pipe(map(() => true));
@@ -115,7 +123,9 @@ export function fetchActiveTargetingModel(site?: string): Observable<ContentInst
           locale: null,
           dateCreated: null,
           dateModified: null,
-          contentTypeId: null
+          contentTypeId: null,
+          disabled: false,
+          sourceMap: {}
         },
         ...data
       };
@@ -127,15 +137,6 @@ export function deserializeActiveTargetingModelData<T extends Object>(
   data: T,
   contentTypeFields: LookupTable<ContentTypeField>
 ): ContentInstance {
-  Object.keys(data).forEach((modelKey) => {
-    if (contentTypeFields[modelKey]) {
-      // if checkbox-group (Array)
-      if (contentTypeFields[modelKey].type === 'checkbox-group') {
-        data[modelKey] = data[modelKey] ? data[modelKey].split(',') : [];
-      }
-    }
-  });
-
   return {
     craftercms: {
       id: '',
@@ -143,7 +144,9 @@ export function deserializeActiveTargetingModelData<T extends Object>(
       label: null,
       dateCreated: null,
       dateModified: null,
-      contentTypeId: null
+      contentTypeId: null,
+      disabled: false,
+      sourceMap: {}
     },
     ...data
   };

@@ -77,13 +77,12 @@ export function PreviewBrowseComponentsPanel() {
     if (!editMode) {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
-    hostToGuest$.next({
-      type: componentInstanceDragStarted.type,
-      payload: {
+    hostToGuest$.next(
+      componentInstanceDragStarted({
         instance: item,
         contentType: contentTypesBranch.byId[item.craftercms.contentTypeId]
-      }
-    });
+      })
+    );
   };
 
   const onDragEnd = () => hostToGuest$.next({ type: componentInstanceDragEnded.type });

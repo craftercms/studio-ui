@@ -216,7 +216,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           versionTitle: asDayMonthDateTime(previousBranch.modifiedDate)
         }),
         onCancel: closeConfirmDialog(),
-        onOk: batchActions([closeConfirmDialog(), revertToPreviousVersion({ id: activeItem.versionNumber })])
+        onOk: batchActions([closeConfirmDialog(), revertToPreviousVersion({ path, id: activeItem.versionNumber })])
       })
     );
   };

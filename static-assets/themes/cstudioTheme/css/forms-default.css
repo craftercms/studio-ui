@@ -74,6 +74,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 
 .cstudio-form-control-node-selector-item .actions-container {
   min-width: 51px;
+  text-align: right;
 }
 
 .cstudio-form-control-video-selector-item {
@@ -183,6 +184,23 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   background: none repeat scroll 0 0 #f0f0f0;
   color: black;
   cursor: pointer;
+}
+
+.cstudio-form-control-node-selector-add-container-item-block-label {
+  padding: 5px 10px;
+  font-weight: 600;
+  display: inline-block;
+  color: #666;
+}
+
+.cstudio-form-control-node-selector-add-container-item-block-divider {
+  display: none;
+}
+
+.cstudio-form-control-node-selector-add-container-item-block-divider:not(:last-child) {
+  display: list-item;
+  border-top: 1px solid #eee;
+  margin: 10px 0;
 }
 
 .cstudio-form-control-button {

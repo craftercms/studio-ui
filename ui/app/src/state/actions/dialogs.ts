@@ -49,6 +49,7 @@ import ContentInstance from '../../models/ContentInstance';
 import { ContentTypeFieldValidation, DetailedItem } from '../../models';
 import { RenameAssetStateProps } from '../../components/RenameAssetDialog';
 import { AjaxError } from 'rxjs/ajax';
+import { BrokenReferencesDialogStateProps } from '../../components/BrokenReferencesDialog/types';
 
 // region History
 export const showHistoryDialog = /*#__PURE__*/ createAction<Partial<HistoryDialogStateProps>>('SHOW_HISTORY_DIALOG');
@@ -154,7 +155,8 @@ export const showEditDialog = /*#__PURE__*/ createAction<LegacyFormDialogStatePr
 export const closeEditDialog = /*#__PURE__*/ createAction<StandardAction>('CLOSE_EDIT_DIALOG');
 export const editDialogClosed = /*#__PURE__*/ createAction<StandardAction>('EDIT_DIALOG_CLOSED');
 export const newContentCreationComplete = /*#__PURE__*/ createAction<StandardAction>('NEW_CONTENT_CREATION_COMPLETE');
-export const updateEditConfig = /*#__PURE__*/ createAction<any>('UPDATE_EDIT_CONFIG');
+export const updateEditDialogConfig =
+  /*#__PURE__*/ createAction<Partial<LegacyFormDialogStateProps>>('UPDATE_EDIT_DIALOG_CONFIG');
 // endregion
 
 // region Legacy Code Editor
@@ -302,4 +304,24 @@ export const showRtePickerActions = /*#__PURE__*/ createAction<ShowRtePickerActi
 export const rtePickerActionResult = /*#__PURE__*/ createAction<{ path: string; name: string }>(
   'RTE_PICKER_ACTION_RESULT'
 );
+// endregion
+
+// region BrokenReferences Cancellation
+
+export const showBrokenReferencesDialog = /*#__PURE__*/ createAction<Partial<BrokenReferencesDialogStateProps>>(
+  'SHOW_BROKEN_REFERENCES_DIALOG'
+);
+
+export const closeBrokenReferencesDialog = /*#__PURE__*/ createAction('CLOSE_BROKEN_REFERENCES_DIALOG');
+
+export const brokenReferencesDialogClosed = /*#__PURE__*/ createAction('BROKEN_REFERENCES_DIALOG_CLOSED');
+
+export const fetchBrokenReferences = /*#__PURE__*/ createAction('FETCH_BROKEN_REFERENCES');
+
+export const fetchBrokenReferencesFailed = /*#__PURE__*/ createAction<AjaxError>('FETCH_BROKEN_REFERENCES_FAILED');
+
+export const updateBrokenReferencesDialog = /*#__PURE__*/ createAction<Partial<BrokenReferencesDialogStateProps>>(
+  'UPDATE_BROKEN_REFERENCES_DIALOG'
+);
+
 // endregion

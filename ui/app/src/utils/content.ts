@@ -19,7 +19,7 @@ import { getStateMapFromLegacyItem } from './state';
 import { nnou, nou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
-import ContentInstance from '../models/ContentInstance';
+import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
@@ -76,6 +76,7 @@ import slugify from 'slugify';
 import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
+import { findParentModelId, getModelIdFromInheritedField, isInheritedField } from './model';
 
 export function isEditableAsset(path: string) {
   return (
@@ -359,11 +360,19 @@ const systemPropsList = [
   'lastModifiedDate_dt'
 ];
 
+/**
+ * doc {XMLDocument}
+ * path {string}
+ * contentTypesLookup {LookupTable<ContentType>}
+ * instanceLookup {LookupTable<ContentInstance>}
+ * unflattenedPaths {LookupTable<ContentInstance>} A lookup table directly completed/mutated by this function indexed by path of those objects that are incomplete/unflattened
+ */
 export function parseContentXML(
   doc: XMLDocument,
   path: string = null,
   contentTypesLookup: LookupTable<ContentType>,
-  instanceLookup: LookupTable<ContentInstance>
+  instanceLookup: LookupTable<ContentInstance>,
+  unflattenedPaths?: LookupTable<ContentInstance>
 ): ContentInstance {
   let id = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > objectId')) : null;
   if (id === null && !/^[a-f\d]{4}(?:[a-f\d]{4}-){4}[a-f\d]{12}$/i.test((id = fileNameFromPath(path)))) {
@@ -371,18 +380,22 @@ export function parseContentXML(
     id = null;
   }
   const contentTypeId = nnou(doc) ? getInnerHtml(doc.querySelector(':scope > content-type')) : null;
-  const current = {
+  const current: ContentInstanceBase = {
     craftercms: {
       id,
       path,
       label: null,
-      locale: null,
       dateCreated: null,
       dateModified: null,
-      contentTypeId: contentTypeId,
+      contentTypeId,
+      disabled: false,
       sourceMap: {}
     }
   };
+  // We're assuming that contentTypeId is null when the content is not flattened
+  if (contentTypeId === null && unflattenedPaths) {
+    unflattenedPaths[path] = current;
+  }
   if (nnou(doc)) {
     current.craftercms.label = getInnerHtml(
       doc.querySelector(':scope > internal-name') ?? doc.querySelector(':scope > file-name'),
@@ -391,7 +404,7 @@ export function parseContentXML(
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
   }
-  instanceLookup[id ?? path] = current;
+  id && (instanceLookup[id] = current);
   if (nnou(doc)) {
     Array.from(doc.documentElement.children).forEach((element: Element) => {
       const tagName = element.tagName;
@@ -424,18 +437,32 @@ export function parseContentXML(
             );
           }
         }
-        current[tagName] = parseElementByContentType(element, field, contentTypesLookup, instanceLookup);
+        current[tagName] = parseElementByContentType(
+          element,
+          field,
+          contentTypesLookup,
+          instanceLookup,
+          unflattenedPaths
+        );
       }
     });
   }
   return current;
 }
 
+/**
+ * element {Element}
+ * field {ContentTypeField}
+ * contentTypesLookup {LookupTable<ContentType>}
+ * instanceLookup {LookupTable<ContentInstance>}
+ * unflattenedPaths {LookupTable<ContentInstance>} A lookup table directly completed/mutated by this function indexed by path of those objects that are incomplete/unflattened
+ */
 function parseElementByContentType(
   element: Element,
   field: ContentTypeField,
   contentTypesLookup: LookupTable<ContentType>,
-  instanceLookup: LookupTable<ContentInstance>
+  instanceLookup: LookupTable<ContentInstance>,
+  unflattenedPaths?: LookupTable<ContentInstance>
 ) {
   if (!field) {
     return getInnerHtml(element) ?? '';
@@ -457,7 +484,8 @@ function parseElementByContentType(
             fieldTag,
             field.fields[fieldTagName],
             contentTypesLookup,
-            instanceLookup
+            instanceLookup,
+            unflattenedPaths
           );
         });
         array.push(repeatItem);
@@ -498,7 +526,8 @@ function parseElementByContentType(
                 component ? wrapElementInAuxDocument(component) : null,
                 path,
                 contentTypesLookup,
-                instanceLookup
+                instanceLookup,
+                unflattenedPaths
               );
               array.push(instance);
             }
@@ -521,25 +550,34 @@ function parseElementByContentType(
     case 'textarea':
       return getInnerHtml(element, { applyLegacyUnescaping: true });
     case 'image':
-    case 'dropdown':
     case 'date-time':
     case 'time':
       return getInnerHtml(element);
+    case 'dropdown':
+      if (field.id.endsWith('_i') || field.id.endsWith('_f')) {
+        return getInnerHtmlNumber(element, parseFloat);
+      } else {
+        return getInnerHtml(element);
+      }
     case 'boolean':
     case 'page-nav-order':
       return getInnerHtml(element) === 'true';
     case 'numeric-input':
       return getInnerHtmlNumber(element, parseFloat);
-    case 'transcoded-video-picker':
-    case 'taxonomy-selector':
-      return getInnerHtml(element);
     default:
-      console.log(
-        `%c[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
-        'color: blue',
-        element
-      );
-      return getInnerHtml(element);
+      !['transcoded-video', 'transcoded-video-picker', 'taxonomy-selector'].includes(type) &&
+        console.log(
+          `%c[parseElementByContentType] Missing type "${type}" on switch statement for field "${field.id}".`,
+          'color: blue',
+          element
+        );
+      try {
+        const extract: any = deserialize(element)?.[element.tagName] ?? '';
+        return extract.item ? (Array.isArray(extract.item) ? extract.item : [extract.item]) : extract;
+      } catch (e) {
+        console.error('[parseElementByContentType] Error deserializing element', element, e);
+        return getInnerHtml(element);
+      }
   }
 }
 
@@ -575,6 +613,8 @@ export const createModelHierarchyDescriptor: (
 });
 // endregion
 
+let contentTypeMissingWarningQueue = [];
+let contentTypeMissingWarningTimeout: NodeJS.Timeout;
 export function createModelHierarchyDescriptorMap(
   normalizedModels: LookupTable<ContentInstance>,
   contentTypes: LookupTable<ContentType>
@@ -585,11 +625,21 @@ export function createModelHierarchyDescriptorMap(
     contentTypes[contentTypeId]?.fields ? Object.values(contentTypes[contentTypeId]?.fields) : null;
   const cleanCarryOver = (carryOver: string) => carryOver.replace(/(^\.+)|(\.+$)/g, '').replace(/\.{2,}/g, '.');
   const contentTypeMissingWarning = (model: ContentInstance) => {
-    if (!contentTypes[model.craftercms.contentTypeId]) {
-      console.error(
-        `[createModelHierarchyDescriptorMap] Content type with id ${model.craftercms.contentTypeId} was not found. ` +
-          `Unable to fully process model at '${model.craftercms.path}' with id ${model.craftercms.id}`
+    // Show this warning only if the model has a content type id defined (not null),
+    // but it's not present in the content type lookup table.
+    if (model.craftercms.contentTypeId && !contentTypes[model.craftercms.contentTypeId]) {
+      contentTypeMissingWarningQueue.push(
+        `Content type with id "${model.craftercms.contentTypeId}" was not found. ` +
+          `Unable to fully process model at "${model.craftercms.path}" with id "${model.craftercms.id}"`
       );
+      clearTimeout(contentTypeMissingWarningTimeout);
+      contentTypeMissingWarningTimeout = setTimeout(() => {
+        console.log(
+          `%c[createModelHierarchyDescriptorMap]: \n- ${contentTypeMissingWarningQueue.join('\n- ')}`,
+          'color: #f00'
+        );
+        contentTypeMissingWarningQueue = [];
+      }, 200);
     }
   };
   // endregion
@@ -740,7 +790,7 @@ export function createChildModelLookup(
   return lookup;
 }
 
-export function normalizeModelsLookup(models: LookupTable<ContentInstance>) {
+export function normalizeModelsLookup(models: LookupTable<ContentInstance>): LookupTable<ContentInstance> {
   const lookup = {};
   Object.entries(models).forEach(([id, model]) => {
     lookup[id] = normalizeModel(model);
@@ -907,7 +957,7 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
 });
 
 export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {
-  return lookupTable[withoutIndex(path)] ?? lookupTable[withIndex(path)];
+  return lookupTable[withIndex(path)] ?? lookupTable[withoutIndex(path)];
 }
 
 export function modelsToLookup(models: ContentInstance[]): LookupTable<ContentInstance> {
@@ -1065,4 +1115,72 @@ export function generateComponentBasePath(contentType: string) {
 
 export function generateComponentPath(modelId: string, contentType: string) {
   return `${generateComponentBasePath(contentType)}/${modelId}.xml`;
+}
+
+/**
+ * If the field is inherited, swaps the modelId and parentModelId with
+ * the inheritance parent's. */
+export function getInheritanceParentIdsForField(
+  fieldId: string,
+  modelLookup: LookupTable<ContentInstance>,
+  modelId: string,
+  parentModelId: string,
+  modelIdByPath: LookupTable<string>,
+  hierarchyMap: ModelHierarchyMap
+): { modelId: string; parentModelId: string } {
+  const ids = { modelId, parentModelId };
+  if (isInheritedField(modelLookup[modelId], fieldId)) {
+    ids.modelId = getModelIdFromInheritedField(modelLookup[modelId], fieldId, modelIdByPath);
+    ids.parentModelId = findParentModelId(modelId, hierarchyMap, modelLookup);
+  }
+  return ids;
+}
+
+export interface GeneratePlaceholderImageDataUrlArgs {
+  width: number;
+  height: number;
+  fillStyle: string;
+  textFillStyle: string;
+  text: string;
+  textPositionX: number;
+  textPositionY: number;
+  font: string;
+  textAlign: CanvasTextAlign;
+  textBaseline: CanvasTextBaseline;
+}
+
+export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePlaceholderImageDataUrlArgs>): string {
+  let attrs: GeneratePlaceholderImageDataUrlArgs = Object.assign(
+    {
+      width: 300,
+      height: 150,
+      fillStyle: '#f0f0f0',
+      text: 'Sample Image',
+      textPositionX: 150,
+      textPositionY: 88.24,
+      textFillStyle: 'black',
+      font: '30px Arial',
+      textAlign: 'center',
+      textBaseline: 'middle'
+    },
+    attributes
+  );
+
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  canvas.width = attrs.width;
+  canvas.height = attrs.height;
+
+  // Set background color
+  context.fillStyle = attrs.fillStyle;
+  context.fillRect(0, 0, attrs.width, attrs.height);
+
+  // Render text
+  context.font = attrs.font;
+  context.fillStyle = attrs.textFillStyle;
+  context.textAlign = attrs.textAlign;
+  context.textBaseline = attrs.textBaseline;
+  context.fillText(attrs.text, attrs.textPositionX, attrs.textPositionY);
+
+  return canvas.toDataURL();
 }

@@ -145,7 +145,14 @@ export function initTinyMCE(
       const datasources = {};
       Object.values(field.validations).forEach((validation) => {
         if (
-          ['allowImageUpload', 'allowImagesFromRepo', 'allowVideoUpload', 'allowVideosFromRepo'].includes(validation.id)
+          [
+            'allowImageUpload',
+            'allowImagesFromRepo',
+            'allowVideoUpload',
+            'allowVideosFromRepo',
+            'allowAudioUpload',
+            'allowAudioFromRepo'
+          ].includes(validation.id)
         ) {
           datasources[validation.id] = validation;
         }
@@ -240,9 +247,15 @@ export function initTinyMCE(
       }
 
       function replaceLineBreaksIfApplicable(content: string) {
-        // Replace line breaks with <br> for textarea fields
-        // Address line breaks in textarea fields: https://github.com/craftercms/craftercms/issues/6432
-        type === 'textarea' && editor.setContent(content.replaceAll('\n', '<br>'), { format: 'html' });
+        if (type === 'textarea') {
+          // Replace line breaks with <br> for textarea fields
+          // Address line breaks in textarea fields: https://github.com/craftercms/craftercms/issues/6432
+          editor.setContent(content.replaceAll('\n', '<br>'), { format: 'html' });
+        } else if (type === 'html') {
+          // Set content in 'html' format for the editor to exec its internal cleanup mechanisms
+          // For example, removal of potentially problematic line breaks which we're seeing cause the list plugin to crash (https://github.com/craftercms/craftercms/issues/6514)
+          editor.setContent(content, { format: 'html' });
+        }
       }
 
       editor.on('init', function () {

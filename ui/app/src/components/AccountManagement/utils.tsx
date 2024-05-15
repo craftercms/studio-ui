@@ -17,7 +17,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import {
-  removeStoredBrowseDialogCompactMode,
+  removeStoredBrowseDialogViewMode,
   removeStoredClipboard,
   removeStoredEditModeChoice,
   removeStoredEditModePadding,
@@ -126,7 +126,7 @@ export const preferencesGroups: Array<{
       removeStoredOutdatedXBValidationDate(props.siteId, props.username);
       removeStoredClipboard(props.siteUuid, props.username);
       removeStoredPreviewBackgroundMode(props.username);
-      removeStoredBrowseDialogCompactMode(props.username);
+      removeStoredBrowseDialogViewMode(props.username);
     }
   }
 ];

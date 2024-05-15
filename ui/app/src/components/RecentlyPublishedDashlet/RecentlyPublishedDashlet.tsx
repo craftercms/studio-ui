@@ -219,10 +219,12 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
                 }
                 secondary={
                   <Typography color="text.secondary" variant="body2">
-                    <FormattedMessage
-                      id="recentlyPublishedDashlet.noSubmissionCommentAvailable"
-                      defaultMessage="Submission comment not provided"
-                    />
+                    {item.comment || (
+                      <FormattedMessage
+                        id="recentlyPublishedDashlet.noSubmissionCommentAvailable"
+                        defaultMessage="Submission comment not provided"
+                      />
+                    )}
                   </Typography>
                 }
               />

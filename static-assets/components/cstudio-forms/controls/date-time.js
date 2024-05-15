@@ -523,11 +523,11 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
     // parse the value using patterns and retrive the date with format
     if (this.timeEl) {
       let formattedValue;
-      if (!this.hour12) {
+      if (this.hour12 || this.timeEl.value.trim() === '') {
+        formattedValue = this.timeEl.value;
+      } else {
         const timeMomentObj = moment(this.timeEl.value, 'HH:mm:ss');
         formattedValue = timeMomentObj.format('hh:mm:ss a');
-      } else {
-        formattedValue = this.timeEl.value;
       }
 
       this.timeEl.dataset.value = formattedValue;
@@ -1152,11 +1152,15 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
         dateEl,
         'click',
         function (e) {
-          this.show();
-          if (calEl.getBoundingClientRect().top < 0) {
-            calEl.style.setProperty('top', '0px', 'important');
-          } else {
+          const isCalElVisible = calEl.style.display !== 'none';
+          // Avoid re-rendering the calendar if it's already visible
+          if (!isCalElVisible) {
+            // Re-set top style property for a proper re-positioning (e.g. if there was scrolling on the form)
             calEl.style.top = null;
+            this.show();
+            if (calEl.getBoundingClientRect().top < 0) {
+              calEl.style.setProperty('top', '0px', 'important');
+            }
           }
         },
         calendarComponent,

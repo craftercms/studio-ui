@@ -44,11 +44,23 @@
       }
     });
 
+    // On the type editor, the constructor arguments are gibberish. The `form`arg is nullish.
+    if (form?.definition?.datasources) {
+      craftercms.utils.array.asArray(form.definition.datasources).forEach((ds) => {
+        if (ds.id === id) {
+          this.title = ds.title;
+        }
+      });
+    }
+
     return this;
   }
 
   Components.prototype = {
     add: function (control) {
+      control.$dropdownMenu.append(
+        `<li><div class="cstudio-form-control-node-selector-add-container-item-block-label">${this.title}</div></li>`
+      );
       const self = this;
       if (this.contentTypes) {
         this.contentTypes.split(',').forEach((contentType) => {
@@ -70,7 +82,7 @@
           }
         });
       }
-      if (this.allowShared && this.enableSearch) {
+      if (this.enableSearch) {
         let message = formatMessage('searchExisting');
         $(control.$dropdownMenu).append(
           self._createOption(message, () => {
@@ -78,6 +90,9 @@
           })
         );
       }
+      control.$dropdownMenu.append(
+        `<li class="cstudio-form-control-node-selector-add-container-item-block-divider"></li>`
+      );
     },
 
     edit: function (key, control, index) {
@@ -106,14 +121,14 @@
     getSupportedProperties: function () {
       return [
         {
-          label: formatMessage('allowShared'),
-          name: 'allowShared',
+          label: formatMessage('allowEmbedded'),
+          name: 'allowEmbedded',
           type: 'boolean',
           defaultValue: 'true'
         },
         {
-          label: formatMessage('allowEmbedded'),
-          name: 'allowEmbedded',
+          label: formatMessage('allowShared'),
+          name: 'allowShared',
           type: 'boolean',
           defaultValue: 'true'
         },
@@ -121,15 +136,13 @@
           label: formatMessage('enableBrowse'),
           name: 'enableBrowse',
           type: 'boolean',
-          defaultValue: 'false',
-          dependsOn: 'allowShared'
+          defaultValue: 'true'
         },
         {
           label: formatMessage('enableSearch'),
           name: 'enableSearch',
           type: 'boolean',
-          defaultValue: 'false',
-          dependsOn: 'allowShared'
+          defaultValue: 'false'
         },
         {
           label: formatMessage('baseRepositoryPath'),
@@ -165,6 +178,10 @@
         contentTypes: [contentType],
         multiSelect,
         allowUpload: false,
+        initialParameters: {
+          sortBy: 'internalName',
+          sortOrder: 'asc'
+        },
         onSuccess: (result) => {
           (Array.isArray(result) ? result : [result]).forEach(({ name, path }) => {
             const value = name && name !== '' ? name : path;
@@ -176,7 +193,8 @@
     },
 
     _openSearch: function (control) {
-      const searchPath = craftercms.utils.string.ensureSingleSlash(`${this.baseBrowsePath}/.+`);
+      let searchPath = this._processPathsForMacros(this.baseBrowsePath);
+      searchPath = craftercms.utils.string.ensureSingleSlash(`${searchPath}/.+`);
       const searchContext = {
         path: searchPath,
         searchId: null,
@@ -316,19 +334,19 @@
       const self = this;
 
       if (self.allowEmbedded) {
-        let message = `${formatMessage('createNewEmbedded')} ${self._getContentTypeName(contentType)}`;
+        let message = `${formatMessage('createNewEmbedded')} "${self._getContentTypeName(contentType)}"`;
         let type = 'embedded';
         control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
       if (self.allowShared) {
-        let message = `${formatMessage('createNewShared')} ${self._getContentTypeName(contentType)}`;
+        let message = `${formatMessage('createNewShared')} "${self._getContentTypeName(contentType)}"`;
         let type = 'shared';
         control.$dropdownMenu.append(self._createOption(message, callback(type)));
       }
 
-      if (self.allowShared && self.enableBrowse) {
-        let message = `${formatMessage('browseExisting')} ${self._getContentTypeName(contentType)}`;
+      if (self.enableBrowse) {
+        let message = `${formatMessage('browseExisting')} "${self._getContentTypeName(contentType)}"`;
         control.$dropdownMenu.append(
           self._createOption(message, () => {
             self._openBrowse(contentType, control);

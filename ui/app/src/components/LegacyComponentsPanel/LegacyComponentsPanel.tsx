@@ -162,7 +162,9 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
       let fieldId = zonesKeys[0];
       let zone = zones[fieldId];
       const parentPath = compPath ?? guestPath;
-      const parentModelId = guest.modelIdByPath[parentPath];
+      const parentModelId = guest?.modelIdByPath[parentPath];
+      const model = guest?.models[parentModelId];
+      const parentContentTypeId = model?.craftercms.contentTypeId;
 
       if (isNew) {
         if (isNew === true) {
@@ -272,7 +274,8 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
                 index,
                 datasource,
                 contentTypesLookup,
-                parentModelId
+                parentModelId,
+                parentContentTypeId
               ).subscribe(() => {
                 dispatch(
                   showSystemNotification({
@@ -313,7 +316,8 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
             index,
             datasource,
             contentTypesLookup,
-            parentModelId
+            parentModelId,
+            parentContentTypeId
           ).subscribe(() => {
             dispatch(
               showSystemNotification({
@@ -357,7 +361,8 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
               index,
               datasource,
               contentTypesLookup,
-              parentModelId
+              parentModelId,
+              parentContentTypeId
             ).subscribe(() => {
               dispatch(
                 showSystemNotification({
@@ -418,7 +423,17 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
         // endregion
       }
     },
-    [authoringBase, contentTypesLookup, dispatch, formatMessage, guestPath, hostToGuest$, siteId, guest?.modelIdByPath]
+    [
+      authoringBase,
+      contentTypesLookup,
+      dispatch,
+      formatMessage,
+      guestPath,
+      hostToGuest$,
+      siteId,
+      guest?.modelIdByPath,
+      guest?.models
+    ]
   );
 
   useEffect(() => {

@@ -28,6 +28,7 @@ import {
   contentTypesResponse,
   deleteItemOperation,
   duplicateItemOperation,
+  fetchGuestModel,
   insertComponentOperation,
   insertItemOperation,
   moveItemOperation,
@@ -116,6 +117,10 @@ export function getCachedModels(): LookupTable<ContentInstance> {
   return models$.value;
 }
 
+export function getCachedModelsByPath(): LookupTable<string> {
+  return paths$.value;
+}
+
 export function getCachedSandboxItems(): LookupTable<SandboxItem> {
   return items$.value;
 }
@@ -197,7 +202,7 @@ export function fetchByPath(
   path: string
 ): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
   return of('nothing').pipe(
-    tap(() => post({ type: 'FETCH_GUEST_MODEL', payload: { path } })),
+    tap(() => post(fetchGuestModel({ path }))),
     switchMap(() =>
       fromTopic('FETCH_GUEST_MODEL_COMPLETE').pipe(
         map((e) => e?.payload),
@@ -403,7 +408,9 @@ export function createContentInstance(contentType: ContentType, path: string = n
       label: `New ${contentType.name}`,
       contentTypeId: contentType.id,
       dateCreated: now,
-      dateModified: now
+      dateModified: now,
+      disabled: false,
+      sourceMap: {}
     }
   };
   Object.entries(contentType.fields).forEach(([id, field]) => {
@@ -778,7 +785,15 @@ fromTopic('FETCH_GUEST_MODEL_COMPLETE')
           mhm[id] = hierarchyMap[id];
         }
       });
-      models$.next({ ...models$.value, ...modelLookup });
+      const nextModels: Record<string, ContentInstance> = { ...models$.value };
+      // Partial models (non-flattened references) can create instability.
+      // Take only those that seem complete and let the system fetch those that aren't.
+      Object.entries(modelLookup).forEach(([id, instance]) => {
+        if ((instance.craftercms.id || instance.craftercms.path) && instance.craftercms.contentTypeId) {
+          nextModels[id] = instance;
+        }
+      });
+      models$.next(nextModels);
       paths$.next({ ...paths$.value, ...modelIdByPath });
       items$.next({ ...items$.value, ...createLookupTable(sandboxItems, 'path') });
       permissions$.next(permissions);
