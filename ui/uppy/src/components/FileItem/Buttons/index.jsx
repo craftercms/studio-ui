@@ -124,7 +124,6 @@ export default function Buttons(props) {
     successfulUploadButton,
     validateFilesPolicy
   } = props;
-  console.log('props', props);
   const removeFileFn = () => removeFile(file.id, 'removed-by-user');
   return (
     <div className="uppy-Dashboard-Item-actionWrapper">
