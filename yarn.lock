@@ -5005,40 +5005,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@videojs/vhs-utils@npm:4.0.0":
-  version: 4.0.0
-  resolution: "@videojs/vhs-utils@npm:4.0.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    global: "npm:^4.4.0"
-    url-toolkit: "npm:^2.2.1"
-  checksum: 10/a6b4b78e9169c4b16a428926390af7421bf461ab13be00e30be031f36accb44da1a088d749bdd850e256a81ea212c3d73b5161ce13eda4aca82155bdd8cc600a
-  languageName: node
-  linkType: hard
-
-"@videojs/vhs-utils@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@videojs/vhs-utils@npm:2.3.0"
-  dependencies:
-    "@babel/runtime": "npm:^7.5.5"
-    global: "npm:^4.3.2"
-    url-toolkit: "npm:^2.1.6"
-  checksum: 10/86591d806da5a5b0192367f3893767272f8940b4392a0f31e37ae60703d24bccbe3ade393fcf150a545c12176a35e74415785145da0ab616e71ffb513682f7dd
-  languageName: node
-  linkType: hard
-
-"@videojs/vhs-utils@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "@videojs/vhs-utils@npm:3.0.5"
-  dependencies:
-    "@babel/runtime": "npm:^7.12.5"
-    global: "npm:^4.4.0"
-    url-toolkit: "npm:^2.2.1"
-  checksum: 10/da1dbbd75dc0f9971a9efb7301b886b08dd3eb9734f268cd5338dfd97a9a03d44a1d8103173193bbe0558a730858d5ff49a8e0bbee0415d976e63574081783e6
-  languageName: node
-  linkType: hard
-
-"@videojs/vhs-utils@npm:^4.0.0":
+"@videojs/vhs-utils@npm:^4.1.0":
   version: 4.1.0
   resolution: "@videojs/vhs-utils@npm:4.1.0"
   dependencies:
@@ -8958,7 +8925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"global@npm:4.4.0, global@npm:^4.3.1, global@npm:^4.3.2, global@npm:^4.4.0, global@npm:~4.4.0":
+"global@npm:4.4.0, global@npm:^4.3.1, global@npm:^4.4.0, global@npm:~4.4.0":
   version: 4.4.0
   resolution: "global@npm:4.4.0"
   dependencies:
@@ -16210,7 +16177,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"url-toolkit@npm:^2.1.6, url-toolkit@npm:^2.2.1":
+"url-toolkit@npm:^2.2.1":
   version: 2.2.3
   resolution: "url-toolkit@npm:2.2.3"
   checksum: 10/49eab0e18606af150619226a69410b5ca369a0e35547224ee754e6248cffeb67be1c8e81760383ddbc3ab6ae58175239989cf9854db0d9424db66b48a5e6ad27
