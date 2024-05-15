@@ -910,18 +910,11 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
 );
 
 const moveComponent = (dragContext) => {
-  let { dragged, dropZone, dropZones, targetIndex } = dragContext,
-    originDropZone = dropZones.find((dropZone) => dropZone.origin);
+  let { dragged, dropZone, dropZones } = dragContext;
+  let originDropZone = dropZones.find((dropZone) => dropZone.origin);
   const containerRecord = iceRegistry.getById(originDropZone.iceId);
-  const {
-    movedToSameZone,
-    movedToSamePosition,
-    draggedElementIndex,
-    targetIndex: newTargetIndex
-  } = getMoveComponentInfo(dragContext);
-  targetIndex = newTargetIndex;
-
-  // Determine whether the component is to be sorted or moved.
+  // Determine whether the component is being sorted or moved.
+  const { movedToSameZone, movedToSamePosition, draggedElementIndex, targetIndex } = getMoveComponentInfo(dragContext);
   if (movedToSameZone) {
     if (!movedToSamePosition) {
       setTimeout(() => {
@@ -946,7 +939,6 @@ const moveComponent = (dragContext) => {
     // Different drop zone: Move identified
 
     const rec = iceRegistry.getById(dropZone.iceId);
-
     // Chrome didn't trigger the dragend event
     // without the set timeout.
     setTimeout(() => {
