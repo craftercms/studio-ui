@@ -2302,7 +2302,8 @@
           function (e, el) {
             const invalidMacros = [
               { regex: /{objectId}/, macro: 'objectId' },
-              { regex: /{parentPath(\[[0-9]+])?}/, macro: 'parentPath' }
+              { regex: /{parentPath(\[.*])?}/, macro: 'parentPath' },
+              { regex: /{objectGroupId(2)?}/, macro: 'objectGroupId' }
             ];
             const newPath = el.value;
             const invalidMacrosInPath = [];
