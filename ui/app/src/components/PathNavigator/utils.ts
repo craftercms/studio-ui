@@ -37,17 +37,21 @@ export function isVideo(item: DetailedItem | SandboxItem): boolean {
   return item?.mimeType.startsWith('video/');
 }
 
+export function isAudio(item: DetailedItem | SandboxItem): boolean {
+  return item?.mimeType.startsWith('audio/');
+}
+
 export function isTextContent(mimeType: string): boolean {
   return (
     /^text\//.test(mimeType) ||
-    /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh|x-yaml|ld+json|x-csh)$/.test(
+    /^application\/(x-httpd-php|rtf|xhtml\+xml|xml|json|ld\+json|javascript|x-groovy|x-sh|x-yaml|ld+json|x-csh|x-subrip)$/.test(
       mimeType
     )
   );
 }
 
 export function isMediaContent(mimeType: string) {
-  return /^image\//.test(mimeType) || /^video\//.test(mimeType);
+  return /^image\//.test(mimeType) || /^video\//.test(mimeType) || /^audio\//.test(mimeType);
 }
 
 export function isPdfDocument(mimeType: string) {
