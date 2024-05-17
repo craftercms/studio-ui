@@ -181,12 +181,14 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   };
 
   const compareTo = (versionNumber: string) => {
+    console.log('compareTo', versionNumber);
     dispatch(
       batchActions([fetchContentTypes(), compareVersion({ id: versionNumber }), compareVersionDialogWithActions()])
     );
   };
 
   const compareBoth = (selected: string[]) => {
+    console.log('compareBoth', selected);
     dispatch(
       batchActions([
         fetchContentTypes(),
@@ -197,6 +199,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   };
 
   const compareToPrevious = (versionNumber: string) => {
+    console.log('compareToPrevious', versionNumber);
     dispatch(
       batchActions([
         fetchContentTypes(),
@@ -260,7 +263,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         break;
       }
       case 'compareToCurrent': {
-        compareBoth([activeItem.versionNumber, current]);
+        compareBoth([current, activeItem.versionNumber]);
         break;
       }
       case 'compareToPrevious': {
