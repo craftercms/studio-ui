@@ -12,6 +12,21 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   plugins: ['react-refresh'],
   rules: {
-    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }]
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    'prettier/prettier': ['error'],
+    'spaced-comment': [
+      'error',
+      'always',
+      {
+        line: {
+          markers: ['/', '#']
+        },
+        block: {
+          markers: ['!', '*', '#', 'function', 'const', 'if', 'export', 'interface', '#__PURE__', '@__PURE__'],
+          exceptions: ['!', '*', '#'],
+          balanced: false
+        }
+      }
+    ]
   }
 };
