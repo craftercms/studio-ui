@@ -1075,7 +1075,15 @@ export function applyAssetNameRules(name: string, options?: { allowBraces: boole
  * letter, number, dash or underscore.
  */
 export function applyContentNameRules(name: string): string {
-  return name.replace(/[^a-z0-9-_]/g, '');
+  return slugify(name, {
+    lower: true,
+    // Setting `strict: true` would disallow `_`, which we don't want.
+    strict: false,
+    // Because of the moment where the library trims, `trim: true` caused undesired replacement of `-`
+    // at the beginning or end of the slug.
+    trim: false
+  }).replace(/[^a-z0-9-_]/g, '');
+  // return slugify(name).replace(
 }
 
 export const openItemEditor = (
