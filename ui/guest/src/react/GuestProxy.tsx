@@ -17,7 +17,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext, useSelector } from './GuestContext';
 import * as ElementRegistry from '../elementRegistry';
-import { getParentElementFromICEProps, fieldHeirsMap, createFieldHeirsKey } from '../elementRegistry';
+import { getParentElementFromICEProps } from '../elementRegistry';
 import * as iceRegistry from '../iceRegistry';
 import $ from '../jquery';
 import {
@@ -381,6 +381,9 @@ export function GuestProxy() {
           spinner = spinner.firstChild as HTMLDivElement;
 
           const daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
+          // 'daddy' element contains the model of the item that inherits field. Retrieving the model for latter usage
+          // when rendering the new component.
+          const inheritedModelId = daddy.getAttribute('data-craftercms-model-id');
 
           // If daddy has children, get the closest  one to the one that is being added, and get its width to set it
           // to the spinner container.
@@ -423,14 +426,8 @@ export function GuestProxy() {
               ifrm.onload = function () {
                 spinner.remove();
                 let itemElement = ifrm.contentWindow.document.documentElement.querySelector(
-                  `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
+                  `[data-craftercms-model-id="${inheritedModelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
                 );
-                if (!itemElement) {
-                  const inheritedModelId = fieldHeirsMap[createFieldHeirsKey(modelId, fieldId)];
-                  itemElement = ifrm.contentWindow.document.documentElement.querySelector(
-                    `[data-craftercms-model-id="${inheritedModelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
-                  );
-                }
                 let component = document.createElement('div');
                 component.innerHTML = itemElement?.outerHTML;
                 component = component.firstChild as HTMLDivElement;

@@ -48,14 +48,6 @@ let db: LookupTable<ElementRecord> = {};
 // Lookup table of element record id arrays, indexed by iceId
 let registry: LookupTable<number[]> = {};
 
-// A map that contains the IDs of models that inherit an certain field from given inheritance parent model
-// { [`${inheritanceParentId}:${fieldId}`]: [inheritanceTargetId1, inheritanceTargetId2, etc] }
-export let fieldHeirsMap = {};
-
-export function createFieldHeirsKey(inheritanceParentId: string, fieldId: string): string {
-  return `${inheritanceParentId}:${fieldId}`;
-}
-
 export function get(id: number): ElementRecord {
   const record = db[id];
   record && nullOrUndefined(record.label) && setLabel(record);
@@ -163,7 +155,6 @@ export function register(payload: ElementRecordRegistration): number {
     if (isInheritedField(model.craftercms.id, fieldId)) {
       byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
         const sourceModelId = response.craftercms.id;
-        fieldHeirsMap[createFieldHeirsKey(sourceModelId, fieldId)] = modelId;
         model$(response.craftercms.id)
           .pipe(take(1))
           .subscribe(() => {
@@ -452,7 +443,6 @@ export function flush(): void {
   db = {};
   registry = {};
   iceRegistry.flush();
-  fieldHeirsMap = {};
 }
 
 export function getRegistry(): typeof db {
