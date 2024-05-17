@@ -41,11 +41,11 @@
     "@babel/plugin-transform-react-jsx": "^7.23.4",
     "@babel/preset-env": "^7.24.5",
     "@babel/preset-react": "^7.24.1",
-    "@types/babel__preset-env": "^7",
+    "@types/babel__preset-env": "^7.9.6",
     "@types/eslint": "^8.56.10",
     "babel-plugin-inline-package-json": "^2.0.0",
     "build-if-changed": "^1.5.5",
-    "eslint": "^8.57.0"
+    "eslint": "^9.2.0"
   },
   "peerDependencies": {
     "uppy": "^2.13.8"
