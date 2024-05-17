@@ -97,6 +97,7 @@
     "@craftercms/classes": "4.1.4",
     "@craftercms/content": "4.1.4",
     "@craftercms/ice": "4.1.4",
+    "@craftercms/npm-content": "workspace:^",
     "@craftercms/search": "4.1.4",
     "@craftercms/studio-ui": "workspace:^",
     "@emotion/css": "^11.11.2",

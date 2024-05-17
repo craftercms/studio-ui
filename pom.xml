@@ -96,94 +96,27 @@
         </configuration>
         <executions>
           <execution>
-            <id>UI build: Node and Yarn installation</id>
+            <id>[UI] Node and Yarn installation</id>
             <goals>
               <goal>install-node-and-yarn</goal>
             </goals>
             <phase>prepare-package</phase>
           </execution>
           <execution>
-            <id>UI build: Yarn install</id>
+            <id>[UI] Install dependencies</id>
             <goals>
               <goal>yarn</goal>
             </goals>
             <phase>prepare-package</phase>
           </execution>
           <execution>
-            <id>NPM content: build</id>
+            <id>[UI] Build</id>
             <goals>
               <goal>yarn</goal>
             </goals>
             <phase>prepare-package</phase>
             <configuration>
-              <workingDirectory>ui/npm-content</workingDirectory>
-              <arguments>build-if-changed</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>UI styles: Build sass styles</id>
-            <goals>
-              <goal>yarn</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <workingDirectory>ui/scss</workingDirectory>
-              <arguments>build-if-changed</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>Uppy Dashboard: build</id>
-            <goals>
-              <goal>yarn</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <workingDirectory>ui/uppy</workingDirectory>
-              <arguments>build-if-changed</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>UI next: build</id>
-            <goals>
-              <goal>yarn</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <workingDirectory>ui/app</workingDirectory>
-              <arguments>build-if-changed</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>UI legacy: build</id>
-            <goals>
-              <goal>yarn</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <workingDirectory>ui/legacy</workingDirectory>
-              <arguments>build-if-changed</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>UI guest prep: studio-ui package build</id>
-            <goals>
-              <goal>yarn</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <workingDirectory>ui/app</workingDirectory>
-              <arguments>build:tsc</arguments>
-            </configuration>
-          </execution>
-          <execution>
-            <id>UI guest: build</id>
-            <goals>
-              <goal>yarn</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <workingDirectory>ui/guest</workingDirectory>
-              <arguments>build-if-changed</arguments>
+              <arguments>build:all</arguments>
             </configuration>
           </execution>
         </executions>
