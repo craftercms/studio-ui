@@ -5,7 +5,7 @@
     "rootDir": "./src",
     "outDir": "./build_tsc",
     "module": "esnext",
-    "target": "es6",
+    "target": "ESNext",
     "importHelpers": true,
     "composite": true,
     "downlevelIteration": true,

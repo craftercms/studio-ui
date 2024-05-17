@@ -144,7 +144,7 @@ const initialState: GlobalState['preview'] = {
   highlightMode: 'all',
   hostSize: { width: null, height: null },
   toolsPanelPageStack: [],
-  showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
+  showToolsPanel: import.meta.env.VITE_SHOW_TOOLS_PANEL ? import.meta.env.VITE_SHOW_TOOLS_PANEL === 'true' : true,
   toolsPanelWidth: 240,
   icePanelWidth: 240,
   icePanelStack: [],

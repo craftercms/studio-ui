@@ -13,11 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React from 'react';
-import { createHashRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
-import PreviewComponent from '../components/Preview/Preview';
 
-export default function Preview() {
-  const router = createHashRouter(createRoutesFromElements(<Route path="/" element={<PreviewComponent />} />));
-  return <RouterProvider router={router} />;
+if (import.meta.env.MODE === 'production' || import.meta.env.VITE_MAIN === undefined) {
+  import('./main.prod');
+} else {
+  import(/* @vite-ignore */ import.meta.env.VITE_MAIN);
 }

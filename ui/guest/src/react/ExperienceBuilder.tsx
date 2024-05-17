@@ -222,7 +222,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   // Connect to shared worker & socket
   useEffect(() => {
     if (hasHost && authoringBase) {
-      const worker = new SharedWorker(`${authoringBase}/static-assets/next/shared-worker.js`, {
+      const worker = new SharedWorker(`${authoringBase}/static-assets/app/shared-worker.js`, {
         name: SHARED_WORKER_NAME,
         credentials: 'same-origin'
       });
