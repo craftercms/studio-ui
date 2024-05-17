@@ -65,7 +65,6 @@
     "@mui/x-data-grid": "^7.3.2",
     "@mui/x-date-pickers": "^7.3.2",
     "@mui/x-tree-view": "^7.3.1",
-    "@prettier/plugin-xml": "^3.4.1",
     "@reduxjs/toolkit": "^2.2.4",
     "@stomp/stompjs": "^7.0.0",
     "@types/ace": "^0.0.52",
@@ -112,6 +111,7 @@
   },
   "devDependencies": {
     "@formatjs/cli": "^6.2.10",
+    "@prettier/plugin-xml": "3.3.0",
     "@rollup/plugin-swc": "^0.3.0",
     "@types/js-cookie": "^3.0.6",
     "@types/react-infinite-scroller": "^1.2.5",
