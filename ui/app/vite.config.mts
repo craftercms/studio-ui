@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import reactSwc from '@vitejs/plugin-react-swc';
+// import reactSwc from '@vitejs/plugin-react-swc';
 import react from '@vitejs/plugin-react';
 
 const proxyConfig = {
@@ -12,22 +12,22 @@ const proxyConfig = {
 export default defineConfig(({ mode }) => ({
   base: mode === 'development' ? '/studio' : '/studio/static-assets/app',
   plugins: [
-    mode === 'development'
-      ? react({
-          babel: {
-            plugins: [
-              [
-                'formatjs',
-                {
-                  removeDefaultMessage: false,
-                  idInterpolationPattern: '[sha512:contenthash:base64:6]',
-                  ast: true
-                }
-              ]
-            ]
-          }
-        })
-      : reactSwc()
+    // TODO: SWC is faster, but can't use the formatjs transformer with it.
+    // mode === 'development' ? react({ ... }) : reactSwc()
+    react({
+      babel: {
+        plugins: [
+          [
+            'formatjs',
+            {
+              removeDefaultMessage: false,
+              idInterpolationPattern: '[sha512:contenthash:base64:6]',
+              ast: true
+            }
+          ]
+        ]
+      }
+    })
   ],
   server: {
     port: 3000,
