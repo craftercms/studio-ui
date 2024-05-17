@@ -17,7 +17,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext, useSelector } from './GuestContext';
 import * as ElementRegistry from '../elementRegistry';
-import { getParentElementFromICEProps, inheritorsModelIdsMap } from '../elementRegistry';
+import { getParentElementFromICEProps, fieldHeirsMap, createFieldHeirsKey } from '../elementRegistry';
 import * as iceRegistry from '../iceRegistry';
 import $ from '../jquery';
 import {
@@ -426,7 +426,7 @@ export function GuestProxy() {
                   `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
                 );
                 if (!itemElement) {
-                  const inheritedModelId = inheritorsModelIdsMap[`${modelId}-${fieldId}`];
+                  const inheritedModelId = fieldHeirsMap[createFieldHeirsKey(modelId, fieldId)];
                   itemElement = ifrm.contentWindow.document.documentElement.querySelector(
                     `[data-craftercms-model-id="${inheritedModelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
                   );
