@@ -1083,7 +1083,6 @@ export function applyContentNameRules(name: string): string {
     // at the beginning or end of the slug.
     trim: false
   }).replace(/[^a-z0-9-_]/g, '');
-  // return slugify(name).replace(
 }
 
 export const openItemEditor = (
