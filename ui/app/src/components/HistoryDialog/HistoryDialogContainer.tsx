@@ -188,7 +188,6 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   };
 
   const compareBoth = (selected: string[]) => {
-    console.log('compareBoth', selected);
     dispatch(
       batchActions([
         fetchContentTypes(),
