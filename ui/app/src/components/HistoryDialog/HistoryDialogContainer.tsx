@@ -181,7 +181,6 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   };
 
   const compareTo = (versionNumber: string) => {
-    console.log('compareTo', versionNumber);
     dispatch(
       batchActions([fetchContentTypes(), compareVersion({ id: versionNumber }), compareVersionDialogWithActions()])
     );
@@ -198,7 +197,6 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   };
 
   const compareToPrevious = (versionNumber: string) => {
-    console.log('compareToPrevious', versionNumber);
     dispatch(
       batchActions([
         fetchContentTypes(),
