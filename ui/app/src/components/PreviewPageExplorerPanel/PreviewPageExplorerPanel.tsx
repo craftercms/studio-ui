@@ -54,7 +54,6 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewGuest } from '../../hooks/usePreviewGuest';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useUnmount } from '../../hooks/useUnmount';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { SimpleTreeView } from '@mui/x-tree-view';
@@ -714,17 +713,6 @@ export function PreviewPageExplorerPanel() {
   const handleSearchKeyword = (keyword) => {
     setKeyword(keyword);
   };
-
-  const resource = useLogicResource<boolean, any>(
-    { models, byId: ContentTypesById },
-    {
-      shouldResolve: (source) => Boolean(source.models && source.byId),
-      shouldReject: () => false,
-      shouldRenew: () => !Object.keys(processedModels.current).length && resource.complete,
-      resultSelector: () => true,
-      errorSelector: null
-    }
-  );
 
   useUnmount(onBack);
 
