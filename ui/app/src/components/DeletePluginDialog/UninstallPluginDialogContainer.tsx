@@ -17,7 +17,7 @@
 import * as React from 'react';
 import { UninstallPluginDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createResource } from '../../utils/resource';
 import { uninstallMarketplacePlugin, fetchMarketplacePluginUsage } from '../../services/marketplace';
 import Suspencified from '../Suspencified/Suspencified';
@@ -25,12 +25,38 @@ import { UninstallPluginDialogBody } from './UninstallPluginDialogBody';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import useSpreadState from '../../hooks/useSpreadState';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
 
 export function UninstallPluginDialogContainer(props: UninstallPluginDialogContainerProps) {
   const { onClose, pluginId, onComplete, isSubmitting, onSubmittingAndOrPendingChange } = props;
   const site = useActiveSiteId();
   const dispatch = useDispatch();
   const callbacksRef = useUpdateRefs({ onSubmittingAndOrPendingChange });
+  const [{ data, isFetching, error }, setState] = useSpreadState({
+    data: null,
+    isFetching: false,
+    error: null
+  });
+
+  useEffect(() => {
+    setState({ isFetching: true });
+    fetchMarketplacePluginUsage(site, pluginId).subscribe({
+      next(response) {
+        setState({
+          data: response,
+          isFetching: false
+        });
+      },
+      error: ({ response: { response } }) => {
+        setState({
+          error: response,
+          isFetching: false
+        });
+      }
+    });
+  }, [site, pluginId, setState]);
 
   const resource = useMemo(() => {
     return createResource(() => fetchMarketplacePluginUsage(site, pluginId).toPromise());
@@ -59,15 +85,17 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return (
-    <Suspencified loadingStateProps={{ styles: { root: { width: 300, height: 250 } } }}>
-      <UninstallPluginDialogBody
-        isSubmitting={isSubmitting}
-        onCloseButtonClick={onCloseButtonClick}
-        pluginId={pluginId}
-        resource={resource}
-        onSubmit={() => onSubmit(pluginId)}
-      />
-    </Suspencified>
-  );
+  return error ? (
+    <ApiResponseErrorState error={error} />
+  ) : isFetching ? (
+    <LoadingState styles={{ root: { width: 300, height: 250 } }} />
+  ) : data ? (
+    <UninstallPluginDialogBody
+      isSubmitting={isSubmitting}
+      onCloseButtonClick={onCloseButtonClick}
+      pluginId={pluginId}
+      data={data}
+      onSubmit={() => onSubmit(pluginId)}
+    />
+  ) : null;
 }

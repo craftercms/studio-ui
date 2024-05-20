@@ -36,7 +36,7 @@ export interface UninstallPluginDialogContainerProps
 export interface UninstallPluginDialogBodyProps {
   isSubmitting: boolean;
   pluginId: string;
-  resource: Resource<SandboxItem[]>;
+  data: SandboxItem[];
   password?: string;
   sx?: UninstallPluginDialogBodyPartialSx;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;

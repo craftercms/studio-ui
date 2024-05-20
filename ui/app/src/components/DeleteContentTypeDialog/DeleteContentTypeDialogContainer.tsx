@@ -101,21 +101,17 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return (
-    <>
-      {error ? (
-        <ApiResponseErrorState error={error} />
-      ) : isFetching ? (
-        <LoadingState styles={{ root: { width: 300, height: 250 } }} />
-      ) : data ? (
-        <DeleteContentTypeDialogBody
-          submitting={isSubmitting}
-          onCloseButtonClick={onCloseButtonClick}
-          data={data}
-          contentType={contentType}
-          onSubmit={onSubmit}
-        />
-      ) : null}
-    </>
-  );
+  return error ? (
+    <ApiResponseErrorState error={error} />
+  ) : isFetching ? (
+    <LoadingState styles={{ root: { width: 300, height: 250 } }} />
+  ) : data ? (
+    <DeleteContentTypeDialogBody
+      submitting={isSubmitting}
+      onCloseButtonClick={onCloseButtonClick}
+      data={data}
+      contentType={contentType}
+      onSubmit={onSubmit}
+    />
+  ) : null;
 }
