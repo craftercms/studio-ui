@@ -101,6 +101,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       const selectedADate = new Date(versionsBranch.byId[selected[0]].modifiedDate);
       const selectedBDate = new Date(version.modifiedDate);
 
+      // When comparing versions, we want to show what the new version did to the old. For that, we check for the most
+      // recent version and add it first in the list of versions to compare.
       dispatch(
         compareBothVersions({
           versions:
