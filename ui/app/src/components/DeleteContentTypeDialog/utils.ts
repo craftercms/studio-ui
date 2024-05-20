@@ -36,7 +36,7 @@ export interface DeleteContentTypeDialogContainerProps
 export interface DeleteContentTypeDialogBodyProps {
   submitting: boolean;
   contentType: ContentType;
-  resource: Resource<FetchContentTypeUsageResponse>;
+  data: FetchContentTypeUsageResponse;
   password?: string;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onSubmit(): void;
