@@ -101,7 +101,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
             itemExists ? (
               <FormattedMessage defaultMessage="An item with that name already exists." />
             ) : (
-              <FormattedMessage defaultMessage="Consisting of letters, numbers, dash (-) and underscore (_)." />
+              <FormattedMessage defaultMessage="Consisting of lowercase letters without accents, numbers, dash (-) and underscore (_)." />
             )
           }
         />
