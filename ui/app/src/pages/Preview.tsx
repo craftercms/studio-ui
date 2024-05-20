@@ -14,14 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from 'react';
-import { createHashRouter, createRoutesFromElements, Route, RouterProvider, useParams } from 'react-router-dom';
+import { createHashRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import PreviewComponent from '../components/Preview/Preview';
 
-export default function Preview(topProps: any) {
-  const params = useParams();
-  const router = createHashRouter(
-    createRoutesFromElements(<Route path="/" element={<PreviewComponent {...topProps} {...params} />} />)
-  );
-
+export default function Preview() {
+  const router = createHashRouter(createRoutesFromElements(<Route path="/" element={<PreviewComponent />} />));
   return <RouterProvider router={router} />;
 }

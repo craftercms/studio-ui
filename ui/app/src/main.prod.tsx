@@ -14,6 +14,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './components';
+import React, { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import CrafterCMSNextBridge from './components/CrafterCMSNextBridge';
+import Global from './pages/Global';
 
-export * from './models';
+interface FreemarkerData {
+  passwordRequirementsMinComplexity: number;
+  footerHtml: string;
+}
+
+const json = document.getElementById('bootData').innerHTML;
+const props: FreemarkerData = JSON.parse(json);
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <CrafterCMSNextBridge>
+      <Global {...props} />
+    </CrafterCMSNextBridge>
+  </StrictMode>
+);

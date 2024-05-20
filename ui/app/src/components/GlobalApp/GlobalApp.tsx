@@ -44,24 +44,21 @@ import Skeleton from '@mui/material/Skeleton';
 import { globalMenuMessages } from '../../env/i18n-legacy';
 import { GlobalRoutes } from '../../env/routes';
 
-const routeWrapper = (module) => {
-  module.Component = module.default;
-  return module;
-};
+const routeWrapper = (module) => ({ ...module, Component: module.default });
 
 // Site management loaded normally above as it is usually where people first land.
-const UserManagement = lazy(() => import('../UserManagement'));
+const UserManagement = lazy(() => import('../UserManagement/UserManagement'));
 const GroupManagement = () => import('../GroupManagement/GroupManagement').then(routeWrapper);
-const AuditManagement = () => import('../AuditManagement').then(routeWrapper);
-const LogLevelManagement = () => import('../LogLevelManagement').then(routeWrapper);
-const LogConsole = () => import('../LogConsole').then(routeWrapper);
-const GlobalConfigManagement = () => import('../GlobalConfigManagement').then(routeWrapper);
-const EncryptTool = () => import('../EncryptTool').then(routeWrapper);
-const TokenManagement = () => import('../TokenManagement').then(routeWrapper);
-const AboutCrafterCMSView = () => import('../AboutCrafterCMSView').then(routeWrapper);
-const AccountManagement = lazy(() => import('../AccountManagement'));
+const AuditManagement = () => import('../AuditManagement/AuditManagement').then(routeWrapper);
+const LogLevelManagement = () => import('../LogLevelManagement/LogLevelManagement').then(routeWrapper);
+const LogConsole = () => import('../LogConsole/LogConsole').then(routeWrapper);
+const GlobalConfigManagement = () => import('../GlobalConfigManagement/GlobalConfigManagement').then(routeWrapper);
+const EncryptTool = () => import('../EncryptTool/EncryptTool').then(routeWrapper);
+const TokenManagement = () => import('../TokenManagement/TokenManagement').then(routeWrapper);
+const AboutCrafterCMSView = () => import('../AboutCrafterCMSView/AboutCrafterCMSView').then(routeWrapper);
+const AccountManagement = lazy(() => import('../AccountManagement/AccountManagement'));
 
-interface GlobalAppProps {
+export interface GlobalAppProps {
   passwordRequirementsMinComplexity: number;
   footerHtml: string;
 }

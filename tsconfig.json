@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": ".",
-    "target": "es6",
+    "target": "es2022",
     "lib": [
       "dom",
       "dom.iterable",

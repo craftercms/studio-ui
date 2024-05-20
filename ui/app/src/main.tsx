@@ -14,6 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './components';
-
-export * from './models';
+if (import.meta.env.MODE === 'production' || import.meta.env.VITE_MAIN === undefined) {
+  import('./main.prod');
+} else {
+  import(/* @vite-ignore */ import.meta.env.VITE_MAIN);
+}
