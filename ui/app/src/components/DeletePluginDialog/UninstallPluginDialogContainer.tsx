@@ -15,12 +15,10 @@
  */
 
 import * as React from 'react';
+import { useEffect } from 'react';
 import { UninstallPluginDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useEffect, useMemo } from 'react';
-import { createResource } from '../../utils/resource';
-import { uninstallMarketplacePlugin, fetchMarketplacePluginUsage } from '../../services/marketplace';
-import Suspencified from '../Suspencified/Suspencified';
+import { fetchMarketplacePluginUsage, uninstallMarketplacePlugin } from '../../services/marketplace';
 import { UninstallPluginDialogBody } from './UninstallPluginDialogBody';
 import { useDispatch } from 'react-redux';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -57,10 +55,6 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
       }
     });
   }, [site, pluginId, setState]);
-
-  const resource = useMemo(() => {
-    return createResource(() => fetchMarketplacePluginUsage(site, pluginId).toPromise());
-  }, [site, pluginId]);
 
   const onSubmit = (id: string) => {
     onSubmittingAndOrPendingChange({

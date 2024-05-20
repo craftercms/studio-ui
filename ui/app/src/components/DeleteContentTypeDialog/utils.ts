@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import ContentType from '../../models/ContentType';
-import { Resource } from '../../models/Resource';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import React from 'react';

@@ -16,7 +16,6 @@
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
-import { Resource } from '../../models/Resource';
 import { SandboxItem } from '../../models/Item';
 import { FullSxRecord, PartialSxRecord } from '../../models/CustomRecord';
 
