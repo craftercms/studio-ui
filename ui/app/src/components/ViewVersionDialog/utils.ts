@@ -20,18 +20,16 @@ import { DialogHeaderStateAction } from '../DialogHeader';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
-import { LookupTable } from '../../models/LookupTable';
-import { Resource } from '../../models/Resource';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface VersionViewProps {
-  resource: Resource<VersionResource>;
-}
-
-export interface VersionResource {
-  version: any;
-  contentTypes: LookupTable<ContentType>;
+  version: {
+    content: string;
+    path: string;
+    site: string;
+    versionNumber: string;
+  };
 }
 
 export interface ViewVersionDialogBaseProps {
