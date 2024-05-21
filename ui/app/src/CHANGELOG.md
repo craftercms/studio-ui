@@ -36,6 +36,8 @@
 * [hooks]
   * `usePreviewUrlControl`: Removed `history` prop. Retrieval of search and navigate (previously called 'push') is now done internally.
 * Removed deprecated `aws-file-upload` and `aws-video` upload controls.
+* Removed `PreviewPageExplorerPanel` component.
+* Removed `pages/QuickCreateMenu` component.
 
 ## 4.1.5
 * [common-api.js]
