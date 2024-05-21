@@ -16,13 +16,10 @@
 
 import { CompareVersionsDialogContainerProps } from './utils';
 import { FormattedMessage } from 'react-intl';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import { CompareVersionsBranch, ItemHistoryEntry } from '../../models/Version';
-import { CompareVersions, CompareVersionsResource } from './CompareVersions';
-import { EntityState } from '../../models/EntityState';
-import ContentType from '../../models/ContentType';
+import { ItemHistoryEntry } from '../../models/Version';
+import { CompareVersions } from './CompareVersions';
 import {
   compareBothVersions,
   compareVersion,
@@ -32,7 +29,6 @@ import {
 import VersionList from '../VersionList';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleItemSelector from '../SingleItemSelector';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import EmptyState from '../EmptyState/EmptyState';
 import Typography from '@mui/material/Typography';
 import DialogFooter from '../DialogFooter/DialogFooter';
@@ -40,6 +36,7 @@ import { HistoryDialogPagination } from '../HistoryDialog';
 import { makeStyles } from 'tss-react/mui';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { LoadingState } from '../LoadingState';
+import ApiResponseErrorState from '../ApiResponseErrorState';
 
 const useStyles = makeStyles()(() => ({
   dialogBody: {
@@ -58,41 +55,12 @@ const useStyles = makeStyles()(() => ({
 }));
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
-  const { selectedA, selectedB, versionsBranch, disableItemSwitching = false, contentTypesBranch } = props;
+  const { selectedA, selectedB, versionsBranch, disableItemSwitching = false } = props;
   const { count, page, limit, selected, compareVersionsBranch, current, item, rootPath } = versionsBranch;
   const { classes, cx } = useStyles();
   const [openSelector, setOpenSelector] = useState(false);
   const dispatch = useDispatch();
   const compareMode = selectedA && selectedB;
-
-  const compareVersionsData = useMemo(
-    () => ({
-      compareVersionsBranch,
-      contentTypesBranch
-    }),
-    [compareVersionsBranch, contentTypesBranch]
-  );
-
-  const compareVersionsResource = useLogicResource<
-    CompareVersionsResource,
-    { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }
-  >(compareVersionsData, {
-    shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
-      compareVersionsBranch.compareVersions &&
-      contentTypesBranch.byId &&
-      !compareVersionsBranch.isFetching &&
-      !contentTypesBranch.isFetching,
-    shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
-      Boolean(compareVersionsBranch.error || contentTypesBranch.error),
-    shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) => resource.complete,
-    resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
-      a: compareVersionsBranch.compareVersions?.[0],
-      b: compareVersionsBranch.compareVersions?.[1],
-      contentTypes: contentTypesBranch.byId
-    }),
-    errorSelector: ({ compareVersionsBranch, contentTypesBranch }) =>
-      compareVersionsBranch.error || contentTypesBranch.error
-  });
 
   const handleItemClick = (version: ItemHistoryEntry) => {
     if (!selected[0]) {
@@ -128,9 +96,17 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
           />
         )}
         {compareMode ? (
-          <SuspenseWithEmptyState resource={compareVersionsResource}>
-            <CompareVersions resource={compareVersionsResource} />
-          </SuspenseWithEmptyState>
+          compareVersionsBranch ? (
+            compareVersionsBranch.error ? (
+              <ApiResponseErrorState error={compareVersionsBranch.error} />
+            ) : compareVersionsBranch.isFetching ? (
+              <LoadingState />
+            ) : compareVersionsBranch.compareVersions?.length > 0 ? (
+              <CompareVersions versions={compareVersionsBranch.compareVersions} />
+            ) : (
+              <EmptyState title={<FormattedMessage defaultMessage="No versions found" />} />
+            )
+          ) : null
         ) : item ? (
           <ErrorBoundary>
             {versionsBranch.isFetching ? (
