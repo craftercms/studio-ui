@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
@@ -741,20 +741,22 @@ export function PreviewPageExplorerPanel() {
           <Divider className={classes.divider} />
         </div>
         {models && ContentTypesById ? (
-          <PageExplorerUI
-            handleBreadCrumbClick={handleBreadCrumbClick}
-            handleClick={handleClick}
-            handleClose={handleClose}
-            handleScroll={handleScroll}
-            optionsMenu={optionsMenu}
-            rootPrefix={rootPrefix}
-            handleOptions={handleOptions}
-            keyword={keyword}
-            nodeLookup={nodeLookup}
-            selected={state.selected}
-            breadcrumbs={state.breadcrumbs}
-            rootChildren={Object.keys(processedModels.current)}
-          />
+          <Suspense fallback="">
+            <PageExplorerUI
+              handleBreadCrumbClick={handleBreadCrumbClick}
+              handleClick={handleClick}
+              handleClose={handleClose}
+              handleScroll={handleScroll}
+              optionsMenu={optionsMenu}
+              rootPrefix={rootPrefix}
+              handleOptions={handleOptions}
+              keyword={keyword}
+              nodeLookup={nodeLookup}
+              selected={state.selected}
+              breadcrumbs={state.breadcrumbs}
+              rootChildren={Object.keys(processedModels.current)}
+            />
+          </Suspense>
         ) : (
           <LoadingState title={formatMessage(translations.loading)} />
         )}

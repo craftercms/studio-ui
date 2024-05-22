@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { LegacyContentType } from '../../models/ContentType';
 import translations from './translations';
 import { withoutIndex } from '../../utils/path';
@@ -157,11 +157,13 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
           <ContentTypesLoader isCompact={isCompact} />
         ) : filteredContentTypes ? (
           filteredContentTypes.length > 0 ? (
-            <ContentTypesGrid
-              contentTypes={filteredContentTypes}
-              isCompact={isCompact}
-              onTypeOpen={onSelectedContentType}
-            />
+            <Suspense fallback="">
+              <ContentTypesGrid
+                contentTypes={filteredContentTypes}
+                isCompact={isCompact}
+                onTypeOpen={onSelectedContentType}
+              />
+            </Suspense>
           ) : (
             <EmptyState
               title={

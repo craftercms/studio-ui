@@ -16,7 +16,7 @@
 
 import { CompareVersionsDialogContainerProps } from './utils';
 import { FormattedMessage } from 'react-intl';
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { ItemHistoryEntry } from '../../models/Version';
 import { CompareVersions } from './CompareVersions';
@@ -112,7 +112,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
             ) : compareVersionsBranch.isFetching ? (
               <LoadingState />
             ) : compareVersionsBranch.compareVersions?.length > 0 ? (
-              <CompareVersions versions={compareVersionsBranch.compareVersions} />
+              <Suspense fallback="">
+                <CompareVersions versions={compareVersionsBranch.compareVersions} />
+              </Suspense>
             ) : (
               <EmptyState title={<FormattedMessage defaultMessage="No versions found" />} />
             )

@@ -17,7 +17,7 @@
 import { ChangeContentTypeDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { LegacyContentType } from '../../models/ContentType';
 import { fetchLegacyContentTypes } from '../../services/contentTypes';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -133,12 +133,14 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
           <ContentTypesLoader numOfItems={6} isCompact={isCompact} />
         ) : filteredContentTypes ? (
           filteredContentTypes.length > 0 ? (
-            <ContentTypesGrid
-              contentTypes={filteredContentTypes}
-              isCompact={isCompact}
-              onTypeOpen={onSelectedContentType}
-              selectedContentType={selectedContentType}
-            />
+            <Suspense fallback="">
+              <ContentTypesGrid
+                contentTypes={filteredContentTypes}
+                isCompact={isCompact}
+                onTypeOpen={onSelectedContentType}
+                selectedContentType={selectedContentType}
+              />
+            </Suspense>
           ) : (
             <EmptyState
               title={

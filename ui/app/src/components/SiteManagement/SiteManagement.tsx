@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
 import SkeletonSitesGrid from '../SitesGrid/SitesGridSkeleton';
@@ -214,16 +214,18 @@ export function SiteManagement() {
           <SkeletonSitesGrid numOfItems={3} currentView={currentView} />
         ) : sitesList ? (
           sitesList.length > 0 ? (
-            <SitesGrid
-              sites={sitesList}
-              onSiteClick={onSiteClick}
-              onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
-              onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
-              currentView={currentView}
-              onPublishButtonClick={onPublishButtonClick}
-              onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
-              disabledSitesLookup={disabledSitesLookup}
-            />
+            <Suspense fallback="">
+              <SitesGrid
+                sites={sitesList}
+                onSiteClick={onSiteClick}
+                onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
+                onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
+                currentView={currentView}
+                onPublishButtonClick={onPublishButtonClick}
+                onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
+                disabledSitesLookup={disabledSitesLookup}
+              />
+            </Suspense>
           ) : (
             <EmptyState
               title={<FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />}

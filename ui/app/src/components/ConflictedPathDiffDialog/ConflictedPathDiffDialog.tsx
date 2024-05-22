@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogHeader from '../DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
@@ -137,7 +137,9 @@ export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProp
         ) : fetching ? (
           <LoadingState />
         ) : fileDiff ? (
-          <ConflictedPathDiffDialogUI fileDiff={fileDiff} tab={tab} />
+          <Suspense fallback="">
+            <ConflictedPathDiffDialogUI fileDiff={fileDiff} tab={tab} />
+          </Suspense>
         ) : null}
       </DialogBody>
       <DialogFooter>

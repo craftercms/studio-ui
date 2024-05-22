@@ -16,7 +16,7 @@
 
 import { ViewVersionDialogContainerProps } from './utils';
 import DialogBody from '../DialogBody/DialogBody';
-import React from 'react';
+import React, { Suspense } from 'react';
 import LegacyVersionDialog from './LegacyVersionDialog';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
@@ -31,7 +31,9 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
       ) : isFetching ? (
         <LoadingState />
       ) : version ? (
-        <LegacyVersionDialog version={version} />
+        <Suspense fallback="">
+          <LegacyVersionDialog version={version} />
+        </Suspense>
       ) : null}
     </DialogBody>
   );

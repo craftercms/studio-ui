@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { UninstallPluginDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { fetchMarketplacePluginUsage, uninstallMarketplacePlugin } from '../../services/marketplace';
@@ -84,12 +84,14 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
   ) : isFetching ? (
     <LoadingState styles={{ root: { width: 300, height: 250 } }} />
   ) : data ? (
-    <UninstallPluginDialogBody
-      isSubmitting={isSubmitting}
-      onCloseButtonClick={onCloseButtonClick}
-      pluginId={pluginId}
-      data={data}
-      onSubmit={() => onSubmit(pluginId)}
-    />
+    <Suspense fallback="">
+      <UninstallPluginDialogBody
+        isSubmitting={isSubmitting}
+        onCloseButtonClick={onCloseButtonClick}
+        pluginId={pluginId}
+        data={data}
+        onSubmit={() => onSubmit(pluginId)}
+      />
+    </Suspense>
   ) : null;
 }

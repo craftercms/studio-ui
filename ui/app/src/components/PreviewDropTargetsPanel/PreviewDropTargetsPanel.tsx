@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { makeStyles } from 'tss-react/mui';
@@ -140,7 +140,9 @@ export function PreviewDropTargetsPanel() {
           <LoadingState />
         ) : filteredDropTargets ? (
           filteredDropTargets.length > 0 ? (
-            <DropTargetsList dropTargets={filteredDropTargets} onSelectedDropZone={onSelectedDropZone} />
+            <Suspense fallback="">
+              <DropTargetsList dropTargets={filteredDropTargets} onSelectedDropZone={onSelectedDropZone} />
+            </Suspense>
           ) : (
             <EmptyState
               title={

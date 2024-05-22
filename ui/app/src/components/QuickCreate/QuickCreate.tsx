@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { forwardRef, Suspense, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddRounded';
@@ -173,12 +173,14 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         ) : isFetching ? (
           <LoadingState classes={{ graphic: classes.quickCreateLoadingState }} />
         ) : quickCreateItems && systemVersion ? (
-          <QuickCreateSection
-            classes={classes}
-            version={systemVersion}
-            quickCreateItems={quickCreateItems}
-            onItemSelected={onFormDisplay}
-          />
+          <Suspense fallback="">
+            <QuickCreateSection
+              classes={classes}
+              version={systemVersion}
+              quickCreateItems={quickCreateItems}
+              onItemSelected={onFormDisplay}
+            />
+          </Suspense>
         ) : null}
       </Menu>
     </>

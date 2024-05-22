@@ -19,7 +19,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import * as React from 'react';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
 import { showSystemNotification } from '../../state/actions/system';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
@@ -106,12 +106,14 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
   ) : isFetching ? (
     <LoadingState styles={{ root: { width: 300, height: 250 } }} />
   ) : data ? (
-    <DeleteContentTypeDialogBody
-      submitting={isSubmitting}
-      onCloseButtonClick={onCloseButtonClick}
-      data={data}
-      contentType={contentType}
-      onSubmit={onSubmit}
-    />
+    <Suspense fallback="">
+      <DeleteContentTypeDialogBody
+        submitting={isSubmitting}
+        onCloseButtonClick={onCloseButtonClick}
+        data={data}
+        contentType={contentType}
+        onSubmit={onSubmit}
+      />
+    </Suspense>
   ) : null;
 }
