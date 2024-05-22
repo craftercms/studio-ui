@@ -106,6 +106,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
   const { classes } = useAddressBarStyles();
   const { site = '', item } = props;
   const noSiteSet = isBlank(site);
+  const { error } = usePreviewState();
   const { currentUrlPath = '' } = usePreviewNavigation();
   const [internalUrl, setInternalUrl] = useState(currentUrlPath);
   const [openSelector, setOpenSelector] = useState(false);
@@ -151,8 +152,12 @@ export function PreviewAddressBar(props: AddressBarProps) {
   };
 
   useEffect(() => {
-    currentUrlPath && setInternalUrl(currentUrlPath);
-  }, [currentUrlPath]);
+    if (error) {
+      setInternalUrl(`${error.code}`);
+    } else {
+      currentUrlPath && setInternalUrl(currentUrlPath);
+    }
+  }, [currentUrlPath, error]);
 
   // region XB communication detection
 
@@ -250,9 +255,14 @@ export function PreviewAddressBar(props: AddressBarProps) {
           />
         )}
         <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
-          <IconButton onClick={onOptions} disabled={!item} size="medium" id="previewAddressBarActionsMenuButton">
-            <MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
-            {!item && (
+          <IconButton
+            onClick={onOptions}
+            disabled={!item || Boolean(error)}
+            size="medium"
+            id="previewAddressBarActionsMenuButton"
+          >
+            <MoreRounded sx={alertLevel === 2 && !error ? { visibility: 'hidden' } : undefined} />
+            {!item && !error && (
               <Box
                 sx={{
                   top: 0,
