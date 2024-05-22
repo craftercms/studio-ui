@@ -97,14 +97,15 @@
     "@craftercms/classes": "4.1.4",
     "@craftercms/content": "4.1.4",
     "@craftercms/ice": "4.1.4",
+    "@craftercms/npm-content": "workspace:^",
     "@craftercms/search": "4.1.4",
     "@craftercms/studio-ui": "workspace:^",
     "@emotion/css": "^11.11.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@mui/icons-material": "^5.15.17",
-    "@mui/material": "^5.15.17",
-    "@reduxjs/toolkit": "^2.2.4",
+    "@mui/icons-material": "^5.15.18",
+    "@mui/material": "^5.15.18",
+    "@reduxjs/toolkit": "^2.2.5",
     "@types/react-dom": "^18.3.0",
     "js-cookie": "^3.0.5",
     "prop-types": "^15.8.1",
@@ -120,15 +121,17 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@rollup/plugin-swc": "^0.3.0",
+    "@swc/core": "^1.5.7",
     "@types/jquery": "^3.5.30",
     "@types/js-cookie": "^3.0.6",
     "@types/prop-types": "^15.7.12",
     "@types/react-is": "^18.3.0",
-    "@types/tinymce": "^4.6.9",
     "build-if-changed": "^1.5.5",
     "npm-run-all": "^4.1.5",
     "replace-in-file": "^7.1.0",
     "rollup": "^4.17.2",
+    "rollup-plugin-swc3": "^0.11.2",
     "yargs": "^17.7.2"
   }
 }

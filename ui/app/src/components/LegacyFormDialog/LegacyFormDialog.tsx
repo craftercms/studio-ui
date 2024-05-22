@@ -40,7 +40,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
   const { open, inProgress, isSubmitting, disableHeader, isMinimized, onMaximize, onMinimize, ...rest } = props;
   const renameContentDialogState = useEnhancedDialogState();
   const [renameContentDialogData, setRenameContentDialogData] = useState(renameContentDialogDataInitialState);
-
+  const [iframeLoaded, setIframeLoaded] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>();
   const messages = fromEvent(window, 'message').pipe(filter((e: any) => e.data && e.data.type));
 
@@ -50,7 +50,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
     // The form engine is too expensive to load to lose it with an unintentional
     // backdrop click. Disabling backdrop click until form engine 2.
     if ('backdropClick' !== reason && !isSubmitting) {
-      if (inProgress) {
+      if (inProgress || !iframeLoaded) {
         props?.onClose();
       }
       iframeRef.current.contentWindow.postMessage({ type: 'LEGACY_FORM_DIALOG_CANCEL_REQUEST' }, '*');
@@ -112,7 +112,13 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
             ]}
           />
         )}
-        <EmbeddedLegacyContainer ref={iframeRef} inProgress={inProgress} onMinimize={onMinimize} {...rest} />
+        <EmbeddedLegacyContainer
+          ref={iframeRef}
+          inProgress={inProgress}
+          onMinimize={onMinimize}
+          setIframeLoaded={setIframeLoaded}
+          {...rest}
+        />
       </Dialog>
       <MinimizedBar open={isMinimized} onMaximize={onMaximize} title={title} />
       <RenameContentDialog

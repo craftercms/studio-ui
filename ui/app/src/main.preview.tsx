@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,6 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './components';
+import React, { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import CrafterCMSNextBridge from './components/CrafterCMSNextBridge';
+import Preview from './pages/Preview';
 
-export * from './models';
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <CrafterCMSNextBridge>
+      <Preview />
+    </CrafterCMSNextBridge>
+  </StrictMode>
+);

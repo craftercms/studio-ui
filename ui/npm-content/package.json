@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "ace-builds": "^1.33.1",
+    "ace-builds": "^1.33.2",
     "bootstrap": "^5.3.3",
     "css-loader": "^7.1.1",
     "file-loader": "^6.2.0",
@@ -40,7 +40,7 @@
     "grunt": "^1.6.1",
     "monaco-editor-webpack-plugin": "^7.1.0",
     "npm-run-all": "^4.1.5",
-    "rimraf": "^5.0.6",
+    "rimraf": "^5.0.7",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4"
   }
