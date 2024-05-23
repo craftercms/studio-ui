@@ -127,13 +127,6 @@ async function run() {
     fse.copy(path.join(srcPath, 'assets'), path.join(buildPath, 'assets'));
     console.log(`Copied assets to build`);
 
-    await renameNpmIndex('index.npm.js', 'index.js');
-    await renameNpmIndex('node/index.npm.js', 'node/index.js');
-
-    await renameNpmIndex('index.npm.d.ts', 'index.d.ts');
-    // Types current not emitted on node build
-    await renameNpmIndex('node/index.npm.d.ts', 'node/index.d.ts');
-
     await fse.copyFile(path.join(packagePath, 'scripts', 'LICENSE'), path.join(buildPath, 'LICENSE'));
     console.log('License file added');
 

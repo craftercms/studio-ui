@@ -37,6 +37,8 @@ import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, parseSandBoxItemToDetailedItem } from '../../utils/content';
 import { SandboxItem } from '../../models';
 import ListItemButton from '@mui/material/ListItemButton';
+import DialogFooter from '../DialogFooter';
+import ApiResponseErrorState from '../ApiResponseErrorState';
 
 const dialogContentHeight = 420;
 
@@ -62,13 +64,16 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
 
   useEffect(() => {
     if (packageId) {
-      setState({ items: null, loading: true });
-      fetchPublishingHistoryPackageItems(site, packageId, { limit: state.limit, offset: 0 }).subscribe({
+      setState({ items: null, loading: true, error: null });
+      fetchPublishingHistoryPackageItems(site, packageId, {
+        limit: state.limit,
+        offset: 0
+      }).subscribe({
         next: (items) => {
           setState({ items, loading: false, offset: 0, total: items.total });
         },
-        error(error) {
-          setState({ error, loading: false });
+        error({ response }) {
+          setState({ error: response.response, loading: false });
         }
       });
     }
@@ -90,13 +95,13 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
 
   const loadPage = (pageNumber: number) => {
     const newOffset = pageNumber * state.limit;
-    setState({ items: null, loading: true });
+    setState({ items: null, loading: true, error: null });
     fetchPublishingHistoryPackageItems(site, packageId, { limit: state.limit, offset: newOffset }).subscribe({
       next: (items) => {
         setState({ items, loading: false, offset: newOffset, total: items.total });
       },
-      error(error) {
-        setState({ error, loading: false });
+      error({ response }) {
+        setState({ error: response.response, loading: false });
       }
     });
   };
@@ -122,6 +127,7 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
     >
       <DialogContent>
         {state.loading && <LoadingState styles={{ root: { width: 100, height: dialogContentHeight } }} />}
+        {state.error && <ApiResponseErrorState error={state.error} />}
         {!Boolean(packageId) && (
           <Typography color="error.main">
             <FormattedMessage
@@ -175,20 +181,22 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
                   </ListItemButton>
                 ))}
               </List>
-              <Box display="flex" justifyContent="space-between">
-                <Pager
-                  totalPages={totalPages}
-                  totalItems={state.total}
-                  currentPage={currentPage}
-                  rowsPerPage={state.limit}
-                  onPagePickerChange={(page) => loadPage(page)}
-                  onPageChange={(page) => loadPage(page)}
-                  onRowsPerPageChange={onRowsPerPageChange}
-                />
-              </Box>
             </>
           ))}
       </DialogContent>
+      <DialogFooter>
+        <Box display="flex" justifyContent="space-between">
+          <Pager
+            totalPages={totalPages}
+            totalItems={state.total}
+            currentPage={currentPage}
+            rowsPerPage={state.limit}
+            onPagePickerChange={(page) => loadPage(page)}
+            onPageChange={(page) => loadPage(page)}
+            onRowsPerPageChange={onRowsPerPageChange}
+          />
+        </Box>
+      </DialogFooter>
     </EnhancedDialog>
   );
 }

@@ -64,6 +64,7 @@ echo "Building Monaco editor..."
 yarn build:monaco
 echo "Monaco editor build complete"
 
+echo "Building jQuery..."
 # jQuery - Custom build for XB
 npmContentBuildDirectory=./build
 guestBuildDirectory=../guest/src/
@@ -75,6 +76,7 @@ mkdir "$npmContentBuildDirectory/jquery"
 rm -rf "$guestBuildDirectory/jquery"
 mkdir "$guestBuildDirectory/jquery"
 git clone --quiet -c advice.detachedHead=false --branch 3.7.1 https://github.com/jquery/jquery jquery-src
+rm -rf jquery-src/.git
 npm --prefix ./jquery-src install -s ./jquery-src
 yarn build:jquery
 # Copy build files to npm build directory

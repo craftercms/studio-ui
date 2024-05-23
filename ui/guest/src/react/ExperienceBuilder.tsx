@@ -114,7 +114,7 @@ import { setJwt } from '@craftercms/studio-ui/utils/auth';
 import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
-import { emitSystemEvent } from '@craftercms/studio-ui/state/actions/system';
+import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/actions/system';
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 
 // TODO: add themeOptions and global styles customising
@@ -222,7 +222,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
   // Connect to shared worker & socket
   useEffect(() => {
     if (hasHost && authoringBase) {
-      const worker = new SharedWorker(`${authoringBase}/static-assets/next/shared-worker.js`, {
+      const worker = new SharedWorker(`${authoringBase}/static-assets/app/shared-worker.js`, {
         name: SHARED_WORKER_NAME,
         credentials: 'same-origin'
       });
@@ -240,6 +240,10 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
             }
             case emitSystemEvent.type: {
               dispatch(payload);
+              break;
+            }
+            case emitSystemEvents.type: {
+              payload.events.forEach((action) => dispatch(action));
               break;
             }
           }

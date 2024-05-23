@@ -74,7 +74,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
     onClosed,
     iceGroupId,
     newEmbedded,
-    index
+    index,
+    setIframeLoaded
   } = props;
 
   const { formatMessage } = useIntl();
@@ -178,6 +179,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           break;
         }
         case EMBEDDED_LEGACY_FORM_RENDERED: {
+          setIframeLoaded(true);
           if (inProgress) {
             dispatch(updateEditDialogConfig({ inProgress: false }));
           }
@@ -257,7 +259,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSave, messages, dispatch, onClose, formatMessage, onMinimize]);
+  }, [inProgress, onSave, messages, dispatch, onClose, formatMessage, onMinimize, setIframeLoaded]);
 
   useUnmount(onClosed);
 

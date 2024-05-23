@@ -35,6 +35,7 @@ function chunks(list, size) {
 }
 
 export default ({
+  uppy,
   id,
   error,
   i18n,
@@ -68,7 +69,9 @@ export default ({
   pauseUpload,
   cancelUpload,
   removeFile,
-  externalMessages
+  externalMessages,
+  successfulUploadButton,
+  validateFilesPolicy
 }) => {
   const rowHeight = totalFileCount ? (totalFileCount * 140 - 20) / totalFileCount : 140;
 
@@ -88,6 +91,7 @@ export default ({
     <div class="uppy-Dashboard-filesInner" role="presentation" key={row[0]}>
       {row.map((fileID) => (
         <FileItem
+          uppy={uppy}
           key={fileID}
           log={log}
           info={info}
@@ -105,6 +109,7 @@ export default ({
           hideCancelButton={hideCancelButton}
           showLinkToFileUploadResult={showLinkToFileUploadResult}
           showRemoveButtonAfterComplete={showRemoveButtonAfterComplete}
+          successfulUploadButton={successfulUploadButton}
           isWide={isWide}
           metaFields={metaFields}
           recoveredState={recoveredState}
@@ -125,6 +130,7 @@ export default ({
           pauseUpload={pauseUpload}
           cancelUpload={cancelUpload}
           removeFile={removeFile}
+          validateFilesPolicy={validateFilesPolicy}
         />
       ))}
     </div>

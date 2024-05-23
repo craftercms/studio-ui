@@ -37,7 +37,9 @@ import {
   isNavigable,
   isPreviewable,
   isVideo,
-  isPdfDocument
+  isPdfDocument,
+  isAudio,
+  isMediaContent
 } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
@@ -312,10 +314,10 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const onPreview = (item: DetailedItem) => {
     if (isEditableViaFormEditor(item)) {
       dispatch(showEditDialog({ path: item.path, authoringBase, site: siteId, readonly: true }));
-    } else if (isImage(item) || isVideo(item) || isPdfDocument(item.mimeType)) {
+    } else if (isMediaContent(item.mimeType) || isPdfDocument(item.mimeType)) {
       dispatch(
         showPreviewDialog({
-          type: isImage(item) ? 'image' : isVideo(item) ? 'video' : 'pdf',
+          type: isImage(item) ? 'image' : isVideo(item) ? 'video' : isAudio(item) ? 'audio' : 'pdf',
           title: item.label,
           url: item.path
         })

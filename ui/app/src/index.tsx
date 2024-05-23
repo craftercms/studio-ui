@@ -14,15 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (process.env.NODE_ENV === 'production') {
-  require('./env/craftercms').publishCrafterGlobal();
-  require('./env/registerComponents').registerComponents();
-  require('./env/codebase-bridge').createCodebaseBridge();
-} else {
-  const React = require('react');
-  const { createRoot } = require('react-dom/client');
-  const App = require('./components/App').default;
-  createRoot(document.getElementById('root')).render(<App />);
-}
+export * from './components';
 
-export {};
+export * from './models';

@@ -17,3 +17,5 @@
 export { default } from './UppyDashboard';
 
 export * from './UppyDashboard';
+
+export * from './UppyDashboardProps';

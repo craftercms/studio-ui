@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ExpandMore from '@mui/icons-material/ExpandMoreOutlined';
 import Accordion, { accordionClasses } from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -25,8 +25,12 @@ import { SxProps, Theme, useTheme } from '@mui/material/styles';
 import WidgetDescriptor from '../../models/WidgetDescriptor';
 import { SystemIcon, SystemIconDescriptor } from '../SystemIcon';
 import WidgetsGrid from '../WidgetsGrid';
+import { getStoredWidgetsAccordion, setStoredWidgetsAccordion } from '../../utils/state';
+import useActiveSite from '../../hooks/useActiveSite';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export interface WidgetsAccordionProps {
+  id?: string;
   title: string;
   widgets: WidgetDescriptor[];
   icon?: SystemIconDescriptor;
@@ -39,18 +43,29 @@ export interface WidgetsAccordionProps {
 }
 
 export function WidgetsAccordion(props: WidgetsAccordionProps) {
-  const { title, icon, sxs } = props;
-  const [open, setOpen] = useState(false);
+  const { title, id = `WidgetsAccordion:${props.title.replace(/\s/g, '')}`, icon, sxs } = props;
+  const { uuid } = useActiveSite();
+  const user = useActiveUser();
+  const [open, setOpen] = useState(() => getStoredWidgetsAccordion(uuid, user.username, id)?.open ?? false);
   const theme = useTheme();
   const expandedClass = accordionClasses.expanded;
   const contentClass = accordionSummaryClasses.content;
+  useEffect(() => {
+    if (id) {
+      setStoredWidgetsAccordion(uuid, user.username, id, { open });
+    }
+  }, [id, open, user.username, uuid]);
   return (
     <Accordion
+      square
+      disableGutters
+      elevation={0}
       expanded={open}
       onChange={(e, isExpanded) => setOpen(isExpanded)}
       sx={{
         boxShadow: 0,
-        [`&.${expandedClass}`]: { margin: 0 },
+        backgroundColor: 'inherit',
+        [`&.${expandedClass}`]: { margin: 'inherit' },
         ...sxs?.accordion
       }}
     >
@@ -64,7 +79,7 @@ export function WidgetsAccordion(props: WidgetsAccordionProps) {
         }}
       >
         {icon && (
-          <SystemIcon icon={icon} style={{ marginRight: '10px', color: theme.palette.action.active, ...sxs?.icon }} />
+          <SystemIcon icon={icon} sx={{ marginRight: '10px', color: theme.palette.action.active, ...sxs?.icon }} />
         )}
         <Typography sx={sxs?.typography}>{title}</Typography>
       </AccordionSummary>

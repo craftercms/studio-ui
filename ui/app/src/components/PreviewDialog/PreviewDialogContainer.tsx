@@ -93,6 +93,13 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
       case 'pdf': {
         return <IFrame url={isBlobUrl(url) ? url : `${guestBase}${url}`} title={title} width="100%" height="100vh" />;
       }
+      case 'audio': {
+        return (
+          <audio controls autoPlay>
+            <source src={url} type={mimeType} />
+          </audio>
+        );
+      }
       default:
         break;
     }

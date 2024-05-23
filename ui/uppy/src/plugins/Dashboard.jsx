@@ -284,7 +284,9 @@ export class Dashboard extends UppyDashboard {
     if (this.opts.autoOpenFileEditor) {
       this.uppy.on('files-added', this.#openFileEditorWhenFilesAdded);
     } else {
-      this.uppy.on('files-added', this.validateFilesPolicy);
+      if (this.opts.autoProceed) {
+        this.uppy.on('files-added', this.validateFilesPolicy);
+      }
     }
   };
 
@@ -417,7 +419,7 @@ export class Dashboard extends UppyDashboard {
       // getPlugin: this.uppy.getPlugin,
       progressindicators: progressindicators,
       editors: editors,
-      autoProceed: this.uppy.opts.autoProceed,
+      autoProceed: this.opts.autoProceed,
       id: this.id,
       closeModal: this.requestCloseModal,
       handleClickOutside: this.handleClickOutside,
@@ -489,7 +491,9 @@ export class Dashboard extends UppyDashboard {
       handleDragOver: this.handleDragOver,
       handleDragLeave: this.handleDragLeave,
       handleDrop: this.handleDrop,
-      externalMessages: this.opts.externalMessages
+      externalMessages: this.opts.externalMessages,
+      successfulUploadButton: this.opts.successfulUploadButton,
+      validateFilesPolicy: this.validateFilesPolicy
     });
   };
 

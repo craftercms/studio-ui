@@ -21,7 +21,7 @@ export const useSelection: <T = any>(
   selectorFn: (state: GlobalState) => T,
   equalityFn?: (left: T, right: T) => boolean
 ) => T =
-  process.env.NODE_ENV === 'production'
+  import.meta.env.NODE_ENV === 'production'
     ? useSelector
     : <T = any>(selector, equalityFn) => useSelector<GlobalState, T>(selector, equalityFn);
 

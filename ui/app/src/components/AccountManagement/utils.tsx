@@ -121,12 +121,17 @@ export const preferencesGroups: Array<{
   {
     label: <FormattedMessage defaultMessage="Miscellaneous" />,
     onClear: (props) => {
+      const widgetsAccordionsKeyRegex = new RegExp(
+        `^craftercms.${props.username}.widgetsAccordion.${props.siteUuid}.[a-zA-Z0-9]+`
+      );
+
       removeStoredGlobalAppOpenSidebar(props.username);
       removeStoredGlobalMenuSiteViewPreference(props.username);
       removeStoredOutdatedXBValidationDate(props.siteId, props.username);
       removeStoredClipboard(props.siteUuid, props.username);
       removeStoredPreviewBackgroundMode(props.username);
       removeStoredBrowseDialogViewMode(props.username);
+      removeStoredItems((key) => widgetsAccordionsKeyRegex.test(key));
     }
   }
 ];
