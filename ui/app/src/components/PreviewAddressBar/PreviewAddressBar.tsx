@@ -152,12 +152,8 @@ export function PreviewAddressBar(props: AddressBarProps) {
   };
 
   useEffect(() => {
-    if (error) {
-      setInternalUrl(`${error.code}`);
-    } else {
-      currentUrlPath && setInternalUrl(currentUrlPath);
-    }
-  }, [currentUrlPath, error]);
+    currentUrlPath && setInternalUrl(currentUrlPath);
+  }, [currentUrlPath]);
 
   // region XB communication detection
 
