@@ -1,0 +1,48 @@
+/*
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+module.exports = {
+  root: true,
+  env: { browser: true, es2022: true },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:prettier/recommended',
+    'prettier'
+  ],
+  ignorePatterns: ['dist', 'build', 'build_tsc', '.eslintrc.cjs', 'target'],
+  parser: '@typescript-eslint/parser',
+  plugins: ['react-refresh'],
+  rules: {
+    'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    'prettier/prettier': ['error'],
+    'spaced-comment': [
+      'error',
+      'always',
+      {
+        line: {
+          markers: ['/', '#']
+        },
+        block: {
+          markers: ['!', '*', '#', 'function', 'const', 'if', 'export', 'interface', '#__PURE__', '@__PURE__'],
+          exceptions: ['!', '*', '#'],
+          balanced: false
+        }
+      }
+    ]
+  }
+};

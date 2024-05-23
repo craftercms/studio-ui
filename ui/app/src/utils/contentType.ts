@@ -108,14 +108,14 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
       }
       case 'text':
       case 'textarea': {
-        let maxLength = parseInt(field.validations.maxLength?.value);
-        let textGen = new Jabber();
+        const maxLength = parseInt(field.validations.maxLength?.value);
+        const textGen = new Jabber();
         return maxLength
           ? `${textGen.createParagraph(50).substring(0, maxLength)}.`.replace(/\.+/, '.')
           : textGen.createParagraph(10);
       }
       case 'html': {
-        let textGen = new Jabber();
+        const textGen = new Jabber();
         return textGen.createParagraph(10);
       }
       case 'numeric-input': {
