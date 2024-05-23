@@ -669,10 +669,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           }
           break;
         }
-        case errorPageCheckIn.type: {
-          dispatch(errorPageCheckIn(payload));
-          break;
-        }
         case fetchGuestModel.type: {
           if (payload.path?.startsWith('/')) {
             contentTypes$.subscribe((contentTypes) => {
@@ -1119,7 +1115,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // region actions whitelisted
-        case unlockItem.type: {
+        case unlockItem.type:
+        case errorPageCheckIn.type: {
           dispatch(action);
           break;
         }
