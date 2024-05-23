@@ -357,10 +357,12 @@ CStudioAuthoring.Module.requireModule(
           const external = {
             ...rteConfig.tinymceOptions?.external_plugins,
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
-            craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
+            craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
+            template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js'
           };
 
           tinymce.init({
+            license_key: 'gpl',
             selector: `#${CSS.escape(rteId)}`,
             promotion: false,
             // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
