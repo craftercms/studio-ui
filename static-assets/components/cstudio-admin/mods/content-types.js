@@ -243,15 +243,15 @@
                     class: 'btn-default',
                     fn: function () {
                       if (CStudioAdminConsole.isDirty) {
-                        CStudioAuthoring.Utils.showConfirmDialog(
-                          CMgs.format(langBundle, 'notification'),
-                          CMgs.format(langBundle, 'contentTypeModifiedWarn'),
-                          () => {
+                        CStudioAuthoring.Utils.showConfirmDialog({
+                          title: CMgs.format(langBundle, 'notification'),
+                          body: CMgs.format(langBundle, 'contentTypeModifiedWarn'),
+                          onOk: () => {
                             // Revert state
                             onSetDirty(false);
                             _self.openExistingItemRender(CStudioAdminConsole.contentTypeSelected);
                           }
-                        );
+                        });
                       } else {
                         _self.closeEditor();
                       }
@@ -2285,6 +2285,29 @@
           'string',
           sheetEl,
           function (e, el) {
+            const invalidMacros = [
+              { regex: /{objectId}/, macro: 'objectId' },
+              { regex: /{parentPath(\[.*])?}/, macro: 'parentPath' },
+              { regex: /{objectGroupId(2)?}/, macro: 'objectGroupId' }
+            ];
+            const newPath = el.value;
+            const invalidMacrosInPath = [];
+            invalidMacros.forEach(({ macro, regex }) => {
+              if (newPath.match(regex)) {
+                invalidMacrosInPath.push(macro);
+                el.value = el.value.replace(regex, '');
+              }
+            });
+            if (invalidMacrosInPath.length > 0) {
+              CStudioAuthoring.Utils.showNotification(
+                formatMessage(contentTypesMessages.invalidMacros, { macros: invalidMacrosInPath.join(', ') }),
+                'top',
+                'left',
+                'info',
+                48,
+                197
+              );
+            }
             item.quickCreatePath = el.value;
             onSetDirty(true);
           },

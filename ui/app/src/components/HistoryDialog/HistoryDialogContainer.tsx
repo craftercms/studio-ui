@@ -260,7 +260,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         break;
       }
       case 'compareToCurrent': {
-        compareBoth([activeItem.versionNumber, current]);
+        compareBoth([current, activeItem.versionNumber]);
         break;
       }
       case 'compareToPrevious': {

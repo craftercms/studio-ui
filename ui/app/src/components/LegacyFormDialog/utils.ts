@@ -65,4 +65,6 @@ export interface LegacyFormDialogStateProps extends LegacyFormDialogBaseProps {
 
 export interface LegacyFormDialogContainerProps
   extends LegacyFormDialogBaseProps,
-    Pick<LegacyFormDialogProps, 'onMinimize' | 'onClose' | 'onClosed' | 'onSaveSuccess'> {}
+    Pick<LegacyFormDialogProps, 'onMinimize' | 'onClose' | 'onClosed' | 'onSaveSuccess'> {
+  setIframeLoaded(loaded: boolean): void;
+}

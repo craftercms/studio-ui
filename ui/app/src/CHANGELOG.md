@@ -2,6 +2,13 @@
 
 [//]: # (TODO: migrate 4.1.x branch changelog to develop)
 
+## 4.1.5
+* [common-api.js]
+  * `CStudioAuthoring.Utils.showConfirmDialog`: Added function overload to receive a `props` style object as first and only argument. The props argument would contain all ConfirmDialog props. Original set of arguments still supported for backward compatibility.
+
+## 4.1.4
+* `UploadDialog`: Added props `endpoint`, `method`, `headers`, `meta`, `allowedMetaFields`, `useFormData`, `fieldName` and `onFileAdded` for additional control over the upload process.
+
 ## 4.1.3
 
 * HostUI removed and merged into Host
