@@ -236,10 +236,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           const pathToLock = record.inherited
             ? models[getModelIdFromInheritedField(modelId, record.fieldId)].craftercms.path
             : path;
-          const { movedToSamePosition } = getMoveComponentInfo(dragContext);
 
           // If moving to the same position, there is no need of locking and other requests.
-          if (movedToSamePosition) {
+          if (status === EditingStatus.SORTING_COMPONENT && getMoveComponentInfo(dragContext).movedToSamePosition) {
             post(instanceDragEnded());
             return of(computedDragEnd());
           } else {
