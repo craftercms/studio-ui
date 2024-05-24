@@ -120,11 +120,16 @@ export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => 
   let { dragged, targetIndex, dropZone, dropZones } = dragContext,
     record = dragged,
     newTargetIndex = targetIndex,
-    draggedElementIndex = record.index,
+    draggedElementIndex = record?.index,
     originDropZone = dropZones.find((dropZone) => dropZone.origin),
     currentDZ = dropZone.element,
-    movedToSameZone = currentDZ === originDropZone.element,
+    movedToSameZone = currentDZ === originDropZone?.element,
     movedToSamePosition: boolean;
+
+  // If there's no record on the dragged item, it's a new item being placed
+  if (!record) {
+    movedToSamePosition = false;
+  }
 
   if (typeof draggedElementIndex === 'string') {
     // If the index is a string, it's a nested index with dot notation.
