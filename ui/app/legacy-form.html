@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -14,18 +14,14 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<#if (envConfig.role! == 'admin' || envConfig.role! == 'developer')>
-  <#include "/static-assets/app/site-tools.html">
-<#else>
-  <script>window.location.href = '/studio';</script>
-  <style>
-    body {
-      text-align: center;
-      font-family: sans-serif;
-    }
-  </style>
-  <noscript>
-    <h1>Access Denied</h1>
-    <p>You don't have the necessary permissions to access this page.</p>
-  </noscript>
-</#if>.
+<script type="text/plain" id="globalBootData">
+  {
+    <#assign env_config = envConfig???then(envConfig + _csrf, {})/>
+    <#outputformat "HTML">
+    "xsrfHeader": "${env_config.headerName!_csrf.headerName!'X-XSRF-TOKEN'}",
+    "xsrfArgument": "${env_config.parameterName!_csrf.parameterName!'_csrf'}",
+    "useBaseDomain": ${env_config.useBaseDomain!'false'}
+    </#outputformat>
+  }
+</script>
+<script type="module" src="/src/main.legacy-form.tsx"></script>

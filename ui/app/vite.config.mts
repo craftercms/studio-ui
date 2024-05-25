@@ -61,7 +61,9 @@ export default defineConfig(({ mode }) => ({
       input: {
         main: 'index.html',
         login: 'login.html',
-        preview: 'preview.html'
+        preview: 'preview.html',
+        'site-tools': 'site-tools.html',
+        'legacy-form': 'legacy-form.html'
       }
     }
   }
