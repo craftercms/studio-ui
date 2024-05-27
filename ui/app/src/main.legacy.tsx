@@ -18,18 +18,11 @@ import { registerComponents } from './env/registerComponents';
 import { createCodebaseBridge } from './env/codebase-bridge';
 import { publishCrafterGlobal } from './env/craftercms';
 import { setRequestForgeryToken } from './utils/auth';
-import { unescapeHTML } from './utils/string';
 
-registerComponents();
 publishCrafterGlobal();
+registerComponents();
 setRequestForgeryToken();
 createCodebaseBridge();
 
-declare global {
-  interface Window {
-    CrafterCMSNext;
-  }
-}
-
-const footerData = JSON.parse(document.getElementById('siteToolsFooterData').textContent);
-window.CrafterCMSNext.render('#root', 'SiteTools', { footerHtml: unescapeHTML(footerData.description) }, false);
+const domLegacyReadyEvent = new Event('DOMLegacyReady');
+document.dispatchEvent(domLegacyReadyEvent);

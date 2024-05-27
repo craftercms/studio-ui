@@ -15,7 +15,28 @@
   -->
 
 <#if (envConfig.role! == 'admin' || envConfig.role! == 'developer')>
-  <#include "/static-assets/app/site-tools.html">
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
+    <style>body { overflow: hidden }</style>
+  </head>
+  <body>
+  <div id="root"></div>
+  <#include "/static-assets/app/legacy.html">
+  <script>
+    document.addEventListener("DOMLegacyReady", () => {
+      CrafterCMSNext.render('#root', 'SiteTools', {
+        footerHtml: '${applicationContext.get("crafter.entitlementValidator").getDescription()}'
+      }, false);
+    });
+  </script>
+  </body>
+  </html>
 <#else>
   <script>window.location.href = '/studio';</script>
   <style>

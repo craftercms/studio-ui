@@ -66,11 +66,14 @@
 <body class="yui-skin-cstudioTheme <#if embedded>embedded</#if>">
   <div id="admin-console" class="categories-panel-active"></div>
 
+  <#include "/static-assets/app/legacy.html">
   <script>
-    (function (CStudioAuthoring) {
-      CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
-      CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
-    }) (CStudioAuthoring);
+    document.addEventListener("DOMLegacyReady", () => {
+      (function (CStudioAuthoring) {
+        CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
+        CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
+      }) (CStudioAuthoring);
+    });
   </script>
 </body>
 </html>
