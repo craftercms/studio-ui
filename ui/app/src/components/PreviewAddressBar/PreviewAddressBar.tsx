@@ -250,42 +250,39 @@ export function PreviewAddressBar(props: AddressBarProps) {
             onBlur={() => setFocus(false)}
           />
         )}
-        <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
-          <IconButton
-            onClick={onOptions}
-            disabled={!item || Boolean(error)}
-            size="medium"
-            id="previewAddressBarActionsMenuButton"
-          >
-            <MoreRounded sx={alertLevel === 2 && !error ? { visibility: 'hidden' } : undefined} />
-            {!item && !error && (
-              <Box
-                sx={{
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  display: 'flex',
-                  position: 'absolute',
-                  alignItems: 'center',
-                  placeContent: 'center',
-                  pointerEvents: 'all'
-                }}
-                onMouseEnter={handlePopoverOpen}
-                onMouseLeave={handlePopoverClose}
-              >
-                {alertLevel === 2 ? (
-                  <ErrorOutlineOutlined color="error" />
-                ) : (
-                  <CircularProgress
-                    sx={{ position: 'absolute', pointerEvents: 'all' }}
-                    color={alertLevel ? (alertLevel === 1 ? 'warning' : 'error') : 'primary'}
-                  />
-                )}
-              </Box>
-            )}
-          </IconButton>
-        </Tooltip>
+        {!error && (
+          <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
+            <IconButton onClick={onOptions} disabled={!item} size="medium" id="previewAddressBarActionsMenuButton">
+              <MoreRounded sx={alertLevel === 2 && !error ? { visibility: 'hidden' } : undefined} />
+              {!item && !error && (
+                <Box
+                  sx={{
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    display: 'flex',
+                    position: 'absolute',
+                    alignItems: 'center',
+                    placeContent: 'center',
+                    pointerEvents: 'all'
+                  }}
+                  onMouseEnter={handlePopoverOpen}
+                  onMouseLeave={handlePopoverClose}
+                >
+                  {alertLevel === 2 ? (
+                    <ErrorOutlineOutlined color="error" />
+                  ) : (
+                    <CircularProgress
+                      sx={{ position: 'absolute', pointerEvents: 'all' }}
+                      color={alertLevel ? (alertLevel === 1 ? 'warning' : 'error') : 'primary'}
+                    />
+                  )}
+                </Box>
+              )}
+            </IconButton>
+          </Tooltip>
+        )}
       </Paper>
       <SingleItemSelector
         rootPath={rootPath}
