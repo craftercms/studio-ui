@@ -23,15 +23,10 @@
     "node_modules",
     "../../node_modules",
     "src/shared-worker.ts",
-    "src/index.tsx",
-    "src/components/App.tsx",
-    "src/components/PluginHost.tsx",
-    "src/modules/Preview/Tools/YoastPanel.tsx",
     "src/translations/src",
     "src/translations/whitelists",
-    "src/state/themeContext.tsx",
     "src/**/*.ignore.*",
     "src/**/*.test.ts",
-    "src/utils/amd.ts"
+    "main.*.tsx"
   ]
 }
