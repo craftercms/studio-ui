@@ -117,14 +117,13 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
  * targetIndex: number
  */
 export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => {
-  let { dragged, targetIndex, dropZone, dropZones } = dragContext;
-  let record = dragged;
+  let { dragged: draggedRecord, targetIndex, dropZone, dropZones } = dragContext;
   let newTargetIndex = targetIndex;
-  let draggedElementIndex = record?.index;
+  let draggedElementIndex = draggedRecord?.index;
   const originDropZone = dropZones.find((dropZone) => dropZone.origin);
   const currentDZ = dropZone.element;
   const movedToSameZone = currentDZ === originDropZone?.element;
-  let movedToSamePosition: boolean;
+  let movedToSamePosition = false;
 
   if (typeof draggedElementIndex === 'string') {
     // If the index is a string, it's a nested index with dot notation.
