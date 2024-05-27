@@ -253,7 +253,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
         {!error && (
           <Tooltip title={Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}>
             <IconButton onClick={onOptions} disabled={!item} size="medium" id="previewAddressBarActionsMenuButton">
-              <MoreRounded sx={alertLevel === 2 && !error ? { visibility: 'hidden' } : undefined} />
+              <MoreRounded sx={alertLevel === 2 ? { visibility: 'hidden' } : undefined} />
               {!item && !error && (
                 <Box
                   sx={{
