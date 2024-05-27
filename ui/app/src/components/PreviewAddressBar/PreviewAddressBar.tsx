@@ -251,9 +251,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
             onBlur={() => setFocus(false)}
           />
         )}
-        <Tooltip
-          title={disableItemMenuButton ? '' : Boolean(item) ? <FormattedMessage defaultMessage="Options (a)" /> : ''}
-        >
+        <Tooltip title={disableItemMenuButton ? '' : <FormattedMessage defaultMessage="Options (a)" />}>
           <IconButton
             onClick={onOptions}
             disabled={disableItemMenuButton}
