@@ -345,13 +345,13 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       }
     });
 
-    itemsContainerEl.innerHTML = '';
-    var tar = new YAHOO.util.DDTarget(itemsContainerEl);
-
     // Retrieve all SandboxItems to determine if the user has the edit permissions.
-    craftercms.services.content
+    this._renderItemsSubscription?.unsubscribe();
+    this._renderItemsSubscription = craftercms.services.content
       .fetchItemsByPath(CStudioAuthoringContext.site, sharedItems)
       .subscribe((sandboxItems) => {
+        itemsContainerEl.innerHTML = '';
+        var tar = new YAHOO.util.DDTarget(itemsContainerEl);
         const itemsByPath = craftercms.utils.object.createLookupTable(sandboxItems, 'path');
 
         for (var i = 0; i < items.length; i++) {
