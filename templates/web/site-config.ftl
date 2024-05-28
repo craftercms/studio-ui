@@ -27,7 +27,7 @@
   </head>
   <body>
   <div id="root"></div>
-  <#include "/static-assets/app/legacy.html">
+  <#include "/static-assets/app/pages/legacy.html">
   <script>
     document.addEventListener("DOMLegacyReady", () => {
       CrafterCMSNext.render('#root', 'SiteTools', {

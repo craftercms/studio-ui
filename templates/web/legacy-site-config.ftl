@@ -66,7 +66,7 @@
 <body class="yui-skin-cstudioTheme <#if embedded>embedded</#if>">
   <div id="admin-console" class="categories-panel-active"></div>
 
-  <#include "/static-assets/app/legacy.html">
+  <#include "/static-assets/app/pages/legacy.html">
   <script>
     document.addEventListener("DOMLegacyReady", () => {
       (function (CStudioAuthoring) {

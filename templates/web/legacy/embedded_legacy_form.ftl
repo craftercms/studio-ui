@@ -75,7 +75,7 @@
   </style>
 </head>
 <body>
-<#include "/static-assets/app/legacy.html">
+<#include "/static-assets/app/pages/legacy.html">
 <script>
   document.addEventListener("DOMLegacyReady", () => {
     const { formatMessage } = CrafterCMSNext.i18n.intl;

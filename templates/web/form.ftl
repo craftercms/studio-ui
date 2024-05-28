@@ -90,7 +90,7 @@
   </div>
 </div>
 
-<#include "/static-assets/app/legacy.html">
+<#include "/static-assets/app/pages/legacy.html">
 <script>
   document.addEventListener("DOMLegacyReady", () => {
     CStudioForms.engine.render(null, "default", "formContainer");
