@@ -32,6 +32,7 @@ import useActiveUser from '../../hooks/useActiveUser';
 export interface WidgetsAccordionProps {
   id?: string;
   title: string;
+  initialExpanded?: boolean;
   widgets: WidgetDescriptor[];
   icon?: SystemIconDescriptor;
   sxs?: Partial<
@@ -43,10 +44,16 @@ export interface WidgetsAccordionProps {
 }
 
 export function WidgetsAccordion(props: WidgetsAccordionProps) {
-  const { title, id = `WidgetsAccordion:${props.title.replace(/\s/g, '')}`, icon, sxs } = props;
+  const {
+    title,
+    id = `WidgetsAccordion:${props.title.replace(/\s/g, '')}`,
+    icon,
+    sxs,
+    initialExpanded = false
+  } = props;
   const { uuid } = useActiveSite();
   const user = useActiveUser();
-  const [open, setOpen] = useState(() => getStoredWidgetsAccordion(uuid, user.username, id)?.open ?? false);
+  const [open, setOpen] = useState(() => getStoredWidgetsAccordion(uuid, user.username, id)?.open ?? initialExpanded);
   const theme = useTheme();
   const expandedClass = accordionClasses.expanded;
   const contentClass = accordionSummaryClasses.content;
