@@ -62,7 +62,8 @@ export default defineConfig(({ mode }) => ({
         main: 'pages/index.html',
         login: 'pages/login.html',
         preview: 'pages/preview.html',
-        legacy: 'pages/legacy.html'
+        legacy: 'pages/legacy.html',
+        'project-tools': 'pages/project-tools.html',
       }
     }
   }
