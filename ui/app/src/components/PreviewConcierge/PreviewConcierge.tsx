@@ -27,6 +27,7 @@ import {
   duplicateItemOperation,
   duplicateItemOperationComplete,
   duplicateItemOperationFailed,
+  errorPageCheckIn,
   fetchContentTypes,
   fetchGuestModel,
   fetchGuestModelComplete,
@@ -1114,7 +1115,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           break;
         }
         // region actions whitelisted
-        case unlockItem.type: {
+        case unlockItem.type:
+        case errorPageCheckIn.type: {
           dispatch(action);
           break;
         }
