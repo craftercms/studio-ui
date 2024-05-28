@@ -5,6 +5,7 @@
 ## 4.1.5
 * [common-api.js]
   * `CStudioAuthoring.Utils.showConfirmDialog`: Added function overload to receive a `props` style object as first and only argument. The props argument would contain all ConfirmDialog props. Original set of arguments still supported for backward compatibility.
+* `pathNavigatorTreeFetchPathChildrenFailed` action creator payload requires a `path` property.
 
 ## 4.1.4
 * `UploadDialog`: Added props `endpoint`, `method`, `headers`, `meta`, `allowedMetaFields`, `useFormData`, `fieldName` and `onFileAdded` for additional control over the upload process.

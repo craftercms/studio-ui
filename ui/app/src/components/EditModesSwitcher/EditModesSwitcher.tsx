@@ -16,8 +16,6 @@
 
 import * as React from 'react';
 import EditModesSwitcherUI from './EditModesSwitcherUI';
-import { useActiveUser } from '../../hooks/useActiveUser';
-import { isItemLockedForMe } from '../../utils/content';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
 import { DetailedItem } from '../../models/Item';
@@ -29,17 +27,13 @@ export interface EditModesSwitcherProps {
 }
 
 export function EditModesSwitcher(props: EditModesSwitcherProps) {
-  const { item, disabled } = props;
-  const user = useActiveUser();
-  const isLocked = isItemLockedForMe(item, user.username);
-  const write = Boolean(item?.availableActionsMap.edit);
-  const dispatch = useDispatch();
+  const { disabled } = props;
   const { editMode, highlightMode } = usePreviewState();
+  const dispatch = useDispatch();
   const onChange = (editMode, highlightMode) => dispatch(setPreviewEditMode({ editMode, highlightMode }));
-  const isDisabled = disabled || !write || isLocked;
   return (
     <EditModesSwitcherUI
-      disabled={isDisabled}
+      disabled={disabled}
       isEditMode={editMode}
       highlightMode={highlightMode}
       onEditModeChange={onChange}

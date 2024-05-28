@@ -38,13 +38,13 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
   const { isEditMode, highlightMode, onEditModeChange, size = 'small', activeSxShadow = 1, disabled = false } = props;
   const isAllHighlightMode = isEditMode && highlightMode === 'all';
   const isMoveHighlightMode = isEditMode && !isAllHighlightMode;
-  const getStyle = () => ({
+  const commonModeButtonStyle = {
     boxShadow: activeSxShadow,
     bgcolor: 'background.default',
     ':hover': {
       cursor: 'default'
     }
-  });
+  };
   return (
     <Box
       sx={{
@@ -96,7 +96,7 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
           disabled={disabled}
           size={size}
           onClick={() => onEditModeChange(true, 'all')}
-          sx={isAllHighlightMode ? getStyle() : UNDEFINED}
+          sx={isAllHighlightMode ? commonModeButtonStyle : UNDEFINED}
         >
           <EditRoundedIcon />
         </IconButton>
@@ -111,7 +111,7 @@ export function EditModesSwitcherUI(props: EditModesSwitcherUIProps) {
           disabled={disabled}
           size={size}
           onClick={() => onEditModeChange(true, 'move')}
-          sx={isMoveHighlightMode ? getStyle() : UNDEFINED}
+          sx={isMoveHighlightMode ? commonModeButtonStyle : UNDEFINED}
         >
           <DragIndicatorRoundedIcon />
         </IconButton>

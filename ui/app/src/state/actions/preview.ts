@@ -31,6 +31,7 @@ import { ContentEventPayload, WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
+import { ModelHierarchyMap } from '../../utils/content';
 
 interface CommonOperationProps {
   modelId: string;
@@ -294,10 +295,22 @@ export const fetchPrimaryGuestModelComplete = /*#__PURE__*/ createAction<{
 
 // This action is meant for the other Guest models that aren't the main.
 // The reducer will shouldn't set the guest.modelId.
-export const fetchGuestModelComplete = /*#__PURE__*/ createAction<{
+export const fetchGuestModelsComplete = /*#__PURE__*/ createAction<{
   modelLookup: LookupTable<ContentInstance>;
   hierarchyMap: LookupTable<string[]>;
 }>('FETCH_GUEST_MODELS_COMPLETE');
+
+// TODO: Do we really need these two (↑ and ↓) separate actions? Asses consolidate under a single action with a better name.
+
+export const fetchGuestModelComplete = /*#__PURE__*/ createAction<{
+  path: string;
+  model: ContentInstance;
+  modelLookup: Record<string, ContentInstance>;
+  hierarchyMap: ModelHierarchyMap;
+  modelIdByPath: Record<string, string>;
+  sandboxItems: SandboxItem[];
+  permissions: string[];
+}>('FETCH_GUEST_MODEL_COMPLETE');
 
 export const guestModelUpdated = /*#__PURE__*/ createAction<{ model: ContentInstance }>('GUEST_MODEL_UPDATED');
 

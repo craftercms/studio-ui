@@ -17,9 +17,16 @@
 import React, { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react';
 import $ from 'jquery';
 import { fromEvent, interval, merge } from 'rxjs';
-import { filter, pluck, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, take, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import * as iceRegistry from '../iceRegistry';
-import { contentTypes$, FetchGuestModelCompletePayload, flushRequestedPaths, operations$ } from '../contentController';
+import {
+  contentTypes$,
+  flushRequestedPaths,
+  getCachedModels,
+  getCachedSandboxItems,
+  modelHierarchyMap,
+  operations$
+} from '../contentController';
 import * as elementRegistry from '../elementRegistry';
 import { GuestContextProvider, GuestReduxContext, useDispatch, useSelector } from './GuestContext';
 import CrafterCMSPortal from './CrafterCMSPortal';
@@ -54,6 +61,7 @@ import {
   contentTreeFieldSelected,
   contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
+  fetchGuestModelComplete,
   guestCheckIn,
   guestCheckOut,
   highlightModeChanged,
@@ -74,7 +82,7 @@ import { GuestState } from '../store/models/GuestStore';
 import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
 import { checkIfLockedOrModified, dragOk } from '../store/util';
-import { createLocationArgument } from '../utils/util';
+import { createLocationArgument, isEditActionAvailable } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 import { Snackbar, SnackbarProps, ThemeOptions, ThemeProvider } from '@mui/material';
@@ -93,7 +101,6 @@ import {
   dropzoneEnter,
   dropzoneLeave,
   setDropPosition,
-  setLockedItems,
   startListening
 } from '../store/actions';
 import DragGhostElement from './DragGhostElement';
@@ -110,7 +117,7 @@ import { setJwt } from '@craftercms/studio-ui/utils/auth';
 import { SHARED_WORKER_NAME } from '@craftercms/studio-ui/utils/constants';
 import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 import { emitSystemEvent } from '@craftercms/studio-ui/state/actions/system';
-import StandardAction from '@craftercms/studio-ui/models/StandardAction';
+import { getParentModelId } from '../utils/ice';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -187,6 +194,16 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           if (nullOrUndefined(record)) {
             console.error('[Guest] No record found for dispatcher element');
           } else {
+            if (
+              !isEditActionAvailable({
+                record,
+                models: getCachedModels(),
+                sandboxItemsByPath: getCachedSandboxItems(),
+                parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
+              })
+            ) {
+              return false;
+            }
             if (refs.current.keysPressed.z && type === 'click') {
               return false;
             }
@@ -413,6 +430,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           dispatch({ type });
           break;
         // region actions whitelisted
+        case fetchGuestModelComplete.type:
         case componentInstanceDragStarted.type:
         case clearHighlightedDropTargets.type:
         case desktopAssetUploadProgress.type:
@@ -494,20 +512,14 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
     refs.current.hasChanges = false;
 
-    fromTopic('FETCH_GUEST_MODEL_COMPLETE')
+    fromTopic(fetchGuestModelComplete.type)
       .pipe(
-        // Collect locked items to update locked lookup table on state...
-        tap(({ payload }: StandardAction<FetchGuestModelCompletePayload>) => {
-          const locked = payload.sandboxItems.filter((item) => item.stateMap.locked);
-          locked.length && dispatch(setLockedItems(locked));
-        }),
         filter(({ payload }) => payload.path === path),
-        pluck('payload', 'model'),
         withLatestFrom(contentTypes$),
         take(1)
       )
-      .subscribe(([model]) => {
-        iceId = iceRegistry.register({ modelId: model.craftercms.id });
+      .subscribe(([action]) => {
+        iceId = iceRegistry.register({ modelId: action.payload.model.craftercms.id });
         refs.current.contentReady = true;
         dispatch(contentReady());
       });
@@ -635,7 +647,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const hasValidations = Boolean(validations.length);
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
               const elementRecord = elementRegistry.get(highlight.id);
-              const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, elementRecord);
+              const { isLocked, isExternallyModified, path } = checkIfLockedOrModified(state, elementRecord);
               return (
                 <ZoneMarker
                   key={highlight.id}
