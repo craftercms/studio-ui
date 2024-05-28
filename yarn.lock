@@ -5049,19 +5049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uppy/xhr-upload@npm:^3.6.2":
-  version: 3.6.6
-  resolution: "@uppy/xhr-upload@npm:3.6.6"
-  dependencies:
-    "@uppy/companion-client": "npm:^3.8.1"
-    "@uppy/utils": "npm:^5.9.0"
-  peerDependencies:
-    "@uppy/core": ^3.11.1
-  checksum: 10/563a6a7b70fe6866991a89bdf32010eee1846ff6fb1d8647c248e23ae6301dd93505a5e1130ec0cd87d1222e81c31f391597eeda232cb177eac4dd73e573d863
-  languageName: node
-  linkType: hard
-
-"@uppy/xhr-upload@npm:^3.6.7":
+"@uppy/xhr-upload@npm:^3.6.2, @uppy/xhr-upload@npm:^3.6.7":
   version: 3.6.7
   resolution: "@uppy/xhr-upload@npm:3.6.7"
   dependencies:
