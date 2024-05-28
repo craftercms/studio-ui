@@ -65,8 +65,5 @@ export function isEditActionAvailable(args: {
   if (!path) {
     path = models[parentModelId].craftercms.path;
   }
-  if (!path) {
-    console.error('* * * * *\nNo path found. Check.\n* * * * *', record, models);
-  }
-  return sandboxItemsByPath[path].availableActionsMap.edit;
+  return sandboxItemsByPath[path]?.availableActionsMap.edit;
 }
