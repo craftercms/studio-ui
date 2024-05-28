@@ -163,13 +163,16 @@
       });
     </script>
 
+    <#include "/static-assets/app/pages/legacy.html">
     <script type="text/javascript">
-        $(function() {
+      document.addEventListener("DOMLegacyReady", () => {
+        CrafterCMSNext.system.getStore().subscribe(() => {
+          $(function() {
             CStudioBrowseWebDAV.init();
+          });
         });
-
+      });
     </script>
-
     <script type="text/javascript">
       Handlebars.registerHelper('equal', function(lvalue, rvalue, options) {
         if (arguments.length < 3)
