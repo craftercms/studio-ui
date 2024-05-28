@@ -141,7 +141,7 @@ export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => 
     if (draggedElementIndex < targetIndex) {
       // Hence the final target index in reality is
       // the drop marker's index minus 1
-      newTargetIndex = targetIndex--;
+      newTargetIndex = --targetIndex;
     }
     movedToSamePosition = draggedElementIndex === targetIndex;
   }
