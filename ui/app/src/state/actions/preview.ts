@@ -62,6 +62,10 @@ export const fetchGuestModel = /*#__PURE__*/ createAction<{ path: string }>('FET
 export const guestSiteLoad = /*#__PURE__*/ createAction<{ location: Partial<Location>; url: string }>(
   'GUEST_SITE_LOAD'
 ); // Legacy guest check in
+export const errorPageCheckIn = /*#__PURE__*/ createAction<{
+  code: number;
+  message: string;
+}>('ERROR_PAGE_CHECK_IN');
 export const sortItemOperation = /*#__PURE__*/ createAction<
   {
     targetIndex: string | number;

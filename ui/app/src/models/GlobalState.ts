@@ -201,6 +201,10 @@ export interface GlobalState {
     editModePadding: boolean;
     windowSize: number;
     xbDetectionTimeoutMs: number;
+    error: {
+      code: number;
+      message: string;
+    };
   };
   previewNavigation: {
     currentUrlPath: string;
