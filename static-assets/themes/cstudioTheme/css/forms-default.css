@@ -1624,6 +1624,11 @@ body.yui-skin-cstudioTheme.masked {
   align-items: center;
 }
 
+button.node-selector-item-icon {
+  border: none;
+  background: none;
+}
+
 .node-selector-item-icon {
   color: #7c7c80;
   padding: 2px 7px;

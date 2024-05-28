@@ -31,7 +31,7 @@ import {
   fetchComponentsByContentType,
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
-  fetchGuestModelComplete,
+  fetchGuestModelsComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
   guestCheckOut,
@@ -335,7 +335,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, {
     return nextState;
   },
   [fetchPrimaryGuestModelComplete.type]: fetchGuestModelsCompleteHandler,
-  [fetchGuestModelComplete.type]: fetchGuestModelsCompleteHandler,
+  [fetchGuestModelsComplete.type]: fetchGuestModelsCompleteHandler,
   [guestModelUpdated.type]: (state, { payload: { model } }) => ({
     ...state,
     guest: {

@@ -96,7 +96,7 @@ export function EditModeSwitch(props: EditModeSwitchProps) {
   const write = Boolean(item?.availableActionsMap.edit);
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const editMode = useSelection((state) => state.preview.editMode) && !isLocked && write;
+  const editMode = useSelection((state) => state.preview.editMode);
 
   const onChange = (e) => {
     dispatch(setPreviewEditMode({ editMode: e.target.checked }));

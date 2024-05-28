@@ -149,6 +149,7 @@ export function isBlobUrl(url: string): boolean {
 }
 
 /**
+ * TODO: Remove?
  * Returns the boolean intersection of editMode, lock status and the item's edit permission
  */
 export function getComputedEditMode({
@@ -969,6 +970,14 @@ export const createItemActionMap: (availableActions: number) => ItemActionsMap =
   rejectPublish: hasPublishRejectAction(value)
 });
 
+/**
+ * Given an item lookup table, tries to find the path with and without the "/index.xml" portion of the path.
+ * This reconciles path differences when working with pages between folder and index (i.e. /site/website vs /site/website/index.xml),
+ * which refer to the same item in most contexts.
+ * path {string} The path to look for
+ * lookupTable {Record<string, T>} The map-like object containing all items in which to look the path up
+ * @returns {T} The item if found, undefined otherwise
+ **/
 export function lookupItemByPath<T = DetailedItem>(path: string, lookupTable: LookupTable<T>): T {
   return lookupTable[withIndex(path)] ?? lookupTable[withoutIndex(path)];
 }
