@@ -36,6 +36,9 @@
   * `actions/dialogs`: Renamed `updateEditConfig` action to `updateEditDialogConfig`
 * [hooks]
   * `usePreviewUrlControl`: Removed `history` prop. Retrieval of search and navigate (previously called 'push') is now done internally.
+  * Removed `useLogicResource` hook.
+  * Removed `useSelectorResource` hook.
+  * Removed `useQuickCreateListResource` hook.
 * Removed deprecated `aws-file-upload` and `aws-video` upload controls.
 * Migrated the Studio UI build to Vite/SWC
 * Rollup's XB build to use SWC
