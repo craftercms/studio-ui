@@ -42,6 +42,7 @@ import { getHostToHostBus } from '../utils/subjects';
 import { StandardAction } from '../models/StandardAction';
 import { createCustomDocumentEventListener } from '../utils/dom';
 import { components as studioUIComponents, services, utils } from './studioUI';
+import logoIcon from '../assets/crafter-icon.svg';
 
 const ErrorState = studioUIComponents.ErrorState;
 
@@ -69,7 +70,7 @@ interface CodebaseBridge {
   ReactDOM: typeof ReactDOM;
   ReactDOMClient: { createRoot: typeof createRoot };
   components: { [key: string]: JSXElementConstructor<any> };
-  assets: { [key: string]: () => Promise<any> };
+  assets: { [key: string]: any };
   util: object;
   render: Function;
   renderBackgroundUI: Function;
@@ -137,7 +138,7 @@ export function createCodebaseBridge() {
     mui,
 
     assets: {
-      logoIcon: require('../assets/crafter-icon.svg')
+      logoIcon
     },
 
     util: { ...utils, babel },
