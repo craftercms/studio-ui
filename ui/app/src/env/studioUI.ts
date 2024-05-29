@@ -236,6 +236,7 @@ export const components = {
   PreviewDialog: lazy(() => import('../components/PreviewDialog')),
   PreviewDropTargetsPanel: lazy(() => import('../components/PreviewDropTargetsPanel')),
   PreviewForwardButton: lazy(() => import('../components/PreviewForwardButton')),
+  PreviewInPageInstancesPanel: lazy(() => import('../components/PreviewInPageInstancesPanel')),
   PreviewPageExplorerPanel: lazy(() => import('../components/PreviewPageExplorerPanel')),
   PreviewSearchPanel: lazy(() => import('../components/PreviewSearchPanel')),
   PreviewSettingsPanel: lazy(() => import('../components/PreviewSettingsPanel')),

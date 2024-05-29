@@ -191,6 +191,7 @@ export * from './PreviewConcierge';
 export * from './PreviewDialog';
 export * from './PreviewDropTargetsPanel';
 export * from './PreviewForwardButton';
+export * from './PreviewInPageInstancesPanel';
 export * from './PreviewPageExplorerPanel';
 export * from './PreviewSearchPanel';
 export * from './PreviewSettingsPanel';
