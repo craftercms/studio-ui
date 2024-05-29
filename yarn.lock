@@ -2789,6 +2789,7 @@ __metadata:
     "@types/prop-types": "npm:^15.7.5"
     "@types/react-dom": "npm:^18.2.18"
     "@types/react-is": "npm:^17.0.7"
+    "@types/tinymce": "npm:^4.6.9"
     build-if-changed: "npm:^1.5.5"
     jquery: "npm:^3.7.1"
     js-cookie: "npm:^3.0.5"
@@ -5776,6 +5777,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jquery@npm:*":
+  version: 3.5.30
+  resolution: "@types/jquery@npm:3.5.30"
+  dependencies:
+    "@types/sizzle": "npm:*"
+  checksum: 10/5287586be022bfe85d411733b35f8f0ae8577c4afb5a94ff0e157d2c1036e10adfdd15ed80becb06f01647c39be5dbb24a45cba10db3fa6304eb442fa509321e
+  languageName: node
+  linkType: hard
+
 "@types/jquery@npm:^3.5.29":
   version: 3.5.29
   resolution: "@types/jquery@npm:3.5.29"
@@ -6083,6 +6093,15 @@ __metadata:
   version: 2.0.1
   resolution: "@types/stack-utils@npm:2.0.1"
   checksum: 10/205fdbe3326b7046d7eaf5e494d8084f2659086a266f3f9cf00bccc549c8e36e407f88168ad4383c8b07099957ad669f75f2532ed4bc70be2b037330f7bae019
+  languageName: node
+  linkType: hard
+
+"@types/tinymce@npm:^4.6.9":
+  version: 4.6.9
+  resolution: "@types/tinymce@npm:4.6.9"
+  dependencies:
+    "@types/jquery": "npm:*"
+  checksum: 10/ab578ddb86c2c6f18083facb05fa272290fcdff4bdc9b8ffb060e80c957849f19aaee93d50f78e43646ae7dbdfd922b4c21d7f93bb4e50ddcfed605eb7b1baa4
   languageName: node
   linkType: hard
 
