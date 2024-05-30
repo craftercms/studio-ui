@@ -20,6 +20,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import pkg from './package.json';
+import alias from '@rollup/plugin-alias';
 
 const input = 'src/index.tsx';
 
@@ -43,6 +44,9 @@ const plugins = [
     ],
     extensions
   }),
+  alias({
+    entries: [{ find: '@craftercms/studio-ui', replacement: '@craftercms/studio-ui/build_tsc' }]
+  }),
   resolve({
     extensions,
     dedupe: ['react', 'react-dom', 'react-is'],
@@ -51,26 +55,11 @@ const plugins = [
   commonjs({ include: /node_modules/ }),
   copy({
     targets: [
-      { src: 'build/*.umd.js', dest: '../app/public' },
-      { src: 'build/*.umd.js', dest: '../../static-assets/scripts' }
+      { src: 'build/*.umd.js*', dest: '../app/public' },
+      { src: 'build/*.umd.js*', dest: '../../static-assets/scripts' }
     ],
     hook: 'writeBundle'
-  }),
-  {
-    name: 'rollup-plugin-adjust-studio-ui-imports',
-    transform(code, id) {
-      if (id.includes('ui/guest')) {
-        const regEx = /import\s+[\w$*\s{},]*\s+from\s+['"](@craftercms\/studio-ui(?!\/models).*?)['"]/g;
-        const match = code.match(regEx);
-        if (match) {
-          return code.replace(regEx, (match) =>
-            match.replace('@craftercms/studio-ui', '@craftercms/studio-ui/build_tsc')
-          );
-        }
-      }
-      return null;
-    }
-  }
+  })
 ];
 
 const globals = {
@@ -94,6 +83,7 @@ const baseConfig = {
   }
 };
 
+/** @type {Array<import('rollup').RollupOptions>} */
 export default [
   /* UMD build */
   {
@@ -102,6 +92,7 @@ export default [
     plugins,
     output: {
       name: 'craftercms.xb',
+      sourcemap: true,
       file: 'build/craftercms-xb.umd.js',
       format: 'umd',
       amd: { id: pkg.craftercms.id },

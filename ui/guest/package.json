@@ -119,6 +119,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@rollup/plugin-alias": "^5.1.0",
     "@types/jquery": "^3.5.29",
     "@types/js-cookie": "^3.0.6",
     "@types/prop-types": "^15.7.5",
