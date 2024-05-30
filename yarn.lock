@@ -1620,6 +1620,7 @@ __metadata:
     "@mui/icons-material": "npm:^5.15.7"
     "@mui/material": "npm:^5.15.7"
     "@reduxjs/toolkit": "npm:^1.9.7"
+    "@rollup/plugin-alias": "npm:^5.1.0"
     "@types/jquery": "npm:^3.5.29"
     "@types/js-cookie": "npm:^3.0.6"
     "@types/prop-types": "npm:^15.7.5"
@@ -3405,6 +3406,20 @@ __metadata:
     react-redux:
       optional: true
   checksum: 10/11c718270bb378e5b26e172eb84cc549d6f263748b6f330b07ee9c366c6474b013fd410e5b2f65a5742e73b7873a3ac14e06cae4bb01480ba03b423c4fd92583
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-alias@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "@rollup/plugin-alias@npm:5.1.0"
+  dependencies:
+    slash: "npm:^4.0.0"
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 10/2749f9563dba9274e4324fcd14ffe761fa66ee3baab307ba583d0348adfa2c1d2a164f59eac8c26a9ce7c713a99a991a831c072101e83697157ccf082c362310
   languageName: node
   linkType: hard
 
