@@ -18,7 +18,7 @@ import { DetailedItem } from '../../models/Item';
 import { useStyles } from './styles';
 import React, { useState } from 'react';
 import SearchBar from '../SearchBar/SearchBar';
-import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
+import MuiBreadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNextRounded';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
@@ -27,6 +27,8 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import { defineMessages, useIntl } from 'react-intl';
 import Box from '@mui/material/Box';
+import { PartialSxRecord } from '../../models';
+import { menuClasses } from '@mui/material/Menu';
 
 export type PathNavigatorBreadcrumbsClassKey =
   | 'root'
@@ -39,6 +41,7 @@ export interface BreadcrumbsProps {
   breadcrumb: DetailedItem[];
   keyword?: string;
   classes?: Partial<Record<PathNavigatorBreadcrumbsClassKey, string>>;
+  sxs?: PartialSxRecord<PathNavigatorBreadcrumbsClassKey>;
   onSearch?(keyword: string): void;
   onCrumbSelected(breadcrumb: DetailedItem, event: React.SyntheticEvent): void;
 }
@@ -51,7 +54,7 @@ const messages = defineMessages({
 function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
-  const { breadcrumb, onCrumbSelected, keyword, onSearch } = props;
+  const { breadcrumb, onCrumbSelected, keyword, onSearch, sxs } = props;
   const [showSearch, setShowSearch] = useState(Boolean(keyword));
 
   const onChange = (keyword: string) => onSearch(keyword);
@@ -62,7 +65,11 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   return (
     <>
       {breadcrumb && breadcrumb.length > 1 && (
-        <section className={clsx(classes.breadcrumbs, classes.widgetSection, props.classes?.root)}>
+        <Box
+          component="section"
+          className={clsx(classes.breadcrumbs, classes.widgetSection, props.classes?.root)}
+          sx={sxs?.root}
+        >
           <MuiBreadcrumbs
             aria-label="Breadcrumbs"
             separator={<NavigateNextIcon fontSize="small" />}
@@ -102,7 +109,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
               </IconButton>
             )}
           </div>
-        </section>
+        </Box>
       )}
       {/* This way the searchBar will be shown whenever there's a keyword OR when the user clicks on the search icon */}
       {(((Boolean(keyword) || showSearch) && onSearch) || forceSearch) && (
