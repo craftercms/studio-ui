@@ -288,12 +288,14 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                           entries.contentType.dataSources?.find(
                             (ds) => ds.type === 'components' && ds.contentTypes.split(',').includes(contentType.id)
                           )?.baseRepoPath ?? null;
-                        newComponentPath = processPathMacros({
-                          path: newComponentPath,
-                          objectId: record.modelId,
-                          useUUID: false,
-                          fullParentPath: path
-                        });
+                        newComponentPath = newComponentPath
+                          ? processPathMacros({
+                              path: newComponentPath,
+                              objectId: record.modelId,
+                              useUUID: false,
+                              fullParentPath: path
+                            })
+                          : newComponentPath;
                       }
                       const instance = createContentInstance(contentType, newComponentPath);
                       setTimeout(() => {
