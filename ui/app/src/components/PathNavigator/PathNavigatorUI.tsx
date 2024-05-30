@@ -206,12 +206,12 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         ) : (
           <>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {/* region <Breadcrumbs /> */}
               {state.breadcrumb && state.breadcrumb.length > 1 && (
                 <IconButton color="primary" size="small" sx={{ p: 0 }} onClick={onBack}>
                   <NavigateBeforeIcon />
                 </IconButton>
               )}
+              {/* region <Breadcrumbs /> */}
               <Breadcrumbs
                 keyword={keyword}
                 breadcrumb={state.breadcrumb.map((path) => lookupItemByPath(path, itemsByPath)).filter(Boolean)}
@@ -220,8 +220,8 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
                 classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
                 sxs={{ root: { display: 'inline-flex !important', width: '100%', maxWidth: '84%' } }}
               />
+              {/* endregion */}
             </Box>
-            {/* endregion */}
             {/* region Current Item */}
             {lookupItemByPath(state.currentPath, itemsByPath) && (
               <PathNavigatorItem
