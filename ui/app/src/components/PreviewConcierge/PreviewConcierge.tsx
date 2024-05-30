@@ -401,14 +401,15 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           getHostToHostBus().next(reloadRequest());
           break;
         case 'E':
-          dispatch(
-            showEditDialog({
-              site: upToDateRefs.current.siteId,
-              path: upToDateRefs.current.guest.path,
-              readonly: isItemLockedForMe(upToDateRefs.current.item, upToDateRefs.current.user.username),
-              authoringBase: upToDateRefs.current.authoringBase
-            })
-          );
+          upToDateRefs.current.item &&
+            dispatch(
+              showEditDialog({
+                site: upToDateRefs.current.siteId,
+                path: upToDateRefs.current.guest.path,
+                readonly: isItemLockedForMe(upToDateRefs.current.item, upToDateRefs.current.user.username),
+                authoringBase: upToDateRefs.current.authoringBase
+              })
+            );
           break;
         case 'a':
           if (store.getState().dialogs.itemMegaMenu.open) {
