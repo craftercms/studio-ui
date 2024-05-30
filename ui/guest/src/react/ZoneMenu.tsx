@@ -78,16 +78,9 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const permissions = getCachedPermissions();
   const models = getCachedModels();
   const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
-  const containerModelId = findParentModelId(modelId, modelHierarchyMap, models);
   const modelPath = isInheritedField(modelId, fieldId)
     ? models[getModelIdFromInheritedField(modelId, fieldId)].craftercms.path
     : models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
-  const itemAvailableActions = getCachedSandboxItem(modelPath).availableActionsMap;
-  const containerItemAvailableActions = models[containerModelId]
-    ? getCachedSandboxItem(models[containerModelId].craftercms.path).availableActionsMap
-    : null;
-  const containerHasEditAction = containerItemAvailableActions?.edit ?? false;
-  const hasEditAction = itemAvailableActions.edit;
 
   const trashButtonRef = React.useRef();
   const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
@@ -138,11 +131,23 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
+
   const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
   const collectionContainsFiles = collection ? collection.some((item) => item.hasOwnProperty('key')) : false;
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection?.[elementIndex] : null;
+  const componentPath = models[componentId]?.craftercms.path;
   const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
+
+  // Use componentId to find the container modelId. If not a component, is unlikely to have a container, but in
+  // cases where a page is being referenced by another model, we fall back to modelId.
+  const containerModelId = findParentModelId(componentId ?? modelId, modelHierarchyMap, models);
+  const containerItemAvailableActions = models[containerModelId]
+    ? getCachedSandboxItem(models[containerModelId].craftercms.path).availableActionsMap
+    : null;
+  const containerHasEditAction = containerItemAvailableActions?.edit ?? false;
+  const itemAvailableActions = getCachedSandboxItem(componentPath ?? modelPath).availableActionsMap;
+  const hasEditAction = itemAvailableActions.edit;
 
   const isMovable =
     containerHasEditAction &&
