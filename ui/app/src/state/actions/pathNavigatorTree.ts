@@ -147,7 +147,11 @@ export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
     data?: LookupTable<GetChildrenResponse>;
     sortStrategy?: GetChildrenOptions['sortStrategy'];
     order?: GetChildrenOptions['order'];
+    limit?: number;
   }>
 >('PATH_NAV_TREE_UPDATE');
 
 export const pathNavigatorTreeRootMissing = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_ROOT_MISSING');
+
+export const pathNavigatorTreeChangeLimit =
+  /*#__PURE__*/ createAction<PayloadWithId<{ id: string; limit: number }>>('PATH_NAV_TREE_CHANGE_LIMIT');
