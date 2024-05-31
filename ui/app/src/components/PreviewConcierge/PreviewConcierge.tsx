@@ -187,7 +187,6 @@ import ContentType from '../../models/ContentType';
 import { Dispatch } from 'redux';
 import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 
-// region const issueDescriptorRequest = () => {...}
 const issueDescriptorRequest = (props: {
   site: string;
   path: string;

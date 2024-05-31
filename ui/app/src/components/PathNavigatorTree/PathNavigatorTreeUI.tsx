@@ -17,7 +17,7 @@
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
 import Accordion from '@mui/material/Accordion';
-import Header, { PathNavigatorHeader } from '../PathNavigator/PathNavigatorHeader';
+import { PathNavigatorHeader } from '../PathNavigator/PathNavigatorHeader';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { StateStylingProps } from '../../models/UiConfig';
 import PathNavigatorTreeItem, { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
