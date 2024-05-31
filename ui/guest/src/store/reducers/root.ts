@@ -633,12 +633,12 @@ const reducer = createReducer(initialState, {
       instance.craftercms.contentTypeId,
       (record: ICERecord, hierarchyMap: ModelHierarchyMap) => {
         return (
-          isEditActionAvailable({
+          !isEditActionAvailable({
             record,
             models: getCachedModels(),
             sandboxItemsByPath: getCachedSandboxItems(),
             parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
-          }) && !hierarchyMap[record.modelId]?.children.includes(instanceId)
+          }) || hierarchyMap[record.modelId]?.children.includes(instanceId)
         );
       },
       // This action type ensures we're working with existing 'shared' components
