@@ -58,6 +58,11 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   cursor: move;
 }
 
+button.node-selector-item-icon {
+  border: none;
+  background: none;
+}
+
 .cstudio-form-control-node-selector-item.disabled {
   cursor: default;
 }

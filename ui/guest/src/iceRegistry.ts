@@ -268,31 +268,28 @@ export function getContentTypeDropTargets(
   const contentTypeId = typeof contentType === 'string' ? contentType : contentType.id;
   return Array.from(registry.values()).filter((record) => {
     const { fieldId, index } = record;
-    if (notNullOrUndefined(fieldId) && !excludeFn?.(record, contentController.modelHierarchyMap)) {
-      const { field, contentType: _contentType, model } = getReferentialEntries(record);
-      const accepts = isTypeAcceptedAsByField(field, contentTypeId, createMode);
-      if (!accepts) {
-        return false;
-      } else if (nullOrUndefined(index)) {
-        return true;
-      } else {
-        // At this point, this field has been identified as accepting the content type
-        // but the record has an index. If it has an index, it may still be a nested component
-        // holder (node-selector).
-        return (
-          // Check that the field in question is a node-selector
-          contentTypeUtils.isComponentHolder(_contentType, fieldId) &&
-          // If it is an array, it is a receptacle, otherwise it's an item:
-          // If it is a node selector, it may be an item of the node selector or a node
-          // selector itself. Node selectors themselves will be arrays. If it's a value of the
-          // node selector it would be a string representing an id of a model held by the node
-          // selector.
-          Array.isArray(Model.extractCollectionItem(model, fieldId, index))
-        );
-      }
-    } else {
+    if (nullOrUndefined(fieldId) || excludeFn?.(record, contentController.modelHierarchyMap)) {
       return false;
     }
+    const { field, contentType: _contentType, model } = getReferentialEntries(record);
+    if (!isTypeAcceptedAsByField(field, contentTypeId, createMode)) {
+      return false;
+    } else if (nullOrUndefined(index)) {
+      return true;
+    }
+    // At this point, this field has been identified as accepting the content type
+    // but the record has an index. If it has an index, it may still be a nested component
+    // holder (node-selector).
+    return (
+      // Check that the field in question is a node-selector
+      contentTypeUtils.isComponentHolder(_contentType, fieldId) &&
+      // If it is an array, it is a receptacle, otherwise it's an item:
+      // If it is a node selector, it may be an item of the node selector or a node
+      // selector itself. Node selectors themselves will be arrays. If it's a value of the
+      // node selector it would be a string representing an id of a model held by the node
+      // selector.
+      Array.isArray(Model.extractCollectionItem(model, fieldId, index))
+    );
   });
 }
 
@@ -453,7 +450,7 @@ export function collectMoveTargets(): ICERecord[] {
   return movableRecords;
 }
 
-export function checkComponentMovability(entries): boolean {
+export function checkComponentMovability(entries: ReferentialEntries): boolean {
   // Can't move if
   // - no other zones
   // - other zones are maxed out
@@ -560,7 +557,7 @@ export function checkComponentMovability(entries): boolean {
   }
 }
 
-export function checkRepeatGroupMovability(entries): boolean {
+export function checkRepeatGroupMovability(entries: ReferentialEntries): boolean {
   const { model, field, index } = entries;
   return (
     field?.type === 'repeat' &&

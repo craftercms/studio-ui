@@ -77,3 +77,4 @@ export * from './monitoring/LogEvent';
 export * from './monitoring/Memory';
 export * from './monitoring/Status';
 export * from './monitoring/Version';
+export * from './SimpleAjaxError';

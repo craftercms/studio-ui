@@ -17,7 +17,7 @@
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
 import Accordion from '@mui/material/Accordion';
-import Header from '../PathNavigator/PathNavigatorHeader';
+import Header, { PathNavigatorHeader } from '../PathNavigator/PathNavigatorHeader';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { StateStylingProps } from '../../models/UiConfig';
 import PathNavigatorTreeItem, { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
@@ -32,7 +32,14 @@ import { SimpleTreeView } from '@mui/x-tree-view';
 export interface PathNavigatorTreeUIProps
   extends Pick<
     PathNavigatorTreeItemProps,
-    'showNavigableAsLinks' | 'showPublishingTarget' | 'showWorkflowState' | 'showItemMenu'
+    | 'showNavigableAsLinks'
+    | 'showPublishingTarget'
+    | 'showWorkflowState'
+    | 'showItemMenu'
+    | 'keywordByPath'
+    | 'totalByPath'
+    | 'childrenByParentPath'
+    | 'errorByPath'
   > {
   title: string;
   icon?: SystemIconDescriptor;
@@ -40,9 +47,6 @@ export interface PathNavigatorTreeUIProps
   rootPath: string;
   isRootPathMissing: boolean;
   itemsByPath: LookupTable<DetailedItem>;
-  keywordByPath: LookupTable<string>;
-  totalByPath: LookupTable<number>;
-  childrenByParentPath: LookupTable<string[]>;
   onIconClick(path: string): void;
   onLabelClick(event: React.MouseEvent<Element, MouseEvent>, path: string): void;
   onChangeCollapsed(collapsed: boolean): void;
@@ -92,6 +96,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     itemsByPath,
     keywordByPath,
     childrenByParentPath,
+    errorByPath,
     totalByPath,
     onIconClick,
     onLabelClick,
@@ -128,7 +133,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         ...(container ? (isCollapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
       }}
     >
-      <Header
+      <PathNavigatorHeader
         icon={icon}
         title={title}
         locale={null}
@@ -159,6 +164,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
               keywordByPath={keywordByPath}
               totalByPath={totalByPath}
               childrenByParentPath={childrenByParentPath}
+              errorByPath={errorByPath}
               onIconClick={onIconClick}
               onLabelClick={onLabelClick}
               onFilterChange={onFilterChange}

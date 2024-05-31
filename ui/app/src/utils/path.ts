@@ -82,7 +82,7 @@ export function parseQueryString(): ParsedQuery {
 }
 
 export function withoutIndex(path: string): string {
-  return path.replace('/index.xml', '');
+  return path?.replace('/index.xml', '');
 }
 
 export function withIndex(path: string): string {

@@ -25,6 +25,7 @@ import {
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathChildrenFailed,
   pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeInit,
@@ -204,6 +205,7 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
         limit,
         expanded,
         childrenByParentPath: {},
+        errorByPath: {},
         offsetByPath: {},
         keywordByPath,
         totalByPath: {},
@@ -228,10 +230,14 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
     })
     .addCase(pathNavigatorTreeFetchPathChildren, (state, action) => {
       const { expand = true } = action.payload;
+      delete state[action.payload.id].errorByPath[action.payload.path];
       expand && expandPath(state, action);
     })
     .addCase(pathNavigatorTreeFetchPathChildrenComplete, (state, { payload }) => {
       updatePath(state, payload);
+    })
+    .addCase(pathNavigatorTreeFetchPathChildrenFailed, (state, action) => {
+      state[action.payload.id].errorByPath[action.payload.path] = action.payload.error;
     })
     .addCase(pathNavigatorTreeBulkFetchPathChildren, (state, action) => {
       const { requests } = action.payload;

@@ -32,7 +32,7 @@ import {
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
   fetchContentModelComplete,
-  fetchGuestModelComplete,
+  fetchGuestModelsComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
   guestCheckOut,
@@ -350,7 +350,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       };
     })
     .addCase(fetchPrimaryGuestModelComplete, fetchGuestModelsCompleteHandler)
-    .addCase(fetchGuestModelComplete, fetchGuestModelsCompleteHandler)
+    .addCase(fetchGuestModelsComplete, fetchGuestModelsCompleteHandler)
     .addCase(guestModelUpdated, (state, { payload: { model } }) => ({
       ...state,
       guest: {

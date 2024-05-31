@@ -330,102 +330,118 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
 
     var items = this.items;
-    const hasLegacyPrefix = items.some((item) => Object.keys(item).filter((key) => key.includes('_mvs')).length > 0);
-    // only if true -> set value - for backward compatibility
-    if (hasLegacyPrefix) {
-      this.useMVS = true;
-    }
+
+    const sharedItems = [];
+    let hasLegacyPrefix = false;
+    items.forEach((item) => {
+      // If it is a path, it is a shared item, otherwise, it will be a guid and it is an embedded item.
+      if (item.key.trim().startsWith('/')) {
+        sharedItems.push(item.key);
+      }
+      if (!hasLegacyPrefix) {
+        hasLegacyPrefix = Object.keys(item).some((key) => key.includes('_mvs'));
+        // only if true -> set value - for backward compatibility
+        if (hasLegacyPrefix) this.useMVS = true;
+      }
+    });
 
     itemsContainerEl.innerHTML = '';
     var tar = new YAHOO.util.DDTarget(itemsContainerEl);
-    for (var i = 0; i < items.length; i++) {
-      const item = items[i];
-      const itemIndex = i;
-      var itemEl = document.createElement('div');
-      if (this.readonly != true) {
-        var dd = new NodeSelectorDragAndDropDecorator(itemEl);
-      }
+    // Retrieve all SandboxItems to determine if the user has the edit permissions.
+    craftercms.services.content
+      .fetchItemsByPath(CStudioAuthoringContext.site, sharedItems)
+      .subscribe((sandboxItems) => {
+        const itemsByPath = craftercms.utils.object.createLookupTable(sandboxItems, 'path');
 
-      YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item');
-      itemEl.style.backgroundColor = '#F0F0F0'; // stylesheet not working due to proxy?
-      itemEl.style.overflowWrap = 'break-word';
-      itemEl._index = i;
-      itemEl.context = this;
+        for (var i = 0; i < items.length; i++) {
+          const item = items[i];
+          const itemIndex = i;
+          var itemEl = document.createElement('div');
+          if (this.readonly != true) {
+            var dd = new NodeSelectorDragAndDropDecorator(itemEl);
+          }
 
-      $(itemEl).append(`<span class="name">${item.value}</span>`);
-      if (item.include) {
-        $(itemEl).append(`<span class="path">${item.include}</span>`);
-      } else if (item.inline === 'true') {
-        $(itemEl).append(
-          `<span class="path">(${this.formatMessage(this.formEngineMessages.embeddedComponent)})</span>`
-        );
-      } else {
-        $(itemEl).append(`<span class="path">${item.key}</span>`);
-      }
+          YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item');
+          itemEl.style.backgroundColor = '#F0F0F0'; // stylesheet not working due to proxy?
+          itemEl.style.overflowWrap = 'break-word';
+          itemEl._index = i;
+          itemEl.context = this;
 
-      if (this.readonly === true) {
-        itemEl.classList.add('disabled');
-      }
+          $(itemEl).append(`<span class="name">${item.value}</span>`);
+          if (item.include) {
+            $(itemEl).append(`<span class="path">${item.include}</span>`);
+          } else if (item.inline === 'true') {
+            $(itemEl).append(
+              `<span class="path">(${this.formatMessage(this.formEngineMessages.embeddedComponent)})</span>`
+            );
+          } else {
+            $(itemEl).append(`<span class="path">${item.key}</span>`);
+          }
 
-      const isComponent = item.key.startsWith('/site') || item.inline;
-      const editBtnLabel = this.readonly ? 'View' : 'Edit';
-      const editBtnIconClass = this.readonly ? 'fa-eye' : 'fa-pencil';
+          if (this.readonly === true) {
+            itemEl.classList.add('disabled');
+          }
 
-      const $actionsContainer = $(`<span class="actions-container ml-auto" />`);
-      const editBtn = $(
-        `<span class="fa ${editBtnIconClass} node-selector-item-icon" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></span>`
-      );
-      const deleteBtn = $(
-        '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
-      );
+          const isComponent = item.key.startsWith('/site') || item.inline;
+          const hasWritePermission = !(item.key in itemsByPath) || itemsByPath[item.key].availableActionsMap.edit;
+          const editBtnLabel = this.readonly || !hasWritePermission ? 'View' : 'Edit';
+          const editBtnIconClass = this.readonly || !hasWritePermission ? 'fa-eye' : 'fa-pencil';
 
-      const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
-      if (isEditable) {
-        if (isComponent || !this.readonly) {
-          $actionsContainer.append(editBtn);
-          editBtn.on('click', function () {
-            const elIndex = $(this).data('index');
-            let selectedDatasource =
-              _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
-            selectedDatasource.edit(item.key, _self, elIndex, {
-              failure: function (error) {
-                if (error.status === 404) {
-                  CStudioAuthoring.Utils.showConfirmDialog({
-                    body: _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
-                      internalName: _self.items[elIndex].value
-                    }),
-                    onOk: () => {
-                      _self.deleteItem(elIndex);
-                    },
-                    okButtonText: _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
-                      controlLabel: _self.fieldDef.title
-                    }),
-                    cancelButtonText: _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
-                  });
-                } else {
-                  craftercms.getStore().dispatch({
-                    type: 'SHOW_ERROR_DIALOG',
-                    payload: { error: error.response.response }
-                  });
-                }
-              }
+          const $actionsContainer = $(`<span class="actions-container ml-auto" />`);
+          const editBtn = $(
+            `<button class="fa ${editBtnIconClass} node-selector-item-icon" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></button>`
+          );
+          const deleteBtn = $(
+            '<button class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></button>'
+          );
+          const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
+          if (isEditable) {
+            if (isComponent || !this.readonly) {
+              $actionsContainer.append(editBtn);
+              editBtn.on('click', function () {
+                const elIndex = $(this).data('index');
+                let selectedDatasource =
+                  _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
+                selectedDatasource.edit(item.key, _self, elIndex, {
+                  failure: function (error) {
+                    if (error.status === 404) {
+                      CStudioAuthoring.Utils.showConfirmDialog({
+                        body: _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
+                          internalName: _self.items[elIndex].value
+                        }),
+                        onOk: () => {
+                          _self.deleteItem(elIndex);
+                        },
+                        okButtonText: _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
+                          controlLabel: _self.fieldDef.title
+                        }),
+                        cancelButtonText: _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
+                      });
+                    } else {
+                      craftercms.getStore().dispatch({
+                        type: 'SHOW_ERROR_DIALOG',
+                        payload: { error: error.response.response }
+                      });
+                    }
+                  }
+                });
+              });
+            }
+          }
+          if (this.readonly != true) {
+            $actionsContainer.append(deleteBtn);
+            deleteBtn.on('click', function () {
+              _self.deleteItem(itemIndex);
+              _self._renderItems();
             });
-          });
+          }
+
+          $(itemEl).append($actionsContainer);
+          itemEl._onMouseDown = function () {};
+
+          itemsContainerEl.appendChild(itemEl);
         }
-      }
-      if (this.readonly != true) {
-        $actionsContainer.append(deleteBtn);
-        deleteBtn.on('click', function () {
-          _self.deleteItem(itemIndex);
-          _self._renderItems();
-        });
-      }
-
-      $(itemEl).append($actionsContainer);
-      itemEl._onMouseDown = function () {};
-
-      itemsContainerEl.appendChild(itemEl);
-    }
+      });
   },
 
   getItemsLeftCount: function () {
