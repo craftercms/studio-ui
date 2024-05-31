@@ -28,7 +28,7 @@ import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { NEVER, Observable, of } from 'rxjs';
 import { SandboxItem } from '@craftercms/studio-ui/models';
 import { GuestState } from './models/GuestStore';
-import { ElementRecord } from '../models/InContextEditing';
+import { ElementRecord, ICERecord } from '../models/InContextEditing';
 import { getCachedModel, getCachedModels, modelHierarchyMap } from '../contentController';
 import { getParentModelId } from '../utils/ice';
 
@@ -119,7 +119,7 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
 export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => {
   let { dragged: draggedRecord, targetIndex, dropZone, dropZones } = dragContext;
   let newTargetIndex = targetIndex;
-  let draggedElementIndex = draggedRecord?.index;
+  let draggedElementIndex = (draggedRecord as ICERecord)?.index;
   const originDropZone = dropZones.find((dropZone) => dropZone.origin);
   const currentDZ = dropZone.element;
   const movedToSameZone = currentDZ === originDropZone?.element;
