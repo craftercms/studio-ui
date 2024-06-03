@@ -38,6 +38,7 @@ import { Pagination } from '../Pagination';
 import Box from '@mui/material/Box';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -207,9 +208,11 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           <>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {state.breadcrumb && state.breadcrumb.length > 1 && (
-                <IconButton color="primary" size="small" sx={{ p: 0 }} onClick={onBack}>
-                  <NavigateBeforeIcon />
-                </IconButton>
+                <Tooltip title={<FormattedMessage defaultMessage="Back" />}>
+                  <IconButton color="primary" size="small" sx={{ p: 0 }} onClick={onBack}>
+                    <NavigateBeforeIcon />
+                  </IconButton>
+                </Tooltip>
               )}
               {/* region <Breadcrumbs /> */}
               <Breadcrumbs
