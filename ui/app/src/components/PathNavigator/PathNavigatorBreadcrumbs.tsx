@@ -63,7 +63,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
   const forceSearch = breadcrumb.length <= 1;
 
   return (
-    <>
+    <Box sx={{ width: '100%' }}>
       {breadcrumb && breadcrumb.length > 1 && (
         <Box
           component="section"
@@ -141,7 +141,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
           )}
         </Box>
       )}
-    </>
+    </Box>
   );
 }
 

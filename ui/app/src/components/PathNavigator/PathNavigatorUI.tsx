@@ -221,7 +221,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
                 onSearch={onSearch}
                 onCrumbSelected={onBreadcrumbSelected}
                 classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
-                sxs={{ root: { display: 'inline-flex !important', width: '100%', maxWidth: '84%' } }}
+                sxs={{ root: { display: 'inline-flex !important', width: '100%' } }}
               />
               {/* endregion */}
             </Box>
