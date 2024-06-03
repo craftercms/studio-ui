@@ -19,6 +19,7 @@ import PathNavigatorTreeUI, { PathNavigatorTreeUIProps } from './PathNavigatorTr
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeBackgroundRefresh,
+  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -26,8 +27,7 @@ import {
   pathNavigatorTreeInit,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeSetKeyword,
-  pathNavigatorTreeToggleCollapsed,
-  pathNavigatorTreeUpdate
+  pathNavigatorTreeToggleCollapsed
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
@@ -101,6 +101,7 @@ export interface PathNavigatorTreeStateProps {
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
   offsetByPath: LookupTable<number>;
+  currentLimitByPath: LookupTable<number>;
   excludes: string[];
   systemTypes: SystemType[];
   error: ApiResponse;
@@ -340,7 +341,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
 
   const onLimitChange = (e: SelectChangeEvent<number>) => {
     const limit = Number(e.target.value);
-    dispatch(pathNavigatorTreeUpdate({ id, limit }));
+    dispatch(pathNavigatorTreeChangeLimit({ id, limit }));
   };
 
   // endregion
