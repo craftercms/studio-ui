@@ -149,7 +149,10 @@ function Preview(props) {
         if ((siteChanged || urlChanged) && (currentUrlPath !== qs.page || site !== qs.site)) {
           const page = currentUrlPath;
           if (page !== previewLandingBase) {
-            push({ search: stringify({ site, page }, { encode: false }) });
+            // Encoding the `site` & `page` is necessary to avoid ambiguity with the router arguments. For example:
+            // - `.../#?site=editorial&page=/products?id=1&variant=2`: without encoding, the router would consider variant as a query parameter rather than part of the `page` arg path.
+            // - `.../#?site=editorial&page=%2Fproducts%3Fid%3D1%26variant%3D2`: removes the ambiguity.
+            push({ search: stringify({ site, page: currentUrlPath }, { encode: true }) });
           }
         } else if (qsSiteChanged && qsUrlChanged) {
           dispatch(changeSite(qs.site, qs.page));
