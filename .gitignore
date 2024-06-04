@@ -121,7 +121,7 @@ static-assets/themes/cstudioTheme/base.css.map
 static-assets/themes/cstudioTheme/css/global.css
 static-assets/themes/cstudioTheme/css/global.css.map
 templates/web/common/js-next-scripts.ftl
-static-assets/scripts/craftercms-xb.umd.js
+static-assets/scripts/craftercms-xb.umd.js*
 static-assets/scripts/preview-landing.umd.js
 ui/app/public/craftercms-xb.umd.js
 ui/app/public/preview-landing.umd.js
