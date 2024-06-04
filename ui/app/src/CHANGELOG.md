@@ -43,7 +43,6 @@
 * Migrated the Studio UI build to Vite/SWC
 * Rollup's XB build to use SWC
 * Upgraded target compilation to ES2022, dropping many code transforms for features that are supported by most modern browsers such as nullish coalescing, optional chaining, object spreading and destructuring.
-* Removed `PreviewPageExplorerPanel` component.
 * Removed `pages/QuickCreateMenu` component.
 
 ## 4.1.5
