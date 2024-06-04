@@ -36,9 +36,6 @@ import { ErrorState } from '../ErrorState';
 import { renderErrorState } from '../ErrorState/util';
 import { Pagination } from '../Pagination';
 import Box from '@mui/material/Box';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
 
 export type PathNavigatorUIClassKey =
   | 'root'
