@@ -20,14 +20,6 @@ export const translations = defineMessages({
   toggleEditMode: {
     id: 'previewToolbar.toggleEditMode',
     defaultMessage: 'Toggle edit mode'
-  },
-  itemLocked: {
-    id: 'previewToolbar.editModeSwitchLockedMessage',
-    defaultMessage: 'Item is locked by {lockOwner}'
-  },
-  editNotAvailable: {
-    id: 'previewToolbar.editModeSwitchDisabled',
-    defaultMessage: 'Editing is not available'
   }
 });
 
