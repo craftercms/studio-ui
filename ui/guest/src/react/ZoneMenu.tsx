@@ -45,7 +45,7 @@ import {
 import { clearAndListen$ } from '../store/subjects';
 import { startListening } from '../store/actions';
 import { ElementRecord } from '../models/InContextEditing';
-import { extractCollection } from '@craftercms/studio-ui/utils/model';
+import { extractCollection, findParentModelId } from '@craftercms/studio-ui/utils/model';
 import { isSimple, popPiece } from '@craftercms/studio-ui/utils/string';
 import { AnyAction } from '@reduxjs/toolkit';
 import useRef from '@craftercms/studio-ui/hooks/useUpdateRefs';
@@ -81,13 +81,13 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const modelPath = isInheritedField(modelId, fieldId)
     ? models[getModelIdFromInheritedField(modelId, fieldId)].craftercms.path
     : models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
-  const itemAvailableActions = getCachedSandboxItem(modelPath).availableActionsMap;
 
   const trashButtonRef = React.useRef();
   const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
 
   const iceRecord = getById(record.iceIds[0]);
   const recordType = iceRecord.recordType;
+
   const collection = useMemo(() => {
     if (['node-selector-item', 'repeat-item'].includes(recordType)) {
       return extractCollection(getCachedModel(modelId), fieldId, index);
@@ -131,22 +131,36 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
+
   const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
   const collectionContainsFiles = collection ? collection.some((item) => item.hasOwnProperty('key')) : false;
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection?.[elementIndex] : null;
+  const componentPath = models[componentId]?.craftercms.path;
   const { field, contentType } = useMemo(() => getReferentialEntries(record.iceIds[0]), [record.iceIds]);
+
+  // Use componentId to find the container modelId. If not a component, is unlikely to have a container, but in
+  // cases where a page is being referenced by another model, we fall back to modelId.
+  const containerModelId = findParentModelId(componentId ?? modelId, modelHierarchyMap, models);
+  const containerItemAvailableActions = models[containerModelId]
+    ? getCachedSandboxItem(models[containerModelId].craftercms.path).availableActionsMap
+    : null;
+  const containerHasEditAction = containerItemAvailableActions?.edit ?? false;
+  const itemAvailableActions = getCachedSandboxItem(componentPath ?? modelPath).availableActionsMap;
+  const hasEditAction = itemAvailableActions.edit;
+
   const isMovable =
-    ['node-selector-item', 'repeat-item'].includes(recordType) ||
-    Boolean(recordType === 'component' && nodeSelectorItemRecord);
+    containerHasEditAction &&
+    (['node-selector-item', 'repeat-item'].includes(recordType) ||
+      Boolean(recordType === 'component' && nodeSelectorItemRecord));
   const numOfItemsInContainerCollection = collection?.length;
   const isFirstItem = isMovable ? elementIndex === 0 : null;
   const isLastItem = isMovable ? elementIndex === numOfItemsInContainerCollection - 1 : null;
   const isOnlyItem = isMovable ? isFirstItem && isLastItem : null;
   const isEmbedded = useMemo(() => !Boolean(getCachedModel(modelId)?.craftercms.path), [modelId]);
   const showCodeEditOptions =
-    ['component', 'page', 'node-selector-item'].includes(recordType) && !isHeadlessMode && !isItemFile;
-  const showAddItem = recordType === 'field' && field.type === 'repeat';
+    hasEditAction && !isHeadlessMode && !isItemFile && ['component', 'page', 'node-selector-item'].includes(recordType);
+  const showAddItem = hasEditAction && recordType === 'field' && field.type === 'repeat';
   const { isTrashable, showDuplicate } = useMemo(() => {
     const actions = {
       isTrashable: false,
@@ -155,7 +169,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
 
     const nodeSelectorEntries = Boolean(nodeSelectorItemRecord) ? getReferentialEntries(nodeSelectorItemRecord) : null;
 
-    if (Boolean(collection)) {
+    if (containerHasEditAction && Boolean(collection)) {
       const validations = nodeSelectorEntries?.field?.validations;
       const maxValidation = validations?.maxCount?.value;
       const minValidation = validations?.minCount?.value;
@@ -170,7 +184,15 @@ export function ZoneMenu(props: ZoneMenuProps) {
     }
 
     return actions;
-  }, [collection, numOfItemsInContainerCollection, recordType, nodeSelectorItemRecord, isItemFile, permissions]);
+  }, [
+    nodeSelectorItemRecord,
+    collection,
+    numOfItemsInContainerCollection,
+    permissions,
+    containerHasEditAction,
+    recordType,
+    isItemFile
+  ]);
 
   const store = useStore();
   const getItemData = () => {
@@ -372,7 +394,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
       </Tooltip>
-      {!isLockedItem && (
+      {hasEditAction && !isLockedItem && (
         <Tooltip title="Edit" key="edit">
           <UltraStyledIconButton size="small" onClick={onEdit}>
             <PencilIcon />

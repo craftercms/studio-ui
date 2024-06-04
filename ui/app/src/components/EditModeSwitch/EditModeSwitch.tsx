@@ -20,12 +20,9 @@ import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { useIntl } from 'react-intl';
-import translations from './translations';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
 import { useSelection } from '../../hooks/useSelection';
-import { isItemLockedForMe } from '../../utils/content';
-import { useActiveUser } from '../../hooks/useActiveUser';
 
 const EditSwitch = withStyles(Switch, (theme, _params, classes) => {
   const green = theme.palette.success.main;
@@ -91,32 +88,17 @@ export interface EditModeSwitchProps extends Partial<SwitchProps> {
 
 export function EditModeSwitch(props: EditModeSwitchProps) {
   const { item, disabled, ...rest } = props;
-  const user = useActiveUser();
-  const isLocked = isItemLockedForMe(item, user.username);
-  const write = Boolean(item?.availableActionsMap.edit);
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const editMode = useSelection((state) => state.preview.editMode) && !isLocked && write;
+  const editMode = useSelection((state) => state.preview.editMode);
 
   const onChange = (e) => {
     dispatch(setPreviewEditMode({ editMode: e.target.checked }));
   };
 
   return (
-    <Tooltip
-      title={
-        isLocked
-          ? item
-            ? formatMessage(translations.itemLocked, { lockOwner: item.lockOwner.username })
-            : ''
-          : !write
-          ? formatMessage(translations.editNotAvailable)
-          : formatMessage(translations.toggleEditMode)
-      }
-    >
-      <span>
-        <EditSwitch color="default" checked={editMode} onChange={onChange} {...rest} disabled={disabled || !write} />
-      </span>
+    <Tooltip title={formatMessage({ id: 'previewToolbar.toggleEditMode', defaultMessage: 'Toggle edit mode' })}>
+      <EditSwitch color="default" checked={editMode} onChange={onChange} {...rest} disabled={disabled} />
     </Tooltip>
   );
 }

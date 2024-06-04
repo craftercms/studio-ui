@@ -73,6 +73,7 @@ export interface SearchItem {
   lastModified: string;
   size: number;
   snippets: any;
+  additionalFields?: Record<string, unknown>;
 }
 
 export interface SearchFacet {

@@ -28,9 +28,11 @@ import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 import { NEVER, Observable, of } from 'rxjs';
 import { SandboxItem } from '@craftercms/studio-ui/models';
 import { GuestState } from './models/GuestStore';
-import { ElementRecord } from '../models/InContextEditing';
+import { ElementRecord, ICERecord } from '../models/InContextEditing';
 import { getCachedModel, getCachedModels, modelHierarchyMap } from '../contentController';
 import { getParentModelId } from '../utils/ice';
+import { getReferentialEntries } from '../iceRegistry';
+import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 
 export function dragOk(status): boolean {
   return [
@@ -101,8 +103,17 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
  * it uses to compute the result, so they can be used by consumer if needed.
  */
 export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord) => {
-  const { modelId } = record;
-  const model = getCachedModel(modelId);
+  let { modelId, fieldId } = record;
+  // If the present record refers to a node selector item, we need to switch the model to that item of the collection.
+  // Otherwise, is just the model from the present record.
+  let model = getCachedModel(modelId);
+  if (fieldId.length > 0) {
+    const entries = getReferentialEntries(record.iceIds[0]);
+    if (entries.recordType === 'node-selector-item') {
+      model = getCachedModel(extractCollectionItem(model, fieldId[0], record.index));
+      modelId = model.craftercms.id;
+    }
+  }
   const parentModelId = model.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
   const parentModel = parentModelId ? getCachedModel(parentModelId) : null;
   const path = model.craftercms.path ?? parentModel.craftercms.path;
@@ -119,14 +130,13 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
  * targetIndex: number
  */
 export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => {
-  let { dragged, targetIndex, dropZone, dropZones } = dragContext,
-    record = dragged,
-    newTargetIndex = targetIndex,
-    draggedElementIndex = record.index,
-    originDropZone = dropZones.find((dropZone) => dropZone.origin),
-    currentDZ = dropZone.element,
-    movedToSameZone = currentDZ === originDropZone.element,
-    movedToSamePosition: boolean;
+  let { dragged: draggedRecord, targetIndex, dropZone, dropZones } = dragContext;
+  let newTargetIndex = targetIndex;
+  let draggedElementIndex = (draggedRecord as ICERecord)?.index;
+  const originDropZone = dropZones.find((dropZone) => dropZone.origin);
+  const currentDZ = dropZone.element;
+  const movedToSameZone = currentDZ === originDropZone?.element;
+  let movedToSamePosition = false;
 
   if (typeof draggedElementIndex === 'string') {
     // If the index is a string, it's a nested index with dot notation.
@@ -142,13 +152,12 @@ export const getMoveComponentInfo = (dragContext: GuestState['dragContext']) => 
     if (draggedElementIndex < targetIndex) {
       // Hence the final target index in reality is
       // the drop marker's index minus 1
-      newTargetIndex = targetIndex--;
+      newTargetIndex = targetIndex - 1;
     }
     movedToSamePosition = draggedElementIndex === targetIndex;
-  } else {
-    // Not same dropzone => different position
-    movedToSamePosition = false;
   }
+
+  // Not same dropzone => different position
 
   return {
     movedToSameZone,

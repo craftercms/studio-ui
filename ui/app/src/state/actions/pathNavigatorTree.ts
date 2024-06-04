@@ -21,6 +21,7 @@ import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../../models/GetChildrenOptions';
 import LookupTable from '../../models/LookupTable';
 import SystemType from '../../models/SystemType';
+import SimpleAjaxError from '../../models/SimpleAjaxError';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -130,7 +131,8 @@ export const pathNavigatorTreeBulkFetchPathChildrenComplete =
 
 export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
   id: string;
-  error: Omit<AjaxError, 'request' | 'xhr'>;
+  path: string;
+  error: SimpleAjaxError;
 }>('PATH_NAV_TREE_FETCH_PATH_CHILDREN_FAILED');
 
 export const pathNavigatorTreeBulkFetchPathChildrenFailed = /*#__PURE__*/ createAction<{

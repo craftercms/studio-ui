@@ -29,6 +29,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
+import { lookupItemByPath } from '../../utils/content';
 
 export interface ItemMegaMenuBaseProps {
   path: string;
@@ -64,7 +65,7 @@ export function ItemMegaMenu(props: ItemMegaMenuProps) {
   const site = useActiveSiteId();
   const items = useItemsByPath();
   const clipboard = useSelection((state) => state.content.clipboard);
-  const item = items[path];
+  const item = lookupItemByPath(path, items);
   const contentTypes = useSelection((state) => state.contentTypes);
   const itemContentType = contentTypes?.byId?.[item?.contentTypeId]?.name;
   const { authoringBase } = useEnv();

@@ -155,7 +155,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onRowsPerPageChange
   } = props;
   // endregion
-  const items = state.itemsInPath?.flatMap((path) => itemsByPath[path] ?? []) ?? [];
+  const items = state.itemsInPath?.flatMap((path) => lookupItemByPath(path, itemsByPath) ?? []) ?? [];
   const levelDescriptor = itemsByPath[state.levelDescriptor];
   return (
     <Accordion

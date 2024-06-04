@@ -25,6 +25,7 @@ import {
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathChildrenFailed,
   pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeInit,
@@ -193,6 +194,7 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
         limit,
         expanded,
         childrenByParentPath: {},
+        errorByPath: {},
         offsetByPath: {},
         keywordByPath,
         totalByPath: {},
@@ -217,10 +219,14 @@ const reducer = createReducer<LookupTable<PathNavigatorTreeStateProps>>(
     },
     [pathNavigatorTreeFetchPathChildren.type]: (state, action) => {
       const { expand = true } = action.payload;
+      delete state[action.payload.id].errorByPath[action.payload.path];
       expand && expandPath(state, action);
     },
     [pathNavigatorTreeFetchPathChildrenComplete.type]: (state, { payload: { id, parentPath, children, options } }) => {
       updatePath(state, { id, parentPath, children, options });
+    },
+    [pathNavigatorTreeFetchPathChildrenFailed.type]: (state, action) => {
+      state[action.payload.id].errorByPath[action.payload.path] = action.payload.error;
     },
     [pathNavigatorTreeBulkFetchPathChildren.type]: (
       state,

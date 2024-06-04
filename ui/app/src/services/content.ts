@@ -98,7 +98,7 @@ export function fetchDescriptorDOM(
   return fetchDescriptorXML(site, path, options).pipe(map(fromString));
 }
 
-// region fetchSandboxItem
+// region fetchSandboxItem(...
 export function fetchSandboxItem(site: string, path: string): Observable<SandboxItem>;
 export function fetchSandboxItem(
   site: string,
@@ -115,7 +115,7 @@ export function fetchSandboxItem(
   path: string,
   options?: FetchItemsByPathOptions
 ): Observable<SandboxItem | DetailedItem> {
-  return fetchItemsByPath(site, [path], options).pipe(pluck(0));
+  return fetchItemsByPath(site, [path], options).pipe(map((items) => items[0]));
 }
 // endregion
 
@@ -1252,6 +1252,7 @@ export function fetchChildrenByPaths(
       );
 }
 
+// region export function fetchItemsByPath(...
 export function fetchItemsByPath(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<SandboxItem>>;
 export function fetchItemsByPath(
   siteId: string,
@@ -1289,7 +1290,9 @@ export function fetchItemsByPath(
     )
   );
 }
+// endregion
 
+// region export function fetchItemByPath(...
 export function fetchItemByPath(siteId: string, path: string): Observable<SandboxItem>;
 export function fetchItemByPath(
   siteId: string,
@@ -1333,6 +1336,7 @@ export function fetchItemByPath(
     pluck(0)
   );
 }
+// endregion
 
 export function fetchItemWithChildrenByPath(
   siteId: string,

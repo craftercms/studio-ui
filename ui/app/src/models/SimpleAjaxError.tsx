@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,21 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { defineMessages } from 'react-intl';
+import ApiResponse from './ApiResponse';
 
-export const translations = defineMessages({
-  toggleEditMode: {
-    id: 'previewToolbar.toggleEditMode',
-    defaultMessage: 'Toggle edit mode'
-  },
-  itemLocked: {
-    id: 'previewToolbar.editModeSwitchLockedMessage',
-    defaultMessage: 'Item is locked by {lockOwner}'
-  },
-  editNotAvailable: {
-    id: 'previewToolbar.editModeSwitchDisabled',
-    defaultMessage: 'Editing is not available'
-  }
-});
+/**
+ * Essentially a redeclaration of `Omit<AjaxError, 'request' | 'xhr'>`. Mainly removes
+ * non-serializables from AjaxError and allows typing of the `response` property.
+ **/
+export interface SimpleAjaxError<T = ApiResponse> {
+  message: string;
+  name: string;
+  response: T;
+  responseType: string;
+  status: number;
+}
 
-export default translations;
+export default SimpleAjaxError;
