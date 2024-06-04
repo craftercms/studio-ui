@@ -18,7 +18,7 @@ import React, { ChangeEvent, ElementType, useEffect, useState } from 'react';
 import { DetailedItem } from '../../models/Item';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { useDispatch } from 'react-redux';
-import { getParentPath, withIndex, withoutIndex } from '../../utils/path';
+import { withIndex, withoutIndex } from '../../utils/path';
 import {
   pathNavigatorBackgroundRefresh,
   pathNavigatorChangeLimit,
