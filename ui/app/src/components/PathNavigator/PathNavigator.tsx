@@ -395,13 +395,6 @@ export function PathNavigator(props: PathNavigatorProps) {
     onSearch$.next(keyword);
   };
 
-  const onBack = () => {
-    if (state.rootPath !== state.currentPath) {
-      const parentPath = getParentPath(state.currentPath);
-      dispatch(pathNavigatorConditionallySetPath({ id, path: parentPath, keyword }));
-    }
-  };
-
   return (
     <>
       <PathNavigatorUI
@@ -426,7 +419,6 @@ export function PathNavigator(props: PathNavigatorProps) {
         onPageChanged={onPageChanged}
         onRowsPerPageChange={onRowsPerPageChange}
         computeActiveItems={computeActiveItems}
-        onBack={onBack}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}

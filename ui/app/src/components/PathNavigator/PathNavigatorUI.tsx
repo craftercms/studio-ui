@@ -131,7 +131,6 @@ export interface PathNavigatorUIProps {
    **/
   onPageChanged?: (page: number) => void;
   onRowsPerPageChange?: (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void;
-  onBack?: () => void;
 }
 
 export function PathNavigatorUI(props: PathNavigatorUIProps) {
@@ -156,8 +155,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onItemClicked,
     onPageChanged,
     computeActiveItems,
-    onRowsPerPageChange,
-    onBack
+    onRowsPerPageChange
   } = props;
   // endregion
   const items = state.itemsInPath?.flatMap((path) => itemsByPath[path] ?? []) ?? [];
@@ -206,25 +204,15 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
           />
         ) : (
           <>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {state.breadcrumb && state.breadcrumb.length > 1 && (
-                <Tooltip title={<FormattedMessage defaultMessage="Back" />}>
-                  <IconButton color="primary" size="small" sx={{ p: 0 }} onClick={onBack}>
-                    <NavigateBeforeIcon />
-                  </IconButton>
-                </Tooltip>
-              )}
-              {/* region <Breadcrumbs /> */}
-              <Breadcrumbs
-                keyword={keyword}
-                breadcrumb={state.breadcrumb.map((path) => lookupItemByPath(path, itemsByPath)).filter(Boolean)}
-                onSearch={onSearch}
-                onCrumbSelected={onBreadcrumbSelected}
-                classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
-                sxs={{ root: { display: 'inline-flex !important', width: '100%' } }}
-              />
-              {/* endregion */}
-            </Box>
+            {/* region <Breadcrumbs /> */}
+            <Breadcrumbs
+              keyword={keyword}
+              breadcrumb={state.breadcrumb.map((path) => lookupItemByPath(path, itemsByPath)).filter(Boolean)}
+              onSearch={onSearch}
+              onCrumbSelected={onBreadcrumbSelected}
+              classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
+            />
+            {/* endregion */}
             {/* region Current Item */}
             {lookupItemByPath(state.currentPath, itemsByPath) && (
               <PathNavigatorItem
