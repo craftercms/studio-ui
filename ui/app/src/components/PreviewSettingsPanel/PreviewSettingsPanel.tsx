@@ -32,7 +32,6 @@ import { setHighlightMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import EditModeSwitch from '../EditModeSwitch';
 import { usePreviewState } from '../../hooks/usePreviewState';
-import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { HighlightMode } from '../../models/GlobalState';
 import PaddingModeSwitchListItem from '../PaddingModeSwitchListItem';
 
@@ -75,13 +74,12 @@ const formHelperTextSx = { pb: 1, pr: 2, pl: 2, pt: 0, mt: 0 };
 export function PreviewSettingsPanel() {
   const { formatMessage } = useIntl();
   const { highlightMode } = usePreviewState();
-  const item = useCurrentPreviewItem();
   const dispatch = useDispatch();
   return (
     <List>
       <ListItem>
         <ListItemText primary={formatMessage(translations.editMode)} />
-        <EditModeSwitch item={item} edge="end" />
+        <EditModeSwitch edge="end" />
       </ListItem>
       <FormHelperText sx={formHelperTextSx}>{formatMessage(translations.editModeHelperText)}</FormHelperText>
       <Divider />

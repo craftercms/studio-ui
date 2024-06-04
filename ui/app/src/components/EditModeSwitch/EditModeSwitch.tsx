@@ -18,7 +18,6 @@ import { withStyles } from 'tss-react/mui';
 import Switch, { SwitchProps } from '@mui/material/Switch';
 import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
-import { DetailedItem, SandboxItem } from '../../models/Item';
 import { useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
@@ -82,12 +81,10 @@ const EditSwitch = withStyles(Switch, (theme, _params, classes) => {
   };
 });
 
-export interface EditModeSwitchProps extends Partial<SwitchProps> {
-  item?: SandboxItem | DetailedItem;
-}
+export interface EditModeSwitchProps extends Partial<SwitchProps> {}
 
 export function EditModeSwitch(props: EditModeSwitchProps) {
-  const { item, disabled, ...rest } = props;
+  const { disabled, ...rest } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const editMode = useSelection((state) => state.preview.editMode);
