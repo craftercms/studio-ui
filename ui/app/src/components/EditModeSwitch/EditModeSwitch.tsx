@@ -20,7 +20,6 @@ import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { useIntl } from 'react-intl';
-import translations from './translations';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
 import { useSelection } from '../../hooks/useSelection';
@@ -98,7 +97,7 @@ export function EditModeSwitch(props: EditModeSwitchProps) {
   };
 
   return (
-    <Tooltip title={formatMessage(translations.toggleEditMode)}>
+    <Tooltip title={formatMessage({ id: 'previewToolbar.toggleEditMode', defaultMessage: 'Toggle edit mode' })}>
       <EditSwitch color="default" checked={editMode} onChange={onChange} {...rest} disabled={disabled} />
     </Tooltip>
   );
