@@ -45,7 +45,7 @@
     "@types/eslint": "^8.56.10",
     "babel-plugin-inline-package-json": "^2.0.0",
     "build-if-changed": "^1.5.5",
-    "eslint": "^8.57.0"
+    "eslint": "^9.4.0"
   },
   "peerDependencies": {
     "uppy": "^2.13.8"
