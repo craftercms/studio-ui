@@ -95,7 +95,7 @@
   },
   "dependencies": {
     "@craftercms/classes": "4.1.4",
-    "@craftercms/content": "4.1.4",
+    "@craftercms/content": "4.1.5",
     "@craftercms/ice": "4.1.4",
     "@craftercms/npm-content": "workspace:^",
     "@craftercms/search": "4.1.4",
