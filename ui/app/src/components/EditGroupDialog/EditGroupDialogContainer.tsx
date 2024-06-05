@@ -225,6 +225,10 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           fnRefs.current.onSubmittingAndOrPendingChange({
             isSubmitting: false
           });
+
+          // Fetch users and members for created group
+          fetchUsers();
+          fetchMembers(group.id);
         },
         error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
@@ -252,6 +256,13 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     });
   };
 
+  const fetchMembers = (groupId: number) => {
+    fetchUsersFromGroup(groupId).subscribe((members) => {
+      setMembers(members);
+      setMembersLookup(createPresenceTable(members, true, (member) => member.username));
+    });
+  };
+
   const fetchMoreUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
     fetchAll({
       limit: usersFetchSize,
@@ -276,10 +287,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   useMount(() => {
     if (props.group) {
       fetchUsers();
-      fetchUsersFromGroup(props.group.id).subscribe((members) => {
-        setMembers(members);
-        setMembersLookup(createPresenceTable(members, true, (member) => member.username));
-      });
+      fetchMembers(props.group.id);
     }
   });
 
