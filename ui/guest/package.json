@@ -94,11 +94,11 @@
     "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "dependencies": {
-    "@craftercms/classes": "4.1.4",
+    "@craftercms/classes": "4.1.5",
     "@craftercms/content": "4.1.5",
-    "@craftercms/ice": "4.1.4",
+    "@craftercms/ice": "4.1.5",
     "@craftercms/npm-content": "workspace:^",
-    "@craftercms/search": "4.1.4",
+    "@craftercms/search": "4.1.5",
     "@craftercms/studio-ui": "workspace:^",
     "@emotion/css": "^11.11.2",
     "@emotion/react": "^11.11.4",
