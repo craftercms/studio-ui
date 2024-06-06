@@ -225,7 +225,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           fnRefs.current.onSubmittingAndOrPendingChange({
             isSubmitting: false
           });
-
           // Fetch users and members for created group
           fetchUsers();
           fetchMembers(group.id);
