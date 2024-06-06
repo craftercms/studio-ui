@@ -426,6 +426,17 @@ export const simpleTaxonomyDSMessages = defineMessages({
   }
 });
 
+export const browseCMISMessages = defineMessages({
+  cmis: {
+    id: 'browseCMIS.cmis',
+    defaultMessage: 'CMIS'
+  },
+  cloningCMIS: {
+    id: 'browseCMIS.cloningCMIS',
+    defaultMessage: 'Cloning CMIS Asset'
+  }
+});
+
 export const browseSearchMessages = defineMessages({
   lookUpParentError: {
     id: 'browseSearchMessages.lookUpChildError',
