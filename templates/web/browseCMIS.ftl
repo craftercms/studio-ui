@@ -218,11 +218,11 @@
       });
     </script>
 
-    <#include "/static-assets/app/pages/legacy.html">
     <script type="text/javascript">
         $(function() {
-          CStudioBrowseCMIS.init();
+            CStudioBrowseCMIS.init();
         });
+
     </script>
 
    </body>
