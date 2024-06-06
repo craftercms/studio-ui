@@ -40,8 +40,6 @@
 * Migrated the Studio UI build to Vite/SWC
 * Rollup's XB build to use SWC
 * Upgraded target compilation to ES2022, dropping many code transforms for features that are supported by most modern browsers such as nullish coalescing, optional chaining, object spreading and destructuring.
-* Remove legacy `browseCMIS` dialog.
-* Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources.
 
 ## 4.1.5
 * [common-api.js]
