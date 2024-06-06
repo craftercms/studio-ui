@@ -47,6 +47,7 @@ import {
   moveModeClass
 } from '../constants';
 import {
+  allowedContentTypesUpdate,
   assetDragEnded,
   assetDragStarted,
   clearContentTreeFieldSelected,
@@ -116,6 +117,7 @@ import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/actions/system';
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
+import { subscribeToAllowedContentTypes } from '../iceRegistry';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -448,21 +450,29 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // Load dependencies (tinymce, ace)
   useEffect(() => {
-    if (hasHost && !window.tinymce) {
-      const script = document.createElement('script');
-      script.src = '/studio/static-assets/libs/tinymce/tinymce.min.js';
-      // script.onload = () => ...;
-      document.head.appendChild(script);
-    }
-    if (hasHost && !window.ace) {
-      const script = document.createElement('script');
-      script.src = '/studio/static-assets/libs/ace/ace.js';
-      document.head.appendChild(script);
+    if (hasHost) {
+      if (!window.tinymce) {
+        const script = document.createElement('script');
+        script.src = '/studio/static-assets/libs/tinymce/tinymce.min.js';
+        // script.onload = () => ...;
+        document.head.appendChild(script);
+      }
+      if (!window.ace) {
+        const script = document.createElement('script');
+        script.src = '/studio/static-assets/libs/ace/ace.js';
+        document.head.appendChild(script);
 
-      const styleSheet = document.createElement('link');
-      styleSheet.rel = 'stylesheet';
-      styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
-      document.head.appendChild(styleSheet);
+        const styleSheet = document.createElement('link');
+        styleSheet.rel = 'stylesheet';
+        styleSheet.href = '/studio/static-assets/styles/tinymce-ace.css';
+        document.head.appendChild(styleSheet);
+      }
+      const allowedTypesSubscription = subscribeToAllowedContentTypes((allowed) =>
+        post(allowedContentTypesUpdate(allowed))
+      );
+      return () => {
+        allowedTypesSubscription.unsubscribe();
+      };
     }
   }, [hasHost]);
 

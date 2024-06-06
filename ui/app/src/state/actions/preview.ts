@@ -32,6 +32,7 @@ import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
 import { AjaxError } from 'rxjs/ajax';
 import { ActiveTargetingModel } from '../../services/configuration';
+import AllowedContentTypesData from '../../models/AllowedContentTypesData';
 
 interface CommonOperationProps {
   modelId: string;
@@ -192,6 +193,9 @@ export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type:
 );
 export const setEditModePadding = /*#__PURE__*/ createAction<{ editModePadding: boolean }>('SET_DRAG_HELP_MODE');
 export const toggleEditModePadding = /*#__PURE__*/ createAction('TOGGLE_DRAG_HELP_MODE');
+
+export const allowedContentTypesUpdate = /*#__PURE__*/ createAction<AllowedContentTypesData>('ALLOWED_TYPES_UPDATED');
+
 // endregion
 
 // region Actions

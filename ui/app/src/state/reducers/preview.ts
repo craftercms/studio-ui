@@ -17,6 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { HighlightMode, PagedEntityState } from '../../models/GlobalState';
 import {
+  allowedContentTypesUpdate,
   clearDropTargets,
   clearSelectForEdit,
   closeToolsPanel,
@@ -317,6 +318,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       const url = href.replace(location.origin, '');
       state.error = null;
       state.guest = {
+        allowedContentTypes: null,
         url,
         origin,
         modelId: null,
@@ -807,6 +809,17 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
     })
     .addCase(mainModelModifiedExternally, (state, { payload }) => {
       if (state.guest) state.guest.mainModelModifier = payload.user;
+    })
+    .addCase(allowedContentTypesUpdate, (state, { payload }) => {
+      const reducerFn = (acc: LookupTable<boolean>, value: string) => {
+        acc[value] = true;
+        return acc;
+      };
+      state.guest.allowedContentTypes = {
+        embedded: payload.embedded?.reduce(reducerFn, {}),
+        shared: payload.shared?.reduce(reducerFn, {}),
+        sharedExisting: payload.sharedExisting?.reduce(reducerFn, {})
+      };
     });
 });
 

@@ -68,6 +68,7 @@ import { UIBlockerStateProps } from '../components/UIBlocker';
 import { RenameAssetStateProps } from '../components/RenameAssetDialog';
 import Person from './Person';
 import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/types';
+import AllowedContentTypesData from './AllowedContentTypesData';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -100,6 +101,7 @@ export interface GuestData {
    * used to determine if the content item was modified in the background and it editing should be disabled.
    */
   mainModelModifier: Person;
+  allowedContentTypes: AllowedContentTypesData<LookupTable<boolean>>;
 }
 
 // TODO:

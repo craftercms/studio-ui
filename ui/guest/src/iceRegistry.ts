@@ -32,6 +32,9 @@ import { forEach } from '@craftercms/studio-ui/utils/array';
 import { determineRecordType, findComponentContainerFields } from './utils/ice';
 import { isSimple, removeLastPiece } from '@craftercms/studio-ui/utils/string';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { Observer, Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { AllowedContentTypesData } from '@craftercms/studio-ui/models/AllowedContentTypesData';
 
 /** Functions return nullish if everything is fine */
 const validationChecks: Partial<Record<ValidationKeys, Function>> = {
@@ -65,6 +68,28 @@ let rid = 0;
 export const registry: Map<number, ICERecord> = new Map();
 
 let refCount: LookupTable<number> = {};
+
+export interface AllowedContentTypesLookup {
+  result: AllowedContentTypesData | null;
+  recordIdKeyLookup: LookupTable<string>;
+  allowedLookup: LookupTable<AllowedContentTypesData & { recordIds: number[] }>;
+}
+
+const allowedContentTypesData: AllowedContentTypesLookup = {
+  result: null,
+  recordIdKeyLookup: {
+    /* [recordId]: `{contentTypeId}:{fieldId}` */
+  },
+  allowedLookup: {
+    /* [`{contentTypeId}:{fieldId}`]: { embedded: [], shared: [], sharedExisting: [], recordIds: [] } */
+  }
+};
+
+const createAllowedContentTypesLookupKey = (contentTypeId: string, fieldId: string) => `${contentTypeId}:${fieldId}`;
+const allowedContentTypes$ = new Subject<AllowedContentTypesData>();
+const allowedContentTypesUpdated$ = new Subject<void>();
+
+allowedContentTypesUpdated$.pipe(debounceTime(800)).subscribe(collectAndEmitAllowedContentTypes);
 
 export function register(registration: ICERecordRegistration): number {
   // For consistency, set `fieldId` and `index` props
@@ -113,6 +138,28 @@ export function register(registration: ICERecordRegistration): number {
 
     record.recordType = determineRecordType(entities);
 
+    if (record.recordType === 'field' && entities.field.type === 'node-selector') {
+      const key = createAllowedContentTypesLookupKey(entities.contentTypeId, entities.fieldId);
+      if (!allowedContentTypesData.allowedLookup[key]) {
+        const validations = entities.field.validations;
+        allowedContentTypesData.allowedLookup[key] = {
+          embedded: validations.allowedEmbeddedContentTypes?.value ?? null,
+          shared: validations.allowedSharedContentTypes?.value ?? null,
+          sharedExisting: validations.allowedSharedExistingContentTypes?.value ?? null,
+          recordIds: []
+        };
+      } else {
+        console.log(`Skipping registration of allowed content types for: ${key}`);
+      }
+      // TODO: Debug log. Remove. Do not merge.
+      if (allowedContentTypesData.allowedLookup[key].recordIds.includes(record.id)) {
+        console.log(`${record.id} already registered for ${key}`);
+      }
+      allowedContentTypesData.recordIdKeyLookup[record.id] = key;
+      allowedContentTypesData.allowedLookup[key].recordIds.push(record.id);
+      allowedContentTypesUpdated$.next();
+    }
+
     registry.set(record.id, record);
     refCount[record.id] = 1;
 
@@ -127,6 +174,21 @@ export function deregister(id: number): ICERecord {
       registry.delete(id);
     } else {
       refCount[id]--;
+    }
+    let key = allowedContentTypesData.recordIdKeyLookup[id];
+    if (key) {
+      delete allowedContentTypesData.recordIdKeyLookup[id];
+      if (
+        // If everything fits correctly, if only one is left, it should be this record that's being removed.
+        allowedContentTypesData.allowedLookup[key].recordIds.length === 1
+      ) {
+        delete allowedContentTypesData.allowedLookup[key];
+      } else {
+        allowedContentTypesData.allowedLookup[key].recordIds = allowedContentTypesData.allowedLookup[
+          key
+        ].recordIds.filter((recId) => recId !== id);
+      }
+      allowedContentTypesUpdated$.next();
     }
   }
   return null;
@@ -595,6 +657,9 @@ export function findContainerField(
 export function flush(): void {
   registry.clear();
   refCount = {};
+  allowedContentTypesData.recordIdKeyLookup = {};
+  allowedContentTypesData.allowedLookup = {};
+  allowedContentTypesData.result = null;
 }
 
 export function findContainerRecord(modelId: string, fieldId: string, index: string | number): ICERecord {
@@ -636,4 +701,29 @@ export function findChildRecord(modelId: string, fieldId: string, index: string 
 
 export function getRegistry() {
   return registry;
+}
+
+function collectAndEmitAllowedContentTypes(): void {
+  const result: AllowedContentTypesData = {
+    embedded: [],
+    shared: [],
+    sharedExisting: []
+  };
+  Object.values(allowedContentTypesData.allowedLookup).forEach((allowed) => {
+    allowed.embedded && result.embedded.push(...allowed.embedded);
+    allowed.shared && result.shared.push(...allowed.shared);
+    allowed.sharedExisting && result.sharedExisting.push(...allowed.sharedExisting);
+  });
+  allowedContentTypesData.result = result;
+  allowedContentTypes$.next(result);
+}
+
+export function getAllowedContentTypes(): AllowedContentTypesData {
+  return allowedContentTypesData.result;
+}
+
+export function subscribeToAllowedContentTypes(
+  observerOrNext: Partial<Observer<AllowedContentTypesData>> | ((value: AllowedContentTypesData) => void)
+): Subscription {
+  return allowedContentTypes$.subscribe(observerOrNext);
 }

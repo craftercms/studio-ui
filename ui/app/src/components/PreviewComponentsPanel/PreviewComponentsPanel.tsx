@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@mui/material/List';
 import ContentType from '../../models/ContentType';
@@ -39,6 +39,24 @@ import LoadingState from '../LoadingState';
 import ErrorBoundary from '../ErrorBoundary';
 import EmptyState from '../EmptyState';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
+import ListItem from '@mui/material/ListItem';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
+import InfoRounded from '@mui/icons-material/InfoOutlined';
+import { ExpandMoreRounded } from '@mui/icons-material';
+import Alert, { alertClasses } from '@mui/material/Alert';
+import { nou } from '../../utils/object';
+import Tooltip from '@mui/material/Tooltip';
+import Skeleton from '@mui/material/Skeleton';
+import { ItemTypeIcon } from '../ItemTypeIcon';
+import { SandboxItem } from '../../models';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
@@ -62,25 +80,107 @@ const translations = defineMessages({
   }
 });
 
-type ComponentsPanelUIProps = { componentTypes: ContentType[] };
+type ContentTypeData = {
+  allowedTypes: ContentType[];
+  otherTypes: ContentType[];
+};
 
 export function PreviewComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
-  const contentTypesBranchEntries = Object.entries(contentTypesBranch.byId ?? {});
+  const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
   const [keyword, setKeyword] = useState('');
-  const lowerCaseKeyword = keyword.toLowerCase();
-  const filteredContentTypes = contentTypesBranch.byId
-    ? contentTypesBranchEntries
-        .filter(
-          ([id, contentType]) =>
-            id !== '/component/level-descriptor' &&
-            contentType.type === 'component' &&
-            (contentType.name.toLowerCase().includes(lowerCaseKeyword) ||
-              contentType.id.toLowerCase().includes(lowerCaseKeyword))
-        )
-        .map(([, contentType]) => contentType)
-    : null;
   const { formatMessage } = useIntl();
+  const contentTypeData: ContentTypeData = useMemo(() => {
+    const allowedTypes: ContentType[] = [];
+    const otherTypes: ContentType[] = [];
+    const result = { allowedTypes, otherTypes };
+    if (!contentTypesBranch.byId || !allowedTypesData) return result;
+    const lowerCaseKeyword = keyword.trim().toLowerCase();
+    const typeLookup = contentTypesBranch.byId;
+    for (const id in typeLookup) {
+      const contentType = typeLookup[id];
+      if (
+        // Skip pages
+        contentType.type === 'page' ||
+        // Keyword isn't blank and the type name nor id match the keyword
+        (lowerCaseKeyword !== '' &&
+          !contentType.name.toLowerCase().includes(lowerCaseKeyword) &&
+          !id.toLowerCase().includes(lowerCaseKeyword))
+      ) {
+        continue;
+      }
+      // if contentType.type === 'component' ...
+      if (allowedTypesData.embedded?.[id] || allowedTypesData.shared?.[id] || allowedTypesData.sharedExisting?.[id]) {
+        allowedTypes.push(contentType);
+      } else {
+        otherTypes.push(contentType);
+      }
+    }
+    return result;
+  }, [contentTypesBranch.byId, keyword, allowedTypesData]);
+  const dispatch = useDispatch();
+  // region Context Menu
+  const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
+  const onMenuClose = () => setMenuContext(null);
+  const onBrowseSharedInstancesClicked = () => {
+    dispatch(
+      batchActions([
+        setContentTypeFilter(menuContext.contentType.id),
+        pushIcePanelPage(
+          createToolsPanelPage(
+            formatMessage({ defaultMessage: 'Existing {name}' }, { name: menuContext.contentType.name }),
+            [createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })],
+            'icePanel'
+          )
+        )
+      ])
+    );
+  };
+  const onListInPageInstancesClick = () => {
+    dispatch(
+      batchActions([
+        setContentTypeFilter(menuContext.contentType.id),
+        pushIcePanelPage(
+          createToolsPanelPage(
+            formatMessage({ defaultMessage: 'Instances of {name}' }, { name: menuContext.contentType.name }),
+            [createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })],
+            'icePanel'
+          )
+        )
+      ])
+    );
+  };
+  const onListDropTargetsClick = () => {
+    dispatch(
+      pushIcePanelPage(
+        createToolsPanelPage(
+          formatMessage({ defaultMessage: 'Drop Targets for {name}' }, { name: menuContext.contentType.name }),
+          [createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })],
+          'icePanel'
+        )
+      )
+    );
+    getHostToGuestBus().next({
+      type: contentTypeDropTargetsRequest.type,
+      payload: menuContext.contentType.id
+    });
+  };
+  // endregion
+  // region Drag and Drop
+  const editMode = useSelection((state) => state.preview.editMode);
+  const [isBeingDragged, setIsBeingDragged] = useState<string | null>(null);
+  const onDragStart = (contentType: ContentType) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
+    getHostToGuestBus().next({ type: componentDragStarted.type, payload: contentType });
+    setIsBeingDragged(contentType.id);
+  };
+  const onDragEnd = () => {
+    getHostToGuestBus().next({ type: componentDragEnded.type });
+    setIsBeingDragged(null);
+  };
+  // endregion
   return (
     <ErrorBoundary>
       <Box sx={{ padding: (theme) => `${theme.spacing(1)} ${theme.spacing(1)} 0` }}>
@@ -96,116 +196,138 @@ export function PreviewComponentsPanel() {
         <LoadingState
           title={<FormattedMessage id="componentsPanel.suspenseStateMessage" defaultMessage="Retrieving Page Model" />}
         />
-      ) : contentTypesBranchEntries.length === 0 ? (
-        <EmptyState
-          title={<FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />}
-          subtitle={
-            <FormattedMessage
-              id="componentsPanel.emptyComponentsSubtitle"
-              defaultMessage="Communicate with your developers to create the required components in the system."
-            />
-          }
-        />
-      ) : filteredContentTypes.length === 0 ? (
-        <EmptyState
-          title={<FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />}
-          subtitle={<FormattedMessage defaultMessage="Try changing the keyword." />}
-        />
       ) : (
-        <ComponentsPanelUI componentTypes={filteredContentTypes} />
+        <>
+          {/* **** */}
+          <Box sx={{ pt: 1 }}>
+            {nou(allowedTypesData) ? (
+              <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
+                <FormattedMessage defaultMessage="Awaiting for the preview application..." />
+              </Alert>
+            ) : contentTypeData.allowedTypes.length ? (
+              <>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    placeContent: 'space-between',
+                    alignItems: 'center',
+                    px: 1.6,
+                    py: 1.5
+                  }}
+                >
+                  <Typography variant="overline">
+                    <FormattedMessage defaultMessage="Allowed Types" />
+                  </Typography>
+                  <Tooltip
+                    arrow
+                    title={
+                      <FormattedMessage defaultMessage="The allowed types are those configured by project developers to be accepted by the content model" />
+                    }
+                  >
+                    <IconButton size="small">
+                      <InfoRounded fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+                <List sx={{ pt: 0 }}>
+                  {contentTypeData.allowedTypes.map((contentType) => (
+                    <DraggablePanelListItem
+                      key={contentType.id}
+                      primaryText={contentType.name}
+                      onDragStart={() => onDragStart(contentType)}
+                      onDragEnd={onDragEnd}
+                      onMenu={(anchor) => setMenuContext({ anchor, contentType })}
+                      isBeingDragged={isBeingDragged === contentType.id}
+                    />
+                  ))}
+                </List>
+              </>
+            ) : (
+              <EmptyState
+                sxs={{ title: { textAlign: 'center' } }}
+                title={
+                  keyword ? (
+                    <FormattedMessage defaultMessage='No types match "{keyword}"' values={{ keyword }} />
+                  ) : (
+                    <FormattedMessage defaultMessage="No allowed types were detected on the current preview" />
+                  )
+                }
+                subtitle={
+                  keyword ? undefined : (
+                    <FormattedMessage defaultMessage="Developers can modify the content model to allow for types to be used where required" />
+                  )
+                }
+              />
+            )}
+          </Box>
+          {/* **** */}
+          {contentTypeData.otherTypes.length > 0 && (
+            <Accordion square disableGutters elevation={0} sx={{ background: 'none' }}>
+              <AccordionSummary expandIcon={<ExpandMoreRounded />}>
+                <Typography variant="overline">
+                  <FormattedMessage defaultMessage="Other Types" />
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ p: 0 }}>
+                <Alert
+                  severity="info"
+                  variant="outlined"
+                  sx={{ width: '100%', border: 'none', py: 0, [`.${alertClasses.icon}`]: { mr: 1 } }}
+                >
+                  <FormattedMessage defaultMessage="Usage of these types is not configured for the current content model." />
+                </Alert>
+                <List dense>
+                  {contentTypeData.otherTypes.map((type) => (
+                    <ListItem key={type.id}>
+                      <ListItemText primary={type.name} />
+                      <ListItemSecondaryAction sx={{ right: '10px' }}>
+                        <IconButton
+                          edge="end"
+                          aria-label="delete"
+                          size="small"
+                          onClick={(e) => setMenuContext({ anchor: e.currentTarget, contentType: type })}
+                        >
+                          <MoreVertRounded />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          )}
+          {/* **** */}
+        </>
       )}
-    </ErrorBoundary>
-  );
-}
-
-export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
-  const { componentTypes } = props;
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const editMode = useSelection((state) => state.preview.editMode);
-
-  const hostToGuest$ = getHostToGuestBus();
-  const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
-
-  const onDragStart = (contentType) => {
-    if (!editMode) {
-      dispatch(setPreviewEditMode({ editMode: true }));
-    }
-    hostToGuest$.next({ type: componentDragStarted.type, payload: contentType });
-  };
-
-  const onDragEnd = () => hostToGuest$.next({ type: componentDragEnded.type });
-
-  const onMenuClose = () => setMenuContext(null);
-
-  const onBrowseSharedInstancesClicked = () => {
-    dispatch(
-      batchActions([
-        setContentTypeFilter(menuContext.contentType.id),
-        pushIcePanelPage(
-          createToolsPanelPage(
-            { id: 'previewBrowseComponentsPanel.title' },
-            [createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })],
-            'icePanel'
-          )
-        )
-      ])
-    );
-  };
-
-  const onListInPageInstancesClick = () => {
-    dispatch(
-      batchActions([
-        setContentTypeFilter(menuContext.contentType.id),
-        pushIcePanelPage(
-          createToolsPanelPage(
-            { id: 'previewInPageInstancesPanel.title' },
-            [createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })],
-            'icePanel'
-          )
-        )
-      ])
-    );
-  };
-
-  const onListDropTargetsClick = () => {
-    dispatch(
-      pushIcePanelPage(
-        createToolsPanelPage(
-          { id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' },
-          [createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })],
-          'icePanel'
-        )
-      )
-    );
-    hostToGuest$.next({
-      type: contentTypeDropTargetsRequest.type,
-      payload: menuContext.contentType.id
-    });
-  };
-
-  return (
-    <>
-      <List>
-        {componentTypes.map((contentType) => (
-          <DraggablePanelListItem
-            key={contentType.id}
-            primaryText={contentType.name}
-            secondaryText={contentType.id}
-            onDragStart={() => onDragStart(contentType)}
-            onDragEnd={onDragEnd}
-            onMenu={(anchor) => setMenuContext({ anchor, contentType })}
-          />
-        ))}
-      </List>
-
-      <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
+      <Menu open={Boolean(menuContext)} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
+        <Box
+          sx={{
+            px: 2,
+            py: 1,
+            mb: 1,
+            maxWidth: 300,
+            borderColor: 'divider',
+            borderWidth: 1,
+            borderBottomStyle: 'solid'
+          }}
+        >
+          <Typography variant="body2" title={menuContext?.contentType.id} noWrap>
+            {menuContext?.contentType.id ?? <Skeleton variant="text" />}
+          </Typography>
+          <Typography sx={{ display: 'flex', alignItems: 'center', placeContent: 'space-between' }}>
+            {menuContext?.contentType.name ?? <Skeleton variant="text" width="100px" />}
+            <ItemTypeIcon
+              item={{ systemType: menuContext?.contentType.type ?? '', mimeType: '' } as SandboxItem}
+              sx={{ ml: 0.7, color: 'action.active' }}
+            />
+          </Typography>
+        </Box>
         <MenuItem onClick={onListInPageInstancesClick}>{formatMessage(translations.listInPageInstances)}</MenuItem>
         <MenuItem onClick={onBrowseSharedInstancesClicked}>{formatMessage(translations.browse)}</MenuItem>
         <MenuItem onClick={onListDropTargetsClick}>{formatMessage(translations.listDropTargets)}</MenuItem>
       </Menu>
-    </>
+    </ErrorBoundary>
   );
-};
+}
 
 export default PreviewComponentsPanel;

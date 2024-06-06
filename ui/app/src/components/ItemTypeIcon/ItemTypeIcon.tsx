@@ -40,10 +40,14 @@ import { DetailedItem, SandboxItem } from '../../models/Item';
 import { IntlFormatters, useIntl } from 'react-intl';
 import { messages } from './translations';
 import { SvgIconProps } from '@mui/material/SvgIcon';
+import { BoxProps } from '@mui/material/Box';
 
 export interface ItemTypeIconProps extends SvgIconProps {
   item: DetailedItem | SandboxItem;
   tooltipProps?: Partial<TooltipProps>;
+  sxs?: Partial<{
+    icon: BoxProps['sx'];
+  }>;
 }
 
 export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage: IntlFormatters['formatMessage']) {
@@ -55,7 +59,7 @@ export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage:
 }
 
 export function ItemTypeIcon(props: ItemTypeIconProps) {
-  const { item, tooltipProps, ...rest } = props;
+  const { item, tooltipProps, sxs, ...rest } = props;
   const { formatMessage } = useIntl();
   let TheIcon = UnknownStateIcon;
   switch (item.systemType) {
@@ -143,7 +147,7 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
   }
   return (
     <Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage)}>
-      <TheIcon {...rest} />
+      <TheIcon sx={sxs?.icon} {...rest} />
     </Tooltip>
   );
 }
