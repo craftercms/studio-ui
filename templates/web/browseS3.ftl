@@ -164,7 +164,7 @@
     <#include "/static-assets/app/pages/legacy.html">
     <script type="text/javascript">
       document.addEventListener("DOMLegacyReady", () => {
-        CrafterCMSNext.system.getStore().subscribe(() => {
+        window.craftercms.store$().subscribe(() => {
           $(function() {
             CStudioBrowseS3.init();
           });

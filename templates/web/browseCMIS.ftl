@@ -220,13 +220,9 @@
 
     <#include "/static-assets/app/pages/legacy.html">
     <script type="text/javascript">
-      document.addEventListener("DOMLegacyReady", () => {
-        CrafterCMSNext.system.getStore().subscribe(() => {
-          $(function() {
-            CStudioBrowseCMIS.init();
-          });
+        $(function() {
+          CStudioBrowseCMIS.init();
         });
-      });
     </script>
 
    </body>
