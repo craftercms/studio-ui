@@ -55,11 +55,9 @@ var setFormSize = function (height, id) {
   form.style.height = height + 'px';
 };
 
-var CStudioForms = CStudioForms;
-
 const initializeCStudioForms = () => {
-  CStudioForms =
-    CStudioForms ||
+  window.CStudioForms =
+    window.CStudioForms ||
     (function () {
       var cfe = {};
 
