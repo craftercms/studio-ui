@@ -50,7 +50,6 @@ export interface GroupEditDialogUIProps {
   onDeleteGroup?(group: Group): void;
   onSave(): void;
   submitOk: boolean;
-  onCancel(): void;
   onChangeValue(value: { key: string; value: string }): void;
   onAddMembers?(): void;
   onRemoveMembers?(): void;
