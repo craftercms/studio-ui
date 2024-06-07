@@ -163,7 +163,7 @@
 
     <#include "/static-assets/app/pages/legacy.html">
     <script type="text/javascript">
-      document.addEventListener("DOMLegacyReady", () => {
+      document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
         window.craftercms.store$().subscribe(() => {
           $(function() {
             CStudioBrowseS3.init();

@@ -8013,7 +8013,7 @@ function getTopLegacyWindow(nextWindow) {
 
 if (!window.location.pathname.includes('/studio/search') && !window.location.pathname.includes('/studio/legacy/form')) {
   if (typeof CrafterCMSNext === 'undefined') {
-    document.addEventListener('DOMLegacyReady', function () {
+    document.addEventListener('CrafterCMS.CodebaseBridgeReady', function () {
       CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
     });
   } else {

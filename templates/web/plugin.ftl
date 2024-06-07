@@ -22,7 +22,7 @@
 <#if pSite == '' || pType == '' || pName == ''>
   <@layout title="Error - ${contentModel['common-title']!''}">
     <script>
-      document.addEventListener('DOMLegacyReady', () => {
+      document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
         printError({ title: 'Query arguments site, type and name are mandatory to render a plugin' })
       });
     </script>
@@ -48,7 +48,7 @@
   <#if html = "CONTENT_NOT_FOUND">
     <@layout title="Not Found - ${contentModel['common-title']!''}">
       <script>
-        document.addEventListener('DOMLegacyReady', () => {
+        document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
           printError({
             title: 'Unable to render the requested plugin.',
             message: (
@@ -65,7 +65,7 @@
 <#else>
   <@layout title="${pName?replace('-', ' ')?cap_first} - ${contentModel['common-title']!''}">
     <script>
-      document.addEventListener('DOMLegacyReady', () => {
+      document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
         window.CRAFTER_CMS_PLUGIN_PAGE = true;
         (function() {
           const { render } = CrafterCMSNext;

@@ -63,7 +63,7 @@
     }
     </#if>
 
-    document.addEventListener("DOMLegacyReady", () => {
+    document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
       CrafterCMSNext.render('#root', 'SearchPage', {
         embedded: ${embedded?string},
         mode: "${mode}",

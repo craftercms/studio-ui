@@ -27,7 +27,7 @@
 <div id="root"></div>
 <#include "/static-assets/app/pages/legacy.html">
 <script>
-  document.addEventListener("DOMLegacyReady", () => {
+  document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
     const { createElement, Fragment } = craftercms.libs.React;
     const { Typography, Box } = craftercms.libs.MaterialUI;
     const { ViewToolbar, LauncherOpenerButton, SiteDashboard } = CrafterCMSNext.components;

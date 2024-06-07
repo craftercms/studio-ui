@@ -92,7 +92,7 @@
 
 <#include "/static-assets/app/pages/legacy.html">
 <script>
-  document.addEventListener("DOMLegacyReady", () => {
+  document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
     CStudioForms.engine.render(null, "default", "formContainer");
   });
 </script>
