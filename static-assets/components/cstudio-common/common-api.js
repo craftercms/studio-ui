@@ -7842,6 +7842,12 @@ function getTopLegacyWindow(nextWindow) {
 
 if (!window.location.pathname.includes('/studio/search') && !window.location.pathname.includes('/studio/legacy/form')) {
   document.addEventListener('DOMContentLoaded', function () {
-    CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
+    if (typeof CrafterCMSNext === 'undefined') {
+      document.addEventListener('CrafterCMS.CodebaseBridgeReady', function () {
+        CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
+      });
+    } else {
+      CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
+    }
   });
 }

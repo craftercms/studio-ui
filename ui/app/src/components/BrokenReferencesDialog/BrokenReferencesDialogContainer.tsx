@@ -77,22 +77,24 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
                         }
                       }}
                     />
-                    <ListItemSecondaryAction>
-                      <Button
-                        color="primary"
-                        onClick={() => {
-                          onEditReferenceClick?.(reference.path);
-                        }}
-                        size="small"
-                        sx={{
-                          marginLeft: 'auto',
-                          fontWeight: 'bold',
-                          verticalAlign: 'baseline'
-                        }}
-                      >
-                        <FormattedMessage defaultMessage="Edit" />
-                      </Button>
-                    </ListItemSecondaryAction>
+                    {reference.availableActionsMap.edit && (
+                      <ListItemSecondaryAction>
+                        <Button
+                          color="primary"
+                          onClick={() => {
+                            onEditReferenceClick?.(reference.path);
+                          }}
+                          size="small"
+                          sx={{
+                            marginLeft: 'auto',
+                            fontWeight: 'bold',
+                            verticalAlign: 'baseline'
+                          }}
+                        >
+                          <FormattedMessage defaultMessage="Edit" />
+                        </Button>
+                      </ListItemSecondaryAction>
+                    )}
                   </ListItem>
                 ))}
               </List>

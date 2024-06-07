@@ -300,6 +300,8 @@ export function processPathMacros(dependencies: {
   fullParentPath?: string;
 }): string {
   let { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
+  if (!path) return path;
+
   let processedPath = path;
 
   // Remove unrecognized macros.

@@ -44,6 +44,7 @@
 ## 4.1.5
 * [common-api.js]
   * `CStudioAuthoring.Utils.showConfirmDialog`: Added function overload to receive a `props` style object as first and only argument. The props argument would contain all ConfirmDialog props. Original set of arguments still supported for backward compatibility.
+* Removed `item` property from EditModeSwitch component and its usage in `PreviewSettingsPanel` component
 * `pathNavigatorTreeFetchPathChildrenFailed` action creator payload requires a `path` property.
 
 ## 4.1.4

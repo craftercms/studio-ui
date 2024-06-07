@@ -14,4 +14,4 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<#include "/static-assets/app/login.html">
+<#include "/static-assets/app/pages/login.html">
