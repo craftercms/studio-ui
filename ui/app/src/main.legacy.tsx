@@ -24,5 +24,5 @@ registerComponents();
 setRequestForgeryToken();
 createCodebaseBridge();
 
-const domLegacyReadyEvent = new Event('DOMLegacyReady');
-document.dispatchEvent(domLegacyReadyEvent);
+const crafterCMSCodebaseBridgeReadyEvent = new Event('CrafterCMS.CodebaseBridgeReady');
+document.dispatchEvent(crafterCMSCodebaseBridgeReadyEvent);

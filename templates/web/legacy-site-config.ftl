@@ -68,7 +68,7 @@
 
   <#include "/static-assets/app/pages/legacy.html">
   <script>
-    document.addEventListener("DOMLegacyReady", () => {
+    document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
       (function (CStudioAuthoring) {
         CStudioAuthoring.OverlayRequiredResources.loadRequiredResources();
         CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();

@@ -3508,8 +3508,8 @@ const initializeCStudioForms = () => {
 };
 
 if (typeof CrafterCMSNext === 'undefined') {
-  // CrafterCMSNext is not defined, wait for DOMLegacyReady event to initialize CStudioForms.
-  document.addEventListener('DOMLegacyReady', () => {
+  // CrafterCMSNext is not defined, wait for CrafterCMS.CodebaseBridgeReady event to initialize CStudioForms.
+  document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
     initializeCStudioForms();
   });
 } else {

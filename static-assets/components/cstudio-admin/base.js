@@ -15,7 +15,7 @@
  */
 
 (function () {
-  document.addEventListener('DOMLegacyReady', () => {
+  document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
     const i18n = CrafterCMSNext.i18n,
       formatMessage = i18n.intl.formatMessage,
       contentTypesMessages = i18n.messages.contentTypesMessages;

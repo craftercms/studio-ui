@@ -77,7 +77,7 @@
 <body>
 <#include "/static-assets/app/pages/legacy.html">
 <script>
-  document.addEventListener("DOMLegacyReady", () => {
+  document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
     const { formatMessage } = CrafterCMSNext.i18n.intl;
     const { embeddedLegacyFormMessages } = CrafterCMSNext.i18n.messages;
     const path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
