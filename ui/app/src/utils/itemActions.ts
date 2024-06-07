@@ -45,7 +45,12 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchLegacyItemsTree, fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
+import {
+  fetchItemsByPath,
+  fetchLegacyItemsTree,
+  fetchSandboxItem,
+  fetchWorkflowAffectedItems
+} from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -108,9 +113,9 @@ import {
 } from './content';
 import {
   getEditorMode,
-  isPdfDocument,
   isImage,
   isNavigable,
+  isPdfDocument,
   isPreviewable,
   isVideo
 } from '../components/PathNavigator/utils';
@@ -124,7 +129,6 @@ import SystemType from '../models/SystemType';
 import StandardAction from '../models/StandardAction';
 import { fetchItemVersions } from '../state/actions/versions';
 import { fetchDependant } from '../services/dependencies';
-import { parseLegacyItemToSandBoxItem } from '../utils/content';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -642,7 +646,7 @@ export const itemActionDispatcher = ({
       case 'cut': {
         const path = item.path;
         fetchDependant(site, path).subscribe({
-          next(dependant) {
+          next(dependantItems) {
             const actionToDispatch = batchActions([
               setClipboard({
                 type: 'CUT',
@@ -653,9 +657,13 @@ export const itemActionDispatcher = ({
               showCutItemSuccessNotification()
             ]);
 
-            if (dependant?.length) {
-              const items = parseLegacyItemToSandBoxItem(dependant);
-              dispatch(showBrokenReferencesDialog({ path, references: items, onContinue: actionToDispatch }));
+            if (dependantItems?.length) {
+              fetchItemsByPath(
+                site,
+                dependantItems.map((item) => item.uri ?? item.path)
+              ).subscribe((sandboxItems) => {
+                dispatch(showBrokenReferencesDialog({ path, references: sandboxItems, onContinue: actionToDispatch }));
+              });
             } else {
               dispatch(actionToDispatch);
             }
