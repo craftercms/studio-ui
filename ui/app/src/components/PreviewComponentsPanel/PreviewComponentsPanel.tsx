@@ -88,6 +88,7 @@ type ContentTypeData = {
 export function PreviewComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
+  const awaitingGuestCheckIn = nou(allowedTypesData);
   const [keyword, setKeyword] = useState('');
   const { formatMessage } = useIntl();
   const contentTypeData: ContentTypeData = useMemo(() => {
@@ -200,7 +201,7 @@ export function PreviewComponentsPanel() {
         <>
           {/* **** */}
           <Box sx={{ pt: 1 }}>
-            {nou(allowedTypesData) ? (
+            {awaitingGuestCheckIn ? (
               <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
                 <FormattedMessage defaultMessage="Awaiting for the preview application..." />
               </Alert>
@@ -216,12 +217,12 @@ export function PreviewComponentsPanel() {
                   }}
                 >
                   <Typography variant="overline">
-                    <FormattedMessage defaultMessage="Allowed Types" />
+                    <FormattedMessage defaultMessage="Compatible Types" />
                   </Typography>
                   <Tooltip
                     arrow
                     title={
-                      <FormattedMessage defaultMessage="The allowed types are those configured by project developers to be accepted by the content model" />
+                      <FormattedMessage defaultMessage="The compatible types are those configured by project developers to be accepted by the content model" />
                     }
                   >
                     <IconButton size="small">
@@ -249,7 +250,7 @@ export function PreviewComponentsPanel() {
                   keyword ? (
                     <FormattedMessage defaultMessage='No types match "{keyword}"' values={{ keyword }} />
                   ) : (
-                    <FormattedMessage defaultMessage="No allowed types were detected on the current preview" />
+                    <FormattedMessage defaultMessage="No compatible types were detected on the current preview" />
                   )
                 }
                 subtitle={
@@ -274,7 +275,7 @@ export function PreviewComponentsPanel() {
                   variant="outlined"
                   sx={{ width: '100%', border: 'none', py: 0, [`.${alertClasses.icon}`]: { mr: 1 } }}
                 >
-                  <FormattedMessage defaultMessage="Usage of these types is not configured for the current content model." />
+                  <FormattedMessage defaultMessage="Usage of these types is not configured for the current content model" />
                 </Alert>
                 <List dense>
                   {contentTypeData.otherTypes.map((type) => (
