@@ -59,7 +59,7 @@ export default defineConfig(({ mode }) => ({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        main: 'pages/index.html',
+        main: 'index.html',
         login: 'pages/login.html',
         preview: 'pages/preview.html',
         legacy: 'pages/legacy.html',
