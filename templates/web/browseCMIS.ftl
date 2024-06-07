@@ -222,6 +222,7 @@
         $(function() {
             CStudioBrowseCMIS.init();
         });
+
     </script>
 
    </body>
