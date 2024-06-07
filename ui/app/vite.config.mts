@@ -44,8 +44,10 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       input: {
         main: 'index.html',
-        login: 'login.html',
-        preview: 'preview.html'
+        login: 'pages/login.html',
+        preview: 'pages/preview.html',
+        legacy: 'pages/legacy.html',
+        'project-tools': 'pages/project-tools.html',
       }
     }
   }
