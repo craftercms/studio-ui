@@ -1460,6 +1460,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.24.6":
+  version: 7.24.7
+  resolution: "@babel/runtime@npm:7.24.7"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10/7b77f566165dee62db3db0296e71d08cafda3f34e1b0dcefcd68427272e17c1704f4e4369bff76651b07b6e49d3ea5a0ce344818af9116e9292e4381e0918c76
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.24.0, @babel/template@npm:^7.24.6":
   version: 7.24.6
   resolution: "@babel/template@npm:7.24.6"
@@ -2855,11 +2864,11 @@ __metadata:
   linkType: hard
 
 "@mui/x-data-grid@npm:^7.5.0":
-  version: 7.5.1
-  resolution: "@mui/x-data-grid@npm:7.5.1"
+  version: 7.6.2
+  resolution: "@mui/x-data-grid@npm:7.6.2"
   dependencies:
-    "@babel/runtime": "npm:^7.24.5"
-    "@mui/system": "npm:^5.15.14"
+    "@babel/runtime": "npm:^7.24.6"
+    "@mui/system": "npm:^5.15.15"
     "@mui/utils": "npm:^5.15.14"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -2868,7 +2877,7 @@ __metadata:
     "@mui/material": ^5.15.14
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: 10/40de093ecf49d682a539bdb0a7e68e48fee475055ed9f313ff5984b2a9a82f783496c2af7d17aa8a64cf52740d17f2b2fab1208486e0b23dd716112c87af51af
+  checksum: 10/81ba99b62d3dc23c075cd04da5af9d7648bdcd58fb42648aa7b424f3c7a5fb02ab1943d179d5f9c4fdec7449b4b53222933438bc6d0a5ef3960fa29027598ac2
   languageName: node
   linkType: hard
 
