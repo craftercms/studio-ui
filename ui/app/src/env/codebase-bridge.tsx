@@ -70,7 +70,7 @@ interface CodebaseBridge {
   ReactDOM: typeof ReactDOM;
   ReactDOMClient: { createRoot: typeof createRoot };
   components: { [key: string]: JSXElementConstructor<any> };
-  assets: { [key: string]: any };
+  assets: { [key: string]: string };
   util: object;
   render: Function;
   renderBackgroundUI: Function;
