@@ -82,7 +82,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     group.name.trim() &&
       !validateGroupNameMinLength(group.name) &&
       !isInvalidGroupName(group.name) &&
-      (isEdit ? group.desc !== (props.group?.desc ?? '') : true)
+      (!isEdit || group.desc !== (props.group?.desc ?? ''))
   );
   const [users, setUsers] = useState<User[]>();
   const [usersHaveNextPage, setUsersHaveNextPage] = useState(false);
