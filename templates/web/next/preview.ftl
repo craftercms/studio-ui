@@ -14,4 +14,4 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<#include "/static-assets/app/preview.html">
+<#include "/static-assets/app/pages/preview.html">

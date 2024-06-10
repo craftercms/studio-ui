@@ -376,6 +376,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
               <SearchBar
                 autoFocus
                 onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
                 onChange={(keyword) => {
                   setKeyword(keyword);
                   onFilterChange(keyword, path);

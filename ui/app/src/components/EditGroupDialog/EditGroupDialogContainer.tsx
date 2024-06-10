@@ -75,12 +75,15 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     validateRequiredField(group.name, isDirty) ||
     isInvalidGroupName(group.name) ||
     validateGroupNameMinLength(group.name);
+  const isEdit = Boolean(props.group);
   // This validation is different than groupName error, because for groupNameError it will return true only when form
   // is dirty. For submit, it will be true even though form is not dirty (to avoid submitting a clean form).
   const submitOk = Boolean(
-    group.name.trim() && !validateGroupNameMinLength(group.name) && !isInvalidGroupName(group.name)
+    group.name.trim() &&
+      !validateGroupNameMinLength(group.name) &&
+      !isInvalidGroupName(group.name) &&
+      (!isEdit || group.desc !== (props.group?.desc ?? ''))
   );
-  const isEdit = Boolean(props.group);
   const [users, setUsers] = useState<User[]>();
   const [usersHaveNextPage, setUsersHaveNextPage] = useState(false);
   const usersRef = useRef([]);
@@ -225,6 +228,9 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
           fnRefs.current.onSubmittingAndOrPendingChange({
             isSubmitting: false
           });
+          // Fetch users and members for created group
+          fetchUsers();
+          fetchMembers(group.id);
         },
         error({ response: { response } }) {
           dispatch(showErrorDialog({ error: response }));
@@ -236,11 +242,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     }
   };
 
-  const onCancel = () => {
-    setGroup(props.group);
-    setIsDirty(false);
-  };
-
   const fetchUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
     fetchAll({
       limit: usersFetchSize,
@@ -249,6 +250,13 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       setUsersHaveNextPage(_users.total > _users.length);
       setUsers(_users);
       setUsersOffset(options?.limit ?? usersFetchSize);
+    });
+  };
+
+  const fetchMembers = (groupId: number) => {
+    fetchUsersFromGroup(groupId).subscribe((members) => {
+      setMembers(members);
+      setMembersLookup(createPresenceTable(members, true, (member) => member.username));
     });
   };
 
@@ -276,10 +284,7 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
   useMount(() => {
     if (props.group) {
       fetchUsers();
-      fetchUsersFromGroup(props.group.id).subscribe((members) => {
-        setMembers(members);
-        setMembersLookup(createPresenceTable(members, true, (member) => member.username));
-      });
+      fetchMembers(props.group.id);
     }
   });
 
@@ -338,7 +343,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onChangeValue={onChangeValue}
       submitOk={submitOk}
       onSave={onSave}
-      onCancel={onCancel}
       onAddMembers={onAddMembers}
       onRemoveMembers={onRemoveMembers}
       inProgressIds={inProgressIds}
