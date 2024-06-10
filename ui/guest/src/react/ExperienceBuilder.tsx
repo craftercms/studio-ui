@@ -381,10 +381,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           post(guestCheckOut({ path }));
           return (window.location.href = payload.url);
         }
-        case contentTypeDropTargetsRequest.type: {
-          dispatch(contentTypeDropTargetsRequest({ contentTypeId: payload }));
-          break;
-        }
         case scrollToDropTarget.type:
           scrollToDropTargets([payload], scrollElement, (id: number) => elementRegistry.fromICEId(id).element);
           break;
@@ -407,6 +403,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           dispatch({ type });
           break;
         // region actions whitelisted
+        case contentTypeDropTargetsRequest.type:
         case componentInstanceDragStarted.type:
         case clearHighlightedDropTargets.type:
         case desktopAssetUploadProgress.type:

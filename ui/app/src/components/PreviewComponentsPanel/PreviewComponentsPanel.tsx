@@ -40,7 +40,7 @@ import ErrorBoundary from '../ErrorBoundary';
 import EmptyState from '../EmptyState';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import ListItemText from '@mui/material/ListItemText';
+import ListItemText, { listItemTextClasses } from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
@@ -169,10 +169,7 @@ export function PreviewComponentsPanel() {
         )
       )
     );
-    getHostToGuestBus().next({
-      type: contentTypeDropTargetsRequest.type,
-      payload: menuContext.contentType.id
-    });
+    getHostToGuestBus().next(contentTypeDropTargetsRequest({ contentTypeId: menuContext.contentType.id }));
   };
   const onMenuButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>, contentType: ContentType) => {
     const { backgroundColor, textColor } = getAvatarWithIconColors(contentType.name, theme, darken);
@@ -291,21 +288,75 @@ export function PreviewComponentsPanel() {
                   <FormattedMessage defaultMessage="Content types not configured for use." />
                 </Alert>
                 <List dense>
-                  {contentTypeData.otherTypes.map((type) => (
-                    <ListItem key={type.id}>
-                      <ListItemText primary={type.name} />
-                      <ListItemSecondaryAction sx={{ right: '10px' }}>
-                        <IconButton
-                          edge="end"
-                          aria-label="delete"
-                          size="small"
-                          onClick={(e) => onMenuButtonClickHandler(e, type)}
-                        >
-                          <MoreVertRounded />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
+                  {contentTypeData.otherTypes.map((type) => {
+                    const { backgroundColor, textColor } = getAvatarWithIconColors(
+                      contentTypesBranch.byId[type.id].name,
+                      theme,
+                      darken
+                    );
+                    return (
+                      <ListItem key={type.id}>
+                        <ListItemText
+                          sx={{
+                            [`.${listItemTextClasses.primary}`]: {
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center'
+                            }
+                          }}
+                          primary={
+                            <>
+                              <Box
+                                component="span"
+                                sx={{
+                                  mr: 1,
+                                  flexShrink: 0,
+                                  width: '24px',
+                                  height: '24px',
+                                  borderRadius: '20px',
+                                  overflow: 'hidden',
+                                  backgroundColor,
+                                  borderColor: textColor,
+                                  borderStyle: 'solid',
+                                  borderWidth: '1px',
+                                  display: 'inline-block'
+                                }}
+                              />
+                              <Box
+                                component="span"
+                                sx={{
+                                  flexShrink: 1,
+                                  flexGrow: 1,
+                                  textOverflow: 'ellipsis',
+                                  overflow: 'hidden',
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                {type.name}
+                                {type.name}
+                                {type.name}
+                                {type.name}
+                                {type.name}
+                                {type.name}
+                                {type.name}
+                                {type.name}
+                              </Box>
+                            </>
+                          }
+                        />
+                        <ListItemSecondaryAction sx={{ right: '10px' }}>
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            size="small"
+                            onClick={(e) => onMenuButtonClickHandler(e, type)}
+                          >
+                            <MoreVertRounded />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    );
+                  })}
                 </List>
               </AccordionDetails>
             </Accordion>
