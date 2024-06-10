@@ -278,7 +278,8 @@ export default [
             keyword,
             limit: state.pathNavigator[id].limit,
             sortStrategy: state.pathNavigator[id].sortStrategy,
-            order: state.pathNavigator[id].order
+            order: state.pathNavigator[id].order,
+            excludes: state.pathNavigator[id].excludes
           }).pipe(
             map((children) =>
               pathNavigatorFetchPathComplete({
@@ -309,6 +310,7 @@ export default [
             limit: state.pathNavigator[id].limit,
             sortStrategy: state.pathNavigator[id].sortStrategy,
             order: state.pathNavigator[id].order,
+            excludes: state.pathNavigator[id].excludes,
             ...(Boolean(state.pathNavigator[id].keyword) && { keyword: state.pathNavigator[id].keyword }),
             offset
           }).pipe(
