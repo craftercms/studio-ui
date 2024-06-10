@@ -259,7 +259,8 @@
     },
 
     _editShared(key, control, datasource, index, callback) {
-      const readonly = control.readonly;
+      const editPermission = control.editPermissionMap?.[key];
+      const readonly = editPermission ? !editPermission : control.readonly;
       const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
 
       CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {

@@ -45,6 +45,7 @@ CStudioForms.Controls.NodeSelector = function (id, form, owner, properties, cons
   this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
   this.words = CrafterCMSNext.i18n.messages.words;
   this.formEngineMessages = CrafterCMSNext.i18n.messages.formEngineMessages;
+  this.editPermissionMap = {};
 
   return this;
 };
@@ -368,20 +369,17 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
       }
 
       const isComponent = item.key.startsWith('/site') || item.inline;
-      const editBtnLabel = this.readonly ? 'View' : 'Edit';
-      const editBtnIconClass = this.readonly ? 'fa-eye' : 'fa-pencil';
 
       const $actionsContainer = $(`<span class="actions-container ml-auto" />`);
-      const editBtn = $(
-        `<span class="fa ${editBtnIconClass} node-selector-item-icon" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></span>`
-      );
-      const deleteBtn = $(
-        '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
-      );
 
-      const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
-      if (isEditable) {
-        if (isComponent || !this.readonly) {
+      const addActionButtons = (editPermission) => {
+        const editBtnLabel = editPermission ? 'Edit' : 'View';
+        const editBtnIconClass = editPermission ? 'fa-pencil' : 'fa-eye';
+
+        if (editPermission || (!editPermission && isComponent)) {
+          const editBtn = $(
+            `<span class="fa ${editBtnIconClass} node-selector-item-icon" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${itemIndex}"></span>`
+          );
           $actionsContainer.append(editBtn);
           editBtn.on('click', function () {
             const elIndex = $(this).data('index');
@@ -412,13 +410,31 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
             });
           });
         }
-      }
-      if (this.readonly != true) {
-        $actionsContainer.append(deleteBtn);
-        deleteBtn.on('click', function () {
-          _self.deleteItem(itemIndex);
-          _self._renderItems();
-        });
+
+        const deleteBtn = $(
+          '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
+        );
+
+        if (!_self.readonly) {
+          $actionsContainer.append(deleteBtn);
+          deleteBtn.on('click', function () {
+            _self.deleteItem(itemIndex);
+            _self._renderItems();
+          });
+        }
+      };
+
+      const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
+      if (isEditable) {
+        // If editable, check for edit permission, unless it's an embedded component (`item.inline` true)
+        if (item.inline) {
+          addActionButtons(!this.readonly);
+        } else {
+          craftercms.services.content.fetchItemByPath('editorial', item.key).subscribe((sandboxItem) => {
+            _self.editPermissionMap[item.key] = sandboxItem.availableActionsMap.edit;
+            addActionButtons(sandboxItem.availableActionsMap.edit);
+          });
+        }
       }
 
       $(itemEl).append($actionsContainer);
