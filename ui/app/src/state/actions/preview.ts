@@ -194,7 +194,8 @@ export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type:
 export const setEditModePadding = /*#__PURE__*/ createAction<{ editModePadding: boolean }>('SET_DRAG_HELP_MODE');
 export const toggleEditModePadding = /*#__PURE__*/ createAction('TOGGLE_DRAG_HELP_MODE');
 
-export const allowedContentTypesUpdate = /*#__PURE__*/ createAction<AllowedContentTypesData>('ALLOWED_TYPES_UPDATED');
+export const allowedContentTypesUpdate =
+  /*#__PURE__*/ createAction<LookupTable<AllowedContentTypesData>>('ALLOWED_TYPES_UPDATED');
 
 // endregion
 

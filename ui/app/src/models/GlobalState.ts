@@ -101,7 +101,7 @@ export interface GuestData {
    * used to determine if the content item was modified in the background and it editing should be disabled.
    */
   mainModelModifier: Person;
-  allowedContentTypes: AllowedContentTypesData<LookupTable<boolean>>;
+  allowedContentTypes: LookupTable<AllowedContentTypesData>;
 }
 
 // TODO:

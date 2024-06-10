@@ -811,15 +811,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       if (state.guest) state.guest.mainModelModifier = payload.user;
     })
     .addCase(allowedContentTypesUpdate, (state, { payload }) => {
-      const reducerFn = (acc: LookupTable<boolean>, value: string) => {
-        acc[value] = true;
-        return acc;
-      };
-      state.guest.allowedContentTypes = {
-        embedded: payload.embedded?.reduce(reducerFn, {}),
-        shared: payload.shared?.reduce(reducerFn, {}),
-        sharedExisting: payload.sharedExisting?.reduce(reducerFn, {})
-      };
+      state.guest.allowedContentTypes = payload;
     });
 });
 

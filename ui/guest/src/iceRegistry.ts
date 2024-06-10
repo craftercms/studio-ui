@@ -70,26 +70,29 @@ export const registry: Map<number, ICERecord> = new Map();
 let refCount: LookupTable<number> = {};
 
 export interface AllowedContentTypesLookup {
-  result: AllowedContentTypesData | null;
+  result: LookupTable<AllowedContentTypesData> | null;
+  /**
+   * Various instances of the content type can be present
+   */
   recordIdKeyLookup: LookupTable<string>;
-  allowedLookup: LookupTable<AllowedContentTypesData & { recordIds: number[] }>;
+  allowedLookup: LookupTable<{ recordIds: number[]; data: Partial<AllowedContentTypesData> }>;
 }
 
 const allowedContentTypesData: AllowedContentTypesLookup = {
+  // Consolidated list of allowed content types in all modes allowed
+  /* { [`{contentTypeId}`]: { embedded?: true, shared?: true, sharedExisting?: true } } */
   result: null,
-  recordIdKeyLookup: {
-    /* [recordId]: `{contentTypeId}:{fieldId}` */
-  },
-  allowedLookup: {
-    /* [`{contentTypeId}:{fieldId}`]: { embedded: [], shared: [], sharedExisting: [], recordIds: [] } */
-  }
+  /* [recordId]: `{contentTypeId}:{fieldId}` */
+  recordIdKeyLookup: {},
+  /* [`{contentTypeId}:{fieldId}`]: {
+    recordIds: []
+    data: { [typeId]: { embedded?: true, shared?: true, sharedExisting?: true } },
+  } */
+  allowedLookup: {}
 };
 
 const createAllowedContentTypesLookupKey = (contentTypeId: string, fieldId: string) => `${contentTypeId}:${fieldId}`;
-const allowedContentTypes$ = new Subject<AllowedContentTypesData>();
-const allowedContentTypesUpdated$ = new Subject<void>();
-
-allowedContentTypesUpdated$.pipe(debounceTime(800)).subscribe(collectAndEmitAllowedContentTypes);
+const allowedContentTypes$ = new Subject<AllowedContentTypesLookup['result']>();
 
 export function register(registration: ICERecordRegistration): number {
   // For consistency, set `fieldId` and `index` props
@@ -126,9 +129,10 @@ export function register(registration: ICERecordRegistration): number {
   } else {
     const record: ICERecord = { ...data, id: rid++ };
     const entities = getReferentialEntries(record);
+    const field = entities.field;
 
     // Record coherence validation
-    if (notNullOrUndefined(entities.fieldId) && nullOrUndefined(entities.field)) {
+    if (notNullOrUndefined(entities.fieldId) && nullOrUndefined(field)) {
       console.error(
         `[ICERegistry] Field "${entities.fieldId}" was not found on the "${entities.contentType.name}" content type. ` +
           `Please check the field name matches one of the content type field names ` +
@@ -138,26 +142,18 @@ export function register(registration: ICERecordRegistration): number {
 
     record.recordType = determineRecordType(entities);
 
-    if (record.recordType === 'field' && entities.field.type === 'node-selector') {
+    if (record.recordType === 'field' && field.type === 'node-selector' && field.validations.allowedContentTypes) {
       const key = createAllowedContentTypesLookupKey(entities.contentTypeId, entities.fieldId);
       if (!allowedContentTypesData.allowedLookup[key]) {
-        const validations = entities.field.validations;
+        const validations = field.validations;
         allowedContentTypesData.allowedLookup[key] = {
-          embedded: validations.allowedEmbeddedContentTypes?.value ?? null,
-          shared: validations.allowedSharedContentTypes?.value ?? null,
-          sharedExisting: validations.allowedSharedExistingContentTypes?.value ?? null,
+          data: validations.allowedContentTypes.value,
           recordIds: []
         };
-      } else {
-        console.log(`Skipping registration of allowed content types for: ${key}`);
-      }
-      // TODO: Debug log. Remove. Do not merge.
-      if (allowedContentTypesData.allowedLookup[key].recordIds.includes(record.id)) {
-        console.log(`${record.id} already registered for ${key}`);
       }
       allowedContentTypesData.recordIdKeyLookup[record.id] = key;
       allowedContentTypesData.allowedLookup[key].recordIds.push(record.id);
-      allowedContentTypesUpdated$.next();
+      collectAndEmitAllowedContentTypes();
     }
 
     registry.set(record.id, record);
@@ -169,29 +165,28 @@ export function register(registration: ICERecordRegistration): number {
 
 export function deregister(id: number): ICERecord {
   const record = registry.get(id);
-  if (record) {
-    if (refCount[id] === 1) {
-      registry.delete(id);
-    } else {
-      refCount[id]--;
-    }
-    let key = allowedContentTypesData.recordIdKeyLookup[id];
-    if (key) {
-      delete allowedContentTypesData.recordIdKeyLookup[id];
-      if (
-        // If everything fits correctly, if only one is left, it should be this record that's being removed.
-        allowedContentTypesData.allowedLookup[key].recordIds.length === 1
-      ) {
-        delete allowedContentTypesData.allowedLookup[key];
-      } else {
-        allowedContentTypesData.allowedLookup[key].recordIds = allowedContentTypesData.allowedLookup[
-          key
-        ].recordIds.filter((recId) => recId !== id);
-      }
-      allowedContentTypesUpdated$.next();
-    }
+  if (!record) return null;
+  if (refCount[id] === 1) {
+    registry.delete(id);
+  } else {
+    refCount[id]--;
   }
-  return null;
+  let key = allowedContentTypesData.recordIdKeyLookup[id];
+  if (key) {
+    delete allowedContentTypesData.recordIdKeyLookup[id];
+    if (
+      // If everything is fitting correctly, if only one is left, it should be this record that's being deleted.
+      allowedContentTypesData.allowedLookup[key].recordIds.length === 1
+    ) {
+      delete allowedContentTypesData.allowedLookup[key];
+    } else {
+      allowedContentTypesData.allowedLookup[key].recordIds = allowedContentTypesData.allowedLookup[
+        key
+      ].recordIds.filter((recId) => recId !== id);
+    }
+    collectAndEmitAllowedContentTypes();
+  }
+  return record;
 }
 
 export function exists(data: Partial<ICEProps>): number {
@@ -379,7 +374,7 @@ export function isTypeAcceptedAsByField(
         ? receiverField?.validations?.allowedEmbeddedContentTypes?.value
         : mode === 'sharedExisting'
           ? receiverField?.validations?.allowedSharedExistingContentTypes?.value
-          : receiverField?.validations?.allowedContentTypes?.value) ?? [];
+          : Object.keys(receiverField?.validations?.allowedContentTypes?.value ?? {})) ?? [];
   let acceptedTypes: string[] = Array.isArray(createMode)
     ? createMode.flatMap((mode) => processCreateMode(mode))
     : processCreateMode(createMode);
@@ -704,26 +699,35 @@ export function getRegistry() {
 }
 
 function collectAndEmitAllowedContentTypes(): void {
-  const result: AllowedContentTypesData = {
-    embedded: [],
-    shared: [],
-    sharedExisting: []
-  };
-  Object.values(allowedContentTypesData.allowedLookup).forEach((allowed) => {
-    allowed.embedded && result.embedded.push(...allowed.embedded);
-    allowed.shared && result.shared.push(...allowed.shared);
-    allowed.sharedExisting && result.sharedExisting.push(...allowed.sharedExisting);
-  });
-  allowedContentTypesData.result = result;
-  allowedContentTypes$.next(result);
+  clearTimeout(collectAndEmitAllowedContentTypes.timeout);
+  collectAndEmitAllowedContentTypes.timeout = setTimeout(() => {
+    const result: LookupTable<AllowedContentTypesData> = {};
+    const allowedLookup = allowedContentTypesData.allowedLookup;
+    for (let key in allowedLookup) {
+      const allowed = allowedContentTypesData.allowedLookup[key].data;
+      for (let typeId in allowed) {
+        if (!result[typeId]) {
+          result[typeId] = { ...allowed[typeId] };
+          break;
+        }
+        Object.assign(result[typeId], allowed[typeId]);
+      }
+    }
+    allowedContentTypesData.result = result;
+    allowedContentTypes$.next(result);
+  }, 500);
 }
+
+collectAndEmitAllowedContentTypes.timeout = null;
 
 export function getAllowedContentTypes(): AllowedContentTypesData {
   return allowedContentTypesData.result;
 }
 
 export function subscribeToAllowedContentTypes(
-  observerOrNext: Partial<Observer<AllowedContentTypesData>> | ((value: AllowedContentTypesData) => void)
+  observerOrNext:
+    | Partial<Observer<LookupTable<AllowedContentTypesData>>>
+    | ((value: LookupTable<AllowedContentTypesData>) => void)
 ): Subscription {
   return allowedContentTypes$.subscribe(observerOrNext);
 }

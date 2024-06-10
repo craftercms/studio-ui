@@ -57,12 +57,11 @@ import Tooltip from '@mui/material/Tooltip';
 import Skeleton from '@mui/material/Skeleton';
 import { ItemTypeIcon } from '../ItemTypeIcon';
 import { SandboxItem } from '../../models';
+import Avatar from '@mui/material/Avatar';
+import { getAvatarWithIconColors } from '../../utils/contentType';
+import { darken, useTheme } from '@mui/material/styles';
 
 const translations = defineMessages({
-  previewComponentsPanelTitle: {
-    id: 'previewComponentsPanel.title',
-    defaultMessage: 'Add Components'
-  },
   browse: {
     id: 'previewComponentsPanel.browse',
     defaultMessage: 'Browse existing'
@@ -111,17 +110,26 @@ export function PreviewComponentsPanel() {
         continue;
       }
       // if contentType.type === 'component' ...
-      if (allowedTypesData.embedded?.[id] || allowedTypesData.shared?.[id] || allowedTypesData.sharedExisting?.[id]) {
+      if (allowedTypesData[id]?.embedded || allowedTypesData[id]?.shared) {
         allowedTypes.push(contentType);
       } else {
         otherTypes.push(contentType);
       }
     }
+    const sorter = (a: ContentType, b: ContentType) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+    allowedTypes.sort(sorter);
+    otherTypes.sort(sorter);
     return result;
   }, [contentTypesBranch.byId, keyword, allowedTypesData]);
   const dispatch = useDispatch();
+  const theme = useTheme();
   // region Context Menu
-  const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
+  const [menuContext, setMenuContext] = useState<{
+    anchor: Element;
+    contentType: ContentType;
+    backgroundColor: string;
+    textColor: string;
+  }>();
   const onMenuClose = () => setMenuContext(null);
   const onBrowseSharedInstancesClicked = () => {
     dispatch(
@@ -166,6 +174,10 @@ export function PreviewComponentsPanel() {
       payload: menuContext.contentType.id
     });
   };
+  const onMenuButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>, contentType: ContentType) => {
+    const { backgroundColor, textColor } = getAvatarWithIconColors(contentType.name, theme, darken);
+    setMenuContext({ anchor: e.currentTarget, contentType, backgroundColor, textColor });
+  };
   // endregion
   // region Drag and Drop
   const editMode = useSelection((state) => state.preview.editMode);
@@ -203,7 +215,7 @@ export function PreviewComponentsPanel() {
           <Box sx={{ pt: 1 }}>
             {awaitingGuestCheckIn ? (
               <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
-                <FormattedMessage defaultMessage="Awaiting for the preview application..." />
+                <FormattedMessage defaultMessage="Waiting for the preview application to load." />
               </Alert>
             ) : contentTypeData.allowedTypes.length ? (
               <>
@@ -221,9 +233,7 @@ export function PreviewComponentsPanel() {
                   </Typography>
                   <Tooltip
                     arrow
-                    title={
-                      <FormattedMessage defaultMessage="The compatible types are those configured by project developers to be accepted by the content model" />
-                    }
+                    title={<FormattedMessage defaultMessage="Compatible types are configured in the content model." />}
                   >
                     <IconButton size="small">
                       <InfoRounded fontSize="small" />
@@ -237,7 +247,7 @@ export function PreviewComponentsPanel() {
                       primaryText={contentType.name}
                       onDragStart={() => onDragStart(contentType)}
                       onDragEnd={onDragEnd}
-                      onMenu={(anchor) => setMenuContext({ anchor, contentType })}
+                      onMenu={(e) => onMenuButtonClickHandler(e, contentType)}
                       isBeingDragged={isBeingDragged === contentType.id}
                     />
                   ))}
@@ -248,14 +258,17 @@ export function PreviewComponentsPanel() {
                 sxs={{ title: { textAlign: 'center' } }}
                 title={
                   keyword ? (
-                    <FormattedMessage defaultMessage='No types match "{keyword}"' values={{ keyword }} />
+                    <FormattedMessage
+                      defaultMessage='No content types were found matching "{keyword}"'
+                      values={{ keyword }}
+                    />
                   ) : (
-                    <FormattedMessage defaultMessage="No compatible types were detected on the current preview" />
+                    <FormattedMessage defaultMessage="No compatible types were found." />
                   )
                 }
                 subtitle={
                   keyword ? undefined : (
-                    <FormattedMessage defaultMessage="Developers can modify the content model to allow for types to be used where required" />
+                    <FormattedMessage defaultMessage="Developers can configure the content model to add compatible types." />
                   )
                 }
               />
@@ -275,7 +288,7 @@ export function PreviewComponentsPanel() {
                   variant="outlined"
                   sx={{ width: '100%', border: 'none', py: 0, [`.${alertClasses.icon}`]: { mr: 1 } }}
                 >
-                  <FormattedMessage defaultMessage="Usage of these types is not configured for the current content model" />
+                  <FormattedMessage defaultMessage="Content types not configured for use." />
                 </Alert>
                 <List dense>
                   {contentTypeData.otherTypes.map((type) => (
@@ -286,7 +299,7 @@ export function PreviewComponentsPanel() {
                           edge="end"
                           aria-label="delete"
                           size="small"
-                          onClick={(e) => setMenuContext({ anchor: e.currentTarget, contentType: type })}
+                          onClick={(e) => onMenuButtonClickHandler(e, type)}
                         >
                           <MoreVertRounded />
                         </IconButton>
@@ -300,26 +313,64 @@ export function PreviewComponentsPanel() {
           {/* **** */}
         </>
       )}
-      <Menu open={Boolean(menuContext)} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
+      <Menu
+        open={Boolean(menuContext)}
+        anchorEl={menuContext?.anchor}
+        onClose={onMenuClose}
+        slotProps={{
+          paper: {
+            sx: { maxWidth: 350, minWidth: 200 }
+          }
+        }}
+      >
         <Box
+          component="header"
           sx={{
             px: 2,
             py: 1,
             mb: 1,
-            maxWidth: 300,
-            borderColor: 'divider',
+            display: 'block',
+            maxWidth: '100%',
             borderWidth: 1,
+            borderColor: 'divider',
             borderBottomStyle: 'solid'
           }}
         >
-          <Typography variant="body2" title={menuContext?.contentType.id} noWrap>
-            {menuContext?.contentType.id ?? <Skeleton variant="text" />}
-          </Typography>
-          <Typography sx={{ display: 'flex', alignItems: 'center', placeContent: 'space-between' }}>
-            {menuContext?.contentType.name ?? <Skeleton variant="text" width="100px" />}
-            <ItemTypeIcon
-              item={{ systemType: menuContext?.contentType.type ?? '', mimeType: '' } as SandboxItem}
-              sx={{ ml: 0.7, color: 'action.active' }}
+          <Box
+            component="section"
+            sx={{
+              display: 'flex',
+              placeContent: 'space-between'
+            }}
+          >
+            <Box>
+              <Typography
+                component="div"
+                variant="caption"
+                color="textSecondary"
+                title={menuContext?.contentType.id}
+                sx={{ wordBreak: 'break-all' }}
+              >
+                {menuContext?.contentType.id ?? <Skeleton variant="text" />}
+              </Typography>
+              <Typography>{menuContext?.contentType.name ?? <Skeleton variant="text" width="100px" />}</Typography>
+            </Box>
+            <Avatar component="div" sx={{ backgroundColor: menuContext?.backgroundColor, ml: 1 }}>
+              <ItemTypeIcon
+                fontSize="medium"
+                item={{ systemType: menuContext?.contentType.type ?? '', mimeType: '' } as SandboxItem}
+                sx={{ color: menuContext?.textColor }}
+              />
+            </Avatar>
+          </Box>
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            <FormattedMessage
+              defaultMessage="The model is configured for {modes}"
+              values={{
+                modes: Object.keys(allowedTypesData?.[menuContext?.contentType.id] ?? {})
+                  .map((mode) => (mode === 'sharedExisting' ? 'existing shared' : mode))
+                  .join(', ')
+              }}
             />
           </Typography>
         </Box>

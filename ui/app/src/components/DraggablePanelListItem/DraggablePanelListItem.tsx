@@ -18,20 +18,20 @@ import React, { useState } from 'react';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
-import { toColor } from '../../utils/string';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { darken, useTheme } from '@mui/material/styles';
 import ListItemButton from '@mui/material/ListItemButton';
+import { getAvatarWithIconColors } from '../../utils/contentType';
 
 interface PanelListItemProps {
   primaryText: string;
   secondaryText?: string;
   onDragStart?: (...args: any) => any;
   onDragEnd?: (...args: any) => any;
-  onMenu?: (anchor: Element) => any;
+  onMenu?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   isBeingDragged?: boolean;
 }
 
@@ -39,9 +39,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
   const { onMenu, primaryText, secondaryText, onDragStart, onDragEnd, isBeingDragged = false } = props;
   const hasMenu = Boolean(onMenu);
   const theme = useTheme();
-  const color = toColor(primaryText);
-  const bgColor = theme.palette.mode === 'dark' ? darken(color, 0.2) : color;
-  const textColor = theme.palette.getContrastText(color);
+  const { backgroundColor, textColor } = getAvatarWithIconColors(primaryText, theme, darken);
   const [over, setOver] = useState(false);
   return (
     <ListItemButton
@@ -56,7 +54,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
       sx={{
         pl: 1.5,
         pr: hasMenu ? 6 : undefined,
-        border: `1px solid ${isBeingDragged ? bgColor : 'transparent'}`,
+        border: `1px solid ${isBeingDragged ? backgroundColor : 'transparent'}`,
         borderRadius: isBeingDragged ? 2 : 0,
         cursor: isBeingDragged ? 'grabbing' : 'grab'
       }}
@@ -67,14 +65,14 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
             mr: 1.5,
             width: 30,
             height: 30,
-            backgroundColor: over ? 'transparent' : bgColor,
+            backgroundColor: over ? 'transparent' : backgroundColor,
             transition: 'background-color 0.25s ease-in-out'
           }}
         >
           <DragIndicatorRounded
             fontSize="small"
             sx={{
-              color: over ? bgColor : textColor,
+              color: over ? backgroundColor : textColor,
               transition: 'color 0.25s ease-in-out'
             }}
           />
@@ -83,7 +81,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
       <ListItemText primary={primaryText} secondary={secondaryText} />
       {hasMenu && (
         <ListItemSecondaryAction sx={{ right: '10px', display: isBeingDragged ? 'none' : undefined }}>
-          <IconButton edge="end" onClick={(e) => onMenu(e.currentTarget)} size="small">
+          <IconButton edge="end" onClick={onMenu} size="small">
             <MoreVertRounded />
           </IconButton>
         </ListItemSecondaryAction>

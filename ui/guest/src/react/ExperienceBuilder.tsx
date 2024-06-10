@@ -117,7 +117,7 @@ import useUnmount from '@craftercms/studio-ui/hooks/useUnmount';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
 import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/actions/system';
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
-import { subscribeToAllowedContentTypes } from '../iceRegistry';
+import { getById, getReferentialEntries, subscribeToAllowedContentTypes } from '../iceRegistry';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -641,6 +641,8 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const elementPath = models[elementRecord.modelId]?.craftercms.path ?? path;
               const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, elementRecord);
               const lockInfo = isLocked ? state.lockedPaths[elementPath]?.user : null;
+              const iceRecord = getById(elementRecord.iceIds[0]);
+              const field = iceRecord.recordType === 'field' ? getReferentialEntries(iceRecord).field : undefined;
               return (
                 <ZoneMarker
                   key={highlight.id}
@@ -649,6 +651,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                   inherited={highlight.inherited}
                   lockInfo={lockInfo}
                   isStale={isExternallyModified}
+                  field={field}
                   onPopperClick={
                     isMoveMode && isFieldSelectedMode
                       ? (e) => {

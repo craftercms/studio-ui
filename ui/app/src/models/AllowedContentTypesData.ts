@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export interface AllowedContentTypesData<T = string[]> {
-  embedded: T;
-  shared: T;
-  sharedExisting: T;
+export interface AllowedContentTypesData<T = true> {
+  embedded?: T;
+  shared?: T;
+  sharedExisting?: T;
 }
 
 export default AllowedContentTypesData;
