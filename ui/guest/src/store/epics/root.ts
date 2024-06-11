@@ -647,18 +647,18 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   },
   // endregion
   // region contentTypeDropTargetsRequest
-  (action$: Observable<GuestStandardAction<{ contentTypeId: string }>>) => {
+  (action$: Observable<GuestStandardAction<{ contentTypeId: string }>>, state$) => {
     return action$.pipe(
       ofType(contentTypeDropTargetsRequest.type),
-      tap((action) => {
+      withLatestFrom(state$),
+      tap(([action, state]) => {
         const { contentTypeId } = action.payload;
-        const dropTargets = iceRegistry.getContentTypeDropTargets(contentTypeId).map((item) => {
-          let { elementRecordId } = ElementRegistry.compileDropZone(item.id);
-          let highlight = ElementRegistry.getHoverData(elementRecordId);
+        const dropTargets = Object.values(state.highlighted).map(({ id, label }) => {
+          const item = iceRegistry.getById(ElementRegistry.get(id).iceIds[0]);
           return {
             modelId: item.modelId,
             fieldId: item.fieldId,
-            label: highlight.label,
+            label,
             id: item.id,
             contentTypeId
           };
