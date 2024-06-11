@@ -62,6 +62,11 @@ import { getAvatarWithIconColors } from '../../utils/contentType';
 import { darken, useTheme } from '@mui/material/styles';
 
 const translations = defineMessages({
+  previewComponentsPanelTitle: {
+    // Translation not used in code but powers i18n for `ui.xml`
+    id: 'previewComponentsPanelTitle',
+    defaultMessage: 'Add Content'
+  },
   browse: {
     id: 'previewComponentsPanel.browse',
     defaultMessage: 'Browse existing'
@@ -332,13 +337,6 @@ export function PreviewComponentsPanel() {
                                   whiteSpace: 'nowrap'
                                 }}
                               >
-                                {type.name}
-                                {type.name}
-                                {type.name}
-                                {type.name}
-                                {type.name}
-                                {type.name}
-                                {type.name}
                                 {type.name}
                               </Box>
                             </>

@@ -47,8 +47,9 @@ import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   dropTargetsPanel: {
-    id: 'previewDropTargetsPanel.title',
-    defaultMessage: 'Component Drop Targets'
+    // Translation not used in code but powers i18n for `ui.xml`
+    id: 'previewDropTargetsPanelTitle',
+    defaultMessage: 'Drop Targets'
   },
   selectContentType: {
     id: 'previewDropTargetsPanel.selectContentType',
