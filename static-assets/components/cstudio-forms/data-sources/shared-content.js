@@ -269,7 +269,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
     var _self = this;
     craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
       next(sandboxItem) {
-        const readonly = control.readonly;
+        const readonly = !sandboxItem.availableActionsMap.edit;
         const action =
           readonly || !sandboxItem.availableActionsMap.edit
             ? CStudioAuthoring.Operations.viewContent
