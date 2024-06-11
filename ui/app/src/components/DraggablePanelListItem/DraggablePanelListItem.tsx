@@ -68,7 +68,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
             mr: 1.5,
             width: 30,
             height: 30,
-            backgroundColor: over ? 'transparent' : backgroundColor,
+            backgroundColor: over || avatarSrc ? 'transparent' : backgroundColor,
             transition: 'background-color 0.25s ease-in-out'
           }}
         >
