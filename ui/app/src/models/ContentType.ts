@@ -29,7 +29,6 @@ export interface ContentTypeFieldValidation<T = any> {
   level: 'required' | 'suggestion';
 }
 
-// TODO: assess removing `allowedContentTypes` validation in favour of keeping `allowedEmbeddedContentTypes` & `allowedSharedContentTypes` only
 export type ValidationKeys =
   | 'allowedContentTypeTags'
   | 'allowedContentTypes'

@@ -31,6 +31,8 @@ import { GuestState } from './models/GuestStore';
 import { ElementRecord, ICERecord } from '../models/InContextEditing';
 import { getCachedModel, getCachedModels, modelHierarchyMap } from '../contentController';
 import { getParentModelId } from '../utils/ice';
+import { getReferentialEntries } from '../iceRegistry';
+import { extractCollectionItem } from '@craftercms/studio-ui/utils/model';
 
 export function dragOk(status): boolean {
   return [
@@ -99,8 +101,17 @@ export function beforeWrite$<T extends any = 'continue', S extends any = never>(
  * it uses to compute the result, so they can be used by consumer if needed.
  */
 export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord) => {
-  const { modelId } = record;
-  const model = getCachedModel(modelId);
+  let { modelId, fieldId } = record;
+  // If the present record refers to a node selector item, we need to switch the model to that item of the collection.
+  // Otherwise, is just the model from the present record.
+  let model = getCachedModel(modelId);
+  if (fieldId.length > 0) {
+    const entries = getReferentialEntries(record.iceIds[0]);
+    if (entries.recordType === 'node-selector-item') {
+      model = getCachedModel(extractCollectionItem(model, fieldId[0], record.index));
+      modelId = model.craftercms.id;
+    }
+  }
   const parentModelId = model.craftercms.path ? null : getParentModelId(modelId, getCachedModels(), modelHierarchyMap);
   const parentModel = parentModelId ? getCachedModel(parentModelId) : null;
   const path = model.craftercms.path ?? parentModel.craftercms.path;

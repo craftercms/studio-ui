@@ -100,6 +100,7 @@ import { uploadDataUrl } from '@craftercms/studio-ui/services/content';
 import { getRequestForgeryToken } from '@craftercms/studio-ui/utils/auth';
 import { ensureSingleSlash } from '@craftercms/studio-ui/utils/string';
 import { getInheritanceParentIdsForField } from '@craftercms/studio-ui/utils/content';
+import { SearchItem } from '@craftercms/studio-ui/models';
 
 const createReader$ = (file: File) =>
   new Observable((subscriber: Subscriber<ProgressEvent<FileReader>>) => {
@@ -124,9 +125,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
     action$.pipe(
       ofType('mouseover', 'mouseleave'),
       withLatestFrom(state$),
-      filter((args) => args[1].status === EditingStatus.LISTENING),
-      tap(([action, state]: [action: GuestStandardAction, state: GuestState]) =>
-        action.payload.event.stopPropagation()
+      tap(
+        ([action, state]: [action: GuestStandardAction, state: GuestState]) =>
+          state.status === EditingStatus.LISTENING && action.payload.event.stopPropagation()
       ),
       ignoreElements()
     ),
@@ -260,7 +261,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
                         record.modelId,
                         record.fieldId,
                         record.index,
-                        dragContext.dragged.path
+                        (dragContext.dragged as SearchItem).path
                       );
                     }
                     break;
@@ -647,18 +648,18 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   },
   // endregion
   // region contentTypeDropTargetsRequest
-  (action$: Observable<GuestStandardAction<{ contentTypeId: string }>>) => {
+  (action$: Observable<GuestStandardAction<{ contentTypeId: string }>>, state$) => {
     return action$.pipe(
       ofType(contentTypeDropTargetsRequest.type),
-      tap((action) => {
+      withLatestFrom(state$),
+      tap(([action, state]) => {
         const { contentTypeId } = action.payload;
-        const dropTargets = iceRegistry.getContentTypeDropTargets(contentTypeId).map((item) => {
-          let { elementRecordId } = ElementRegistry.compileDropZone(item.id);
-          let highlight = ElementRegistry.getHoverData(elementRecordId);
+        const dropTargets = Object.values(state.highlighted).map(({ id, label }) => {
+          const item = iceRegistry.getById(ElementRegistry.get(id).iceIds[0]);
           return {
             modelId: item.modelId,
             fieldId: item.fieldId,
-            label: highlight.label,
+            label,
             id: item.id,
             contentTypeId
           };
@@ -828,7 +829,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       ofType(assetDragStarted.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
-        if (nullOrUndefined(state.dragContext.dragged.path)) {
+        if (nullOrUndefined((state.dragContext.dragged as SearchItem).path)) {
           console.error('No path found for this drag asset.');
         } else {
           return initializeDragSubjects(state$);

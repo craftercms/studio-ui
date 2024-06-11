@@ -286,7 +286,7 @@
                   );
                 }
               },
-              error() {
+              failure: function (error) {
                 callback?.failure(error);
               }
             }

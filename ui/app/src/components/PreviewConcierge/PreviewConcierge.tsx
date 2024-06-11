@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { MutableRefObject, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import {
+  allowedContentTypesUpdate,
   changeCurrentUrl,
   clearSelectedZones,
   clearSelectForEdit,
@@ -31,6 +32,7 @@ import {
   fetchContentTypes,
   fetchGuestModel,
   fetchGuestModelComplete,
+  fetchGuestModelsComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
   guestCheckOut,
@@ -117,10 +119,8 @@ import {
 import EditFormPanel from '../EditFormPanel/EditFormPanel';
 import {
   createModelHierarchyDescriptorMap,
-  getComputedEditMode,
   getInheritanceParentIdsForField,
   getNumOfMenuOptionsForItem,
-  hasEditAction,
   isItemLockedForMe,
   normalizeModel,
   normalizeModelsLookup,
@@ -185,9 +185,19 @@ import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { isSameDay } from '../../utils/datetime';
 import compatibilityList from './compatibilityList';
 import ContentType from '../../models/ContentType';
+import { Dispatch } from 'redux';
+import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
 
-// region const issueDescriptorRequest = () => {...}
-const issueDescriptorRequest = (props) => {
+const issueDescriptorRequest = (props: {
+  site: string;
+  path: string;
+  contentTypes: Record<string, ContentType>;
+  requestedSourceMapPaths: MutableRefObject<Record<string, boolean>>;
+  flatten?: boolean;
+  dispatch: Dispatch;
+  completeActionCreator: ActionCreatorWithOptionalPayload<any>;
+  permissions: string[];
+}) => {
   const {
     site,
     path,
@@ -195,7 +205,7 @@ const issueDescriptorRequest = (props) => {
     requestedSourceMapPaths,
     flatten = true,
     dispatch,
-    completeAction,
+    completeActionCreator,
     permissions
   } = props;
   const hostToGuest$ = getHostToGuestBus();
@@ -277,7 +287,7 @@ const issueDescriptorRequest = (props) => {
 
       dispatch(
         batchActions([
-          completeAction({
+          completeActionCreator({
             model: normalizedModel,
             modelLookup: normalizedModels,
             modelIdByPath: modelIdByPath,
@@ -286,9 +296,8 @@ const issueDescriptorRequest = (props) => {
           updateItemsByPath({ items: sandboxItems })
         ])
       );
-      hostToGuest$.next({
-        type: 'FETCH_GUEST_MODEL_COMPLETE',
-        payload: {
+      hostToGuest$.next(
+        fetchGuestModelComplete({
           path,
           model: normalizedModel,
           modelLookup: normalizedModels,
@@ -296,11 +305,10 @@ const issueDescriptorRequest = (props) => {
           modelIdByPath: modelIdByPath,
           sandboxItems,
           permissions
-        }
-      });
+        })
+      );
     });
 };
-// endregion
 
 const dataSourceActionsListInitialState = {
   show: false,
@@ -327,7 +335,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const models = guest?.models;
   const modelIdByPath = guest?.modelIdByPath;
   const hierarchyMap = guest?.hierarchyMap;
-  const mainModelModifier = guest?.mainModelModifier;
   const requestedSourceMapPaths = useRef({});
   const currentItemPath = guest?.path;
   const uiConfig = useSiteUIConfig();
@@ -341,16 +348,14 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const [dataSourceActionsListState, setDataSourceActionsListState] = useSpreadState<DataSourcesActionsListProps>(
     dataSourceActionsListInitialState
   );
-  const conditionallyToggleEditMode = (nextHighlightMode?: HighlightMode) => {
-    if (item && !isItemLockedForMe(item, username) && hasEditAction(item.availableActions)) {
-      dispatch(
-        setPreviewEditMode({
-          // If switching from highlight modes (all vs move), we just want to switch modes without turning off edit mode.
-          editMode: nextHighlightMode !== highlightMode ? true : !editMode,
-          highlightMode: nextHighlightMode
-        })
-      );
-    }
+  const toggleEditMode = (nextHighlightMode?: HighlightMode) => {
+    dispatch(
+      setPreviewEditMode({
+        // If switching from highlight modes (all vs move), we just want to switch modes without turning off edit mode.
+        editMode: nextHighlightMode !== highlightMode ? true : !editMode,
+        highlightMode: nextHighlightMode
+      })
+    );
   };
   const env = useEnv();
   const upToDateRefs = useUpdateRefs({
@@ -375,7 +380,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
     enqueueSnackbar,
     editModePadding,
     cdataEscapedFieldPatterns,
-    conditionallyToggleEditMode,
+    toggleEditMode,
     keyboardShortcutsDialogState,
     setDataSourceActionsListState,
     showToolsPanel,
@@ -385,10 +390,10 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
       const key = event.key;
       switch (key) {
         case 'e':
-          upToDateRefs.current.conditionallyToggleEditMode('all');
+          upToDateRefs.current.toggleEditMode('all');
           break;
         case 'm':
-          upToDateRefs.current.conditionallyToggleEditMode('move');
+          upToDateRefs.current.toggleEditMode('move');
           break;
         case 'p':
           upToDateRefs.current.dispatch(toggleEditModePadding());
@@ -406,7 +411,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               showEditDialog({
                 site: upToDateRefs.current.siteId,
                 path: upToDateRefs.current.guest.path,
-                readonly: isItemLockedForMe(upToDateRefs.current.item, upToDateRefs.current.user.username),
+                readonly:
+                  !upToDateRefs.current.item.availableActionsMap.edit ||
+                  isItemLockedForMe(upToDateRefs.current.item, upToDateRefs.current.user.username),
                 authoringBase: upToDateRefs.current.authoringBase
               })
             );
@@ -479,12 +486,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   useEffect(() => {
     // FYI. Path navigator refresh triggers this effect too due to item changing.
     if (item) {
-      const mode =
-        getComputedEditMode({ item, username: username, editMode }) &&
-        (mainModelModifier == null || mainModelModifier.username === username);
-      getHostToGuestBus().next(setPreviewEditMode({ editMode: mode }));
+      getHostToGuestBus().next(setPreviewEditMode({ editMode }));
     }
-  }, [item, editMode, username, dispatch, mainModelModifier]);
+  }, [item, editMode]);
 
   // Fetch active item
   useEffect(() => {
@@ -607,7 +611,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
               contentTypes,
               requestedSourceMapPaths,
               dispatch,
-              completeAction: fetchPrimaryGuestModelComplete,
+              completeActionCreator: fetchPrimaryGuestModelComplete,
               permissions
             });
           });
@@ -663,7 +667,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchPrimaryGuestModelComplete,
+                completeActionCreator: fetchPrimaryGuestModelComplete,
                 permissions
               });
             });
@@ -679,7 +683,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchGuestModelComplete,
+                completeActionCreator: fetchGuestModelsComplete,
                 permissions
               });
             });
@@ -726,7 +730,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchGuestModelComplete,
+                completeActionCreator: fetchGuestModelsComplete,
                 permissions
               });
               hostToHost$.next(sortItemOperationComplete(payload));
@@ -813,7 +817,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchGuestModelComplete,
+                completeActionCreator: fetchGuestModelsComplete,
                 permissions
               });
               hostToGuest$.next(
@@ -866,7 +870,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchPrimaryGuestModelComplete,
+                completeActionCreator: fetchPrimaryGuestModelComplete,
                 permissions
               });
               hostToGuest$.next(duplicateItemOperationComplete());
@@ -961,7 +965,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
                 contentTypes,
                 requestedSourceMapPaths,
                 dispatch,
-                completeAction: fetchGuestModelComplete,
+                completeActionCreator: fetchGuestModelsComplete,
                 permissions
               });
 
@@ -1117,7 +1121,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         // region actions whitelisted
         case unlockItem.type:
-        case errorPageCheckIn.type: {
+        case errorPageCheckIn.type:
+        case allowedContentTypesUpdate.type: {
           dispatch(action);
           break;
         }

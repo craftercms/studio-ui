@@ -51,7 +51,7 @@ import PathNavigatorSkeleton from './PathNavigatorSkeleton';
 import GlobalState from '../../models/GlobalState';
 import { SystemIconDescriptor } from '../SystemIcon';
 import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
-import { getNumOfMenuOptionsForItem } from '../../utils/content';
+import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
 import { useSelection } from '../../hooks/useSelection';
 import { useEnv } from '../../hooks/useEnv';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
@@ -316,7 +316,7 @@ export function PathNavigator(props: PathNavigatorProps) {
         path: path,
         anchorReference: 'anchorPosition',
         anchorPosition: { top, left },
-        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
+        loaderItems: getNumOfMenuOptionsForItem(lookupItemByPath(path, itemsByPath))
       })
     );
   };
