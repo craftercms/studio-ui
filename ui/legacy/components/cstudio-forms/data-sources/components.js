@@ -292,7 +292,7 @@
             }
           );
         },
-        failure: function () {}
+        error: function () {}
       });
     },
 
