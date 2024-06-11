@@ -65,7 +65,7 @@ const translations = defineMessages({
   previewComponentsPanelTitle: {
     // Translation not used in code but powers i18n for `ui.xml`
     id: 'previewComponentsPanelTitle',
-    defaultMessage: 'Add Content'
+    defaultMessage: 'Create Content'
   },
   browse: {
     id: 'previewComponentsPanel.browse',
