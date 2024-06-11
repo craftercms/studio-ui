@@ -15,8 +15,6 @@
  */
 
 import * as React from 'react';
-import { useActiveUser } from '../../hooks/useActiveUser';
-import { isItemLockedForMe } from '../../utils/content';
 import { useDispatch } from 'react-redux';
 import { setPreviewEditMode } from '../../state/actions/preview';
 import { DetailedItem } from '../../models/Item';
@@ -36,22 +34,18 @@ export interface EditModesSwitcherProps {
 }
 
 export function EditModesSwitcher(props: EditModesSwitcherProps) {
-  const { item, disabled } = props;
-  const user = useActiveUser();
-  const isLocked = isItemLockedForMe(item, user.username);
-  const write = Boolean(item?.availableActionsMap.edit);
-  const dispatch = useDispatch();
+  const { disabled } = props;
   const { editMode, highlightMode } = usePreviewState();
+  const dispatch = useDispatch();
   const onEditModeChange = (editMode, highlightMode?) => dispatch(setPreviewEditMode({ editMode, highlightMode }));
-  const isComputedDisabled = disabled || !write || isLocked;
   const isAllHighlightMode = editMode && highlightMode === 'all';
   const isMoveHighlightMode = editMode && !isAllHighlightMode;
-  const getStyle = () => ({
+  const commonModeButtonStyle = {
     bgcolor: 'background.default',
     ':hover': {
       cursor: 'default'
     }
-  });
+  };
   return (
     <Box
       sx={{
@@ -90,21 +84,17 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
       </Tooltip>
       <Tooltip
         title={
-          isComputedDisabled ? (
-            ''
-          ) : (
-            <FormattedMessage id="editModesSwitcher.editModeTooltip" defaultMessage="Edit mode (e)" />
-          )
+          disabled ? '' : <FormattedMessage id="editModesSwitcher.editModeTooltip" defaultMessage="Edit mode (e)" />
         }
       >
         <IconButton
           color={isAllHighlightMode ? 'success' : UNDEFINED}
-          disabled={isComputedDisabled}
+          disabled={disabled}
           size="small"
           onClick={() => onEditModeChange(true, 'all')}
           sx={{
             borderRadius: 0,
-            ...(isAllHighlightMode && getStyle())
+            ...(isAllHighlightMode && commonModeButtonStyle)
           }}
         >
           <EditRoundedIcon />
@@ -112,22 +102,18 @@ export function EditModesSwitcher(props: EditModesSwitcherProps) {
       </Tooltip>
       <Tooltip
         title={
-          isComputedDisabled ? (
-            ''
-          ) : (
-            <FormattedMessage id="editModesSwitcher.moveModeTooltip" defaultMessage="Move mode (m)" />
-          )
+          disabled ? '' : <FormattedMessage id="editModesSwitcher.moveModeTooltip" defaultMessage="Move mode (m)" />
         }
       >
         <IconButton
           color={isMoveHighlightMode ? 'primary' : UNDEFINED}
-          disabled={isComputedDisabled}
+          disabled={disabled}
           size="small"
           onClick={() => onEditModeChange(true, 'move')}
           sx={{
             borderTopLeftRadius: 0,
             borderBottomLeftRadius: 0,
-            ...(isMoveHighlightMode && getStyle())
+            ...(isMoveHighlightMode && commonModeButtonStyle)
           }}
         >
           <DragIndicatorRoundedIcon />
