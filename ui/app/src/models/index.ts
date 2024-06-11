@@ -15,6 +15,7 @@
  */
 
 export * from './Activity';
+export * from './AllowedContentTypesData';
 export * from './ApiResponse';
 export * from './Audit';
 export * from './Aws';

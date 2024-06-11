@@ -41,6 +41,7 @@ import { stripDuplicateSlashes } from '../utils/path';
 import { Api2ResponseFormat } from '../models/ApiResponse';
 import { asArray } from '../utils/array';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
+import AllowedContentTypesData from '../models/AllowedContentTypesData';
 
 const typeMap = {
   input: 'text',
@@ -155,6 +156,11 @@ function getFieldValidations(
                 let value = prop.value ? prop.value.split(',') : [];
                 if (mappedPropName === 'allowedContentTypes') {
                   const datasource = dropTargetsLookup[itemManagerId] as ComponentsDatasource;
+                  validations.allowedContentTypes = validations.allowedContentTypes ?? {
+                    id: 'allowedContentTypes',
+                    level: 'required',
+                    value: {} as LookupTable<AllowedContentTypesData<boolean>>
+                  };
                   validations.allowedEmbeddedContentTypes = validations.allowedEmbeddedContentTypes ?? {
                     id: 'allowedEmbeddedContentTypes',
                     level: 'required',
@@ -170,39 +176,29 @@ function getFieldValidations(
                     level: 'required',
                     value: []
                   };
-                  datasource.allowEmbedded &&
-                    (validations.allowedEmbeddedContentTypes.value =
-                      validations.allowedEmbeddedContentTypes.value.concat(value));
-                  datasource.allowShared &&
-                    (validations.allowedSharedContentTypes.value =
-                      validations.allowedSharedContentTypes.value.concat(value));
-                  (datasource.enableBrowse || datasource.enableSearch) &&
-                    (validations.allowedSharedExistingContentTypes.value =
-                      validations.allowedSharedExistingContentTypes.value.concat(value));
-                  // If someone configures the "components" data source to not allow anything but still select one or more allowed content types,
-                  // it would cause the allowance of those content types to be created as embedded because of the way the checks are done. Even
-                  // though this is not a real use case, this cancels that possibility. See componentDragStarted action reducer and drop epic for
-                  // details on how this would happen.
-                  if (
-                    !(
-                      datasource.allowEmbedded ||
-                      datasource.allowShared ||
-                      datasource.enableBrowse ||
-                      datasource.enableSearch
-                    )
-                  ) {
-                    value = [];
-                  }
-                  // If there is more than one Components DS on this type, make sure they don't override each other as they get parsed
-                  if (validations[mappedPropName]) {
-                    value = validations[mappedPropName].value.concat(value);
-                  }
+                  const allowedContentTypesMeta = validations.allowedContentTypes.value;
+                  value.forEach((typeId) => {
+                    allowedContentTypesMeta[typeId] = allowedContentTypesMeta[typeId] ?? {};
+                    if (datasource.allowEmbedded) {
+                      allowedContentTypesMeta[typeId].embedded = true;
+                      validations.allowedEmbeddedContentTypes.value.push(typeId);
+                    }
+                    if (datasource.allowShared) {
+                      allowedContentTypesMeta[typeId].shared = true;
+                      validations.allowedSharedContentTypes.value.push(typeId);
+                    }
+                    if (datasource.enableBrowse || datasource.enableSearch) {
+                      allowedContentTypesMeta[typeId].sharedExisting = true;
+                      validations.allowedSharedExistingContentTypes.value.push(typeId);
+                    }
+                  });
+                } else {
+                  validations[mappedPropName] = {
+                    id: mappedPropName,
+                    value,
+                    level: 'required'
+                  };
                 }
-                validations[mappedPropName] = {
-                  id: mappedPropName,
-                  value,
-                  level: 'required'
-                };
               }
             });
           });

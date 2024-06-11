@@ -16,6 +16,7 @@
 
 import React, { MutableRefObject, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import {
+  allowedContentTypesUpdate,
   changeCurrentUrl,
   clearSelectedZones,
   clearSelectForEdit,
@@ -1120,7 +1121,8 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
         }
         // region actions whitelisted
         case unlockItem.type:
-        case errorPageCheckIn.type: {
+        case errorPageCheckIn.type:
+        case allowedContentTypesUpdate.type: {
           dispatch(action);
           break;
         }
