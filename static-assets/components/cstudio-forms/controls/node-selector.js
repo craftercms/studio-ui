@@ -45,7 +45,6 @@ CStudioForms.Controls.NodeSelector = function (id, form, owner, properties, cons
   this.formatMessage = CrafterCMSNext.i18n.intl.formatMessage;
   this.words = CrafterCMSNext.i18n.messages.words;
   this.formEngineMessages = CrafterCMSNext.i18n.messages.formEngineMessages;
-  this.editPermissionMap = {};
 
   return this;
 };
@@ -331,117 +330,119 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
 
     var items = this.items;
-    const hasLegacyPrefix = items.some((item) => Object.keys(item).filter((key) => key.includes('_mvs')).length > 0);
-    // only if true -> set value - for backward compatibility
-    if (hasLegacyPrefix) {
-      this.useMVS = true;
-    }
 
-    itemsContainerEl.innerHTML = '';
-    var tar = new YAHOO.util.DDTarget(itemsContainerEl);
-    for (var i = 0; i < items.length; i++) {
-      const item = items[i];
-      const itemIndex = i;
-      var itemEl = document.createElement('div');
-      if (this.readonly != true) {
-        var dd = new NodeSelectorDragAndDropDecorator(itemEl);
+    const sharedItems = [];
+    let hasLegacyPrefix = false;
+    items.forEach((item) => {
+      // If it is a path, it is a shared item, otherwise, it will be a guid and it is an embedded item.
+      if (item.key.trim().startsWith('/')) {
+        sharedItems.push(item.key);
       }
-
-      YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item');
-      itemEl.style.backgroundColor = '#F0F0F0'; // stylesheet not working due to proxy?
-      itemEl.style.overflowWrap = 'break-word';
-      itemEl._index = i;
-      itemEl.context = this;
-
-      $(itemEl).append(`<span class="name">${item.value}</span>`);
-      if (item.include) {
-        $(itemEl).append(`<span class="path">${item.include}</span>`);
-      } else if (item.inline === 'true') {
-        $(itemEl).append(
-          `<span class="path">(${this.formatMessage(this.formEngineMessages.embeddedComponent)})</span>`
-        );
-      } else {
-        $(itemEl).append(`<span class="path">${item.key}</span>`);
+      if (!hasLegacyPrefix) {
+        hasLegacyPrefix = Object.keys(item).some((key) => key.includes('_mvs'));
+        // only if true -> set value - for backward compatibility
+        if (hasLegacyPrefix) this.useMVS = true;
       }
+    });
 
-      if (this.readonly === true) {
-        itemEl.classList.add('disabled');
-      }
+    // Retrieve all SandboxItems to determine if the user has the edit permissions.
+    this._renderItemsSubscription?.unsubscribe();
+    this._renderItemsSubscription = craftercms.services.content
+      .fetchItemsByPath(CStudioAuthoringContext.site, sharedItems)
+      .subscribe((sandboxItems) => {
+        itemsContainerEl.innerHTML = '';
+        var tar = new YAHOO.util.DDTarget(itemsContainerEl);
+        const itemsByPath = craftercms.utils.object.createLookupTable(sandboxItems, 'path');
 
-      const isComponent = item.key.startsWith('/site') || item.inline;
+        for (var i = 0; i < items.length; i++) {
+          const item = items[i];
+          const itemIndex = i;
+          var itemEl = document.createElement('div');
+          if (this.readonly != true) {
+            var dd = new NodeSelectorDragAndDropDecorator(itemEl);
+          }
 
-      const $actionsContainer = $(`<span class="actions-container ml-auto" />`);
+          YAHOO.util.Dom.addClass(itemEl, 'cstudio-form-control-node-selector-item');
+          itemEl.style.backgroundColor = '#F0F0F0'; // stylesheet not working due to proxy?
+          itemEl.style.overflowWrap = 'break-word';
+          itemEl._index = i;
+          itemEl.context = this;
 
-      const addActionButtons = (editPermission) => {
-        const editBtnLabel = editPermission ? 'Edit' : 'View';
-        const editBtnIconClass = editPermission ? 'fa-pencil' : 'fa-eye';
+          $(itemEl).append(`<span class="name">${item.value}</span>`);
+          if (item.include) {
+            $(itemEl).append(`<span class="path">${item.include}</span>`);
+          } else if (item.inline === 'true') {
+            $(itemEl).append(
+              `<span class="path">(${this.formatMessage(this.formEngineMessages.embeddedComponent)})</span>`
+            );
+          } else {
+            $(itemEl).append(`<span class="path">${item.key}</span>`);
+          }
 
-        if (editPermission || (!editPermission && isComponent)) {
+          if (this.readonly === true) {
+            itemEl.classList.add('disabled');
+          }
+
+          const isComponent = item.key.startsWith('/site') || item.inline;
+          const hasWritePermission = !(item.key in itemsByPath) || itemsByPath[item.key].availableActionsMap.edit;
+          const editBtnLabel = (item.inline && this.readonly) || !hasWritePermission ? 'View' : 'Edit';
+          const editBtnIconClass = (item.inline && this.readonly) || !hasWritePermission ? 'fa-eye' : 'fa-pencil';
+
+          const $actionsContainer = $(`<span class="actions-container ml-auto" />`);
           const editBtn = $(
-            `<span class="fa ${editBtnIconClass} node-selector-item-icon" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${itemIndex}"></span>`
+            `<button class="fa ${editBtnIconClass} node-selector-item-icon" title="${editBtnLabel}" aria-label="${editBtnLabel}" role="button" data-index="${i}"></button>`
           );
-          $actionsContainer.append(editBtn);
-          editBtn.on('click', function () {
-            const elIndex = $(this).data('index');
-            let selectedDatasource =
-              _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
-            selectedDatasource.edit(item.key, _self, elIndex, {
-              failure: function (error) {
-                if (error.status === 404) {
-                  CStudioAuthoring.Utils.showConfirmDialog({
-                    body: _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
-                      internalName: _self.items[elIndex].value
-                    }),
-                    onOk: () => {
-                      _self.deleteItem(elIndex);
-                    },
-                    okButtonText: _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
-                      controlLabel: _self.fieldDef.title
-                    }),
-                    cancelButtonText: _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
-                  });
-                } else {
-                  craftercms.getStore().dispatch({
-                    type: 'SHOW_ERROR_DIALOG',
-                    payload: { error: error.response.response }
-                  });
-                }
-              }
+          const deleteBtn = $(
+            '<button class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></button>'
+          );
+          const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
+          if (isEditable) {
+            if (isComponent || !this.readonly) {
+              $actionsContainer.append(editBtn);
+              editBtn.on('click', function () {
+                const elIndex = $(this).data('index');
+                let selectedDatasource =
+                  _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
+                selectedDatasource.edit(item.key, _self, elIndex, {
+                  failure: function (error) {
+                    if (error.status === 404) {
+                      CStudioAuthoring.Utils.showConfirmDialog({
+                        body: _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
+                          internalName: _self.items[elIndex].value
+                        }),
+                        onOk: () => {
+                          _self.deleteItem(elIndex);
+                        },
+                        okButtonText: _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
+                          controlLabel: _self.fieldDef.title
+                        }),
+                        cancelButtonText: _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
+                      });
+                    } else {
+                      craftercms.getStore().dispatch({
+                        type: 'SHOW_ERROR_DIALOG',
+                        payload: { error: error.response.response }
+                      });
+                    }
+                  }
+                });
+              });
+            }
+          }
+          if (this.readonly != true) {
+            $actionsContainer.append(deleteBtn);
+            deleteBtn.on('click', function () {
+              _self.deleteItem(itemIndex);
+              _self._renderItems();
             });
-          });
+          }
+
+          $(itemEl).append($actionsContainer);
+          itemEl._onMouseDown = function () {};
+
+          itemsContainerEl.appendChild(itemEl);
         }
-
-        const deleteBtn = $(
-          '<span class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></span>'
-        );
-
-        if (!_self.readonly) {
-          $actionsContainer.append(deleteBtn);
-          deleteBtn.on('click', function () {
-            _self.deleteItem(itemIndex);
-            _self._renderItems();
-          });
-        }
-      };
-
-      const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
-      if (isEditable) {
-        // If editable, check for edit permission, unless it's an embedded component (`item.inline` true)
-        if (item.inline) {
-          addActionButtons(!this.readonly);
-        } else {
-          craftercms.services.content.fetchItemByPath('editorial', item.key).subscribe((sandboxItem) => {
-            _self.editPermissionMap[item.key] = sandboxItem.availableActionsMap.edit;
-            addActionButtons(sandboxItem.availableActionsMap.edit);
-          });
-        }
-      }
-
-      $(itemEl).append($actionsContainer);
-      itemEl._onMouseDown = function () {};
-
-      itemsContainerEl.appendChild(itemEl);
-    }
+      });
   },
 
   getItemsLeftCount: function () {
