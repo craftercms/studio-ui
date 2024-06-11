@@ -385,7 +385,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
           const isComponent = item.key.startsWith('/site') || item.inline;
           const hasWritePermission = !(item.key in itemsByPath) || itemsByPath[item.key].availableActionsMap.edit;
-          const hasEditAction = !((item.inline && this.readonly) || !hasWritePermission);
+          const hasEditAction = hasWritePermission && !(item.inline && this.readonly);
           const editBtnLabel = hasEditAction ? 'Edit' : 'View';
           const editBtnIconClass = hasEditAction ? 'fa-pencil' : 'fa-eye';
 
