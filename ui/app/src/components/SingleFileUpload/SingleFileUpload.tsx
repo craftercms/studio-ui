@@ -19,7 +19,7 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
 import Form from '@uppy/form';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import '@uppy/core/src/style.scss';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/file-input/src/style.scss';
@@ -34,6 +34,8 @@ import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
 import { toQueryString } from '../../utils/object';
+import Box from '@mui/material/Box';
+import Alert, { alertClasses } from '@mui/material/Alert';
 
 const messages = defineMessages({
   chooseFile: {
@@ -66,9 +68,6 @@ const singleFileUploadStyles = makeStyles()(() => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap'
-  },
-  description: {
-    margin: '10px 0'
   },
   input: {
     display: 'none !important'
@@ -140,6 +139,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     body: string;
     error?: boolean;
   }>(null);
+  const [error, setError] = useState(null);
   fileRef.current = file;
   suggestedNameRef.current = suggestedName;
 
@@ -185,6 +185,15 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       }),
     [fileTypes, customFileName]
   );
+
+  const resetState = () => {
+    setDescription(formatMessage(messages.selectFileMessage));
+    setFile(null);
+    setFileNameErrorClass('');
+    setDisableInput(false);
+    setConfirm(null);
+    setError(null);
+  };
 
   useEffect(() => {
     const instance = uppy
@@ -237,7 +246,9 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
   useEffect(() => {
     const onUploadError = (file, error, response) => {
       uppy.cancelAll();
+      // TODO: is this working?
       setFileNameErrorClass('text-danger');
+      setError(error);
       onError?.({ file, error, response });
       setDisableInput(false);
     };
@@ -336,17 +347,44 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       </form>
       <div className="uppy-progress-bar" />
       <div className="uploaded-files">
-        <Typography variant="subtitle1" component="h2" className={classes.description}>
+        <Typography variant="subtitle1" component="h2" sx={{ mb: 1 }}>
           {description}
-          {file && (
-            <em
-              className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
-              title={file.name}
-            >
-              {' ' + file.name}
-            </em>
-          )}
         </Typography>
+        <Box
+          component={error ? Alert : 'div'}
+          {...(error
+            ? {
+                severity: 'error',
+                icon: false,
+                onClose: () => resetState()
+              }
+            : {})}
+          sx={{
+            mb: 1,
+            [`.${alertClasses.message}`]: {
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }
+          }}
+        >
+          <Typography variant="subtitle1" component="h2" sx={{ flex: 1, overflow: 'hidden', pr: 2 }}>
+            {file && (
+              <em
+                className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
+                title={file.name}
+              >
+                {file.name}
+              </em>
+            )}
+          </Typography>
+          {error && (
+            <Typography variant="subtitle1" component="h2" sx={{ width: '90px' }}>
+              <FormattedMessage defaultMessage="Upload error" />
+            </Typography>
+          )}
+        </Box>
         <div className={classes.inputContainer}>
           <input
             accept={fileTypes?.join(',')}

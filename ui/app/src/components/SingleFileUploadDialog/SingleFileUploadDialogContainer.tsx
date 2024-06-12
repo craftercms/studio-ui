@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { SingleFileUploadDialogContainerProps } from './utils';
 import { useDispatch } from 'react-redux';
 import DialogBody from '../DialogBody/DialogBody';
@@ -26,7 +26,6 @@ import { batchActions } from '../../state/actions/misc';
 export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
   const { onUploadComplete, onUploadStart, onUploadError, ...rest } = props;
   const dispatch = useDispatch();
-
   const onStart = useCallback(() => {
     onUploadStart?.();
     dispatch(
@@ -51,14 +50,9 @@ export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogCon
   const onError = useCallback(
     ({ file, error, response }) => {
       dispatch(
-        batchActions([
-          showSystemNotification({
-            message: error.message
-          }),
-          updateSingleFileUploadDialog({
-            isSubmitting: false
-          })
-        ])
+        updateSingleFileUploadDialog({
+          isSubmitting: false
+        })
       );
 
       onUploadError?.({ file, error, response });
