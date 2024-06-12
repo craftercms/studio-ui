@@ -26,11 +26,4 @@ before_install:
   - cp .travis-settings.xml $HOME/.m2/settings.xml
 install: skip
 script:
-- wget -q https://raw.githubusercontent.com/craftercms/craftercms/develop/.travis-prep-jdk.sh
-- chmod +x .travis-prep-jdk.sh
-- "./.travis-prep-jdk.sh"
-- export JAVA_HOME=$HOME/jdk
-- export PATH=$HOME/jdk/bin:$PATH
-- which java
-- java -version
 - mvn -Dmaven.javadoc.skip=true clean package
