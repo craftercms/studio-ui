@@ -246,7 +246,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
   useEffect(() => {
     const onUploadError = (file, error, response) => {
       uppy.cancelAll();
-      // TODO: is this working?
       setFileNameErrorClass('text-danger');
       setError(error);
       onError?.({ file, error, response });
