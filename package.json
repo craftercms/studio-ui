@@ -64,7 +64,7 @@
   },
   "packageManager": "yarn@4.2.2",
   "scripts": {
-    "build:all": "yarn workspaces foreach --include './ui/{npm-content,uppy,legacy,app}' -Ap run build-if-changed && yarn workspaces foreach --include './ui/{scss,guest}' -Ap run build-if-changed",
+    "build:all": "yarn workspaces foreach --include './ui/uppy' -A run build-if-changed && yarn workspaces foreach --include './ui/{npm-content,legacy,app}' -Ap run build-if-changed && yarn workspaces foreach --include './ui/{scss,guest}' -Ap run build-if-changed",
     "format:all": "node scripts/prettier.js write",
     "format:next": "node scripts/prettier.js next",
     "format:legacy": "node scripts/prettier.js legacy",
