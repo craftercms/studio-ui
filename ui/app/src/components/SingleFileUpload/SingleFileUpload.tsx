@@ -19,7 +19,7 @@ import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
 import ProgressBar from '@uppy/progress-bar';
 import Form from '@uppy/form';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import '@uppy/core/src/style.scss';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/file-input/src/style.scss';
@@ -34,6 +34,11 @@ import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
 import { toQueryString } from '../../utils/object';
+import { getResponseError } from '../UploadDialog/util';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Alert from '@mui/material/Alert';
 
 const messages = defineMessages({
   chooseFile: {
@@ -72,9 +77,6 @@ const singleFileUploadStyles = makeStyles()(() => ({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap'
-  },
-  description: {
-    margin: '10px 0'
   },
   input: {
     display: 'none !important'
@@ -146,6 +148,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     body: string;
     error?: boolean;
   }>(null);
+  const [error, setError] = useState(null);
   fileRef.current = file;
   suggestedNameRef.current = suggestedName;
 
@@ -192,6 +195,15 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     [fileTypes, customFileName]
   );
 
+  const resetState = () => {
+    setDescription(formatMessage(messages.selectFileMessage));
+    setFile(null);
+    setFileNameErrorClass('');
+    setDisableInput(false);
+    setConfirm(null);
+    setError(null);
+  };
+
   useEffect(() => {
     const instance = uppy
       .use(Form, {
@@ -211,6 +223,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         fieldName: 'file',
         timeout: upload.timeout,
         headers: getGlobalHeaders(),
+        getResponseError: (responseText) => getResponseError(responseText, formatMessage),
         getResponseData: (responseText, response) => response
       });
 
@@ -244,8 +257,8 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     const onUploadError = (file, error, response) => {
       uppy.cancelAll();
       setFileNameErrorClass('text-danger');
+      setError(error);
       onError?.({ file, error, response });
-      setDisableInput(false);
     };
 
     uppy.on('upload-error', onUploadError);
@@ -268,13 +281,13 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         }
       }).subscribe(({ allowed, modifiedValue }) => {
         if (allowed) {
+          setDisableInput(true);
           if (modifiedValue) {
             // Modified value is expected to be a path.
             const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
             setConfirm({ body: formatMessage(messages.createPolicy, { name: modifiedName }) });
             setSuggestedName(modifiedName);
           } else {
-            setDisableInput(true);
             uppy.upload();
             setDescription(`${formatMessage(messages.uploadingFile)}:`);
             onUploadStart?.();
@@ -342,14 +355,35 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       </form>
       <div className="uppy-progress-bar" />
       <div className="uploaded-files">
-        <Typography variant="subtitle1" component="h2" className={classes.description}>
-          {description}
+        {error ? (
+          <Alert
+            icon={false}
+            severity="error"
+            action={
+              <Tooltip title={<FormattedMessage defaultMessage="Dismiss" />}>
+                <IconButton onClick={() => resetState()} size="small">
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+            }
+            sx={{ mb: 2 }}
+          >
+            <Typography variant="subtitle1" component="h2">
+              {error.message}
+            </Typography>
+          </Alert>
+        ) : (
+          <Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
+            {description}
+          </Typography>
+        )}
+        <Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
           {file && (
             <em
               className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
               title={file.name}
             >
-              {' ' + file.name}
+              {file.name}
             </em>
           )}
         </Typography>

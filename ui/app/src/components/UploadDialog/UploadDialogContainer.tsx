@@ -117,20 +117,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
       timeout: upload.timeout,
       headers: mixHeaders(headers),
       method,
-      getResponseError(responseText) {
-        try {
-          const parsed = JSON.parse(responseText);
-          const error: ApiResponse = parsed.response;
-          // TODO: Test this with Studio error responses.
-          return new Error(
-            `[${error.code}] ${error.message}. ${error.remedialAction}. ${error.documentationUrl}.`
-              .replace('. .', '.')
-              .replace('. .', '.')
-          );
-        } catch {
-          return new Error(formatMessage({ defaultMessage: 'An error occurred uploading the file.' }));
-        }
-      }
+      getResponseError: (responseText) => getResponseError(responseText, formatMessage)
     };
     allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
     // These (validateStatus, getResponseData, getResponseError) are unlikely to have closures inside them that would go stale.
