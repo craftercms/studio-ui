@@ -200,10 +200,37 @@ export function GuestProxy() {
         document.querySelectorAll<HTMLElement>('[data-craftercms-model-id]').forEach(registerElement);
       });
 
+    let stopDragScroll = false;
     const handler: JQuery.EventHandlerBase<any, any> = (e: Event): void => {
+      if (e.type === 'dragover') {
+        onDragHandler(e);
+      }
       const record = ElementRegistry.fromElement(e.currentTarget as Element);
       if (notNullOrUndefined(record)) {
         persistenceRef.current.onEvent(e, record.id);
+      }
+    };
+    const onDragHandler: JQuery.EventHandlerBase<any, any> = (e): void => {
+      const dragScroll = function (step) {
+        var scrollY = $(window).scrollTop();
+        $(window).scrollTop(scrollY + step);
+        if (!stopDragScroll) {
+          setTimeout(function () {
+            dragScroll(step);
+          }, 20);
+        }
+      };
+
+      stopDragScroll = true;
+      if (e.originalEvent.clientY < 150) {
+        stopDragScroll = false;
+        dragScroll(-1);
+      }
+      const windowHeight = document.querySelector('html').clientHeight;
+      const windowWidth = document.querySelector('html').clientWidth;
+      if (e.originalEvent.clientX <= windowWidth && e.originalEvent.clientY > windowHeight - 150) {
+        stopDragScroll = false;
+        dragScroll(1);
       }
     };
 
@@ -216,7 +243,9 @@ export function GuestProxy() {
       .on('drop', '[data-craftercms-model-id]', handler)
       .on('dragend', '[data-craftercms-model-id]', handler)
       .on('click', '[data-craftercms-model-id]', handler)
-      .on('dblclick', '[data-craftercms-model-id]', handler);
+      .on('dblclick', '[data-craftercms-model-id]', handler)
+      .on('drag', '[data-craftercms-model-id]', (e) => onDragHandler(e, window, stopDragScroll))
+      .on('dragend', '[data-craftercms-model-id]', () => (stopDragScroll = true));
 
     const sub = operations$.subscribe((op: Operation) => {
       switch (op.type) {
