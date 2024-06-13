@@ -385,6 +385,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
           const isComponent = item.key.startsWith('/site') || item.inline;
           const hasWritePermission = !(item.key in itemsByPath) || itemsByPath[item.key].availableActionsMap.edit;
+          // If the user has write permission, the user can edit the item. If the item is an embedded component, check for the readonly property.
           const hasEditAction = hasWritePermission && !(item.inline && this.readonly);
           const editBtnLabel = hasEditAction ? 'Edit' : 'View';
           const editBtnIconClass = hasEditAction ? 'fa-pencil' : 'fa-eye';
@@ -396,6 +397,8 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           const deleteBtn = $(
             '<button class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></button>'
           );
+          // isEditable: studio-ui has mechanisms to edit the item (e.g. a component or a text file)
+          // allowEdit: the datasource has edit capabilities (datasource.edit exists).
           const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
           if (isEditable && hasEditAction) {
             $actionsContainer.append(editBtn);
