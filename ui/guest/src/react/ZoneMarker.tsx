@@ -179,7 +179,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                       <Tooltip
                         arrow
                         // TODO: i18n
-                        title={`Drop target compatible "${type?.name}" as ${Object.keys(modes)
+                        title={`Drop target compatible with "${type?.name}" as ${Object.keys(modes)
                           .map((mode) => (mode === 'sharedExisting' ? 'existing shared' : mode))
                           .join(', ')}`}
                       >
