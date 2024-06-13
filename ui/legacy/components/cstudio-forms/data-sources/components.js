@@ -261,7 +261,7 @@
     _editShared(key, control, datasource, index, callback) {
       craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
         next(sandboxItem) {
-          const readonly = control.readonly;
+          const readonly = !sandboxItem.availableActionsMap.edit;
           const action =
             readonly || !sandboxItem.availableActionsMap.edit
               ? CStudioAuthoring.Operations.viewContent
@@ -286,13 +286,13 @@
                   );
                 }
               },
-              error() {
+              failure: function (error) {
                 callback?.failure(error);
               }
             }
           );
         },
-        failure: function () {}
+        error: function () {}
       });
     },
 

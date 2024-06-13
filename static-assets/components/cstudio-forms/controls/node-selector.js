@@ -385,8 +385,10 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
 
           const isComponent = item.key.startsWith('/site') || item.inline;
           const hasWritePermission = !(item.key in itemsByPath) || itemsByPath[item.key].availableActionsMap.edit;
-          const editBtnLabel = this.readonly || !hasWritePermission ? 'View' : 'Edit';
-          const editBtnIconClass = this.readonly || !hasWritePermission ? 'fa-eye' : 'fa-pencil';
+          // If the user has write permission, the user can edit the item. If the item is an embedded component, check for the readonly property.
+          const hasEditAction = hasWritePermission && !(item.inline && this.readonly);
+          const editBtnLabel = hasEditAction ? 'Edit' : 'View';
+          const editBtnIconClass = hasEditAction ? 'fa-pencil' : 'fa-eye';
 
           const $actionsContainer = $(`<span class="actions-container ml-auto" />`);
           const editBtn = $(
@@ -395,39 +397,39 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
           const deleteBtn = $(
             '<button class="fa fa-trash node-selector-item-icon" title="Delete" aria-label="Delete" role="button"></button>'
           );
+          // isEditable: studio-ui has mechanisms to edit the item (e.g. a component or a text file)
+          // allowEdit: the datasource has edit capabilities (datasource.edit exists).
           const isEditable = this.allowEdit && (isComponent || craftercms.utils.content.isEditableAsset(item.key));
-          if (isEditable) {
-            if (isComponent || !this.readonly) {
-              $actionsContainer.append(editBtn);
-              editBtn.on('click', function () {
-                const elIndex = $(this).data('index');
-                let selectedDatasource =
-                  _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
-                selectedDatasource.edit(item.key, _self, elIndex, {
-                  failure: function (error) {
-                    if (error.status === 404) {
-                      CStudioAuthoring.Utils.showConfirmDialog({
-                        body: _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
-                          internalName: _self.items[elIndex].value
-                        }),
-                        onOk: () => {
-                          _self.deleteItem(elIndex);
-                        },
-                        okButtonText: _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
-                          controlLabel: _self.fieldDef.title
-                        }),
-                        cancelButtonText: _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
-                      });
-                    } else {
-                      craftercms.getStore().dispatch({
-                        type: 'SHOW_ERROR_DIALOG',
-                        payload: { error: error.response.response }
-                      });
-                    }
+          if (isEditable && hasEditAction) {
+            $actionsContainer.append(editBtn);
+            editBtn.on('click', function () {
+              const elIndex = $(this).data('index');
+              let selectedDatasource =
+                _self.datasources.find((item) => item.id === _self.items[elIndex].datasource) || _self.datasources[0];
+              selectedDatasource.edit(item.key, _self, elIndex, {
+                failure: function (error) {
+                  if (error.status === 404) {
+                    CStudioAuthoring.Utils.showConfirmDialog({
+                      body: _self.formatMessage(_self.formEngineMessages.nodeSelectorItemNotFound, {
+                        internalName: _self.items[elIndex].value
+                      }),
+                      onOk: () => {
+                        _self.deleteItem(elIndex);
+                      },
+                      okButtonText: _self.formatMessage(_self.formEngineMessages.removeItemFromNodeSelector, {
+                        controlLabel: _self.fieldDef.title
+                      }),
+                      cancelButtonText: _self.formatMessage(_self.formEngineMessages.keepItemInNodeSelector)
+                    });
+                  } else {
+                    craftercms.getStore().dispatch({
+                      type: 'SHOW_ERROR_DIALOG',
+                      payload: { error: error.response.response }
+                    });
                   }
-                });
+                }
               });
-            }
+            });
           }
           if (this.readonly != true) {
             $actionsContainer.append(deleteBtn);
