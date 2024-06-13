@@ -31,7 +31,6 @@ import UppyDashboard from '../UppyDashboard';
 import { makeStyles } from 'tss-react/mui';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { XHRUploadOptions } from '@uppy/xhr-upload';
-import ApiResponse from '../../models/ApiResponse';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const useStyles = makeStyles()(() => ({
@@ -118,23 +117,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
       timeout: upload.timeout,
       headers: mixHeaders(headers),
       method,
-      getResponseError(responseText) {
-        try {
-          const parsed = JSON.parse(responseText);
-          if (parsed.response) {
-            const error: ApiResponse = parsed.response;
-            return new Error(
-              `[${error.code}] ${error.message}. ${error.remedialAction}. ${error.documentationUrl}.`
-                .replace('. .', '.')
-                .replace('. .', '.')
-            );
-          } else {
-            return new Error(parsed.message.replace('. .', '.').replace('. .', '.'));
-          }
-        } catch {
-          return new Error(formatMessage({ defaultMessage: 'An error occurred uploading the file.' }));
-        }
-      }
+      getResponseError: (responseText) => getResponseError(responseText, formatMessage)
     };
     allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
     // These (validateStatus, getResponseData, getResponseError) are unlikely to have closures inside them that would go stale.

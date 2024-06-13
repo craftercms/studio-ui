@@ -34,8 +34,11 @@ import Button from '@mui/material/Button';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { ensureSingleSlash } from '../../utils/string';
 import { toQueryString } from '../../utils/object';
-import Box from '@mui/material/Box';
-import Alert, { alertClasses } from '@mui/material/Alert';
+import Alert from '@mui/material/Alert';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import { getResponseError } from '../UploadDialog/util';
 
 const messages = defineMessages({
   chooseFile: {
@@ -214,6 +217,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         fieldName: 'file',
         timeout: upload.timeout,
         headers: getGlobalHeaders(),
+        getResponseError: (responseText) => getResponseError(responseText, formatMessage),
         getResponseData: (responseText, response) => response
       });
 
@@ -249,7 +253,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       setFileNameErrorClass('text-danger');
       setError(error);
       onError?.({ file, error, response });
-      setDisableInput(false);
     };
 
     uppy.on('upload-error', onUploadError);
@@ -272,13 +275,13 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         }
       }).subscribe(({ allowed, modifiedValue, message }) => {
         if (allowed) {
+          setDisableInput(true);
           if (modifiedValue) {
             // Modified value is expected to be a path.
             const modifiedName = modifiedValue.match(/[^/]+$/)?.[0] ?? modifiedValue;
             setConfirm({ body: message });
             setSuggestedName(modifiedName);
           } else {
-            setDisableInput(true);
             uppy.upload();
             setDescription(`${formatMessage(messages.uploadingFile)}:`);
             onUploadStart?.();
@@ -346,44 +349,38 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       </form>
       <div className="uppy-progress-bar" />
       <div className="uploaded-files">
-        <Typography variant="subtitle1" component="h2" sx={{ mb: 1 }}>
-          {description}
-        </Typography>
-        <Box
-          component={error ? Alert : 'div'}
-          {...(error
-            ? {
-                severity: 'error',
-                icon: false,
-                onClose: () => resetState()
-              }
-            : {})}
-          sx={{
-            mb: 1,
-            [`.${alertClasses.message}`]: {
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
+        {error ? (
+          <Alert
+            icon={false}
+            severity="error"
+            action={
+              <Tooltip title={<FormattedMessage defaultMessage="Dismiss" />}>
+                <IconButton onClick={() => resetState()} size="small">
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
             }
-          }}
-        >
-          <Typography variant="subtitle1" component="h2" sx={{ flex: 1, overflow: 'hidden', pr: 2 }}>
-            {file && (
-              <em
-                className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
-                title={file.name}
-              >
-                {file.name}
-              </em>
-            )}
-          </Typography>
-          {error && (
-            <Typography variant="subtitle1" component="h2" sx={{ width: '90px' }}>
-              <FormattedMessage defaultMessage="Upload error" />
+            sx={{ mb: 2 }}
+          >
+            <Typography variant="subtitle1" component="h2">
+              {error.message}
             </Typography>
+          </Alert>
+        ) : (
+          <Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
+            {description}
+          </Typography>
+        )}
+        <Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
+          {file && (
+            <em
+              className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
+              title={file.name}
+            >
+              {file.name}
+            </em>
           )}
-        </Box>
+        </Typography>
         <div className={classes.inputContainer}>
           <input
             accept={fileTypes?.join(',')}
