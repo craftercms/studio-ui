@@ -25,7 +25,6 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ConfirmDropdown from '../ConfirmDropdown';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import Box from '@mui/material/Box';
 import TransferList from '../TransferList';
@@ -68,7 +67,6 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
     onDeleteGroup,
     onSave,
     submitOk,
-    onCancel,
     onChangeValue,
     onAddMembers,
     onRemoveMembers,
@@ -211,11 +209,6 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             </Box>
             {!group.externallyManaged && (
               <div className={classes.formActions}>
-                {isEdit && (
-                  <SecondaryButton disabled={!isDirty || isSubmitting} onClick={onCancel}>
-                    <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
-                  </SecondaryButton>
-                )}
                 <PrimaryButton disabled={!submitOk} loading={isSubmitting} type="submit">
                   <FormattedMessage id="words.save" defaultMessage="Save" />
                 </PrimaryButton>

@@ -23,6 +23,7 @@
     * Internal structure changed so that ListItem wraps the ListItemButton
     * `listItemProps` are routed to the list `ListItem` component instead of the `ListItemButton`
     * Added `listItemButtonProps` property
+  * `DraggablePanelListItem` prop `onMenu` send the pointer event as its first and only argument instead of the anchor element attached to the event. Can get element through `event.currentTarget`.
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`
@@ -40,6 +41,7 @@
 * Migrated the Studio UI build to Vite/SWC
 * Rollup's XB build to use SWC
 * Upgraded target compilation to ES2022, dropping many code transforms for features that are supported by most modern browsers such as nullish coalescing, optional chaining, object spreading and destructuring.
+* The `allowedContentTypes` ContentTypeField validation changed from being an array to a Record<contentTypeId, { embedded?: true; shared?: true; sharedExisting?: true; }>
 * Remove legacy `browseCMIS` dialog and `openCMISBrowse` function from common-api.
 * Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources. 
 
@@ -47,6 +49,7 @@
 * [common-api.js]
   * `CStudioAuthoring.Utils.showConfirmDialog`: Added function overload to receive a `props` style object as first and only argument. The props argument would contain all ConfirmDialog props. Original set of arguments still supported for backward compatibility.
 * Removed `item` property from EditModeSwitch component and its usage in `PreviewSettingsPanel` component
+* `pathNavigatorTreeFetchPathChildrenFailed` action creator payload requires a `path` property.
 
 ## 4.1.4
   * `UploadDialog`: Added props `endpoint`, `method`, `headers`, `meta`, `allowedMetaFields`, `useFormData`, `fieldName` and `onFileAdded` for additional control over the upload process.

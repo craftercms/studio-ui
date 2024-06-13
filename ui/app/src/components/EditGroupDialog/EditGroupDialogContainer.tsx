@@ -75,12 +75,15 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     validateRequiredField(group.name, isDirty) ||
     isInvalidGroupName(group.name) ||
     validateGroupNameMinLength(group.name);
+  const isEdit = Boolean(props.group);
   // This validation is different than groupName error, because for groupNameError it will return true only when form
   // is dirty. For submit, it will be true even though form is not dirty (to avoid submitting a clean form).
   const submitOk = Boolean(
-    group.name.trim() && !validateGroupNameMinLength(group.name) && !isInvalidGroupName(group.name)
+    group.name.trim() &&
+      !validateGroupNameMinLength(group.name) &&
+      !isInvalidGroupName(group.name) &&
+      (!isEdit || group.desc !== (props.group?.desc ?? ''))
   );
-  const isEdit = Boolean(props.group);
   const [users, setUsers] = useState<User[]>();
   const [usersHaveNextPage, setUsersHaveNextPage] = useState(false);
   const usersRef = useRef([]);
@@ -239,11 +242,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
     }
   };
 
-  const onCancel = () => {
-    setGroup(props.group);
-    setIsDirty(false);
-  };
-
   const fetchUsers = (options?: Partial<PaginationOptions & { keyword?: string }>) => {
     fetchAll({
       limit: usersFetchSize,
@@ -345,7 +343,6 @@ export function EditGroupDialogContainer(props: EditGroupDialogContainerProps) {
       onChangeValue={onChangeValue}
       submitOk={submitOk}
       onSave={onSave}
-      onCancel={onCancel}
       onAddMembers={onAddMembers}
       onRemoveMembers={onRemoveMembers}
       inProgressIds={inProgressIds}
