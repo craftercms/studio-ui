@@ -14,14 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { SingleFileUploadDialogContainerProps } from './utils';
 import { useDispatch } from 'react-redux';
 import DialogBody from '../DialogBody/DialogBody';
 import SingleFileUploadDialogUI from './SingleFileUploadDialogUI';
 import { updateSingleFileUploadDialog } from '../../state/actions/dialogs';
-import { showSystemNotification } from '../../state/actions/system';
-import { batchActions } from '../../state/actions/misc';
 
 export function SingleFileUploadDialogContainer(props: SingleFileUploadDialogContainerProps) {
   const { onUploadComplete, onUploadStart, onUploadError, ...rest } = props;
