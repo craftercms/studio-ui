@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { UploadDialogContainerProps } from './util';
+import { getResponseError as getResponseErrorUtil, UploadDialogContainerProps } from './util';
 import { useIntl } from 'react-intl';
 import { useSelection } from '../../hooks/useSelection';
 import React, { useEffect } from 'react';
@@ -31,7 +31,6 @@ import UppyDashboard from '../UppyDashboard';
 import { makeStyles } from 'tss-react/mui';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { XHRUploadOptions } from '@uppy/xhr-upload';
-import ApiResponse from '../../models/ApiResponse';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 
 const useStyles = makeStyles()(() => ({
@@ -117,7 +116,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
       timeout: upload.timeout,
       headers: mixHeaders(headers),
       method,
-      getResponseError: (responseText) => getResponseError(responseText, formatMessage)
+      getResponseError: (responseText) => getResponseErrorUtil(responseText, formatMessage)
     };
     allowedMetaFields && (xhrOptions.allowedMetaFields = allowedMetaFields);
     // These (validateStatus, getResponseData, getResponseError) are unlikely to have closures inside them that would go stale.
