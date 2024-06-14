@@ -9254,11 +9254,11 @@ __metadata:
   linkType: hard
 
 "marked-highlight@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "marked-highlight@npm:2.1.1"
+  version: 2.1.2
+  resolution: "marked-highlight@npm:2.1.2"
   peerDependencies:
-    marked: ">=4 <13"
-  checksum: 10/0ddf79b5cc0aad11fc5ea10d572b53f5569579be010efa2ab7e50209a95226690d8359c773b59bc5b126869511e0561cee559c945ebbbeab5f26d417a0729d61
+    marked: ">=4 <14"
+  checksum: 10/831909feb0a07cec95210cdcc39cb755524189ff04243fb18d600ab47cda4ddb1876896fea704efcf9ec5d78ce1831d86fdd1f5c2f513015e3304bf1915d9974
   languageName: node
   linkType: hard
 
