@@ -385,6 +385,16 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
     }
   });
 
+  const currentItems = models[modelId][fieldId];
+  const newItems = index ? currentItems.splice(index, 0, instance) : [...(currentItems ?? []), instance];
+  models$.next({
+    ...models,
+    [modelId]: {
+      ...models[modelId],
+      [fieldId]: newItems
+    }
+  });
+
   const action = insertItemOperation({
     modelId,
     fieldId,
