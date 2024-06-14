@@ -11004,15 +11004,15 @@ __metadata:
   linkType: hard
 
 "replace-in-file@npm:^7.1.0":
-  version: 7.1.0
-  resolution: "replace-in-file@npm:7.1.0"
+  version: 7.2.0
+  resolution: "replace-in-file@npm:7.2.0"
   dependencies:
     chalk: "npm:^4.1.2"
     glob: "npm:^8.1.0"
     yargs: "npm:^17.7.2"
   bin:
     replace-in-file: bin/cli.js
-  checksum: 10/575319cc1b5cdefb17a89e1642227be709fbd2fbd9347d2b0a218e71c74b73572699a29a75c095c0d2260e58e363395d066a755965c564537df30122a8f85fe7
+  checksum: 10/9d08fc6c65dc3a06cb386ce00d03ca1acdfade394ca79e349777d2cc4dc346827b589ad6749e42aba602725e462b84d2386a77e22120cd3b8b8d764684f1e8d7
   languageName: node
   linkType: hard
 
