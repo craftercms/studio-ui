@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@mui/material/List';
 import SearchBar from '../SearchBar/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
@@ -31,7 +31,7 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, nou } from '../../utils/object';
 import { fetchContentInstance } from '../../services/content';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
@@ -50,6 +50,7 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
 import { ErrorBoundary } from '../ErrorBoundary';
+import FormHelperText from '@mui/material/FormHelperText';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -124,6 +125,8 @@ export function PreviewSearchPanel() {
   });
   const dispatch = useDispatch();
   const editMode = useSelection((state) => state.preview.editMode);
+  const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
+  const awaitingGuestCheckIn = nou(allowedTypesData);
   const contentTypes = useContentTypeList(
     (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
   );
@@ -131,6 +134,9 @@ export function PreviewSearchPanel() {
     () => (contentTypes ? createLookupTable(contentTypes, 'id') : null),
     [contentTypes]
   );
+  const allowedTypes = (allowedTypesData ? Object.entries(allowedTypesData) : [])
+    .filter(([, type]) => type.shared)
+    .map(([key]) => key);
 
   const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
@@ -143,7 +149,7 @@ export function PreviewSearchPanel() {
         ...initialSearchParameters,
         keywords,
         ...options,
-        filters: { 'content-type': contentTypes?.map((item) => item.id), 'mime-type': mimeTypes }
+        filters: { 'content-type': allowedTypes, 'mime-type': mimeTypes }
       })
         .pipe(
           takeUntil(unMount$),
@@ -277,6 +283,16 @@ export function PreviewSearchPanel() {
           <></>
         )}
       </ErrorBoundary>
+      <FormHelperText
+        sx={{
+          margin: '10px 16px',
+          pt: 1,
+          textAlign: 'center',
+          borderTop: (theme) => `1px solid ${theme.palette.divider}`
+        }}
+      >
+        <FormattedMessage defaultMessage="Only shared instances and assets are shown here" />
+      </FormHelperText>
     </>
   );
 }
