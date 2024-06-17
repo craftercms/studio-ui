@@ -85,6 +85,7 @@ export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPan
                 <DraggablePanelListItem
                   key={item.craftercms.id}
                   primaryText={item.craftercms.label}
+                  avatarColorBase={item.craftercms.contentTypeId}
                   onDragStart={() => onDragStart(item)}
                   onDragEnd={onDragEnd}
                 />

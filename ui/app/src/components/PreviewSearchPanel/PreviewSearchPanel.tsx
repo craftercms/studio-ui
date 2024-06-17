@@ -31,7 +31,7 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
-import { createLookupTable, nou } from '../../utils/object';
+import { createLookupTable } from '../../utils/object';
 import { fetchContentInstance } from '../../services/content';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
@@ -51,6 +51,7 @@ import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
 import { ErrorBoundary } from '../ErrorBoundary';
 import FormHelperText from '@mui/material/FormHelperText';
+import LookupTable from '../../models/LookupTable';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -79,12 +80,13 @@ const useStyles = makeStyles()((theme) => ({
 
 interface SearchResultsProps {
   items: SearchItem[];
+  contentInstanceLookup: LookupTable<ContentInstance>;
   onDragStart(item: SearchItem): void;
   onDragEnd(item: SearchItem): void;
 }
 
 function SearchResults(props: SearchResultsProps) {
-  const { items, onDragStart, onDragEnd } = props;
+  const { items, contentInstanceLookup, onDragStart, onDragEnd } = props;
   return (
     <List>
       {items.map((item: SearchItem) => (
@@ -92,6 +94,7 @@ function SearchResults(props: SearchResultsProps) {
           key={item.path}
           primaryText={item.name ?? getFileNameFromPath(item.path)}
           avatarSrc={item.type === 'Image' ? item.path : null}
+          avatarColorBase={contentInstanceLookup[item.path]?.craftercms.contentTypeId}
           onDragStart={() => onDragStart(item)}
           onDragEnd={() => onDragEnd(item)}
         />
@@ -126,7 +129,6 @@ export function PreviewSearchPanel() {
   const dispatch = useDispatch();
   const editMode = useSelection((state) => state.preview.editMode);
   const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
-  const awaitingGuestCheckIn = nou(allowedTypesData);
   const contentTypes = useContentTypeList(
     (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
   );
@@ -276,7 +278,12 @@ export function PreviewSearchPanel() {
         ) : state.isFetching ? (
           <LoadingState />
         ) : state.items && state.items.length ? (
-          <SearchResults items={state.items} onDragStart={onDragStart} onDragEnd={onDragEnd} />
+          <SearchResults
+            items={state.items}
+            contentInstanceLookup={state.contentInstanceLookup}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
+          />
         ) : state.items && state.items.length === 0 ? (
           <EmptyState title={formatMessage(translations.noResults)} />
         ) : (
