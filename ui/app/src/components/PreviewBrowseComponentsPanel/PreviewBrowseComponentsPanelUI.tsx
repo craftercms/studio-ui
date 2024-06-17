@@ -24,6 +24,8 @@ import EmptyState from '../EmptyState/EmptyState';
 import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@mui/material/FormHelperText';
 import Pagination from '../Pagination';
+import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
+import Alert from '@mui/material/Alert';
 
 export interface ComponentResource {
   count: number;
@@ -34,6 +36,7 @@ export interface ComponentResource {
 }
 
 export interface PreviewBrowseComponentsPanelUIProps {
+  awaitingGuestCheckIn: boolean;
   items: Array<ContentInstance>;
   count: number;
   pageNumber: number;
@@ -48,42 +51,60 @@ export interface PreviewBrowseComponentsPanelUIProps {
 }
 
 export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPanelUIProps) {
-  const { items, onPageChanged, onDragStart, onDragEnd, onRowsPerPageChange, count, pageNumber, limit } = props;
+  const {
+    awaitingGuestCheckIn,
+    items,
+    onPageChanged,
+    onDragStart,
+    onDragEnd,
+    onRowsPerPageChange,
+    count,
+    pageNumber,
+    limit
+  } = props;
   const { formatMessage } = useIntl();
   const { classes } = useComponentsPanelUI();
   return (
     <>
-      <Pagination
-        count={count}
-        rowsPerPage={limit}
-        page={pageNumber}
-        onPageChange={(e, page: number) => onPageChanged(page * limit)}
-        onRowsPerPageChange={onRowsPerPageChange}
-      />
-      <div className={classes.browsePanelWrapper}>
-        <List>
-          {items.map((item: ContentInstance) => (
-            <DraggablePanelListItem
-              key={item.craftercms.id}
-              primaryText={item.craftercms.label}
-              onDragStart={() => onDragStart(item)}
-              onDragEnd={onDragEnd}
-            />
-          ))}
-        </List>
-        {count === 0 && (
-          <EmptyState
-            title={formatMessage(translations.noResults)}
-            classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+      {awaitingGuestCheckIn ? (
+        <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
+          <FormattedMessage defaultMessage="Waiting for the preview application to load." />
+        </Alert>
+      ) : (
+        <>
+          <Pagination
+            count={count}
+            rowsPerPage={limit}
+            page={pageNumber}
+            onPageChange={(e, page: number) => onPageChanged(page * limit)}
+            onRowsPerPageChange={onRowsPerPageChange}
           />
-        )}
-        <FormHelperText className={classes.helperTextWrapper}>
-          <FormattedMessage
-            id="previewBrowseComponentsPanel.sharedComponentsHelperText"
-            defaultMessage="Only shared components are shown here"
-          />
-        </FormHelperText>
-      </div>
+          <div className={classes.browsePanelWrapper}>
+            <List>
+              {items.map((item: ContentInstance) => (
+                <DraggablePanelListItem
+                  key={item.craftercms.id}
+                  primaryText={item.craftercms.label}
+                  onDragStart={() => onDragStart(item)}
+                  onDragEnd={onDragEnd}
+                />
+              ))}
+            </List>
+            {count === 0 && (
+              <EmptyState
+                title={formatMessage(translations.noResults)}
+                classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+              />
+            )}
+            <FormHelperText className={classes.helperTextWrapper}>
+              <FormattedMessage
+                id="previewBrowseComponentsPanel.sharedComponentsHelperText"
+                defaultMessage="Only shared components are shown here"
+              />
+            </FormHelperText>
+          </div>
+        </>
+      )}
     </>
   );
 }

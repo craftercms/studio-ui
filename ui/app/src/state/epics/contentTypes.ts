@@ -41,7 +41,7 @@ import {
   fetchContentTypes as fetchContentTypesService
 } from '../../services/contentTypes';
 import { CrafterCMSEpic } from '../store';
-import ContentType from '../../models/ContentType';
+import { asArray } from '../../utils/array';
 
 export default [
   // region fetchContentTypes
@@ -65,21 +65,21 @@ export default [
     action$.pipe(
       ofType(fetchComponentsByContentType.type, setContentTypeFilter.type),
       withLatestFrom(state$),
-      switchMap(([, state]) =>
-        fetchItemsByContentType(
+      switchMap(([, state]) => {
+        const allowedContentTypes = Object.entries(state.preview.guest?.allowedContentTypes)
+          .filter(([, value]) => value.shared)
+          .map(([key]) => key);
+        return fetchItemsByContentType(
           state.sites.active,
-          state.preview.components.contentTypeFilter === 'all'
-            ? Object.values(state.contentTypes.byId)
-                .filter(
-                  (contentType: ContentType) =>
-                    contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
-                )
-                .map((contentType) => contentType.id)
+          state.preview.components.contentTypeFilter === 'compatible'
+            ? allowedContentTypes?.length
+              ? allowedContentTypes
+              : [''] // Empty array is like sending no filters, so it returns items unfiltered.
             : state.preview.components.contentTypeFilter,
           state.contentTypes.byId,
           state.preview.components.query
-        ).pipe(map(fetchComponentsByContentTypeComplete), catchAjaxError(fetchComponentsByContentTypeFailed))
-      )
+        ).pipe(map(fetchComponentsByContentTypeComplete), catchAjaxError(fetchComponentsByContentTypeFailed));
+      })
     ),
   // endregion
   // region associateTemplate
