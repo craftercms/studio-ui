@@ -153,8 +153,10 @@ export function register(registration: ICERecordRegistration): number {
       }
       allowedContentTypesData.recordIdKeyLookup[record.id] = key;
       allowedContentTypesData.allowedLookup[key].recordIds.push(record.id);
-      collectAndEmitAllowedContentTypes();
     }
+    // If there are no allowed content types, we still need to call this for the redux state to be updated and not be
+    // null. This way the panels don't get stuck in a loading state ('Waiting for the preview application to load').
+    collectAndEmitAllowedContentTypes();
 
     registry.set(record.id, record);
     refCount[record.id] = 1;
