@@ -154,11 +154,17 @@ export function PreviewBrowseComponentsPanel() {
               <ListSubheader>
                 <FormattedMessage defaultMessage="Compatible" />
               </ListSubheader>
-              {contentTypeData.allowedTypes.map((contentType: ContentType, i: number) => (
-                <MenuItem value={contentType.id} key={i}>
-                  {contentType.name}
+              {contentTypeData.allowedTypes.length === 0 ? (
+                <MenuItem disabled>
+                  <FormattedMessage defaultMessage="No compatible types were found." />
                 </MenuItem>
-              ))}
+              ) : (
+                contentTypeData.allowedTypes.map((contentType: ContentType, i: number) => (
+                  <MenuItem value={contentType.id} key={i}>
+                    {contentType.name}
+                  </MenuItem>
+                ))
+              )}
               <ListSubheader>
                 <FormattedMessage defaultMessage="Other" />
               </ListSubheader>
