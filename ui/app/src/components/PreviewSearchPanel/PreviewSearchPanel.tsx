@@ -31,7 +31,7 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, nou } from '../../utils/object';
 import { fetchContentInstance } from '../../services/content';
 import { forkJoin, Observable, of } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
@@ -52,6 +52,8 @@ import { EmptyState } from '../EmptyState';
 import { ErrorBoundary } from '../ErrorBoundary';
 import FormHelperText from '@mui/material/FormHelperText';
 import LookupTable from '../../models/LookupTable';
+import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
+import Alert from '@mui/material/Alert';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -129,6 +131,7 @@ export function PreviewSearchPanel() {
   const dispatch = useDispatch();
   const editMode = useSelection((state) => state.preview.editMode);
   const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
+  const awaitingGuestCheckIn = nou(allowedTypesData);
   const contentTypes = useContentTypeList(
     (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
   );
@@ -136,9 +139,6 @@ export function PreviewSearchPanel() {
     () => (contentTypes ? createLookupTable(contentTypes, 'id') : null),
     [contentTypes]
   );
-  const allowedTypes = (allowedTypesData ? Object.entries(allowedTypesData) : [])
-    .filter(([, type]) => type.shared)
-    .map(([key]) => key);
 
   const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
@@ -147,52 +147,61 @@ export function PreviewSearchPanel() {
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
       setState({ isFetching: true });
       setError(null);
-      search(site, {
-        ...initialSearchParameters,
-        keywords,
-        ...options,
-        filters: { 'content-type': allowedTypes, 'mime-type': mimeTypes }
-      })
-        .pipe(
-          takeUntil(unMount$),
-          switchMap((result) => {
-            const requests: Array<Observable<ContentInstance>> = [];
-            result.items.forEach((item) => {
-              if (item.type === 'Component') {
-                requests.push(fetchContentInstance(site, item.path, contentTypesLookup));
+      if (allowedTypesData) {
+        // If there are no allowed types, an empty array causes the request to return everything.
+        const allowedTypes = Object.keys(allowedTypesData).length
+          ? Object.entries(allowedTypesData)
+              .filter(([, type]) => type.shared)
+              .map(([key]) => key)
+          : [''];
+
+        search(site, {
+          ...initialSearchParameters,
+          keywords,
+          ...options,
+          filters: { 'content-type': allowedTypes, 'mime-type': mimeTypes }
+        })
+          .pipe(
+            takeUntil(unMount$),
+            switchMap((result) => {
+              const requests: Array<Observable<ContentInstance>> = [];
+              result.items.forEach((item) => {
+                if (item.type === 'Component') {
+                  requests.push(fetchContentInstance(site, item.path, contentTypesLookup));
+                }
+              });
+              return requests.length
+                ? forkJoin(requests).pipe(map((contentInstances) => ({ contentInstances, result })))
+                : of({ result, contentInstances: null });
+            })
+          )
+          .subscribe({
+            next: (response) => {
+              setPageNumber(options ? options.offset / options.limit : 0);
+              if (response.contentInstances) {
+                setState({
+                  isFetching: false,
+                  items: response.result.items,
+                  contentInstanceLookup: createLookupTable(response.contentInstances, 'craftercms.path'),
+                  count: response.result.total,
+                  limit: options?.limit ?? initialSearchParameters.limit
+                });
+              } else {
+                setState({
+                  isFetching: false,
+                  items: response.result.items,
+                  count: response.result.total,
+                  limit: options?.limit ?? initialSearchParameters.limit
+                });
               }
-            });
-            return requests.length
-              ? forkJoin(requests).pipe(map((contentInstances) => ({ contentInstances, result })))
-              : of({ result, contentInstances: null });
-          })
-        )
-        .subscribe({
-          next: (response) => {
-            setPageNumber(options ? options.offset / options.limit : 0);
-            if (response.contentInstances) {
-              setState({
-                isFetching: false,
-                items: response.result.items,
-                contentInstanceLookup: createLookupTable(response.contentInstances, 'craftercms.path'),
-                count: response.result.total,
-                limit: options?.limit ?? initialSearchParameters.limit
-              });
-            } else {
-              setState({
-                isFetching: false,
-                items: response.result.items,
-                count: response.result.total,
-                limit: options?.limit ?? initialSearchParameters.limit
-              });
+            },
+            error: ({ response }) => {
+              setError(response.response);
             }
-          },
-          error: ({ response }) => {
-            setError(response.response);
-          }
-        });
+          });
+      }
     },
-    [setState, site, contentTypes, unMount$, contentTypesLookup]
+    [setState, site, unMount$, contentTypesLookup, allowedTypesData]
   );
 
   useMount(() => {
@@ -203,10 +212,10 @@ export function PreviewSearchPanel() {
   });
 
   useEffect(() => {
-    if (contentTypes && contentTypesLookup) {
+    if (contentTypes && contentTypesLookup && !awaitingGuestCheckIn) {
       onSearch();
     }
-  }, [contentTypes, contentTypesLookup, onSearch]);
+  }, [contentTypes, contentTypesLookup, onSearch, awaitingGuestCheckIn]);
 
   const onSearch$ = useDebouncedInput(onSearch, 400);
 
@@ -272,24 +281,30 @@ export function PreviewSearchPanel() {
           onRowsPerPageChange={onRowsPerPageChange}
         />
       )}
-      <ErrorBoundary>
-        {error ? (
-          <ApiResponseErrorState error={error} />
-        ) : state.isFetching ? (
-          <LoadingState />
-        ) : state.items && state.items.length ? (
-          <SearchResults
-            items={state.items}
-            contentInstanceLookup={state.contentInstanceLookup}
-            onDragStart={onDragStart}
-            onDragEnd={onDragEnd}
-          />
-        ) : state.items && state.items.length === 0 ? (
-          <EmptyState title={formatMessage(translations.noResults)} />
-        ) : (
-          <></>
-        )}
-      </ErrorBoundary>
+      {awaitingGuestCheckIn ? (
+        <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
+          <FormattedMessage defaultMessage="Waiting for the preview application to load." />
+        </Alert>
+      ) : (
+        <ErrorBoundary>
+          {error ? (
+            <ApiResponseErrorState error={error} />
+          ) : state.isFetching ? (
+            <LoadingState />
+          ) : state.items && state.items.length ? (
+            <SearchResults
+              items={state.items}
+              contentInstanceLookup={state.contentInstanceLookup ?? {}}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+            />
+          ) : state.items && state.items.length === 0 ? (
+            <EmptyState title={formatMessage(translations.noResults)} />
+          ) : (
+            <></>
+          )}
+        </ErrorBoundary>
+      )}
       <FormHelperText
         sx={{
           margin: '10px 16px',
