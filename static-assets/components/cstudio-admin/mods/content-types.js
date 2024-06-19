@@ -404,30 +404,46 @@
                                     },
                                     { type: 'CLOSE_CREATE_FILE_DIALOG' }
                                   ]
+                                },
+                                onClose: {
+                                  type: 'BATCH_ACTIONS',
+                                  payload: [
+                                    {
+                                      type: 'DISPATCH_DOM_EVENT',
+                                      payload: { id: customEventId, type: 'close' }
+                                    },
+                                    { type: 'CLOSE_CREATE_FILE_DIALOG' }
+                                  ]
                                 }
                               }
                             });
 
-                            CrafterCMSNext.createLegacyCallbackListener(customEventId, (response) => {
-                              const { fileName, path } = response;
-                              const templateUrl = `${path}/${fileName}`;
+                            const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(
+                              customEventId,
+                              (response) => {
+                                if (response.type === 'onCreated') {
+                                  const { fileName, path } = response;
+                                  const templateUrl = `${path}/${fileName}`;
 
-                              CStudioAuthoring.Operations.openCodeEditor({
-                                path: templateUrl,
-                                contentType,
-                                mode: 'ftl',
-                                onSuccess: () => {
-                                  _self.updateFormDefProp('display-template', templateUrl, type !== 'saveAndClose');
-                                  saveFn(type);
-                                },
-                                onClose: () => {
-                                  // When closing, update the template (since template is already created) and save,
-                                  // but do not close/minimize the editor.
-                                  _self.updateFormDefProp('display-template', templateUrl, true);
-                                  saveFn('save');
+                                  CStudioAuthoring.Operations.openCodeEditor({
+                                    path: templateUrl,
+                                    contentType,
+                                    mode: 'ftl',
+                                    onSuccess: () => {
+                                      _self.updateFormDefProp('display-template', templateUrl, type !== 'saveAndClose');
+                                      saveFn(type);
+                                    },
+                                    onClose: () => {
+                                      // When closing, update the template (since template is already created) and save,
+                                      // but do not close/minimize the editor.
+                                      _self.updateFormDefProp('display-template', templateUrl, true);
+                                      saveFn('save');
+                                    }
+                                  });
                                 }
-                              });
-                            });
+                                unsubscribe();
+                              }
+                            );
                           }
                         },
                         formatMessage(contentTypesMessages.createATemplate)
