@@ -150,11 +150,10 @@ export function PreviewSearchPanel() {
       if (allowedTypesData) {
         // If there are no allowed types, an empty array causes the request to return everything. So we send an array
         // with an empty string to filter out all content-types.
-        const allowedTypes = Object.keys(allowedTypesData).length
-          ? Object.entries(allowedTypesData)
-              .filter(([, type]) => type.shared)
-              .map(([key]) => key)
-          : [''];
+        let allowedTypes = Object.entries(allowedTypesData)
+          .filter(([, type]) => type.shared)
+          .map(([key]) => key);
+        if (allowedTypes.length === 0) allowedTypes = [''];
 
         search(site, {
           ...initialSearchParameters,
