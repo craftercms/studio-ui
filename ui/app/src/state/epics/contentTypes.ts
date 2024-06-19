@@ -74,7 +74,9 @@ export default [
           state.preview.components.contentTypeFilter === 'compatible'
             ? allowedContentTypes?.length
               ? allowedContentTypes
-              : [''] // Empty array is like sending no filters, so it returns items unfiltered.
+              : // When there are no allowed content types, sending an empty array is like sending no content-type filter,
+                // so it returns items unfiltered. By sending an array with an empty string, we filter out all content-types.
+                ['']
             : state.preview.components.contentTypeFilter,
           state.contentTypes.byId,
           state.preview.components.query

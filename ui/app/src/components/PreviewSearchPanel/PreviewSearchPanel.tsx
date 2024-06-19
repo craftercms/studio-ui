@@ -148,7 +148,8 @@ export function PreviewSearchPanel() {
       setState({ isFetching: true });
       setError(null);
       if (allowedTypesData) {
-        // If there are no allowed types, an empty array causes the request to return everything.
+        // If there are no allowed types, an empty array causes the request to return everything. So we send an array
+        // with an empty string to filter out all content-types.
         const allowedTypes = Object.keys(allowedTypesData).length
           ? Object.entries(allowedTypesData)
               .filter(([, type]) => type.shared)
