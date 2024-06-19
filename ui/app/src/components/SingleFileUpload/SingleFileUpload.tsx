@@ -37,8 +37,9 @@ import { toQueryString } from '../../utils/object';
 import { getResponseError } from '../UploadDialog/util';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
+import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
+import Box from '@mui/material/Box';
 
 const messages = defineMessages({
   chooseFile: {
@@ -204,6 +205,12 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     setError(null);
   };
 
+  const retryUpload = () => {
+    setError(null);
+    setConfirm(null);
+    uppy.retryUpload(file.id);
+  };
+
   useEffect(() => {
     const instance = uppy
       .use(Form, {
@@ -232,7 +239,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
       instance.cancelAll();
       instance.close();
     };
-  }, [uppy, formTarget, url, upload.timeout, path, site]);
+  }, [uppy, formTarget, url, upload.timeout, path, site, formatMessage]);
 
   useEffect(() => {
     const onUploadSuccess = (file) => {
@@ -240,8 +247,12 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     };
 
     const onCompleteUpload = (result) => {
-      onComplete?.(result);
-      setDisableInput(false);
+      // Uppy triggers 'complete' event even if the upload fails. When the upload fails, we call 'onError' instead of
+      // 'onComplete'.
+      if (result.successful.length > 0) {
+        onComplete?.(result);
+        setDisableInput(false);
+      }
     };
 
     uppy.on('upload-success', onUploadSuccess);
@@ -255,10 +266,10 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 
   useEffect(() => {
     const onUploadError = (file, error, response) => {
-      uppy.cancelAll();
       setFileNameErrorClass('text-danger');
       setError(error);
       onError?.({ file, error, response });
+      setDisableInput(false);
     };
 
     uppy.on('upload-error', onUploadError);
@@ -270,6 +281,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
 
   useEffect(() => {
     const onFileAdded = (file: UppyFile) => {
+      setError(null);
       setDescription(`${formatMessage(messages.validatingFile)}:`);
       setFile(file);
       setFileNameErrorClass('');
@@ -353,16 +365,16 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         <input type="hidden" name="path" value={path} />
         <input type="hidden" name="site" value={site} />
       </form>
-      <div className="uppy-progress-bar" />
+      <Box className="uppy-progress-bar" sx={{ display: error ? 'none' : null }} />
       <div className="uploaded-files">
         {error ? (
           <Alert
             icon={false}
             severity="error"
             action={
-              <Tooltip title={<FormattedMessage defaultMessage="Dismiss" />}>
-                <IconButton onClick={() => resetState()} size="small">
-                  <CloseIcon />
+              <Tooltip title={<FormattedMessage defaultMessage="Retry" />}>
+                <IconButton onClick={() => retryUpload()} size="small">
+                  <ReplayRoundedIcon />
                 </IconButton>
               </Tooltip>
             }
