@@ -2507,10 +2507,8 @@ var nodeOpen = false,
               uploaded.fileName = uploaded.name;
             }
             uploadCb.success(uploaded);
-            unsubscribe();
-          } else {
-            unsubscribe();
           }
+          unsubscribe();
         });
       },
 
