@@ -418,32 +418,28 @@
                               }
                             });
 
-                            const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(
-                              customEventId,
-                              (response) => {
-                                if (response.type === 'onCreated') {
-                                  const { fileName, path } = response;
-                                  const templateUrl = `${path}/${fileName}`;
+                            craftercms.utils.dom.createCustomDocumentEventListener(customEventId, (response) => {
+                              if (response.type === 'onCreated') {
+                                const { fileName, path } = response;
+                                const templateUrl = `${path}/${fileName}`;
 
-                                  CStudioAuthoring.Operations.openCodeEditor({
-                                    path: templateUrl,
-                                    contentType,
-                                    mode: 'ftl',
-                                    onSuccess: () => {
-                                      _self.updateFormDefProp('display-template', templateUrl, type !== 'saveAndClose');
-                                      saveFn(type);
-                                    },
-                                    onClose: () => {
-                                      // When closing, update the template (since template is already created) and save,
-                                      // but do not close/minimize the editor.
-                                      _self.updateFormDefProp('display-template', templateUrl, true);
-                                      saveFn('save');
-                                    }
-                                  });
-                                }
-                                unsubscribe();
+                                CStudioAuthoring.Operations.openCodeEditor({
+                                  path: templateUrl,
+                                  contentType,
+                                  mode: 'ftl',
+                                  onSuccess: () => {
+                                    _self.updateFormDefProp('display-template', templateUrl, type !== 'saveAndClose');
+                                    saveFn(type);
+                                  },
+                                  onClose: () => {
+                                    // When closing, update the template (since template is already created) and save,
+                                    // but do not close/minimize the editor.
+                                    _self.updateFormDefProp('display-template', templateUrl, true);
+                                    saveFn('save');
+                                  }
+                                });
                               }
-                            );
+                            });
                           }
                         },
                         formatMessage(contentTypesMessages.createATemplate)

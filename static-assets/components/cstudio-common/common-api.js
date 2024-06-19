@@ -2497,7 +2497,7 @@ var nodeOpen = false,
           }
         });
 
-        const unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventId, (result) => {
+        craftercms.utils.dom.createCustomDocumentEventListener(eventId, (result) => {
           if (result.type === 'uploadComplete') {
             let uploaded = result.successful[0];
             if (!uploaded.fileExtension) {
@@ -2508,7 +2508,6 @@ var nodeOpen = false,
             }
             uploadCb.success(uploaded);
           }
-          unsubscribe();
         });
       },
 
