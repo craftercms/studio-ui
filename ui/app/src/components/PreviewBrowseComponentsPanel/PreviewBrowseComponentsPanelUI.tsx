@@ -64,48 +64,44 @@ export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPan
   } = props;
   const { formatMessage } = useIntl();
   const { classes } = useComponentsPanelUI();
-  return (
+  return awaitingGuestCheckIn ? (
+    <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
+      <FormattedMessage defaultMessage="Waiting for the preview application to load." />
+    </Alert>
+  ) : (
     <>
-      {awaitingGuestCheckIn ? (
-        <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
-          <FormattedMessage defaultMessage="Waiting for the preview application to load." />
-        </Alert>
-      ) : (
-        <>
-          <Pagination
-            count={count}
-            rowsPerPage={limit}
-            page={pageNumber}
-            onPageChange={(e, page: number) => onPageChanged(page * limit)}
-            onRowsPerPageChange={onRowsPerPageChange}
+      <Pagination
+        count={count}
+        rowsPerPage={limit}
+        page={pageNumber}
+        onPageChange={(e, page: number) => onPageChanged(page * limit)}
+        onRowsPerPageChange={onRowsPerPageChange}
+      />
+      <div className={classes.browsePanelWrapper}>
+        <List>
+          {items.map((item: ContentInstance) => (
+            <DraggablePanelListItem
+              key={item.craftercms.id}
+              primaryText={item.craftercms.label}
+              avatarColorBase={item.craftercms.contentTypeId}
+              onDragStart={() => onDragStart(item)}
+              onDragEnd={onDragEnd}
+            />
+          ))}
+        </List>
+        {count === 0 && (
+          <EmptyState
+            title={formatMessage(translations.noResults)}
+            classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
           />
-          <div className={classes.browsePanelWrapper}>
-            <List>
-              {items.map((item: ContentInstance) => (
-                <DraggablePanelListItem
-                  key={item.craftercms.id}
-                  primaryText={item.craftercms.label}
-                  avatarColorBase={item.craftercms.contentTypeId}
-                  onDragStart={() => onDragStart(item)}
-                  onDragEnd={onDragEnd}
-                />
-              ))}
-            </List>
-            {count === 0 && (
-              <EmptyState
-                title={formatMessage(translations.noResults)}
-                classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
-              />
-            )}
-            <FormHelperText className={classes.helperTextWrapper}>
-              <FormattedMessage
-                id="previewBrowseComponentsPanel.sharedComponentsHelperText"
-                defaultMessage="Only shared components are shown here"
-              />
-            </FormHelperText>
-          </div>
-        </>
-      )}
+        )}
+        <FormHelperText className={classes.helperTextWrapper}>
+          <FormattedMessage
+            id="previewBrowseComponentsPanel.sharedComponentsHelperText"
+            defaultMessage="Only shared components are shown here"
+          />
+        </FormHelperText>
+      </div>
     </>
   );
 }
