@@ -385,7 +385,7 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
     }
   });
 
-  const currentItems = (models[modelId][fieldId] ?? []).slice();
+  const currentItems = [...(models[modelId][fieldId] ?? [])];
   const newItems = index ? currentItems.splice(index, 0, instance) : [...currentItems, instance];
   models$.next({
     ...models,
