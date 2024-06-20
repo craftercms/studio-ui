@@ -79,7 +79,7 @@ export function getCollectionWithoutItemAtIndex(collection: string[], index: str
   return collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 }
 
-export function getCollection(model: ContentInstance, fieldId: string, index: string | number): string[] {
+export function getCollection(model: ContentInstance, fieldId: string, index: string | number) {
   const isStringIndex = typeof index === 'string';
   return isStringIndex ? Model.extractCollection(model, fieldId, index) : Model.value(model, fieldId);
 }

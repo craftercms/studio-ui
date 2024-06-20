@@ -385,14 +385,21 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
     }
   });
 
-  const currentItems = (models[modelId][fieldId] ?? []).slice();
-  const newItems = index ? currentItems.splice(index, 0, instance) : [...currentItems, instance];
+  const currentItems = getCollection(models[modelId], fieldId, index)?.concat() ?? [];
+  let newItems;
+  if (nou(index)) {
+    // Index doesn't exist, insert at the end
+    newItems = [...currentItems, instance];
+  } else {
+    // If index is complex, we already have the set of items from the model, now we need the latter part of the index
+    // to insert the new instance at the desired position.
+    const targetIndex = isSimple(index) ? index : popPiece(index as string);
+    newItems = currentItems.splice(targetIndex as number, 0, instance);
+  }
+  const model = setCollection(models[modelId], fieldId, index, newItems);
   models$.next({
     ...models,
-    [modelId]: {
-      ...models[modelId],
-      [fieldId]: newItems
-    }
+    [modelId]: model
   });
 
   const action = insertItemOperation({
