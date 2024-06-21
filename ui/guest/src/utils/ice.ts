@@ -74,17 +74,29 @@ function findParentModelId(
       null;
 }
 
-export function getCollectionWithoutItemAtIndex(collection: string[], index: string | number): string[] {
+export function getCollectionWithoutItemAtIndex(
+  collection: Array<string | Record<string, unknown>>,
+  index: string | number
+): Array<string | Record<string, unknown>> {
   const parsedIndex = parseInt(popPiece(`${index}`), 10);
   return collection.slice(0, parsedIndex).concat(collection.slice(parsedIndex + 1));
 }
 
-export function getCollection(model: ContentInstance, fieldId: string, index: string | number) {
+export function getCollection(
+  model: ContentInstance,
+  fieldId: string,
+  index: string | number
+): Array<string | Record<string, unknown>> {
   const isStringIndex = typeof index === 'string';
   return isStringIndex ? Model.extractCollection(model, fieldId, index) : Model.value(model, fieldId);
 }
 
-export function setCollection(model: ContentInstance, fieldId: string, index: number | string, collection: string[]) {
+export function setCollection(
+  model: ContentInstance,
+  fieldId: string,
+  index: number | string,
+  collection: Array<string | Record<string, unknown>>
+) {
   if (!isSimple(fieldId)) {
     const concatFieldId = mergeArraysAlternatively(fieldId.split('.'), index.toString().split('.')).join('.');
     const fieldNames = concatFieldId.split('.');
