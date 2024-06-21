@@ -25,14 +25,6 @@ import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@mui/material/FormHelperText';
 import Pagination from '../Pagination';
 
-export interface ComponentResource {
-  count: number;
-  limit: number;
-  pageNumber: number;
-  contentTypeFilter: string;
-  items: Array<ContentInstance>;
-}
-
 export interface PreviewBrowseComponentsPanelUIProps {
   items: Array<ContentInstance>;
   count: number;

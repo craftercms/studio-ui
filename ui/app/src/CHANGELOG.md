@@ -24,6 +24,8 @@
     * `listItemProps` are routed to the list `ListItem` component instead of the `ListItemButton`
     * Added `listItemButtonProps` property
   * `DraggablePanelListItem` prop `onMenu` send the pointer event as its first and only argument instead of the anchor element attached to the event. Can get element through `event.currentTarget`.
+  * Removed `pages/QuickCreateMenu` component.
+  * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`
@@ -40,14 +42,14 @@
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
   * Removed `useQuickCreateListResource` hook.
+  * Removed `useSystemVersionResource` hook.
 * Removed deprecated `aws-file-upload` and `aws-video` upload controls.
 * Migrated the Studio UI build to Vite/SWC
 * Rollup's XB build to use SWC
 * Upgraded target compilation to ES2022, dropping many code transforms for features that are supported by most modern browsers such as nullish coalescing, optional chaining, object spreading and destructuring.
 * The `allowedContentTypes` ContentTypeField validation changed from being an array to a Record<contentTypeId, { embedded?: true; shared?: true; sharedExisting?: true; }>
 * Remove legacy `browseCMIS` dialog and `openCMISBrowse` function from common-api.
-* Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources. 
-* Removed `pages/QuickCreateMenu` component.
+* Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources.
 
 ## 4.1.5
 * [common-api.js]
