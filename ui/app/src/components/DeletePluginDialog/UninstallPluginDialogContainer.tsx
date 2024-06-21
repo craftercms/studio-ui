@@ -40,7 +40,7 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
 
   useEffect(() => {
     setState({ isFetching: true });
-    fetchMarketplacePluginUsage(site, pluginId).subscribe({
+    const sub = fetchMarketplacePluginUsage(site, pluginId).subscribe({
       next(response) {
         setState({
           data: response,
@@ -54,6 +54,9 @@ export function UninstallPluginDialogContainer(props: UninstallPluginDialogConta
         });
       }
     });
+    return () => {
+      sub.unsubscribe();
+    };
   }, [site, pluginId, setState]);
 
   const onSubmit = (id: string) => {

@@ -99,7 +99,7 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
           : selectedItem.path;
 
       setIsFetching(true);
-      fetchLegacyContentTypes(site, path).subscribe({
+      const sub = fetchLegacyContentTypes(site, path).subscribe({
         next(response) {
           setIsFetching(false);
           if (response.length === 1) {
@@ -114,6 +114,9 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
           dispatch(showErrorDialog({ error: response }));
         }
       });
+      return () => {
+        sub.unsubscribe();
+      };
     }
   }, [dispatch, selectedItem, site, onSelectedContentType]);
 

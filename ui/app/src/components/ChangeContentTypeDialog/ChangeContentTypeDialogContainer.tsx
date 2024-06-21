@@ -77,7 +77,7 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
   useEffect(() => {
     if (selectedItem.path) {
       setIsFetching(true);
-      fetchLegacyContentTypes(site, selectedItem.path).subscribe({
+      const sub = fetchLegacyContentTypes(site, selectedItem.path).subscribe({
         next: (response) => {
           setIsFetching(false);
           setContentTypes(
@@ -92,6 +92,9 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
           dispatch(showErrorDialog({ error: response }));
         }
       });
+      return () => {
+        sub.unsubscribe();
+      };
     }
   }, [dispatch, selectedItem, site]);
 

@@ -55,7 +55,7 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
 
   useEffect(() => {
     setState({ isFetching: true });
-    fetchContentTypeUsage(site, contentType.id).subscribe({
+    const sub = fetchContentTypeUsage(site, contentType.id).subscribe({
       next(response) {
         setState({
           data: response,
@@ -70,6 +70,9 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
         });
       }
     });
+    return () => {
+      sub.unsubscribe();
+    };
   }, [site, contentType.id, setState]);
 
   const onSubmit = () => {
