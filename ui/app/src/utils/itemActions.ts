@@ -45,7 +45,12 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchLegacyItemsTree, fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
+import {
+  fetchItemsByPath,
+  fetchLegacyItemsTree,
+  fetchSandboxItem,
+  fetchWorkflowAffectedItems
+} from '../services/content';
 import {
   batchActions,
   changeContentType,
@@ -643,7 +648,7 @@ export const itemActionDispatcher = ({
       case 'cut': {
         const path = item.path;
         fetchDependant(site, path).subscribe({
-          next(dependant) {
+          next(dependantItems) {
             const actionToDispatch = batchActions([
               setClipboard({
                 type: 'CUT',
@@ -654,9 +659,13 @@ export const itemActionDispatcher = ({
               showCutItemSuccessNotification()
             ]);
 
-            if (dependant?.length) {
-              const items = parseLegacyItemToSandBoxItem(dependant);
-              dispatch(showBrokenReferencesDialog({ path, references: items, onContinue: actionToDispatch }));
+            if (dependantItems?.length) {
+              fetchItemsByPath(
+                site,
+                dependantItems.map((item) => item.uri ?? item.path)
+              ).subscribe((sandboxItems) => {
+                dispatch(showBrokenReferencesDialog({ path, references: sandboxItems, onContinue: actionToDispatch }));
+              });
             } else {
               dispatch(actionToDispatch);
             }

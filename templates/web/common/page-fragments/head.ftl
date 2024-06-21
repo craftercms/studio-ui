@@ -18,7 +18,6 @@
   <meta http-equiv="refresh" content="0;URL='/studio/user-dashboard/#/sites/all'" />
 <#else>
 
-  <#include "/templates/web/common/js-next-scripts.ftl" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/yui/assets/skin.css" />
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/yui/container/assets/skins/sam/container.css"/>
   <link rel="stylesheet" type="text/css" href="/studio/static-assets/themes/cstudioTheme/base.css" />

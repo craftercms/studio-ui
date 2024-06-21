@@ -22,7 +22,9 @@
 <#if pSite == '' || pType == '' || pName == ''>
   <@layout title="Error - ${contentModel['common-title']!''}">
     <script>
-      printError({ title: 'Query arguments site, type and name are mandatory to render a plugin' })
+      document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
+        printError({ title: 'Query arguments site, type and name are mandatory to render a plugin' })
+      });
     </script>
   </@layout>
 <#elseif pSite?? && pType?? && pName?? && pFile?ends_with('.html')>
@@ -46,13 +48,15 @@
   <#if html = "CONTENT_NOT_FOUND">
     <@layout title="Not Found - ${contentModel['common-title']!''}">
       <script>
-        printError({
-          title: 'Unable to render the requested plugin.',
-          message: (
-            'Please check that the url has all the necessary params (site, type, name and file), ' +
-            'that these values are correct and that you\'ve committed all your work to the site repo.'
-          )
-        })
+        document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
+          printError({
+            title: 'Unable to render the requested plugin.',
+            message: (
+              'Please check that the url has all the necessary params (site, type, name and file), ' +
+              'that these values are correct and that you\'ve committed all your work to the site repo.'
+            )
+          })
+        });
       </script>
     </@layout>
   <#else>
@@ -61,39 +65,41 @@
 <#else>
   <@layout title="${pName?replace('-', ' ')?cap_first} - ${contentModel['common-title']!''}">
     <script>
-      window.CRAFTER_CMS_PLUGIN_PAGE = true;
-      (function () {
-        const { render } = CrafterCMSNext;
-        const { utils } = craftercms;
-        const qs = utils.path.parseQueryString();
-        utils.auth.setRequestForgeryToken();
+      document.addEventListener('CrafterCMS.CodebaseBridgeReady', () => {
+        window.CRAFTER_CMS_PLUGIN_PAGE = true;
+        (function () {
+          const { render } = CrafterCMSNext;
+          const { utils } = craftercms;
+          const qs = utils.path.parseQueryString();
+          utils.auth.setRequestForgeryToken();
 
-        const script = document.createElement('script');
+          const script = document.createElement('script');
 
-        script.src = '/studio/1/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}<#if pPluginId?has_content>&pluginId=${pPluginId}</#if>';
+          script.src = '/studio/1/plugin/file?siteId=${pSite}&type=${pType}&name=${pName}&filename=${pFile}<#if pPluginId?has_content>&pluginId=${pPluginId}</#if>';
 
-        script.onload = function () {
-          if (['yes', 'true', 'enable', '1'].includes(qs.monitor)) {
-            const elem = document.createElement('div');
-            document.body.appendChild(elem);
-            render(elem, 'AuthMonitor');
-          }
-        };
+          script.onload = function () {
+            if (['yes', 'true', 'enable', '1'].includes(qs.monitor)) {
+              const elem = document.createElement('div');
+              document.body.appendChild(elem);
+              render(elem, 'AuthMonitor');
+            }
+          };
 
-        script.onerror = function () {
-          console.error('Script failed to load. The query string is attached to this error.', qs);
-          printError({
-            title: 'Unable to render the requested plugin.',
-            message: (
-              'Please check that the url has all the necessary params (site, type, name and file), ' +
-              'that these values are correct and that you\'ve committed all your work to the site repo.'
-            )
-          });
-        };
+          script.onerror = function () {
+            console.error('Script failed to load. The query string is attached to this error.', qs);
+            printError({
+              title: 'Unable to render the requested plugin.',
+              message: (
+                'Please check that the url has all the necessary params (site, type, name and file), ' +
+                'that these values are correct and that you\'ve committed all your work to the site repo.'
+              )
+            });
+          };
 
-        document.head.appendChild(script);
+          document.head.appendChild(script);
 
-      })();
+        })();
+      });
     </script>
   </@layout>
 </#if>
@@ -126,7 +132,7 @@
     </style>
   </head>
   <body>
-  <#include "/templates/web/common/js-next-scripts.ftl" />
+  <#include "/static-assets/app/pages/legacy.html">
   <script>
     function printError(props) {
       const elem = document.createElement('div');

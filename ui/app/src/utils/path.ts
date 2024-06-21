@@ -82,7 +82,7 @@ export function parseQueryString(): ParsedQuery {
 }
 
 export function withoutIndex(path: string): string {
-  return path.replace('/index.xml', '');
+  return path?.replace('/index.xml', '');
 }
 
 export function withIndex(path: string): string {
@@ -300,10 +300,12 @@ export function processPathMacros(dependencies: {
   fullParentPath?: string;
 }): string {
   let { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
+  if (!path) return path;
+
   let processedPath = path;
 
   // Remove unrecognized macros.
-  const pathMacros = processedPath.match(/\{([^{}]+)}/g) ?? [];
+  const pathMacros = processedPath.match(/\{(.+)}}/g) ?? [];
   pathMacros.forEach((macro) => {
     if (!availableMacrosRegex.test(macro)) {
       processedPath = processedPath.replace(macro, '');

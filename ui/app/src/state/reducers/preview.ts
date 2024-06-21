@@ -17,10 +17,12 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { HighlightMode, PagedEntityState } from '../../models/GlobalState';
 import {
+  allowedContentTypesUpdate,
   clearDropTargets,
   clearSelectForEdit,
   closeToolsPanel,
   contentTypeDropTargetsResponse,
+  errorPageCheckIn,
   fetchAssetsPanelItems,
   fetchAssetsPanelItemsComplete,
   fetchAssetsPanelItemsFailed,
@@ -31,7 +33,7 @@ import {
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
   fetchContentModelComplete,
-  fetchGuestModelComplete,
+  fetchGuestModelsComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
   guestCheckOut,
@@ -166,7 +168,8 @@ const initialState: GlobalState['preview'] = {
   richTextEditor: null,
   editModePadding: false,
   windowSize: window.innerWidth,
-  xbDetectionTimeoutMs: 5000
+  xbDetectionTimeoutMs: 5000,
+  error: null
 };
 
 const minDrawerWidth = 240;
@@ -313,7 +316,9 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       const href = location.href;
       const origin = location.origin;
       const url = href.replace(location.origin, '');
+      state.error = null;
       state.guest = {
+        allowedContentTypes: null,
         url,
         origin,
         modelId: null,
@@ -341,8 +346,13 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       // }
       return nextState;
     })
+    .addCase(errorPageCheckIn, (state, { payload }) => {
+      state.error = {
+        ...payload
+      };
+    })
     .addCase(fetchPrimaryGuestModelComplete, fetchGuestModelsCompleteHandler)
-    .addCase(fetchGuestModelComplete, fetchGuestModelsCompleteHandler)
+    .addCase(fetchGuestModelsComplete, fetchGuestModelsCompleteHandler)
     .addCase(guestModelUpdated, (state, { payload: { model } }) => ({
       ...state,
       guest: {
@@ -799,6 +809,9 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
     })
     .addCase(mainModelModifiedExternally, (state, { payload }) => {
       if (state.guest) state.guest.mainModelModifier = payload.user;
+    })
+    .addCase(allowedContentTypesUpdate, (state, { payload }) => {
+      state.guest.allowedContentTypes = payload;
     });
 });
 

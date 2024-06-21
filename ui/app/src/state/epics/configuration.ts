@@ -111,12 +111,12 @@ export default [
     action$.pipe(
       ofType(emitSystemEvents.type),
       switchMap((action) =>
-        action.payload.events.flatMap((event) =>
-          event.type !== configurationEvent.type
+        action.payload.events.flatMap((eventAction) =>
+          eventAction.type !== configurationEvent.type
             ? []
-            : event.payload.payload.targetPath === '/config/studio/ui.xml'
-              ? [fetchSiteUiConfig({ site: event.payload.siteId })]
-              : event.payload.payload.targetPath === '/config/studio/site-config.xml'
+            : eventAction.payload.targetPath === '/config/studio/ui.xml'
+              ? [fetchSiteUiConfig({ site: eventAction.payload.siteId })]
+              : eventAction.payload.targetPath === '/config/studio/site-config.xml'
                 ? [fetchSiteConfig()]
                 : []
         )

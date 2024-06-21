@@ -15,26 +15,7 @@
   -->
 
 <#if (envConfig.role! == 'admin' || envConfig.role! == 'developer')>
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="/studio/static-assets/img/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
-    <style>body { overflow: hidden }</style>
-  </head>
-  <body>
-  <div id="root"></div>
-  <#include "/templates/web/common/js-next-scripts.ftl" />
-  <script>
-    CrafterCMSNext.render('#root', 'SiteTools', {
-      footerHtml: '${applicationContext.get("crafter.entitlementValidator").getDescription()}'
-    }, false);
-  </script>
-  </body>
-  </html>
+  <#include "/static-assets/app/pages/project-tools.html">
 <#else>
   <script>window.location.href = '/studio';</script>
   <style>

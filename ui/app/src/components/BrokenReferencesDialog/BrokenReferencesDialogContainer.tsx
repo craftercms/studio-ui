@@ -51,51 +51,60 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
 
   return error ? (
     <ApiResponseErrorState error={error} />
-  ) : references.length > 0 ? (
+  ) : (
     <>
       <DialogBody>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <List
-              sx={{
-                border: (theme) => `1px solid ${theme.palette.divider}`,
-                background: (theme) => theme.palette.background.paper
-              }}
-            >
-              {references.map((reference, index) => (
-                <ListItem key={reference.path} divider={references.length - 1 !== index}>
-                  <ListItemText
-                    primary={reference.label}
-                    secondary={reference.path}
-                    primaryTypographyProps={{
-                      title: reference.path,
-                      sx: {
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis'
-                      }
-                    }}
-                  />
-                  <ListItemSecondaryAction>
-                    <Button
-                      color="primary"
-                      onClick={() => {
-                        onEditReferenceClick?.(reference.path);
+          {references.length > 0 ? (
+            <Grid item xs={12}>
+              <List
+                sx={{
+                  border: (theme) => `1px solid ${theme.palette.divider}`,
+                  background: (theme) => theme.palette.background.paper
+                }}
+              >
+                {references.map((reference, index) => (
+                  <ListItem key={reference.path} divider={references.length - 1 !== index}>
+                    <ListItemText
+                      primary={reference.label}
+                      secondary={reference.path}
+                      primaryTypographyProps={{
+                        title: reference.path,
+                        sx: {
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis'
+                        }
                       }}
-                      size="small"
-                      sx={{
-                        marginLeft: 'auto',
-                        fontWeight: 'bold',
-                        verticalAlign: 'baseline'
-                      }}
-                    >
-                      <FormattedMessage defaultMessage="Edit" />
-                    </Button>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
+                    />
+                    {reference.availableActionsMap.edit && (
+                      <ListItemSecondaryAction>
+                        <Button
+                          color="primary"
+                          onClick={() => {
+                            onEditReferenceClick?.(reference.path);
+                          }}
+                          size="small"
+                          sx={{
+                            marginLeft: 'auto',
+                            fontWeight: 'bold',
+                            verticalAlign: 'baseline'
+                          }}
+                        >
+                          <FormattedMessage defaultMessage="Edit" />
+                        </Button>
+                      </ListItemSecondaryAction>
+                    )}
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
+          ) : (
+            <EmptyState
+              title={<FormattedMessage defaultMessage="No broken references have been detected" />}
+              sxs={{ root: { width: '100%', pt: 2 } }}
+            />
+          )}
         </Grid>
       </DialogBody>
       <DialogFooter>
@@ -111,8 +120,6 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
         )}
       </DialogFooter>
     </>
-  ) : (
-    <EmptyState title={<FormattedMessage defaultMessage="No broken references have been detected" />} />
   );
 }
 

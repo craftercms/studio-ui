@@ -105,12 +105,14 @@ export function initTinyMCE(
     ...rteSetup?.tinymceOptions?.external_plugins,
     acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
     editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js',
-    craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js'
+    craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
+    template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js'
   };
 
   record.element.classList.remove(emptyFieldClass);
 
   window.tinymce.init({
+    license_key: 'gpl',
     target: rteEl,
     promotion: false,
     // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
@@ -270,29 +272,32 @@ export function initTinyMCE(
         // In some cases the 'blur' event is getting caught somewhere along
         // the way. Focusout seems to be more reliable.
         editor.on('focusout', (e) => {
-          let saved = false;
-          let relatedTarget = e.relatedTarget as HTMLElement;
-          // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
-          changed = changed || getContent() !== initialTinyContent;
-          if (
-            !relatedTarget?.closest('.tox-tinymce') &&
-            !relatedTarget?.closest('.tox') &&
-            !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
-          ) {
-            if (validations?.required && !getContent().trim()) {
-              post(
-                snackGuestMessage({
-                  id: 'required',
-                  level: 'required',
-                  values: { field: record.label }
-                })
-              );
-            } else if (changed) {
-              saved = true;
-              save();
+          // Only consider 'focusout' events that are trusted and not at the bubbling phase.
+          if (e.isTrusted && e.eventPhase !== 3) {
+            let relatedTarget = e.relatedTarget as HTMLElement;
+            let saved = false;
+            // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
+            changed = changed || getContent() !== initialTinyContent;
+            if (
+              !relatedTarget?.closest('.tox-tinymce') &&
+              !relatedTarget?.closest('.tox') &&
+              !relatedTarget?.classList.contains('tox-dialog__body-nav-item')
+            ) {
+              if (validations?.required && !getContent().trim()) {
+                post(
+                  snackGuestMessage({
+                    id: 'required',
+                    level: 'required',
+                    values: { field: record.label }
+                  })
+                );
+              } else if (changed) {
+                saved = true;
+                save();
+              }
+              e.stopImmediatePropagation();
+              cancel({ saved });
             }
-            e.stopImmediatePropagation();
-            cancel({ saved });
           }
         });
 
