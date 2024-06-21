@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
-import React, { Suspense, useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { LegacyContentType } from '../../models/ContentType';
 import translations from './translations';
 import { withoutIndex } from '../../utils/path';
@@ -55,11 +55,14 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
   const [keyword, setKeyword] = useState('');
   const [debounceKeyword, setDebounceKeyword] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const filteredContentTypes = contentTypes?.filter(
-    (contentType) =>
-      contentType.label.toLowerCase().includes(debounceKeyword.toLowerCase()) &&
-      (selectedFilter === 'all' || contentType.type === selectedFilter)
-  );
+  const filteredContentTypes = useMemo(() => {
+    const lowercaseKeyword = debounceKeyword.toLowerCase();
+    return contentTypes?.filter(
+      (contentType) =>
+        contentType.label.toLowerCase().includes(lowercaseKeyword) &&
+        (selectedFilter === 'all' || contentType.type === selectedFilter)
+    );
+  }, [contentTypes, debounceKeyword, selectedFilter]);
 
   const filters = [
     {
