@@ -17,7 +17,7 @@
 import { ChangeContentTypeDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useDispatch } from 'react-redux';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useState } from 'react';
 import { LegacyContentType } from '../../models/ContentType';
 import { fetchLegacyContentTypes } from '../../services/contentTypes';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
@@ -63,9 +63,10 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
   const [isFetching, setIsFetching] = useState(false);
   const [keyword, setKeyword] = useState('');
   const [debounceKeyword, setDebounceKeyword] = useState('');
-  const filteredContentTypes = contentTypes?.filter((contentType) =>
-    contentType.label.toLowerCase().includes(debounceKeyword.toLowerCase())
-  );
+  const filteredContentTypes = useMemo(() => {
+    const lowercaseKeyword = debounceKeyword.toLowerCase();
+    return contentTypes?.filter((contentType) => contentType.label.toLowerCase().includes(lowercaseKeyword));
+  }, [contentTypes, debounceKeyword]);
 
   const onSelectedContentType = (contentType: LegacyContentType) => {
     onContentTypeSelected?.({
