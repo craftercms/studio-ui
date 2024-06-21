@@ -95,6 +95,7 @@
     "@craftercms/classes": "4.1.4",
     "@craftercms/content": "4.1.4",
     "@craftercms/ice": "4.1.4",
+    "@craftercms/npm-content": "workspace:^",
     "@craftercms/search": "4.1.4",
     "@craftercms/studio-ui": "workspace:^",
     "@emotion/css": "^11.11.2",
@@ -120,6 +121,8 @@
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^5.1.0",
+    "@rollup/plugin-swc": "^0.3.0",
+    "@swc/core": "^1.5.7",
     "@types/jquery": "^3.5.29",
     "@types/js-cookie": "^3.0.6",
     "@types/prop-types": "^15.7.5",
@@ -129,6 +132,7 @@
     "npm-run-all": "^4.1.5",
     "replace-in-file": "^6.3.5",
     "rollup": "^2.79.1",
+    "rollup-plugin-swc3": "^0.11.2",
     "yargs": "^15.4.1"
   }
 }

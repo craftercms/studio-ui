@@ -2,13 +2,13 @@
   "name": "@craftercms/studio",
   "private": true,
   "workspaces": [
+    "ui/npm-content",
+    "ui/uppy",
     "ui/app",
     "ui/guest",
     "ui/legacy",
     "ui/scss",
-    "ui/monaco",
-    "ui/uppy",
-    "ui/npm-content"
+    "ui/monaco"
   ],
   "eslintConfig": {
     "extends": [
@@ -66,25 +66,22 @@
     "react-is": "^18.2.0",
     "ansi-regex": "^5.0.1",
     "json5": "^2.2.2",
-    "nth-check": "^2.0.1",
     "semver": "^7.5.2",
     "@videojs/vhs-utils": "^4.1.0"
   },
   "packageManager": "yarn@4.1.1",
   "scripts": {
-    "prettier:raw": "node scripts/prettier.js",
-    "prettier:all": "node scripts/prettier.js write",
-    "prettier:next": "node scripts/prettier.js next",
-    "prettier:legacy": "node scripts/prettier.js legacy",
-    "prettier:check": "node scripts/prettier.js check-changed",
-    "prettier:changed": "node scripts/prettier.js changed",
-    "prettier:certify": "node scripts/prettier.js check",
-    "prettier:sass": "prettier --config prettier.config.js --write 'ui/scss/**/*.scss'",
-    "prettier:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
-    "format-pom": "prettier --use-tabs --write pom.xml",
+    "build:all": "yarn workspaces foreach --include './ui/{npm-content,uppy,legacy,app,monaco}' -Ap run build-if-changed && yarn workspaces foreach --include './ui/{scss,guest}' -Ap run build-if-changed",
+    "format:all": "node scripts/prettier.js write",
+    "format:next": "node scripts/prettier.js next",
+    "format:legacy": "node scripts/prettier.js legacy",
+    "format:check": "node scripts/prettier.js check",
+    "format:sass": "prettier --config prettier.config.js --write 'ui/scss/**/*.scss'",
+    "format:css": "prettier --config prettier.config.js --write 'static-assets/css/**/*.css' 'static-assets/themes/cstudioTheme/**/*.css'",
+    "format:pom": "prettier --use-tabs --write pom.xml",
     "lint:ci": "eslint --ext .ts,.tsx .",
-    "update:yarn": "yarn set version latest",
-    "update:caniuse": "yarn up -R caniuse-lite"
+    "upgrade:yarn": "yarn set version latest",
+    "upgrade:caniuse": "yarn up -R caniuse-lite"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.1.0",
@@ -100,10 +97,7 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "rollup": "^2.79.1",
-    "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-copy": "^3.4.0",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-ts-treeshaking": "^1.0.2",
     "yargs": "^15.4.1"
   }
 }

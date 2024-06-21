@@ -1,0 +1,15 @@
+{
+  "jsc": {
+    "target": "ES2022",
+    "parser": {
+      "syntax": "ecmascript",
+      "jsx": true
+    },
+    "transform": {
+      "react": {
+        "pragma": "craftercms.libs.React.createElement",
+        "pragmaFrag": "craftercms.libs.React.Fragment"
+      }
+    }
+  }
+}

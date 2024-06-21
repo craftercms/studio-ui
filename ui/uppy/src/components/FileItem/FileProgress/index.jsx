@@ -1,4 +1,4 @@
-const { h } = require('preact');
+import { h } from 'preact';
 
 function onPauseResumeCancelRetry(props) {
   if (props.isUploaded) return;
@@ -101,7 +101,7 @@ function ProgressBar({ width, type }) {
   );
 }
 
-module.exports = function FileProgress({ file, isUploaded, error }) {
+export default function FileProgress({ file, isUploaded, error }) {
   // Nothing if upload has not started
   if (!file.progress.uploadStarted) {
     return null;
@@ -130,4 +130,4 @@ module.exports = function FileProgress({ file, isUploaded, error }) {
       <ProgressBar width={`${file.progress.percentage}%`} />
     </div>
   );
-};
+}

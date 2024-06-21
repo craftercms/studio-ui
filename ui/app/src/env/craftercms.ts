@@ -22,9 +22,10 @@ import * as MaterialUI from '@mui/material';
 import * as ReactRedux from 'react-redux';
 import * as ReactIntl from 'react-intl';
 import * as rxjs from 'rxjs';
+import { Observable } from 'rxjs';
 import { createAction } from '@reduxjs/toolkit';
 import createEmotion from '@emotion/css/create-instance';
-import { CrafterCMSStore, getStoreSync } from '../state/store';
+import { CrafterCMSStore, getStore, getStoreSync } from '../state/store';
 import { registerPlugin } from '../services/plugin';
 import { PluginDescriptor } from '../models/PluginDescriptor';
 import { components, icons, services, utils } from './studioUI';
@@ -78,6 +79,7 @@ export interface CrafterCMSGlobal {
     (): void;
     amd: true;
   };
+  store$(): Observable<CrafterCMSStore>;
 }
 
 let UND;
@@ -150,7 +152,8 @@ export const craftercms: CrafterCMSGlobal = {
   components,
   icons,
   services,
-  utils
+  utils,
+  store$: getStore
 };
 
 export const publishCrafterGlobal = () => {

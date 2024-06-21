@@ -94,7 +94,7 @@ export function importFile(
 ): Promise<any> {
   // @ts-ignore — methods share same signature
   const url = buildFileUrl(...arguments);
-  return import(/* webpackIgnore: true */ url);
+  return import(/* @vite-ignore */ url);
 }
 
 export function importPlugin(fileBuilder: PluginFileBuilder): Promise<any>;

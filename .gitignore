@@ -35,12 +35,12 @@
 # since they will be recreated, and may cause churn.  Uncomment if using
 # auto-import.
 # .idea/artifacts
-# .idea/compiler.xml
+.idea/compiler.xml
 # .idea/jarRepositories.xml
-# .idea/modules.xml
+.idea/modules.xml
 # .idea/*.iml
 # .idea/modules
-# *.iml
+*.iml
 # *.ipr
 
 # CMake
@@ -85,11 +85,15 @@ fabric.properties
 node_modules
 build
 build_tsc
+dist
+tsconfig.tsbuildinfo
+ui/npm-content/jquery-src
+jquery-src/
 
 #
 # builds
 #
-static-assets/next
+static-assets/app
 static-assets/styles/browse.css
 static-assets/styles/forms-engine.css
 static-assets/styles/bootstrap-5.3.css
@@ -121,10 +125,8 @@ static-assets/scripts/craftercms-xb.umd.js
 static-assets/scripts/preview-landing.umd.js
 ui/app/public/craftercms-xb.umd.js
 ui/app/public/preview-landing.umd.js
-ui/app/public/shared-worker.js
+ui/app/public/shared-worker.js*
 ui/guest/dist
-ui/app/src/test
-ui/app/src/tests
 static-assets/components/cstudio-admin/mods/encrypt-tool.js
 static-assets/components/cstudio-admin/mods/content-type-propsheet/contentTypes.js
 static-assets/components/cstudio-admin/mods/content-type-propsheet/content-path-input.js
@@ -146,11 +148,13 @@ scripts/settings_local.sh
 
 target/
 
+main.dev.tsx
 ui/app/.env.development
 
 # Ignore irrelevant generated translation system files
 ui/app/src/translations/src.json
 ui/app/src/translations/whitelists
+*.babel
 
 # Yarn
 .pnp.*

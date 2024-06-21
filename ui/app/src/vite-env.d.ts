@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,6 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from './components';
+/// <reference types="vite/client" />
 
-export * from './models';
+interface ImportMetaEnv {
+  VITE_SHOW_TOOLS_PANEL: string;
+  VITE_PREVIEW_LANDING: string;
+  VITE_AUTHORING_BASE: string;
+  VITE_GUEST_BASE: string;
+  /**
+   * Can be used to specify a different entry file other than `main.prod.tsx`
+   * to use for the dev server's `index.html`.
+   */
+  VITE_MAIN: string;
+}
