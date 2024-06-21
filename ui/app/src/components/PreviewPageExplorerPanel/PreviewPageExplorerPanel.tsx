@@ -741,22 +741,20 @@ export function PreviewPageExplorerPanel() {
           <Divider className={classes.divider} />
         </div>
         {models && ContentTypesById ? (
-          <Suspense fallback="">
-            <PageExplorerUI
-              handleBreadCrumbClick={handleBreadCrumbClick}
-              handleClick={handleClick}
-              handleClose={handleClose}
-              handleScroll={handleScroll}
-              optionsMenu={optionsMenu}
-              rootPrefix={rootPrefix}
-              handleOptions={handleOptions}
-              keyword={keyword}
-              nodeLookup={nodeLookup}
-              selected={state.selected}
-              breadcrumbs={state.breadcrumbs}
-              rootChildren={Object.keys(processedModels.current)}
-            />
-          </Suspense>
+          <PageExplorerUI
+            handleBreadCrumbClick={handleBreadCrumbClick}
+            handleClick={handleClick}
+            handleClose={handleClose}
+            handleScroll={handleScroll}
+            optionsMenu={optionsMenu}
+            rootPrefix={rootPrefix}
+            handleOptions={handleOptions}
+            keyword={keyword}
+            nodeLookup={nodeLookup}
+            selected={state.selected}
+            breadcrumbs={state.breadcrumbs}
+            rootChildren={Object.keys(processedModels.current)}
+          />
         ) : (
           <LoadingState title={formatMessage(translations.loading)} />
         )}

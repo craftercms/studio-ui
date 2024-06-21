@@ -112,9 +112,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
             ) : compareVersionsBranch.isFetching ? (
               <LoadingState />
             ) : compareVersionsBranch.compareVersions?.length > 0 ? (
-              <Suspense fallback="">
-                <CompareVersions versions={compareVersionsBranch.compareVersions} />
-              </Suspense>
+              <CompareVersions versions={compareVersionsBranch.compareVersions} />
             ) : (
               <EmptyState title={<FormattedMessage defaultMessage="No versions found" />} />
             )

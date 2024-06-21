@@ -137,9 +137,7 @@ export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProp
         ) : fetching ? (
           <LoadingState />
         ) : fileDiff ? (
-          <Suspense fallback="">
-            <ConflictedPathDiffDialogUI fileDiff={fileDiff} tab={tab} />
-          </Suspense>
+          <ConflictedPathDiffDialogUI fileDiff={fileDiff} tab={tab} />
         ) : null}
       </DialogBody>
       <DialogFooter>

@@ -167,9 +167,7 @@ export function PreviewDropTargetsPanel() {
           <LoadingState />
         ) : filteredDropTargets ? (
           filteredDropTargets.length > 0 ? (
-            <Suspense fallback="">
-              <DropTargetsList dropTargets={filteredDropTargets} onSelectedDropZone={onSelectedDropZone} />
-            </Suspense>
+            <DropTargetsList dropTargets={filteredDropTargets} onSelectedDropZone={onSelectedDropZone} />
           ) : (
             <EmptyState
               title={

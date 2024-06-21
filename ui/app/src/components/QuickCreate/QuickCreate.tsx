@@ -173,14 +173,12 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         ) : isFetching ? (
           <LoadingState classes={{ graphic: classes.quickCreateLoadingState }} />
         ) : quickCreateItems && systemVersion ? (
-          <Suspense fallback="">
-            <QuickCreateSection
-              classes={classes}
-              version={systemVersion}
-              quickCreateItems={quickCreateItems}
-              onItemSelected={onFormDisplay}
-            />
-          </Suspense>
+          <QuickCreateSection
+            classes={classes}
+            version={systemVersion}
+            quickCreateItems={quickCreateItems}
+            onItemSelected={onFormDisplay}
+          />
         ) : null}
       </Menu>
     </>

@@ -31,9 +31,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
       ) : isFetching ? (
         <LoadingState />
       ) : version ? (
-        <Suspense fallback="">
-          <LegacyVersionDialog version={version} />
-        </Suspense>
+        <LegacyVersionDialog version={version} />
       ) : null}
     </DialogBody>
   );

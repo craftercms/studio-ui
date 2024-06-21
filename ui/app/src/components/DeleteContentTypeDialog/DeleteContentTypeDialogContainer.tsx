@@ -109,14 +109,12 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
   ) : isFetching ? (
     <LoadingState styles={{ root: { width: 300, height: 250 } }} />
   ) : data ? (
-    <Suspense fallback="">
-      <DeleteContentTypeDialogBody
-        submitting={isSubmitting}
-        onCloseButtonClick={onCloseButtonClick}
-        data={data}
-        contentType={contentType}
-        onSubmit={onSubmit}
-      />
-    </Suspense>
+    <DeleteContentTypeDialogBody
+      submitting={isSubmitting}
+      onCloseButtonClick={onCloseButtonClick}
+      data={data}
+      contentType={contentType}
+      onSubmit={onSubmit}
+    />
   ) : null;
 }

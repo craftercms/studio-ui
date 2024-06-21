@@ -214,18 +214,16 @@ export function SiteManagement() {
           <SkeletonSitesGrid numOfItems={3} currentView={currentView} />
         ) : sitesList ? (
           sitesList.length > 0 ? (
-            <Suspense fallback="">
-              <SitesGrid
-                sites={sitesList}
-                onSiteClick={onSiteClick}
-                onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
-                onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
-                currentView={currentView}
-                onPublishButtonClick={onPublishButtonClick}
-                onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
-                disabledSitesLookup={disabledSitesLookup}
-              />
-            </Suspense>
+            <SitesGrid
+              sites={sitesList}
+              onSiteClick={onSiteClick}
+              onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
+              onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
+              currentView={currentView}
+              onPublishButtonClick={onPublishButtonClick}
+              onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
+              disabledSitesLookup={disabledSitesLookup}
+            />
           ) : (
             <EmptyState
               title={<FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />}

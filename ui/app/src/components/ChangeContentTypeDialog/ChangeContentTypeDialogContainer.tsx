@@ -137,14 +137,12 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
           <ContentTypesLoader numOfItems={6} isCompact={isCompact} />
         ) : filteredContentTypes ? (
           filteredContentTypes.length > 0 ? (
-            <Suspense fallback="">
-              <ContentTypesGrid
-                contentTypes={filteredContentTypes}
-                isCompact={isCompact}
-                onTypeOpen={onSelectedContentType}
-                selectedContentType={selectedContentType}
-              />
-            </Suspense>
+            <ContentTypesGrid
+              contentTypes={filteredContentTypes}
+              isCompact={isCompact}
+              onTypeOpen={onSelectedContentType}
+              selectedContentType={selectedContentType}
+            />
           ) : (
             <EmptyState
               title={

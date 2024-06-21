@@ -163,13 +163,11 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
           <ContentTypesLoader isCompact={isCompact} />
         ) : filteredContentTypes ? (
           filteredContentTypes.length > 0 ? (
-            <Suspense fallback="">
-              <ContentTypesGrid
-                contentTypes={filteredContentTypes}
-                isCompact={isCompact}
-                onTypeOpen={onSelectedContentType}
-              />
-            </Suspense>
+            <ContentTypesGrid
+              contentTypes={filteredContentTypes}
+              isCompact={isCompact}
+              onTypeOpen={onSelectedContentType}
+            />
           ) : (
             <EmptyState
               title={
