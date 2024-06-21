@@ -381,6 +381,9 @@ export function GuestProxy() {
           spinner = spinner.firstChild as HTMLDivElement;
 
           const daddy = getParentElementFromICEProps(modelId, fieldId, targetIndex);
+          // 'daddy' element contains the model of the item that inherits field. Retrieving the model for latter usage
+          // when rendering the new component.
+          const inheritedModelId = daddy.getAttribute('data-craftercms-model-id');
 
           // If daddy has children, get the closest  one to the one that is being added, and get its width to set it
           // to the spinner container.
@@ -422,8 +425,8 @@ export function GuestProxy() {
 
               ifrm.onload = function () {
                 spinner.remove();
-                const itemElement = ifrm.contentWindow.document.documentElement.querySelector(
-                  `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
+                let itemElement = ifrm.contentWindow.document.documentElement.querySelector(
+                  `[data-craftercms-model-id="${inheritedModelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
                 );
                 let component = document.createElement('div');
                 component.innerHTML = itemElement?.outerHTML;

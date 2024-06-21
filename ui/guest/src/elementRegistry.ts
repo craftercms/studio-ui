@@ -133,18 +133,18 @@ export function register(payload: ElementRecordRegistration): number {
         ? fieldId
         : fieldId.split(',').map((str) => str.trim());
 
-  function create() {
+  function create(inheritanceParentModelId?: string) {
     // Create/register the physical record
     db[id] = {
       id,
       element,
-      modelId,
+      modelId: inheritanceParentModelId ?? modelId,
       index,
       label,
       fieldId: fieldIds,
       iceIds,
       complete: false,
-      inherited: fieldIds.some((fieldId) => isInheritedField(modelId, fieldId))
+      inherited: fieldIds.some((fieldId) => isInheritedField(inheritanceParentModelId ?? modelId, fieldId))
     };
   }
 
@@ -154,11 +154,12 @@ export function register(payload: ElementRecordRegistration): number {
     // for the model to be loaded.
     if (isInheritedField(model.craftercms.id, fieldId)) {
       byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
+        const sourceModelId = response.craftercms.id;
         model$(response.craftercms.id)
           .pipe(take(1))
           .subscribe(() => {
-            create();
-            completeDeferredRegistration(id);
+            create(sourceModelId);
+            completeDeferredRegistration(id, sourceModelId);
           });
       });
     } else {
@@ -183,13 +184,13 @@ export function register(payload: ElementRecordRegistration): number {
   return id;
 }
 
-export function completeDeferredRegistration(id: number): void {
+export function completeDeferredRegistration(id: number, inheritanceParentModelId?: string): void {
   const record = db[id];
   const { modelId, index, fieldId: fieldIds, iceIds } = record;
 
   if (fieldIds.length > 0) {
     fieldIds.forEach((fieldId) => {
-      const iceId = iceRegistry.register({ modelId, index, fieldId });
+      const iceId = iceRegistry.register({ modelId: inheritanceParentModelId ?? modelId, index, fieldId });
       if (!registry[iceId]) {
         registry[iceId] = [];
       }
@@ -197,7 +198,7 @@ export function completeDeferredRegistration(id: number): void {
       !iceIds.includes(iceId) && iceIds.push(iceId);
     });
   } else {
-    const iceId = iceRegistry.register({ modelId, index });
+    const iceId = iceRegistry.register({ modelId: inheritanceParentModelId ?? modelId, index });
     if (!registry[iceId]) {
       registry[iceId] = [];
     }
