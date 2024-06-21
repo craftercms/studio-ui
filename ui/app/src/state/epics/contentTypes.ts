@@ -66,9 +66,9 @@ export default [
       ofType(fetchComponentsByContentType.type, setContentTypeFilter.type),
       withLatestFrom(state$),
       switchMap(([, state]) => {
-        const allowedContentTypes = Object.entries(state.preview.guest?.allowedContentTypes)
-          .filter(([, value]) => value.shared)
-          .map(([key]) => key);
+        const allowedContentTypes = Object.entries(state.preview.guest?.allowedContentTypes ?? {}).flatMap(
+          ([key, type]) => (type.shared ? [key] : [])
+        );
         return fetchItemsByContentType(
           state.sites.active,
           state.preview.components.contentTypeFilter === 'compatible'

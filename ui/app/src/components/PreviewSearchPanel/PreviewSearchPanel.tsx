@@ -145,21 +145,20 @@ export function PreviewSearchPanel() {
 
   const onSearch = useCallback(
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
+      let sub;
       setState({ isFetching: true });
       setError(null);
       if (allowedTypesData) {
-        // If there are no allowed types, an empty array causes the request to return everything. So we send an array
-        // with an empty string to filter out all content-types.
-        let allowedTypes = Object.entries(allowedTypesData)
-          .filter(([, type]) => type.shared)
-          .map(([key]) => key);
-        if (allowedTypes.length === 0) allowedTypes = [''];
+        const allowedTypes = Object.entries(allowedTypesData ?? {}).flatMap(([key, type]) =>
+          type.shared ? [key] : []
+        );
 
-        search(site, {
+        sub?.unsubscribe();
+        sub = search(site, {
           ...initialSearchParameters,
           keywords,
           ...options,
-          filters: { 'content-type': allowedTypes, 'mime-type': mimeTypes }
+          filters: { ...(allowedTypes.length > 0 ? { 'content-type': allowedTypes } : {}), 'mime-type': mimeTypes }
         })
           .pipe(
             takeUntil(unMount$),
@@ -196,9 +195,14 @@ export function PreviewSearchPanel() {
               }
             },
             error: ({ response }) => {
+              setState({ isFetching: false });
               setError(response.response);
             }
           });
+
+        return () => {
+          sub.unsubscribe();
+        };
       }
     },
     [setState, site, unMount$, contentTypesLookup, allowedTypesData]
