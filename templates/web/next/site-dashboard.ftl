@@ -25,9 +25,9 @@
 </head>
 <body>
 <div id="root"></div>
-<#include "/templates/web/common/js-next-scripts.ftl" />
+<#include "/static-assets/app/pages/legacy.html">
 <script>
-  (function (CrafterCMSNext) {
+  document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
     const { createElement, Fragment } = craftercms.libs.React;
     const { Typography, Box } = craftercms.libs.MaterialUI;
     const { ViewToolbar, LauncherOpenerButton, SiteDashboard } = CrafterCMSNext.components;
@@ -49,7 +49,7 @@
       );
     }
     CrafterCMSNext.render('#root', Root, {}, false);
-  })(CrafterCMSNext);
+  });
 </script>
 </body>
 </html>

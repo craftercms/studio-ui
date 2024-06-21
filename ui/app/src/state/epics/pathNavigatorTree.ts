@@ -311,7 +311,7 @@ export default [
               options: finalOptions
             })
           ),
-          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
+          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id, path }))
         );
       })
     ),
@@ -364,7 +364,7 @@ export default [
         const options = createGetChildrenOptions(chunk, { keyword });
         return fetchChildrenByPath(state.sites.active, path, options).pipe(
           map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options })),
-          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
+          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id, path }))
         );
       })
     ),

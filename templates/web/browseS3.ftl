@@ -161,11 +161,15 @@
       });
     </script>
 
+    <#include "/static-assets/app/pages/legacy.html">
     <script type="text/javascript">
-        $(function() {
+      document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
+        window.craftercms.store$().subscribe(() => {
+          $(function() {
             CStudioBrowseS3.init();
+          });
         });
-
+      });
     </script>
 
     <script type="text/javascript">

@@ -259,17 +259,19 @@
     },
 
     _editShared(key, control, datasource, index, callback) {
-      const readonly = control.readonly;
-      const action = readonly ? CStudioAuthoring.Operations.viewContent : CStudioAuthoring.Operations.editContent;
-
-      CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, key, {
-        success: function (contentTO) {
+      craftercms.services.content.fetchSandboxItem(CStudioAuthoringContext.site, key).subscribe({
+        next(sandboxItem) {
+          const readonly = !sandboxItem.availableActionsMap.edit;
+          const action =
+            readonly || !sandboxItem.availableActionsMap.edit
+              ? CStudioAuthoring.Operations.viewContent
+              : CStudioAuthoring.Operations.editContent;
           action(
-            contentTO.item.contentType,
+            sandboxItem.contentTypeId,
             CStudioAuthoringContext.siteId,
-            contentTO.item.mimeType,
-            contentTO.item.nodeRef,
-            contentTO.item.uri,
+            sandboxItem.mimeType,
+            null,
+            sandboxItem.path,
             false,
             {
               success: function (contentTO, editorId, name, value, draft, action) {
@@ -290,7 +292,7 @@
             }
           );
         },
-        failure: function () {}
+        error: function () {}
       });
     },
 

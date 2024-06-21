@@ -19,19 +19,15 @@ import { defineMessages, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { makeStyles } from 'tss-react/mui';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import Avatar from '@mui/material/Avatar';
-import MoveToInboxRounded from '@mui/icons-material/MoveToInboxRounded';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import ContentType from '../../models/ContentType';
 import { useDispatch } from 'react-redux';
 import {
-  clearHighlightedDropTargets,
   clearDropTargets,
+  clearHighlightedDropTargets,
   contentTypeDropTargetsRequest,
   scrollToDropTarget,
   setPreviewEditMode
@@ -42,11 +38,18 @@ import { LookupTable } from '../../models/LookupTable';
 import { useSelection } from '../../hooks/useSelection';
 import { useLogicResource } from '../../hooks/useLogicResource';
 import { useMount } from '../../hooks/useMount';
+import { getAvatarWithIconColors } from '../../utils/contentType';
+import { darken, useTheme } from '@mui/material/styles';
+import { ContentTypeField } from '../../icons';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemButton from '@mui/material/ListItemButton';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   dropTargetsPanel: {
-    id: 'previewDropTargetsPanel.title',
-    defaultMessage: 'Component Drop Targets'
+    // Translation not used in code but powers i18n for `ui.xml`
+    id: 'previewDropTargetsPanelTitle',
+    defaultMessage: 'Drop Targets'
   },
   selectContentType: {
     id: 'previewDropTargetsPanel.selectContentType',
@@ -83,6 +86,7 @@ export function PreviewDropTargetsPanel() {
     : null;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
+  const theme = useTheme();
 
   useMount(() => {
     return () => {
@@ -104,10 +108,7 @@ export function PreviewDropTargetsPanel() {
   };
 
   function handleSelectChange(contentTypeId: string) {
-    hostToGuest$.next({
-      type: contentTypeDropTargetsRequest.type,
-      payload: contentTypeId
-    });
+    hostToGuest$.next(contentTypeDropTargetsRequest({ contentTypeId }));
   }
 
   const dropTargetsResource = useLogicResource<
@@ -132,15 +133,41 @@ export function PreviewDropTargetsPanel() {
         <Select
           value={dropTargetsBranch.selectedContentType || ''}
           displayEmpty
-          onChange={(event: any) => handleSelectChange(event.target.value)}
+          onChange={(event: any) => {
+            event.stopPropagation();
+            handleSelectChange(event.target.value);
+          }}
         >
           <MenuItem value="" disabled>
             {formatMessage(translations.selectContentType)}
           </MenuItem>
           {contentTypes?.map((contentType: ContentType, i: number) => {
+            const { backgroundColor, textColor } = getAvatarWithIconColors(
+              contentTypesBranch.byId[contentType.id].name,
+              theme,
+              darken
+            );
             return (
               <MenuItem value={contentType.id} key={i}>
-                {contentType.name}
+                <Box display="flex" alignItems="center">
+                  <Box
+                    sx={{
+                      mr: 1,
+                      flexShrink: 0,
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '20px',
+                      overflow: 'hidden',
+                      backgroundColor,
+                      borderColor: textColor,
+                      borderStyle: 'solid',
+                      borderWidth: '1px'
+                    }}
+                  />
+                  <Box sx={{ flexShrink: 1, flexGrow: 1, textOverflow: 'ellipsis' }} title={contentType.name}>
+                    {contentType.name}
+                  </Box>
+                </Box>
               </MenuItem>
             );
           })}
@@ -171,20 +198,14 @@ interface DropTargetsListProps {
 
 function DropTargetsList(props: DropTargetsListProps) {
   const dropTargets = props.resource.read();
-  return (
-    <>
-      {dropTargets?.map((dropTarget: ContentTypeDropTarget) => (
-        <ListItem key={dropTarget.id} button onClick={() => props.onSelectedDropZone(dropTarget)}>
-          <ListItemAvatar>
-            <Avatar>
-              <MoveToInboxRounded />
-            </Avatar>
-          </ListItemAvatar>
-          <ListItemText primary={dropTarget.label} />
-        </ListItem>
-      ))}
-    </>
-  );
+  return dropTargets?.map((dropTarget: ContentTypeDropTarget) => (
+    <ListItemButton key={dropTarget.id} onClick={() => props.onSelectedDropZone(dropTarget)}>
+      <ListItemIcon>
+        <ContentTypeField />
+      </ListItemIcon>
+      <ListItemText primary={dropTarget.label} />
+    </ListItemButton>
+  ));
 }
 
 export default PreviewDropTargetsPanel;
