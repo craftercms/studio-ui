@@ -93,8 +93,9 @@ export function PreviewInPageInstancesPanel() {
   const models = useMemo(() => {
     return guest?.models;
   }, [guest]);
-  const filteredContentTypes =
-    models && Object.values(models)?.filter((model) => model.craftercms.contentTypeId === contentTypeFilter);
+  const filteredContentTypes = Object.values(models ?? {}).filter(
+    (model) => model.craftercms.contentTypeId === contentTypeFilter
+  );
 
   const selectedModels = useMemo(() => {
     return Object.values(models ?? []).filter((model) => {
