@@ -19,7 +19,7 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import * as React from 'react';
-import { Suspense, useEffect } from 'react';
+import { useEffect } from 'react';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
 import { showSystemNotification } from '../../state/actions/system';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';

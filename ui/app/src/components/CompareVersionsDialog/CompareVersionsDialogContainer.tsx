@@ -16,7 +16,7 @@
 
 import { CompareVersionsDialogContainerProps } from './utils';
 import { FormattedMessage } from 'react-intl';
-import React, { Suspense, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { ItemHistoryEntry } from '../../models/Version';
 import { CompareVersions } from './CompareVersions';

@@ -20,7 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { LegacyContentType } from '../../models/ContentType';
 import translations from './translations';
 import { withoutIndex } from '../../utils/path';
