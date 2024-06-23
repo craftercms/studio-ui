@@ -39,28 +39,26 @@ export interface ICEAttributes {
   'data-craftercms-type'?: 'collection';
 }
 
-export interface ICEConfig {
-  model: ContentInstance;
+export type ICEConfig = {
+  isAuthoring: boolean;
   fieldId?: string;
   index?: string | number;
   label?: string;
-  isAuthoring: boolean;
-}
+  model?: ContentInstance;
+  modelId?: string;
+  path?: string;
+} & ({ model: ContentInstance } | { modelId: string; path: string });
 
 export function getICEAttributes(config: ICEConfig): ICEAttributes {
-  let { model, fieldId, index, label, isAuthoring = true } = config;
+  let { model, modelId, path, fieldId, index, label, isAuthoring = true } = config;
   let attributes = {} as ICEAttributes;
 
   if (!isAuthoring) {
     return attributes;
   }
 
-  if (label === null || label === undefined) {
-    label = model?.craftercms.label || '';
-  }
-
-  attributes['data-craftercms-model-id'] = model.craftercms.id;
-  attributes['data-craftercms-model-path'] = model.craftercms.path;
+  attributes['data-craftercms-model-id'] = model?.craftercms.id ?? modelId;
+  attributes['data-craftercms-model-path'] = model?.craftercms.path ?? path;
   nnou(fieldId) && (attributes['data-craftercms-field-id'] = fieldId);
   nnou(index) && (attributes['data-craftercms-index'] = index);
   nnou(label) && (attributes['data-craftercms-label'] = label);

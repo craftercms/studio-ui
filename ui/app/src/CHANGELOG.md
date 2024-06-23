@@ -44,6 +44,7 @@
 * The `allowedContentTypes` ContentTypeField validation changed from being an array to a Record<contentTypeId, { embedded?: true; shared?: true; sharedExisting?: true; }>
 * Remove legacy `browseCMIS` dialog and `openCMISBrowse` function from common-api.
 * Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources. 
+* `ICEConfig` TypeScript `interface` changed to be `type`. It now accepts either the (model) or (modelId & path).
 
 ## 4.1.5
 * [common-api.js]
