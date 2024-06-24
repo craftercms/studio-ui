@@ -379,7 +379,10 @@ export function duplicateItem(modelId: string, fieldId: string, index: number | 
 export function insertItem(modelId: string, fieldId: string, index: number | string, contentType: ContentType): void {
   const instance: InstanceRecord = {};
   const models = getCachedModels();
-  Object.entries(contentType.fields[fieldId].fields).forEach(([id, field]) => {
+  const fields = fieldId.split('.');
+  const field = fields.reduce((acc, field) => acc[field].fields, contentType.fields);
+  // For each of the entries of the field of type `content-type`, set the default value for the new instance.
+  Object.entries(field).forEach(([id, field]) => {
     if (!systemProps.includes(field.id)) {
       instance[id] = getDefaultValue(field);
     }
