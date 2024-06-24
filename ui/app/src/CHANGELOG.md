@@ -2,6 +2,9 @@
 
 [//]: # (TODO: migrate 4.1.x branch changelog to develop)
 
+## 4.1.6
+* `ICEConfig` TypeScript `interface` changed to be `type`. It now accepts either the (model) or (modelId & path).
+
 ## 4.1.5
 * [common-api.js]
   * `CStudioAuthoring.Utils.showConfirmDialog`: Added function overload to receive a `props` style object as first and only argument. The props argument would contain all ConfirmDialog props. Original set of arguments still supported for backward compatibility.
