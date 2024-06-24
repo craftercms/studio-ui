@@ -17,7 +17,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useGuestContext, useSelector } from './GuestContext';
 import * as ElementRegistry from '../elementRegistry';
-import { getParentElementFromICEProps } from '../elementRegistry';
+import { getParentElementFromICEProps, inheritorsModelIdsMap } from '../elementRegistry';
 import * as iceRegistry from '../iceRegistry';
 import $ from 'jquery';
 import {
@@ -418,9 +418,15 @@ export function GuestProxy() {
 
               ifrm.onload = function () {
                 $spinner.remove();
-                const itemElement = ifrm.contentWindow.document.documentElement.querySelector(
+                let itemElement = ifrm.contentWindow.document.documentElement.querySelector(
                   `[data-craftercms-model-id="${modelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
                 );
+                if (!itemElement) {
+                  const inheritedModelId = inheritorsModelIdsMap[`${modelId}-${fieldId}`];
+                  itemElement = ifrm.contentWindow.document.documentElement.querySelector(
+                    `[data-craftercms-model-id="${inheritedModelId}"][data-craftercms-field-id="${fieldId}"][data-craftercms-index="${targetIndex}"]`
+                  );
+                }
                 const $component = $(itemElement?.outerHTML);
                 insertElement($component, $daddy, targetIndex);
                 updateElementRegistrations(Array.from($daddy.children()), 'insert', targetIndex, null, fieldId);
