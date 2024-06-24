@@ -46,6 +46,7 @@ import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
 import { SandboxItem, StandardAction } from '@craftercms/studio-ui/models';
+import { mergeArraysAlternatively } from '@craftercms/studio-ui/utils/array';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -388,15 +389,20 @@ export function insertItem(modelId: string, fieldId: string, index: number | str
     }
   });
 
-  const currentItems = getCollection(models[modelId], fieldId, index)?.concat() ?? [];
+  const indexPieces = index?.toString().split('.');
+  const concatFieldId = !isSimple(fieldId)
+    ? mergeArraysAlternatively(fieldId.split('.'), indexPieces).join('.')
+    : fieldId;
+  const currentItems = getCollection(models[modelId], concatFieldId, index) ?? [];
+
   let newItems;
-  if (nou(index)) {
-    // Index doesn't exist, insert at the end
+  if (nou(index) || indexPieces.length < fields.length) {
+    // Index doesn't exist for current field subsection (when not simple field), or index doesn't exist at all, insert at the end
     newItems = [...currentItems, instance];
   } else {
     // If index is complex, we already have the set of items from the model, now we need the latter part of the index
     // to insert the new instance at the desired position.
-    const targetIndex = isSimple(index) ? index : popPiece(index as string);
+    let targetIndex = isSimple(index) ? index : popPiece(index as string);
     newItems = currentItems.splice(targetIndex as number, 0, instance);
   }
   const model = setCollection(models[modelId], fieldId, index, newItems);
