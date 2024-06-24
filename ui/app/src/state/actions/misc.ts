@@ -53,4 +53,6 @@ export const editTemplate = /*#__PURE__*/ createAction<EditFilePayload>('EDIT_TE
 
 export const editController = /*#__PURE__*/ createAction<EditFilePayload>('EDIT_CONTROLLER');
 
+export const editTemplateCreateSuccess = /*#__PURE__*/ createAction<{ contentTypeId: string }>('EDIT_TEMPLATE_SUCCESS');
+
 // endregion

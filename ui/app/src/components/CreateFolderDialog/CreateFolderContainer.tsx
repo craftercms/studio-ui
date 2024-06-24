@@ -19,7 +19,7 @@ import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { DetailedItem, SandboxItem } from '../../models/Item';
-import { getParentPath, getRootPath, withoutIndex } from '../../utils/path';
+import { getParentPath, getPathParts, getRootPath, withoutIndex } from '../../utils/path';
 import { createFolder, fetchSandboxItem, renameFolder } from '../../services/content';
 import { batchActions } from '../../state/actions/misc';
 import { updateCreateFolderDialog } from '../../state/actions/dialogs';
@@ -35,38 +35,43 @@ import PrimaryButton from '../PrimaryButton';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import { UNDEFINED } from '../../utils/constants';
-import { isBlank } from '../../utils/string';
+import { ensureSingleSlash, isBlank } from '../../utils/string';
 import { useEnhancedDialogContext } from '../EnhancedDialog';
-import { applyFolderNameRules, lookupItemByPath } from '../../utils/content';
+import { applyFolderNameRules, applyFolderPathRules, lookupItemByPath } from '../../utils/content';
 import { useFetchItem } from '../../hooks/useFetchItem';
 import ApiResponse from '../../models/ApiResponse';
 
 export function CreateFolderContainer(props: CreateFolderContainerProps) {
-  const { onClose, onCreated, onRenamed, rename = false, value = '', allowBraces = false } = props;
+  const { onClose, onCreated, onRenamed, rename = false, value: initialValue = '', allowBraces = false } = props;
   const { isSubmitting, hasPendingChanges } = useEnhancedDialogContext();
-  const [name, setName] = useState(value);
+  const [{ value, name, fullPath }, setPathData] = useState({
+    value: initialValue,
+    name: '',
+    valuePath: '',
+    fullPath: ''
+  });
   const [confirm, setConfirm] = useState(null);
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const [openSelector, setOpenSelector] = useState(false);
   const [selectedItem, setSelectedItem] = useState<DetailedItem>(null);
-  const path = useMemo(() => {
+  const basePath = useMemo(() => {
     return selectedItem ? withoutIndex(selectedItem.path) : withoutIndex(props.path);
   }, [props.path, selectedItem]);
   // When folder name changes, path prop will still be the previous one, and useDetailedItem will try to re-fetch the
   // non-existing item (old folder name path), so we will only re-fetch when the actual path prop of the component
   // changes (useDetailedItemNoState).
-  const item = useFetchItem(path);
+  const item = useFetchItem(basePath);
   const itemLookupTable = useItemsByPath();
-  const newFolderPath = `${rename ? getParentPath(path) : path}/${name}`;
+  const newFolderPath = ensureSingleSlash(`${rename ? getParentPath(basePath) : fullPath}/${name}`);
   // When calling the validation API, we need to check if the item with the suggested name exists. This is an extra validation for the
   // folderExists const.
   const [itemExists, setItemExists] = useState(false);
   const folderExists = rename
-    ? name !== value && (itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED)
+    ? value !== initialValue && (itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED)
     : itemExists || lookupItemByPath(newFolderPath, itemLookupTable) !== UNDEFINED;
-  const isValid = !isBlank(name) && !folderExists && (!rename || name !== value);
+  const isValid = !isBlank(value) && !folderExists && (!rename || value !== initialValue);
 
   useEffect(() => {
     if (item && rename === false) {
@@ -108,7 +113,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   const onSubmit = () => {
     dispatch(updateCreateFolderDialog({ isSubmitting: true }));
     if (name) {
-      const parentPath = rename ? getParentPath(path) : path;
+      const parentPath = rename ? getParentPath(basePath) : fullPath;
       validateActionPolicy(site, {
         type: rename ? 'RENAME' : 'CREATE',
         target: `${parentPath}/${name}`
@@ -127,9 +132,9 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
                     setConfirm({ body: message });
                   } else {
                     if (rename) {
-                      onRenameFolder(site, path, name);
+                      onRenameFolder(site, basePath, name);
                     } else {
-                      onCreateFolder(site, path, name);
+                      onCreateFolder(site, fullPath, name);
                     }
                   }
                 }
@@ -151,9 +156,9 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
 
   const onConfirm = () => {
     if (rename) {
-      onRenameFolder(site, path, name);
+      onRenameFolder(site, basePath, name);
     } else {
-      onCreateFolder(site, path, name);
+      onCreateFolder(site, fullPath, name);
     }
   };
 
@@ -163,7 +168,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   };
 
   const onInputChanges = (newValue: string) => {
-    setName(newValue);
+    setPathData(getPathParts(basePath, newValue));
     setItemExists(false);
     const newHasPendingChanges = rename ? newValue !== value : !isBlank(newValue);
     hasPendingChanges !== newHasPendingChanges &&
@@ -177,22 +182,26 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
   return (
     <>
       <DialogBody>
-        {selectedItem && (
-          <SingleItemSelector
-            label={<FormattedMessage id="words.location" defaultMessage="Location" />}
-            open={openSelector}
-            onClose={() => setOpenSelector(false)}
-            onDropdownClick={() => setOpenSelector(!openSelector)}
-            rootPath={getRootPath(path)}
-            selectedItem={selectedItem}
-            canSelectFolders
-            onItemClicked={(item) => {
-              setOpenSelector(false);
-              setSelectedItem(item);
-            }}
-            filterChildren={itemSelectorFilterChildren}
-          />
-        )}
+        <SingleItemSelector
+          label={<FormattedMessage id="words.location" defaultMessage="Location" />}
+          open={openSelector}
+          onClose={() => setOpenSelector(false)}
+          onDropdownClick={selectedItem ? () => setOpenSelector(!openSelector) : null}
+          rootPath={getRootPath(basePath)}
+          selectedItem={rename ? item : selectedItem}
+          canSelectFolders
+          onItemClicked={(item) => {
+            setOpenSelector(false);
+            setSelectedItem(item);
+          }}
+          filterChildren={itemSelectorFilterChildren}
+          showPath={true}
+          sxs={{
+            root: {
+              width: '100%'
+            }
+          }}
+        />
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -210,10 +219,10 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
                 <FormattedMessage id="newFolder.folderName" defaultMessage="Folder Name" />
               )
             }
-            value={name}
+            value={value}
             autoFocus
             required
-            error={(!name && isSubmitting !== null) || folderExists}
+            error={(!value && isSubmitting !== null) || folderExists}
             placeholder={formatMessage(translations.placeholder)}
             helperText={
               folderExists ? (
@@ -221,7 +230,7 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
                   id="newFolder.folderAlreadyExists"
                   defaultMessage="A folder with that name already exists"
                 />
-              ) : !name && isSubmitting !== null ? (
+              ) : !value && isSubmitting !== null ? (
                 <FormattedMessage id="newFolder.required" defaultMessage="Folder name is required." />
               ) : (
                 <FormattedMessage
@@ -235,7 +244,13 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             InputLabelProps={{
               shrink: true
             }}
-            onChange={(event) => onInputChanges(applyFolderNameRules(event.target.value, { allowBraces }))}
+            onChange={(event) =>
+              onInputChanges(
+                rename
+                  ? applyFolderNameRules(event.target.value, { allowBraces })
+                  : applyFolderPathRules(event.target.value, { allowBraces })
+              )
+            }
           />
         </form>
       </DialogBody>

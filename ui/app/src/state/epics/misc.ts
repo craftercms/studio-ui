@@ -21,19 +21,31 @@ import GlobalState from '../../models/GlobalState';
 import {
   batchActions,
   changeContentType as changeContentTypeAction,
+  dispatchDOMEvent,
   editContentTypeTemplate,
   editController,
-  editTemplate
+  editTemplate,
+  editTemplateCreateSuccess
 } from '../actions/misc';
-import { changeContentType, createFile, fetchWorkflowAffectedItems } from '../../services/content';
-import { showCodeEditorDialog, showEditDialog, showWorkflowCancellationDialog } from '../actions/dialogs';
+import { changeContentType, fetchWorkflowAffectedItems } from '../../services/content';
+import {
+  closeCreateFileDialog,
+  showCodeEditorDialog,
+  showCreateFileDialog,
+  showEditDialog,
+  showWorkflowCancellationDialog
+} from '../actions/dialogs';
 import { reloadDetailedItem } from '../actions/content';
-import { blockUI, showEditItemSuccessNotification, unblockUI } from '../actions/system';
+import {
+  blockUI,
+  showCreateItemSuccessNotification,
+  showEditItemSuccessNotification,
+  unblockUI
+} from '../actions/system';
 import { CrafterCMSEpic } from '../store';
 import { translations } from '../../components/ItemActionsMenu/translations';
 import { showErrorDialog } from '../reducers/dialogs/error';
-import { getFileNameFromPath, getParentPath } from '../../utils/path';
-import { popPiece } from '../../utils/string';
+import { ensureSingleSlash, popPiece } from '../../utils/string';
 import { associateTemplate } from '../actions/preview';
 
 const epics = [
@@ -113,25 +125,27 @@ const epics = [
             ),
             catchError(({ response }) => {
               if (response.response.code === 7000) {
-                const fileName = editContentTypeTemplate.type === type ? getFileNameFromPath(path) : payload.fileName;
-                const destinationPath = editContentTypeTemplate.type === type ? getParentPath(path) : payload.path;
-                return createFile(state.sites.active, destinationPath, fileName).pipe(
-                  map(() =>
-                    batchActions(
-                      [
-                        // Only editing templates should associate. Groovy controllers are not on the content type definition.
-                        type !== editController.type &&
-                          associateTemplate({ contentTypeId: contentType, displayTemplate: path }),
-                        showCodeEditorDialog({
-                          site: state.sites.active,
-                          path,
-                          mode,
-                          contentType
-                        }),
-                        unblockUI()
-                      ].filter(Boolean)
-                    )
-                  )
+                // Base path for content type templates should always be '/templates/web', because the dialog allows
+                // the template to be created in a subfolder of that path.
+                const destinationPath = editContentTypeTemplate.type === type ? '/templates/web' : payload.path;
+                return of(
+                  batchActions([
+                    unblockUI(),
+                    showCreateFileDialog({
+                      path: destinationPath,
+                      type: type === editController.type ? 'controller' : 'template',
+                      allowSubFolders: !(type === editController.type),
+                      onCreated: batchActions([
+                        type !== editController.type && editTemplateCreateSuccess({ contentTypeId: contentType }),
+                        closeCreateFileDialog(),
+                        showCreateItemSuccessNotification(),
+                        type === editController.type ? editController() : editTemplate(),
+                        // Action for legacy code createSuccess handling
+                        type !== editController.type && dispatchDOMEvent({ id: 'editTemplateCreateSuccess' })
+                      ]),
+                      onClose: closeCreateFileDialog()
+                    })
+                  ])
                 );
               }
               return of(
@@ -145,6 +159,15 @@ const epics = [
             })
           )
         );
+      })
+    ),
+  (action$, state$: Observable<GlobalState>) =>
+    action$.pipe(
+      ofType(editTemplateCreateSuccess.type),
+      withLatestFrom(state$),
+      map(([{ payload }, state]) => {
+        const newTemplatePath = ensureSingleSlash(`${payload.path}/${payload.fileName}`);
+        return associateTemplate({ contentTypeId: payload.contentTypeId, displayTemplate: newTemplatePath });
       })
     )
 ] as CrafterCMSEpic[];
