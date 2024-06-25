@@ -442,7 +442,7 @@ export function insertComponent(
   create = false
 ): void {
   const models = getCachedModels();
-  const result = (getCollection(models[modelId], fieldId, targetIndex)?.concat() as string[]) ?? [];
+  const result = getCollection(models[modelId], fieldId, targetIndex)?.concat() ?? [];
 
   // Insert in desired position
   result.splice(targetIndex as number, 0, instance.craftercms.id);
@@ -527,8 +527,8 @@ export function sortItem(
   const models = getCachedModels();
   const currentIndexParsed = typeof currentIndex === 'number' ? currentIndex : parseInt(popPiece(currentIndex));
   const targetIndexParsed = typeof targetIndex === 'number' ? targetIndex : parseInt(popPiece(targetIndex));
-  const collection = getCollection(models[modelId], fieldId, currentIndex) as string[];
-  const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed) as string[];
+  const collection = getCollection(models[modelId], fieldId, currentIndex);
+  const result = getCollectionWithoutItemAtIndex(collection, currentIndexParsed);
 
   // Insert in desired position
   result.splice(targetIndexParsed, 0, collection[currentIndexParsed]);
