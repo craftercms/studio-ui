@@ -134,6 +134,7 @@ interface Menu {
 //   }
 // };
 
+export const limitsDefault = [5, 10, 25, 50];
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   // region const { ... } = props;
   const {
@@ -177,6 +178,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const errorByPath = state?.errorByPath;
   const getItemByPath = (path: string) => lookupItemByPath(path, itemsByPath);
   const rootItem = getItemByPath(rootPath);
+  const limits = [...new Set([...limitsDefault, limit])].sort((a, b) => a - b);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -373,6 +375,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         showPublishingTarget={showPublishingTarget}
         showWorkflowState={showWorkflowState}
         showItemMenu={showItemMenu}
+        limits={limits}
         limit={state.limit}
         onLimitChange={onLimitChange}
       />

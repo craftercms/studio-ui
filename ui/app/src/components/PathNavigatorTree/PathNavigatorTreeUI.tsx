@@ -33,6 +33,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { limitsDefault } from './PathNavigatorTree';
 
 export interface PathNavigatorTreeUIProps
   extends Pick<
@@ -63,6 +64,7 @@ export interface PathNavigatorTreeUIProps
   expandedNodes: string[];
   classes?: Partial<Record<'root' | 'body' | 'header', string>>;
   active?: PathNavigatorTreeItemProps['active'];
+  limits?: number[];
   limit?: number;
   onLimitChange?: (e: SelectChangeEvent<number>) => void;
 }
@@ -119,6 +121,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     showPublishingTarget,
     showWorkflowState,
     showItemMenu,
+    limits = limitsDefault,
     limit = 10,
     onLimitChange
   } = props;
@@ -198,10 +201,9 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
                 sx={{ borderBottom: 'none', pl: 1, fontSize: '0.9rem' }}
                 disableUnderline
               >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
+                {limits.map((limit) => (
+                  <MenuItem value={limit}>{limit}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
