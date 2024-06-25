@@ -92,7 +92,11 @@ export function isEditableAsset(path: string) {
     path.endsWith('.htm') ||
     path.endsWith('.sass') ||
     path.endsWith('.scss') ||
-    path.endsWith('.less')
+    path.endsWith('.less') ||
+    path.endsWith('.csv') ||
+    path.endsWith('.json') ||
+    path.endsWith('.yaml') ||
+    path.endsWith('.yml')
   );
 }
 
