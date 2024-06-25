@@ -67,6 +67,7 @@ export interface PathNavigatorTreeUIProps
   limits?: number[];
   limit?: number;
   onLimitChange?: (e: SelectChangeEvent<number>) => void;
+  showPaginationOptions?: boolean;
 }
 
 const useStyles = makeStyles()(() => ({
@@ -123,7 +124,8 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     showItemMenu,
     limits = limitsDefault,
     limit = 10,
-    onLimitChange
+    onLimitChange,
+    showPaginationOptions
   } = props;
   // endregion
   return (
@@ -189,24 +191,28 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
             />
           </SimpleTreeView>
           {/* region pagination  */}
-          <Box display="flex" justifyContent="flex-end" alignItems="center">
-            <Typography variant="body2">
-              <FormattedMessage defaultMessage="Items per folder" />
-            </Typography>
-            <FormControl variant="standard" sx={{ m: 1 }}>
-              <Select
-                value={limit}
-                onChange={(e) => onLimitChange(e)}
-                variant="standard"
-                sx={{ borderBottom: 'none', pl: 1, fontSize: '0.9rem' }}
-                disableUnderline
-              >
-                {limits.map((limit) => (
-                  <MenuItem value={limit}>{limit}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
+          {showPaginationOptions && (
+            <Box display="flex" justifyContent="flex-end" alignItems="center">
+              <Typography variant="body2">
+                <FormattedMessage defaultMessage="Items per folder" />
+              </Typography>
+              <FormControl variant="standard" sx={{ m: 1 }}>
+                <Select
+                  value={limit}
+                  onChange={(e) => onLimitChange(e)}
+                  variant="standard"
+                  sx={{ borderBottom: 'none', pl: 1, fontSize: '0.9rem' }}
+                  disableUnderline
+                >
+                  {limits.map((limit) => (
+                    <MenuItem value={limit} key={limit}>
+                      {limit}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
           {/* endregion */}
         </AccordionDetails>
       )}
