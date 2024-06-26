@@ -47,6 +47,8 @@ let seq = 0;
 let db: LookupTable<ElementRecord> = {};
 // Lookup table of element record id arrays, indexed by iceId
 let registry: LookupTable<number[]> = {};
+// Lookup table of element record id, index by the element
+const recordIdByElementLookup = new Map<Element, number>();
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -115,6 +117,12 @@ export function setLabel(record: ElementRecord): void {
   record.label = labels.join(', ');
 }
 
+// TODO:
+//  - add element already registered protection
+//  - add quick by element lookup (use Map)
+//  - fix register/deregister so quick that the deferred registration doesn't complete
+//    - check/fix what happens when deregister is called before the deferred registration is completed.
+
 export function register(payload: ElementRecordRegistration): number {
   // @ts-ignore
   if (notNullOrUndefined(payload.id)) {
@@ -122,6 +130,10 @@ export function register(payload: ElementRecordRegistration): number {
   }
 
   const { element, modelId, index, label, fieldId, path } = payload;
+
+  if (recordIdByElementLookup.has(element)) {
+    return recordIdByElementLookup.get(element);
+  }
 
   const id = seq++;
   const iceIds = [];
@@ -346,11 +358,8 @@ export function getSiblingRects(id: number): LookupTable<DOMRect> {
 }
 
 export function fromElement(element: Element): ElementRecord {
-  return forEach(Object.values(db), (record) => {
-    if (record.element === element) {
-      return record;
-    }
-  });
+  const id = recordIdByElementLookup.get(element);
+  return db[id];
 }
 
 export function hasElement(element: Element): boolean {
@@ -441,6 +450,7 @@ export function getParentsElementFromICEProps(modelId: string, fieldId: string, 
 export function flush(): void {
   db = {};
   registry = {};
+  recordIdByElementLookup.clear();
   iceRegistry.flush();
 }
 
