@@ -464,12 +464,12 @@ export function insertItem(
     site,
     path,
     (element) => {
-      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, index);
+      const node = extractNode(element, fieldId, index);
       const newItem = createElement('item');
       const serializedInstance = {};
       for (let key in instance) {
         if (key !== 'craftercms') {
-          let value = instance[key];
+          const value = instance[key];
           serializedInstance[key] =
             nnou(value) && (typeof value !== 'string' || !isBlank(value)) && shouldSerializeValueFn?.(key)
               ? cdataWrap(`${value}`)
