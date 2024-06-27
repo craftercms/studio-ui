@@ -469,7 +469,7 @@ export function insertItem(
       const serializedInstance = {};
       for (let key in instance) {
         if (key !== 'craftercms') {
-          const value = instance[key];
+          let value = instance[key];
           serializedInstance[key] =
             nnou(value) && (typeof value !== 'string' || !isBlank(value)) && shouldSerializeValueFn?.(key)
               ? cdataWrap(`${value}`)
