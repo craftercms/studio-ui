@@ -117,12 +117,6 @@ export function setLabel(record: ElementRecord): void {
   record.label = labels.join(', ');
 }
 
-// TODO:
-//  - add element already registered protection
-//  - add quick by element lookup (use Map)
-//  - fix register/deregister so quick that the deferred registration doesn't complete
-//    - check/fix what happens when deregister is called before the deferred registration is completed.
-
 export function register(payload: ElementRecordRegistration): number {
   // @ts-ignore
   if (notNullOrUndefined(payload.id)) {
