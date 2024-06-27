@@ -17,6 +17,7 @@
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
+import { extractCollectionPiece } from '@craftercms/studio-ui/utils/model';
 import Cookies from 'js-cookie';
 import { fromTopic, post } from './utils/communicator';
 import { v4 as uuid } from 'uuid';
@@ -379,10 +380,19 @@ export function duplicateItem(modelId: string, fieldId: string, index: number | 
 export function insertItem(modelId: string, fieldId: string, index: number | string, contentType: ContentType): void {
   const instance: InstanceRecord = {};
   const models = getCachedModels();
-  Object.entries(contentType.fields[fieldId].fields).forEach(([id, field]) => {
+  const fieldPathArray = fieldId.split('.');
+  const repeatFields = fieldPathArray.reduce((acc, field) => acc[field].fields, contentType.fields);
+  // For each of the entries of the field of type `content-type`, set the default value for the new instance.
+  Object.entries(repeatFields).forEach(([id, field]) => {
     if (!systemProps.includes(field.id)) {
       instance[id] = getDefaultValue(field);
     }
+  });
+  const currentItems = extractCollectionPiece(models[modelId], fieldId, index);
+  const model = setCollection(models[modelId], fieldId, index, [...currentItems, instance]);
+  models$.next({
+    ...models,
+    [modelId]: model
   });
 
   const action = insertItemOperation({
