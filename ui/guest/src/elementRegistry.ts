@@ -181,6 +181,7 @@ export function register(payload: ElementRecordRegistration): number {
 
   // If the relevant model is loaded, complete its registration, otherwise,
   // request it and complete registration when it does load.
+  recordIdByElementLookup.set(element, id);
   if (hasCachedModel(modelId)) {
     completeRegistration(id);
   } else {
