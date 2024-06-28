@@ -48,6 +48,11 @@ let seq = 0;
 let db: LookupTable<ElementRecord> = {};
 // Lookup table of element record id arrays, indexed by iceId
 let registry: LookupTable<number[]> = {};
+// Lookup table of element record id, index by the element
+const recordIdByElementLookup = new Map<Element, number>();
+
+let registrationSubscription;
+let deferredRegistrationSubscription;
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -124,6 +129,10 @@ export function register(payload: ElementRecordRegistration): number {
 
   const { element, modelId, index, label, fieldId, path } = payload;
 
+  if (recordIdByElementLookup.has(element)) {
+    return recordIdByElementLookup.get(element);
+  }
+
   const id = seq++;
   const iceIds = [];
   // prettier-ignore
@@ -155,7 +164,7 @@ export function register(payload: ElementRecordRegistration): number {
     // for the model to be loaded.
     if (isInheritedField(model.craftercms.id, fieldId)) {
       byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
-        model$(response.craftercms.id)
+        deferredRegistrationSubscription = model$(response.craftercms.id)
           .pipe(take(1))
           .subscribe(() => {
             create();
@@ -170,11 +179,12 @@ export function register(payload: ElementRecordRegistration): number {
 
   // If the relevant model is loaded, complete its registration, otherwise,
   // request it and complete registration when it does load.
+  recordIdByElementLookup.set(element, id);
   if (hasCachedModel(modelId)) {
     completeRegistration(id);
   } else {
     path && byPathFetchIfNotLoaded(path).subscribe();
-    model$(modelId)
+    registrationSubscription = model$(modelId)
       .pipe(take(1))
       .subscribe(() => {
         completeRegistration(id);
@@ -211,8 +221,11 @@ export function completeDeferredRegistration(id: number): void {
 
 export function deregister(id: string | number): ElementRecord {
   const record = db[id];
+  registrationSubscription?.unsubscribe();
+  deferredRegistrationSubscription?.unsubscribe();
   if (notNullOrUndefined(record)) {
-    const { iceIds } = record;
+    const { iceIds, element } = record;
+    recordIdByElementLookup.delete(element);
     iceIds.forEach((iceId) => {
       if (registry[iceId].length === 1) {
         delete registry[iceId];
@@ -347,11 +360,8 @@ export function getSiblingRects(id: number): LookupTable<DOMRect> {
 }
 
 export function fromElement(element: Element): ElementRecord {
-  return forEach(Object.values(db), (record) => {
-    if (record.element === element) {
-      return record;
-    }
-  });
+  const id = recordIdByElementLookup.get(element);
+  return db[id];
 }
 
 export function hasElement(element: Element): boolean {
@@ -450,6 +460,7 @@ export function getParentsElementFromICEProps(
 export function flush(): void {
   db = {};
   registry = {};
+  recordIdByElementLookup.clear();
   iceRegistry.flush();
 }
 
