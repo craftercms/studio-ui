@@ -512,11 +512,11 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     if (value == '') {
       this.value = this.defaultValue;
       this.inputEl.value = this.defaultValue;
-      this.filenameAvailable();
+      this.defaultValue !== '' && this.filenameAvailable();
     } else {
       this.value = value;
       this.inputEl.value = this._getValue();
-      if (this.inputEl.value == '' && !this.isRootPath() && this.defaultValue != '') {
+      if (this.inputEl.value == '' && !this.isRootPath() && this.defaultValue !== '') {
         this.value = this.defaultValue;
         this.inputEl.value = this.defaultValue;
         this.filenameAvailable();
