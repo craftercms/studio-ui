@@ -50,6 +50,9 @@ let registry: LookupTable<number[]> = {};
 // Lookup table of element record id, index by the element
 const recordIdByElementLookup = new Map<Element, number>();
 
+let registrationSubscription;
+let deferredRegistrationSubscription;
+
 export function get(id: number): ElementRecord {
   const record = db[id];
   record && nullOrUndefined(record.label) && setLabel(record);
@@ -160,7 +163,7 @@ export function register(payload: ElementRecordRegistration): number {
     // for the model to be loaded.
     if (isInheritedField(model.craftercms.id, fieldId)) {
       byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
-        model$(response.craftercms.id)
+        deferredRegistrationSubscription = model$(response.craftercms.id)
           .pipe(take(1))
           .subscribe(() => {
             create();
@@ -180,7 +183,7 @@ export function register(payload: ElementRecordRegistration): number {
     completeRegistration(id);
   } else {
     path && byPathFetchIfNotLoaded(path).subscribe();
-    model$(modelId)
+    registrationSubscription = model$(modelId)
       .pipe(take(1))
       .subscribe(() => {
         completeRegistration(id);
@@ -217,8 +220,11 @@ export function completeDeferredRegistration(id: number): void {
 
 export function deregister(id: string | number): ElementRecord {
   const record = db[id];
+  registrationSubscription?.unsubscribe();
+  deferredRegistrationSubscription?.unsubscribe();
   if (notNullOrUndefined(record)) {
-    const { iceIds } = record;
+    const { iceIds, element } = record;
+    recordIdByElementLookup.delete(element);
     iceIds.forEach((iceId) => {
       if (registry[iceId].length === 1) {
         delete registry[iceId];
