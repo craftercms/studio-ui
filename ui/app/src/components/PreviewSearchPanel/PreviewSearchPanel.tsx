@@ -148,62 +148,58 @@ export function PreviewSearchPanel() {
       let sub;
       setState({ isFetching: true });
       setError(null);
-      if (allowedTypesData) {
-        const allowedTypes = Object.entries(allowedTypesData ?? {}).flatMap(([key, type]) =>
-          type.shared ? [key] : []
-        );
+      const allowedTypes = Object.entries(allowedTypesData ?? {}).flatMap(([key, type]) => (type.shared ? [key] : []));
 
-        sub?.unsubscribe();
-        sub = search(site, {
-          ...initialSearchParameters,
-          keywords,
-          ...options,
-          filters: { ...(allowedTypes.length > 0 ? { 'content-type': allowedTypes } : {}), 'mime-type': mimeTypes }
-        })
-          .pipe(
-            takeUntil(unMount$),
-            switchMap((result) => {
-              const requests: Array<Observable<ContentInstance>> = [];
-              result.items.forEach((item) => {
-                if (item.type === 'Component') {
-                  requests.push(fetchContentInstance(site, item.path, contentTypesLookup));
-                }
-              });
-              return requests.length
-                ? forkJoin(requests).pipe(map((contentInstances) => ({ contentInstances, result })))
-                : of({ result, contentInstances: null });
-            })
-          )
-          .subscribe({
-            next: (response) => {
-              setPageNumber(options ? options.offset / options.limit : 0);
-              if (response.contentInstances) {
-                setState({
-                  isFetching: false,
-                  items: response.result.items,
-                  contentInstanceLookup: createLookupTable(response.contentInstances, 'craftercms.path'),
-                  count: response.result.total,
-                  limit: options?.limit ?? initialSearchParameters.limit
-                });
-              } else {
-                setState({
-                  isFetching: false,
-                  items: response.result.items,
-                  count: response.result.total,
-                  limit: options?.limit ?? initialSearchParameters.limit
-                });
+      sub?.unsubscribe();
+      sub = search(site, {
+        ...initialSearchParameters,
+        keywords,
+        ...options,
+        filters: { ...(allowedTypes.length > 0 ? { 'content-type': allowedTypes } : {}), 'mime-type': mimeTypes }
+      })
+        .pipe(
+          takeUntil(unMount$),
+          switchMap((result) => {
+            const requests: Array<Observable<ContentInstance>> = [];
+            result.items.forEach((item) => {
+              if (item.type === 'Component') {
+                requests.push(fetchContentInstance(site, item.path, contentTypesLookup));
               }
-            },
-            error: ({ response }) => {
-              setState({ isFetching: false });
-              setError(response.response);
+            });
+            return requests.length
+              ? forkJoin(requests).pipe(map((contentInstances) => ({ contentInstances, result })))
+              : of({ result, contentInstances: null });
+          })
+        )
+        .subscribe({
+          next: (response) => {
+            setPageNumber(options ? options.offset / options.limit : 0);
+            if (response.contentInstances) {
+              setState({
+                isFetching: false,
+                items: response.result.items,
+                contentInstanceLookup: createLookupTable(response.contentInstances, 'craftercms.path'),
+                count: response.result.total,
+                limit: options?.limit ?? initialSearchParameters.limit
+              });
+            } else {
+              setState({
+                isFetching: false,
+                items: response.result.items,
+                count: response.result.total,
+                limit: options?.limit ?? initialSearchParameters.limit
+              });
             }
-          });
+          },
+          error: ({ response }) => {
+            setState({ isFetching: false });
+            setError(response.response);
+          }
+        });
 
-        return () => {
-          sub.unsubscribe();
-        };
-      }
+      return () => {
+        sub.unsubscribe();
+      };
     },
     [setState, site, unMount$, contentTypesLookup, allowedTypesData]
   );
