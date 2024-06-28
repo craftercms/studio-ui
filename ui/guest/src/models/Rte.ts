@@ -14,11 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Settings } from 'tinymce/index';
+import { EditorOptions } from 'tinymce';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
 
-export interface TinymceOptions extends Settings {
-  paste_postprocess?(plugin: string, args?: {}): void;
+export interface TinymceOptions extends EditorOptions {
   code_editor_inline?: boolean;
   code_editor_wrap?: boolean;
   craftercms_paste_cleanup?: boolean;

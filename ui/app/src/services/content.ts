@@ -464,7 +464,7 @@ export function insertItem(
     site,
     path,
     (element) => {
-      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, index);
+      const node = extractNode(element, fieldId, index);
       const newItem = createElement('item');
       const serializedInstance = {};
       for (let key in instance) {

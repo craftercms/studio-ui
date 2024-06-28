@@ -2481,11 +2481,23 @@ var nodeOpen = false,
                   type: 'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
                 }
               ]
+            },
+            onClose: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventId, type: 'close' }
+                },
+                {
+                  type: 'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
+                }
+              ]
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(eventId, (result) => {
+        craftercms.utils.dom.createCustomDocumentEventListener(eventId, (result) => {
           if (result.type === 'uploadComplete') {
             let uploaded = result.successful[0];
             if (!uploaded.fileExtension) {

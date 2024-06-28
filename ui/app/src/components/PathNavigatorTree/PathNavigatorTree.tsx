@@ -19,6 +19,7 @@ import PathNavigatorTreeUI, { PathNavigatorTreeUIProps } from './PathNavigatorTr
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeBackgroundRefresh,
+  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -32,14 +33,14 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import {
   getEditorMode,
+  isAudio,
   isEditableViaFormEditor,
   isImage,
+  isMediaContent,
   isNavigable,
-  isPreviewable,
-  isVideo,
   isPdfDocument,
-  isAudio,
-  isMediaContent
+  isPreviewable,
+  isVideo
 } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
@@ -64,6 +65,7 @@ import SystemType from '../../models/SystemType';
 import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 export interface PathNavigatorTreeProps
   extends Pick<
@@ -101,6 +103,7 @@ export interface PathNavigatorTreeStateProps {
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
   offsetByPath: LookupTable<number>;
+  currentLimitByPath: LookupTable<number>;
   excludes: string[];
   systemTypes: SystemType[];
   error: ApiResponse;
@@ -335,6 +338,11 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     }
   };
 
+  const onLimitChange = (e: SelectChangeEvent<number>) => {
+    const limit = Number(e.target.value);
+    dispatch(pathNavigatorTreeChangeLimit({ id, limit }));
+  };
+
   // endregion
 
   return (
@@ -365,6 +373,8 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         showPublishingTarget={showPublishingTarget}
         showWorkflowState={showWorkflowState}
         showItemMenu={showItemMenu}
+        limit={state.limit}
+        onLimitChange={onLimitChange}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}

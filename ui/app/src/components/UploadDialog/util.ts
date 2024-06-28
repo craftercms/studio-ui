@@ -20,6 +20,8 @@ import { XHRUploadOptions } from '@uppy/xhr-upload';
 import { SuccessResponse, Uppy } from '@uppy/core';
 import { UppyFile } from '@uppy/utils';
 import UppyDashboardProps from '../UppyDashboard/UppyDashboardProps';
+import ApiResponse from '../../models/ApiResponse';
+import { IntlShape } from 'react-intl';
 
 export interface UploadDialogBaseProps {
   open: boolean;
@@ -62,3 +64,21 @@ export interface UploadDialogContainerProps extends UploadDialogProps {
   setPendingChanges?(pending: boolean): void;
   onMinimized?(): void;
 }
+
+export const getResponseError = (responseText: string, formatMessage: IntlShape['formatMessage']) => {
+  try {
+    const parsed = JSON.parse(responseText);
+    if (parsed.response) {
+      const error: ApiResponse = parsed.response;
+      return new Error(
+        `[${error.code}] ${error.message}. ${error.remedialAction}. ${error.documentationUrl}.`
+          .replace('. .', '.')
+          .replace('. .', '.')
+      );
+    } else {
+      return new Error(parsed.message.replace('. .', '.').replace('. .', '.'));
+    }
+  } catch {
+    return new Error(formatMessage({ defaultMessage: 'An error occurred uploading the file.' }));
+  }
+};
