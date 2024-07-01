@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromEvent, merge, Observable, Subject } from 'rxjs';
+import { fromEvent, merge, Observable, ReplaySubject, Subject } from 'rxjs';
 import { debounceTime, filter, map, share, takeUntil, throttleTime, withLatestFrom } from 'rxjs/operators';
 import { ElementRecord } from '../models/InContextEditing';
 import { SyntheticEvent } from 'react';
@@ -28,6 +28,8 @@ export const escape$ =
   typeof document === 'undefined'
     ? new Subject<KeyboardEvent>()
     : fromEvent<KeyboardEvent>(document, 'keydown').pipe(filter((e) => e.key === 'Escape'));
+
+export const guestCheckIn$ = new ReplaySubject<boolean>(1);
 
 let active = false;
 
