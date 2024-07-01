@@ -30,6 +30,7 @@ interface PanelListItemProps {
   primaryText: string;
   secondaryText?: string;
   avatarSrc?: string;
+  avatarColorBase?: string;
   onDragStart?: (...args: any) => any;
   onDragEnd?: (...args: any) => any;
   onMenu?: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -37,10 +38,19 @@ interface PanelListItemProps {
 }
 
 export function DraggablePanelListItem(props: PanelListItemProps) {
-  const { onMenu, primaryText, avatarSrc, secondaryText, onDragStart, onDragEnd, isBeingDragged = false } = props;
+  const {
+    onMenu,
+    primaryText,
+    avatarSrc,
+    avatarColorBase,
+    secondaryText,
+    onDragStart,
+    onDragEnd,
+    isBeingDragged = false
+  } = props;
   const hasMenu = Boolean(onMenu);
   const theme = useTheme();
-  const { backgroundColor, textColor } = getAvatarWithIconColors(primaryText, theme, darken);
+  const { backgroundColor, textColor } = getAvatarWithIconColors(avatarColorBase ?? primaryText, theme, darken);
   const [over, setOver] = useState(false);
   return (
     <ListItemButton

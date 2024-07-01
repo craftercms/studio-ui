@@ -174,7 +174,11 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                 >
                   {Object.entries(allowedTypesMeta).map(([id, modes]) => {
                     const type = contentTypes[id];
-                    const { backgroundColor, textColor } = getAvatarWithIconColors(type?.name, theme, darken);
+                    const { backgroundColor, textColor } = getAvatarWithIconColors(
+                      type?.id ?? type?.name,
+                      theme,
+                      darken
+                    );
                     return (
                       <Tooltip
                         arrow

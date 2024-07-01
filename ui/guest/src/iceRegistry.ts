@@ -153,8 +153,10 @@ export function register(registration: ICERecordRegistration): number {
       }
       allowedContentTypesData.recordIdKeyLookup[record.id] = key;
       allowedContentTypesData.allowedLookup[key].recordIds.push(record.id);
-      collectAndEmitAllowedContentTypes();
     }
+    // Invoking all the time so that the `allowedContentTypes$` subject emits either way.
+    // Not emitting could cause UIs to be stuck in a loading state.
+    collectAndEmitAllowedContentTypes();
 
     registry.set(record.id, record);
     refCount[record.id] = 1;

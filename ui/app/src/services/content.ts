@@ -779,6 +779,19 @@ export function fetchItemsByContentType(
   contentTypesLookup: LookupTable<ContentType>,
   options?: ComponentsContentTypeParams
 ): Observable<ContentInstancePage> {
+  // If content types is null|undefined or if is empty (array or string), return empty values as there's no need to
+  // make a request.
+  if (
+    !contentTypes ||
+    (typeof contentTypes === 'string' && contentTypes === '') ||
+    (Array.isArray(contentTypes) && contentTypes.length === 0)
+  ) {
+    return of({
+      count: 0,
+      lookup: {}
+    });
+  }
+
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
