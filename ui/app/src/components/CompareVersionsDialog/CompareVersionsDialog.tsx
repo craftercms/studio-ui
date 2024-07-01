@@ -30,6 +30,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const {
     selectedA,
     selectedB,
+    leftActions,
     rightActions,
     versionsBranch,
     isFetching,
@@ -44,21 +45,33 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
 
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="compareVersionsDialog.headerTitle" defaultMessage="Compare item versions" />}
-      dialogHeaderProps={{
-        subtitle: isSelectMode ? (
+      title={
+        isSelectMode ? (
           <FormattedMessage
             id="compareVersionsDialog.headerSubtitleCompareTo"
             defaultMessage="Select a revision to compare to “{selectedA}”"
             values={{ selectedA: <AsDayMonthDateTime date={selectedA.modifiedDate} /> }}
           />
-        ) : (
-          !isCompareMode && (
+        ) : isCompareMode ? (
+          <>
             <FormattedMessage
-              id="compareVersionsDialog.headerSubtitleCompare"
-              defaultMessage="Select a revision to compare"
+              defaultMessage="Comparing “{selectedA}” with “{selectedB}”"
+              values={{
+                selectedA: <AsDayMonthDateTime date={selectedA.modifiedDate} />,
+                selectedB: <AsDayMonthDateTime date={selectedB.modifiedDate} />
+              }}
             />
-          )
+          </>
+        ) : (
+          <FormattedMessage
+            id="compareVersionsDialog.headerSubtitleCompare"
+            defaultMessage="Select a revision to compare"
+          />
+        )
+      }
+      dialogHeaderProps={{
+        subtitle: !isCompareMode && (
+          <FormattedMessage id="compareVersionsDialog.headerTitle" defaultMessage="Compare item versions" />
         ),
         leftActions: isCompareMode
           ? [
@@ -68,7 +81,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
                 'aria-label': formatMessage(translations.backToSelectRevision)
               }
             ]
-          : null,
+          : leftActions,
         rightActions
       }}
       maxWidth={isCompareMode ? 'xl' : 'md'}
