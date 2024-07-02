@@ -18,10 +18,7 @@
 
 import { makeStyles } from 'tss-react/mui';
 import ContentInstance from '../../models/ContentInstance';
-import { LookupTable } from '../../models/LookupTable';
-import ContentType from '../../models/ContentType';
 import React from 'react';
-import { Resource } from '../../models/Resource';
 import { useSelection } from '../../hooks/useSelection';
 
 // declare const monaco: any;
@@ -151,14 +148,8 @@ import { useSelection } from '../../hooks/useSelection';
   }
 }); */
 
-export interface CompareVersionsResource {
-  a: ContentInstance;
-  b: any;
-  contentTypes: LookupTable<ContentType>;
-}
-
 interface CompareVersionsProps {
-  resource: Resource<CompareVersionsResource>;
+  versions: ContentInstance[];
 }
 
 const getLegacyDialogStyles = makeStyles()(() => ({
@@ -169,7 +160,7 @@ const getLegacyDialogStyles = makeStyles()(() => ({
 }));
 
 export function CompareVersions(props: CompareVersionsProps) {
-  const { a, b } = props.resource.read();
+  const [a, b] = props.versions;
   const { classes } = getLegacyDialogStyles();
   const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
   return (

@@ -63,12 +63,11 @@ export function ContentTypesLoader(props: { numOfItems?: number; isCompact: bool
 }
 
 export function ContentTypesGrid(props: ContentTypesGridProps) {
-  const { resource, isCompact, onTypeOpen, selectedContentType } = props;
+  const { contentTypes, isCompact, onTypeOpen, selectedContentType } = props;
   const { classes } = useStyles();
-  const filterContentTypes = resource.read();
   return (
     <Grid container spacing={3} className={classes.cardsContainer}>
-      {filterContentTypes.map((content) => (
+      {contentTypes.map((content) => (
         <Grid item key={content.label} xs={12} sm={!isCompact ? 4 : 6}>
           <NewContentCard
             isCompact={isCompact}

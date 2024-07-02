@@ -60,15 +60,7 @@ function getStyles(sx: UninstallPluginDialogBodyPartialSx): UninstallPluginDialo
 }
 
 export function UninstallPluginDialogBody(props: UninstallPluginDialogBodyProps) {
-  const {
-    onCloseButtonClick,
-    resource,
-    pluginId,
-    onSubmit: onSubmitProp,
-    password = 'uninstall',
-    isSubmitting
-  } = props;
-  const data = resource.read();
+  const { onCloseButtonClick, data, pluginId, onSubmit: onSubmitProp, password = 'uninstall', isSubmitting } = props;
   const hasUsages = data.length > 0;
   const [confirmPasswordPassed, setConfirmPasswordPassed] = useState(false);
   const [passwordFieldValue, setPasswordFieldValue] = useState('');

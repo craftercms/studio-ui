@@ -32,11 +32,7 @@ import {
   scrollToDropTarget,
   setPreviewEditMode
 } from '../../state/actions/preview';
-import { Resource } from '../../models/Resource';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import { LookupTable } from '../../models/LookupTable';
 import { useSelection } from '../../hooks/useSelection';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useMount } from '../../hooks/useMount';
 import { getAvatarWithIconColors } from '../../utils/contentType';
 import { darken, useTheme } from '@mui/material/styles';
@@ -44,6 +40,8 @@ import { ContentTypeField } from '../../icons';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import Box from '@mui/material/Box';
+import LoadingState from '../LoadingState';
+import { EmptyState } from '../EmptyState';
 
 const translations = defineMessages({
   dropTargetsPanel: {
@@ -87,6 +85,13 @@ export function PreviewDropTargetsPanel() {
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const theme = useTheme();
+  const filteredDropTargets = dropTargetsBranch
+    ? dropTargetsBranch.byId
+      ? Object.values(dropTargetsBranch.byId).filter(
+          (dropTarget) => dropTarget.contentTypeId === dropTargetsBranch.selectedContentType
+        )
+      : []
+    : null;
 
   useMount(() => {
     return () => {
@@ -110,22 +115,6 @@ export function PreviewDropTargetsPanel() {
   function handleSelectChange(contentTypeId: string) {
     hostToGuest$.next(contentTypeDropTargetsRequest({ contentTypeId }));
   }
-
-  const dropTargetsResource = useLogicResource<
-    ContentTypeDropTarget[],
-    { selectedContentType: string; byId: LookupTable<ContentTypeDropTarget> }
-  >(dropTargetsBranch, {
-    shouldResolve: (source) => source.selectedContentType === null || Boolean(source.byId),
-    shouldReject: (source) => false,
-    shouldRenew: (source, resource) => resource.complete,
-    resultSelector: (source) =>
-      source.byId
-        ? Object.values(source.byId).filter(
-            (dropTarget) => dropTarget.contentTypeId === dropTargetsBranch.selectedContentType
-          )
-        : [],
-    errorSelector: (source) => null
-  });
 
   return (
     <>
@@ -174,30 +163,35 @@ export function PreviewDropTargetsPanel() {
         </Select>
       </div>
       <List>
-        <SuspenseWithEmptyState
-          resource={dropTargetsResource}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: dropTargetsBranch.selectedContentType
-                ? formatMessage(translations.noResults)
-                : formatMessage(translations.chooseContentType)
-            }
-          }}
-        >
-          <DropTargetsList resource={dropTargetsResource} onSelectedDropZone={onSelectedDropZone} />
-        </SuspenseWithEmptyState>
+        {dropTargetsBranch?.selectedContentType !== null && !Boolean(dropTargetsBranch?.byId) ? (
+          <LoadingState />
+        ) : filteredDropTargets ? (
+          filteredDropTargets.length > 0 ? (
+            <DropTargetsList dropTargets={filteredDropTargets} onSelectedDropZone={onSelectedDropZone} />
+          ) : (
+            <EmptyState
+              title={
+                dropTargetsBranch.selectedContentType
+                  ? formatMessage(translations.noResults)
+                  : formatMessage(translations.chooseContentType)
+              }
+            />
+          )
+        ) : (
+          <></>
+        )}
       </List>
     </>
   );
 }
 
 interface DropTargetsListProps {
-  resource: Resource<ContentTypeDropTarget[]>;
+  dropTargets: ContentTypeDropTarget[];
   onSelectedDropZone(dropTarget: ContentTypeDropTarget): void;
 }
 
 function DropTargetsList(props: DropTargetsListProps) {
-  const dropTargets = props.resource.read();
+  const { dropTargets } = props;
   return dropTargets?.map((dropTarget: ContentTypeDropTarget) => (
     <ListItemButton key={dropTarget.id} onClick={() => props.onSelectedDropZone(dropTarget)}>
       <ListItemIcon>

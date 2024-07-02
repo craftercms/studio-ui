@@ -14,26 +14,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { defineMessages, FormattedMessage } from 'react-intl';
 import { initToolsPanelConfig, updateToolsPanelWidth } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { renderWidgets } from '../Widget';
 import { WidgetDescriptor } from '../../models';
-import { Resource } from '../../models/Resource';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { makeStyles } from 'tss-react/mui';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useActiveUser } from '../../hooks/useActiveUser';
-import { useLogicResource } from '../../hooks/useLogicResource';
 import { useSiteUIConfig } from '../../hooks/useSiteUIConfig';
-import LookupTable from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
 import { getStoredPreviewToolsPanelPage, getStoredPreviewToolsPanelWidth } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
+import { EmptyState } from '../EmptyState';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -63,8 +62,7 @@ export function ToolsPanel() {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
   const { classes } = useStyles();
-  const { showToolsPanel, toolsPanel, toolsPanelWidth, windowSize } = usePreviewState();
-  const pages = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
+  const { showToolsPanel, toolsPanel, toolsPanelWidth, windowSize, toolsPanelPageStack } = usePreviewState();
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { username } = useActiveUser();
@@ -76,14 +74,6 @@ export function ToolsPanel() {
       dispatch(initToolsPanelConfig({ configXml: uiConfig.xml, storedPage, toolsPanelWidth }));
     }
   }, [uiConfig.xml, toolsPanel, dispatch, uuid, username, siteId]);
-
-  const resource = useLogicResource<WidgetDescriptor[], LookupTable<WidgetDescriptor[]>>(toolsPanel, {
-    errorSelector: (source) => uiConfig.error,
-    resultSelector: (source) => source.widgets,
-    shouldReject: (source) => false,
-    shouldResolve: (source) => Boolean(source),
-    shouldRenew: (source, resource) => uiConfig.isFetching || resource.complete
-  });
 
   const onWidthChange = (width) => {
     dispatch(
@@ -106,46 +96,46 @@ export function ToolsPanel() {
         drawerPaperBelowToolbar: { top: '64px' }
       }}
     >
-      <SuspenseWithEmptyState
-        resource={resource}
-        loadingStateProps={{
-          classes: { root: classes.loadingViewRoot }
-        }}
-        withEmptyStateProps={{
-          isEmpty: (widgets) => !siteId || widgets?.length === 0,
-          emptyStateProps: {
-            title: siteId ? (
-              <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />
-            ) : (
-              <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose project" />
-            ),
-            ...(!siteId && { image: `${baseUrl}/static-assets/images/choose_option.svg` }),
-            classes: { root: classes.emptyState, image: classes.emptyStateImage }
-          }
-        }}
-      >
-        <ToolsPaneBody resource={resource} pageStack={pages} />
-      </SuspenseWithEmptyState>
+      {uiConfig ? (
+        uiConfig.error ? (
+          <ApiResponseErrorState error={uiConfig.error} />
+        ) : uiConfig.isFetching || !toolsPanel ? (
+          <LoadingState classes={{ root: classes.loadingViewRoot }} />
+        ) : !siteId || !toolsPanel.widgets || toolsPanel.widgets.length === 0 || !toolsPanelPageStack ? (
+          <EmptyState
+            title={
+              siteId ? (
+                <FormattedMessage id="previewTools.noWidgetsMessage" defaultMessage="No tools have been configured" />
+              ) : (
+                <FormattedMessage id="previewTools.choseSiteMessage" defaultMessage="Please choose project" />
+              )
+            }
+            image={!siteId ? `${baseUrl}/static-assets/images/choose_option.svg` : undefined}
+            classes={{ root: classes.emptyState, image: classes.emptyStateImage }}
+          />
+        ) : (
+          <ToolsPaneBody root={toolsPanel.widgets} pageStack={toolsPanelPageStack} />
+        )
+      ) : null}
     </ResizeableDrawer>
   );
 }
 
 interface ToolsPaneBodyProps {
-  resource: Resource<WidgetDescriptor[]>;
+  root: WidgetDescriptor[];
   pageStack: WidgetDescriptor[];
 }
 
 function ToolsPaneBody(props: ToolsPaneBodyProps) {
-  const root = props.resource.read();
+  const { root, pageStack } = props;
   const site = useActiveSiteId();
-  const { pageStack } = props;
   const { rolesBySite } = useActiveUser();
   return (
-    <>
+    <Suspense fallback="">
       {renderWidgets(pageStack.length ? pageStack.slice(props.pageStack.length - 1) : root, {
         userRoles: rolesBySite[site]
       })}
-    </>
+    </Suspense>
   );
 }
 

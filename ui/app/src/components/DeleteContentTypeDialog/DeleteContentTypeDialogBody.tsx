@@ -81,8 +81,7 @@ const useStyles = makeStyles()((theme) => ({
 
 export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
   const { classes } = useStyles();
-  const { onCloseButtonClick, resource, contentType, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
-  const data = resource.read();
+  const { onCloseButtonClick, data, contentType, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
   const { formatMessage } = useIntl();
   const dataEntries = Object.entries(data) as Array<[keyof FetchContentTypeUsageResponse, SandboxItem[]]>;
   const entriesWithItems = dataEntries.filter(([, items]) => items.length > 0);

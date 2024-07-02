@@ -122,7 +122,6 @@ export function createCodebaseBridge() {
       SiteTools: lazy(() => import('../pages/SiteTools')),
       Login: lazy(() => import('../pages/Login')),
       PagesWidget: lazy(() => import('../components/PathNavigator/PathNavigator')),
-      QuickCreateMenu: lazy(() => import('../pages/QuickCreateMenu')),
       DeleteContentTypeButton: lazy(() => import('../pages/DeleteContentTypeButton')),
       PreviewCompatDialog: lazy(() => import('../components/PreviewCompatibilityDialog/PreviewCompatibilityDialog'))
     },

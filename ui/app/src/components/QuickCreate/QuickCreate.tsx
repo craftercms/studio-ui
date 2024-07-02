@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddRounded';
@@ -30,19 +30,20 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import QuickCreateItem from '../../models/content/QuickCreateItem';
-import { Resource } from '../../models/Resource';
-import Suspencified from '../Suspencified/Suspencified';
-import { getSimplifiedVersion } from '../../utils/string';
 import palette from '../../styles/palette';
 import Tooltip from '@mui/material/Tooltip';
 import { DetailedItem } from '../../models/Item';
 import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
-import { useQuickCreateListResource } from '../../hooks/useQuickCreateListResource';
-import { useSystemVersionResource } from '../../hooks/useSystemVersionResource';
 import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { lookupItemByPath } from '../../utils/content';
 import { processPathMacros } from '../../utils/path';
+import { fetchQuickCreateList } from '../../state/actions/content';
+import useQuickCreateState from '../../hooks/useQuickCreateState';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import useSystemVersion from '../../hooks/useSystemVersion';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
 
 const translations = defineMessages({
   quickCreateBtnLabel: {
@@ -104,10 +105,6 @@ interface QuickCreateMenuProps {
   open: boolean;
   item?: DetailedItem;
   anchorEl: HTMLElement;
-  resource: {
-    version: Resource<string>;
-    quickCreate: Resource<QuickCreateItem[]>;
-  };
   onNewContentSelected?(): void;
   onQuickCreateItemSelected?(props: {
     authoringBase: string;
@@ -126,17 +123,17 @@ interface QuickCreateMenuButtonProps {
 interface QuickCreateSectionProps {
   classes: { [className: string]: string };
   onItemSelected: (item: QuickCreateItem) => any;
-  resource: {
-    version: Resource<string>;
-    quickCreate: Resource<QuickCreateItem[]>;
-  };
+  version: string;
+  quickCreateItems: QuickCreateItem[];
 }
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
-  const { open, onClose, anchorEl, resource, onNewContentSelected, onQuickCreateItemSelected, item } = props;
+  const { open, onClose, anchorEl, onNewContentSelected, onQuickCreateItemSelected, item } = props;
   const { classes } = useStyles();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const itemNewContentButton = item?.availableActionsMap.createContent;
+  const { error, isFetching, items: quickCreateItems } = useQuickCreateState();
+  const systemVersion = useSystemVersion();
 
   const onFormDisplay = (item: QuickCreateItem) => {
     const { contentTypeId, path } = item;
@@ -171,19 +168,25 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
         <Typography component="h4" className={classes.menuSectionTitle}>
           <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
-        <Suspencified loadingStateProps={{ classes: { graphic: classes.quickCreateLoadingState } }}>
-          <QuickCreateSection classes={classes} resource={resource} onItemSelected={onFormDisplay} />
-        </Suspencified>
+        {error ? (
+          <ApiResponseErrorState error={error} />
+        ) : isFetching ? (
+          <LoadingState classes={{ graphic: classes.quickCreateLoadingState }} />
+        ) : quickCreateItems && systemVersion ? (
+          <QuickCreateSection
+            classes={classes}
+            version={systemVersion}
+            quickCreateItems={quickCreateItems}
+            onItemSelected={onFormDisplay}
+          />
+        ) : null}
       </Menu>
     </>
   );
 }
 
 function QuickCreateSection(props: QuickCreateSectionProps) {
-  const { resource, classes, onItemSelected } = props;
-  const quickCreateItems = resource.quickCreate.read();
-
-  let version = getSimplifiedVersion(resource.version.read());
+  const { version, quickCreateItems, classes, onItemSelected } = props;
 
   return (
     <>
@@ -249,6 +252,11 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: DetailedItem }>((prop
   const { guest } = usePreviewState();
   const dispatch = useDispatch();
   const items = useItemsByPath();
+  const site = useActiveSiteId();
+
+  useEffect(() => {
+    site && dispatch(fetchQuickCreateList());
+  }, [site, dispatch]);
 
   const onMenuBtnClick = (e) => {
     setAnchorEl(e.currentTarget);
@@ -285,10 +293,6 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: DetailedItem }>((prop
     );
   };
 
-  const quickCreateResource = useQuickCreateListResource();
-
-  const versionResource = useSystemVersionResource();
-
   return (
     <>
       <QuickCreateMenuButton ref={ref} onMenuBtnClick={onMenuBtnClick} />
@@ -297,7 +301,6 @@ const QuickCreate = forwardRef<HTMLButtonElement, { item?: DetailedItem }>((prop
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={onMenuClose}
-        resource={{ quickCreate: quickCreateResource, version: versionResource }}
         onNewContentSelected={onNewContentSelected}
         onQuickCreateItemSelected={onQuickCreateItemSelected}
       />

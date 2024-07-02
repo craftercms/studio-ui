@@ -19,13 +19,14 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { defineMessages, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import * as React from 'react';
-import { useMemo } from 'react';
-import { createResource } from '../../utils/resource';
+import { useEffect } from 'react';
 import { deleteContentType, fetchContentTypeUsage } from '../../services/contentTypes';
 import { showSystemNotification } from '../../state/actions/system';
-import Suspencified from '../Suspencified/Suspencified';
 import DeleteContentTypeDialogBody from './DeleteContentTypeDialogBody';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import useSpreadState from '../../hooks/useSpreadState';
+import ApiResponseErrorState from '../ApiResponseErrorState';
+import LoadingState from '../LoadingState';
 
 const messages = defineMessages({
   deleteComplete: {
@@ -46,11 +47,34 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
   const functionRefs = useUpdateRefs({
     onSubmittingAndOrPendingChange
   });
+  const [{ data, isFetching, error }, setState] = useSpreadState({
+    data: null,
+    isFetching: false,
+    error: null
+  });
 
-  const resource = useMemo(
-    () => createResource(() => fetchContentTypeUsage(site, contentType.id).toPromise()),
-    [site, contentType.id]
-  );
+  useEffect(() => {
+    setState({ isFetching: true });
+    const sub = fetchContentTypeUsage(site, contentType.id).subscribe({
+      next(response) {
+        setState({
+          data: response,
+          isFetching: false,
+          error: null
+        });
+      },
+      error(e) {
+        setState({
+          error: e,
+          isFetching: false
+        });
+      }
+    });
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [site, contentType.id, setState]);
+
   const onSubmit = () => {
     functionRefs.current.onSubmittingAndOrPendingChange({
       isSubmitting: true
@@ -80,15 +104,17 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
 
   const onCloseButtonClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => onClose(e, null);
 
-  return (
-    <Suspencified loadingStateProps={{ styles: { root: { width: 300, height: 250 } } }}>
-      <DeleteContentTypeDialogBody
-        submitting={isSubmitting}
-        onCloseButtonClick={onCloseButtonClick}
-        resource={resource}
-        contentType={contentType}
-        onSubmit={onSubmit}
-      />
-    </Suspencified>
-  );
+  return error ? (
+    <ApiResponseErrorState error={error} />
+  ) : isFetching ? (
+    <LoadingState styles={{ root: { width: 300, height: 250 } }} />
+  ) : data ? (
+    <DeleteContentTypeDialogBody
+      submitting={isSubmitting}
+      onCloseButtonClick={onCloseButtonClick}
+      data={data}
+      contentType={contentType}
+      onSubmit={onSubmit}
+    />
+  ) : null;
 }

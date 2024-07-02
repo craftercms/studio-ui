@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
 import StandardAction from '../../models/StandardAction';
 import { SandboxItem } from '../../models/Item';
 import { ApiResponse } from '../../models/ApiResponse';

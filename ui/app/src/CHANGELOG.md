@@ -3,6 +3,7 @@
 * [utils/xml] Upgrade prettier to v3x which changed from sync apis to async
   * `serialize` no longer formats code
   * `beautify` is now async
+* [utils/resource] Removed `createFakeResource`, `createResource` and `createResourceBundle` utils.
 * [components]
   * HostUI removed, merged with Host (its container component)
   * EditModeSwitcherUI removed, merged with EditModeSwitcher (its container component)
@@ -24,6 +25,9 @@
     * `listItemProps` are routed to the list `ListItem` component instead of the `ListItemButton`
     * Added `listItemButtonProps` property
   * `DraggablePanelListItem` prop `onMenu` send the pointer event as its first and only argument instead of the anchor element attached to the event. Can get element through `event.currentTarget`.
+  * Removed `pages/QuickCreateMenu` component.
+  * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
+  * Removed `resource` prop from StoreProvider
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`
@@ -37,6 +41,11 @@
   * `actions/dialogs`: Renamed `updateEditConfig` action to `updateEditDialogConfig`
 * [hooks]
   * `usePreviewUrlControl`: Removed `history` prop. Retrieval of search and navigate (previously called 'push') is now done internally.
+  * Removed `useLogicResource` hook.
+  * Removed `useSelectorResource` hook.
+  * Removed `useQuickCreateListResource` hook.
+  * Removed `useSystemVersionResource` hook.
+  * Removed `useResolveWhenNoNullResource` hook.
 * Removed deprecated `aws-file-upload` and `aws-video` upload controls.
 * Migrated the Studio UI build to Vite/SWC
 * Rollup's XB build to use SWC

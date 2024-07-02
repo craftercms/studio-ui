@@ -55,7 +55,6 @@ export * from './PluginFileBuilder';
 export * from './ProjectLifecycleEvent';
 export * from './Publishing';
 export * from './Repository';
-export * from './Resource';
 export * from './Search';
 export * from './Site';
 export * from './SiteConfigurationFile';
