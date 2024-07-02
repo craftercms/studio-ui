@@ -24,6 +24,7 @@
     * `listItemProps` are routed to the list `ListItem` component instead of the `ListItemButton`
     * Added `listItemButtonProps` property
   * `DraggablePanelListItem` prop `onMenu` send the pointer event as its first and only argument instead of the anchor element attached to the event. Can get element through `event.currentTarget`.
+  * `PathNavigatorTree`:  Added `showPaginationOptions` prop to show/hide pagination options section in the component
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { PathNavigatorTreeUIProps } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
@@ -90,6 +90,7 @@ export interface PathNavigatorTreeProps
   onNodeClick?: PathNavigatorTreeUIProps['onLabelClick'];
   active?: PathNavigatorTreeItemProps['active'];
   classes?: Partial<Record<'header', string>>;
+  showPaginationOptions?: boolean;
 }
 
 export interface PathNavigatorTreeStateProps {
@@ -134,6 +135,7 @@ interface Menu {
 //   }
 // };
 
+export const limitsDefault = [5, 10, 25, 50];
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   // region const { ... } = props;
   const {
@@ -158,7 +160,8 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     showWorkflowState,
     showItemMenu,
     sortStrategy,
-    order
+    order,
+    showPaginationOptions = true
   } = props;
   // endregion
   const state = useSelection((state) => state.pathNavigatorTree[id]);
@@ -177,6 +180,9 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const errorByPath = state?.errorByPath;
   const getItemByPath = (path: string) => lookupItemByPath(path, itemsByPath);
   const rootItem = getItemByPath(rootPath);
+  const limits = useMemo(() => {
+    return [...new Set([...limitsDefault, limit])].sort((a, b) => a - b);
+  }, [limit]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -373,8 +379,10 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         showPublishingTarget={showPublishingTarget}
         showWorkflowState={showWorkflowState}
         showItemMenu={showItemMenu}
+        limits={limits}
         limit={state.limit}
         onLimitChange={onLimitChange}
+        showPaginationOptions={showPaginationOptions}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}
