@@ -1002,8 +1002,6 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
 
       // Subscriptions
-      YAHOO.util.Event.addListener(timeEl, 'blur', this.updateTime, this, true);
-
       YAHOO.util.Event.addListener(
         timeEl,
         'click',
