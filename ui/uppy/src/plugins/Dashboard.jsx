@@ -59,22 +59,27 @@ export class Dashboard extends UppyDashboard {
   }
 
   addFiles = (files) => {
-    let descriptors = files.map((file) => ({
-      source: this.id,
-      name: file.name,
-      type: file.type,
-      data: file,
-      meta: {
-        // path of the file relative to the ancestor directory the user selected.
-        // e.g. 'docs/Old Prague/airbnb.pdf'
-        relativePath: file.relativePath || null,
-        // sitePolicy custom value
-        validating: true,
-        path: file.relativePath
-          ? this.opts.path + file.relativePath.substring(0, file.relativePath.lastIndexOf('/'))
-          : this.opts.path
-      }
-    }));
+    let descriptors = files.map((file) => {
+      // When uploading via drag and drop, uppy uses `relativePath` as the prop for the actual relative path, for
+      // browse uploads, it uses `webkitRelativePath`.
+      const relativePath = file.relativePath ?? file.webkitRelativePath ?? null;
+      return {
+        source: this.id,
+        name: file.name,
+        type: file.type,
+        data: file,
+        meta: {
+          // path of the file relative to the ancestor directory the user selected.
+          // e.g. 'docs/Old Prague/airbnb.pdf'
+          relativePath,
+          // sitePolicy custom value
+          validating: true,
+          path: relativePath
+            ? this.opts.path + relativePath.substring(0, relativePath.lastIndexOf('/'))
+            : this.opts.path
+        }
+      };
+    });
     const maxActiveUploads = this.opts.maxActiveUploads;
     const uppyFiles = this.uppy.getFiles();
     // TODO: There's a TODO in uppy code to move the code to Core so it can be used as an util,
@@ -138,11 +143,12 @@ export class Dashboard extends UppyDashboard {
       )
       .subscribe((response) => {
         let uploading = false;
-        response.forEach(({ allowed, modifiedValue, target }) => {
+        response.forEach(({ allowed, modifiedValue, target, message }) => {
           let fileId = fileIdLookup[target];
           this.uppy.setFileMeta(fileId, {
             validating: false,
             allowed,
+            message,
             ...(modifiedValue && { suggestedName: modifiedValue.replace(/^.*[\\\/]/, '') })
           });
           if (allowed && modifiedValue === null) {
@@ -278,7 +284,9 @@ export class Dashboard extends UppyDashboard {
     if (this.opts.autoOpenFileEditor) {
       this.uppy.on('files-added', this.#openFileEditorWhenFilesAdded);
     } else {
-      this.uppy.on('files-added', this.validateFilesPolicy);
+      if (this.opts.autoProceed) {
+        this.uppy.on('files-added', this.validateFilesPolicy);
+      }
     }
   };
 
@@ -411,7 +419,7 @@ export class Dashboard extends UppyDashboard {
       // getPlugin: this.uppy.getPlugin,
       progressindicators: progressindicators,
       editors: editors,
-      autoProceed: this.uppy.opts.autoProceed,
+      autoProceed: this.opts.autoProceed,
       id: this.id,
       closeModal: this.requestCloseModal,
       handleClickOutside: this.handleClickOutside,
@@ -483,7 +491,9 @@ export class Dashboard extends UppyDashboard {
       handleDragOver: this.handleDragOver,
       handleDragLeave: this.handleDragLeave,
       handleDrop: this.handleDrop,
-      externalMessages: this.opts.externalMessages
+      externalMessages: this.opts.externalMessages,
+      successfulUploadButton: this.opts.successfulUploadButton,
+      validateFilesPolicy: this.validateFilesPolicy
     });
   };
 

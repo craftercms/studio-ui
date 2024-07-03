@@ -307,6 +307,12 @@ export const contentTypesMessages = defineMessages({
   stayEditing: {
     id: 'contentType.stayEditing',
     defaultMessage: 'Stay & continue editing'
+  },
+  audioManager: {
+    defaultMessage: 'Audio Manager'
+  },
+  invalidMacros: {
+    defaultMessage: 'The following invalid macros were removed: {macros}'
   }
 });
 
@@ -417,17 +423,6 @@ export const simpleTaxonomyDSMessages = defineMessages({
   simpleTaxonomy: {
     id: 'simpleTaxonomyDS.simpleTaxonomy',
     defaultMessage: 'Simple Taxonomy'
-  }
-});
-
-export const browseCMISMessages = defineMessages({
-  cmis: {
-    id: 'browseCMIS.cmis',
-    defaultMessage: 'CMIS'
-  },
-  cloningCMIS: {
-    id: 'browseCMIS.cloningCMIS',
-    defaultMessage: 'Cloning CMIS Asset'
   }
 });
 
@@ -712,24 +707,20 @@ export const componentsMessages = defineMessages({
     defaultMessage: 'Create new shared'
   },
   allowShared: {
-    id: 'componentsMessages.allowShared',
-    defaultMessage: 'Allow Shared'
+    defaultMessage: 'Allow New Shared'
   },
   allowEmbedded: {
     id: 'componentsMessages.allowEmbedded',
     defaultMessage: 'Allow Embedded'
   },
   enableBrowse: {
-    id: 'componentsMessages.enableBrowse',
-    defaultMessage: 'Enable Browse'
+    defaultMessage: 'Enable Browsing Shared'
   },
   enableSearch: {
-    id: 'componentsMessages.enableSearch',
-    defaultMessage: 'Enable Search'
+    defaultMessage: 'Allow Searching Shared'
   },
   baseRepositoryPath: {
-    id: 'componentsMessages.baseRepositoryPath',
-    defaultMessage: 'Base Repository Path'
+    defaultMessage: 'Path for New Items'
   },
   baseBrowsePath: {
     id: 'componentsMessages.baseBrowsePath',
@@ -844,5 +835,17 @@ export const itemSuccessMessages = defineMessages({
   folderCreated: {
     id: 'folder.created',
     defaultMessage: 'Folder created successfully'
+  }
+});
+
+export const audioDSMessages = defineMessages({
+  uploadLabel: {
+    defaultMessage: 'Audio Uploaded from Desktop'
+  },
+  browseLabel: {
+    defaultMessage: 'Audio From Repository'
+  },
+  uploadError: {
+    defaultMessage: 'An error occurred while uploading the audio file.'
   }
 });

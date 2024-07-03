@@ -16,8 +16,8 @@
 
 import React from 'react';
 import Card from '@mui/material/Card';
-import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
+import CardHeader, { CardHeaderProps, cardHeaderClasses } from '@mui/material/CardHeader';
+import CardMedia, { cardMediaClasses } from '@mui/material/CardMedia';
 import CardActionArea, { CardActionAreaProps } from '@mui/material/CardActionArea';
 import { makeStyles } from 'tss-react/mui';
 import { MediaItem } from '../../models/Search';
@@ -26,6 +26,7 @@ import Checkbox from '@mui/material/Checkbox';
 import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
 import palette from '../../styles/palette';
 import SystemIcon from '../SystemIcon';
+import Box from '@mui/material/Box';
 
 const useStyles = makeStyles()(() => ({
   card: {
@@ -71,12 +72,14 @@ const useStyles = makeStyles()(() => ({
   }
 }));
 
+export type MediaCardViewModes = 'card' | 'compact' | 'row';
+
 interface MediaCardProps {
   item: MediaItem;
   showPath?: boolean;
   selected?: Array<string>;
   previewAppBaseUri: string;
-  compact?: boolean;
+  viewMode?: MediaCardViewModes;
   action?: CardHeaderProps['action'];
   avatar?: CardHeaderProps['avatar'];
   classes?: Partial<Record<'root' | 'checkbox' | 'media' | 'mediaIcon' | 'cardActionArea' | 'cardHeader', string>>;
@@ -103,10 +106,13 @@ function MediaCard(props: MediaCardProps) {
     avatar,
     onDragStart,
     onDragEnd,
-    compact = false
+    viewMode = 'card'
   } = props;
   // endregion
-  const { name, path, type } = item;
+  let { name, path, type } = item;
+  if (item.mimeType.includes('audio/')) {
+    type = 'Audio';
+  }
   let iconMap = {
     Page: '@mui/icons-material/InsertDriveFileOutlined',
     Video: '@mui/icons-material/VideocamOutlined',
@@ -115,7 +121,8 @@ function MediaCard(props: MediaCardProps) {
     Component: '@mui/icons-material/ExtensionOutlined',
     Groovy: '@mui/icons-material/CodeRounded',
     JavaScript: '@mui/icons-material/CodeRounded',
-    CSS: '@mui/icons-material/CodeRounded'
+    CSS: '@mui/icons-material/CodeRounded',
+    Audio: '@mui/icons-material/AudiotrackOutlined'
   };
   let icon = { id: iconMap[type] ?? '@mui/icons-material/InsertDriveFileOutlined' };
   const systemIcon = <SystemIcon icon={icon} svgIconProps={{ className: 'media-icon' }} />;
@@ -139,6 +146,14 @@ function MediaCard(props: MediaCardProps) {
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onClick={onClick}
+      sx={
+        viewMode === 'row' && {
+          display: 'flex',
+          width: '100%',
+          [`& .${cardHeaderClasses.root}`]: { flexGrow: 1 },
+          [`& .${cardMediaClasses.root}`]: { paddingTop: '0 !important', height: '80px !important', width: '80px' }
+        }
+      }
     >
       <CardHeader
         classes={{ action: classes.cardHeader, root: props.classes?.cardHeader }}
@@ -173,7 +188,7 @@ function MediaCard(props: MediaCardProps) {
           title: item.path
         }}
       />
-      {!compact && (
+      {viewMode !== 'compact' && (
         <CardActionAreaOrFragment {...cardActionAreaOrFragmentProps}>
           {type === 'Image' ? (
             <CardMedia
@@ -182,7 +197,10 @@ function MediaCard(props: MediaCardProps) {
               title={name}
             />
           ) : (
-            <div className={cx(classes.mediaIcon, props.classes?.mediaIcon)}>
+            <Box
+              className={cx(classes.mediaIcon, props.classes?.mediaIcon)}
+              sx={viewMode === 'row' && { paddingTop: '0 !important', height: '80px', width: '80px' }}
+            >
               {type === 'Video' ? (
                 <video className={classes.videoThumbnail}>
                   <source src={path} type="video/mp4" />
@@ -191,7 +209,7 @@ function MediaCard(props: MediaCardProps) {
               ) : (
                 systemIcon
               )}
-            </div>
+            </Box>
           )}
         </CardActionAreaOrFragment>
       )}

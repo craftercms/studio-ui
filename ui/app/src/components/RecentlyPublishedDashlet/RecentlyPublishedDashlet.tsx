@@ -120,7 +120,7 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
 
   // region Item Updates Propagation
   useEffect(() => {
-    const events = [publishEvent.type];
+    const events: string[] = [publishEvent.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => events.includes(e.type))).subscribe(({ type, payload }) => {
       loadPage(getCurrentPage(offset, limit), true);
@@ -219,10 +219,12 @@ export function RecentlyPublishedDashlet(props: RecentlyPublishedDashletProps) {
                 }
                 secondary={
                   <Typography color="text.secondary" variant="body2">
-                    <FormattedMessage
-                      id="recentlyPublishedDashlet.noSubmissionCommentAvailable"
-                      defaultMessage="Submission comment not provided"
-                    />
+                    {item.comment || (
+                      <FormattedMessage
+                        id="recentlyPublishedDashlet.noSubmissionCommentAvailable"
+                        defaultMessage="Submission comment not provided"
+                      />
+                    )}
                   </Typography>
                 }
               />

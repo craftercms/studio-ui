@@ -121,7 +121,6 @@ export interface Site {
   uuid: string;
   name: string;
   description: string;
-  imageUrl: string;
   state?: 'INITIALIZING' | 'READY' | 'DELETING' | 'DELETED';
 }
 
@@ -181,4 +180,5 @@ export interface ContentValidationResult {
   target: string;
   allowed: boolean;
   modifiedValue: string;
+  message: string;
 }

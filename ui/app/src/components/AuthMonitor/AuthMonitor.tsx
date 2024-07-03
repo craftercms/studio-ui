@@ -81,7 +81,7 @@ export function AuthMonitor() {
   };
   const { authoringBase, logoutUrl } = useSelection((state) => state.env);
   const { active } = useSelection((state) => state.auth);
-  const isSSO = authenticationType === 'saml';
+  const isSSO = authenticationType === 'saml' || authenticationType === 'auth_headers';
   const firstRender = useRef(true);
   useEffect(() => {
     // On regular login dialog, the username is locked to the user whose session expired; on the

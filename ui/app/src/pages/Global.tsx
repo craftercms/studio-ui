@@ -14,15 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React from 'react';
-import { HashRouter } from 'react-router-dom';
-import GlobalApp, { GlobalAppContextProvider } from '../components/GlobalApp';
+import { GlobalAppContextProvider, GlobalApp, GlobalAppProps } from '../components/GlobalApp';
 
-export default function Global(topProps: any) {
+export default function Global(props: GlobalAppProps) {
   return (
     <GlobalAppContextProvider>
-      <HashRouter>
-        <GlobalApp {...topProps} />
-      </HashRouter>
+      <GlobalApp {...props} />
     </GlobalAppContextProvider>
   );
 }

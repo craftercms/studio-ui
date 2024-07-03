@@ -93,7 +93,7 @@ export const styleSxDefaults: Partial<GuestStylesSx> = {
         color: 'error.contrastText'
       },
       box: {
-        bgcolor: 'error.light'
+        outlineColor: (theme) => theme.palette.error.light
       }
     },
     warnHighlight: {

@@ -110,7 +110,6 @@ interface SandboxEnvProps {
   modifier: Person;
   dateModified: string;
   dateSubmitted: string;
-  commitId: string;
   sizeInBytes: number;
   expiresOn: string;
   submitter: Person;
@@ -120,7 +119,6 @@ interface PublishEnvProps {
   dateScheduled: string;
   datePublished: string;
   publisher: string;
-  commitId: string;
   expiresOn: string;
 }
 

@@ -45,7 +45,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
     margin: theme.spacing(1)
   },
   actionButtons: {
-    margin: '10px 0',
     textAlign: 'right',
     '& .MuiButton-root': {
       marginRight: theme.spacing(1)
@@ -107,7 +106,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
 
   return (
     <>
-      <Grid className={classes.panelMargin}>
+      <Grid sx={{ p: 2 }}>
         {Object.keys(fields).map((fieldId: string) => {
           const type = fields[fieldId].type;
           const Control = controlsMap[type] ?? UndefinedControlType;
@@ -127,7 +126,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
           );
         })}
       </Grid>
-      <Grid className={classes.actionButtons}>
+      <Grid className={classes.actionButtons} sx={{ p: 2 }}>
         <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
           <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
         </SecondaryButton>

@@ -18,7 +18,12 @@ import { createLookupTable } from './object';
 import ContentType, { ContentTypeField } from '../models/ContentType';
 import Jabber from 'jabber';
 import LookupTable from '../models/LookupTable';
+import { generatePlaceholderImageDataUrl } from './content';
+import { toColor } from './string';
+import { darken } from '@mui/material/styles';
+import { Theme } from '@mui/material';
 
+// TODO: Not used.
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
   return Object.values(contentType.fields).reduce((accumulator, field) => {
     if (
@@ -27,7 +32,7 @@ export function getRelatedContentTypeIds(contentType: ContentType): string[] {
       'validations' in field &&
       'allowedContentTypes' in field.validations
     ) {
-      field.validations.allowedContentTypes.value.forEach(
+      Object.keys(field.validations.allowedContentTypes.value).forEach(
         (ctid) => !accumulator.includes(ctid) && accumulator.push(ctid)
       );
     }
@@ -69,7 +74,7 @@ export function getField(
             `Unable to retrieve the field \`${fieldId}\` without full list of content types.`
         );
       }
-      const contentTypeWithTargetFieldId = accumulator.validations.allowedContentTypes.value.find((ct) =>
+      const contentTypeWithTargetFieldId = Object.keys(accumulator.validations.allowedContentTypes.value).find((ct) =>
         Boolean(contentTypes[ct].fields[field])
       );
       accumulator = contentTypes[contentTypeWithTargetFieldId].fields[field];
@@ -104,18 +109,25 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
       case 'image': {
         const width = field.validations.width?.value ?? field.validations.minWidth?.value ?? 150;
         const height = field.validations.height?.value ?? field.validations.minHeight?.value ?? width;
-        return `https://via.placeholder.com/${width}x${height}`;
+        return generatePlaceholderImageDataUrl({
+          width,
+          height,
+          font: `24px Arial`,
+          text: width > 100 ? `${width} x ${height}` : ':)',
+          textPositionY: height / 2,
+          textPositionX: width / 2
+        });
       }
       case 'text':
       case 'textarea': {
-        let maxLength = parseInt(field.validations.maxLength?.value);
-        let textGen = new Jabber();
+        const maxLength = parseInt(field.validations.maxLength?.value);
+        const textGen = new Jabber();
         return maxLength
           ? `${textGen.createParagraph(50).substring(0, maxLength)}.`.replace(/\.+/, '.')
           : textGen.createParagraph(10);
       }
       case 'html': {
-        let textGen = new Jabber();
+        const textGen = new Jabber();
         return textGen.createParagraph(10);
       }
       case 'numeric-input': {
@@ -148,4 +160,23 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
       }
     }
   }
+}
+
+// TODO: This could be used to more generic location. What it does is not specific to content types.
+/**
+ * It takes a string and generates a colour and contrast colour for it.
+ * Applies a darkening effect when the theme is dark.
+ */
+export function getAvatarWithIconColors(
+  colourBaseString: string,
+  theme: Theme,
+  darkenFn: typeof darken
+): { backgroundColor: string; textColor: string } {
+  if (!(colourBaseString && theme && darkenFn)) {
+    return { backgroundColor: '', textColor: '' };
+  }
+  const base = toColor(colourBaseString);
+  const backgroundColor = theme.palette.mode === 'dark' ? darkenFn(base, 0.2) : base;
+  const textColor = theme.palette.getContrastText(base);
+  return { backgroundColor, textColor };
 }

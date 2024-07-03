@@ -77,6 +77,7 @@ const useStyles = makeStyles<ResizeableDrawerStyles, ResizeableDrawerClassKey>()
       bottom: 0,
       overflow: 'hidden',
       maxWidth: '95% !important',
+      backgroundColor: theme.palette.background.default,
       ...drawerPaper
     },
     drawerPaperBelowToolbar: {
@@ -101,7 +102,7 @@ const useStyles = makeStyles<ResizeableDrawerStyles, ResizeableDrawerClassKey>()
       top: 0,
       bottom: 0,
       zIndex: 100,
-      backgroundColor: 'rgba(0, 0, 0, 0.12)',
+      backgroundColor: theme.palette.divider,
       transition: 'width 200ms',
       '&:hover': {
         width: '4px',

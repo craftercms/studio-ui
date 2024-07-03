@@ -1,7 +1,7 @@
 {
   "name": "@craftercms/studio-ui",
   "description": "Services, components, models & utils to build CrafterCMS authoring extensions.",
-  "version": "4.1.2",
+  "version": "4.2.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -16,66 +16,6 @@
     "cms"
   ],
   "license": "LGPL-3.0-only",
-  "proxy": "http://localhost:8080/",
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "plugin:prettier/recommended"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error"
-      ],
-      "spaced-comment": [
-        "error",
-        "always",
-        {
-          "line": {
-            "markers": [
-              "/",
-              "#"
-            ]
-          },
-          "block": {
-            "markers": [
-              "!",
-              "*",
-              "#",
-              "function",
-              "const",
-              "if",
-              "export",
-              "interface",
-              "#__PURE__",
-              "@__PURE__"
-            ],
-            "exceptions": [
-              "!",
-              "*",
-              "#"
-            ],
-            "balanced": false
-          }
-        }
-      ]
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
   "bic": {
     "skip": [
       "build",
@@ -87,16 +27,14 @@
     ]
   },
   "scripts": {
-    "start": "craco start",
-    "build": "run-s --max_old_space_size=4096 build:react build:worker deploy:app",
-    "build:install": "yarn",
-    "build:react": "craco --max_old_space_size=4096 build",
-    "deploy:app": "node scripts/deploy.js",
+    "start": "vite",
+    "build": "run-s compile build:worker build:vite",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "build:vite": "vite build",
     "build:worker": "rollup -c rollup.config.mjs --environment PRODUCTION",
     "build:worker:dev": "rollup -c rollup.config.mjs --environment PRODUCTION:false",
-    "watch:worker": "rollup -w -c rollup.config.mjs --environment PRODUCTION:false",
     "build:worker:npm": "rollup -c rollup.config.mjs --environment NPM",
-    "build:app": "run-s build:react deploy:app",
+    "watch:worker": "rollup -w -c rollup.config.mjs --environment PRODUCTION:false",
     "compile": "tsc -p tsconfig.json",
     "build:tsc": "tsc -p tsconfig.build.json",
     "build:node": "tsc -p tsconfig.node.json",
@@ -105,7 +43,6 @@
     "build:npm": "run-s clean:npm build:tsc clean:models package:npm build:worker:npm",
     "clean:npm": "rimraf ./build_tsc ./tsconfig.build.tsbuildinfo",
     "clean:models": "rimraf ./build_tsc/models/**/*.{js,map} && touch ./build_tsc/models/index.js",
-    "test": "react-scripts test",
     "i18n:extract": "formatjs extract './src/**/*.{ts,tsx}' --ignore='**/*.d.ts' --out-file src/translations/en-extract.json",
     "i18n:compile": "run-s i18n:compile-en i18n:compile-es i18n:compile-de i18n:compile-ko",
     "i18n-create-en": "formatjs compile './src/translations/en.json' --out-file './src/translations/en.json'",
@@ -114,89 +51,87 @@
     "i18n:compile-de": "formatjs compile './src/translations/de.json' --ast --out-file './src/translations/de.ast.json' --format simple",
     "i18n:compile-ko": "formatjs compile './src/translations/ko.json' --ast --out-file './src/translations/ko.ast.json' --format simple",
     "i18n-clean": "rimraf ./src/translations/{*.ast}.json",
-    "custom-prettier": "node ../../scripts/prettier.js"
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "dependencies": {
     "@craftercms/uppy": "workspace:^",
     "@emotion/css": "^11.11.2",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@graphiql/plugin-explorer": "^1.0.2",
-    "@mui/icons-material": "^5.14.16",
-    "@mui/lab": "^5.0.0-alpha.152",
-    "@mui/material": "^5.14.17",
-    "@mui/x-data-grid": "^6.18.0",
-    "@mui/x-date-pickers": "^6.18.0",
-    "@mui/x-tree-view": "^6.17.0",
-    "@prettier/plugin-xml": "^3.2.2",
-    "@reduxjs/toolkit": "^1.9.7",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@graphiql/plugin-explorer": "^3.0.1",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/lab": "^5.0.0-alpha.170",
+    "@mui/material": "^5.15.20",
+    "@mui/x-data-grid": "^7.6.2",
+    "@mui/x-date-pickers": "^7.6.2",
+    "@mui/x-tree-view": "^7.6.2",
+    "@prettier/plugin-xml": "3.3.0",
+    "@reduxjs/toolkit": "^2.2.5",
     "@stomp/stompjs": "^7.0.0",
-    "@types/ace": "^0.0.51",
-    "@types/graphql": "^14.5.0",
-    "@types/marked": "^4.3.2",
-    "@types/react": "^18.2.36",
-    "@types/react-dom": "^18.2.14",
-    "@types/react-swipeable-views": "^0.13.4",
-    "@types/video.js": "^7.3.55",
-    "@videojs/vhs-utils": "^4.0.0",
+    "@types/ace": "^0.0.52",
+    "@types/react": "^18.3.2",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-swipeable-views": "^0.13.5",
+    "@types/video.js": "^7.3.58",
     "autosuggest-highlight": "^3.3.4",
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.1",
     "diff": "^5.1.0",
-    "fast-xml-parser": "^4.3.2",
-    "graphiql": "^3.0.9",
+    "fast-xml-parser": "^4.3.6",
+    "graphiql": "^3.2.2",
     "graphql": "^16.8.1",
-    "graphql-ws": "^5.14.2",
+    "graphql-ws": "^5.16.0",
     "highlight.js": "^11.9.0",
     "jabber": "^1.5.3",
     "js-cookie": "^3.0.5",
-    "marked": "^9.1.5",
-    "marked-highlight": "^2.0.6",
-    "moment-timezone": "^0.5.43",
-    "nanoid": "^5.0.3",
+    "marked": "^12.0.2",
+    "marked-highlight": "^2.1.1",
+    "moment-timezone": "^0.5.45",
+    "nanoid": "^5.0.7",
     "notistack": "3.0.1",
-    "prettier": "^3.0.3",
-    "query-string": "^8.1.0",
-    "react": "18.2.0",
+    "prettier": "^3.2.5",
+    "query-string": "^9.0.0",
+    "react": "18.3.1",
     "react-animations": "^1.0.0",
-    "react-dom": "18.2.0",
-    "react-hotkeys-hook": "^4.4.1",
+    "react-dom": "18.3.1",
+    "react-hotkeys-hook": "^4.5.0",
     "react-infinite-scroller": "^1.2.6",
-    "react-intl": "^6.5.2",
-    "react-redux": "^8.1.3",
-    "react-router-dom": "^5.3.4",
-    "react-scripts": "5.0.1",
+    "react-intl": "^6.6.8",
+    "react-redux": "^9.1.2",
+    "react-router-dom": "^6.23.1",
     "react-swipeable-views": "^0.14.0",
     "react-swipeable-views-utils": "^0.14.0",
-    "redux": "^4.2.1",
-    "redux-observable": "^2.0.0",
-    "rxjs": "^7.0.0",
+    "redux": "^5.0.1",
+    "redux-observable": "^3.0.0-rc.2",
+    "rxjs": "^7.8.1",
     "slugify": "^1.6.6",
-    "tss-react": "^4.9.3",
-    "typescript": "^4.9.5",
-    "uppy": "^3.18.1",
-    "video.js": "^8.6.1",
-    "web-vitals": "^3.5.0",
+    "tss-react": "^4.9.10",
+    "typescript": "^5.4.5",
+    "uppy": "^3.25.3",
+    "video.js": "^8.14.0",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@craco/craco": "7.1.0",
-    "@formatjs/cli": "^6.2.2",
-    "@rollup/plugin-typescript": "^11.1.5",
+    "@formatjs/cli": "^6.2.12",
+    "@rollup/plugin-swc": "^0.3.0",
     "@types/diff": "^5",
     "@types/js-cookie": "^3.0.6",
-    "@types/prettier": "^3.0.0",
-    "@types/react-infinite-scroller": "^1.2.4",
-    "@types/zxcvbn": "^4.4.3",
-    "babel-plugin-formatjs": "^10.5.8",
-    "babel-plugin-react-intl": "^8.2.25",
+    "@types/react-infinite-scroller": "^1.2.5",
+    "@types/zxcvbn": "^4.4.4",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react-swc": "^3.6.0",
+    "babel-plugin-formatjs": "^10.5.16",
     "build-if-changed": "^1.5.5",
-    "eslint": "^8.53.0",
-    "eslint-config-react-app": "^7.0.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-formatjs": "^4.13.3",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-refresh": "^0.4.7",
     "ncp": "^2.0.0",
     "npm-run-all": "^4.1.5",
-    "postcss-normalize": "^10.0.1",
     "prop-types": "^15.8.1",
-    "rimraf": "^5.0.5",
-    "rollup": "^3.29.4"
+    "rimraf": "^5.0.7",
+    "rollup": "^4.17.2",
+    "vite": "^5.2.11"
   }
 }

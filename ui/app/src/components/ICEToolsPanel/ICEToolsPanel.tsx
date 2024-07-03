@@ -37,13 +37,14 @@ import Alert from '@mui/material/Alert';
 export function ICEToolsPanel() {
   const dispatch = useDispatch();
   const uiConfig = useSiteUIConfig();
-  const { icePanel, windowSize } = usePreviewState();
+  const { icePanel, windowSize, guest } = usePreviewState();
   const { id: site, uuid } = useActiveSite();
   const { rolesBySite, username } = useActiveUser();
   const { icePanelWidth: width, editMode, icePanelStack } = useSelection((state) => state.preview);
   const item = useCurrentPreviewItem();
   const isOpen = editMode;
   const isLockedForMe = Boolean(item && isItemLockedForMe(item, username));
+  const isStale = guest?.mainModelModifier ? guest.mainModelModifier.username !== username : false;
 
   const onWidthChange = (width) => {
     dispatch(updateIcePanelWidth({ width }));
@@ -65,15 +66,21 @@ export function ICEToolsPanel() {
       width={width}
       maxWidth={windowSize}
       onWidthChange={onWidthChange}
+      styles={{
+        resizeHandle: { backgroundColor: 'transparent' },
+        drawerPaperBelowToolbar: { top: '64px' }
+      }}
     >
       <Suspense fallback={<LoadingState />}>
         <ConditionalLoadingState isLoading={!Boolean(icePanel)}>
           {isLockedForMe && (
             <Alert variant="outlined" severity="warning" sx={{ borderStyle: 'none none solid', borderRadius: 0 }}>
-              <FormattedMessage
-                id="icePanel.itemLockedWarning"
-                defaultMessage="Item is locked, some functionality may be disabled"
-              />
+              <FormattedMessage defaultMessage="Item is locked, editing is disabled." />
+            </Alert>
+          )}
+          {isStale && (
+            <Alert variant="outlined" severity="error" sx={{ borderStyle: 'none none solid', borderRadius: 0 }}>
+              <FormattedMessage defaultMessage="Item was modified, refresh to edit." />
             </Alert>
           )}
           {icePanel?.widgets && icePanel.widgets.length > 0 ? (

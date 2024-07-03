@@ -216,7 +216,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           versionTitle: asDayMonthDateTime(previousBranch.modifiedDate)
         }),
         onCancel: closeConfirmDialog(),
-        onOk: batchActions([closeConfirmDialog(), revertToPreviousVersion({ id: activeItem.versionNumber })])
+        onOk: batchActions([closeConfirmDialog(), revertToPreviousVersion({ path, id: activeItem.versionNumber })])
       })
     );
   };
@@ -260,7 +260,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         break;
       }
       case 'compareToCurrent': {
-        compareBoth([activeItem.versionNumber, current]);
+        compareBoth([current, activeItem.versionNumber]);
         break;
       }
       case 'compareToPrevious': {

@@ -45,9 +45,12 @@ import {
   showEditDialog,
   showPreviewDialog,
   updateCodeEditorDialog,
-  updateEditConfig,
+  updateEditDialogConfig,
   updatePreviewDialog,
-  closeRenameAssetDialog
+  closeRenameAssetDialog,
+  fetchBrokenReferences,
+  updateBrokenReferencesDialog,
+  fetchBrokenReferencesFailed
 } from '../actions/dialogs';
 import { fetchDeleteDependencies as fetchDeleteDependenciesService, fetchDependant } from '../../services/dependencies';
 import { fetchContentXML, fetchItemVersion } from '../../services/content';
@@ -64,6 +67,7 @@ import { getHostToGuestBus } from '../../utils/subjects';
 import { unlockItem } from '../actions/content';
 import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import { LegacyItem } from '../../models';
+import { parseLegacyItemToSandBoxItem } from '../../utils/content';
 
 function getDialogNameFromType(type: string): string {
   let name = getDialogActionNameFromType(type);
@@ -185,7 +189,7 @@ const dialogEpics: CrafterCMSEpic[] = [
           // which is used to check if it's the same form that's getting opened.
           const { isMinimized, updateDialogAction } =
             type === showEditDialog.type
-              ? { isMinimized: state.dialogs.edit.isMinimized, updateDialogAction: updateEditConfig }
+              ? { isMinimized: state.dialogs.edit.isMinimized, updateDialogAction: updateEditDialogConfig }
               : { isMinimized: state.dialogs.codeEditor.isMinimized, updateDialogAction: updateCodeEditorDialog };
           if (isMinimized === true) {
             return of(updateDialogAction({ isMinimized: false }));
@@ -255,6 +259,22 @@ const dialogEpics: CrafterCMSEpic[] = [
             return fetchRenameAssetDependantsComplete({ dependants });
           }),
           catchAjaxError(fetchRenameAssetDependantsFailed)
+        )
+      )
+    ),
+  // endregion
+  // region fetchBrokenReferences
+  (action$, state$) =>
+    action$.pipe(
+      ofType(fetchBrokenReferences.type),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        fetchDependant(state.sites.active, state.dialogs.brokenReferences.path).pipe(
+          map((response: LegacyItem[]) => {
+            const references = parseLegacyItemToSandBoxItem(response);
+            return updateBrokenReferencesDialog({ references });
+          }),
+          catchAjaxError(fetchBrokenReferencesFailed)
         )
       )
     )

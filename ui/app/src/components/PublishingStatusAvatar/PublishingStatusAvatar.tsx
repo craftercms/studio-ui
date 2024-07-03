@@ -97,7 +97,12 @@ export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, Publishin
     <Avatar
       ref={ref}
       variant="circular"
-      className={cx(classes.root, props.className, props.classes?.root, enabled ? status : 'error')}
+      className={cx(
+        classes.root,
+        props.className,
+        props.classes?.root,
+        enabled ? status : enabled === false ? 'error' : null
+      )}
     >
       <CloudUploadOutlined className={cx(props.classes?.icon)} />
     </Avatar>

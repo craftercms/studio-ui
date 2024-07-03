@@ -64,7 +64,8 @@ const initialState: GlobalState['uiConfig'] = {
     publishEverythingCommentRequired: false,
     submissionCommentMaxLength: 250
   },
-  cdataEscapedFieldPatterns: []
+  cdataEscapedFieldPatterns: [],
+  remoteGitBranch: null
 };
 
 const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) => {
@@ -144,7 +145,7 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
       }
     }))
     .addCase(fetchSiteConfigComplete, (state, { payload }) => {
-      const { cdataEscapedFieldPatterns, locale, publishing, upload } = payload;
+      const { cdataEscapedFieldPatterns, locale, publishing, upload, remoteGitBranch } = payload;
       return {
         ...state,
         upload: {
@@ -161,7 +162,8 @@ const reducer = createReducer<GlobalState['uiConfig']>(initialState, (builder) =
         publishing: {
           ...state.publishing,
           ...publishing
-        }
+        },
+        remoteGitBranch
       };
     });
 });

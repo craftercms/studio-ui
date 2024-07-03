@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType } from 'redux-observable';
+import { ofType } from 'redux-observable';
 import { ignoreElements, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { catchAjaxError } from '../../utils/ajax';
 import {
@@ -35,36 +35,41 @@ import {
 import { Observable } from 'rxjs';
 import GlobalState from '../../models/GlobalState';
 import { getHostToGuestBus } from '../../utils/subjects';
+import { CrafterCMSEpic } from '../store';
+import { showErrorDialog } from '../reducers/dialogs/error';
 
-const fetchAudiencesPanel: Epic = (action$, state$: Observable<GlobalState>) =>
-  action$.pipe(
-    ofType(fetchAudiencesPanelModel.type),
-    withLatestFrom(state$),
-    switchMap(([{ payload }, state]) =>
-      fetchActiveTargetingModel(state.sites.active).pipe(
-        map((data) => fetchAudiencesPanelModelComplete(deserializeActiveTargetingModelData(data, payload.fields))),
-        catchAjaxError(fetchAudiencesPanelModelFailed)
+export default [
+  (action$, state$: Observable<GlobalState>) =>
+    action$.pipe(
+      ofType(fetchAudiencesPanelModel.type),
+      withLatestFrom(state$),
+      switchMap(([{ payload }, state]) =>
+        fetchActiveTargetingModel(state.sites.active).pipe(
+          map((data) => fetchAudiencesPanelModelComplete(deserializeActiveTargetingModelData(data, payload.fields))),
+          catchAjaxError(fetchAudiencesPanelModelFailed)
+        )
       )
-    )
-  );
-
-const setActiveTargetingModel: Epic = (action$, state$: Observable<GlobalState>) =>
-  action$.pipe(
-    ofType(SET_ACTIVE_TARGETING_MODEL),
-    withLatestFrom(state$),
-    switchMap(([, state]) =>
-      setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
-        map((response) => setActiveTargetingModelCompleteAction(response)),
-        catchAjaxError(setActiveTargetingModelFailed)
+    ),
+  (action$, state$: Observable<GlobalState>) =>
+    action$.pipe(
+      ofType(SET_ACTIVE_TARGETING_MODEL),
+      withLatestFrom(state$),
+      switchMap(([, state]) =>
+        setActiveTargetingModelService(state.preview.audiencesPanel.model).pipe(
+          map((response) => setActiveTargetingModelCompleteAction(response)),
+          catchAjaxError(setActiveTargetingModelFailed)
+        )
       )
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(setActiveTargetingModelFailed.type),
+      map(({ payload }) => showErrorDialog({ error: payload.response }))
+    ),
+  (action$) =>
+    action$.pipe(
+      ofType(SET_ACTIVE_TARGETING_MODEL_COMPLETE),
+      tap(() => getHostToGuestBus().next({ type: reloadRequest.type })),
+      ignoreElements()
     )
-  );
-
-const setActiveTargetingModelComplete: Epic = (action$) =>
-  action$.pipe(
-    ofType(SET_ACTIVE_TARGETING_MODEL_COMPLETE),
-    tap(() => getHostToGuestBus().next({ type: reloadRequest.type })),
-    ignoreElements()
-  );
-
-export default [fetchAudiencesPanel, setActiveTargetingModel, setActiveTargetingModelComplete] as Epic[];
+] as CrafterCMSEpic[];

@@ -18,6 +18,7 @@ import { PREVIEW_URL_PATH } from './constants';
 import { ReplaySubject } from 'rxjs';
 import { take } from 'rxjs/operators';
 import Monaco from '../models/Monaco';
+import { ProjectToolsRoutes } from '../env/routes';
 
 export type SystemLinkId =
   | 'preview'
@@ -41,9 +42,9 @@ export function getSystemLink({
 }) {
   return {
     preview: `${authoringBase}${PREVIEW_URL_PATH}#/?page=${page}&site=${site}`,
-    siteTools: `${authoringBase}/site-config`,
-    siteSearch: `${authoringBase}/search`,
-    siteDashboard: `${authoringBase}/site-dashboard`
+    siteTools: `${authoringBase}${ProjectToolsRoutes.ProjectTools}`,
+    siteSearch: `${authoringBase}${ProjectToolsRoutes.Search}`,
+    siteDashboard: `${authoringBase}${ProjectToolsRoutes.SiteDashboard}`
   }[systemLinkId];
 }
 
@@ -73,4 +74,16 @@ export function withMonaco(onReady: (api: Monaco) => void): void {
     document.head.appendChild(script);
   }
   monaco$.asObservable().pipe(take(1)).subscribe(onReady);
+}
+
+export function isPreviewAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(`/preview`);
+}
+
+export function isDashboardAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(ProjectToolsRoutes.SiteDashboard);
+}
+
+export function isProjectToolsAppUrl(pathname = window.location.pathname): boolean {
+  return pathname.includes(ProjectToolsRoutes.ProjectTools);
 }

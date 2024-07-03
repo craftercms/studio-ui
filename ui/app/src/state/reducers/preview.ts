@@ -17,10 +17,12 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { HighlightMode, PagedEntityState } from '../../models/GlobalState';
 import {
+  allowedContentTypesUpdate,
   clearDropTargets,
   clearSelectForEdit,
   closeToolsPanel,
   contentTypeDropTargetsResponse,
+  errorPageCheckIn,
   fetchAssetsPanelItems,
   fetchAssetsPanelItemsComplete,
   fetchAssetsPanelItemsFailed,
@@ -31,7 +33,7 @@ import {
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
   fetchContentModelComplete,
-  fetchGuestModelComplete,
+  fetchGuestModelsComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
   guestCheckOut,
@@ -42,6 +44,7 @@ import {
   initRichTextEditorConfig,
   initToolbarConfig,
   initToolsPanelConfig,
+  mainModelModifiedExternally,
   openToolsPanel,
   popIcePanelPage,
   popToolsPanelPage,
@@ -143,7 +146,7 @@ const initialState: GlobalState['preview'] = {
   highlightMode: 'all',
   hostSize: { width: null, height: null },
   toolsPanelPageStack: [],
-  showToolsPanel: process.env.REACT_APP_SHOW_TOOLS_PANEL ? process.env.REACT_APP_SHOW_TOOLS_PANEL === 'true' : true,
+  showToolsPanel: import.meta.env.VITE_SHOW_TOOLS_PANEL ? import.meta.env.VITE_SHOW_TOOLS_PANEL === 'true' : true,
   toolsPanelWidth: 240,
   icePanelWidth: 240,
   icePanelStack: [],
@@ -165,12 +168,12 @@ const initialState: GlobalState['preview'] = {
   richTextEditor: null,
   editModePadding: false,
   windowSize: window.innerWidth,
-  xbDetectionTimeoutMs: null
+  xbDetectionTimeoutMs: 5000,
+  error: null
 };
 
 const minDrawerWidth = 240;
 const minPreviewWidth = 320;
-const defaultXbDetectionTimeoutMs = 5000;
 
 const isDrawerWidthValid = (
   windowSize: number,
@@ -253,7 +256,6 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       const previewConfigEl = configDOM.querySelector('[id="craftercms.components.Preview"]');
       const initialEditModeOn = previewConfigEl?.getAttribute('initialEditModeOn');
       const initialHighlightMode = previewConfigEl?.getAttribute('initialHighlightMode') as HighlightMode;
-      const xbDetectionTimeoutMs = parseInt(previewConfigEl?.getAttribute('xbDetectionTimeoutMs'));
 
       // If there is no storedEditMode, set it to the value of initialEditModeOn (config value), otherwise, defaults to true
       state.editMode = payload.storedEditMode ?? (initialEditModeOn ? initialEditModeOn === 'true' : true);
@@ -261,10 +263,6 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
         payload.storedHighlightMode ??
         (['all', 'move'].includes(initialHighlightMode) ? initialHighlightMode : state.highlightMode);
       state.editModePadding = payload.storedPaddingMode ?? state.editModePadding;
-      state.xbDetectionTimeoutMs =
-        !isNaN(xbDetectionTimeoutMs) && xbDetectionTimeoutMs >= 0
-          ? xbDetectionTimeoutMs
-          : state.xbDetectionTimeoutMs ?? defaultXbDetectionTimeoutMs;
     })
     .addCase(openToolsPanel, (state) => {
       const { windowSize, editMode, toolsPanelWidth, icePanelWidth } = state;
@@ -318,7 +316,9 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       const href = location.href;
       const origin = location.origin;
       const url = href.replace(location.origin, '');
+      state.error = null;
       state.guest = {
+        allowedContentTypes: null,
         url,
         origin,
         modelId: null,
@@ -327,7 +327,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
         hierarchyMap: null,
         modelIdByPath: null,
         selected: null,
-        itemBeingDragged: null
+        itemBeingDragged: null,
+        mainModelModifier: null
       };
     })
     .addCase(guestCheckOut, (state) => {
@@ -345,8 +346,13 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       // }
       return nextState;
     })
+    .addCase(errorPageCheckIn, (state, { payload }) => {
+      state.error = {
+        ...payload
+      };
+    })
     .addCase(fetchPrimaryGuestModelComplete, fetchGuestModelsCompleteHandler)
-    .addCase(fetchGuestModelComplete, fetchGuestModelsCompleteHandler)
+    .addCase(fetchGuestModelsComplete, fetchGuestModelsCompleteHandler)
     .addCase(guestModelUpdated, (state, { payload: { model } }) => ({
       ...state,
       guest: {
@@ -800,6 +806,12 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       state.windowSize = windowSize;
       state.toolsPanelWidth = adjustedToolsPanelWidth;
       state.icePanelWidth = adjustedIcePanelWidth;
+    })
+    .addCase(mainModelModifiedExternally, (state, { payload }) => {
+      if (state.guest) state.guest.mainModelModifier = payload.user;
+    })
+    .addCase(allowedContentTypesUpdate, (state, { payload }) => {
+      state.guest.allowedContentTypes = payload;
     });
 });
 

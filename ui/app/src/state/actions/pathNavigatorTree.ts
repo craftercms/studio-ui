@@ -21,6 +21,7 @@ import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../../models/GetChildrenOptions';
 import LookupTable from '../../models/LookupTable';
 import SystemType from '../../models/SystemType';
+import SimpleAjaxError from '../../models/SimpleAjaxError';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -44,6 +45,10 @@ export const pathNavigatorTreeBackgroundRefresh = /*#__PURE__*/ createAction<{ i
   'PATH_NAV_TREE_BACKGROUND_REFRESH'
 );
 
+export const pathNavigatorTreeBulkRefresh = /*#__PURE__*/ createAction<{
+  requests: PayloadWithId<{ backgroundRefresh?: boolean }>[];
+}>('PATH_NAV_TREE_BULK_REFRESH');
+
 export const pathNavigatorTreeRestore = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_RESTORE');
 
 export type PathNavigatorTreeRestoreCompletePayload = PayloadWithId<{
@@ -57,8 +62,17 @@ export const pathNavigatorTreeRestoreComplete = /*#__PURE__*/ createAction<PathN
   'PATH_NAV_TREE_RESTORE_COMPLETE'
 );
 
+export const pathNavigatorTreeBulkRestoreComplete = /*#__PURE__*/ createAction<{
+  trees: PathNavigatorTreeRestoreCompletePayload[];
+}>('PATH_NAV_TREE_BULK_RESTORE_COMPLETE');
+
 export const pathNavigatorTreeRestoreFailed = /*#__PURE__*/ createAction<{
   id: string;
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAV_TREE_RESTORE_FAILED');
+
+export const pathNavigatorTreeBulkRestoreFailed = /*#__PURE__*/ createAction<{
+  ids: string[];
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_RESTORE_FAILED');
 
@@ -88,18 +102,44 @@ export const pathNavigatorTreeFetchPathPageFailed = /*#__PURE__*/ createAction<{
   error: Omit<AjaxError, 'request' | 'xhr'>;
 }>('PATH_NAV_TREE_FETCH_PATH_PAGE_FAILED');
 
-export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<
-  PayloadWithId<{ path: string; options?: Partial<GetChildrenOptions>; expand?: boolean }>
->('PATH_NAV_TREE_FETCH_PATH_CHILDREN');
+export type PathNavTreeFetchPathChildrenPayload = PayloadWithId<{
+  path: string;
+  options?: Partial<GetChildrenOptions>;
+  expand?: boolean;
+}>;
+
+export const pathNavigatorTreeFetchPathChildren = /*#__PURE__*/ createAction<PathNavTreeFetchPathChildrenPayload>(
+  'PATH_NAV_TREE_FETCH_PATH_CHILDREN'
+);
+
+export type PathNavTreeBulkFetchPathChildrenPayload = { requests: Array<PathNavTreeFetchPathChildrenPayload> };
+
+export const pathNavigatorTreeBulkFetchPathChildren =
+  /*#__PURE__*/ createAction<PathNavTreeBulkFetchPathChildrenPayload>('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN');
 
 export const pathNavigatorTreeFetchPathChildrenComplete = /*#__PURE__*/ createAction<
   PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>
 >('PATH_NAV_TREE_FETCH_PATH_CHILDREN_COMPLETE');
 
+export type PathNavTreeBulkFetchPathChildrenCompletePayload = {
+  paths: PayloadWithId<{ children: GetChildrenResponse; parentPath: string; options?: Partial<GetChildrenOptions> }>[];
+};
+
+export const pathNavigatorTreeBulkFetchPathChildrenComplete =
+  /*#__PURE__*/ createAction<PathNavTreeBulkFetchPathChildrenCompletePayload>(
+    'PATH_NAV_BULK_TREE_FETCH_PATH_CHILDREN_COMPLETE'
+  );
+
 export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
   id: string;
-  error: Omit<AjaxError, 'request' | 'xhr'>;
+  path: string;
+  error: SimpleAjaxError;
 }>('PATH_NAV_TREE_FETCH_PATH_CHILDREN_FAILED');
+
+export const pathNavigatorTreeBulkFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
+  ids: string[];
+  error: Omit<AjaxError, 'request' | 'xhr'>;
+}>('PATH_NAV_TREE_BULK_FETCH_PATH_CHILDREN_FAILED');
 
 export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
   PayloadWithId<{
@@ -109,7 +149,11 @@ export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
     data?: LookupTable<GetChildrenResponse>;
     sortStrategy?: GetChildrenOptions['sortStrategy'];
     order?: GetChildrenOptions['order'];
+    limit?: number;
   }>
 >('PATH_NAV_TREE_UPDATE');
 
 export const pathNavigatorTreeRootMissing = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_ROOT_MISSING');
+
+export const pathNavigatorTreeChangeLimit =
+  /*#__PURE__*/ createAction<PayloadWithId<{ id: string; limit: number }>>('PATH_NAV_TREE_CHANGE_LIMIT');

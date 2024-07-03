@@ -27,6 +27,7 @@ import {
   closePublishDialog,
   closeRejectDialog,
   closeUploadDialog,
+  showBrokenReferencesDialog,
   showChangeContentTypeDialog,
   showCodeEditorDialog,
   showConfirmDialog,
@@ -44,12 +45,18 @@ import {
   showUploadDialog,
   showWorkflowCancellationDialog
 } from '../state/actions/dialogs';
-import { fetchLegacyItemsTree, fetchSandboxItem, fetchWorkflowAffectedItems } from '../services/content';
+import {
+  fetchItemsByPath,
+  fetchLegacyItemsTree,
+  fetchSandboxItem,
+  fetchWorkflowAffectedItems
+} from '../services/content';
 import {
   batchActions,
   changeContentType,
   editContentTypeTemplate,
   editController,
+  EditFilePayload,
   editTemplate
 } from '../state/actions/misc';
 import {
@@ -120,8 +127,10 @@ import { fetchPublishingStatus } from '../state/actions/publishingStatus';
 import { Clipboard } from '../models/GlobalState';
 import { Dispatch } from 'redux';
 import SystemType from '../models/SystemType';
-import StandardAction from '../models/StandardAction';
 import { fetchItemVersions } from '../state/actions/versions';
+import StandardAction from '../models/StandardAction';
+import { fetchDependant } from '../services/dependencies';
+import { parseLegacyItemToSandBoxItem } from '../utils/content';
 
 export type ContextMenuOptionDescriptor<ID extends string = string> = {
   id: ID;
@@ -589,8 +598,8 @@ export const itemActionDispatcher = ({
             item.systemType === 'renderingTemplate'
               ? 'template'
               : item.systemType === 'script'
-              ? 'controller'
-              : 'asset';
+                ? 'controller'
+                : 'asset';
 
           dispatch(
             showRenameAssetDialog({
@@ -637,17 +646,34 @@ export const itemActionDispatcher = ({
         break;
       }
       case 'cut': {
-        dispatch(
-          batchActions([
-            setClipboard({
-              type: 'CUT',
-              paths: [item.path],
-              sourcePath: item.path
-            }),
-            emitSystemEvent(itemCut({ target: item.path })),
-            showCutItemSuccessNotification()
-          ])
-        );
+        const path = item.path;
+        fetchDependant(site, path).subscribe({
+          next(dependantItems) {
+            const actionToDispatch = batchActions([
+              setClipboard({
+                type: 'CUT',
+                paths: [item.path],
+                sourcePath: item.path
+              }),
+              emitSystemEvent(itemCut({ target: item.path })),
+              showCutItemSuccessNotification()
+            ]);
+
+            if (dependantItems?.length) {
+              fetchItemsByPath(
+                site,
+                dependantItems.map((item) => item.uri ?? item.path)
+              ).subscribe((sandboxItems) => {
+                dispatch(showBrokenReferencesDialog({ path, references: sandboxItems, onContinue: actionToDispatch }));
+              });
+            } else {
+              dispatch(actionToDispatch);
+            }
+          },
+          error({ response }) {
+            dispatch(showErrorDialog({ error: response }));
+          }
+        });
         break;
       }
       case 'copy': {
@@ -970,7 +996,10 @@ export const itemActionDispatcher = ({
   }
 };
 
-export function editControllerActionCreator(systemType: SystemType, contentTypeId: string): StandardAction {
+export function editControllerActionCreator(
+  systemType: SystemType,
+  contentTypeId: string
+): StandardAction<EditFilePayload> {
   return editController({
     path: getControllerPath(systemType),
     fileName: `${popPiece(contentTypeId, '/')}.groovy`,

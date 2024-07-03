@@ -17,5 +17,3 @@
 export { default } from './EditModesSwitcher';
 
 export * from './EditModesSwitcher';
-
-export * from './EditModesSwitcherUI';

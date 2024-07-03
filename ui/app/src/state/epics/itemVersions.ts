@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Epic, ofType, StateObservable } from 'redux-observable';
+import { ofType, StateObservable } from 'redux-observable';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import GlobalState from '../../models/GlobalState';
 import { fetchItemHistory as getContentHistory, fetchVersions, revertTo } from '../../services/content';
@@ -42,6 +42,7 @@ import { emitSystemEvent, itemReverted, showRevertItemSuccessNotification } from
 import { batchActions } from '../actions/misc';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { reloadRequest } from '../actions/preview';
+import { CrafterCMSEpic } from '../store';
 
 export default [
   (action$, state$: StateObservable<GlobalState>) =>
@@ -116,4 +117,4 @@ export default [
         }
       })
     )
-] as Epic[];
+] as CrafterCMSEpic[];

@@ -28,10 +28,14 @@ interface SitesGridProps {
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
-  onPublishButtonClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site): void;
+  onPublishButtonClick(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    site: Site,
+    status: PublishingStatus
+  ): void;
   onDuplicateSiteClick(siteId: string): void;
   currentView: 'grid' | 'list';
-  publishingStatusLookup: LookupTable<PublishingStatus>;
+  disabledSitesLookup: LookupTable<boolean>;
 }
 
 export function SitesGrid(props: SitesGridProps) {
@@ -42,8 +46,8 @@ export function SitesGrid(props: SitesGridProps) {
     onEditSiteClick,
     onDuplicateSiteClick,
     currentView,
-    publishingStatusLookup,
-    onPublishButtonClick
+    onPublishButtonClick,
+    disabledSitesLookup
   } = props;
   const sites = resource.read();
   const { classes } = useSitesGridStyles();
@@ -54,13 +58,13 @@ export function SitesGrid(props: SitesGridProps) {
           <Grid item key={site.id}>
             <SiteCard
               site={site}
-              publishingStatus={publishingStatusLookup[site.id]}
               onSiteClick={onSiteClick}
               onDeleteSiteClick={onDeleteSiteClick}
               onEditSiteClick={onEditSiteClick}
               onDuplicateSiteClick={onDuplicateSiteClick}
               onPublishButtonClick={onPublishButtonClick}
               compact={currentView === 'list'}
+              disabled={disabledSitesLookup[site.id]}
             />
           </Grid>
         ))}

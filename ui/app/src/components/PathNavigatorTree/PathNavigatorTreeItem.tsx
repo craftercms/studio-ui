@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import React, { useState } from 'react';
 import { DetailedItem } from '../../models/Item';
 import LookupTable from '../../models/LookupTable';
@@ -35,13 +35,12 @@ import ArrowDropDownRoundedIcon from '@mui/icons-material/ArrowDropDownRounded';
 import { isBlank } from '../../utils/string';
 import ErrorOutlineRounded from '@mui/icons-material/ErrorOutlineRounded';
 import { lookupItemByPath } from '../../utils/content';
+import { PathNavigatorTreeStateProps } from './PathNavigatorTree';
 
-export interface PathNavigatorTreeItemProps {
+export interface PathNavigatorTreeItemProps
+  extends Pick<PathNavigatorTreeStateProps, 'keywordByPath' | 'totalByPath' | 'childrenByParentPath' | 'errorByPath'> {
   path: string;
   itemsByPath: LookupTable<DetailedItem>;
-  keywordByPath: LookupTable<string>;
-  totalByPath: LookupTable<number>;
-  childrenByParentPath: LookupTable<string[]>;
   active?: Record<string, boolean>;
   classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
   showNavigableAsLinks?: boolean;
@@ -182,6 +181,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     itemsByPath,
     keywordByPath,
     totalByPath,
+    errorByPath,
     childrenByParentPath,
     active = {},
     showNavigableAsLinks = true,
@@ -242,6 +242,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
         keywordByPath={keywordByPath}
         totalByPath={totalByPath}
         childrenByParentPath={childrenByParentPath}
+        errorByPath={errorByPath}
         active={active}
         onLabelClick={onLabelClick}
         onIconClick={onIconClick}
@@ -274,12 +275,23 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
       );
   } else if (totalByPath[path] > 0 && !childrenByParentPath.length) {
     propsForTreeItem.children.push(
-      <div key="loading" className={classes.loading}>
-        <CircularProgress size={14} />
-        <Typography variant="caption" color="textSecondary">
-          <FormattedMessage id="words.loading" defaultMessage="Loading" />
-        </Typography>
-      </div>
+      errorByPath[path] ? (
+        <div key="loading" className={classes.loading}>
+          <Typography variant="caption" color="error.main">
+            <FormattedMessage
+              defaultMessage="Error: {message}"
+              values={{ message: errorByPath[path]?.response?.message ?? errorByPath[path].message }}
+            />
+          </Typography>
+        </div>
+      ) : (
+        <div key="loading" className={classes.loading}>
+          <CircularProgress size={14} />
+          <Typography variant="caption" color="textSecondary">
+            <FormattedMessage id="words.loading" defaultMessage="Loading" />
+          </Typography>
+        </div>
+      )
     );
   } else if (!isBlank(keywordByPath[path]) && totalByPath[path] === 0) {
     propsForTreeItem.children.push(
@@ -295,27 +307,25 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     // region <TreeItem ... />
     <TreeItem
       key={path}
-      nodeId={path}
-      expandIcon={
-        // region
-        <ArrowRightRoundedIcon
-          role="button"
-          aria-label={formatMessage(translations.expand)}
-          aria-hidden="false"
-          onClick={() => onIconClick(path)}
-        />
-        // endregion
-      }
-      collapseIcon={
-        // region
-        <ArrowDropDownRoundedIcon
-          role="button"
-          aria-label={formatMessage(translations.collapse)}
-          aria-hidden="false"
-          onClick={() => onIconClick(path)}
-        />
-        // endregion
-      }
+      itemId={path}
+      slots={{
+        expandIcon: ArrowRightRoundedIcon,
+        collapseIcon: ArrowDropDownRoundedIcon
+      }}
+      slotProps={{
+        expandIcon: {
+          role: 'button',
+          'aria-label': formatMessage(translations.expand),
+          'aria-hidden': 'false',
+          onClick: () => onIconClick(path)
+        },
+        collapseIcon: {
+          role: 'button',
+          'aria-label': formatMessage(translations.collapse),
+          'aria-hidden': 'false',
+          onClick: () => onIconClick(path)
+        }
+      }}
       label={
         <>
           <section
@@ -356,28 +366,33 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                 </IconButton>
               </Tooltip>
             )}
-            {over && (showFilter || Boolean(item.childrenCount)) && (
-              <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
-                <IconButton
-                  size="small"
-                  className={classes.iconButton}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onClearKeywords();
-                    onFilterButtonClick();
-                  }}
-                >
-                  <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
-                </IconButton>
-              </Tooltip>
-            )}
+            {showFilter ||
+              (Boolean(item.childrenCount) && (
+                <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
+                  <IconButton
+                    size="small"
+                    className={classes.iconButton}
+                    sx={{
+                      opacity: over ? '1' : '.2'
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onClearKeywords();
+                      onFilterButtonClick();
+                    }}
+                  >
+                    <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
+                  </IconButton>
+                </Tooltip>
+              ))}
           </section>
           {showFilter && (
             <section className={classes.filterSection}>
               <SearchBar
                 autoFocus
                 onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
                 onChange={(keyword) => {
                   setKeyword(keyword);
                   onFilterChange(keyword, path);
@@ -417,6 +432,12 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
         label: cx(classes.labelContainer, active[path] && classes.active),
         iconContainer: classes.iconContainer,
         focused: classes.focused
+      }}
+      sx={{
+        [`& .${treeItemClasses.content}`]: {
+          pt: 0,
+          pb: 0
+        }
       }}
       {...propsForTreeItem}
     />

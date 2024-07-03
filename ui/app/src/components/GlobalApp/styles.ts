@@ -27,9 +27,6 @@ export const useStyles = makeStyles()((theme) => ({
       duration: theme.transitions.duration.enteringScreen
     })
   },
-  launcher: {
-    margin: '10px 12px 0 auto'
-  },
   footerDescription: {
     color: theme.palette.text.secondary,
     '& > a': {

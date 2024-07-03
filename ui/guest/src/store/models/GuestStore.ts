@@ -23,6 +23,8 @@ import ContentType from '@craftercms/studio-ui/models/ContentType';
 import { ContentInstance } from '@craftercms/studio-ui/models/ContentInstance';
 import { EditingStatus } from '../../constants';
 import { RteConfig } from '../../models/Rte';
+import Person from '@craftercms/studio-ui/models/Person';
+import { SearchItem } from '@craftercms/studio-ui/models';
 
 interface T {
   [K: string]: any;
@@ -33,21 +35,21 @@ export interface GuestState {
   dragContext: {
     targetIndex: number;
     inZone: boolean;
-    invalidDrop: boolean;
-    dropZone: DropZone;
+    invalidDrop?: boolean;
+    dropZone?: DropZone;
     players: any[];
     siblings: any[];
     containers: any[];
-    over: any;
-    prev: any;
-    next: any;
-    coordinates: any;
+    over?: any;
+    prev?: any;
+    next?: any;
+    coordinates?: any;
     // TODO: Dragged seems to be an ICE record, but there's code looking for dragged.path
-    dragged: ICERecord & { path?: string };
+    dragged: ICERecord | DataTransferItem | SearchItem;
     dropZones: DropZone[];
-    scrolling: boolean;
-    contentType: ContentType;
-    instance: ContentInstance;
+    scrolling?: boolean;
+    contentType?: ContentType;
+    instance?: ContentInstance;
   };
   hostCheckedIn: boolean;
   status: EditingStatus;
@@ -59,7 +61,11 @@ export interface GuestState {
   draggable: T;
   highlighted: T;
   uploading: LookupTable;
-  models: LookupTable<ContentInstance>;
+  // TODO: Move items and instances to state and out of content controller.
+  // models: LookupTable<ContentInstance>;
+  // itemsByPath: LookupTable<SandboxItem>;
+  lockedPaths: LookupTable<{ user: Person }>;
+  externallyModifiedPaths: LookupTable<{ user: Person }>;
   contentTypes: LookupTable<ContentType>;
   fieldSwitcher?: {
     iceId: number;

@@ -16,7 +16,7 @@
 
 import { Observable } from 'rxjs';
 import { get, postJSON } from '../utils/ajax';
-import { map, pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { toQueryString } from '../utils/object';
 import { SandboxItem } from '../models/Item';
 import { PagedArray } from '../models/PagedArray';
@@ -32,10 +32,10 @@ export function fetchItemStates(
 ): Observable<PagedArray<SandboxItem>> {
   const qs = toQueryString({ siteId, path, states, ...options });
   return get(`/studio/api/2/workflow/item_states${qs}`).pipe(
-    pluck('response'),
-    map(({ items, total, offset, limit }) =>
-      Object.assign(
-        items.map((item) => ({
+    map((response) => {
+      const { items, total, offset, limit } = response?.response ?? {};
+      return Object.assign(
+        items?.map((item) => ({
           ...item,
           stateMap: createItemStateMap(item.state),
           availableActionsMap: createItemActionMap(item.availableActions)
@@ -45,8 +45,8 @@ export function fetchItemStates(
           offset,
           limit: limit < options.limit ? options.limit : limit
         }
-      )
-    )
+      );
+    })
   );
 }
 

@@ -39,7 +39,7 @@
 
     <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
     <script src="${path}en/base.js"></script>
-    <script src="${path}kr/base.js"></script>
+    <script src="${path}ko/base.js"></script>
     <script src="${path}es/base.js"></script>
     <script src="${path}de/base.js"></script>
 
@@ -161,11 +161,15 @@
       });
     </script>
 
+    <#include "/static-assets/app/pages/legacy.html">
     <script type="text/javascript">
-        $(function() {
+      document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
+        window.craftercms.store$().subscribe(() => {
+          $(function() {
             CStudioBrowseS3.init();
+          });
         });
-
+      });
     </script>
 
     <script type="text/javascript">

@@ -15,7 +15,6 @@
 -->
 <html>
 <head>
-  <#include "/templates/web/common/js-next-scripts.ftl" />
   <script>
     document.domain = "${Request.serverName}";
   </script>
@@ -24,7 +23,7 @@
   <script src="/studio/static-assets/yui/container/container-min.js"></script>
   <script src="/studio/static-assets/yui/json/json-min.js"></script>
   <script src="/studio/static-assets/yui/yahoo/yahoo-min.js"></script>
-  <script src="/studio/static-assets/libs/jquery/dist/jquery-3.4.1.min.js"></script>
+  <script src="/studio/static-assets/libs/jquery/jquery.min.js"></script>
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
   <script src="/studio/static-assets/components/cstudio-common/common-api.js"></script>
   <script src="/studio/static-assets/scripts/crafter.js"></script>
@@ -36,7 +35,7 @@
   <#-- Lang resources -->
   <#assign path="/studio/static-assets/components/cstudio-common/resources/" />
   <script src="${path}en/base.js"></script>
-  <script src="${path}kr/base.js"></script>
+  <script src="${path}ko/base.js"></script>
   <script src="${path}es/base.js"></script>
   <script src="${path}de/base.js"></script>
 
@@ -76,200 +75,206 @@
   </style>
 </head>
 <body>
+<#include "/static-assets/app/pages/legacy.html">
 <script>
-  const { formatMessage } = CrafterCMSNext.i18n.intl;
-  const { embeddedLegacyFormMessages } = CrafterCMSNext.i18n.messages;
-  const path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
-  const site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
-  const type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
-  const contentType = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentType');
-  const readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') === 'true';
-  const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
-  const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
-  const fieldsIndexes = CStudioAuthoring.Utils.getQueryVariable(location.search, 'fieldsIndexes');
-  const newEmbedded = CStudioAuthoring.Utils.getQueryVariable(location.search, 'newEmbedded');
-  const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
-  const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
-  const LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST';
+  document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
+    const { formatMessage } = CrafterCMSNext.i18n.intl;
+    const { embeddedLegacyFormMessages } = CrafterCMSNext.i18n.messages;
+    const path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
+    const site = CStudioAuthoring.Utils.getQueryVariable(location.search, 'site');
+    const type = CStudioAuthoring.Utils.getQueryVariable(location.search, 'type');
+    const contentType = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentType');
+    const readOnly = CStudioAuthoring.Utils.getQueryVariable(location.search, 'readonly') === 'true';
+    const iceId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'iceId');
+    const selectedFields = CStudioAuthoring.Utils.getQueryVariable(location.search, 'selectedFields');
+    const fieldsIndexes = CStudioAuthoring.Utils.getQueryVariable(location.search, 'fieldsIndexes');
+    const newEmbedded = CStudioAuthoring.Utils.getQueryVariable(location.search, 'newEmbedded');
+    const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
+    const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
+    const LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST';
 
-  CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
+    CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
 
-  function openDialog(path) {
-    var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
-    var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden') === 'true';
-    var canEdit = CStudioAuthoring.Utils.getQueryVariable(location.search, 'canEdit') === 'true';
-    var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
+    function openDialog(path) {
+      var modelId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'modelId');
+      var isHidden = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isHidden') === 'true';
+      var canEdit = CStudioAuthoring.Utils.getQueryVariable(location.search, 'canEdit') === 'true';
+      var changeTemplate = CStudioAuthoring.Utils.getQueryVariable(location.search, 'changeTemplate');
 
-    const embeddedData = newEmbedded ? JSON.parse(newEmbedded) : false;
+      const embeddedData = newEmbedded ? JSON.parse(newEmbedded) : false;
 
-    const aux = [];
-    if (readOnly) aux.push({ name: 'readonly' });
-    if (changeTemplate) aux.push({ name: 'changeTemplate', value: changeTemplate });
-    if (canEdit) aux.push({ name: 'canEdit', value: canEdit });
+      const aux = [];
+      if (readOnly) aux.push({ name: 'readonly' });
+      if (changeTemplate) aux.push({ name: 'changeTemplate', value: changeTemplate });
+      if (canEdit) aux.push({ name: 'canEdit', value: canEdit });
 
-    if (!isNewContent) {
-      CStudioAuthoring.Service.lookupContentItem(
-        site,
-        path,
-        {
-          success: (contentTO) => {
-            CStudioAuthoring.Operations.performSimpleIceEdit(
-              contentTO.item,
-              selectedFields ? JSON.parse(decodeURIComponent(selectedFields)) : iceId,
-              true,
-              {
-                success: (response, editorId, name, value, draft, action) => {
-                  window.parent.postMessage({
-                    ...response,
-                    type: 'EMBEDDED_LEGACY_FORM_SUCCESS',
-                    refresh: true,
-                    tab: type,
-                    action
-                  }, '*');
+      if (!isNewContent) {
+        CStudioAuthoring.Service.lookupContentItem(
+          site,
+          path,
+          {
+            success: (contentTO) => {
+              CStudioAuthoring.Operations.performSimpleIceEdit(
+                contentTO.item,
+                selectedFields ? JSON.parse(decodeURIComponent(selectedFields)) : iceId,
+                true,
+                {
+                  success: (response, editorId, name, value, draft, action) => {
+                    window.parent.postMessage({
+                      ...response,
+                      type: 'EMBEDDED_LEGACY_FORM_SUCCESS',
+                      refresh: true,
+                      tab: type,
+                      action
+                    }, '*');
+                  },
+                  failure: error => {
+                    error && console.error(error);
+                    window.parent.postMessage({
+                      type: 'EMBEDDED_LEGACY_FORM_FAILURE',
+                      refresh: false,
+                      tab: type,
+                      action: 'failure',
+                      message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
+                    }, '*');
+                  },
+                  cancelled: (response) => {
+                    let close = true;
+                    if (response && response.close === false) {
+                      close = false;
+                    }
+                    window.parent.postMessage({
+                      type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+                      refresh: false,
+                      close: close,
+                      tab: type,
+                      action: 'cancelled'
+                    }, '*');
+                  },
+                  renderComplete: () => {
+                    if (modelId || embeddedData) {
+                      CStudioAuthoring.InContextEdit.messageDialogs({
+                        type: 'OPEN_CHILD_COMPONENT',
+                        key: Boolean(modelId) ? modelId : null,
+                        iceId: selectedFields ? JSON.parse(decodeURIComponent(selectedFields)) : iceId,
+                        contentType: embeddedData ? embeddedData.contentType : null,
+                        edit: Boolean(modelId),
+                        selectorId: embeddedData ? embeddedData.fieldId : null,
+                        ds: embeddedData ? embeddedData.datasource : null,
+                        order: embeddedData ? embeddedData.index : null,
+                        callback: {
+                          renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
+                          pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
+                        }
+                      });
+                    } else {
+                      window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                    }
+                  },
+                  pendingChanges: () => {
+                    window.parent.postMessage({
+                      type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
+                      action: 'pendingChanges'
+                    }, '*');
+                  },
+                  renderFailed(error) {
+                    window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
+                  },
+                  changeToEditMode() {
+                    window.parent.postMessage({ type: 'EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE' }, '*');
+                  },
+                  minimize: () => {
+                    window.parent.postMessage({
+                      type: 'EMBEDDED_LEGACY_MINIMIZE_REQUEST'
+                    }, '*');
+                  },
+                  isParent: true,
+                  id: type
                 },
-                failure: error => {
-                  error && console.error(error);
-                  window.parent.postMessage({
-                    type: 'EMBEDDED_LEGACY_FORM_FAILURE',
-                    refresh: false,
-                    tab: type,
-                    action: 'failure',
-                    message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
-                  }, '*');
-                },
-                cancelled: (response) => {
-                  let close = true;
-                  if (response && response.close === false) {
-                    close = false;
-                  }
-                  window.parent.postMessage({
-                    type: 'EMBEDDED_LEGACY_FORM_CLOSE',
-                    refresh: false,
-                    close: close,
-                    tab: type,
-                    action: 'cancelled'
-                  }, '*');
-                },
-                renderComplete: () => {
-                  if (modelId || embeddedData) {
-                    CStudioAuthoring.InContextEdit.messageDialogs({
-                      type: 'OPEN_CHILD_COMPONENT',
-                      key: Boolean(modelId) ? modelId : null,
-                      iceId: selectedFields ? JSON.parse(decodeURIComponent(selectedFields)) : iceId,
-                      contentType: embeddedData ? embeddedData.contentType : null,
-                      edit: Boolean(modelId),
-                      selectorId: embeddedData ? embeddedData.fieldId : null,
-                      ds: embeddedData ? embeddedData.datasource : null,
-                      order: embeddedData ? embeddedData.index : null,
-                      callback: {
-                        renderComplete: 'EMBEDDED_LEGACY_FORM_RENDERED',
-                        pendingChanges: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES'
-                      }
-                    });
-                  } else {
-                    window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-                  }
-                },
-                pendingChanges: () => {
-                  window.parent.postMessage({
-                    type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-                    action: 'pendingChanges'
-                  }, '*');
-                },
-                renderFailed(error) {
-                  window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
-                },
-                changeToEditMode() {
-                  window.parent.postMessage({ type: 'EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE' }, '*');
-                },
-                minimize: () => {
-                  window.parent.postMessage({
-                    type: 'EMBEDDED_LEGACY_MINIMIZE_REQUEST'
-                  }, '*');
-                },
-                isParent: true,
-                id: type
-              },
-              aux,
-              null,
-              !!isHidden,
-              fieldsIndexes ? JSON.parse(decodeURIComponent(fieldsIndexes)) : null
-            );
+                aux,
+                null,
+                !!isHidden,
+                fieldsIndexes ? JSON.parse(decodeURIComponent(fieldsIndexes)) : null
+              );
+            },
+            failure: error => {
+              error && console.error(error);
+              window.parent.postMessage({
+                type: 'EMBEDDED_LEGACY_FORM_FAILURE',
+                refresh: false,
+                tab: type,
+                action: 'failure',
+                message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
+              }, '*');
+            }
           },
-          failure: error => {
-            error && console.error(error);
-            window.parent.postMessage({
-              type: 'EMBEDDED_LEGACY_FORM_FAILURE',
-              refresh: false,
-              tab: type,
-              action: 'failure',
-              message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
-            }, '*');
-          }
-        },
-        false, false
-      );
-    } else {
-      CStudioAuthoring.Operations.openContentWebForm(
-        contentTypeId,
-        null,
-        null,
-        CStudioAuthoring.Operations.processPathsForMacros(path, null, true),
-        false,
-        false,
-        {
-          success: (response, editorId, name, value, draft, action) => {
-            window.parent.postMessage({
-              ...response,
-              type: 'EMBEDDED_LEGACY_FORM_SAVE',
-              refresh: false,
-              tab: type,
-              redirectUrl: response.item?.browserUri,
-              action,
-              isNew: true
-            }, '*');
+          false, false
+        );
+      } else {
+        CStudioAuthoring.Operations.openContentWebForm(
+          contentTypeId,
+          null,
+          null,
+          CStudioAuthoring.Operations.processPathsForMacros(path, null, true),
+          false,
+          false,
+          {
+            success: (response, editorId, name, value, draft, action) => {
+              window.parent.postMessage({
+                ...response,
+                type: 'EMBEDDED_LEGACY_FORM_SAVE',
+                refresh: false,
+                tab: type,
+                redirectUrl: response.item?.browserUri,
+                action,
+                isNew: true
+              }, '*');
+            },
+            failure: (error) => {
+              error && console.error(error);
+              window.parent.postMessage({
+                type: 'EMBEDDED_LEGACY_FORM_FAILURE',
+                refresh: false, tab: type, action: 'failure',
+                message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
+              }, '*');
+            },
+            cancelled: () => {
+              window.parent.postMessage({
+                close: true,
+                type: 'EMBEDDED_LEGACY_FORM_CLOSE',
+                refresh: false,
+                tab: type,
+                action: 'cancelled'
+              }, '*');
+            },
+            renderComplete: () => {
+              window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+            },
+            pendingChanges: () => {
+              window.parent.postMessage({
+                type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
+                action: 'pendingChanges'
+              }, '*');
+            },
+            id: type
           },
-          failure: (error) => {
-            error && console.error(error);
-            window.parent.postMessage({
-              type: 'EMBEDDED_LEGACY_FORM_FAILURE',
-              refresh: false, tab: type, action: 'failure',
-              message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
-            }, '*');
-          },
-          cancelled: () => {
-            window.parent.postMessage({
-              close: true,
-              type: 'EMBEDDED_LEGACY_FORM_CLOSE',
-              refresh: false,
-              tab: type,
-              action: 'cancelled'
-            }, '*');
-          },
-          renderComplete: () => {
-            window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
-          },
-          pendingChanges: () => {
-            window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES', action: 'pendingChanges' }, '*');
-          },
-          id: type
-        },
-        null
-      );
+          null
+        );
+      }
     }
-  }
 
-  window.addEventListener("message", (event) => {
-    if(event.data.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
-      CStudioAuthoring.InContextEdit.messageDialogs({ type: LEGACY_FORM_DIALOG_CANCEL_REQUEST })
-    }
-    if(event.data.type === 'LEGACY_FORM_DIALOG_RENAMED_CONTENT') {
-      CStudioAuthoring.InContextEdit.messageDialogs(event.data, '*');
-    }
-  }, false);
+    window.addEventListener("message", (event) => {
+      if (event.data.type === LEGACY_FORM_DIALOG_CANCEL_REQUEST) {
+        CStudioAuthoring.InContextEdit.messageDialogs({ type: LEGACY_FORM_DIALOG_CANCEL_REQUEST })
+      }
+      if (event.data.type === 'LEGACY_FORM_DIALOG_RENAMED_CONTENT') {
+        CStudioAuthoring.InContextEdit.messageDialogs(event.data, '*');
+      }
+    }, false);
 
-  CrafterCMSNext.system.getStore().subscribe(() => {
-    openDialog(path);
+    CrafterCMSNext.system.getStore().subscribe(() => {
+      openDialog(path);
+    });
   });
 </script>
 </body>

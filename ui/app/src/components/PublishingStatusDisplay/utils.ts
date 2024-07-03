@@ -17,6 +17,7 @@
 import { PublishingStatus, PublishingStatusCodes } from '../../models/Publishing';
 import { defineMessages, IntlShape } from 'react-intl';
 import { capitalize } from '@mui/material';
+import { nou } from '../../utils/object';
 
 export const publishingStatusMessages = defineMessages({
   ready: {
@@ -136,7 +137,9 @@ export function getPublishingStatusMessage(
   >,
   formatMessage: IntlShape['formatMessage']
 ): string {
-  if (!props.enabled) {
+  if (nou(props.enabled)) {
+    return formatMessage({ defaultMessage: 'The publisher status details did not load correctly.' });
+  } else if (!props.enabled) {
     return formatMessage(publishingStatusMessages.disabledMessage);
   }
   switch (props.status) {

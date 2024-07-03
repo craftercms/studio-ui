@@ -100,10 +100,11 @@ async function bannerAndFormat() {
   const config = path.join(__dirname, '../../../prettier.config.js');
   filesToProcess.forEach(async (filePath) => {
     const fullPath = path.join(buildPath, filePath);
-    const options = prettier.resolveConfig.sync(fullPath, { config });
+    const options = await prettier.resolveConfig(fullPath, { config });
     const code = await fse.readFile(fullPath, 'utf8');
     try {
-      const output = `${banner}${prettier.format(code, { ...options, filepath: fullPath })}`;
+      const formattedCode = await prettier.format(code, { ...options, filepath: fullPath });
+      const output = `${banner}${formattedCode}`;
       await fse.writeFile(fullPath, output, 'utf8');
     } catch {
       console.log(`Error formatting "${filePath}"`);
@@ -126,13 +127,6 @@ async function run() {
 
     fse.copy(path.join(srcPath, 'assets'), path.join(buildPath, 'assets'));
     console.log(`Copied assets to build`);
-
-    await renameNpmIndex('index.npm.js', 'index.js');
-    await renameNpmIndex('node/index.npm.js', 'node/index.js');
-
-    await renameNpmIndex('index.npm.d.ts', 'index.d.ts');
-    // Types current not emitted on node build
-    await renameNpmIndex('node/index.npm.d.ts', 'node/index.d.ts');
 
     await fse.copyFile(path.join(packagePath, 'scripts', 'LICENSE'), path.join(buildPath, 'LICENSE'));
     console.log('License file added');

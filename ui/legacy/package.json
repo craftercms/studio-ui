@@ -11,11 +11,13 @@
     ]
   },
   "scripts": {
-    "build": "babel ./src -d ../../static-assets",
-    "watch": "babel -w ./src -d ../../static-assets"
+    "build": "swc components -d ../../static-assets",
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.0",
+    "@babel/cli": "^7.24.5",
+    "@swc/cli": "^0.3.12",
+    "@swc/core": "^1.5.7",
     "build-if-changed": "^1.5.5"
   }
 }

@@ -24,16 +24,17 @@ export interface ContentTypeSection {
 }
 
 export interface ContentTypeFieldValidation<T = any> {
-  id: string;
+  id: ValidationKeys;
   value: T;
   level: 'required' | 'suggestion';
 }
 
 export type ValidationKeys =
   | 'allowedContentTypeTags'
-  | 'allowedContentTypes' // TODO: assess removing this validation in favour of keeping allowedEmbeddedContentTypes & allowedSharedContentTypes only
+  | 'allowedContentTypes'
   | 'allowedEmbeddedContentTypes'
   | 'allowedSharedContentTypes'
+  | 'allowedSharedExistingContentTypes'
   | 'minCount'
   | 'maxCount'
   | 'maxLength'
@@ -52,21 +53,14 @@ export type ValidationKeys =
   | 'allowImagesFromRepo'
   | 'allowImageUpload'
   | 'allowVideosFromRepo'
-  | 'allowVideoUpload';
+  | 'allowVideoUpload'
+  | 'allowAudioUpload'
+  | 'allowAudioFromRepo';
 
-export type ContentTypeFieldValidations = {
-  [key in ValidationKeys]: ContentTypeFieldValidation;
-};
+export type ContentTypeFieldValidations = Record<ValidationKeys, ContentTypeFieldValidation>;
 
 export interface ValidationResult {
-  id:
-    | ValidationKeys
-    | 'outOfSyncContent'
-    | 'itemLocked'
-    | 'noPolicyComply'
-    | 'fileNameChangedPolicy'
-    | 'uploadError'
-    | 'assetUploadStarted';
+  id: string;
   level?: 'required' | 'suggestion' | 'info';
   values?: object;
 }
@@ -103,12 +97,12 @@ export interface DataSource {
   [prop: string]: any;
 }
 
-type LegacyComponentTypes = 'component' | 'page' | 'file';
+export type LegacyComponentType = 'component' | 'page' | 'file';
 
 export interface ContentType {
   id: string;
   name: string;
-  type: LegacyComponentTypes;
+  type: LegacyComponentType;
   quickCreate: boolean;
   quickCreatePath: string;
   displayTemplate: string;
@@ -116,10 +110,6 @@ export interface ContentType {
   fields: LookupTable<ContentTypeField>;
   dataSources: DataSource[];
   mergeStrategy: string;
-}
-
-export interface LegacyFormConfigPattern {
-  pattern: string;
 }
 
 export interface LegacyFormDefinitionProperty {
@@ -206,7 +196,7 @@ export interface LegacyContentType {
   previewable: boolean;
   quickCreate: boolean;
   quickCreatePath: string;
-  type: LegacyComponentTypes;
+  type: LegacyComponentType;
   useRoundedFolder: string;
 }
 

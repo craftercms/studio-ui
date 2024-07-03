@@ -17,15 +17,27 @@
 import Person from './Person';
 
 export interface SocketEventBase {
+  siteId: string;
   timestamp: number;
   eventType: string;
-  targetPath: string;
-  user: Person;
+  targetPath?: string;
+  user: Person | null;
 }
 
-export interface SocketRootEventBase {
-  user: Person;
-  eventType: string;
-}
+export type ContentEventPayload = SocketEventBase & { targetPath: string };
+
+export type DeleteContentEventPayload = SocketEventBase & { targetPath: string };
+
+export type DeleteContentEventsPayload = Omit<SocketEventBase, 'targetPath'> & { targetPaths: string[] };
+
+export type MoveContentEventPayload = SocketEventBase & { targetPath: string; sourcePath: string };
+
+export type LockContentEventPayload = SocketEventBase & { targetPath: string; locked: boolean };
+
+export type PublishEventPayload = Omit<SocketEventBase, 'targetPath'>;
+
+export type RepositoryEventPayload = Omit<SocketEventBase, 'targetPath' | 'user'> & { user: null };
+
+export type WorkflowEventPayload = Omit<SocketEventBase, 'targetPath'>;
 
 export default SocketEventBase;

@@ -32,7 +32,7 @@ import { createLookupTable, nnou, nou, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
 import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
-import { AjaxError, AjaxResponse } from 'rxjs/ajax';
+import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
 import Core from '@uppy/core';
 import XHRUpload from '@uppy/xhr-upload';
@@ -50,7 +50,7 @@ import QuickCreateItem from '../models/content/QuickCreateItem';
 import ApiResponse from '../models/ApiResponse';
 import { fetchContentTypes } from './contentTypes';
 import { Clipboard } from '../models/GlobalState';
-import { getFileNameFromPath, getParentPath, getPasteItemFromPath } from '../utils/path';
+import { getFileNameFromPath, getPasteItemFromPath } from '../utils/path';
 import { StandardAction } from '../models/StandardAction';
 import { GetChildrenResponse } from '../models/GetChildrenResponse';
 import { GetItemWithChildrenResponse } from '../models/GetItemWithChildrenResponse';
@@ -99,7 +99,7 @@ export function fetchDescriptorDOM(
   return fetchDescriptorXML(site, path, options).pipe(map(fromString));
 }
 
-// region fetchSandboxItem
+// region fetchSandboxItem(...
 export function fetchSandboxItem(site: string, path: string): Observable<SandboxItem>;
 export function fetchSandboxItem(
   site: string,
@@ -116,7 +116,7 @@ export function fetchSandboxItem(
   path: string,
   options?: FetchItemsByPathOptions
 ): Observable<SandboxItem | DetailedItem> {
-  return fetchItemsByPath(site, [path], options).pipe(pluck(0));
+  return fetchItemsByPath(site, [path], options).pipe(map((items) => items[0]));
 }
 // endregion
 
@@ -166,12 +166,14 @@ export function writeContent(
   options?: { unlock: boolean }
 ): Observable<boolean> {
   options = Object.assign({ unlock: true }, options);
+  const fileName = getFileNameFromPath(path);
+  const pathToWrite = path.replace(`/${fileName}`, '');
   return post(
     writeContentUrl({
       site,
-      path: getParentPath(path),
+      path: pathToWrite,
       unlock: options.unlock ? 'true' : 'false',
-      fileName: getFileNameFromPath(path)
+      fileName
     }),
     content
   ).pipe(
@@ -195,7 +197,16 @@ export function fetchContentInstanceDescriptor(
   path: string,
   options?: Partial<GetDescriptorOptions>,
   contentTypeLookup?: LookupTable<ContentType>
-): Observable<{ model: ContentInstance; modelLookup: LookupTable<ContentInstance> }> {
+): Observable<{
+  model: ContentInstance;
+  modelLookup: LookupTable<ContentInstance>;
+  /**
+   * A lookup table directly completed/mutated by this function indexed by path of those objects
+   * that are incomplete/unflattened.
+   */
+  unflattenedPaths: LookupTable<ContentInstance>;
+}> {
+  const unflattenedPaths = {};
   return (
     contentTypeLookup
       ? of(contentTypeLookup)
@@ -205,8 +216,8 @@ export function fetchContentInstanceDescriptor(
       fetchDescriptorDOM(site, path, options).pipe(
         map((doc) => {
           const modelLookup = {};
-          const model = parseContentXML(doc, path, contentTypeLookup, modelLookup);
-          return { model, modelLookup };
+          const model = parseContentXML(doc, path, contentTypeLookup, modelLookup, unflattenedPaths);
+          return { model, modelLookup, unflattenedPaths };
         })
       )
     )
@@ -303,8 +314,8 @@ export function updateField(
         typeof serializeValue === 'function'
           ? serializeValue(value)
           : Boolean(serializeValue)
-          ? cdataWrap(value)
-          : value;
+            ? cdataWrap(value)
+            : value;
     },
     modelId
   );
@@ -336,7 +347,7 @@ function performMutation(
           post(
             writeContentUrl({
               site,
-              path: path,
+              path,
               unlock: 'true',
               fileName: getInnerHtml(doc.querySelector(':scope > file-name'))
             }),
@@ -355,41 +366,46 @@ function performMutation(
  * updates the target content item field to include the reference, does not create/write the shared component document.
  * */
 export function insertComponent(
-  site: string,
-  modelId: string,
-  fieldId: string,
+  siteId: string,
+  parentDocPath: string,
+  parentModelId: string,
+  parentFieldId: string,
   targetIndex: string | number,
-  contentType: ContentType,
-  instance: ContentInstance,
-  path: string,
-  shared = false,
+  parentContentType: ContentType,
+  insertedContentInstance: ContentInstance,
+  insertedItemContentType: ContentType,
+  isSharedInstance = false,
   shouldSerializeValueFn?: (fieldId: string) => boolean
 ): Observable<any> {
   return performMutation(
-    site,
-    path,
+    siteId,
+    parentDocPath,
     (element) => {
-      const id = instance.craftercms.id;
-      const path = shared
-        ? instance.craftercms.path ?? generateComponentPath(id, instance.craftercms.contentTypeId)
+      const id = insertedContentInstance.craftercms.id;
+      const path = isSharedInstance
+        ? insertedContentInstance.craftercms.path ??
+          generateComponentPath(id, insertedContentInstance.craftercms.contentTypeId)
         : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
       const newItem = createElement('item');
+      const field = parentContentType.fields[parentFieldId];
 
       // Add the child elements into the `item` node
       createElements(newItem, {
-        '@attributes': { inline: !shared },
-        key: shared ? path : id,
-        value: cdataWrap(instance.craftercms.label),
-        ...(shared
-          ? { include: path, disableFlattening: 'false' }
-          : { component: createComponentObject(instance, contentType, shouldSerializeValueFn) })
+        '@attributes': { inline: !isSharedInstance },
+        key: isSharedInstance ? path : id,
+        value: cdataWrap(insertedContentInstance.craftercms.label),
+        ...(isSharedInstance
+          ? { include: path, disableFlattening: String(field?.properties?.disableFlattening?.value ?? 'false') }
+          : {
+              component: createComponentObject(insertedContentInstance, insertedItemContentType, shouldSerializeValueFn)
+            })
       });
 
-      insertCollectionItem(element, fieldId, targetIndex, newItem);
+      insertCollectionItem(element, parentFieldId, targetIndex, newItem);
     },
-    modelId
+    parentModelId
   );
 }
 // endregion
@@ -399,21 +415,22 @@ export function insertComponent(
  * Insert an *existing* (i.e. shared) component on to the document
  * */
 export function insertInstance(
-  site: string,
-  modelId: string,
-  fieldId: string,
+  siteId: string,
+  parentDocPath: string,
+  parentModelId: string,
+  parentFieldId: string,
   targetIndex: string | number,
-  instance: ContentInstance,
-  path: string,
+  parentContentType: ContentType,
+  insertedInstance: ContentInstance,
   datasource?: string
 ): Observable<any> {
   return performMutation(
-    site,
-    path,
+    siteId,
+    parentDocPath,
     (element) => {
-      const path = instance.craftercms.path;
-
+      const path = insertedInstance.craftercms.path;
       const newItem = createElement('item');
+      const field = parentContentType.fields[parentFieldId];
 
       createElements(newItem, {
         '@attributes': {
@@ -421,14 +438,14 @@ export function insertInstance(
           datasource: datasource ?? ''
         },
         key: path,
-        value: cdataWrap(instance.craftercms.label),
+        value: cdataWrap(insertedInstance.craftercms.label),
         include: path,
-        disableFlattening: 'false'
+        disableFlattening: String(field?.properties?.disableFlattening?.value ?? 'false')
       });
 
-      insertCollectionItem(element, fieldId, targetIndex, newItem);
+      insertCollectionItem(element, parentFieldId, targetIndex, newItem);
     },
-    modelId
+    parentModelId
   );
 }
 // endregion
@@ -447,7 +464,7 @@ export function insertItem(
     site,
     path,
     (element) => {
-      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, index);
+      const node = extractNode(element, fieldId, index);
       const newItem = createElement('item');
       const serializedInstance = {};
       for (let key in instance) {
@@ -467,6 +484,7 @@ export function insertItem(
 }
 // endregion
 
+// region duplicateItem
 export function duplicateItem(
   site: string,
   modelId: string,
@@ -564,7 +582,9 @@ export function duplicateItem(
     })
   );
 }
+// endregion
 
+// region sortItem
 export function sortItem(
   site: string,
   modelId: string,
@@ -583,7 +603,9 @@ export function sortItem(
     modelId
   );
 }
+// endregion
 
+// region moveItem
 export function moveItem(
   site: string,
   originalModelId: string,
@@ -671,7 +693,9 @@ export function moveItem(
     );
   }
 }
+// endregion
 
+// region deleteItem
 export function deleteItem(
   site: string,
   modelId: string,
@@ -706,6 +730,7 @@ export function deleteItem(
     modelId
   );
 }
+// endregion
 
 interface SearchServiceResponse {
   response: ApiResponse;
@@ -735,6 +760,7 @@ interface SearchServiceResponse {
   };
 }
 
+// region fetchItemsByContentType
 export function fetchItemsByContentType(
   site: string,
   contentType: string,
@@ -789,6 +815,7 @@ export function fetchItemsByContentType(
     })
   );
 }
+// endregion
 
 export function formatXML(site: string, path: string): Observable<boolean> {
   return fetchContentDOM(site, path).pipe(
@@ -978,10 +1005,14 @@ export function createFileUpload(
   uploadUrl: string,
   file: any,
   path: string,
-  metaData: object,
+  metaData: Record<string, unknown>,
   xsrfArgumentName: string
 ): Observable<StandardAction> {
-  const qs = toQueryString({ [xsrfArgumentName]: getRequestForgeryToken() });
+  const qs = toQueryString({
+    path,
+    site: metaData?.site ?? metaData?.siteId,
+    [xsrfArgumentName]: getRequestForgeryToken()
+  });
   return new Observable((subscriber) => {
     const uppy = new Core({ autoProceed: true });
     uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, headers: getGlobalHeaders() });
@@ -1008,8 +1039,19 @@ export function createFileUpload(
       });
     });
 
-    uppy.on('upload-error', (file, error) => {
-      subscriber.error(error);
+    uppy.on('upload-error', (file, error, response) => {
+      // @ts-ignore
+      response.error = response;
+      subscriber.error(
+        response
+        // type CustomUploadError {
+        //   error: { request: XMLHttpRequest } & Error;
+        //   body: {
+        //     response: ApiResponse;
+        //     status: number;
+        //   };
+        // }
+      );
     });
 
     uppy.addFile({
@@ -1195,52 +1237,39 @@ export function fetchChildrenByPath(
   path: string,
   options?: Partial<GetChildrenOptions>
 ): Observable<GetChildrenResponse> {
-  return postJSON('/studio/api/2/content/children_by_path', {
-    siteId,
-    path,
-    ...options
-  }).pipe(
-    pluck('response'),
-    map(({ children, levelDescriptor, total, offset, limit }) =>
-      Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
-        levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
-        total,
-        offset,
-        limit
-      })
-    )
-  );
+  return fetchChildrenByPaths(siteId, { [path]: options }).pipe(map((data) => data[path]));
 }
 
+/**
+ * siteId {string} The site id.
+ * fetchOptionsByPath {LookupTable<Partial<GetChildrenOptions>>} A lookup table of paths and their respective options.
+ * options {GetChildrenOptions} Options that will be applied to all the path requests.
+ * */
 export function fetchChildrenByPaths(
   siteId: string,
   fetchOptionsByPath: LookupTable<Partial<GetChildrenOptions>>,
   options?: Partial<GetChildrenOptions>
 ): Observable<LookupTable<GetChildrenResponse>> {
-  const paths = Object.keys(fetchOptionsByPath);
-  if (paths.length === 0) {
-    return of({});
-  }
-  const requests = paths.map((path) =>
-    fetchChildrenByPath(siteId, path, { ...options, ...fetchOptionsByPath[path] }).pipe(
-      catchError((error: AjaxError) => {
-        if (error.status === 404) {
-          return of([]);
-        } else {
-          throw error;
-        }
-      })
-    )
-  );
-  return forkJoin(requests).pipe(
-    map((responses) => {
-      const data = {};
-      Object.keys(fetchOptionsByPath).forEach((path, i) => (data[path] = responses[i]));
-      return data;
-    })
-  );
+  const paths = Object.keys(fetchOptionsByPath).map((path) => ({ path, ...options, ...fetchOptionsByPath[path] }));
+  return paths.length === 0
+    ? of({})
+    : postJSON(`/studio/api/2/content/${siteId}/children`, { paths }).pipe(
+        map(({ response: { items } }) => {
+          const data = {};
+          items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
+            data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
+              levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
+              total,
+              offset,
+              limit
+            });
+          });
+          return data;
+        })
+      );
 }
 
+// region export function fetchItemsByPath(...
 export function fetchItemsByPath(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<SandboxItem>>;
 export function fetchItemsByPath(
   siteId: string,
@@ -1278,7 +1307,9 @@ export function fetchItemsByPath(
     )
   );
 }
+// endregion
 
+// region export function fetchItemByPath(...
 export function fetchItemByPath(siteId: string, path: string): Observable<SandboxItem>;
 export function fetchItemByPath(
   siteId: string,
@@ -1322,6 +1353,7 @@ export function fetchItemByPath(
     pluck(0)
   );
 }
+// endregion
 
 export function fetchItemWithChildrenByPath(
   siteId: string,

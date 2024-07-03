@@ -28,6 +28,8 @@ import Tooltip, { TooltipProps } from '@mui/material/Tooltip';
 import * as React from 'react';
 import ImageIcon from '@mui/icons-material/ImageOutlined';
 import VideoIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
+import AudioIcon from '@mui/icons-material/AudiotrackOutlined';
+import SubtitlesIcon from '@mui/icons-material/ClosedCaptionOffOutlined';
 import CodeRounded from '@mui/icons-material/CodeRounded';
 import FontIcon from '@mui/icons-material/FontDownloadOutlined';
 import TextIcon from '@mui/icons-material/SubjectRounded';
@@ -38,22 +40,26 @@ import { DetailedItem, SandboxItem } from '../../models/Item';
 import { IntlFormatters, useIntl } from 'react-intl';
 import { messages } from './translations';
 import { SvgIconProps } from '@mui/material/SvgIcon';
+import { BoxProps } from '@mui/material/Box';
 
 export interface ItemTypeIconProps extends SvgIconProps {
   item: DetailedItem | SandboxItem;
   tooltipProps?: Partial<TooltipProps>;
+  sxs?: Partial<{
+    icon: BoxProps['sx'];
+  }>;
 }
 
 export function getItemTypeText(item: DetailedItem | SandboxItem, formatMessage: IntlFormatters['formatMessage']) {
   return messages[item.systemType]
     ? formatMessage(messages[item.systemType])
     : item.mimeType
-    ? item.mimeType
-    : formatMessage(messages.unknown);
+      ? item.mimeType
+      : formatMessage(messages.unknown);
 }
 
 export function ItemTypeIcon(props: ItemTypeIconProps) {
-  const { item, tooltipProps, ...rest } = props;
+  const { item, tooltipProps, sxs, ...rest } = props;
   const { formatMessage } = useIntl();
   let TheIcon = UnknownStateIcon;
   switch (item.systemType) {
@@ -64,6 +70,8 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
         TheIcon = ImageIcon;
       } else if (item.mimeType.includes('video/')) {
         TheIcon = VideoIcon;
+      } else if (item.mimeType.includes('audio/')) {
+        TheIcon = AudioIcon;
       } else {
         switch (item.mimeType) {
           case 'application/javascript':
@@ -101,6 +109,9 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
           case 'image/vnd.microsoft.icon':
             TheIcon = ImageIcon;
             break;
+          case 'application/x-subrip':
+            TheIcon = SubtitlesIcon;
+            break;
           default:
             if (item.mimeType.includes('text/')) {
               TheIcon = TextIcon;
@@ -136,7 +147,7 @@ export function ItemTypeIcon(props: ItemTypeIconProps) {
   }
   return (
     <Tooltip {...tooltipProps} title={getItemTypeText(item, formatMessage)}>
-      <TheIcon {...rest} />
+      <TheIcon sx={sxs?.icon} {...rest} />
     </Tooltip>
   );
 }

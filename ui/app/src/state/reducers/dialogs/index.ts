@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { combineReducers } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 import confirm from './confirm';
 import error from './error';
 import newContent from './newContent';
@@ -46,6 +46,7 @@ import unlockPublisher from './unlockPublisher';
 import widget from './widget';
 import uiBlocker from './uiBlocker';
 import renameAsset from './renameAsset';
+import brokenReferences from './brokenReferences';
 
 export default combineReducers({
   confirm,
@@ -78,5 +79,6 @@ export default combineReducers({
   publishingStatus,
   unlockPublisher,
   widget,
-  uiBlocker
+  uiBlocker,
+  brokenReferences
 });

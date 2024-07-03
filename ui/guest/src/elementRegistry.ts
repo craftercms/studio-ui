@@ -167,7 +167,7 @@ export function register(payload: ElementRecordRegistration): number {
     }
   }
 
-  // If the relevant model is loaded, complete it's registration, otherwise,
+  // If the relevant model is loaded, complete its registration, otherwise,
   // request it and complete registration when it does load.
   if (hasCachedModel(modelId)) {
     completeRegistration(id);
@@ -377,7 +377,7 @@ export function getDragContextFromDropTargets(
   dropTargets: ICERecord[],
   validationsLookup?: LookupTable<LookupTable<ValidationResult>>,
   currentRecord?: ElementRecord
-): { dropZones: any; siblings: any; players: any; containers: any } {
+): { dropZones: DropZone[]; siblings: Element[]; players: Element[]; containers: Element[] } {
   const response = {
     dropZones: [],
     siblings: [],
@@ -390,7 +390,7 @@ export function getDragContextFromDropTargets(
     const dropZonesFiltered = currentRecord
       ? dropZones.filter((dropZone) => dropZone.children.includes(currentRecord.element))
       : null;
-    (dropZonesFiltered && dropZonesFiltered.length ? dropZonesFiltered : dropZones).forEach((dropZone) => {
+    (dropZonesFiltered?.length ? dropZonesFiltered : dropZones).forEach((dropZone) => {
       dropZone.origin = null;
       dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
       dropZone.validations = validationsLookup?.[id] ?? {};

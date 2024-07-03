@@ -363,7 +363,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
         self = self;
 
       const canvas = $image.cropper('getCroppedCanvas');
-      var dataUrl = canvas.toDataURL();
+      const dataUrl = canvas.toDataURL(imageData.meta.type);
 
       const file = {
         dataUrl,
@@ -460,21 +460,19 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
           .subscribe(({ allowed, modifiedValue, target }) => {
             if (allowed) {
               if (modifiedValue) {
-                CStudioAuthoring.Utils.showConfirmDialog(
-                  null,
-                  formatMessage(formEngineMessages.createPolicy, { originalPath: fileName, path: modifiedValue }),
-                  () => {
+                CStudioAuthoring.Utils.showConfirmDialog({
+                  body: formatMessage(formEngineMessages.createPolicy, { originalPath: fileName, path: modifiedValue }),
+                  onOk: () => {
                     createNewNameFile();
                   }
-                );
+                });
               } else {
                 createNewNameFile();
               }
             } else {
-              CStudioAuthoring.Utils.showConfirmDialog(
-                null,
-                formatMessage(formEngineMessages.policyError, { path: target })
-              );
+              CStudioAuthoring.Utils.showConfirmDialog({
+                body: formatMessage(formEngineMessages.policyError, { path: target })
+              });
             }
           });
       } else {

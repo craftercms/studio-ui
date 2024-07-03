@@ -40,12 +40,13 @@ import { UserGroupMembershipEditor } from '../UserGroupMembershipEditor';
 import { EditUserDialogUIProps } from './utils';
 import TextField from '@mui/material/TextField';
 import {
-  USER_FIRST_NAME_MIN_LENGTH,
-  USER_LAST_NAME_MIN_LENGTH,
-  USER_FIRST_NAME_MAX_LENGTH,
-  USER_LAST_NAME_MAX_LENGTH,
-  validateFieldMinLength,
   isInvalidEmail,
+  USER_EMAIL_MAX_LENGTH,
+  USER_FIRST_NAME_MAX_LENGTH,
+  USER_FIRST_NAME_MIN_LENGTH,
+  USER_LAST_NAME_MAX_LENGTH,
+  USER_LAST_NAME_MIN_LENGTH,
+  validateFieldMinLength,
   validateRequiredField
 } from '../UserManagement/utils';
 
@@ -264,6 +265,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                           <FormattedMessage id="editUserDialog.invalidEmail" defaultMessage="Email is invalid" />
                         ) : null
                       }
+                      inputProps={{ maxLength: USER_EMAIL_MAX_LENGTH }}
                     />
                   ) : (
                     <Typography className={classes.userNameWrapper} children={user.email} />

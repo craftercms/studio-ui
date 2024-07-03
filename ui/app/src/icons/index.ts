@@ -15,8 +15,10 @@
  */
 
 export { default as About } from './About';
+export { default as AddComponents } from './AddComponents';
 export { default as Asterisk } from './Asterisk';
 export { default as BrokenLink } from './BrokenLink';
+export { default as BrowseComponents } from './BrowseComponents';
 export { default as Component } from './Component';
 export { default as ContentTypeField } from './ContentTypeField';
 export { default as CrafterCMSIcon } from './CrafterCMSIcon';

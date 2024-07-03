@@ -26,17 +26,14 @@ import IconButton from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
 import LookupTable from '../../models/LookupTable';
 import { PublishingStatus } from '../../models/Publishing';
-import { merge } from 'rxjs';
-import { fetchStatus } from '../../services/publishing';
-import { map } from 'rxjs/operators';
 import { Site } from '../../models/Site';
 import { setSiteCookie } from '../../utils/auth';
 import { trash } from '../../services/sites';
-import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
+import { batchActions } from '../../state/actions/misc';
 import { showSystemNotification } from '../../state/actions/system';
 import { fetchSites, popSite } from '../../state/actions/sites';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
-import { closeEditSiteDialog, showEditSiteDialog } from '../../state/actions/dialogs';
+import { showEditSiteDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import SitesGrid from '../SitesGrid/SitesGrid';
@@ -45,21 +42,24 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import { getStoredGlobalMenuSiteViewPreference, setStoredGlobalMenuSiteViewPreference } from '../../utils/state';
 import { hasGlobalPermissions } from '../../services/users';
-import { foo, nnou } from '../../utils/object';
+import { foo } from '../../utils/object';
 import { useEnv } from '../../hooks/useEnv';
 import { useActiveUser } from '../../hooks/useActiveUser';
 import { useLogicResource } from '../../hooks/useLogicResource';
-import { useMount } from '../../hooks/useMount';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSitesBranch } from '../../hooks/useSitesBranch';
 import Paper from '@mui/material/Paper';
 import { getSystemLink } from '../../utils/system';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { createCustomDocumentEventListener } from '../../utils/dom';
 import { DuplicateSiteDialog } from '../DuplicateSiteDialog';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardHeader from '@mui/material/CardHeader';
+import { Typography } from '@mui/material';
+import Alert from '@mui/material/Alert';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import { ConfirmDialog } from '../ConfirmDialog';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -67,6 +67,12 @@ const translations = defineMessages({
     defaultMessage: 'Project deleted successfully'
   }
 });
+
+const confirmDeleteInitialState = {
+  site: null,
+  open: false,
+  checked: false
+};
 
 export function SiteManagement() {
   const dispatch = useDispatch();
@@ -77,55 +83,29 @@ export function SiteManagement() {
   const [currentView, setCurrentView] = useState<'grid' | 'list'>(
     getStoredGlobalMenuSiteViewPreference(user.username) ?? 'grid'
   );
-  const sitesBranch = useSitesBranch();
-  const sitesById = sitesBranch.byId;
-  const isFetching = sitesBranch.isFetching;
-  const [publishingStatusLookup, setPublishingStatusLookup] = useSpreadState<LookupTable<PublishingStatus>>({});
+  const { byId: sitesById, isFetching, active } = useSitesBranch();
   const [selectedSiteStatus, setSelectedSiteStatus] = useState<PublishingStatus>(null);
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>(foo);
-  const [sitesRefreshCountLookup, setSitesRefreshCountLookup] = useSpreadState<LookupTable<number>>({});
   const duplicateSiteDialogState = useEnhancedDialogState();
   const [duplicateSiteId, setDuplicateSiteId] = useState(null);
   const [isDuplicateDialogFromCreateDialog, setIsDuplicateDialogFromCreateDialog] = useState(false);
+  const [disabledSitesLookup, setDisabledSitesLookup] = useSpreadState({});
+  const [confirmDeleteState, setConfirmDeleteState] = useSpreadState(confirmDeleteInitialState);
 
   useEffect(() => {
-    merge(
-      ...Object.keys(sitesById).map((siteId) =>
-        fetchStatus(siteId).pipe(
-          map((status) => ({
-            status,
-            siteId
-          }))
-        )
-      )
-    ).subscribe(({ siteId, status }) => {
-      setPublishingStatusLookup({ [siteId]: status });
-    });
-  }, [setPublishingStatusLookup, sitesById]);
-
-  useMount(() => {
-    hasGlobalPermissions('create_site', 'edit_site', 'delete_site', 'duplicate_site').subscribe(setPermissionsLookup);
-  });
+    const subscription = hasGlobalPermissions('create_site', 'edit_site', 'delete_site', 'duplicate_site').subscribe(
+      setPermissionsLookup
+    );
+    return () => subscription.unsubscribe();
+  }, []);
 
   const resource = useLogicResource<Site[], { sitesById: LookupTable<Site>; isFetching: boolean }>(
-    useMemo(
-      () => ({ sitesById, isFetching, permissionsLookup, sitesRefreshCountLookup }),
-      [sitesById, isFetching, permissionsLookup, sitesRefreshCountLookup]
-    ),
+    useMemo(() => ({ sitesById, isFetching, permissionsLookup }), [sitesById, isFetching, permissionsLookup]),
     {
       shouldResolve: (source) => Boolean(source.sitesById) && permissionsLookup !== foo && !isFetching,
       shouldReject: () => false,
       shouldRenew: (source, resource) => resource.complete,
-      resultSelector: () =>
-        Object.values(sitesById).map((site) => {
-          if (nnou(sitesRefreshCountLookup[site.id])) {
-            return {
-              ...site,
-              imageUrl: `${site.imageUrl}&v=${sitesRefreshCountLookup[site.id]}`
-            };
-          }
-          return site;
-        }),
+      resultSelector: () => Object.values(sitesById),
       errorSelector: () => null
     }
   );
@@ -140,56 +120,43 @@ export function SiteManagement() {
   };
 
   const onDeleteSiteClick = (site: Site) => {
-    trash(site.id).subscribe(
-      () => {
+    setConfirmDeleteState({ site, open: true });
+  };
+
+  const onConfirmDeleteSite = (site: Site) => {
+    setDisabledSitesLookup({ [site.id]: true });
+    trash(site.id).subscribe({
+      next() {
         dispatch(
           batchActions([
-            popSite({ siteId: site.id }),
+            popSite({ siteId: site.id, isActive: site.id === active }),
             showSystemNotification({
               message: formatMessage(translations.siteDeleted)
             }),
             fetchSites()
           ])
         );
+        setDisabledSitesLookup({ [site.id]: false });
       },
-      ({ response: { response } }) => {
+      error({ response: { response } }) {
+        setDisabledSitesLookup({ [site.id]: false });
         dispatch(showErrorDialog({ error: response }));
       }
-    );
+    });
   };
 
   const onEditSiteClick = (site: Site) => {
-    const eventId = 'editSiteImageUploadComplete';
-    createCustomDocumentEventListener(eventId, ({ type }) => {
-      if (type === 'uploadComplete') {
-        setSitesRefreshCountLookup({
-          [site.id]: (sitesRefreshCountLookup[site.id] ?? 0) + 1
-        });
-      }
-    });
-
-    dispatch(
-      showEditSiteDialog({
-        site,
-        onSiteImageChange: dispatchDOMEvent({
-          id: eventId,
-          type: 'uploadComplete'
-        }),
-        onClose: batchActions([
-          closeEditSiteDialog(),
-          dispatchDOMEvent({
-            id: eventId,
-            type: 'close'
-          })
-        ])
-      })
-    );
+    dispatch(showEditSiteDialog({ site }));
   };
 
-  const onPublishButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, site: Site) => {
+  const onPublishButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    site: Site,
+    status: PublishingStatus
+  ) => {
     event.preventDefault();
     event.stopPropagation();
-    setSelectedSiteStatus(publishingStatusLookup[site.id]);
+    setSelectedSiteStatus(status);
     publishingStatusDialogState.onOpen();
   };
 
@@ -298,13 +265,13 @@ export function SiteManagement() {
         >
           <SitesGrid
             resource={resource}
-            publishingStatusLookup={publishingStatusLookup}
             onSiteClick={onSiteClick}
             onDeleteSiteClick={permissionsLookup['delete_site'] && onDeleteSiteClick}
             onEditSiteClick={permissionsLookup['edit_site'] && onEditSiteClick}
             currentView={currentView}
             onPublishButtonClick={onPublishButtonClick}
             onDuplicateSiteClick={permissionsLookup['duplicate_site'] && onDuplicateSiteClick}
+            disabledSitesLookup={disabledSitesLookup}
           />
         </SuspenseWithEmptyState>
       </ErrorBoundary>
@@ -339,6 +306,43 @@ export function SiteManagement() {
         hasPendingChanges={duplicateSiteDialogState.hasPendingChanges}
         isSubmitting={duplicateSiteDialogState.isSubmitting}
         onSubmittingAndOrPendingChange={duplicateSiteDialogState.onSubmittingAndOrPendingChange}
+      />
+      <ConfirmDialog
+        open={confirmDeleteState.open}
+        body={
+          <>
+            <Typography>
+              <FormattedMessage
+                defaultMessage="Confirm the permanent deletion of the “{siteId}” project."
+                values={{
+                  siteId: confirmDeleteState.site?.id
+                }}
+              />
+            </Typography>
+            <Alert severity="warning" icon={false} sx={{ mt: 2 }}>
+              <FormControlLabel
+                sx={{ textAlign: 'left' }}
+                control={
+                  <Checkbox
+                    color="primary"
+                    checked={confirmDeleteState.checked}
+                    onChange={() => setConfirmDeleteState({ checked: !confirmDeleteState.checked })}
+                  />
+                }
+                label={
+                  <FormattedMessage defaultMessage="I understand deleting a project is immediate and irreversible." />
+                }
+              />
+            </Alert>
+          </>
+        }
+        okButtonText={<FormattedMessage defaultMessage="Delete" />}
+        disableOkButton={!confirmDeleteState.checked}
+        onOk={() => {
+          onConfirmDeleteSite(confirmDeleteState.site);
+          setConfirmDeleteState(confirmDeleteInitialState);
+        }}
+        onCancel={() => setConfirmDeleteState(confirmDeleteInitialState)}
       />
     </Paper>
   );

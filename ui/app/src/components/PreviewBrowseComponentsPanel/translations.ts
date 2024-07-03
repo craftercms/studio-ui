@@ -18,8 +18,9 @@ import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
   browse: {
-    id: 'previewBrowseComponentsPanel.title',
-    defaultMessage: 'Browse Components'
+    // Translation not used in code but powers i18n for `ui.xml`
+    id: 'previewBrowseComponentsPanelTitle',
+    defaultMessage: 'Existing Content'
   },
   noResults: {
     id: 'previewBrowseComponentsPanel.noResults',

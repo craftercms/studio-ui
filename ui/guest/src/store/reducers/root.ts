@@ -24,14 +24,25 @@ import {
   getRecordsFromIceId,
   getSiblingRects
 } from '../../elementRegistry';
-import { dragOk } from '../util';
-import * as iceRegistry from '../../iceRegistry';
-import { findChildRecord, getById, getReferentialEntries } from '../../iceRegistry';
+import { checkIfLockedOrModified, dragOk } from '../util';
+import {
+  exists,
+  findChildRecord,
+  getById,
+  getContentTypeDropTargets,
+  getMediaDropTargets,
+  getMovableParentRecord,
+  getRecordDropTargets,
+  getReferentialEntries,
+  isMovable,
+  runDropTargetsValidations,
+  runValidation
+} from '../../iceRegistry';
 import { Reducer } from '@reduxjs/toolkit';
 import { GuestStandardAction } from '../models/GuestStandardAction';
 import { ElementRecord, ICERecord } from '../../models/InContextEditing';
 import { GuestState } from '../models/GuestStore';
-import { notNullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
+import { notNullOrUndefined, nullOrUndefined, reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { updateDropZoneValidations } from '../../utils/dom';
 import { EditingStatus, HighlightMode } from '../../constants';
 import {
@@ -43,6 +54,7 @@ import {
   contentTreeFieldSelected,
   contentTreeSwitchFieldInstance,
   contentTypeDropTargetsRequest,
+  fetchGuestModelComplete,
   highlightModeChanged,
   hostCheckIn,
   setEditModePadding,
@@ -53,6 +65,10 @@ import {
   computedDragEnd,
   computedDragOver,
   desktopAssetDragStarted,
+  desktopAssetUploadComplete,
+  desktopAssetUploadFailed,
+  desktopAssetUploadProgress,
+  desktopAssetUploadStarted,
   dropzoneEnter,
   dropzoneLeave,
   editComponentInline,
@@ -63,13 +79,16 @@ import {
   setDropPosition,
   setEditingStatus,
   setEditMode,
-  startListening,
-  desktopAssetUploadComplete,
-  desktopAssetUploadProgress,
-  desktopAssetUploadStarted,
-  desktopAssetUploadFailed
+  setLockedItems,
+  startListening
 } from '../actions';
 import { ModelHierarchyMap } from '@craftercms/studio-ui/utils/content';
+import { contentEvent, lockContentEvent } from '@craftercms/studio-ui/state/actions/system';
+import { NotFunction, ReducerWithInitialState } from '@reduxjs/toolkit/src/createReducer';
+import StandardAction from '@craftercms/studio-ui/models/StandardAction';
+import { getParentModelId } from '../../utils/ice';
+import { getCachedModels, getCachedSandboxItems, modelHierarchyMap } from '../../contentController';
+import { isEditActionAvailable } from '../../utils/util';
 
 type CaseReducer<S = GuestState, A extends GuestStandardAction = GuestStandardAction> = Reducer<S, A>;
 
@@ -88,7 +107,10 @@ const initialState: GuestState = {
   highlightMode: HighlightMode.ALL,
   authoringBase: null,
   uploading: {},
-  models: {},
+  // models: {},
+  // itemsByPath: {},
+  lockedPaths: {},
+  externallyModifiedPaths: {},
   contentTypes: {},
   hostCheckedIn: false,
   rteConfig: {},
@@ -97,11 +119,16 @@ const initialState: GuestState = {
   username: null
 };
 
-function createReducer<S, CR extends CaseReducers<S>>(initialState: S, actionsMap: CR): Reducer<S> {
-  return (state = initialState, action) => {
+function createReducer<S extends NotFunction<any>, CR extends CaseReducers<S, any> = CaseReducers<S, any>>(
+  initialState: S,
+  actionsMap: CR
+): ReducerWithInitialState<S> {
+  const reducer = (state = initialState, action) => {
     const caseReducer = actionsMap[action.type];
     return caseReducer?.(state, action) ?? state;
   };
+  reducer.getInitialState = () => initialState;
+  return reducer;
 }
 
 const resetState: (state: GuestState) => GuestState = (state: GuestState) => ({
@@ -111,6 +138,65 @@ const resetState: (state: GuestState) => GuestState = (state: GuestState) => ({
   highlighted: {},
   dragContext: null
 });
+
+// Reducers for `desktopAssetDragStarted` & `assetDragStarted` are nearly identical. Refactored as one here.
+const reducerForAssetDragStarted: CaseReducer<
+  GuestState,
+  GuestStandardAction<
+    ReturnType<typeof desktopAssetDragStarted>['payload'] | ReturnType<typeof assetDragStarted>['payload']
+  >
+> = (state, action) => {
+  const { asset } = action.payload;
+  if (nullOrUndefined(asset)) {
+    return state;
+  }
+  let type: string;
+  const isFromDesktop = action.type === desktopAssetDragStarted.type;
+  const property: 'type' | 'mimeType' = isFromDesktop ? 'type' : 'mimeType';
+  if (asset[property].includes('image/')) {
+    type = 'image';
+  } else if (asset[property].includes('video/')) {
+    type = 'video-picker';
+  }
+  const dropTargets = getMediaDropTargets(type).filter((record) => {
+    if (
+      !isEditActionAvailable({
+        record,
+        models: getCachedModels(),
+        sandboxItemsByPath: getCachedSandboxItems(),
+        parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
+      })
+    ) {
+      return false;
+    }
+    let { field: { validations = [] } = {} } = getReferentialEntries(record);
+    return Boolean(
+      isFromDesktop
+        ? validations['allowImageUpload'] || validations['allowVideoUpload']
+        : validations['allowImagesFromRepo'] || validations['allowVideosFromRepo']
+    );
+  });
+  const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
+  const highlighted = getHighlighted(dropZones);
+  return {
+    ...state,
+    highlighted,
+    status: isFromDesktop ? EditingStatus.UPLOAD_ASSET_FROM_DESKTOP : EditingStatus.PLACING_DETACHED_ASSET,
+    dragContext: {
+      players,
+      siblings: [],
+      dropZones,
+      containers,
+      inZone: false,
+      targetIndex: null,
+      dragged: asset
+    }
+  };
+};
+
+// TODO: Must figure out why these case reducers don't seem to have the Proxy object.
+//  Return statements and not mutating the state object is necessary.
+//  Is it because createReducer from redux-toolkit is not used?
 
 const reducer = createReducer(initialState, {
   // region dblclick
@@ -132,7 +218,7 @@ const reducer = createReducer(initialState, {
     if (state.status === EditingStatus.LISTENING) {
       const { highlightMode } = state;
       const iceId = record.iceIds[0];
-      const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
+      const movableRecordId = getMovableParentRecord(iceId);
       if (highlightMode === HighlightMode.ALL) {
         const highlight = getHoverData(record.id);
         if (notNullOrUndefined(movableRecordId)) {
@@ -179,10 +265,11 @@ const reducer = createReducer(initialState, {
     const { record } = action.payload;
     // onMouseOver pre-populates the draggable record
     const iceId = state.draggable?.[record.id];
+    const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
     // Items that browser make draggable by default (images, etc) may not have an ice id
-    if (notNullOrUndefined(iceId)) {
-      const dropTargets = iceRegistry.getRecordDropTargets(iceId);
-      const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
+    if (!isLocked && !isExternallyModified && notNullOrUndefined(iceId)) {
+      const dropTargets = getRecordDropTargets(iceId);
+      const validationsLookup = runDropTargetsValidations(dropTargets);
       const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(
         dropTargets,
         validationsLookup,
@@ -194,14 +281,13 @@ const reducer = createReducer(initialState, {
         highlighted,
         status: EditingStatus.SORTING_COMPONENT,
         dragContext: {
-          ...state.dragContext,
           players,
           siblings,
           dropZones,
           containers,
           inZone: false,
           targetIndex: null,
-          dragged: iceRegistry.getById(iceId)
+          dragged: getById(iceId)
         }
       };
     } else {
@@ -340,7 +426,7 @@ const reducer = createReducer(initialState, {
     }
 
     const maxCount = !currentDropZone.origin
-      ? iceRegistry.runValidation(currentDropZone.iceId as number, 'maxCount', [length])
+      ? runValidation(currentDropZone.iceId as number, 'maxCount', [length])
       : null;
 
     if (maxCount) {
@@ -380,7 +466,7 @@ const reducer = createReducer(initialState, {
       length = length - 1;
     }
 
-    const minCount = iceRegistry.runValidation(currentDropZone.iceId as number, 'minCount', [length]);
+    const minCount = runValidation(currentDropZone.iceId as number, 'minCount', [length]);
 
     if (minCount) {
       rest.minCount = minCount;
@@ -433,7 +519,7 @@ const reducer = createReducer(initialState, {
     const { contentTypeId } = action.payload;
     const highlighted = {};
 
-    iceRegistry.getContentTypeDropTargets(contentTypeId).forEach((item) => {
+    getContentTypeDropTargets(contentTypeId).forEach((item) => {
       let { elementRecordId } = compileDropZone(item.id);
       highlighted[elementRecordId] = getHoverData(elementRecordId);
     });
@@ -501,156 +587,93 @@ const reducer = createReducer(initialState, {
   // TODO: Not pure.
   [componentDragStarted.type]: (state, action) => {
     const { contentType } = action.payload;
-    if (notNullOrUndefined(contentType)) {
-      const dropTargets = iceRegistry.getContentTypeDropTargets(contentType);
-      const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
-      const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(
-        dropTargets,
-        validationsLookup
-      );
-      const highlighted = getHighlighted(dropZones);
-      return {
-        ...state,
-        highlighted,
-        status: EditingStatus.PLACING_NEW_COMPONENT,
-        dragContext: {
-          ...state.dragContext,
-          players,
-          siblings,
-          dropZones,
-          containers,
-          contentType,
-          inZone: false,
-          targetIndex: null,
-          dragged: null
-        }
-      };
-    } else {
+    if (nullOrUndefined(contentType)) {
       return state;
     }
+    let dropTargets = getContentTypeDropTargets(contentType, undefined, ['embedded', 'shared']);
+    const validationsLookup = runDropTargetsValidations(dropTargets);
+    let { players, siblings, containers, dropZones } = getDragContextFromDropTargets(dropTargets, validationsLookup);
+    // TODO: Does filtering drop zones only enough? Verify siblings, containers, etc. don't need to be filtered as well.
+    dropZones = dropZones.filter((dz) => {
+      const iceRecord = getById(dz.iceId);
+      return isEditActionAvailable({
+        record: iceRecord,
+        models: getCachedModels(),
+        sandboxItemsByPath: getCachedSandboxItems(),
+        parentModelId: getParentModelId(iceRecord.modelId, getCachedModels(), modelHierarchyMap)
+      });
+    });
+    const highlighted = getHighlighted(dropZones);
+    return {
+      ...state,
+      highlighted,
+      status: EditingStatus.PLACING_NEW_COMPONENT,
+      dragContext: {
+        players,
+        siblings,
+        dropZones,
+        containers,
+        contentType,
+        inZone: false,
+        targetIndex: null,
+        dragged: null
+      }
+    };
   },
   // endregion
   // region componentInstanceDragStarted
   // TODO: Not pure.
   [componentInstanceDragStarted.type]: (state, action) => {
     const { instance, contentType } = action.payload;
-
-    if (notNullOrUndefined(instance)) {
-      const dropTargets = iceRegistry.getContentTypeDropTargets(
-        instance.craftercms.contentTypeId,
-        (record: ICERecord, hierarchyMap: ModelHierarchyMap) => {
-          const instanceId = instance.craftercms.id;
-          return hierarchyMap[record.modelId]?.children.includes(instanceId);
-        },
-        // This action type ensures we're working with 'shared' components
-        'shared'
-      );
-      const validationsLookup = iceRegistry.runDropTargetsValidations(dropTargets);
-      const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(
-        dropTargets,
-        validationsLookup
-      );
-
-      const highlighted = getHighlighted(dropZones);
-
-      return {
-        ...state,
-        highlighted,
-        status: EditingStatus.PLACING_DETACHED_COMPONENT,
-        dragContext: {
-          ...state.dragContext,
-          players,
-          siblings,
-          dropZones,
-          containers,
-          instance,
-          contentType,
-          inZone: false,
-          targetIndex: null,
-          dragged: null
-        }
-      };
-    } else {
+    if (nullOrUndefined(instance)) {
       return state;
     }
+    const instanceId = instance.craftercms.id;
+    const dropTargets = getContentTypeDropTargets(
+      instance.craftercms.contentTypeId,
+      (record: ICERecord, hierarchyMap: ModelHierarchyMap) => {
+        return (
+          !isEditActionAvailable({
+            record,
+            models: getCachedModels(),
+            sandboxItemsByPath: getCachedSandboxItems(),
+            parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
+          }) || hierarchyMap[record.modelId]?.children.includes(instanceId)
+        );
+      },
+      // This action type ensures we're working with existing 'shared' components
+      'sharedExisting'
+    );
+    const validationsLookup = runDropTargetsValidations(dropTargets);
+    const { players, siblings, containers, dropZones } = getDragContextFromDropTargets(dropTargets, validationsLookup);
+
+    const highlighted = getHighlighted(dropZones);
+
+    return {
+      ...state,
+      highlighted,
+      status: EditingStatus.PLACING_DETACHED_COMPONENT,
+      dragContext: {
+        players,
+        siblings,
+        dropZones,
+        containers,
+        instance,
+        contentType,
+        inZone: false,
+        targetIndex: null,
+        dragged: null
+      }
+    };
   },
   // endregion
   // region desktopAssetDragStarted
   // TODO: Not pure
-  [desktopAssetDragStarted.type]: (state, action) => {
-    const { asset } = action.payload;
-    if (notNullOrUndefined(asset)) {
-      let type;
-      if (asset.type.includes('image/')) {
-        type = 'image';
-      } else if (asset.type.includes('video/')) {
-        type = 'video-picker';
-      }
-
-      const dropTargets = iceRegistry.getMediaDropTargets(type).filter((record) => {
-        let { field: { validations = [] } = {} } = getReferentialEntries(record);
-        return Boolean(validations['allowImageUpload'] || validations['allowVideoUpload']);
-      });
-      const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
-      const highlighted = getHighlighted(dropZones);
-
-      return {
-        ...state,
-        highlighted,
-        status: EditingStatus.UPLOAD_ASSET_FROM_DESKTOP,
-        dragContext: {
-          ...state.dragContext,
-          players,
-          siblings: [],
-          dropZones,
-          containers,
-          inZone: false,
-          targetIndex: null,
-          dragged: asset
-        }
-      };
-    } else {
-      return state;
-    }
-  },
+  [desktopAssetDragStarted.type]: reducerForAssetDragStarted,
   // endregion
   // region assetDragStarted
   // TODO: Not pure
-  [assetDragStarted.type]: (state, action) => {
-    const { asset } = action.payload;
-    if (notNullOrUndefined(asset)) {
-      let type;
-      if (asset.mimeType.includes('image/')) {
-        type = 'image';
-      } else if (asset.mimeType.includes('video/')) {
-        type = 'video-picker';
-      }
-      const dropTargets = iceRegistry.getMediaDropTargets(type).filter((record) => {
-        let { field: { validations = [] } = {} } = getReferentialEntries(record);
-        return Boolean(validations['allowImagesFromRepo'] || validations['allowVideosFromRepo']);
-      });
-      const { players, containers, dropZones } = getDragContextFromDropTargets(dropTargets);
-      const highlighted = getHighlighted(dropZones);
-
-      return {
-        ...state,
-        highlighted,
-        status: EditingStatus.PLACING_DETACHED_ASSET,
-        dragContext: {
-          ...state.dragContext,
-          players,
-          siblings: [],
-          dropZones,
-          containers,
-          inZone: false,
-          targetIndex: null,
-          dragged: asset
-        }
-      };
-    } else {
-      return state;
-    }
-  },
+  [assetDragStarted.type]: reducerForAssetDragStarted,
   // endregion
   // region selectField
   [setEditingStatus.type]: (state, { payload }) => ({
@@ -662,7 +685,7 @@ const reducer = createReducer(initialState, {
   // TODO: Not pure
   [contentTreeFieldSelected.type]: (state, action) => {
     const { iceProps } = action.payload;
-    let iceId = iceRegistry.exists(iceProps);
+    let iceId = exists(iceProps);
     if (iceId === null) {
       return state;
     }
@@ -672,7 +695,7 @@ const reducer = createReducer(initialState, {
     if (iceRecord.recordType === 'component') {
       if (state.highlightMode === HighlightMode.MOVE_TARGETS) {
         // If in move mode, dynamically switch components to their movable item record so users can manipulate.
-        const movableRecordId = iceRegistry.getMovableParentRecord(iceId);
+        const movableRecordId = getMovableParentRecord(iceId);
         iceId = notNullOrUndefined(movableRecordId) ? movableRecordId : iceId;
       }
     } else if (iceRecord.recordType === 'repeat-item' || iceRecord.recordType === 'node-selector-item') {
@@ -693,7 +716,7 @@ const reducer = createReducer(initialState, {
     return {
       ...state,
       status: EditingStatus.FIELD_SELECTED,
-      draggable: iceRegistry.isMovable(iceId) ? { [registryEntries[0].id]: iceId } : {},
+      draggable: isMovable(iceId) ? { [registryEntries[0].id]: iceId } : {},
       highlighted: { [registryEntries[0].id]: highlight },
       fieldSwitcher:
         registryEntries.length > 1
@@ -715,7 +738,7 @@ const reducer = createReducer(initialState, {
     const highlight = getHoverData(state.fieldSwitcher.registryEntryIds[nextElem]);
     return {
       ...state,
-      draggable: iceRegistry.isMovable(state.fieldSwitcher.iceId) ? { [id]: state.fieldSwitcher.iceId } : {},
+      draggable: isMovable(state.fieldSwitcher.iceId) ? { [id]: state.fieldSwitcher.iceId } : {},
       highlighted: { [id]: highlight },
       fieldSwitcher: {
         ...state.fieldSwitcher,
@@ -756,7 +779,55 @@ const reducer = createReducer(initialState, {
   [setEditModePadding.type]: (state, action) => ({
     ...state,
     editModePadding: action.payload.editModePadding
-  })
+  }),
+  // endregion
+  // region contentEvent
+  [contentEvent.type]: (state, { payload }) => {
+    if (state.username !== payload.user.username) {
+      return {
+        ...state,
+        externallyModifiedPaths: { ...state.externallyModifiedPaths, [payload.targetPath]: { user: payload.user } }
+      };
+    } else {
+      return state;
+    }
+  },
+  // endregion
+  // region lockContentEvent
+  [lockContentEvent.type]: (state, { payload }) => {
+    const nextState = { ...state, lockedPaths: { ...state.lockedPaths } };
+    if (payload.locked) {
+      nextState.lockedPaths[payload.targetPath] = { user: payload.user };
+    } else {
+      delete nextState.lockedPaths[payload.targetPath];
+    }
+    return state;
+  },
+  // endregion
+  // region setLockedItems
+  [setLockedItems.type]: (state, { payload }) => {
+    const lockedPaths = { ...state.lockedPaths };
+    payload.forEach((item) => {
+      lockedPaths[item.path] = { user: item.lockOwner };
+    });
+    return { ...state, lockedPaths };
+  },
+  // endregion
+  // region fetchGuestModelComplete
+  [fetchGuestModelComplete.type]: (
+    state,
+    { payload }: StandardAction<ReturnType<typeof fetchGuestModelComplete>['payload']>
+  ) => {
+    const lockedPaths = { ...state.lockedPaths };
+    // const itemsByPath = { ...state.itemsByPath };
+    payload.sandboxItems.forEach((item) => {
+      if (item.stateMap.locked) {
+        lockedPaths[item.path] = { user: item.lockOwner };
+      }
+      // itemsByPath[item.path] = item;
+    });
+    return { ...state, lockedPaths /* , itemsByPath */ };
+  }
   // endregion
 });
 

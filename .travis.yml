@@ -5,14 +5,15 @@ git:
   depth: 1
   quiet: true
 jdk:
-- openjdk17
+- openjdk21
 cache:
   directories:
   - "$HOME/.m2"
 branches:
   only:
   - develop
-  - support/.*
+  - support/4.1.x
+  - support/4.0.x
   - master
 notifications:
   irc:

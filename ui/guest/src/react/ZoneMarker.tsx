@@ -16,11 +16,29 @@
 
 import React, { CSSProperties, ReactNode, useEffect, useRef, useState } from 'react';
 import { getZoneMarkerStyle } from '../utils/dom';
-import { Box, Paper, Popper, Theme, Typography } from '@mui/material';
+import { Box, Paper, Popper, Theme, Tooltip, Typography, useTheme } from '@mui/material';
 import { SxProps } from '@mui/system';
 import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '@craftercms/studio-ui/models/CustomRecord';
 import LevelDescriptorIcon from '@craftercms/studio-ui/icons/LevelDescriptor';
 import FieldIcon from '@craftercms/studio-ui/icons/ContentTypeField';
+import LockedStateIcon from '@craftercms/studio-ui/icons/Lock';
+import Person from '@craftercms/studio-ui/models/Person';
+import { darken, styled } from '@mui/material/styles';
+import LookupTable from '@craftercms/studio-ui/src/models/LookupTable';
+import AllowedContentTypesData from '@craftercms/studio-ui/models/AllowedContentTypesData';
+import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
+import { getCachedContentTypes } from '../contentController';
+import { getAvatarWithIconColors } from '@craftercms/studio-ui/utils/contentType';
+
+const AllowedTypeCircle = styled('div')({
+  width: 20,
+  height: 20,
+  borderStyle: `solid`,
+  borderWidth: `1px`,
+  borderRadius: '20px',
+  display: 'inline-block',
+  marginRight: '2px'
+});
 
 export type ZoneMarkerClassKey = 'box' | 'paper' | 'icon' | 'tooltip' | 'menuItemsContainer';
 
@@ -34,11 +52,14 @@ export interface ZoneMarkerProps {
   inherited: boolean;
   showZoneTooltip?: boolean;
   menuItems?: ReactNode;
+  lockInfo?: Person;
+  isStale?: boolean;
   onPopperClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   // TODO: Receive zoneType and abstract icon display here?
   // zoneType: 'component' | 'page' | 'field';
   sx?: ZoneMarkerPartialSx;
   classes?: PartialClassRecord<ZoneMarkerClassKey>;
+  field?: ContentTypeField;
 }
 
 function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
@@ -83,10 +104,29 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
 }
 
 export function ZoneMarker(props: ZoneMarkerProps) {
-  const { rect, label, classes, inherited, menuItems, showZoneTooltip = true, onPopperClick } = props;
+  const {
+    rect,
+    label,
+    classes,
+    inherited,
+    menuItems,
+    showZoneTooltip = true,
+    onPopperClick,
+    lockInfo = null,
+    isStale = false,
+    field
+  } = props;
+  const isLockedItem = Boolean(lockInfo);
   const [zoneStyle, setZoneStyle] = useState<CSSProperties>();
   const sx = getStyles(props.sx);
   const elRef = useRef();
+  const theme = useTheme();
+  let allowedTypesMeta: LookupTable<Partial<AllowedContentTypesData<boolean>>>;
+  let contentTypes: LookupTable<ContentType>;
+  if (field?.type === 'node-selector' && field.validations.allowedContentTypes) {
+    allowedTypesMeta = field.validations.allowedContentTypes.value;
+    contentTypes = getCachedContentTypes();
+  }
   useEffect(() => {
     setZoneStyle(getZoneMarkerStyle(rect));
   }, [rect]);
@@ -116,12 +156,60 @@ export function ZoneMarker(props: ZoneMarkerProps) {
           ]}
         >
           <Paper className={classes?.paper} sx={sx.paper}>
-            <div style={{ display: 'flex' }}>
-              {inherited ? <LevelDescriptorIcon sx={sx.icon} /> : <FieldIcon sx={sx.icon} />}
-              <Typography title={label} noWrap sx={{ pointerEvents: 'all' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {isLockedItem || isStale ? (
+                <LockedStateIcon sx={sx.icon} />
+              ) : inherited ? (
+                <LevelDescriptorIcon sx={sx.icon} />
+              ) : (
+                <FieldIcon sx={sx.icon} />
+              )}
+              <Typography title={label} noWrap>
                 {label}
               </Typography>
+              {allowedTypesMeta && (
+                <Box
+                  sx={{ ml: 1, pointerEvents: 'all', display: 'flex', alignItems: 'center' }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {Object.entries(allowedTypesMeta).map(([id, modes]) => {
+                    const type = contentTypes[id];
+                    const { backgroundColor, textColor } = getAvatarWithIconColors(type?.name, theme, darken);
+                    return (
+                      <Tooltip
+                        arrow
+                        // TODO: i18n
+                        title={`Drop target compatible with "${type?.name}" as ${Object.keys(modes)
+                          .map((mode) => (mode === 'sharedExisting' ? 'existing shared' : mode))
+                          .join(', ')}`}
+                      >
+                        <AllowedTypeCircle
+                          sx={{
+                            backgroundColor,
+                            // TODO: The border colour is meant to contrast background colour of
+                            //  the *Paper*, which is not set here and can be customized by app developers.
+                            //  At the moment, is being set to the known colour set on guest/src/styles/styles.ts.
+                            borderColor: textColor
+                          }}
+                        />
+                      </Tooltip>
+                    );
+                  })}
+                </Box>
+              )}
             </div>
+            {isLockedItem && (
+              <Typography noWrap variant="body2" component="div">
+                {/* TODO: i18n */}
+                Locked by {lockInfo.username}
+              </Typography>
+            )}
+            {isStale && (
+              <Typography noWrap variant="body2" component="div">
+                {/* TODO: i18n */}
+                Item was modified. Refresh to enable editing.
+              </Typography>
+            )}
             <div>{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}</div>
           </Paper>
         </Popper>

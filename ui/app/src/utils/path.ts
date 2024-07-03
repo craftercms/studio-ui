@@ -21,6 +21,7 @@ import LookupTable from '../models/LookupTable';
 import ContentType from '../models/ContentType';
 import { SystemType } from '../models';
 import { v4 as uuid } from 'uuid';
+import { ensureSingleSlash } from './string';
 
 // Originally from ComponentPanel.getPreviewPagePath
 export function getPathFromPreviewURL(previewURL: string): string {
@@ -48,8 +49,23 @@ export function getPathFromPreviewURL(previewURL: string): string {
   return `/site/website${pagePath}`;
 }
 
+/**
+ * Computes and returns the preview URL from a path. Notice non-previewable paths will not be transformed.
+ * @param path {string} The path to compute the preview URL from
+ * @returns {string} The preview URL
+ */
 export function getPreviewURLFromPath(path: string): string {
-  return withoutIndex(path).replace('/site/website', '') || '/';
+  // Transform only paths that start with `/site/website`. Preview url and path for static assets is the same.
+  // Non-previewable paths are not transformed by this function.
+  // It is known that for some existing platform users, paths do not end with `/index.xml`. For example in
+  // `/site/website/folder/article.xml` previewUrl should be `/folder/article`. In these cases, the file
+  // name cannot be striped off.
+  return /^\/site\/website/.test(path)
+    ? path
+        .replace(/^\/site\/website/, '')
+        .replace(/\/(index|default).xml$/, '')
+        .replace(/(.xml|\/)$/, '') || '/'
+    : path;
 }
 
 export function getFileNameFromPath(path: string): string {
@@ -66,7 +82,7 @@ export function parseQueryString(): ParsedQuery {
 }
 
 export function withoutIndex(path: string): string {
-  return path.replace('/index.xml', '');
+  return path?.replace('/index.xml', '');
 }
 
 export function withIndex(path: string): string {
@@ -275,6 +291,7 @@ export function getControllerPath(type: SystemType): string {
   return `/scripts/${type === 'page' ? 'pages' : 'components'}`;
 }
 
+const availableMacrosRegex = /{(objectId|objectGroupId|objectGroupId2|year|month|yyyy|mm|dd|parentPath(\[[0-9]+])?)}/;
 export function processPathMacros(dependencies: {
   path: string;
   objectId: string;
@@ -282,14 +299,30 @@ export function processPathMacros(dependencies: {
   useUUID?: boolean;
   fullParentPath?: string;
 }): string {
-  const { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
+  let { path, objectId, objectGroupId, useUUID, fullParentPath } = dependencies;
+  if (!path) return path;
+
   let processedPath = path;
+
+  // Remove unrecognized macros.
+  const pathMacros = processedPath.match(/\{(.+)}}/g) ?? [];
+  pathMacros.forEach((macro) => {
+    if (!availableMacrosRegex.test(macro)) {
+      processedPath = processedPath.replace(macro, '');
+    }
+  });
+  processedPath = ensureSingleSlash(processedPath);
+
+  // The objectGroupId is the first 4 characters of the objectId, so compute if not provided.
+  if (objectGroupId === undefined && objectId) {
+    objectGroupId = objectId.substring(0, 4);
+  }
 
   if (processedPath.includes('{objectId}')) {
     if (useUUID) {
       processedPath = processedPath.replace('{objectId}', uuid());
     } else {
-      processedPath = path.replace('{objectId}', objectId);
+      processedPath = processedPath.replace('{objectId}', objectId);
     }
   }
 

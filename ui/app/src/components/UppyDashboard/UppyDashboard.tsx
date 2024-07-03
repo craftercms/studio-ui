@@ -16,7 +16,6 @@
 
 import { Dashboard } from '@craftercms/uppy';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { Uppy } from '@uppy/core';
 import { makeStyles } from 'tss-react/mui';
 
 import palette from '../../styles/palette';
@@ -24,24 +23,14 @@ import { validateActionPolicy } from '../../services/sites';
 import { defineMessages, useIntl } from 'react-intl';
 import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
-import { DashboardOptions } from '@uppy/dashboard';
 import { alpha } from '@mui/material';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { UppyFile } from '@uppy/utils';
 import { CSSObject } from 'tss-react';
-
-interface UppyDashboardProps {
-  uppy: Uppy;
-  site: string;
-  path: string;
-  title: string;
-  maxActiveUploads: number;
-  onMinimized?(): void;
-  onPendingChanges?(pending: boolean): void;
-  onClose?(): void;
-  options?: DashboardOptions;
-}
+import { ensureSingleSlash } from '../../utils/string';
+import { UppyDashboardProps } from './UppyDashboardProps';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const useStyles = makeStyles()((theme) => ({
   dashboard: {
@@ -163,8 +152,14 @@ const useStyles = makeStyles()((theme) => ({
         }
       }
     },
+    '& .uppy-Dashboard-Item-statusSize': {
+      marginBottom: 0
+    },
+    '& .uppy-Dashboard-Item-errorDetails': {
+      display: 'inline-block'
+    },
     '& .item-name-valid': {
-      color: theme.palette.success.main
+      color: theme.palette.success.dark
     },
     '& .item-name-invalid': {
       textDecoration: 'line-through',
@@ -378,23 +373,27 @@ const translations = defineMessages({
     id: 'uppyDashboard.maxActiveUploadsReached',
     defaultMessage: '{maxFiles} maximum active uploads reached. Excess has been discarded.'
   },
-  projectPoliciesChangeRequired: {
-    id: 'uppyDashboard.projectPoliciesChangeRequired',
-    defaultMessage: 'File name "{fileName}" requires changes to comply with project policies.'
-  },
   projectPoliciesNoComply: {
-    id: 'uppyDashboard.projectPoliciesNoComply',
-    defaultMessage: 'File name "{fileName}" doesn\'t comply with project policies and can\'t be uploaded.'
+    defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
+  },
+  proceed: {
+    defaultMessage: 'Start Uploads'
+  },
+  proceedSingle: {
+    defaultMessage: 'Start Upload'
   }
 });
 
 export function UppyDashboard(props: UppyDashboardProps) {
   const { uppy, site, path, onClose, onMinimized, title, onPendingChanges, maxActiveUploads } = props;
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const options = {
     replaceTargetContent: true,
     width: '100%',
     height: '60vh',
     fileManagerSelectionType: 'both',
+    showRemoveButtonAfterComplete: false,
+    theme: prefersDarkMode ? 'dark' : 'light',
     ...props.options
   };
   const { classes } = useStyles();
@@ -442,7 +441,7 @@ export function UppyDashboard(props: UppyDashboardProps) {
       title,
       id: 'craftercms:Dashboard',
       site,
-      path,
+      path: ensureSingleSlash(`${path}/`),
       locale: {
         strings: {
           // @ts-ignore - TODO: find substitution(s)
@@ -459,15 +458,18 @@ export function UppyDashboard(props: UppyDashboardProps) {
           addingMoreFiles: formatMessage(translations.addingMoreFiles),
           renamingFromTo: formatMessage(translations.renamingFromTo),
           minimize: formatMessage(translations.minimize),
-          close: formatMessage(translations.close)
+          close: formatMessage(translations.close),
+          proceed: formatMessage(translations.proceed),
+          proceedSingle: formatMessage(translations.proceedSingle)
         }
       },
       maxActiveUploads,
       externalMessages: {
         maxFiles: formatMessage(translations.maxFiles, { maxFiles: maxActiveUploads }),
-        projectPoliciesChangeRequired: (fileName) =>
-          formatMessage(translations.projectPoliciesChangeRequired, { fileName }),
-        projectPoliciesNoComply: (fileName) => formatMessage(translations.projectPoliciesNoComply, { fileName })
+        projectPoliciesChangeRequired: (fileName, detail) => detail,
+        projectPoliciesNoComply: (fileName, detail) => {
+          return formatMessage(translations.projectPoliciesNoComply, { fileName, detail });
+        }
       },
       onMaxActiveUploadsReached: () => {
         dispatch(

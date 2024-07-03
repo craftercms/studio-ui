@@ -16,16 +16,12 @@
 
 import { SandboxItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
-import { Resource } from '../../models/Resource';
 import React from 'react';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
-export type Source = SandboxItem[];
-export type Return = Omit<Source, 'error'>;
-
 export interface WorkflowCancellationDialogUIProps {
-  resource: Resource<Return>;
+  items: SandboxItem[];
   classes?: any;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onContinue?(response): void;

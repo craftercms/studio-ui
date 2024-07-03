@@ -139,10 +139,7 @@ export function PreviewAssetsPanel() {
     if (!editMode) {
       dispatch(setPreviewEditMode({ editMode: true }));
     }
-    hostToGuest$.next({
-      type: assetDragStarted.type,
-      payload: mediaItem
-    });
+    hostToGuest$.next(assetDragStarted({ asset: mediaItem }));
   };
 
   const onDragEnd = () => hostToGuest$.next(assetDragEnded());

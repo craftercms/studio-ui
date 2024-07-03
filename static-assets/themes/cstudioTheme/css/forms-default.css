@@ -58,6 +58,11 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   cursor: move;
 }
 
+button.node-selector-item-icon {
+  border: none;
+  background: none;
+}
+
 .cstudio-form-control-node-selector-item.disabled {
   cursor: default;
 }
@@ -74,6 +79,7 @@ div.yui-calcontainer.cstudio-form-field-calendar {
 
 .cstudio-form-control-node-selector-item .actions-container {
   min-width: 51px;
+  text-align: right;
 }
 
 .cstudio-form-control-video-selector-item {
@@ -183,6 +189,23 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   background: none repeat scroll 0 0 #f0f0f0;
   color: black;
   cursor: pointer;
+}
+
+.cstudio-form-control-node-selector-add-container-item-block-label {
+  padding: 5px 10px;
+  font-weight: 600;
+  display: inline-block;
+  color: #666;
+}
+
+.cstudio-form-control-node-selector-add-container-item-block-divider {
+  display: none;
+}
+
+.cstudio-form-control-node-selector-add-container-item-block-divider:not(:last-child) {
+  display: list-item;
+  border-top: 1px solid #eee;
+  margin: 10px 0;
 }
 
 .cstudio-form-control-button {
@@ -1012,15 +1035,27 @@ div.yui-calcontainer.cstudio-form-field-calendar {
   padding: 0;
   border: 1px solid rgba(0, 0, 0, 0.5);
   background: rgba(0, 0, 0, 0.6);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3), inset 0 10px rgba(255, 255, 255, 0.2),
-    inset 0 10px 20px rgba(255, 255, 255, 0.25), inset 0 -15px 30px rgba(0, 0, 0, 0.3);
-  -o-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 10px rgba(255, 255, 255, 0.2), inset 0 10px 20px rgba(255, 255, 255, 0.25),
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 10px 20px rgba(255, 255, 255, 0.25),
     inset 0 -15px 30px rgba(0, 0, 0, 0.3);
-  -webkit-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 10px rgba(255, 255, 255, 0.2), inset 0 10px 20px rgba(255, 255, 255, 0.25),
+  -o-box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 10px 20px rgba(255, 255, 255, 0.25),
     inset 0 -15px 30px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.3);
+  -webkit-box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px rgba(255, 255, 255, 0.3),
+    inset 0 10px rgba(255, 255, 255, 0.2),
+    inset 0 10px 20px rgba(255, 255, 255, 0.25),
+    inset 0 -15px 30px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.5),
+    inset 0 1px rgba(255, 255, 255, 0.3);
   z-index: 40;
 }
 
@@ -1653,7 +1688,10 @@ body.yui-skin-cstudioTheme.masked {
 }
 
 .panel-default {
-  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 1px -1px, rgba(0, 0, 0, 0.14) 0 1px 1px 0, rgba(0, 0, 0, 0.12) 0 1px 3px 0 !important;
+  box-shadow:
+    rgba(0, 0, 0, 0.2) 0 2px 1px -1px,
+    rgba(0, 0, 0, 0.14) 0 1px 1px 0,
+    rgba(0, 0, 0, 0.12) 0 1px 3px 0 !important;
   border: 0 !important;
   margin-bottom: 10px !important;
 }
@@ -1750,4 +1788,74 @@ body.yui-skin-cstudioTheme.masked {
 .add-icon {
   margin-left: 5px;
   vertical-align: middle;
+}
+
+input[type='file'] {
+  cursor: pointer;
+  padding: 4px 10px 40px 4px;
+  box-sizing: border-box;
+}
+
+input[type='file']::file-selector-button {
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  outline: 0;
+  margin: 0 10px 0 0;
+  cursor: pointer;
+  user-select: none;
+  vertical-align: middle;
+  appearance: none;
+  text-decoration: none;
+  text-transform: none;
+  font-family: 'Source Sans Pro', 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  padding: 5px 15px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 122, 255, 0.5);
+  color: rgb(0, 122, 255);
+}
+
+.aws-file-upload-preview-el {
+  width: 100%;
+  border-radius: 4px;
+  overflow: hidden;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.aws-file-upload-preview-el img {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 4px;
+}
+
+.aws-file-upload-preview-el video {
+  max-height: 250px;
+  border-radius: 4px;
+  background-color: #555;
+}
+
+.aws-file-upload-preview-el iframe {
+  border: 0;
+  width: 100%;
+  height: 250px;
+  border-radius: 4px;
+}
+
+.aws-file-upload-control-container {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.aws-file-upload-url-el {
+  width: 100%;
+  display: flex;
+  place-content: space-between;
+}
+
+.aws-file-upload-url-el:not(:empty) {
+  padding: 10px;
 }

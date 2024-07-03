@@ -16,13 +16,15 @@
 
 import { get, postJSON } from '../utils/ajax';
 import { forkJoin, Observable } from 'rxjs';
-import { map, pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { FileDiff, Remote, Repository, RepositoryStatus } from '../models/Repository';
 
 const repositoryEndpointUrl = '/studio/api/2/repository';
 
 export function fetchRepositories(siteId: string): Observable<Repository[]> {
-  return get(`${repositoryEndpointUrl}/list_remotes?siteId=${siteId}`).pipe(pluck('response', 'remotes'));
+  return get(`${repositoryEndpointUrl}/list_remotes?siteId=${siteId}`).pipe(
+    map((response) => response?.response?.remotes)
+  );
 }
 
 export function addRemote(remote: Remote): Observable<true> {
@@ -39,7 +41,9 @@ export interface PullResponse {
 }
 
 export function pull(remote: Partial<Remote>): Observable<PullResponse> {
-  return postJSON(`${repositoryEndpointUrl}/pull_from_remote`, remote).pipe(pluck('response', 'result'));
+  return postJSON(`${repositoryEndpointUrl}/pull_from_remote`, remote).pipe(
+    map((response) => response?.response?.result)
+  );
 }
 
 export function push(siteId: string, remoteName: string, remoteBranch: string, force: boolean): Observable<true> {
@@ -49,12 +53,14 @@ export function push(siteId: string, remoteName: string, remoteBranch: string, f
 }
 
 export function fetchStatus(siteId: string): Observable<RepositoryStatus> {
-  return get(`${repositoryEndpointUrl}/status?siteId=${siteId}`).pipe(pluck('response', 'repositoryStatus'));
+  return get(`${repositoryEndpointUrl}/status?siteId=${siteId}`).pipe(
+    map((response) => response?.response?.repositoryStatus)
+  );
 }
 
 export function resolveConflict(siteId: string, path: string, resolution: string): Observable<RepositoryStatus> {
   return postJSON(`${repositoryEndpointUrl}/resolve_conflict`, { siteId, path, resolution }).pipe(
-    pluck('response', 'repositoryStatus')
+    map((response) => response?.response?.repositoryStatus)
   );
 }
 
@@ -67,18 +73,18 @@ export function bulkResolveConflict(siteId: string, paths: string[], resolution:
 
 export function diffConflictedFile(siteId: string, path: string): Observable<FileDiff> {
   return get(`${repositoryEndpointUrl}/diff_conflicted_file?siteId=${siteId}&path=${path}`).pipe(
-    pluck('response', 'diff')
+    map((response) => response?.response?.diff)
   );
 }
 
 export function commitResolution(siteId: string, commitMessage: string): Observable<RepositoryStatus> {
   return postJSON(`${repositoryEndpointUrl}/commit_resolution`, { siteId, commitMessage }).pipe(
-    pluck('response', 'repositoryStatus')
+    map((response) => response?.response?.repositoryStatus)
   );
 }
 
 export function cancelFailedPull(siteId: string): Observable<RepositoryStatus> {
   return postJSON(`${repositoryEndpointUrl}/cancel_failed_pull`, { siteId }).pipe(
-    pluck('response', 'repositoryStatus')
+    map((response) => response?.response?.repositoryStatus)
   );
 }

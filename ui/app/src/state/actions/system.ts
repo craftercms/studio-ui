@@ -23,8 +23,18 @@ import User from '../../models/User';
 import { Site } from '../../models/Site';
 import LookupTable from '../../models/LookupTable';
 import { UIBlockerStateProps } from '../../components/UIBlocker';
-import SocketEventBase, { SocketRootEventBase } from '../../models/SocketEvent';
-import { MarketplacePlugin } from '../../models';
+import SocketEventBase, {
+  DeleteContentEventsPayload,
+  ContentEventPayload,
+  DeleteContentEventPayload,
+  LockContentEventPayload,
+  MoveContentEventPayload,
+  PublishEventPayload,
+  RepositoryEventPayload,
+  WorkflowEventPayload
+} from '../../models/SocketEvent';
+import { DetailedItem, MarketplacePlugin } from '../../models';
+import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 
 // region Item Events
 
@@ -32,25 +42,23 @@ export const itemReverted = /*#__PURE__*/ createAction<{ target: string }>('ITEM
 
 export const itemCut = /*#__PURE__*/ createAction<{ target: string }>('ITEM_CUT');
 
-export const lockContentEvent = /*#__PURE__*/ createAction<SocketEventBase & { locked: boolean }>('LOCK_CONTENT_EVENT');
-
-export type ContentEventPayload = SocketEventBase;
-export type DeleteContentEventPayload = SocketEventBase;
+export const lockContentEvent = /*#__PURE__*/ createAction<LockContentEventPayload>('LOCK_CONTENT_EVENT');
 
 // New or updated (writeContent, createFolder, copyContent, revertContent, renameFolder
 export const contentEvent = /*#__PURE__*/ createAction<ContentEventPayload>('CONTENT_EVENT');
 
 export const deleteContentEvent = /*#__PURE__*/ createAction<DeleteContentEventPayload>('DELETE_CONTENT_EVENT');
 
+// A virtual batched version of deleteContentEvent. Not sent by the back. Created by the worker connected to the socket.
+export const deleteContentEvents = /*#__PURE__*/ createAction<DeleteContentEventsPayload>('DELETE_CONTENT_EVENTS');
+
 export const configurationEvent = /*#__PURE__*/ createAction<SocketEventBase>('CONFIGURATION_EVENT');
 
-export const publishEvent = /*#__PURE__*/ createAction('PUBLISH_EVENT');
+export const publishEvent = /*#__PURE__*/ createAction<PublishEventPayload>('PUBLISH_EVENT');
 
-export const repositoryEvent = /*#__PURE__*/ createAction('REPOSITORY_EVENT');
+export const repositoryEvent = /*#__PURE__*/ createAction<RepositoryEventPayload>('REPOSITORY_EVENT');
 
-export const workflowEvent = /*#__PURE__*/ createAction('WORKFLOW_EVENT');
-
-export type MoveContentEventPayload = SocketEventBase & { sourcePath: string };
+export const workflowEvent = /*#__PURE__*/ createAction<WorkflowEventPayload>('WORKFLOW_EVENT');
 
 export const moveContentEvent = /*#__PURE__*/ createAction<MoveContentEventPayload>('MOVE_CONTENT_EVENT');
 
@@ -58,9 +66,18 @@ export const moveContentEvent = /*#__PURE__*/ createAction<MoveContentEventPaylo
 
 // region Notifications
 
-export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION');
+export const showDeleteItemSuccessNotification = /*#__PURE__*/ createAction<StandardAction<{ items: DetailedItem[] }>>(
+  'SHOW_DELETE_ITEM_SUCCESS_NOTIFICATION'
+);
 
-export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
+export const showPublishItemSuccessNotification = /*#__PURE__*/ createAction<
+  StandardAction<{
+    items: DetailedItem[];
+    type: string;
+    schedule: string;
+    environment: string;
+  }>
+>('SHOW_PUBLISH_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCreateItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CREATE_ITEM_SUCCESS_NOTIFICATION');
 
@@ -70,7 +87,11 @@ export const showCreateFolderSuccessNotification = /*#__PURE__*/ createAction(
 
 export const showEditItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_EDIT_ITEM_SUCCESS_NOTIFICATION');
 
-export const showCopyItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
+export const showCopyItemSuccessNotification = /*#__PURE__*/ createAction<
+  StandardAction<{
+    paths: string[];
+  }>
+>('SHOW_COPY_ITEM_SUCCESS_NOTIFICATION');
 
 export const showCutItemSuccessNotification = /*#__PURE__*/ createAction('SHOW_CUT_ITEM_SUCCESS_NOTIFICATION');
 
@@ -96,6 +117,10 @@ export const showSystemNotification = /*#__PURE__*/ createAction<{
 // endregion
 
 export const emitSystemEvent = /*#__PURE__*/ createAction<StandardAction>('SYSTEM_EVENT');
+
+export const emitSystemEvents = /*#__PURE__*/ createAction<{ siteId: string; events: StandardAction[] }>(
+  'SYSTEM_EVENTS'
+);
 
 export const pluginInstalled = /*#__PURE__*/ createAction<MarketplacePlugin>('PLUGIN_INSTALLED');
 
@@ -129,17 +154,19 @@ export const blockUI = /*#__PURE__*/ createAction<Partial<UIBlockerStateProps>>(
 export const unblockUI = /*#__PURE__*/ createAction('UNBLOCK_UI');
 
 export const openSiteSocket = /*#__PURE__*/ createAction<{ site: string; xsrfToken: string }>('OPEN_SITE_SOCKET');
+export const closeSiteSocket = /*#__PURE__*/ createAction<{ site: string }>('CLOSE_SITE_SOCKET');
 export const siteSocketStatus = /*#__PURE__*/ createAction<{ siteId: string; connected: boolean }>(
   'SITE_SOCKET_STATUS'
 );
 export const globalSocketStatus = /*#__PURE__*/ createAction<{ connected: boolean }>('GLOBAL_SOCKET_STATUS');
 
 // region projects events
-export const newProjectReady = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>('SITE_READY_EVENT');
-export const projectBeingDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
-  'SITE_DELETING_EVENT'
-);
-export const projectDeleted = /*#__PURE__*/ createAction<SocketRootEventBase & { siteId: string }>(
-  'SITE_DELETED_EVENT'
-);
+
+export const newProjectReady =
+  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_READY_EVENT'>>('SITE_READY_EVENT');
+export const projectBeingDeleted =
+  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_DELETING_EVENT'>>('SITE_DELETING_EVENT');
+export const projectDeleted =
+  /*#__PURE__*/ createAction<ProjectLifecycleEvent<'SITE_DELETED_EVENT'>>('SITE_DELETED_EVENT');
+
 // endregion

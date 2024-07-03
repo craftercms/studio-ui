@@ -16,7 +16,7 @@
 
 import { get } from '../utils/ajax';
 import { toQueryString } from '../utils/object';
-import { pluck } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export function fetchToken(site: string, profileId: string): Observable<string> {
@@ -25,7 +25,7 @@ export function fetchToken(site: string, profileId: string): Observable<string> 
     profileId
   });
   return get<{ accessToken: string }>(`/studio/api/1/services/api/1/box/token.json${qs}`).pipe(
-    pluck('response', 'accessToken')
+    map((response) => response?.response?.accessToken)
   );
 }
 
@@ -36,5 +36,7 @@ export function fetchBoxUrl(site: string, profileId: string, fileId: string, fil
     fileId,
     filename
   });
-  return get<{ url: string }>(`/api/1/services/api/1/box/url.json${qs}`).pipe(pluck('response', 'url'));
+  return get<{ url: string }>(`/api/1/services/api/1/box/url.json${qs}`).pipe(
+    map((response) => response?.response?.url)
+  );
 }

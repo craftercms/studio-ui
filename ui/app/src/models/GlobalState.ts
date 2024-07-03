@@ -66,6 +66,9 @@ import { SingleFileUploadDialogStateProps } from '../components/SingleFileUpload
 import { ModelHierarchyMap } from '../utils/content';
 import { UIBlockerStateProps } from '../components/UIBlocker';
 import { RenameAssetStateProps } from '../components/RenameAssetDialog';
+import Person from './Person';
+import { BrokenReferencesDialogStateProps } from '../components/BrokenReferencesDialog/types';
+import AllowedContentTypesData from './AllowedContentTypesData';
 
 export type HighlightMode = 'all' | 'move';
 
@@ -93,6 +96,12 @@ export interface GuestData {
   path: string;
   selected: EditSelection[];
   itemBeingDragged: number;
+  /**
+   * Stores the modifier person for the main XB model from the moment is loaded (guest check's in) onwards.
+   * used to determine if the content item was modified in the background and it editing should be disabled.
+   */
+  mainModelModifier: Person;
+  allowedContentTypes: LookupTable<AllowedContentTypesData>;
 }
 
 // TODO:
@@ -194,6 +203,10 @@ export interface GlobalState {
     editModePadding: boolean;
     windowSize: number;
     xbDetectionTimeoutMs: number;
+    error: {
+      code: number;
+      message: string;
+    };
   };
   previewNavigation: {
     currentUrlPath: string;
@@ -235,6 +248,7 @@ export interface GlobalState {
     unlockPublisher: UnlockPublisherDialogStateProps;
     widget: WidgetDialogStateProps;
     uiBlocker: UIBlockerStateProps;
+    brokenReferences: BrokenReferencesDialogStateProps;
   };
   uiConfig: {
     error: ApiResponse;
@@ -266,6 +280,7 @@ export interface GlobalState {
     cdataEscapedFieldPatterns: string[];
     references: LookupTable;
     xml: string;
+    remoteGitBranch: string;
   };
   pathNavigator: LookupTable<PathNavigatorStateProps>;
   pathNavigatorTree: LookupTable<PathNavigatorTreeStateProps>;

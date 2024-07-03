@@ -79,7 +79,6 @@ import {
   contentEvent,
   lockContentEvent,
   moveContentEvent,
-  MoveContentEventPayload,
   showDeleteItemSuccessNotification,
   showDuplicatedItemSuccessNotification,
   showPasteItemSuccessNotification,
@@ -106,17 +105,17 @@ import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
 import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
-import SocketEvent from '../../models/SocketEvent';
+import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 
 export const sitePolicyMessages = defineMessages({
   itemPastePolicyConfirm: {
     id: 'pastePolicy.confirm',
     defaultMessage:
-      'The selected {action} target goes against project policies for the destination directory. • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
+      'The selected {action} target goes against project policies for the destination directory ({detail}). • Original path: "{path}", • Suggested path is: "{modifiedPath}". Would you like to use the suggested path?'
   },
   itemPastePolicyError: {
     id: 'pastePolicy.error',
-    defaultMessage: 'The selected {action} target goes against project policies for the destination directory.'
+    defaultMessage: 'The selected {action} target goes against project policies for the destination directory: {detail}'
   },
   itemPasteValidating: {
     id: 'words.validating',
@@ -384,13 +383,14 @@ const content: CrafterCMSEpic[] = [
           target: payload.path,
           source: getParentPath(withoutIndex(payload.path))
         }).pipe(
-          map(({ allowed, modifiedValue, target }) => {
+          map(({ allowed, modifiedValue, target, message }) => {
             if (allowed && modifiedValue) {
               return showConfirmDialog({
                 body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
                   action: getIntl().formatMessage(sitePolicyMessages.duplicate),
                   path: target,
-                  modifiedPath: modifiedValue
+                  modifiedPath: modifiedValue,
+                  detail: message
                 }),
                 onCancel: closeConfirmDialog(),
                 onOk: batchActions([
@@ -423,7 +423,8 @@ const content: CrafterCMSEpic[] = [
             } else {
               return showConfirmDialog({
                 body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-                  action: getIntl().formatMessage(sitePolicyMessages.duplicate)
+                  action: getIntl().formatMessage(sitePolicyMessages.duplicate),
+                  detail: message
                 })
               });
             }
@@ -494,7 +495,7 @@ const content: CrafterCMSEpic[] = [
             target: `${withoutIndex(payload.path)}/${fileName}`,
             source: state.content.clipboard.sourcePath
           }).pipe(
-            switchMap(({ allowed, modifiedValue, target }) => {
+            switchMap(({ allowed, modifiedValue, target, message }) => {
               if (allowed && modifiedValue) {
                 return [
                   unblockUI(),
@@ -502,7 +503,8 @@ const content: CrafterCMSEpic[] = [
                     body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyConfirm, {
                       action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
                       path: target,
-                      modifiedPath: modifiedValue
+                      modifiedPath: modifiedValue,
+                      detail: message
                     }),
                     onCancel: closeConfirmDialog(),
                     onOk: batchActions([pasteItem({ path: payload.path }), closeConfirmDialog()])
@@ -519,7 +521,8 @@ const content: CrafterCMSEpic[] = [
                   unblockUI(),
                   showConfirmDialog({
                     body: getIntl().formatMessage(sitePolicyMessages.itemPastePolicyError, {
-                      action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy'
+                      action: state.content.clipboard.type === 'CUT' ? 'cut' : 'copy',
+                      detail: message
                     })
                   })
                 ];

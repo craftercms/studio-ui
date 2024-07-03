@@ -206,24 +206,24 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     selectedMode === 'studio'
       ? publishStudioFormData
       : selectedMode === 'git'
-      ? publishGitFormData
-      : publishEverythingFormData;
+        ? publishGitFormData
+        : publishEverythingFormData;
   // endregion
   // region currentSetFormData
   const currentSetFormData =
     selectedMode === 'studio'
       ? setPublishStudioFormData
       : selectedMode === 'git'
-      ? setPublishGitFormData
-      : setPublishEverythingFormData;
+        ? setPublishGitFormData
+        : setPublishEverythingFormData;
   // endregion
   // region currentFormValid
   const currentFormValid =
     selectedMode === 'studio'
       ? publishStudioFormValid
       : selectedMode === 'git'
-      ? publishGitFormValid
-      : publishEverythingFormValid;
+        ? publishGitFormValid
+        : publishEverythingFormValid;
   // endregion
   // region hasChanges
   const hasChanges =
@@ -232,11 +232,11 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
         publishStudioFormData.comment !== initialPublishStudioFormData.comment ||
         publishStudioFormData.publishingTarget !== initialPublishingTarget
       : selectedMode === 'git'
-      ? publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
-        publishGitFormData.comment !== initialPublishGitFormData.comment ||
-        publishGitFormData.publishingTarget !== initialPublishingTarget
-      : publishEverythingFormData.comment !== initialPublishEverythingFormData.comment ||
-        publishEverythingFormData.publishingTarget !== initialPublishingTarget;
+        ? publishGitFormData.commitIds !== initialPublishGitFormData.commitIds ||
+          publishGitFormData.comment !== initialPublishGitFormData.comment ||
+          publishGitFormData.publishingTarget !== initialPublishingTarget
+        : publishEverythingFormData.comment !== initialPublishEverythingFormData.comment ||
+          publishEverythingFormData.publishingTarget !== initialPublishingTarget;
   // endregion
   const bottomElId = useId();
 

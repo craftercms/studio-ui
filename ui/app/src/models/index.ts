@@ -15,6 +15,7 @@
  */
 
 export * from './Activity';
+export * from './AllowedContentTypesData';
 export * from './ApiResponse';
 export * from './Audit';
 export * from './Aws';
@@ -25,6 +26,7 @@ export * from './ContentTypeDropTarget';
 export * from './Credentials';
 export * from './CustomRecord';
 export * from './Dashboard';
+export * from './DeepPartial';
 export * from './EntityState';
 export * from './FetchItemsByPath';
 export * from './FetchItemsByPathArray';
@@ -50,6 +52,7 @@ export * from './Plugin';
 export * from './PluginDescriptor';
 export * from './PluginDescriptorWithSource';
 export * from './PluginFileBuilder';
+export * from './ProjectLifecycleEvent';
 export * from './Publishing';
 export * from './Repository';
 export * from './Resource';
@@ -75,3 +78,4 @@ export * from './monitoring/LogEvent';
 export * from './monitoring/Memory';
 export * from './monitoring/Status';
 export * from './monitoring/Version';
+export * from './SimpleAjaxError';

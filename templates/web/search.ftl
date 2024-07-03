@@ -22,7 +22,6 @@
 <head>
   <title>${contentModel['internal-name']} - ${contentModel['common-title']!''}</title>
 
-  <script src="/studio/static-assets/libs/jquery/dist/jquery.js"></script>
   <#include "/templates/web/common/page-fragments/head.ftl" />
   <#include "/templates/web/common/page-fragments/studio-context.ftl" />
 
@@ -43,6 +42,7 @@
 
   <div id="root"></div>
 
+  <#include "/static-assets/app/pages/legacy.html">
   <script>
     <#if mode == 'select'>
     const opener = window.opener ? window.opener : parent.iframeOpener;
@@ -63,23 +63,25 @@
     }
     </#if>
 
-    CrafterCMSNext.render('#root', 'SearchPage', {
-      embedded: ${embedded?string},
-      mode: "${mode}",
-      <#if mode == 'select'>
-      onClose: closeSearch,
-      onAcceptSelection: (selectedItems) => {
-        const store = craftercms.getStore();
-        const siteId = store.getState().sites.active;
-        store.dispatch({ type: 'BLOCK_UI' });
-        craftercms.services.content.fetchItemsByPath(siteId, selectedItems, { castAsDetailedItem: true }).subscribe((items) => {
-          store.dispatch({ type: 'UNBLOCK_UI' });
-          callback.success('', items);
-          closeSearch();
-        });
-      }
-      </#if>
-    }, false);
+    document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
+      CrafterCMSNext.render('#root', 'SearchPage', {
+        embedded: ${embedded?string},
+        mode: "${mode}",
+        <#if mode == 'select'>
+        onClose: closeSearch,
+        onAcceptSelection: (selectedItems) => {
+          const store = craftercms.getStore();
+          const siteId = store.getState().sites.active;
+          store.dispatch({ type: 'BLOCK_UI' });
+          craftercms.services.content.fetchItemsByPath(siteId, selectedItems, { castAsDetailedItem: true }).subscribe((items) => {
+            store.dispatch({ type: 'UNBLOCK_UI' });
+            callback.success('', items);
+            closeSearch();
+          });
+        }
+        </#if>
+      }, false);
+    });
   </script>
 </body>
 </html>

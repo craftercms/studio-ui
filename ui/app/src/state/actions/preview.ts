@@ -26,12 +26,14 @@ import {
   SearchResult
 } from '../../models/Search';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
-import { EditSelection, WidgetDescriptor } from '../../models';
+import { EditSelection, ContentEventPayload, WidgetDescriptor } from '../../models';
 import LookupTable from '../../models/LookupTable';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import GlobalState, { HighlightMode } from '../../models/GlobalState';
 import { AjaxError } from 'rxjs/ajax';
 import { ActiveTargetingModel } from '../../services/configuration';
+import AllowedContentTypesData from '../../models/AllowedContentTypesData';
+import { ModelHierarchyMap } from '../../utils/content';
 
 interface CommonOperationProps {
   modelId: string;
@@ -54,13 +56,18 @@ export const guestCheckIn = /*#__PURE__*/ createAction<{
   location: Partial<Location>;
   path: string;
   site: string;
-  documentDomain?: string;
   version?: string;
   __CRAFTERCMS_GUEST_LANDING__?: string;
 }>('GUEST_CHECK_IN');
 export const guestCheckOut = /*#__PURE__*/ createAction<{ path: string }>('GUEST_CHECK_OUT');
-export const fetchGuestModel = /*#__PURE__*/ createAction('FETCH_GUEST_MODEL');
-export const guestSiteLoad = /*#__PURE__*/ createAction('GUEST_SITE_LOAD'); // Legacy guest check in
+export const fetchGuestModel = /*#__PURE__*/ createAction<{ path: string }>('FETCH_GUEST_MODEL');
+export const guestSiteLoad = /*#__PURE__*/ createAction<{ location: Partial<Location>; url: string }>(
+  'GUEST_SITE_LOAD'
+); // Legacy guest check in
+export const errorPageCheckIn = /*#__PURE__*/ createAction<{
+  code: number;
+  message: string;
+}>('ERROR_PAGE_CHECK_IN');
 export const sortItemOperation = /*#__PURE__*/ createAction<
   {
     targetIndex: string | number;
@@ -187,6 +194,10 @@ export const contentTreeSwitchFieldInstance = /*#__PURE__*/ createAction<{ type:
 );
 export const setEditModePadding = /*#__PURE__*/ createAction<{ editModePadding: boolean }>('SET_DRAG_HELP_MODE');
 export const toggleEditModePadding = /*#__PURE__*/ createAction('TOGGLE_DRAG_HELP_MODE');
+
+export const allowedContentTypesUpdate =
+  /*#__PURE__*/ createAction<LookupTable<AllowedContentTypesData>>('ALLOWED_TYPES_UPDATED');
+
 // endregion
 
 // region Actions
@@ -272,10 +283,22 @@ export const fetchPrimaryGuestModelComplete = /*#__PURE__*/ createAction<{
 
 // This action is meant for the other Guest models that aren't the main.
 // The reducer will shouldn't set the guest.modelId.
-export const fetchGuestModelComplete = /*#__PURE__*/ createAction<{
+export const fetchGuestModelsComplete = /*#__PURE__*/ createAction<{
   modelLookup: LookupTable<ContentInstance>;
   hierarchyMap: LookupTable<string[]>;
 }>('FETCH_GUEST_MODELS_COMPLETE');
+
+// TODO: Do we really need these two (↑ and ↓) separate actions? Asses consolidate under a single action with a better name.
+
+export const fetchGuestModelComplete = /*#__PURE__*/ createAction<{
+  path: string;
+  model: ContentInstance;
+  modelLookup: Record<string, ContentInstance>;
+  hierarchyMap: ModelHierarchyMap;
+  modelIdByPath: Record<string, string>;
+  sandboxItems: SandboxItem[];
+  permissions: string[];
+}>('FETCH_GUEST_MODEL_COMPLETE');
 
 export const guestModelUpdated = /*#__PURE__*/ createAction<{ model: ContentInstance }>('GUEST_MODEL_UPDATED');
 
@@ -420,3 +443,7 @@ export const setHighlightMode = /*#__PURE__*/ createAction<{ highlightMode: High
 export const goToLastPage = /*#__PURE__*/ createAction<string>('GO_TO_LAST_PAGE');
 export const goToNextPage = /*#__PURE__*/ createAction('GO_TO_NEXT_PAGE');
 // endregion
+
+export const mainModelModifiedExternally = /*#__PURE__*/ createAction<ContentEventPayload>(
+  'MAIN_MODEL_MODIFIED_EXTERNALLY'
+);

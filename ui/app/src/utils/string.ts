@@ -79,10 +79,13 @@ export function getInitials(str: string | Person): string {
   if (!str) {
     return '';
   } else if (typeof str === 'string') {
-    const pieces = (str ?? '').split(' ');
-    return `${pieces[0].substr(0, 1)}${pieces[1] ? pieces[1].substr(0, 1) : ''}`.toUpperCase();
+    return (str ?? '')
+      .split(' ')
+      .map((str) => str.charAt(0))
+      .join('')
+      .toUpperCase();
   } else {
-    return `${str.firstName.substr(0, 1)}${str.lastName.substr(0, 1)}`.toUpperCase();
+    return `${str.firstName.charAt(0)}${str.lastName.charAt(0)}`.toUpperCase();
   }
 }
 

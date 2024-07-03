@@ -20,6 +20,7 @@ import { obtainAuthToken } from '../../services/auth';
 import I18nProvider from '../I18nProvider';
 import CrafterThemeProvider from '../CrafterThemeProvider';
 import { getRequestForgeryToken } from '../../utils/auth';
+import Typography from '@mui/material/Typography';
 
 export function AuthBoundary(props) {
   const [loggedIn, setLoggedIn] = useState<boolean>(null);
@@ -32,7 +33,7 @@ export function AuthBoundary(props) {
       });
   }, []);
   if (loggedIn === null) {
-    return 'Checking auth...';
+    return <Typography sx={{ margin: '50px auto', textAlign: 'center' }}>Checking Authentication</Typography>;
   } else if (loggedIn) {
     return props.children;
   } else {
