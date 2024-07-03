@@ -108,27 +108,30 @@
   </div>
 </#if>
 
+<#include "/static-assets/app/pages/legacy.html">
 <script>
-  $(document).ready(function(){
-    CStudioAuthoring.Service.getCurrentVersion(CStudioAuthoringContext.site, "${dir}", {
-      success: function(version) {
-        $('#current-version').append(version)
-      }
-    });
+  document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
+    jQuery(function() {
+      CStudioAuthoring.Service.getCurrentVersion(CStudioAuthoringContext.site, "${dir}", {
+        success: function(version) {
+          $('#current-version').append(version)
+        }
+      });
 
-    $('#cancelBtn').on('click', function() {
-      parent.$('body').trigger('diff-end');
-    });
-
-    $(document).on("keyup", function(e) {
-      if (e.keyCode === 27) {	// esc
+      $('#cancelBtn').on('click', function() {
         parent.$('body').trigger('diff-end');
-        $(document).off("keyup");
-      }
-    });
+      });
 
-    $(window).focus();
-  })
+      $(document).on("keyup", function(e) {
+        if (e.keyCode === 27) {	// esc
+          parent.$('body').trigger('diff-end');
+          $(document).off("keyup");
+        }
+      });
+
+      $(window).focus();
+    });
+  });
 </script>
 
 </body>
