@@ -175,7 +175,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
       valid;
 
     if (obj.required) {
-      if (timeValue == '') {
+      if (!Boolean(timeValue)) {
         obj.setError('required', 'Field is Required');
         obj.renderValidation(true);
         valid = false;
@@ -419,6 +419,7 @@ YAHOO.extend(CStudioForms.Controls.Time, CStudioForms.CStudioFormField, {
     var self_ = this;
 
     if (inputTime == undefined) {
+      this.validate(null, this);
       if (this.timeEl.dataset.value != '') {
         CStudioAuthoring.Operations.showSimpleDialog(
           'timeFormatError-dialog',
