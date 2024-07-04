@@ -49,9 +49,8 @@ let db: LookupTable<ElementRecord> = {};
 let registry: LookupTable<number[]> = {};
 // Lookup table of element record id, index by the element
 const recordIdByElementLookup = new Map<Element, number>();
-
-let registrationSubscription;
-let deferredRegistrationSubscription;
+// Subscription registry for deferred registrations
+let registrationSubscriptions = {};
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -163,12 +162,13 @@ export function register(payload: ElementRecordRegistration): number {
     // for the model to be loaded.
     if (isInheritedField(model.craftercms.id, fieldId)) {
       byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
-        deferredRegistrationSubscription = model$(response.craftercms.id)
+        const subscription = model$(response.craftercms.id)
           .pipe(take(1))
           .subscribe(() => {
             create();
             completeDeferredRegistration(id);
           });
+        registrationSubscriptions[id] = [...(registrationSubscriptions[id] ?? []), subscription];
       });
     } else {
       create();
@@ -183,11 +183,12 @@ export function register(payload: ElementRecordRegistration): number {
     completeRegistration(id);
   } else {
     path && byPathFetchIfNotLoaded(path).subscribe();
-    registrationSubscription = model$(modelId)
+    const subscription = model$(modelId)
       .pipe(take(1))
       .subscribe(() => {
         completeRegistration(id);
       });
+    registrationSubscriptions[id] = [...(registrationSubscriptions[id] ?? []), subscription];
   }
 
   return id;
@@ -220,8 +221,10 @@ export function completeDeferredRegistration(id: number): void {
 
 export function deregister(id: string | number): ElementRecord {
   const record = db[id];
-  registrationSubscription?.unsubscribe();
-  deferredRegistrationSubscription?.unsubscribe();
+  const subscriptions = registrationSubscriptions[id];
+  subscriptions?.forEach((subscription) => {
+    subscription.unsubscribe();
+  });
   if (notNullOrUndefined(record)) {
     const { iceIds, element } = record;
     recordIdByElementLookup.delete(element);
