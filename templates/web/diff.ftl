@@ -110,7 +110,7 @@
 
 <#include "/static-assets/app/pages/legacy.html">
 <script>
-  document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
+  const init = () => {
     window.craftercms.store$().subscribe(() => {
       CStudioAuthoring.Service.getCurrentVersion(CStudioAuthoringContext.site, "${dir}", {
         success: function(version) {
@@ -118,7 +118,6 @@
         }
       });
     });
-
     $('#cancelBtn').on('click', function() {
       parent.$('body').trigger('diff-end');
     });
@@ -131,7 +130,12 @@
     });
 
     $(window).focus();
-  });
+  };
+  if (window.craftercms?.store$) {
+    init();
+  } else {
+    document.addEventListener("CrafterCMS.CodebaseBridgeReady", init)
+  }
 </script>
 
 </body>
