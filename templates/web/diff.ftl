@@ -134,7 +134,7 @@
   if (window.craftercms?.store$) {
     init();
   } else {
-    document.addEventListener("CrafterCMS.CodebaseBridgeReady", init)
+    document.addEventListener("CrafterCMS.CodebaseBridgeReady", init);
   }
 </script>
 
