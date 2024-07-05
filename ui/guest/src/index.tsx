@@ -129,8 +129,8 @@ export function registerElements(container: HTMLElement) {
 
 export function deregisterElements(container: HTMLElement) {
   if (container) {
-    const articleElements = container.querySelectorAll('[data-craftercms-model-id]');
-    articleElements.forEach((element) => {
+    const elements = container.querySelectorAll('[data-craftercms-model-id]');
+    elements.forEach((element) => {
       let record = elementRegistry.fromElement(element);
       elementRegistry.deregister(record?.id);
     });
