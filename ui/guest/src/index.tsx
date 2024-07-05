@@ -111,3 +111,28 @@ export const guestCheckIn$ = guestCheckInInternal$.pipe(
 export { elementRegistry, iceRegistry, contentController, fromTopic, post };
 
 setTimeout(() => document?.dispatchEvent(new CustomEvent(xbLoadedEvent)));
+
+export function registerElements(container: HTMLElement) {
+  if (container) {
+    container.querySelectorAll('[data-craftercms-model-id]').forEach((element) => {
+      elementRegistry.register({
+        element: element as HTMLElement,
+        path: element.getAttribute('data-craftercms-model-path'),
+        modelId: element.getAttribute('data-craftercms-model-id'),
+        fieldId: element.getAttribute('data-craftercms-field-id'),
+        index: element.getAttribute('data-craftercms-index'),
+        label: element.getAttribute('data-craftercms-label')
+      });
+    });
+  }
+}
+
+export function deregisterElements(container: HTMLElement) {
+  if (container) {
+    const elements = container.querySelectorAll('[data-craftercms-model-id]');
+    elements.forEach((element) => {
+      let record = elementRegistry.fromElement(element);
+      elementRegistry.deregister(record?.id);
+    });
+  }
+}
