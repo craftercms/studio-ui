@@ -19,13 +19,13 @@ import { findContainerRecord, getById } from './iceRegistry';
 import {
   byPathFetchIfNotLoaded,
   getCachedContentType,
-  getCachedModels,
   getCachedModel,
+  getCachedModels,
   hasCachedModel,
   isInheritedField,
   model$
 } from './contentController';
-import { take } from 'rxjs/operators';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
 import {
   DropZone,
@@ -41,6 +41,7 @@ import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { getChildArrangement, sibling } from './utils/dom';
 import { isSimple, isSymmetricCombination, popPiece } from '@craftercms/studio-ui/utils/string';
+import { Subject } from 'rxjs';
 
 let seq = 0;
 // Element record registry
@@ -49,8 +50,8 @@ let db: LookupTable<ElementRecord> = {};
 let registry: LookupTable<number[]> = {};
 // Lookup table of element record id, index by the element
 const recordIdByElementLookup = new Map<Element, number>();
-// Subscription registry for deferred registrations
-let registrationSubscriptions = {};
+// Stream of ids being deregistered, used to cancel pending model fetch operations.
+const deregister$ = new Subject<number | string>();
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -140,6 +141,7 @@ export function register(payload: ElementRecordRegistration): number {
       : Array.isArray(fieldId)
         ? fieldId
         : fieldId.split(',').map((str) => str.trim());
+  const terminator$ = deregister$.pipe(filter((_id) => _id === id));
 
   function create() {
     // Create/register the physical record
@@ -161,15 +163,16 @@ export function register(payload: ElementRecordRegistration): number {
     // The field may be inherited (for example, from a level descriptor), so it needs to be checked, and if so, wait
     // for the model to be loaded.
     if (isInheritedField(model.craftercms.id, fieldId)) {
-      byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
-        const subscription = model$(response.craftercms.id)
-          .pipe(take(1))
-          .subscribe(() => {
-            create();
-            completeDeferredRegistration(id);
-          });
-        registrationSubscriptions[id] = [...(registrationSubscriptions[id] ?? []), subscription];
-      });
+      byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId])
+        .pipe(
+          switchMap((response) => model$(response.craftercms.id)),
+          takeUntil(terminator$),
+          take(1)
+        )
+        .subscribe(() => {
+          create();
+          completeDeferredRegistration(id);
+        });
     } else {
       create();
       completeDeferredRegistration(id);
@@ -182,13 +185,15 @@ export function register(payload: ElementRecordRegistration): number {
   if (hasCachedModel(modelId)) {
     completeRegistration(id);
   } else {
-    path && byPathFetchIfNotLoaded(path).subscribe();
-    const subscription = model$(modelId)
-      .pipe(take(1))
+    byPathFetchIfNotLoaded(path)
+      .pipe(
+        switchMap(() => model$(modelId)),
+        takeUntil(terminator$),
+        take(1)
+      )
       .subscribe(() => {
         completeRegistration(id);
       });
-    registrationSubscriptions[id] = [...(registrationSubscriptions[id] ?? []), subscription];
   }
 
   return id;
@@ -221,10 +226,7 @@ export function completeDeferredRegistration(id: number): void {
 
 export function deregister(id: string | number): ElementRecord {
   const record = db[id];
-  const subscriptions = registrationSubscriptions[id];
-  subscriptions?.forEach((subscription) => {
-    subscription.unsubscribe();
-  });
+  deregister$.next(id);
   if (notNullOrUndefined(record)) {
     const { iceIds, element } = record;
     recordIdByElementLookup.delete(element);
