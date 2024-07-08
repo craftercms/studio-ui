@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@mui/material/List';
 import SearchBar from '../SearchBar/SearchBar';
@@ -33,7 +33,7 @@ import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
 import { createLookupTable, nou } from '../../utils/object';
 import { fetchContentInstance } from '../../services/content';
-import { forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, Observable, of, Subscription } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { useDispatch } from 'react-redux';
 import { useSelection } from '../../hooks/useSelection';
@@ -139,19 +139,19 @@ export function PreviewSearchPanel() {
     () => (contentTypes ? createLookupTable(contentTypes, 'id') : null),
     [contentTypes]
   );
+  const onPageChangedSubscription = useRef<Subscription>();
+  const onRowsPerPageChangeSubscription = useRef<Subscription>();
 
   const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
 
   const onSearch = useCallback(
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
-      let sub;
       setState({ isFetching: true });
       setError(null);
       const allowedTypes = Object.entries(allowedTypesData ?? {}).flatMap(([key, type]) => (type.shared ? [key] : []));
 
-      sub?.unsubscribe();
-      sub = search(site, {
+      return search(site, {
         ...initialSearchParameters,
         keywords,
         ...options,
@@ -196,10 +196,6 @@ export function PreviewSearchPanel() {
             setError(response.response);
           }
         });
-
-      return () => {
-        sub.unsubscribe();
-      };
     },
     [setState, site, unMount$, contentTypesLookup, allowedTypesData]
   );
@@ -208,12 +204,17 @@ export function PreviewSearchPanel() {
     return () => {
       unMount$.next();
       unMount$.complete();
+      onPageChangedSubscription.current?.unsubscribe();
+      onRowsPerPageChangeSubscription.current?.unsubscribe();
     };
   });
 
   useEffect(() => {
     if (contentTypes && contentTypesLookup && !awaitingGuestCheckIn) {
-      onSearch();
+      const sub = onSearch();
+      return () => {
+        sub?.unsubscribe();
+      };
     }
   }, [contentTypes, contentTypesLookup, onSearch, awaitingGuestCheckIn]);
 
@@ -225,14 +226,14 @@ export function PreviewSearchPanel() {
   }
 
   function onPageChanged(page: number) {
-    onSearch(keyword, {
+    onPageChangedSubscription.current = onSearch(keyword, {
       offset: page * state.limit,
       limit: state.limit
     });
   }
 
   function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    onSearch(keyword, {
+    onRowsPerPageChangeSubscription.current = onSearch(keyword, {
       offset: 0,
       limit: Number(e.target.value)
     });
