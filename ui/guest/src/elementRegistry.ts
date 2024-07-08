@@ -51,7 +51,7 @@ let registry: LookupTable<number[]> = {};
 // Lookup table of element record id, index by the element
 const recordIdByElementLookup = new Map<Element, number>();
 // Stream of ids being deregistered, used to cancel pending model fetch operations.
-const deregister$ = new Subject<number | string>();
+const deregister$ = new Subject<string>();
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -141,7 +141,7 @@ export function register(payload: ElementRecordRegistration): number {
       : Array.isArray(fieldId)
         ? fieldId
         : fieldId.split(',').map((str) => str.trim());
-  const terminator$ = deregister$.pipe(filter((_id) => _id === id));
+  const terminator$ = deregister$.pipe(filter((_id) => _id === String(id)));
 
   function create() {
     // Create/register the physical record
@@ -226,7 +226,7 @@ export function completeDeferredRegistration(id: number): void {
 
 export function deregister(id: string | number): ElementRecord {
   const record = db[id];
-  deregister$.next(id);
+  deregister$.next(String(id));
   if (notNullOrUndefined(record)) {
     const { iceIds, element } = record;
     recordIdByElementLookup.delete(element);
