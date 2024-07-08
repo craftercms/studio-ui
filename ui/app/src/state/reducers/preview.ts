@@ -811,6 +811,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       if (state.guest) state.guest.mainModelModifier = payload.user;
     })
     .addCase(allowedContentTypesUpdate, (state, { payload }) => {
+      if (!state.guest) return state;
       state.guest.allowedContentTypes = payload;
     });
 });
