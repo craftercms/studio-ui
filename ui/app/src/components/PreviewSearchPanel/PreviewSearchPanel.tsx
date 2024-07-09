@@ -139,9 +139,7 @@ export function PreviewSearchPanel() {
     () => (contentTypes ? createLookupTable(contentTypes, 'id') : null),
     [contentTypes]
   );
-  const onPageChangedSubscription = useRef<Subscription>();
-  const onRowsPerPageChangeSubscription = useRef<Subscription>();
-
+  const onSearchSubscription = useRef<Subscription>();
   const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
 
@@ -204,21 +202,24 @@ export function PreviewSearchPanel() {
     return () => {
       unMount$.next();
       unMount$.complete();
-      onPageChangedSubscription.current?.unsubscribe();
-      onRowsPerPageChangeSubscription.current?.unsubscribe();
+      onSearchSubscription.current?.unsubscribe();
     };
   });
 
   useEffect(() => {
     if (contentTypes && contentTypesLookup && !awaitingGuestCheckIn) {
-      const sub = onSearch();
+      onSearchSubscription.current?.unsubscribe();
+      onSearchSubscription.current = onSearch();
       return () => {
-        sub?.unsubscribe();
+        onSearchSubscription.current?.unsubscribe();
       };
     }
   }, [contentTypes, contentTypesLookup, onSearch, awaitingGuestCheckIn]);
 
-  const onSearch$ = useDebouncedInput(onSearch, 400);
+  const onSearch$ = useDebouncedInput((keyword) => {
+    onSearchSubscription.current?.unsubscribe();
+    onSearchSubscription.current = onSearch(keyword);
+  }, 400);
 
   function handleSearchKeyword(keyword: string) {
     setKeyword(keyword);
@@ -226,14 +227,16 @@ export function PreviewSearchPanel() {
   }
 
   function onPageChanged(page: number) {
-    onPageChangedSubscription.current = onSearch(keyword, {
+    onSearchSubscription.current?.unsubscribe();
+    onSearchSubscription.current = onSearch(keyword, {
       offset: page * state.limit,
       limit: state.limit
     });
   }
 
   function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    onRowsPerPageChangeSubscription.current = onSearch(keyword, {
+    onSearchSubscription.current?.unsubscribe();
+    onSearchSubscription.current = onSearch(keyword, {
       offset: 0,
       limit: Number(e.target.value)
     });
