@@ -53,15 +53,13 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
             values={{ selectedA: <AsDayMonthDateTime date={selectedA.modifiedDate} /> }}
           />
         ) : isCompareMode ? (
-          <>
-            <FormattedMessage
-              defaultMessage="Comparing “{selectedA}” with “{selectedB}”"
-              values={{
-                selectedA: <AsDayMonthDateTime date={selectedA.modifiedDate} />,
-                selectedB: <AsDayMonthDateTime date={selectedB.modifiedDate} />
-              }}
-            />
-          </>
+          <FormattedMessage
+            defaultMessage="Comparing “{selectedA}” with “{selectedB}”"
+            values={{
+              selectedA: <AsDayMonthDateTime date={selectedA.modifiedDate} />,
+              selectedB: <AsDayMonthDateTime date={selectedB.modifiedDate} />
+            }}
+          />
         ) : (
           <FormattedMessage
             id="compareVersionsDialog.headerSubtitleCompare"
