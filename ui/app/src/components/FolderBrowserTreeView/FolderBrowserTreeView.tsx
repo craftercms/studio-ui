@@ -107,6 +107,7 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
       showWorkflowState={false}
       showItemMenu={false}
       limit={30}
+      showPaginationOptions={false}
     />
   );
 }
