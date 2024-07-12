@@ -367,7 +367,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
               </Tooltip>
             )}
             {showFilter ||
-              (Boolean(item.childrenCount) && (
+              (Boolean(item?.childrenCount) && (
                 <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
                   <IconButton
                     size="small"
