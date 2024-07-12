@@ -137,7 +137,7 @@ const componentsInitialState = createEntityState({
     offset: 0,
     limit: 10
   },
-  contentTypeFilter: 'all',
+  contentTypeFilter: 'compatible',
   inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
 

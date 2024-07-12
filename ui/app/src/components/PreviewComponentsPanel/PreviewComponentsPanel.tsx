@@ -247,6 +247,7 @@ export function PreviewComponentsPanel() {
                     <DraggablePanelListItem
                       key={contentType.id}
                       primaryText={contentType.name}
+                      avatarColorBase={contentType.id}
                       onDragStart={() => onDragStart(contentType)}
                       onDragEnd={onDragEnd}
                       onMenu={(e) => onMenuButtonClickHandler(e, contentType)}
