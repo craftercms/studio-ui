@@ -28,7 +28,7 @@ const plugins = [
     'process.env.NODE_ENV': JSON.stringify('production'),
     'process.env.VERSION': JSON.stringify(pkg.version)
   }),
-  swc(),
+  swc({ sourceMaps: true }),
   alias({
     entries: [{ find: '@craftercms/studio-ui', replacement: '@craftercms/studio-ui/build_tsc' }]
   }),
