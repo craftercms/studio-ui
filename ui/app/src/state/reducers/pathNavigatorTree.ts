@@ -134,7 +134,7 @@ const updatePath = (state, payload) => {
 };
 
 const restoreTree = (state, payload) => {
-  const { id, children, items, expanded } = payload;
+  const { id, children, expanded } = payload;
   const chunk = state[id];
   chunk.childrenByParentPath = {};
   chunk.totalByPath = {};
@@ -143,20 +143,20 @@ const restoreTree = (state, payload) => {
   const totalByPath = chunk.totalByPath;
   const offsetByPath = chunk.offsetByPath;
   const currentLimitByPath = chunk.currentLimitByPath;
-  items.forEach((item) => {
-    totalByPath[item.path] = item.childrenCount;
-  });
   Object.keys(children).forEach((parentPath) => {
+    // Initialize the childrenByParentPath with an empty array.
+    childrenByParentPath[parentPath] = [];
     const childrenOfPath = children[parentPath];
     if (childrenOfPath.length || childrenOfPath.levelDescriptor) {
-      childrenByParentPath[parentPath] = [];
       if (childrenOfPath.levelDescriptor) {
         childrenByParentPath[parentPath].push(childrenOfPath.levelDescriptor.path);
         totalByPath[childrenOfPath.levelDescriptor.path] = 0;
       }
       childrenOfPath.forEach((child) => {
         childrenByParentPath[parentPath].push(child.path);
-        totalByPath[child.path] = child.childrenCount;
+        // If we have the total in the children object, use it (since that object has the total considering filters),
+        // otherwise use the childrenCount.
+        totalByPath[child.path] = children[child.path]?.total ?? child.childrenCount;
       });
     }
     // Should we account here for the level descriptor (LD)? if there's a LD, add 1 to the total?
