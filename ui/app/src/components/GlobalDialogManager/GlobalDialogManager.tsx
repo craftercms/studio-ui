@@ -370,6 +370,10 @@ function GlobalDialogManager() {
       {/* region Compare Versions */}
       <CompareVersionsDialog
         {...state.compareVersions}
+        leftActions={state.compareVersions.leftActions?.map((action) => ({
+          ...action,
+          onClick: createCallback(action.onClick, dispatch)
+        }))}
         rightActions={state.compareVersions.rightActions?.map((action) => ({
           ...action,
           onClick: createCallback(action.onClick, dispatch)

@@ -35,10 +35,12 @@ export interface CompareVersionsDialogProps extends CompareVersionsDialogBasePro
   selectedA: ItemHistoryEntry;
   selectedB: ItemHistoryEntry;
   contentTypesBranch?: EntityState<ContentType>;
+  leftActions?: DialogHeaderActionProps[];
   rightActions?: DialogHeaderActionProps[];
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps, EnhancedDialogState {
+  leftActions?: DialogHeaderStateAction[];
   rightActions?: DialogHeaderStateAction[];
   onClose?: StandardAction;
   onClosed?: StandardAction;
