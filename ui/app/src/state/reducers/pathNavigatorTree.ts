@@ -77,10 +77,17 @@ const restoreTree = (state, payload) => {
   const childrenByParentPath = chunk.childrenByParentPath;
   const totalByPath = chunk.totalByPath;
   const offsetByPath = chunk.offsetByPath;
-  items.forEach((item) => {
-    totalByPath[item.path] = item.childrenCount;
-  });
+  // Set totalByPath of items that are not in the children object (items not expanded) so we can display the
+  // expand/collapse icon (if they have children). We filter out the items not in the children object to prevent displaying
+  // an incorrect total count (since the children object has the total considering filters).
+  items
+    .filter((item) => !children[item.path])
+    .forEach((item) => {
+      totalByPath[item.path] = item.childrenCount;
+    });
   Object.keys(children).forEach((parentPath) => {
+    // Initialize the childrenByParentPath with an empty array.
+    childrenByParentPath[parentPath] = [];
     const childrenOfPath = children[parentPath];
     if (childrenOfPath.length || childrenOfPath.levelDescriptor) {
       childrenByParentPath[parentPath] = [];
@@ -90,7 +97,9 @@ const restoreTree = (state, payload) => {
       }
       childrenOfPath.forEach((child) => {
         childrenByParentPath[parentPath].push(child.path);
-        totalByPath[child.path] = child.childrenCount;
+        // If we have the total in the children object, use it (since that object has the total considering filters),
+        // otherwise use the childrenCount.
+        totalByPath[child.path] = children[child.path]?.total ?? child.childrenCount;
       });
     }
     // Should we account here for the level descriptor (LD)? if there's a LD, add 1 to the total?
