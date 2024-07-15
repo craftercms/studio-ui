@@ -15,6 +15,7 @@
  */
 
 export * from './Activity';
+export * from './AllowedContentTypesData';
 export * from './ApiResponse';
 export * from './Audit';
 export * from './Aws';
@@ -77,3 +78,4 @@ export * from './monitoring/LogEvent';
 export * from './monitoring/Memory';
 export * from './monitoring/Status';
 export * from './monitoring/Version';
+export * from './SimpleAjaxError';

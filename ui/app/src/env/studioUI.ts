@@ -338,8 +338,10 @@ export const components = {
 };
 export const icons = {
   About: lazy(() => import('../icons/About')),
+  AddComponents: lazy(() => import('../icons/AddComponents')),
   Asterisk: lazy(() => import('../icons/Asterisk')),
   BrokenLink: lazy(() => import('../icons/BrokenLink')),
+  BrowseComponents: lazy(() => import('../icons/BrowseComponents')),
   Component: lazy(() => import('../icons/Component')),
   ContentTypeField: lazy(() => import('../icons/ContentTypeField')),
   CrafterCMSIcon: lazy(() => import('../icons/CrafterCMSIcon')),

@@ -19,7 +19,11 @@ import ContentType, { ContentTypeField } from '../models/ContentType';
 import Jabber from 'jabber';
 import LookupTable from '../models/LookupTable';
 import { generatePlaceholderImageDataUrl } from './content';
+import { toColor } from './string';
+import { darken } from '@mui/material/styles';
+import { Theme } from '@mui/material';
 
+// TODO: Not used.
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
   return Object.values(contentType.fields).reduce((accumulator, field) => {
     if (
@@ -28,7 +32,7 @@ export function getRelatedContentTypeIds(contentType: ContentType): string[] {
       'validations' in field &&
       'allowedContentTypes' in field.validations
     ) {
-      field.validations.allowedContentTypes.value.forEach(
+      Object.keys(field.validations.allowedContentTypes.value).forEach(
         (ctid) => !accumulator.includes(ctid) && accumulator.push(ctid)
       );
     }
@@ -70,7 +74,7 @@ export function getField(
             `Unable to retrieve the field \`${fieldId}\` without full list of content types.`
         );
       }
-      const contentTypeWithTargetFieldId = accumulator.validations.allowedContentTypes.value.find((ct) =>
+      const contentTypeWithTargetFieldId = Object.keys(accumulator.validations.allowedContentTypes.value).find((ct) =>
         Boolean(contentTypes[ct].fields[field])
       );
       accumulator = contentTypes[contentTypeWithTargetFieldId].fields[field];
@@ -156,4 +160,23 @@ export function getDefaultValue(field: ContentTypeField): string | number | bool
       }
     }
   }
+}
+
+// TODO: This could be used to more generic location. What it does is not specific to content types.
+/**
+ * It takes a string and generates a colour and contrast colour for it.
+ * Applies a darkening effect when the theme is dark.
+ */
+export function getAvatarWithIconColors(
+  colourBaseString: string,
+  theme: Theme,
+  darkenFn: typeof darken
+): { backgroundColor: string; textColor: string } {
+  if (!(colourBaseString && theme && darkenFn)) {
+    return { backgroundColor: '', textColor: '' };
+  }
+  const base = toColor(colourBaseString);
+  const backgroundColor = theme.palette.mode === 'dark' ? darkenFn(base, 0.2) : base;
+  const textColor = theme.palette.getContrastText(base);
+  return { backgroundColor, textColor };
 }

@@ -14,11 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { PathNavigatorTreeUIProps } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeBackgroundRefresh,
+  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -32,14 +33,14 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import {
   getEditorMode,
+  isAudio,
   isEditableViaFormEditor,
   isImage,
+  isMediaContent,
   isNavigable,
-  isPreviewable,
-  isVideo,
   isPdfDocument,
-  isAudio,
-  isMediaContent
+  isPreviewable,
+  isVideo
 } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
@@ -63,6 +64,8 @@ import { batchActions } from '../../state/actions/misc';
 import SystemType from '../../models/SystemType';
 import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import { UNDEFINED } from '../../utils/constants';
+import SimpleAjaxError from '../../models/SimpleAjaxError';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 export interface PathNavigatorTreeProps
   extends Pick<
@@ -87,6 +90,7 @@ export interface PathNavigatorTreeProps
   onNodeClick?: PathNavigatorTreeUIProps['onLabelClick'];
   active?: PathNavigatorTreeItemProps['active'];
   classes?: Partial<Record<'header', string>>;
+  showPaginationOptions?: boolean;
 }
 
 export interface PathNavigatorTreeStateProps {
@@ -96,9 +100,11 @@ export interface PathNavigatorTreeStateProps {
   limit: number;
   expanded: string[];
   childrenByParentPath: LookupTable<string[]>;
+  errorByPath: Record<string, SimpleAjaxError>;
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
   offsetByPath: LookupTable<number>;
+  currentLimitByPath: LookupTable<number>;
   excludes: string[];
   systemTypes: SystemType[];
   error: ApiResponse;
@@ -129,6 +135,7 @@ interface Menu {
 //   }
 // };
 
+export const limitsDefault = [5, 10, 25, 50];
 export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   // region const { ... } = props;
   const {
@@ -153,7 +160,8 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     showWorkflowState,
     showItemMenu,
     sortStrategy,
-    order
+    order,
+    showPaginationOptions = true
   } = props;
   // endregion
   const state = useSelection((state) => state.pathNavigatorTree[id]);
@@ -169,7 +177,12 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const keywordByPath = state?.keywordByPath;
   const totalByPath = state?.totalByPath;
   const childrenByParentPath = state?.childrenByParentPath;
-  const rootItem = lookupItemByPath(rootPath, itemsByPath);
+  const errorByPath = state?.errorByPath;
+  const getItemByPath = (path: string) => lookupItemByPath(path, itemsByPath);
+  const rootItem = getItemByPath(rootPath);
+  const limits = useMemo(() => {
+    return [...new Set([...limitsDefault, limit])].sort((a, b) => a - b);
+  }, [limit]);
 
   useEffect(() => {
     // Adding uiConfig as means to stop navigator from trying to
@@ -226,15 +239,11 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   const onNodeLabelClick =
     onNodeClick ??
     ((event: React.MouseEvent<Element, MouseEvent>, path: string) => {
-      if (isNavigable(itemsByPath[path])) {
-        dispatch(
-          previewItem({
-            item: itemsByPath[path],
-            newTab: event.ctrlKey || event.metaKey
-          })
-        );
-      } else if (isPreviewable(itemsByPath[path])) {
-        onPreview(itemsByPath[path]);
+      const item = getItemByPath(path);
+      if (isNavigable(item)) {
+        dispatch(previewItem({ item, newTab: event.ctrlKey || event.metaKey }));
+      } else if (isPreviewable(item)) {
+        onPreview(item);
       } else {
         onToggleNodeClick(path);
       }
@@ -245,8 +254,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     if (state.expanded.includes(path)) {
       dispatch(pathNavigatorTreeCollapsePath({ id, path }));
     } else {
-      const childrenCount = itemsByPath[path].childrenCount;
-      if (childrenCount) {
+      if (getItemByPath(path)?.childrenCount) {
         // If the item's children have been loaded, should simply be expanded
         if (childrenByParentPath[path]) {
           dispatch(pathNavigatorTreeExpandPath({ id, path }));
@@ -276,7 +284,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         path,
         anchorReference: 'anchorPosition',
         anchorPosition: { top, left },
-        loaderItems: getNumOfMenuOptionsForItem(itemsByPath[path])
+        loaderItems: getNumOfMenuOptionsForItem(getItemByPath(path))
       })
     );
   };
@@ -336,6 +344,11 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     }
   };
 
+  const onLimitChange = (e: SelectChangeEvent<number>) => {
+    const limit = Number(e.target.value);
+    dispatch(pathNavigatorTreeChangeLimit({ id, limit }));
+  };
+
   // endregion
 
   return (
@@ -353,6 +366,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         keywordByPath={keywordByPath}
         totalByPath={totalByPath}
         childrenByParentPath={childrenByParentPath}
+        errorByPath={errorByPath}
         expandedNodes={state?.expanded}
         onIconClick={onToggleNodeClick}
         onLabelClick={onNodeLabelClick}
@@ -365,6 +379,10 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         showPublishingTarget={showPublishingTarget}
         showWorkflowState={showWorkflowState}
         showItemMenu={showItemMenu}
+        limits={limits}
+        limit={state.limit}
+        onLimitChange={onLimitChange}
+        showPaginationOptions={showPaginationOptions}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}

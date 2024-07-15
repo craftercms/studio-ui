@@ -19,13 +19,13 @@ import { findContainerRecord, getById } from './iceRegistry';
 import {
   byPathFetchIfNotLoaded,
   getCachedContentType,
-  getCachedModels,
   getCachedModel,
+  getCachedModels,
   hasCachedModel,
   isInheritedField,
   model$
 } from './contentController';
-import { take } from 'rxjs/operators';
+import { filter, switchMap, take, takeUntil } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
 import {
   DropZone,
@@ -41,12 +41,17 @@ import { notNullOrUndefined, nou, nullOrUndefined } from '@craftercms/studio-ui/
 import { forEach } from '@craftercms/studio-ui/utils/array';
 import { getChildArrangement, sibling } from './utils/dom';
 import { isSimple, isSymmetricCombination, popPiece } from '@craftercms/studio-ui/utils/string';
+import { Subject } from 'rxjs';
 
 let seq = 0;
 // Element record registry
 let db: LookupTable<ElementRecord> = {};
 // Lookup table of element record id arrays, indexed by iceId
 let registry: LookupTable<number[]> = {};
+// Lookup table of element record id, index by the element
+const recordIdByElementLookup = new Map<Element, number>();
+// Stream of ids being deregistered, used to cancel pending model fetch operations.
+const deregister$ = new Subject<string>();
 
 export function get(id: number): ElementRecord {
   const record = db[id];
@@ -123,6 +128,10 @@ export function register(payload: ElementRecordRegistration): number {
 
   const { element, modelId, index, label, fieldId, path } = payload;
 
+  if (recordIdByElementLookup.has(element)) {
+    return recordIdByElementLookup.get(element);
+  }
+
   const id = seq++;
   const iceIds = [];
   // prettier-ignore
@@ -132,6 +141,7 @@ export function register(payload: ElementRecordRegistration): number {
       : Array.isArray(fieldId)
         ? fieldId
         : fieldId.split(',').map((str) => str.trim());
+  const terminator$ = deregister$.pipe(filter((_id) => _id === String(id)));
 
   function create() {
     // Create/register the physical record
@@ -153,14 +163,16 @@ export function register(payload: ElementRecordRegistration): number {
     // The field may be inherited (for example, from a level descriptor), so it needs to be checked, and if so, wait
     // for the model to be loaded.
     if (isInheritedField(model.craftercms.id, fieldId)) {
-      byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId]).subscribe((response) => {
-        model$(response.craftercms.id)
-          .pipe(take(1))
-          .subscribe(() => {
-            create();
-            completeDeferredRegistration(id);
-          });
-      });
+      byPathFetchIfNotLoaded(model.craftercms.sourceMap?.[fieldId])
+        .pipe(
+          switchMap((response) => model$(response.craftercms.id)),
+          takeUntil(terminator$),
+          take(1)
+        )
+        .subscribe(() => {
+          create();
+          completeDeferredRegistration(id);
+        });
     } else {
       create();
       completeDeferredRegistration(id);
@@ -169,12 +181,16 @@ export function register(payload: ElementRecordRegistration): number {
 
   // If the relevant model is loaded, complete its registration, otherwise,
   // request it and complete registration when it does load.
+  recordIdByElementLookup.set(element, id);
   if (hasCachedModel(modelId)) {
     completeRegistration(id);
   } else {
-    path && byPathFetchIfNotLoaded(path).subscribe();
-    model$(modelId)
-      .pipe(take(1))
+    byPathFetchIfNotLoaded(path)
+      .pipe(
+        switchMap(() => model$(modelId)),
+        takeUntil(terminator$),
+        take(1)
+      )
       .subscribe(() => {
         completeRegistration(id);
       });
@@ -210,8 +226,10 @@ export function completeDeferredRegistration(id: number): void {
 
 export function deregister(id: string | number): ElementRecord {
   const record = db[id];
+  deregister$.next(String(id));
   if (notNullOrUndefined(record)) {
-    const { iceIds } = record;
+    const { iceIds, element } = record;
+    recordIdByElementLookup.delete(element);
     iceIds.forEach((iceId) => {
       if (registry[iceId].length === 1) {
         delete registry[iceId];
@@ -346,11 +364,8 @@ export function getSiblingRects(id: number): LookupTable<DOMRect> {
 }
 
 export function fromElement(element: Element): ElementRecord {
-  return forEach(Object.values(db), (record) => {
-    if (record.element === element) {
-      return record;
-    }
-  });
+  const id = recordIdByElementLookup.get(element);
+  return db[id];
 }
 
 export function hasElement(element: Element): boolean {
@@ -377,7 +392,7 @@ export function getDragContextFromDropTargets(
   dropTargets: ICERecord[],
   validationsLookup?: LookupTable<LookupTable<ValidationResult>>,
   currentRecord?: ElementRecord
-): { dropZones: any; siblings: any; players: any; containers: any } {
+): { dropZones: DropZone[]; siblings: Element[]; players: Element[]; containers: Element[] } {
   const response = {
     dropZones: [],
     siblings: [],
@@ -390,7 +405,7 @@ export function getDragContextFromDropTargets(
     const dropZonesFiltered = currentRecord
       ? dropZones.filter((dropZone) => dropZone.children.includes(currentRecord.element))
       : null;
-    (dropZonesFiltered && dropZonesFiltered.length ? dropZonesFiltered : dropZones).forEach((dropZone) => {
+    (dropZonesFiltered?.length ? dropZonesFiltered : dropZones).forEach((dropZone) => {
       dropZone.origin = null;
       dropZone.origin = currentRecord ? dropZone.children.includes(currentRecord.element) : null;
       dropZone.validations = validationsLookup?.[id] ?? {};
@@ -441,6 +456,7 @@ export function getParentsElementFromICEProps(modelId: string, fieldId: string, 
 export function flush(): void {
   db = {};
   registry = {};
+  recordIdByElementLookup.clear();
   iceRegistry.flush();
 }
 

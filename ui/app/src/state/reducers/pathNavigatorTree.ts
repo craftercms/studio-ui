@@ -21,10 +21,12 @@ import {
   pathNavigatorTreeBulkFetchPathChildren,
   pathNavigatorTreeBulkFetchPathChildrenComplete,
   pathNavigatorTreeBulkRestoreComplete,
+  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
   pathNavigatorTreeFetchPathChildrenComplete,
+  pathNavigatorTreeFetchPathChildrenFailed,
   pathNavigatorTreeFetchPathPage,
   pathNavigatorTreeFetchPathPageComplete,
   pathNavigatorTreeInit,
@@ -115,6 +117,7 @@ const updatePath = (state, payload) => {
   const chunk = state[id];
   chunk.totalByPath[parentPath] = children.total;
   chunk.childrenByParentPath[parentPath] = [];
+  chunk.currentLimitByPath[parentPath] = chunk.limit;
   if (children.levelDescriptor) {
     chunk.childrenByParentPath[parentPath].push(children.levelDescriptor.path);
     chunk.totalByPath[children.levelDescriptor.path] = 0;
@@ -139,6 +142,7 @@ const restoreTree = (state, payload) => {
   const childrenByParentPath = chunk.childrenByParentPath;
   const totalByPath = chunk.totalByPath;
   const offsetByPath = chunk.offsetByPath;
+  const currentLimitByPath = chunk.currentLimitByPath;
   items.forEach((item) => {
     totalByPath[item.path] = item.childrenCount;
   });
@@ -158,6 +162,7 @@ const restoreTree = (state, payload) => {
     // Should we account here for the level descriptor (LD)? if there's a LD, add 1 to the total?
     totalByPath[parentPath] = childrenOfPath.total;
     offsetByPath[parentPath] = offsetByPath[parentPath] ?? 0;
+    currentLimitByPath[parentPath] = state[id].limit;
     // If the expanded node is filtered or has children it means, it's not a leaf,
     // and we should keep it in 'expanded'.
     // if (chunk.keywordByPath[parentPath] || childrenByParentPath[parentPath].length) {
@@ -204,9 +209,11 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
         limit,
         expanded,
         childrenByParentPath: {},
+        errorByPath: {},
         offsetByPath: {},
         keywordByPath,
         totalByPath: {},
+        currentLimitByPath: {},
         excludes,
         error: null,
         isRootPathMissing: false,
@@ -228,10 +235,14 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
     })
     .addCase(pathNavigatorTreeFetchPathChildren, (state, action) => {
       const { expand = true } = action.payload;
+      delete state[action.payload.id].errorByPath[action.payload.path];
       expand && expandPath(state, action);
     })
     .addCase(pathNavigatorTreeFetchPathChildrenComplete, (state, { payload }) => {
       updatePath(state, payload);
+    })
+    .addCase(pathNavigatorTreeFetchPathChildrenFailed, (state, action) => {
+      state[action.payload.id].errorByPath[action.payload.path] = action.payload.error;
     })
     .addCase(pathNavigatorTreeBulkFetchPathChildren, (state, action) => {
       const { requests } = action.payload;
@@ -246,9 +257,15 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
       });
     })
     .addCase(pathNavigatorTreeFetchPathPage, (state, { payload: { id, path } }) => {
-      state[id].offsetByPath[path] = state[id].offsetByPath[path]
-        ? state[id].offsetByPath[path] + state[id].limit
-        : state[id].limit;
+      // Limit can be modified globally, but some paths may already have been fetched prior to the limit change.
+      // By keeping track of the current limit for each path, we can ensure that the offset is correctly calculated.
+      const currentState = state[id];
+      const currentLimit = currentState.currentLimitByPath[path] ?? currentState.limit;
+      currentState.offsetByPath[path] = currentState.offsetByPath[path]
+        ? currentState.offsetByPath[path] + currentLimit
+        : currentLimit;
+      // Now that the offset has been calculated, we can update the current limit for the path.
+      currentState.currentLimitByPath[path] = currentState.limit;
     })
     .addCase(pathNavigatorTreeFetchPathPageComplete, (state, { payload: { id, parentPath, children, options } }) => {
       const chunk = state[id];
@@ -319,6 +336,9 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
           deleteItemFromState(tree, sourcePath);
         }
       });
+    })
+    .addCase(pathNavigatorTreeChangeLimit, (state, { payload: { id, limit } }) => {
+      state[id].limit = limit;
     });
 });
 

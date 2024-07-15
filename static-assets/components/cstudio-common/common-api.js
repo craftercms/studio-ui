@@ -1313,75 +1313,7 @@ var nodeOpen = false,
       },
 
       /**
-       * open a browse page for CMIS repo
-       */
-      openCMISBrowse: function (repoId, path, studioPath, allowedOperations, mode, newWindow, callback) {
-        var searchId = null;
-
-        var openInSameWindow = newWindow ? false : true;
-
-        var browseUrl =
-          CStudioAuthoringContext.authoringAppBaseUri + '/browseCMIS?site=' + CStudioAuthoringContext.site;
-
-        if (repoId) {
-          browseUrl += '&repoId=' + repoId;
-        }
-        if (path) {
-          browseUrl += '&path=' + path;
-        }
-
-        if (studioPath) {
-          browseUrl += '&studioPath=' + studioPath;
-        }
-
-        if (allowedOperations) {
-          browseUrl += '&allowedOperations=' + allowedOperations;
-        }
-
-        if (!CStudioAuthoring.Utils.isEmpty(mode)) {
-          browseUrl += '&mode=' + mode;
-        }
-
-        var childSearch = null;
-
-        if (
-          !searchId ||
-          searchId == null ||
-          searchId == 'undefined' ||
-          !CStudioAuthoring.ChildSearchManager.searches[searchId]
-        ) {
-          childSearch = CStudioAuthoring.ChildSearchManager.createChildSearchConfig();
-          childSearch.openInSameWindow = openInSameWindow;
-          searchId = CStudioAuthoring.Utils.generateUUID();
-
-          childSearch.searchId = searchId;
-          childSearch.searchUrl = browseUrl + '&searchId=' + searchId;
-          childSearch.saveCallback = callback;
-
-          CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
-        } else {
-          if (window.opener) {
-            if (window.opener.CStudioAuthoring) {
-              var openerChildSearchMgr = window.opener.CStudioAuthoring.ChildSearchManager;
-
-              if (openerChildSearchMgr) {
-                childSearch = openerChildSearchMgr.searches[searchId];
-                childSearch.searchUrl = browseUrl;
-
-                openerChildSearchMgr.openChildSearch(childSearch);
-              }
-            }
-          } else {
-            childSearch = CStudioAuthoring.ChildSearchManager.searches[searchId];
-            childSearch.searchUrl = browseUrl;
-
-            CStudioAuthoring.ChildSearchManager.openChildSearch(childSearch);
-          }
-        }
-      },
-
-      /**
-       * open a browse page for CMIS repo
+       * open a browse page for WebDAV repo
        */
       openWebDAVBrowse: function (path, profileId, mode, newWindow, callback, filter = 'none') {
         var searchId = null;
@@ -2549,11 +2481,23 @@ var nodeOpen = false,
                   type: 'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
                 }
               ]
+            },
+            onClose: {
+              type: 'BATCH_ACTIONS',
+              payload: [
+                {
+                  type: 'DISPATCH_DOM_EVENT',
+                  payload: { id: eventId, type: 'close' }
+                },
+                {
+                  type: 'CLOSE_SINGLE_FILE_UPLOAD_DIALOG'
+                }
+              ]
             }
           }
         });
 
-        CrafterCMSNext.createLegacyCallbackListener(eventId, (result) => {
+        craftercms.utils.dom.createCustomDocumentEventListener(eventId, (result) => {
           if (result.type === 'uploadComplete') {
             let uploaded = result.successful[0];
             if (!uploaded.fileExtension) {
@@ -7842,6 +7786,12 @@ function getTopLegacyWindow(nextWindow) {
 
 if (!window.location.pathname.includes('/studio/search') && !window.location.pathname.includes('/studio/legacy/form')) {
   document.addEventListener('DOMContentLoaded', function () {
-    CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
+    if (typeof CrafterCMSNext === 'undefined') {
+      document.addEventListener('CrafterCMS.CodebaseBridgeReady', function () {
+        CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
+      });
+    } else {
+      CrafterCMSNext.renderBackgroundUI({ mountLegacyConcierge: true });
+    }
   });
 }

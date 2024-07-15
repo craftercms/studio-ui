@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,18 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EditorOptions } from 'tinymce';
-import LookupTable from '@craftercms/studio-ui/models/LookupTable';
+import ApiResponse from './ApiResponse';
 
-export interface TinymceOptions extends EditorOptions {
-  code_editor_inline?: boolean;
-  code_editor_wrap?: boolean;
-  craftercms_paste_cleanup?: boolean;
+/**
+ * Essentially a redeclaration of `Omit<AjaxError, 'request' | 'xhr'>`. Mainly removes
+ * non-serializables from AjaxError and allows typing of the `response` property.
+ **/
+export interface SimpleAjaxError<T = ApiResponse> {
+  message: string;
+  name: string;
+  response: T;
+  responseType: string;
+  status: number;
 }
 
-export interface RteSetup {
-  id?: string;
-  tinymceOptions?: TinymceOptions;
-}
-
-export type RteConfig = LookupTable<RteSetup>;
+export default SimpleAjaxError;

@@ -131,9 +131,9 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const compareVersionDialogWithActions = () =>
     showCompareVersionsDialog({
       disableItemSwitching: true,
-      rightActions: [
+      leftActions: [
         {
-          icon: { id: '@mui/icons-material/HistoryRounded' },
+          icon: { id: '@mui/icons-material/ArrowBackIosRounded' },
           onClick: showHistoryDialog({}),
           'aria-label': formatMessage(translations.backToHistoryList)
         }
@@ -150,9 +150,9 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           fetchContentTypes(),
           fetchContentVersion({ path: versionPath, versionNumber: version.versionNumber }),
           showViewVersionDialog({
-            rightActions: [
+            leftActions: [
               {
-                icon: { id: '@mui/icons-material/HistoryRounded' },
+                icon: { id: '@mui/icons-material/ArrowBackIosRounded' },
                 onClick: showHistoryDialog({}),
                 'aria-label': formatMessage(translations.backToHistoryList)
               }

@@ -17,7 +17,7 @@
 import React, { useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
-import InputBase from '@mui/material/InputBase';
+import InputBase, { InputBaseProps } from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/SearchRounded';
 import CloseIcon from '@mui/icons-material/Close';
 import { defineMessages, useIntl } from 'react-intl';
@@ -95,6 +95,7 @@ interface SearchBarProps {
   onClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onChange(value: string, event: React.SyntheticEvent): void;
   onKeyPress?(key: string): void;
+  onKeyDown?: InputBaseProps['onKeyDown'];
   onActionButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, input: HTMLInputElement): void;
   onDecoratorButtonClick?(): void;
 }
@@ -104,6 +105,7 @@ export function SearchBar(props: SearchBarProps) {
   const {
     onChange,
     onKeyPress,
+    onKeyDown,
     keyword,
     showActionButton = false,
     actionButtonIcon: ActionButtonIcon = CloseIcon,
@@ -137,6 +139,7 @@ export function SearchBar(props: SearchBarProps) {
       )}
       <InputBase
         onChange={(e) => onChange(e.target.value, e)}
+        onKeyDown={onKeyDown}
         onKeyPress={(e) => onKeyPress?.(e.key)}
         onFocus={() => setFocus(true)}
         onBlur={() => {

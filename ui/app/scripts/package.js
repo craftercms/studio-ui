@@ -100,10 +100,11 @@ async function bannerAndFormat() {
   const config = path.join(__dirname, '../../../prettier.config.js');
   filesToProcess.forEach(async (filePath) => {
     const fullPath = path.join(buildPath, filePath);
-    const options = prettier.resolveConfig.sync(fullPath, { config });
+    const options = await prettier.resolveConfig(fullPath, { config });
     const code = await fse.readFile(fullPath, 'utf8');
     try {
-      const output = `${banner}${prettier.format(code, { ...options, filepath: fullPath })}`;
+      const formattedCode = await prettier.format(code, { ...options, filepath: fullPath });
+      const output = `${banner}${formattedCode}`;
       await fse.writeFile(fullPath, output, 'utf8');
     } catch {
       console.log(`Error formatting "${filePath}"`);

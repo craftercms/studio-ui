@@ -64,7 +64,7 @@
   },
   "packageManager": "yarn@4.2.2",
   "scripts": {
-    "build:all": "yarn workspaces foreach --include './ui/{npm-content,uppy,legacy,app}' -Ap run build-if-changed && yarn workspaces foreach --include './ui/{scss,guest}' -Ap run build-if-changed",
+    "build:all": "yarn workspace @craftercms/uppy build-if-changed && yarn workspaces foreach --include './ui/{npm-content,legacy,app}' -Ap run build-if-changed && yarn workspaces foreach --include './ui/{scss,guest}' -Ap run build-if-changed",
     "format:all": "node scripts/prettier.js write",
     "format:next": "node scripts/prettier.js next",
     "format:legacy": "node scripts/prettier.js legacy",
@@ -80,7 +80,7 @@
     "bom:remove": "rimraf ./target/bom.json ./ui/**/target"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.5",
     "@types/node": "^20.12.12",

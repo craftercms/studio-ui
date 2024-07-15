@@ -15,7 +15,7 @@
  */
 
 import TextField, { TextFieldProps } from '@mui/material/TextField';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
@@ -38,13 +38,24 @@ const PasswordTextField = React.forwardRef<HTMLDivElement, PasswordTextFieldProp
   const { visibilitySwitch = true, initialVisible = false } = props;
   const { formatMessage } = useIntl();
   const [showPassword, setShowPassword] = useState(initialVisible);
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const inputRef = useRef<HTMLInputElement>();
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword);
+    inputRef.current.focus();
+    setTimeout(() => {
+      const inputLength = inputRef.current.value.length;
+      inputRef.current.setSelectionRange(inputLength, inputLength);
+    }, 0);
+  };
 
   return (
     <TextField
       {...props}
       ref={ref}
       type={showPassword ? 'text' : 'password'}
+      inputProps={{
+        ref: inputRef
+      }}
       InputProps={
         visibilitySwitch
           ? {

@@ -99,7 +99,7 @@ export function fetchDescriptorDOM(
   return fetchDescriptorXML(site, path, options).pipe(map(fromString));
 }
 
-// region fetchSandboxItem
+// region fetchSandboxItem(...
 export function fetchSandboxItem(site: string, path: string): Observable<SandboxItem>;
 export function fetchSandboxItem(
   site: string,
@@ -116,7 +116,7 @@ export function fetchSandboxItem(
   path: string,
   options?: FetchItemsByPathOptions
 ): Observable<SandboxItem | DetailedItem> {
-  return fetchItemsByPath(site, [path], options).pipe(pluck(0));
+  return fetchItemsByPath(site, [path], options).pipe(map((items) => items[0]));
 }
 // endregion
 
@@ -464,7 +464,7 @@ export function insertItem(
     site,
     path,
     (element) => {
-      let node = extractNode(element, removeLastPiece(fieldId) || fieldId, index);
+      const node = extractNode(element, fieldId, index);
       const newItem = createElement('item');
       const serializedInstance = {};
       for (let key in instance) {
@@ -779,6 +779,19 @@ export function fetchItemsByContentType(
   contentTypesLookup: LookupTable<ContentType>,
   options?: ComponentsContentTypeParams
 ): Observable<ContentInstancePage> {
+  // If content types is null|undefined or if is empty (array or string), return empty values as there's no need to
+  // make a request.
+  if (
+    !contentTypes ||
+    (typeof contentTypes === 'string' && contentTypes === '') ||
+    (Array.isArray(contentTypes) && contentTypes.length === 0)
+  ) {
+    return of({
+      count: 0,
+      lookup: {}
+    });
+  }
+
   if (typeof contentTypes === 'string') {
     contentTypes = [contentTypes];
   }
@@ -1257,9 +1270,10 @@ export function fetchChildrenByPaths(
         map(({ response: { items } }) => {
           const data = {};
           items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
+            const totalWithDescriptor = levelDescriptor ? total + 1 : total;
             data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
               levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
-              total,
+              total: totalWithDescriptor,
               offset,
               limit
             });
@@ -1269,6 +1283,7 @@ export function fetchChildrenByPaths(
       );
 }
 
+// region export function fetchItemsByPath(...
 export function fetchItemsByPath(siteId: string, paths: string[]): Observable<FetchItemsByPathArray<SandboxItem>>;
 export function fetchItemsByPath(
   siteId: string,
@@ -1306,7 +1321,9 @@ export function fetchItemsByPath(
     )
   );
 }
+// endregion
 
+// region export function fetchItemByPath(...
 export function fetchItemByPath(siteId: string, path: string): Observable<SandboxItem>;
 export function fetchItemByPath(
   siteId: string,
@@ -1350,6 +1367,7 @@ export function fetchItemByPath(
     pluck(0)
   );
 }
+// endregion
 
 export function fetchItemWithChildrenByPath(
   siteId: string,

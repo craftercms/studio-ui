@@ -19,6 +19,13 @@ import { filter, ignoreElements, map, mergeMap, switchMap, tap, throttleTime, wi
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeBackgroundRefresh,
+  pathNavigatorTreeBulkFetchPathChildren,
+  pathNavigatorTreeBulkFetchPathChildrenComplete,
+  pathNavigatorTreeBulkFetchPathChildrenFailed,
+  pathNavigatorTreeBulkRefresh,
+  pathNavigatorTreeBulkRestoreComplete,
+  pathNavigatorTreeBulkRestoreFailed,
+  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -36,14 +43,8 @@ import {
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
   pathNavigatorTreeUpdate,
-  pathNavigatorTreeBulkRefresh,
-  pathNavigatorTreeBulkFetchPathChildren,
-  pathNavigatorTreeBulkFetchPathChildrenComplete,
-  pathNavigatorTreeBulkFetchPathChildrenFailed,
-  pathNavigatorTreeBulkRestoreComplete,
-  pathNavigatorTreeBulkRestoreFailed,
-  PathNavTreeFetchPathChildrenPayload,
-  PathNavTreeBulkFetchPathChildrenPayload
+  PathNavTreeBulkFetchPathChildrenPayload,
+  PathNavTreeFetchPathChildrenPayload
 } from '../actions/pathNavigatorTree';
 import {
   checkPathExistence,
@@ -65,9 +66,9 @@ import {
 } from '../../utils/path';
 import { batchActions } from '../actions/misc';
 import {
-  deleteContentEvents,
   contentEvent,
   deleteContentEvent,
+  deleteContentEvents,
   moveContentEvent,
   pluginInstalled,
   publishEvent,
@@ -159,7 +160,8 @@ export default [
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
                 expanded: updatedExpanded,
                 collapsed: state.pathNavigatorTree[id].collapsed,
-                keywordByPath: state.pathNavigatorTree[id].keywordByPath
+                keywordByPath: state.pathNavigatorTree[id].keywordByPath,
+                limit: state.pathNavigatorTree[id].limit
               });
             }
             return pathNavigatorTreeRestoreComplete({ id, expanded: updatedExpanded, collapsed, items, children });
@@ -170,7 +172,8 @@ export default [
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
                 expanded: state.pathNavigatorTree[id].expanded,
                 collapsed: state.pathNavigatorTree[id].collapsed,
-                keywordByPath: state.pathNavigatorTree[id].keywordByPath
+                keywordByPath: state.pathNavigatorTree[id].keywordByPath,
+                limit: state.pathNavigatorTree[id].limit
               });
               return batchActions([pathNavigatorTreeUpdate({ id, expanded: [] }), pathNavigatorTreeRefresh({ id })]);
             } else {
@@ -179,6 +182,25 @@ export default [
           })
         );
       })
+    ),
+  // endregion
+
+  // region pathNavigatorTreeUpdate
+  (action$, state$) =>
+    action$.pipe(
+      ofType(pathNavigatorTreeChangeLimit.type),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => {
+        const { id, limit } = payload;
+        const uuid = state.sites.byId[state.sites.active].uuid;
+        setStoredPathNavigatorTree(uuid, state.user.username, id, {
+          expanded: state.pathNavigatorTree[id].expanded,
+          collapsed: state.pathNavigatorTree[id].collapsed,
+          keywordByPath: state.pathNavigatorTree[id].keywordByPath,
+          limit
+        });
+      }),
+      ignoreElements()
     ),
   // endregion
   // region pathNavigatorTreeBulkBackgroundRefresh
@@ -233,7 +255,8 @@ export default [
                     setStoredPathNavigatorTree(uuid, state.user.username, id, {
                       expanded: updatedExpanded,
                       collapsed: state.pathNavigatorTree[id].collapsed,
-                      keywordByPath: state.pathNavigatorTree[id].keywordByPath
+                      keywordByPath: state.pathNavigatorTree[id].keywordByPath,
+                      limit: state.pathNavigatorTree[id].limit
                     });
                   }
 
@@ -288,7 +311,7 @@ export default [
               options: finalOptions
             })
           ),
-          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
+          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id, path }))
         );
       })
     ),
@@ -341,7 +364,7 @@ export default [
         const options = createGetChildrenOptions(chunk, { keyword });
         return fetchChildrenByPath(state.sites.active, path, options).pipe(
           map((children) => pathNavigatorTreeFetchPathChildrenComplete({ id, parentPath: path, children, options })),
-          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id }))
+          catchAjaxError((error) => pathNavigatorTreeFetchPathChildrenFailed({ error, id, path }))
         );
       })
     ),
@@ -390,12 +413,13 @@ export default [
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         const { id } = payload;
-        const { expanded, collapsed, keywordByPath } = state.pathNavigatorTree[id];
+        const { expanded, collapsed, keywordByPath, limit } = state.pathNavigatorTree[id];
         const uuid = state.sites.byId[state.sites.active].uuid;
         setStoredPathNavigatorTree(uuid, state.user.username, id, {
           expanded,
           collapsed,
-          keywordByPath
+          keywordByPath,
+          limit
         });
       }),
       ignoreElements()

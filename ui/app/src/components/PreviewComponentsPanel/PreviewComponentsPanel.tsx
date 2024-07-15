@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@mui/material/List';
 import ContentType from '../../models/ContentType';
@@ -39,11 +39,33 @@ import LoadingState from '../LoadingState';
 import ErrorBoundary from '../ErrorBoundary';
 import EmptyState from '../EmptyState';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import ListItemText, { listItemTextClasses } from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import IconButton from '@mui/material/IconButton';
+import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
+import ListItem from '@mui/material/ListItem';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
+import InfoRounded from '@mui/icons-material/InfoOutlined';
+import { ExpandMoreRounded } from '@mui/icons-material';
+import Alert, { alertClasses } from '@mui/material/Alert';
+import { nou } from '../../utils/object';
+import Tooltip from '@mui/material/Tooltip';
+import Skeleton from '@mui/material/Skeleton';
+import { ItemTypeIcon } from '../ItemTypeIcon';
+import { SandboxItem } from '../../models';
+import Avatar from '@mui/material/Avatar';
+import { getAvatarWithIconColors } from '../../utils/contentType';
+import { darken, useTheme } from '@mui/material/styles';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
-    id: 'previewComponentsPanel.title',
-    defaultMessage: 'Add Components'
+    // Translation not used in code but powers i18n for `ui.xml`
+    id: 'previewComponentsPanelTitle',
+    defaultMessage: 'Create Content'
   },
   browse: {
     id: 'previewComponentsPanel.browse',
@@ -62,25 +84,118 @@ const translations = defineMessages({
   }
 });
 
-type ComponentsPanelUIProps = { componentTypes: ContentType[] };
+type ContentTypeData = {
+  allowedTypes: ContentType[];
+  otherTypes: ContentType[];
+};
 
 export function PreviewComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
-  const contentTypesBranchEntries = Object.entries(contentTypesBranch.byId ?? {});
+  const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
+  const awaitingGuestCheckIn = nou(allowedTypesData);
   const [keyword, setKeyword] = useState('');
-  const lowerCaseKeyword = keyword.toLowerCase();
-  const filteredContentTypes = contentTypesBranch.byId
-    ? contentTypesBranchEntries
-        .filter(
-          ([id, contentType]) =>
-            id !== '/component/level-descriptor' &&
-            contentType.type === 'component' &&
-            (contentType.name.toLowerCase().includes(lowerCaseKeyword) ||
-              contentType.id.toLowerCase().includes(lowerCaseKeyword))
-        )
-        .map(([, contentType]) => contentType)
-    : null;
   const { formatMessage } = useIntl();
+  const contentTypeData: ContentTypeData = useMemo(() => {
+    const allowedTypes: ContentType[] = [];
+    const otherTypes: ContentType[] = [];
+    const result = { allowedTypes, otherTypes };
+    if (!contentTypesBranch.byId || !allowedTypesData) return result;
+    const lowerCaseKeyword = keyword.trim().toLowerCase();
+    const typeLookup = contentTypesBranch.byId;
+    for (const id in typeLookup) {
+      const contentType = typeLookup[id];
+      if (
+        // Skip pages
+        contentType.type === 'page' ||
+        // Keyword isn't blank and the type name nor id match the keyword
+        (lowerCaseKeyword !== '' &&
+          !contentType.name.toLowerCase().includes(lowerCaseKeyword) &&
+          !id.toLowerCase().includes(lowerCaseKeyword))
+      ) {
+        continue;
+      }
+      // if contentType.type === 'component' ...
+      if (allowedTypesData[id]?.embedded || allowedTypesData[id]?.shared) {
+        allowedTypes.push(contentType);
+      } else {
+        otherTypes.push(contentType);
+      }
+    }
+    const sorter = (a: ContentType, b: ContentType) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+    allowedTypes.sort(sorter);
+    otherTypes.sort(sorter);
+    return result;
+  }, [contentTypesBranch.byId, keyword, allowedTypesData]);
+  const dispatch = useDispatch();
+  const theme = useTheme();
+  // region Context Menu
+  const [menuContext, setMenuContext] = useState<{
+    anchor: Element;
+    contentType: ContentType;
+    backgroundColor: string;
+    textColor: string;
+  }>();
+  const onMenuClose = () => setMenuContext(null);
+  const onBrowseSharedInstancesClicked = () => {
+    dispatch(
+      batchActions([
+        setContentTypeFilter(menuContext.contentType.id),
+        pushIcePanelPage(
+          createToolsPanelPage(
+            formatMessage({ defaultMessage: 'Existing {name}' }, { name: menuContext.contentType.name }),
+            [createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })],
+            'icePanel'
+          )
+        )
+      ])
+    );
+  };
+  const onListInPageInstancesClick = () => {
+    dispatch(
+      batchActions([
+        setContentTypeFilter(menuContext.contentType.id),
+        pushIcePanelPage(
+          createToolsPanelPage(
+            formatMessage({ defaultMessage: 'Instances of {name}' }, { name: menuContext.contentType.name }),
+            [createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })],
+            'icePanel'
+          )
+        )
+      ])
+    );
+  };
+  const onListDropTargetsClick = () => {
+    dispatch(
+      pushIcePanelPage(
+        createToolsPanelPage(
+          formatMessage({ defaultMessage: 'Drop Targets for {name}' }, { name: menuContext.contentType.name }),
+          [createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })],
+          'icePanel'
+        )
+      )
+    );
+    getHostToGuestBus().next(contentTypeDropTargetsRequest({ contentTypeId: menuContext.contentType.id }));
+  };
+  const onMenuButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>, contentType: ContentType) => {
+    const { backgroundColor, textColor } = getAvatarWithIconColors(contentType.name, theme, darken);
+    setMenuContext({ anchor: e.currentTarget, contentType, backgroundColor, textColor });
+  };
+  // endregion
+  // region Drag and Drop
+  const editMode = useSelection((state) => state.preview.editMode);
+  const [isBeingDragged, setIsBeingDragged] = useState<string | null>(null);
+  const onDragStart = (contentType: ContentType) => {
+    if (!editMode) {
+      dispatch(setPreviewEditMode({ editMode: true }));
+    }
+    getHostToGuestBus().next({ type: componentDragStarted.type, payload: contentType });
+    setIsBeingDragged(contentType.id);
+  };
+  const onDragEnd = () => {
+    getHostToGuestBus().next({ type: componentDragEnded.type });
+    setIsBeingDragged(null);
+  };
+  // endregion
   return (
     <ErrorBoundary>
       <Box sx={{ padding: (theme) => `${theme.spacing(1)} ${theme.spacing(1)} 0` }}>
@@ -96,116 +211,225 @@ export function PreviewComponentsPanel() {
         <LoadingState
           title={<FormattedMessage id="componentsPanel.suspenseStateMessage" defaultMessage="Retrieving Page Model" />}
         />
-      ) : contentTypesBranchEntries.length === 0 ? (
-        <EmptyState
-          title={<FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />}
-          subtitle={
-            <FormattedMessage
-              id="componentsPanel.emptyComponentsSubtitle"
-              defaultMessage="Communicate with your developers to create the required components in the system."
-            />
-          }
-        />
-      ) : filteredContentTypes.length === 0 ? (
-        <EmptyState
-          title={<FormattedMessage id="componentsPanel.emptyStateMessage" defaultMessage="No components found" />}
-          subtitle={<FormattedMessage defaultMessage="Try changing the keyword." />}
-        />
       ) : (
-        <ComponentsPanelUI componentTypes={filteredContentTypes} />
+        <>
+          {/* **** */}
+          <Box sx={{ pt: 1 }}>
+            {awaitingGuestCheckIn ? (
+              <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
+                <FormattedMessage defaultMessage="Waiting for the preview application to load." />
+              </Alert>
+            ) : contentTypeData.allowedTypes.length ? (
+              <>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    placeContent: 'space-between',
+                    alignItems: 'center',
+                    px: 1.6,
+                    py: 1.5
+                  }}
+                >
+                  <Typography variant="overline">
+                    <FormattedMessage defaultMessage="Compatible Types" />
+                  </Typography>
+                  <Tooltip
+                    arrow
+                    title={<FormattedMessage defaultMessage="Compatible types are configured in the content model." />}
+                  >
+                    <IconButton size="small">
+                      <InfoRounded fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+                <List sx={{ pt: 0 }}>
+                  {contentTypeData.allowedTypes.map((contentType) => (
+                    <DraggablePanelListItem
+                      key={contentType.id}
+                      primaryText={contentType.name}
+                      avatarColorBase={contentType.id}
+                      onDragStart={() => onDragStart(contentType)}
+                      onDragEnd={onDragEnd}
+                      onMenu={(e) => onMenuButtonClickHandler(e, contentType)}
+                      isBeingDragged={isBeingDragged === contentType.id}
+                    />
+                  ))}
+                </List>
+              </>
+            ) : (
+              <EmptyState
+                sxs={{ title: { textAlign: 'center' } }}
+                title={
+                  keyword ? (
+                    <FormattedMessage
+                      defaultMessage='No content types were found matching "{keyword}"'
+                      values={{ keyword }}
+                    />
+                  ) : (
+                    <FormattedMessage defaultMessage="No compatible types were found." />
+                  )
+                }
+                subtitle={
+                  keyword ? undefined : (
+                    <FormattedMessage defaultMessage="Developers can configure the content model to add compatible types." />
+                  )
+                }
+              />
+            )}
+          </Box>
+          {/* **** */}
+          {contentTypeData.otherTypes.length > 0 && (
+            <Accordion square disableGutters elevation={0} sx={{ background: 'none' }}>
+              <AccordionSummary expandIcon={<ExpandMoreRounded />}>
+                <Typography variant="overline">
+                  <FormattedMessage defaultMessage="Other Types" />
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails sx={{ p: 0 }}>
+                <Alert
+                  severity="info"
+                  variant="outlined"
+                  sx={{ width: '100%', border: 'none', py: 0, [`.${alertClasses.icon}`]: { mr: 1 } }}
+                >
+                  <FormattedMessage defaultMessage="Content types not configured for use." />
+                </Alert>
+                <List dense>
+                  {contentTypeData.otherTypes.map((type) => {
+                    const { backgroundColor, textColor } = getAvatarWithIconColors(
+                      contentTypesBranch.byId[type.id].name,
+                      theme,
+                      darken
+                    );
+                    return (
+                      <ListItem key={type.id}>
+                        <ListItemText
+                          sx={{
+                            [`.${listItemTextClasses.primary}`]: {
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center'
+                            }
+                          }}
+                          primary={
+                            <>
+                              <Box
+                                component="span"
+                                sx={{
+                                  mr: 1,
+                                  flexShrink: 0,
+                                  width: '24px',
+                                  height: '24px',
+                                  borderRadius: '20px',
+                                  overflow: 'hidden',
+                                  backgroundColor,
+                                  borderColor: textColor,
+                                  borderStyle: 'solid',
+                                  borderWidth: '1px',
+                                  display: 'inline-block'
+                                }}
+                              />
+                              <Box
+                                component="span"
+                                sx={{
+                                  flexShrink: 1,
+                                  flexGrow: 1,
+                                  textOverflow: 'ellipsis',
+                                  overflow: 'hidden',
+                                  whiteSpace: 'nowrap'
+                                }}
+                              >
+                                {type.name}
+                              </Box>
+                            </>
+                          }
+                        />
+                        <ListItemSecondaryAction sx={{ right: '10px' }}>
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            size="small"
+                            onClick={(e) => onMenuButtonClickHandler(e, type)}
+                          >
+                            <MoreVertRounded />
+                          </IconButton>
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          )}
+          {/* **** */}
+        </>
       )}
-    </ErrorBoundary>
-  );
-}
-
-export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
-  const { componentTypes } = props;
-  const dispatch = useDispatch();
-  const { formatMessage } = useIntl();
-  const editMode = useSelection((state) => state.preview.editMode);
-
-  const hostToGuest$ = getHostToGuestBus();
-  const [menuContext, setMenuContext] = useState<{ anchor: Element; contentType: ContentType }>();
-
-  const onDragStart = (contentType) => {
-    if (!editMode) {
-      dispatch(setPreviewEditMode({ editMode: true }));
-    }
-    hostToGuest$.next({ type: componentDragStarted.type, payload: contentType });
-  };
-
-  const onDragEnd = () => hostToGuest$.next({ type: componentDragEnded.type });
-
-  const onMenuClose = () => setMenuContext(null);
-
-  const onBrowseSharedInstancesClicked = () => {
-    dispatch(
-      batchActions([
-        setContentTypeFilter(menuContext.contentType.id),
-        pushIcePanelPage(
-          createToolsPanelPage(
-            { id: 'previewBrowseComponentsPanel.title' },
-            [createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })],
-            'icePanel'
-          )
-        )
-      ])
-    );
-  };
-
-  const onListInPageInstancesClick = () => {
-    dispatch(
-      batchActions([
-        setContentTypeFilter(menuContext.contentType.id),
-        pushIcePanelPage(
-          createToolsPanelPage(
-            { id: 'previewInPageInstancesPanel.title' },
-            [createWidgetDescriptor({ id: 'craftercms.components.PreviewInPageInstancesPanel' })],
-            'icePanel'
-          )
-        )
-      ])
-    );
-  };
-
-  const onListDropTargetsClick = () => {
-    dispatch(
-      pushIcePanelPage(
-        createToolsPanelPage(
-          { id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' },
-          [createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })],
-          'icePanel'
-        )
-      )
-    );
-    hostToGuest$.next({
-      type: contentTypeDropTargetsRequest.type,
-      payload: menuContext.contentType.id
-    });
-  };
-
-  return (
-    <>
-      <List>
-        {componentTypes.map((contentType) => (
-          <DraggablePanelListItem
-            key={contentType.id}
-            primaryText={contentType.name}
-            secondaryText={contentType.id}
-            onDragStart={() => onDragStart(contentType)}
-            onDragEnd={onDragEnd}
-            onMenu={(anchor) => setMenuContext({ anchor, contentType })}
-          />
-        ))}
-      </List>
-
-      <Menu open={!!menuContext} anchorEl={menuContext?.anchor} onClose={onMenuClose}>
+      <Menu
+        open={Boolean(menuContext)}
+        anchorEl={menuContext?.anchor}
+        onClose={onMenuClose}
+        slotProps={{
+          paper: {
+            sx: { maxWidth: 350, minWidth: 200 }
+          }
+        }}
+      >
+        <Box
+          component="header"
+          sx={{
+            px: 2,
+            py: 1,
+            mb: 1,
+            display: 'block',
+            maxWidth: '100%',
+            borderWidth: 1,
+            borderColor: 'divider',
+            borderBottomStyle: 'solid'
+          }}
+        >
+          <Box
+            component="section"
+            sx={{
+              display: 'flex',
+              placeContent: 'space-between'
+            }}
+          >
+            <Box>
+              <Typography
+                component="div"
+                variant="caption"
+                color="textSecondary"
+                title={menuContext?.contentType.id}
+                sx={{ wordBreak: 'break-all' }}
+              >
+                {menuContext?.contentType.id ?? <Skeleton variant="text" />}
+              </Typography>
+              <Typography>{menuContext?.contentType.name ?? <Skeleton variant="text" width="100px" />}</Typography>
+            </Box>
+            <Avatar component="div" sx={{ backgroundColor: menuContext?.backgroundColor, ml: 1 }}>
+              <ItemTypeIcon
+                fontSize="medium"
+                item={{ systemType: menuContext?.contentType.type ?? '', mimeType: '' } as SandboxItem}
+                sx={{ color: menuContext?.textColor }}
+              />
+            </Avatar>
+          </Box>
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            <FormattedMessage
+              defaultMessage="The model is configured for {modes}"
+              values={{
+                modes: Object.keys(allowedTypesData?.[menuContext?.contentType.id] ?? {})
+                  .map((mode) => (mode === 'sharedExisting' ? 'existing shared' : mode))
+                  .join(', ')
+              }}
+            />
+          </Typography>
+        </Box>
         <MenuItem onClick={onListInPageInstancesClick}>{formatMessage(translations.listInPageInstances)}</MenuItem>
         <MenuItem onClick={onBrowseSharedInstancesClicked}>{formatMessage(translations.browse)}</MenuItem>
         <MenuItem onClick={onListDropTargetsClick}>{formatMessage(translations.listDropTargets)}</MenuItem>
       </Menu>
-    </>
+    </ErrorBoundary>
   );
-};
+}
 
 export default PreviewComponentsPanel;

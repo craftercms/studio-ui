@@ -108,14 +108,16 @@
   </div>
 </#if>
 
+<#include "/static-assets/app/pages/legacy.html">
 <script>
-  $(document).ready(function(){
-    CStudioAuthoring.Service.getCurrentVersion(CStudioAuthoringContext.site, "${dir}", {
-      success: function(version) {
-        $('#current-version').append(version)
-      }
+  const init = () => {
+    window.craftercms.store$().subscribe(() => {
+      CStudioAuthoring.Service.getCurrentVersion(CStudioAuthoringContext.site, "${dir}", {
+        success: function(version) {
+          $('#current-version').append(version)
+        }
+      });
     });
-
     $('#cancelBtn').on('click', function() {
       parent.$('body').trigger('diff-end');
     });
@@ -128,7 +130,12 @@
     });
 
     $(window).focus();
-  })
+  };
+  if (window.craftercms?.store$) {
+    init();
+  } else {
+    document.addEventListener("CrafterCMS.CodebaseBridgeReady", init);
+  }
 </script>
 
 </body>

@@ -21,6 +21,7 @@ import { GetChildrenResponse } from '../../models/GetChildrenResponse';
 import { GetChildrenOptions } from '../../models/GetChildrenOptions';
 import LookupTable from '../../models/LookupTable';
 import SystemType from '../../models/SystemType';
+import SimpleAjaxError from '../../models/SimpleAjaxError';
 
 type PayloadWithId<P> = P & { id: string };
 
@@ -131,7 +132,8 @@ export const pathNavigatorTreeBulkFetchPathChildrenComplete =
 
 export const pathNavigatorTreeFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
   id: string;
-  error: Omit<AjaxError, 'request' | 'xhr'>;
+  path: string;
+  error: SimpleAjaxError;
 }>('PATH_NAV_TREE_FETCH_PATH_CHILDREN_FAILED');
 
 export const pathNavigatorTreeBulkFetchPathChildrenFailed = /*#__PURE__*/ createAction<{
@@ -147,7 +149,11 @@ export const pathNavigatorTreeUpdate = /*#__PURE__*/ createAction<
     data?: LookupTable<GetChildrenResponse>;
     sortStrategy?: GetChildrenOptions['sortStrategy'];
     order?: GetChildrenOptions['order'];
+    limit?: number;
   }>
 >('PATH_NAV_TREE_UPDATE');
 
 export const pathNavigatorTreeRootMissing = /*#__PURE__*/ createAction<PayloadWithId<{}>>('PATH_NAV_TREE_ROOT_MISSING');
+
+export const pathNavigatorTreeChangeLimit =
+  /*#__PURE__*/ createAction<PayloadWithId<{ id: string; limit: number }>>('PATH_NAV_TREE_CHANGE_LIMIT');

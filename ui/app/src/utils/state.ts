@@ -129,6 +129,7 @@ export interface StoredPathNavTree {
   expanded: string[];
   collapsed: boolean;
   keywordByPath: LookupTable<string>;
+  limit: number;
 }
 
 export function setStoredPathNavigator(

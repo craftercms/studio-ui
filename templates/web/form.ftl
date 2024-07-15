@@ -90,8 +90,11 @@
   </div>
 </div>
 
+<#include "/static-assets/app/pages/legacy.html">
 <script>
-  CStudioForms.engine.render(null, "default", "formContainer");
+  document.addEventListener("CrafterCMS.CodebaseBridgeReady", () => {
+    CStudioForms.engine.render(null, "default", "formContainer");
+  });
 </script>
 
 </body>

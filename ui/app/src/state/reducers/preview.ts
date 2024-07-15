@@ -17,6 +17,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import GlobalState, { HighlightMode, PagedEntityState } from '../../models/GlobalState';
 import {
+  allowedContentTypesUpdate,
   clearDropTargets,
   clearSelectForEdit,
   closeToolsPanel,
@@ -32,7 +33,7 @@ import {
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
   fetchContentModelComplete,
-  fetchGuestModelComplete,
+  fetchGuestModelsComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
   guestCheckOut,
@@ -136,7 +137,7 @@ const componentsInitialState = createEntityState({
     offset: 0,
     limit: 10
   },
-  contentTypeFilter: 'all',
+  contentTypeFilter: 'compatible',
   inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
 
@@ -317,6 +318,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       const url = href.replace(location.origin, '');
       state.error = null;
       state.guest = {
+        allowedContentTypes: null,
         url,
         origin,
         modelId: null,
@@ -350,7 +352,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       };
     })
     .addCase(fetchPrimaryGuestModelComplete, fetchGuestModelsCompleteHandler)
-    .addCase(fetchGuestModelComplete, fetchGuestModelsCompleteHandler)
+    .addCase(fetchGuestModelsComplete, fetchGuestModelsCompleteHandler)
     .addCase(guestModelUpdated, (state, { payload: { model } }) => ({
       ...state,
       guest: {
@@ -807,6 +809,10 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
     })
     .addCase(mainModelModifiedExternally, (state, { payload }) => {
       if (state.guest) state.guest.mainModelModifier = payload.user;
+    })
+    .addCase(allowedContentTypesUpdate, (state, { payload }) => {
+      if (!state.guest) return state;
+      state.guest.allowedContentTypes = payload;
     });
 });
 

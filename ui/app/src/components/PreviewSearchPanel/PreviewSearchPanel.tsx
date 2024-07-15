@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import List from '@mui/material/List';
 import SearchBar from '../SearchBar/SearchBar';
 import { ComponentsContentTypeParams, ElasticParams, SearchItem } from '../../models/Search';
@@ -31,9 +31,9 @@ import {
 import ContentInstance from '../../models/ContentInstance';
 import { search } from '../../services/search';
 import { ApiResponse } from '../../models/ApiResponse';
-import { createLookupTable } from '../../utils/object';
+import { createLookupTable, nou } from '../../utils/object';
 import { fetchContentInstance } from '../../services/content';
-import { forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, Observable, of, Subscription } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { useDispatch } from 'react-redux';
 import { useSelection } from '../../hooks/useSelection';
@@ -50,6 +50,10 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
 import { ErrorBoundary } from '../ErrorBoundary';
+import FormHelperText from '@mui/material/FormHelperText';
+import LookupTable from '../../models/LookupTable';
+import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
+import Alert from '@mui/material/Alert';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -78,12 +82,13 @@ const useStyles = makeStyles()((theme) => ({
 
 interface SearchResultsProps {
   items: SearchItem[];
+  contentInstanceLookup: LookupTable<ContentInstance>;
   onDragStart(item: SearchItem): void;
   onDragEnd(item: SearchItem): void;
 }
 
 function SearchResults(props: SearchResultsProps) {
-  const { items, onDragStart, onDragEnd } = props;
+  const { items, contentInstanceLookup, onDragStart, onDragEnd } = props;
   return (
     <List>
       {items.map((item: SearchItem) => (
@@ -91,6 +96,7 @@ function SearchResults(props: SearchResultsProps) {
           key={item.path}
           primaryText={item.name ?? getFileNameFromPath(item.path)}
           avatarSrc={item.type === 'Image' ? item.path : null}
+          avatarColorBase={contentInstanceLookup[item.path]?.craftercms.contentTypeId}
           onDragStart={() => onDragStart(item)}
           onDragEnd={() => onDragEnd(item)}
         />
@@ -124,6 +130,8 @@ export function PreviewSearchPanel() {
   });
   const dispatch = useDispatch();
   const editMode = useSelection((state) => state.preview.editMode);
+  const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
+  const awaitingGuestCheckIn = nou(allowedTypesData);
   const contentTypes = useContentTypeList(
     (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
   );
@@ -131,7 +139,7 @@ export function PreviewSearchPanel() {
     () => (contentTypes ? createLookupTable(contentTypes, 'id') : null),
     [contentTypes]
   );
-
+  const onSearchSubscription = useRef<Subscription>();
   const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
 
@@ -139,11 +147,13 @@ export function PreviewSearchPanel() {
     (keywords: string = '', options?: ComponentsContentTypeParams) => {
       setState({ isFetching: true });
       setError(null);
-      search(site, {
+      const allowedTypes = Object.entries(allowedTypesData ?? {}).flatMap(([key, type]) => (type.shared ? [key] : []));
+
+      return search(site, {
         ...initialSearchParameters,
         keywords,
         ...options,
-        filters: { 'content-type': contentTypes?.map((item) => item.id), 'mime-type': mimeTypes }
+        filters: { ...(allowedTypes.length > 0 ? { 'content-type': allowedTypes } : {}), 'mime-type': mimeTypes }
       })
         .pipe(
           takeUntil(unMount$),
@@ -180,27 +190,36 @@ export function PreviewSearchPanel() {
             }
           },
           error: ({ response }) => {
+            setState({ isFetching: false });
             setError(response.response);
           }
         });
     },
-    [setState, site, contentTypes, unMount$, contentTypesLookup]
+    [setState, site, unMount$, contentTypesLookup, allowedTypesData]
   );
 
   useMount(() => {
     return () => {
       unMount$.next();
       unMount$.complete();
+      onSearchSubscription.current?.unsubscribe();
     };
   });
 
   useEffect(() => {
-    if (contentTypes && contentTypesLookup) {
-      onSearch();
+    if (contentTypes && contentTypesLookup && !awaitingGuestCheckIn) {
+      onSearchSubscription.current?.unsubscribe();
+      onSearchSubscription.current = onSearch();
+      return () => {
+        onSearchSubscription.current?.unsubscribe();
+      };
     }
-  }, [contentTypes, contentTypesLookup, onSearch]);
+  }, [contentTypes, contentTypesLookup, onSearch, awaitingGuestCheckIn]);
 
-  const onSearch$ = useDebouncedInput(onSearch, 400);
+  const onSearch$ = useDebouncedInput((keyword) => {
+    onSearchSubscription.current?.unsubscribe();
+    onSearchSubscription.current = onSearch(keyword);
+  }, 400);
 
   function handleSearchKeyword(keyword: string) {
     setKeyword(keyword);
@@ -208,14 +227,16 @@ export function PreviewSearchPanel() {
   }
 
   function onPageChanged(page: number) {
-    onSearch(keyword, {
+    onSearchSubscription.current?.unsubscribe();
+    onSearchSubscription.current = onSearch(keyword, {
       offset: page * state.limit,
       limit: state.limit
     });
   }
 
   function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    onSearch(keyword, {
+    onSearchSubscription.current?.unsubscribe();
+    onSearchSubscription.current = onSearch(keyword, {
       offset: 0,
       limit: Number(e.target.value)
     });
@@ -264,19 +285,40 @@ export function PreviewSearchPanel() {
           onRowsPerPageChange={onRowsPerPageChange}
         />
       )}
-      <ErrorBoundary>
-        {error ? (
-          <ApiResponseErrorState error={error} />
-        ) : state.isFetching ? (
-          <LoadingState />
-        ) : state.items && state.items.length ? (
-          <SearchResults items={state.items} onDragStart={onDragStart} onDragEnd={onDragEnd} />
-        ) : state.items && state.items.length === 0 ? (
-          <EmptyState title={formatMessage(translations.noResults)} />
-        ) : (
-          <></>
-        )}
-      </ErrorBoundary>
+      {awaitingGuestCheckIn ? (
+        <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
+          <FormattedMessage defaultMessage="Waiting for the preview application to load." />
+        </Alert>
+      ) : (
+        <ErrorBoundary>
+          {error ? (
+            <ApiResponseErrorState error={error} />
+          ) : state.isFetching ? (
+            <LoadingState />
+          ) : state.items && state.items.length ? (
+            <SearchResults
+              items={state.items}
+              contentInstanceLookup={state.contentInstanceLookup ?? {}}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+            />
+          ) : state.items && state.items.length === 0 ? (
+            <EmptyState title={formatMessage(translations.noResults)} />
+          ) : (
+            <></>
+          )}
+        </ErrorBoundary>
+      )}
+      <FormHelperText
+        sx={{
+          margin: '10px 16px',
+          pt: 1,
+          textAlign: 'center',
+          borderTop: (theme) => `1px solid ${theme.palette.divider}`
+        }}
+      >
+        <FormattedMessage defaultMessage="Only shared instances and assets are shown here" />
+      </FormHelperText>
     </>
   );
 }

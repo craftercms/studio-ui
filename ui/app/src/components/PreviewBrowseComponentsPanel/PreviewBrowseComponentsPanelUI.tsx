@@ -24,6 +24,8 @@ import EmptyState from '../EmptyState/EmptyState';
 import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@mui/material/FormHelperText';
 import Pagination from '../Pagination';
+import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
+import Alert from '@mui/material/Alert';
 
 export interface ComponentResource {
   count: number;
@@ -34,6 +36,7 @@ export interface ComponentResource {
 }
 
 export interface PreviewBrowseComponentsPanelUIProps {
+  awaitingGuestCheckIn: boolean;
   items: Array<ContentInstance>;
   count: number;
   pageNumber: number;
@@ -48,10 +51,24 @@ export interface PreviewBrowseComponentsPanelUIProps {
 }
 
 export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPanelUIProps) {
-  const { items, onPageChanged, onDragStart, onDragEnd, onRowsPerPageChange, count, pageNumber, limit } = props;
+  const {
+    awaitingGuestCheckIn,
+    items,
+    onPageChanged,
+    onDragStart,
+    onDragEnd,
+    onRowsPerPageChange,
+    count,
+    pageNumber,
+    limit
+  } = props;
   const { formatMessage } = useIntl();
   const { classes } = useComponentsPanelUI();
-  return (
+  return awaitingGuestCheckIn ? (
+    <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
+      <FormattedMessage defaultMessage="Waiting for the preview application to load." />
+    </Alert>
+  ) : (
     <>
       <Pagination
         count={count}
@@ -66,6 +83,7 @@ export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPan
             <DraggablePanelListItem
               key={item.craftercms.id}
               primaryText={item.craftercms.label}
+              avatarColorBase={item.craftercms.contentTypeId}
               onDragStart={() => onDragStart(item)}
               onDragEnd={onDragEnd}
             />
