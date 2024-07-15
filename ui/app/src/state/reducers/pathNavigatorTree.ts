@@ -134,7 +134,7 @@ const updatePath = (state, payload) => {
 };
 
 const restoreTree = (state, payload) => {
-  const { id, children, expanded } = payload;
+  const { id, children, items, expanded } = payload;
   const chunk = state[id];
   chunk.childrenByParentPath = {};
   chunk.totalByPath = {};
@@ -143,6 +143,14 @@ const restoreTree = (state, payload) => {
   const totalByPath = chunk.totalByPath;
   const offsetByPath = chunk.offsetByPath;
   const currentLimitByPath = chunk.currentLimitByPath;
+  // Set totalByPath of items that are not in the children object (items not expanded) so we can display the
+  // expand/collapse icon (if they have children). We filter out the items not in the children object to prevent displaying
+  // an incorrect total count (since the children object has the total considering filters).
+  items
+    .filter((item) => !children[item.path])
+    .forEach((item) => {
+      totalByPath[item.path] = item.childrenCount;
+    });
   Object.keys(children).forEach((parentPath) => {
     // Initialize the childrenByParentPath with an empty array.
     childrenByParentPath[parentPath] = [];
