@@ -28,9 +28,6 @@ import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { FormattedMessage } from 'react-intl';
 import { ErrorState } from '../ErrorState';
 import { SimpleTreeView } from '@mui/x-tree-view';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 
 export interface PathNavigatorTreeUIProps
   extends Pick<
