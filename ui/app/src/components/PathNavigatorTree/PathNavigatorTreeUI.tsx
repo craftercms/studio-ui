@@ -31,8 +31,6 @@ import { SimpleTreeView } from '@mui/x-tree-view';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
 export interface PathNavigatorTreeUIProps
   extends Pick<
@@ -186,25 +184,20 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
             />
           </SimpleTreeView>
           {/* region pagination  */}
-          <Box display="flex" justifyContent="flex-end" alignItems="center">
-            <Typography variant="body2">
-              <FormattedMessage defaultMessage="Items per folder" />
-            </Typography>
-            <FormControl variant="standard" sx={{ m: 1 }}>
-              <Select
-                value={limit}
-                onChange={(e) => onLimitChange(e)}
-                variant="standard"
-                sx={{ borderBottom: 'none', pl: 1, fontSize: '0.9rem' }}
-                disableUnderline
-              >
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+          <FormControl variant="standard" sx={{ m: 1 }}>
+            <Select
+              value={limit}
+              onChange={(e) => onLimitChange(e)}
+              variant="standard"
+              sx={{ borderBottom: 'none', pl: 1, fontSize: '0.9rem' }}
+              disableUnderline
+            >
+              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={25}>25</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+            </Select>
+          </FormControl>
           {/* endregion */}
         </AccordionDetails>
       )}
