@@ -77,17 +77,11 @@ const restoreTree = (state, payload) => {
   const childrenByParentPath = chunk.childrenByParentPath;
   const totalByPath = chunk.totalByPath;
   const offsetByPath = chunk.offsetByPath;
-  // Set totalByPath of items that are not in the children object (items not expanded) so we can display the
-  // expand/collapse icon (if they have children). We filter out the items not in the children object to prevent displaying
-  // an incorrect total count (since the children object has the total considering filters).
-  items
-    .filter((item) => !children[item.path])
-    .forEach((item) => {
-      totalByPath[item.path] = item.childrenCount;
-    });
+  // Set totalByPath of items for the tree to know which items have children (in case they are not expanded).
+  items.forEach((item) => {
+    totalByPath[item.path] = item.childrenCount;
+  });
   Object.keys(children).forEach((parentPath) => {
-    // Initialize the childrenByParentPath with an empty array.
-    childrenByParentPath[parentPath] = [];
     const childrenOfPath = children[parentPath];
     if (childrenOfPath.length || childrenOfPath.levelDescriptor) {
       childrenByParentPath[parentPath] = [];
