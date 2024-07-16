@@ -25,7 +25,6 @@ import {
   pathNavigatorTreeBulkRefresh,
   pathNavigatorTreeBulkRestoreComplete,
   pathNavigatorTreeBulkRestoreFailed,
-  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
