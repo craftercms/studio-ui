@@ -21,7 +21,6 @@ import {
   pathNavigatorTreeBulkFetchPathChildren,
   pathNavigatorTreeBulkFetchPathChildrenComplete,
   pathNavigatorTreeBulkRestoreComplete,
-  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -326,9 +325,6 @@ const reducer = createReducer<GlobalState['pathNavigatorTree']>({}, (builder) =>
           deleteItemFromState(tree, sourcePath);
         }
       });
-    })
-    .addCase(pathNavigatorTreeChangeLimit, (state, { payload: { id, limit } }) => {
-      state[id].limit = limit;
     });
 });
 

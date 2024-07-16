@@ -61,8 +61,6 @@ export interface PathNavigatorTreeUIProps
   expandedNodes: string[];
   classes?: Partial<Record<'root' | 'body' | 'header', string>>;
   active?: PathNavigatorTreeItemProps['active'];
-  limit?: number;
-  onLimitChange?: (e: SelectChangeEvent<number>) => void;
 }
 
 const useStyles = makeStyles()(() => ({
@@ -116,9 +114,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     showNavigableAsLinks,
     showPublishingTarget,
     showWorkflowState,
-    showItemMenu,
-    limit = 10,
-    onLimitChange
+    showItemMenu
   } = props;
   // endregion
   return (
@@ -183,22 +179,6 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
               showItemMenu={showItemMenu}
             />
           </SimpleTreeView>
-          {/* region pagination  */}
-          <FormControl variant="standard" sx={{ m: 1 }}>
-            <Select
-              value={limit}
-              onChange={(e) => onLimitChange(e)}
-              variant="standard"
-              sx={{ borderBottom: 'none', pl: 1, fontSize: '0.9rem' }}
-              disableUnderline
-            >
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-            </Select>
-          </FormControl>
-          {/* endregion */}
         </AccordionDetails>
       )}
     </Accordion>

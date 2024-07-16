@@ -26,8 +26,7 @@ import {
   pathNavigatorTreeInit,
   pathNavigatorTreeRefresh,
   pathNavigatorTreeSetKeyword,
-  pathNavigatorTreeToggleCollapsed,
-  pathNavigatorTreeUpdate
+  pathNavigatorTreeToggleCollapsed
 } from '../../state/actions/pathNavigatorTree';
 import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
@@ -65,7 +64,6 @@ import SystemType from '../../models/SystemType';
 import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
-import { SelectChangeEvent } from '@mui/material/Select';
 
 export interface PathNavigatorTreeProps
   extends Pick<
@@ -336,12 +334,6 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
       );
     }
   };
-
-  const onLimitChange = (e: SelectChangeEvent<number>) => {
-    const limit = Number(e.target.value);
-    dispatch(pathNavigatorTreeUpdate({ id, limit }));
-  };
-
   // endregion
 
   return (
@@ -372,8 +364,6 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         showPublishingTarget={showPublishingTarget}
         showWorkflowState={showWorkflowState}
         showItemMenu={showItemMenu}
-        limit={state.limit}
-        onLimitChange={onLimitChange}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}
