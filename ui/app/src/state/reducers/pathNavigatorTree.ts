@@ -152,7 +152,8 @@ const restoreTree = (state, payload) => {
     }
   });
   Object.keys(children).forEach((parentPath) => {
-    // Initialize the childrenByParentPath with an empty array.
+    // Initialize the childrenByParentPath with an empty array for each parentPath, so if the parentPath has no children,
+    // it won't be null, and we know we already fetched the children (and avoid incorrect loading states).
     childrenByParentPath[parentPath] = [];
     const childrenOfPath = children[parentPath];
     if (childrenOfPath.length || childrenOfPath.levelDescriptor) {
