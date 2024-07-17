@@ -223,6 +223,14 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     $dropdown.append($addBtn);
     $dropdown.append($dropdownMenu);
 
+    // Prevent dropdown from opening if the items' limit has been reached.
+    $dropdown.on('show.bs.dropdown', function (e) {
+      const itemsLeftCount = _self.getItemsLeftCount();
+      if (itemsLeftCount === 0) {
+        e.preventDefault();
+      }
+    });
+
     $(nodeOptionsEl).append($dropdown);
 
     if (this.readonly == true) {
