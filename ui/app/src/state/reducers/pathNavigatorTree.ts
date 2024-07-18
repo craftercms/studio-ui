@@ -77,6 +77,7 @@ const restoreTree = (state, payload) => {
   const childrenByParentPath = chunk.childrenByParentPath;
   const totalByPath = chunk.totalByPath;
   const offsetByPath = chunk.offsetByPath;
+  // Set totalByPath of items for the tree to know which items have children (in case they are not expanded).
   items.forEach((item) => {
     totalByPath[item.path] = item.childrenCount;
   });
@@ -90,7 +91,9 @@ const restoreTree = (state, payload) => {
       }
       childrenOfPath.forEach((child) => {
         childrenByParentPath[parentPath].push(child.path);
-        totalByPath[child.path] = child.childrenCount;
+        // If we have the total in the children object, use it (since that object has the total considering filters),
+        // otherwise use the childrenCount.
+        totalByPath[child.path] = children[child.path]?.total ?? child.childrenCount;
       });
     }
     // Should we account here for the level descriptor (LD)? if there's a LD, add 1 to the total?
