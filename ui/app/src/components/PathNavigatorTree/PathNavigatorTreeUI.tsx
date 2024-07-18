@@ -28,12 +28,6 @@ import RefreshRounded from '@mui/icons-material/RefreshRounded';
 import { FormattedMessage } from 'react-intl';
 import { ErrorState } from '../ErrorState';
 import { SimpleTreeView } from '@mui/x-tree-view';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { limitsDefault } from './PathNavigatorTree';
 
 export interface PathNavigatorTreeUIProps
   extends Pick<
@@ -64,10 +58,6 @@ export interface PathNavigatorTreeUIProps
   expandedNodes: string[];
   classes?: Partial<Record<'root' | 'body' | 'header', string>>;
   active?: PathNavigatorTreeItemProps['active'];
-  limits?: number[];
-  limit?: number;
-  onLimitChange?: (e: SelectChangeEvent<number>) => void;
-  showPaginationOptions?: boolean;
 }
 
 const useStyles = makeStyles()(() => ({
@@ -121,11 +111,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
     showNavigableAsLinks,
     showPublishingTarget,
     showWorkflowState,
-    showItemMenu,
-    limits = limitsDefault,
-    limit = 10,
-    onLimitChange,
-    showPaginationOptions
+    showItemMenu
   } = props;
   // endregion
   return (
@@ -190,30 +176,6 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
               showItemMenu={showItemMenu}
             />
           </SimpleTreeView>
-          {/* region pagination  */}
-          {showPaginationOptions && (
-            <Box display="flex" justifyContent="flex-end" alignItems="center">
-              <Typography variant="body2">
-                <FormattedMessage defaultMessage="Items per folder" />
-              </Typography>
-              <FormControl variant="standard" sx={{ m: 1 }}>
-                <Select
-                  value={limit}
-                  onChange={(e) => onLimitChange(e)}
-                  variant="standard"
-                  sx={{ borderBottom: 'none', pl: 1, fontSize: '0.9rem' }}
-                  disableUnderline
-                >
-                  {limits.map((limit) => (
-                    <MenuItem value={limit} key={limit}>
-                      {limit}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          )}
-          {/* endregion */}
         </AccordionDetails>
       )}
     </Accordion>
