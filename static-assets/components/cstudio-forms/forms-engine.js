@@ -1062,12 +1062,9 @@ var CStudioForms =
             }),
             new Promise((resolve) => {
               path.includes('.xml')
-                ? CStudioAuthoring.Service.lookupContentItem(
-                    CStudioAuthoringContext.site,
-                    path,
-                    { success: resolve },
-                    false
-                  )
+                ? CrafterCMSNext.services.content
+                    .fetchSandboxItem(CStudioAuthoringContext.site, decodeURI(path))
+                    .subscribe((item) => resolve({ item }))
                 : resolve(null);
             }),
             new Promise((resolve) => {
@@ -1093,7 +1090,7 @@ var CStudioForms =
                 contentAsFolder: contentType.contentAsFolder
               });
 
-              if (model && model.item.lockOwner !== '' && model.item.lockOwner !== CStudioAuthoringContext.user) {
+              if (model?.item.stateMap.locked && model?.item.lockOwner?.username !== CStudioAuthoringContext.user) {
                 readonly = true;
               }
 
