@@ -1069,8 +1069,8 @@ export function getComputedPublishingTarget(item: DetailedItem): PublishingTarge
 }
 
 export function applyFolderNameRules(name: string, options?: { allowBraces: boolean }): string {
-  // Replace accented vowels with their non-accented counterpart
   return (
+    // Replace accented vowels with their non-accented counterpart
     replaceAccentedVowels(name)
       // replace spaces with dashes
       .replace(/\s+/g, '-')
