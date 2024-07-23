@@ -21,7 +21,7 @@ import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
 import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
 import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
-import { fileNameFromPath, unescapeHTML } from './string';
+import { fileNameFromPath, replaceAccentedVowels, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
 import {
@@ -1069,14 +1069,16 @@ export function getComputedPublishingTarget(item: DetailedItem): PublishingTarge
 }
 
 export function applyFolderNameRules(name: string, options?: { allowBraces: boolean }): string {
-  let cleanedUpName = slugify(name, {
-    // Setting `strict: true` would disallow `_`, which we don't want.
-    strict: false,
-    // Because of the moment where the library trims, `trim: true` caused undesired replacement of `-`
-    // at the beginning or end of the slug.
-    trim: false
-  });
-  return cleanedUpName.replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '');
+  // Replace accented vowels with their non-accented counterpart
+  return (
+    replaceAccentedVowels(name)
+      // replace spaces with dashes
+      .replace(/\s+/g, '-')
+      // replace multiple consecutive dashes with a single dash
+      .replace(/-+/g, '-')
+      // remove any character that is not a letter, number, dash or underscore, and allow braces if specified
+      .replace(options?.allowBraces ? /[^a-zA-Z0-9-_{}]/g : /[^a-zA-Z0-9-_]/g, '')
+  );
 }
 
 export function applyAssetNameRules(name: string, options?: { allowBraces: boolean }): string {
