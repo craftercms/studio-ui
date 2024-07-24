@@ -14,9 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Tooltip } from '@mui/material';
+import { Tooltip, TooltipProps } from '@mui/material';
 
-export const UltraStyledTooltip = ({ title, children, ...props }) => {
+export const UltraStyledTooltip = ({ title, children, ...props }: TooltipProps) => {
   return (
     <Tooltip slotProps={{ tooltip: { sx: { fontSize: 10 } } }} {...props} title={title}>
       {children}
