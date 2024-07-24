@@ -124,9 +124,9 @@ const updatePath = (state, payload) => {
     chunk.childrenByParentPath[parentPath].push(item.path);
     chunk.totalByPath[item.path] = item.childrenCount;
   });
-  // If the expanded node has no children and is not filtered, it's a
+  // If the expanded node has no children, no level descriptor and is not filtered, it's a
   // leaf node and there's no point keeping it in `expanded`
-  if (children.length === 0 && !options?.keyword) {
+  if (children.length === 0 && !children.levelDescriptor && !options?.keyword) {
     chunk.expanded = chunk.expanded.filter((path) => path !== parentPath);
   }
 };
