@@ -60,6 +60,7 @@ import Alert from '@mui/material/Alert';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { ConfirmDialog } from '../ConfirmDialog';
+import { previewSwitch } from '../../services/security';
 
 const translations = defineMessages({
   siteDeleted: {
@@ -112,10 +113,12 @@ export function SiteManagement() {
 
   const onSiteClick = (site: Site) => {
     setSiteCookie(site.id, useBaseDomain);
-    window.location.href = getSystemLink({
-      systemLinkId: 'preview',
-      authoringBase,
-      site: site.id
+    previewSwitch().subscribe(() => {
+      window.location.href = getSystemLink({
+        systemLinkId: 'preview',
+        authoringBase,
+        site: site.id
+      });
     });
   };
 
