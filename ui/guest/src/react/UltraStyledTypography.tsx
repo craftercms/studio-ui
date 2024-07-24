@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,21 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IconButton, styled } from '@mui/material';
-import { svgIconClasses } from '@mui/material/SvgIcon';
-
-// Since this button runs guest-side, there may be all sorts of styles that affect button styles.
+// Since this typography runs guest-side, there may be all sorts of styles that affect Typography styles.
 // The idea of this component is to be as specific as possible to avoid guest site styles to break ours.
 
-export const UltraStyledIconButton = styled(IconButton)({
-  boxShadow: 'none !important',
-  border: 'none !important',
-  color: 'inherit !important',
-  height: 'inherit !important',
-  width: 'inherit !important',
-  [`& .${svgIconClasses.root}`]: {
-    fontSize: 21
-  }
-});
+import { styled } from '@mui/material/styles';
+import { Typography } from '@mui/material';
 
-export default UltraStyledIconButton;
+export const UltraStyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  fontSize: 14
+}));
+
+export default UltraStyledTypography;
