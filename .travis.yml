@@ -1,26 +1,20 @@
 version: "~> 1.0"
-dist: jammy
 language: java
 git:
   depth: 1
   quiet: true
 jdk:
-- openjdk21
+  - openjdk21
 cache:
   directories:
-  - "$HOME/.m2"
+    - "$HOME/.m2"
 branches:
   only:
-  - develop
-  - support/4.1.x
-  - support/4.0.x
-  - master
+    - develop
+    - support/4.1.x
+    - support/4.0.x
+    - master
 notifications:
-  irc:
-    channels:
-    - chat.freenode.net#craftercms
-    use_notice: true
-    skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 before_install:
   - mkdir -p $HOME/.m2
