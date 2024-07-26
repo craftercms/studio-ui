@@ -47,6 +47,9 @@ export function useGuestTheme(styleConfig: ThemeOptions): Theme {
           secondary: {
             main: prefersDarkMode ? palette.indigo.tint : palette.purple.tint
           }
+        },
+        typography: {
+          fontFamily: '"Source Sans Pro", "Open Sans", sans-serif'
         }
       },
       styleConfig

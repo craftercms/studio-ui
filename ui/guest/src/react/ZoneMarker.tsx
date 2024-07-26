@@ -31,6 +31,7 @@ import { getCachedContentTypes } from '../contentController';
 import { getAvatarWithIconColors } from '@craftercms/studio-ui/utils/contentType';
 import UltraStyledTypography from './UltraStyledTypography';
 import UltraStyledTooltip from './UltraStyledTooltip';
+import { SystemCssProperties } from '@mui/system/styleFunctionSx/styleFunctionSx';
 
 const AllowedTypeCircle = styled('div')({
   width: 20,
@@ -167,7 +168,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
               ) : (
                 <FieldIcon sx={sx.icon} />
               )}
-              <UltraStyledTypography title={label} noWrap>
+              <UltraStyledTypography title={label} noWrap sx={{ color: (sx?.paper as SystemCssProperties).color }}>
                 {label}
               </UltraStyledTypography>
               {allowedTypesMeta && (
