@@ -34,7 +34,7 @@ import { Interpolation } from '@emotion/react';
 import { Theme } from '@mui/material/styles';
 import { deepmerge } from '@mui/utils';
 import { DeepPartial } from '@craftercms/studio-ui/models/DeepPartial';
-import { staticGlobalStyles } from '@craftercms/studio-ui/components/GlobalStyles/css';
+import { typographyStyles } from '@craftercms/studio-ui/components/GlobalStyles/typography';
 
 export type GlobalStyleKeys =
   | 'craftercms-asset-uploader-mask-container'
@@ -242,7 +242,7 @@ export function GuestGlobalStyles(props: GuestGlobalStylesProps) {
             styles ?? {}
           )}
         />
-        <Global styles={staticGlobalStyles} />
+        <Global styles={typographyStyles} />
       </>
     ),
     [styles]
