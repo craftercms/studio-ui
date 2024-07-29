@@ -49,7 +49,8 @@ export function useGuestTheme(styleConfig: ThemeOptions): Theme {
           }
         },
         typography: {
-          fontFamily: '"Source Sans Pro", "Open Sans", sans-serif'
+          fontFamily: '"Source Sans Pro", "Open Sans", sans-serif',
+          fontSize: 16
         }
       },
       styleConfig
