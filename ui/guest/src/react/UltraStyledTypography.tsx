@@ -23,7 +23,7 @@ import { Typography } from '@mui/material';
 export const UltraStyledTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.primary,
   letterSpacing: 'unset',
-  fontSize: 16
+  fontSize: theme.typography.fontSize
 }));
 
 export default UltraStyledTypography;
