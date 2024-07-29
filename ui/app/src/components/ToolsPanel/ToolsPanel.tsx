@@ -68,6 +68,7 @@ export function ToolsPanel() {
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { username } = useActiveUser();
+  const previewIframe = document.getElementById('crafterCMSPreviewIframe');
 
   useEffect(() => {
     if (nnou(uiConfig.xml) && !toolsPanel) {
@@ -101,6 +102,16 @@ export function ToolsPanel() {
       maxWidth={windowSize}
       classes={{ drawerBody: classes.drawerBody }}
       onWidthChange={onWidthChange}
+      onResizeStart={() => {
+        // In some browsers, the iframe is blocking the mouse events causing the resizing to malfunction. By disabling
+        // pointer events and user select on the iframe, we can allow the resize to work as expected.
+        previewIframe.style.pointerEvents = 'none';
+        previewIframe.style.userSelect = 'none';
+      }}
+      onResizeStop={() => {
+        previewIframe.style.pointerEvents = '';
+        previewIframe.style.userSelect = '';
+      }}
       styles={{
         resizeHandle: { backgroundColor: 'transparent' },
         drawerPaperBelowToolbar: { top: '64px' }

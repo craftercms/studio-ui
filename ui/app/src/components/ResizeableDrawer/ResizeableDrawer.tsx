@@ -44,6 +44,8 @@ interface ResizeableDrawerProps extends DrawerProps {
   classes?: DrawerProps['classes'] & Partial<Record<ResizeableDrawerClassKey, string>>;
   styles?: ResizeableDrawerStyles;
   onWidthChange?(width: number): void;
+  onResizeStart?(): void;
+  onResizeStop?(): void;
 }
 
 const useStyles = makeStyles<ResizeableDrawerStyles, ResizeableDrawerClassKey>()(
@@ -151,6 +153,8 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
     width,
     maxWidth = 500,
     onWidthChange,
+    onResizeStart,
+    onResizeStop,
     className,
     classes: propsClasses = {},
     PaperProps,
@@ -188,8 +192,10 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
   const handleMouseDown = onWidthChange
     ? () => {
         setResizeActive(true);
+        onResizeStart?.();
         const handleMouseUp = () => {
           setResizeActive(false);
+          onResizeStop?.();
           document.removeEventListener('mouseup', handleMouseUp, true);
           document.removeEventListener('mousemove', handleMouseMove, true);
         };

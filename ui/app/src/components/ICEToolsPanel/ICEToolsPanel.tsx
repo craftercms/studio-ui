@@ -45,6 +45,7 @@ export function ICEToolsPanel() {
   const isOpen = editMode;
   const isLockedForMe = Boolean(item && isItemLockedForMe(item, username));
   const isStale = guest?.mainModelModifier ? guest.mainModelModifier.username !== username : false;
+  const previewIframe = document.getElementById('crafterCMSPreviewIframe');
 
   const onWidthChange = (width) => {
     dispatch(updateIcePanelWidth({ width }));
@@ -66,6 +67,16 @@ export function ICEToolsPanel() {
       width={width}
       maxWidth={windowSize}
       onWidthChange={onWidthChange}
+      onResizeStart={() => {
+        // In some browsers, the iframe is blocking the mouse events causing the resizing to malfunction. By disabling
+        // pointer events and user select on the iframe, we can allow the resize to work as expected.
+        previewIframe.style.pointerEvents = 'none';
+        previewIframe.style.userSelect = 'none';
+      }}
+      onResizeStop={() => {
+        previewIframe.style.pointerEvents = '';
+        previewIframe.style.userSelect = '';
+      }}
       styles={{
         resizeHandle: { backgroundColor: 'transparent' },
         drawerPaperBelowToolbar: { top: '64px' }
