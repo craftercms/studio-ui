@@ -1,29 +1,25 @@
 version: "~> 1.0"
-dist: focal
-language: java
 git:
   depth: 1
   quiet: true
+dist: jammy
+language: java
 jdk:
-- openjdk17
+  - openjdk17
 cache:
   directories:
-  - "$HOME/.m2"
+    - "$HOME/.m2"
 branches:
   only:
-  - develop
-  - support/4.1.x
-  - master
+    - develop
+    - support/4.1.x
+    - support/4.0.x
+    - master
 notifications:
-  irc:
-    channels:
-    - chat.freenode.net#craftercms
-    use_notice: true
-    skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 before_install:
   - mkdir -p $HOME/.m2
   - cp .travis-settings.xml $HOME/.m2/settings.xml
 install: skip
 script:
-- mvn -Dmaven.javadoc.skip=true clean package
+  - mvn -Dmaven.javadoc.skip=true clean package
