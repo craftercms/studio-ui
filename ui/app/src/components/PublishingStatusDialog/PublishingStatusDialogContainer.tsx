@@ -60,7 +60,7 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
   const user = useActiveUser();
   const siteId = useActiveSiteId();
   const userRoles = user?.rolesBySite[siteId];
-  const allowedUser = permittedRoles?.some((role) => userRoles?.includes(role)) ?? false;
+  const allowedUser = (userRoles && permittedRoles?.some((role) => userRoles.includes(role))) ?? false;
 
   const handleClose = () => {
     setUnlockAnchorEl(null);
