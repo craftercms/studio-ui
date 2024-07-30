@@ -103,7 +103,7 @@ const useStyles = makeStyles<ResizeableDrawerStyles, ResizeableDrawerClassKey>()
       position: 'absolute',
       top: 0,
       bottom: 0,
-      zIndex: theme.zIndex.drawer + 2,
+      zIndex: 100,
       backgroundColor: theme.palette.divider,
       transition: 'width 200ms',
       '&:hover': {
