@@ -97,13 +97,13 @@ const useStyles = makeStyles<ResizeableDrawerStyles, ResizeableDrawerClassKey>()
       ...drawerPaperRight
     },
     resizeHandle: {
-      width: '1px',
+      width: '4px',
       cursor: 'ew-resize',
       padding: '4px 0 0',
       position: 'absolute',
       top: 0,
       bottom: 0,
-      zIndex: 100,
+      zIndex: theme.zIndex.drawer + 2,
       backgroundColor: theme.palette.divider,
       transition: 'width 200ms',
       '&:hover': {
