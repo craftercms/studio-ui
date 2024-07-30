@@ -14,8 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
-import { defineMessages, useIntl } from 'react-intl';
+import React, { useMemo, useState } from 'react';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../utils/subjects';
 import { makeStyles } from 'tss-react/mui';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
@@ -44,6 +44,17 @@ import { ContentTypeField } from '../../icons';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import Box from '@mui/material/Box';
+import { nou } from '../../utils/object';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import ListSubheader from '@mui/material/ListSubheader';
+import { EntityState } from '../../models';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
+import Alert from '@mui/material/Alert';
+import { EmptyState } from '../EmptyState';
 
 const translations = defineMessages({
   dropTargetsPanel: {
@@ -68,7 +79,7 @@ const translations = defineMessages({
 const useStyles = makeStyles()(() => ({
   select: {
     width: '100%',
-    padding: '15px',
+    padding: '15px 15px 0',
     '& > div': {
       width: '100%'
     }
@@ -86,7 +97,19 @@ export function PreviewDropTargetsPanel() {
     : null;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const theme = useTheme();
+  const [listMode, setListMode] = useState(true);
+  const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
+  const awaitingGuestCheckIn = nou(allowedTypesData);
+  const allowedContentTypes = useMemo(() => {
+    const allowedTypes: ContentType[] = [];
+    if (!contentTypes || !allowedTypesData) return allowedTypes;
+    contentTypes.forEach((contentType) => {
+      if (allowedTypesData[contentType.id]?.shared) {
+        allowedTypes.push(contentType);
+      }
+    });
+    return allowedTypes;
+  }, [allowedTypesData, contentTypes]);
 
   useMount(() => {
     return () => {
@@ -111,6 +134,12 @@ export function PreviewDropTargetsPanel() {
     hostToGuest$.next(contentTypeDropTargetsRequest({ contentTypeId }));
   }
 
+  const resetState = () => {
+    setListMode(true);
+    dispatch(clearDropTargets());
+    hostToGuest$.next(clearHighlightedDropTargets());
+  };
+
   const dropTargetsResource = useLogicResource<
     ContentTypeDropTarget[],
     { selectedContentType: string; byId: LookupTable<ContentTypeDropTarget> }
@@ -127,67 +156,117 @@ export function PreviewDropTargetsPanel() {
     errorSelector: (source) => null
   });
 
+  return awaitingGuestCheckIn ? (
+    <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
+      <FormattedMessage defaultMessage="Waiting for the preview application to load." />
+    </Alert>
+  ) : allowedContentTypes.length ? (
+    listMode ? (
+      <>
+        <ListSubheader>
+          <FormattedMessage defaultMessage="Compatible types" />
+        </ListSubheader>
+        {allowedContentTypes?.map((contentType: ContentType, i: number) => {
+          return (
+            <ListItemButton
+              key={i}
+              onClick={() => {
+                setListMode(false);
+                handleSelectChange(contentType.id);
+              }}
+            >
+              <ContentTypeItem contentType={contentType} contentTypesBranch={contentTypesBranch} />
+            </ListItemButton>
+          );
+        })}
+      </>
+    ) : (
+      <>
+        <Box className={classes.select} display="flex" alignItems="center">
+          <FormControl>
+            <InputLabel>{formatMessage(translations.selectContentType)}</InputLabel>
+            <Select
+              value={dropTargetsBranch.selectedContentType || ''}
+              label={formatMessage(translations.selectContentType)}
+              onChange={(event) => {
+                event.stopPropagation();
+                handleSelectChange(event.target.value);
+              }}
+            >
+              <ListSubheader>
+                <FormattedMessage defaultMessage="Compatible types" />
+              </ListSubheader>
+              {allowedContentTypes?.map((contentType: ContentType, i: number) => {
+                return (
+                  <MenuItem value={contentType.id} key={i}>
+                    <ContentTypeItem contentType={contentType} contentTypesBranch={contentTypesBranch} />
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+          {dropTargetsBranch?.selectedContentType && (
+            <Tooltip title={<FormattedMessage defaultMessage="Cancel selection" />}>
+              <IconButton edge="end" sx={{ marginLeft: '5px' }} onClick={() => resetState()}>
+                <CloseRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Box>
+        <List>
+          <SuspenseWithEmptyState
+            resource={dropTargetsResource}
+            withEmptyStateProps={{
+              emptyStateProps: {
+                title: dropTargetsBranch.selectedContentType
+                  ? formatMessage(translations.noResults)
+                  : formatMessage(translations.chooseContentType)
+              }
+            }}
+          >
+            <DropTargetsList resource={dropTargetsResource} onSelectedDropZone={onSelectedDropZone} />
+          </SuspenseWithEmptyState>
+        </List>
+      </>
+    )
+  ) : (
+    <EmptyState title="No compatible types were found." sxs={{ title: { textAlign: 'center' } }} />
+  );
+}
+
+interface ContentTypeItemContentProps {
+  contentType: ContentType;
+  contentTypesBranch: EntityState<ContentType>;
+}
+
+function ContentTypeItem(props: ContentTypeItemContentProps) {
+  const { contentType, contentTypesBranch } = props;
+  const theme = useTheme();
+  const { backgroundColor, textColor } = getAvatarWithIconColors(
+    contentTypesBranch.byId[contentType.id].name,
+    theme,
+    darken
+  );
   return (
-    <>
-      <div className={classes.select}>
-        <Select
-          value={dropTargetsBranch.selectedContentType || ''}
-          displayEmpty
-          onChange={(event: any) => {
-            event.stopPropagation();
-            handleSelectChange(event.target.value);
-          }}
-        >
-          <MenuItem value="" disabled>
-            {formatMessage(translations.selectContentType)}
-          </MenuItem>
-          {contentTypes?.map((contentType: ContentType, i: number) => {
-            const { backgroundColor, textColor } = getAvatarWithIconColors(
-              contentTypesBranch.byId[contentType.id].name,
-              theme,
-              darken
-            );
-            return (
-              <MenuItem value={contentType.id} key={i}>
-                <Box display="flex" alignItems="center">
-                  <Box
-                    sx={{
-                      mr: 1,
-                      flexShrink: 0,
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '20px',
-                      overflow: 'hidden',
-                      backgroundColor,
-                      borderColor: textColor,
-                      borderStyle: 'solid',
-                      borderWidth: '1px'
-                    }}
-                  />
-                  <Box sx={{ flexShrink: 1, flexGrow: 1, textOverflow: 'ellipsis' }} title={contentType.name}>
-                    {contentType.name}
-                  </Box>
-                </Box>
-              </MenuItem>
-            );
-          })}
-        </Select>
-      </div>
-      <List>
-        <SuspenseWithEmptyState
-          resource={dropTargetsResource}
-          withEmptyStateProps={{
-            emptyStateProps: {
-              title: dropTargetsBranch.selectedContentType
-                ? formatMessage(translations.noResults)
-                : formatMessage(translations.chooseContentType)
-            }
-          }}
-        >
-          <DropTargetsList resource={dropTargetsResource} onSelectedDropZone={onSelectedDropZone} />
-        </SuspenseWithEmptyState>
-      </List>
-    </>
+    <Box display="flex" alignItems="center" overflow="hidden">
+      <Box
+        sx={{
+          mr: 1,
+          flexShrink: 0,
+          width: '24px',
+          height: '24px',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          backgroundColor,
+          borderColor: textColor,
+          borderStyle: 'solid',
+          borderWidth: '1px'
+        }}
+      />
+      <Box sx={{ flexShrink: 1, flexGrow: 1, textOverflow: 'ellipsis', overflow: 'hidden' }} title={contentType.name}>
+        {contentType.name}
+      </Box>
+    </Box>
   );
 }
 
