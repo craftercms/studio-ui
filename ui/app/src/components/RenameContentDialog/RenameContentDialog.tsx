@@ -28,13 +28,14 @@ import { ensureSingleSlash, isBlank } from '../../utils/string';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
   path: string;
-  value?: string;
+  value?: string; // value to initially display on input, may differ from the actual stored value.
+  currentValue?: string; // current stored value, defaults to value. Used to fetch dependants and validate existence.
   onRenamed(name: string): void;
   onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-  const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+  const { path, value, currentValue = value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
   const [dependantItems, setDependantItems] = useState<DetailedItem[]>(null);
   const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
   const [error, setError] = useState(null);
@@ -42,9 +43,11 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
   const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
 
   useEffect(() => {
-    if (!isBlank(value) && !isBlank(path)) {
+    if (!isBlank(currentValue) && !isBlank(path)) {
       setFetchingDependantItems(true);
-      fetchDependant(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
+      // Fetch dependant items using 'currentValue', as it is the stored value. 'value' does not necessary reflects the
+      // current stored value.
+      fetchDependant(siteId, ensureSingleSlash(`${path}/${currentValue}`)).subscribe({
         next: (response) => {
           const dependants = parseLegacyItemToDetailedItem(response);
           setDependantItems(dependants);
@@ -56,7 +59,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
         }
       });
     }
-  }, [path, value, siteId]);
+  }, [path, currentValue, siteId]);
 
   return (
     <EnhancedDialog
@@ -68,6 +71,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
       <RenameContentDialogContainer
         path={path}
         value={value}
+        currentValue={currentValue}
         dependantItems={dependantItems}
         fetchingDependantItems={fetchingDependantItems}
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}

@@ -31,7 +31,8 @@ import { filter } from 'rxjs/operators';
 const renameContentDialogDataInitialState = {
   id: '',
   path: '',
-  value: ''
+  value: '',
+  currentValue: ''
 };
 
 export function LegacyFormDialog(props: LegacyFormDialogProps) {
@@ -73,11 +74,12 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
     const messagesSubscription = messages.subscribe((e: any) => {
       switch (e.data.type) {
         case 'LEGACY_FORM_DIALOG_RENAME_CONTENT':
-          const { path, fileName, id } = e.data;
+          const { path, fileName, storedFileName, id } = e.data;
           setRenameContentDialogData({
             id,
             path,
-            value: fileName
+            value: fileName,
+            currentValue: storedFileName
           });
           renameContentDialogState.onOpen();
           break;
@@ -132,6 +134,7 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         onRenamed={onContentRenamed}
         path={renameContentDialogData.path}
         value={renameContentDialogData.value}
+        currentValue={renameContentDialogData.currentValue}
       />
     </>
   );

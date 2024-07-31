@@ -366,6 +366,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     inputContainer.appendChild(inputEl);
 
     this.defaultValue = config.defaultValue;
+    this.storedFileName = this._getContentFileName();
 
     var Event = YAHOO.util.Event,
       me = this;
@@ -445,6 +446,16 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     }
     containerEl.appendChild(controlWidgetContainerEl);
     containerEl.appendChild(descriptionEl);
+
+    // When the form has been saved, we need to update the storedFileName.
+    // This is necessary in case the form is saved as draft (not closed). Then, the storedFileName may change so we need
+    // to update the current value.
+    craftercms.libs.rxjs
+      .fromEvent(window, 'message')
+      .pipe(craftercms.libs.rxjs.filter((e) => e.data && e.data.type === 'EMBEDDED_LEGACY_FORM_SAVE_END'))
+      .subscribe((e) => {
+        this.storedFileName = this._getContentFileName();
+      });
   },
 
   _renderEdit: function (containerEl) {
@@ -470,10 +481,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         _self.inputEl.title = _self.inputEl.value;
         _self._onChangeVal(null, _self);
         _self.adjustInputsWidth(_self.inputEl, _self.pathEl);
-        // enable input
-        _self.inputEl.disabled = false;
-        _self.inputEl.focus();
-        editFileNameEl.style.display = 'none';
       };
 
       const id = CStudioAuthoring.Utils.generateUUID();
@@ -489,12 +496,12 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       YAHOO.util.Event.on(editFileNameBtn, 'click', function () {
         _self.form.setFocusedField(_self);
         if (_self.showWarnOnEdit) {
-          const isPage = _self.form.model['file-name'] === 'index.xml';
-          // example of fileName of a page: 'style/index.xml'
-          // example of fileName of a non-page: 'left-rails-with-latest-articles.xml'
-          const fileName = `${isPage ? `${_self.form.model['folder-name']}/` : ''}${_self.form.model['file-name']}`;
+          const fileName = _self._getContentFileName();
           const path = _self._getPath();
-          window.top.postMessage({ type: 'LEGACY_FORM_DIALOG_RENAME_CONTENT', path, fileName, id }, '*');
+          window.top.postMessage(
+            { type: 'LEGACY_FORM_DIALOG_RENAME_CONTENT', path, fileName, storedFileName: _self.storedFileName, id },
+            '*'
+          );
           // There's a timemout in the forms-engine to set the focus on the first input element of the form, this avoids
           // the timeout code to execute if the rename dialog is opened before the timeout runs out.
           window.postMessage({ type: 'CLEAR_FORM_INPUT_FOCUS_TIMEOUT' }, '*');
@@ -596,6 +603,14 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     return [
       // required is assumed
     ];
+  },
+
+  // Returns the content fileName based on the form model, considering if it's a page or not
+  _getContentFileName: function () {
+    // example of fileName of a page: 'style/index.xml'
+    // example of fileName of a non-page: 'left-rails-with-latest-articles.xml'
+    const isPage = this.form.model['file-name'] === 'index.xml';
+    return `${isPage ? `${this.form.model['folder-name']}/` : ''}${this.form.model['file-name']}`;
   }
 });
 

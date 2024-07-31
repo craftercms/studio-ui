@@ -383,3 +383,9 @@ export const getFileNameWithExtensionForItemType = (type: string, name: string) 
   `${name}.${pickExtensionForItemType(type)}`
     .replace(/(\.groovy)(\.groovy)|(\.ftl)(\.ftl)/g, '$1$3')
     .replace(/\.{2,}/g, '.');
+
+// For studio content (pages/components), removes '/index.xml' if is a page, or '.xml' otherwise.
+export const stripContentFileNameExtension = (value: string) => {
+  const isPage = value.includes('/index.xml');
+  return isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
+};

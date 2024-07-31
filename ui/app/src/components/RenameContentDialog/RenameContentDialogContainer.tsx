@@ -30,11 +30,12 @@ import useDebouncedInput from '../../hooks/useDebouncedInput';
 import { checkPathExistence } from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { applyContentNameRules } from '../../utils/content';
+import { stripContentFileNameExtension } from '../../utils/path';
 
 export interface RenameContentDialogContainerProps
   extends Pick<
     RenameContentDialogProps,
-    'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
+    'path' | 'value' | 'currentValue' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
   > {
   dependantItems: DetailedItem[];
   fetchingDependantItems: boolean;
@@ -45,6 +46,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
   const {
     path,
     value,
+    currentValue,
     onRenamed,
     onClose,
     dependantItems,
@@ -54,7 +56,8 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
   } = props;
   const isPage = value.includes('/index.xml');
   const { isSubmitting } = useEnhancedDialogContext();
-  const strippedValue = isPage ? value.replace('/index.xml', '') : value.replace('.xml', '');
+  const strippedValue = stripContentFileNameExtension(value);
+  const strippedCurrentValue = stripContentFileNameExtension(currentValue);
   const [name, setName] = useState(strippedValue);
   const [itemExists, setItemExists] = useState(false);
   const isValid = !isBlank(name) && !itemExists && name !== strippedValue;
@@ -66,7 +69,8 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
   const onNameUpdate$ = useDebouncedInput((name: string) => {
     checkPathExistence(siteId, `${ensureSingleSlash(`${path}/${name}`)}${isPage ? '/index.xml' : '.xml'}`).subscribe(
       (exists) => {
-        setItemExists(name !== strippedValue && exists);
+        // checkPathExistence done against 'currentValue' since is the stored value.
+        setItemExists(name !== strippedCurrentValue && exists);
       }
     );
   }, 400);
