@@ -34,7 +34,7 @@ import { applyContentNameRules } from '../../utils/content';
 export interface RenameContentDialogContainerProps
   extends Pick<
     RenameContentDialogProps,
-    'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange'
+    'path' | 'value' | 'onRenamed' | 'onClose' | 'onSubmittingAndOrPendingChange' | 'allowEditDependencies'
   > {
   dependantItems: DetailedItem[];
   fetchingDependantItems: boolean;
@@ -50,6 +50,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
     dependantItems,
     fetchingDependantItems,
     error,
+    allowEditDependencies,
     onSubmittingAndOrPendingChange
   } = props;
   const isPage = value.includes('/index.xml');
@@ -104,6 +105,7 @@ export function RenameContentDialogContainer(props: RenameContentDialogContainer
               <FormattedMessage defaultMessage="Consisting of lowercase letters without accents, numbers, dash (-) and underscore (_)." />
             )
           }
+          allowEditDependencies={allowEditDependencies}
         />
       </DialogBody>
       <DialogFooter>
