@@ -62,9 +62,8 @@ const translations = defineMessages({
     id: 'previewDropTargetsPanelTitle',
     defaultMessage: 'Drop Targets'
   },
-  selectContentType: {
-    id: 'previewDropTargetsPanel.selectContentType',
-    defaultMessage: 'Select content type'
+  selectedContentType: {
+    defaultMessage: 'Selected content type'
   },
   noResults: {
     id: 'previewDropTargetsPanel.noResults',
@@ -182,10 +181,10 @@ export function PreviewDropTargetsPanel() {
       <>
         <Box className={classes.select} display="flex" alignItems="center">
           <FormControl>
-            <InputLabel>{formatMessage(translations.selectContentType)}</InputLabel>
+            <InputLabel>{formatMessage(translations.selectedContentType)}</InputLabel>
             <Select
               value={dropTargetsBranch.selectedContentType || ''}
-              label={formatMessage(translations.selectContentType)}
+              label={formatMessage(translations.selectedContentType)}
               onChange={(event) => {
                 event.stopPropagation();
                 handleSelectChange(event.target.value);
