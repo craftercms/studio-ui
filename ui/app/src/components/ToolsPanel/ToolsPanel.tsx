@@ -69,7 +69,6 @@ export function ToolsPanel() {
   const uiConfig = useSiteUIConfig();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { username } = useActiveUser();
-  const previewIframe = document.getElementById('crafterCMSPreviewIframe');
 
   useEffect(() => {
     if (nnou(uiConfig.xml) && !toolsPanel) {

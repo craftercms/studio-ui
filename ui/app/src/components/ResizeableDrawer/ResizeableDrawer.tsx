@@ -97,7 +97,7 @@ const useStyles = makeStyles<ResizeableDrawerStyles, ResizeableDrawerClassKey>()
       ...drawerPaperRight
     },
     resizeHandle: {
-      width: '4px',
+      width: '2px',
       cursor: 'ew-resize',
       padding: '4px 0 0',
       position: 'absolute',
