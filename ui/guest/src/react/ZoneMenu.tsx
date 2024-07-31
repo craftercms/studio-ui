@@ -27,7 +27,6 @@ import UltraStyledIconButton from './UltraStyledIconButton';
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
-import { Tooltip } from '@mui/material';
 import {
   deleteItem,
   duplicateItem,
@@ -53,12 +52,13 @@ import { exists, findContainerRecord, getById, getReferentialEntries, runValidat
 import { post } from '../utils/communicator';
 import { requestEdit, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import Menu from '@mui/material/Menu';
-import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import { getParentModelId } from '../utils/ice';
 import { fromICEId, get } from '../elementRegistry';
 import { beforeWrite$ } from '../store/util';
 import { useStore } from './GuestContext';
+import UltraStyledTypography from './UltraStyledTypography';
+import UltraStyledTooltip from './UltraStyledTooltip';
 
 export interface ZoneMenuProps {
   record: ElementRecord;
@@ -80,7 +80,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
   const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
   const modelPath = isInheritedField(modelId, fieldId)
     ? models[getModelIdFromInheritedField(modelId, fieldId)].craftercms.path
-    : models[modelId].craftercms.path ?? models[parentModelId].craftercms.path;
+    : (models[modelId].craftercms.path ?? models[parentModelId].craftercms.path);
 
   const trashButtonRef = React.useRef();
   const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
@@ -389,81 +389,81 @@ export function ZoneMenu(props: ZoneMenuProps) {
 
   return (
     <>
-      <Tooltip title="Cancel (Esc)" key="cancel">
+      <UltraStyledTooltip title="Cancel (Esc)" key="cancel">
         <UltraStyledIconButton size="small" onClick={onCancel}>
           <HighlightOffRoundedIcon />
         </UltraStyledIconButton>
-      </Tooltip>
+      </UltraStyledTooltip>
       {hasEditAction && !isLockedItem && (
-        <Tooltip title="Edit" key="edit">
+        <UltraStyledTooltip title="Edit" key="edit">
           <UltraStyledIconButton size="small" onClick={onEdit}>
             <PencilIcon />
           </UltraStyledIconButton>
-        </Tooltip>
+        </UltraStyledTooltip>
       )}
       {showCodeEditOptions && (
         <>
           {itemAvailableActions.editTemplate && (
-            <Tooltip title="Edit template" key="editTemplate">
+            <UltraStyledTooltip title="Edit template" key="editTemplate">
               <UltraStyledIconButton size="small" onClick={onEditTemplate}>
                 <FreemarkerIcon />
               </UltraStyledIconButton>
-            </Tooltip>
+            </UltraStyledTooltip>
           )}
           {itemAvailableActions.editController && (
-            <Tooltip title="Edit controller" key="editController">
+            <UltraStyledTooltip title="Edit controller" key="editController">
               <UltraStyledIconButton size="small" onClick={onEditController}>
                 <GroovyIcon />
               </UltraStyledIconButton>
-            </Tooltip>
+            </UltraStyledTooltip>
           )}
         </>
       )}
       {!isLockedItem && showAddItem && (
-        <Tooltip title="Add new item" key="addNewItem">
+        <UltraStyledTooltip title="Add new item" key="addNewItem">
           <UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
             <AddCircleOutlineRoundedIcon />
           </UltraStyledIconButton>
-        </Tooltip>
+        </UltraStyledTooltip>
       )}
       {showDuplicate && (
-        <Tooltip title="Duplicate item" key="duplicateItem">
+        <UltraStyledTooltip title="Duplicate item" key="duplicateItem">
           <UltraStyledIconButton size="small" onClick={onDuplicateItem}>
             <ContentCopyRoundedIcon />
           </UltraStyledIconButton>
-        </Tooltip>
+        </UltraStyledTooltip>
       )}
       {isMovable &&
         (!isLockedItem || !isEmbedded) &&
         !isOnlyItem && [
           !isFirstItem && (
-            <Tooltip title="Move up/left (← or ↑)" key="moveUp">
+            <UltraStyledTooltip title="Move up/left (← or ↑)" key="moveUp">
               <UltraStyledIconButton size="small" onClick={onMoveUp}>
                 <ArrowUpwardRoundedIcon />
               </UltraStyledIconButton>
-            </Tooltip>
+            </UltraStyledTooltip>
           ),
           !isLastItem && (
-            <Tooltip title="Move down/right (→ or ↓)" key="moveDown">
+            <UltraStyledTooltip title="Move down/right (→ or ↓)" key="moveDown">
               <UltraStyledIconButton size="small" onClick={onMoveDown}>
                 <ArrowDownwardRoundedIcon />
               </UltraStyledIconButton>
-            </Tooltip>
+            </UltraStyledTooltip>
           )
         ]}
       {isTrashable && !isLockedItem && (
-        <Tooltip title="Trash (⌫)" key="trash">
+        <UltraStyledTooltip title="Trash (⌫)" key="trash">
           <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
             <DeleteOutlineRoundedIcon />
           </UltraStyledIconButton>
-        </Tooltip>
+        </UltraStyledTooltip>
       )}
       {isMovable && (!isLockedItem || !isEmbedded) && (
-        <Tooltip title="Move" key="move">
+        <UltraStyledTooltip title="Move" key="move">
           <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
             <DragIndicatorRounded />
           </UltraStyledIconButton>
-        </Tooltip>
+        </UltraStyledTooltip>
       )}
       <Menu
         anchorEl={trashButtonRef.current}
@@ -479,18 +479,20 @@ export function ZoneMenu(props: ZoneMenuProps) {
         }}
         sx={{ zIndex: 1501 }}
       >
-        <Typography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
+        <UltraStyledTypography variant="body1" sx={{ padding: '10px 16px 10px 16px' }}>
           {isEmbedded ? 'Delete' : 'Disassociate'} this item?
-        </Typography>
+        </UltraStyledTypography>
         <MenuItem
           onClick={(e) => {
             e.preventDefault();
             setShowTrashConfirmation(false);
           }}
         >
-          No
+          <UltraStyledTypography>No</UltraStyledTypography>
         </MenuItem>
-        <MenuItem onClick={(e) => refs.current.doTrash()}>Yes</MenuItem>
+        <MenuItem onClick={(e) => refs.current.doTrash()}>
+          <UltraStyledTypography>Yes</UltraStyledTypography>
+        </MenuItem>
       </Menu>
     </>
   );
