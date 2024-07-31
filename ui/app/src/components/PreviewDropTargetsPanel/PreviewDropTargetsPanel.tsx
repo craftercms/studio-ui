@@ -22,7 +22,7 @@ import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { selectClasses } from '@mui/material/Select';
 import ContentType from '../../models/ContentType';
 import { useDispatch } from 'react-redux';
 import {
@@ -173,7 +173,7 @@ export function PreviewDropTargetsPanel() {
                 handleSelectChange(contentType.id);
               }}
             >
-              <ContentTypeItem contentType={contentType} contentTypesBranch={contentTypesBranch} />
+              <ContentTypeItem contentType={contentType} />
             </ListItemButton>
           );
         })}
@@ -186,6 +186,13 @@ export function PreviewDropTargetsPanel() {
             <Select
               value={dropTargetsBranch.selectedContentType || ''}
               label={formatMessage(translations.selectedContentType)}
+              sx={{
+                [`& .${selectClasses.select}`]: {
+                  display: 'flex',
+                  alignItems: 'center',
+                  overflow: 'hidden'
+                }
+              }}
               onChange={(event) => {
                 event.stopPropagation();
                 handleSelectChange(event.target.value);
@@ -197,7 +204,7 @@ export function PreviewDropTargetsPanel() {
               {allowedContentTypes?.map((contentType: ContentType, i: number) => {
                 return (
                   <MenuItem value={contentType.id} key={i}>
-                    <ContentTypeItem contentType={contentType} contentTypesBranch={contentTypesBranch} />
+                    <ContentTypeItem contentType={contentType} />
                   </MenuItem>
                 );
               })}
@@ -234,35 +241,34 @@ export function PreviewDropTargetsPanel() {
 
 interface ContentTypeItemContentProps {
   contentType: ContentType;
-  contentTypesBranch: EntityState<ContentType>;
 }
 
 function ContentTypeItem(props: ContentTypeItemContentProps) {
-  const { contentType, contentTypesBranch } = props;
+  const { contentType } = props;
   const theme = useTheme();
-  const { backgroundColor, textColor } = getAvatarWithIconColors(
-    contentTypesBranch.byId[contentType.id].name,
-    theme,
-    darken
-  );
+  const { backgroundColor, textColor } = getAvatarWithIconColors(contentType.name, theme, darken);
+
   return (
-    <Box display="flex" alignItems="center" overflow="hidden">
-      <Box
-        sx={{
-          mr: 1,
-          flexShrink: 0,
-          width: '24px',
-          height: '24px',
-          borderRadius: '20px',
-          overflow: 'hidden',
-          backgroundColor,
-          borderColor: textColor,
-          borderStyle: 'solid',
-          borderWidth: '1px'
-        }}
-      />
-      <Typography noWrap>{contentType.name}</Typography>
-    </Box>
+    <>
+      <ListItemIcon sx={{ minWidth: 'unset !important' }}>
+        <Box
+          sx={{
+            flexShrink: 0,
+            width: '24px',
+            height: '24px',
+            borderRadius: '20px',
+            overflow: 'hidden',
+            backgroundColor,
+            borderColor: textColor,
+            borderStyle: 'solid',
+            borderWidth: '1px'
+          }}
+        />
+      </ListItemIcon>
+      <ListItemText primaryTypographyProps={{ noWrap: true }} title={contentType.name}>
+        {contentType.name}
+      </ListItemText>
+    </>
   );
 }
 
