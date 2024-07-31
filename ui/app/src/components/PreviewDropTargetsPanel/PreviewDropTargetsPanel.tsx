@@ -48,14 +48,13 @@ import { nou } from '../../utils/object';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import ListSubheader from '@mui/material/ListSubheader';
-import { EntityState } from '../../models';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
 import Alert from '@mui/material/Alert';
 import { EmptyState } from '../EmptyState';
-import Typography from '@mui/material/Typography';
+import FormHelperText from '@mui/material/FormHelperText';
 
 const translations = defineMessages({
   dropTargetsPanel: {
@@ -161,6 +160,9 @@ export function PreviewDropTargetsPanel() {
   ) : allowedContentTypes.length ? (
     listMode ? (
       <>
+        <FormHelperText sx={{ p: 2 }}>
+          <FormattedMessage defaultMessage="Select content type to view the available drop targets for it" />
+        </FormHelperText>
         <ListSubheader>
           <FormattedMessage defaultMessage="Compatible types" />
         </ListSubheader>
