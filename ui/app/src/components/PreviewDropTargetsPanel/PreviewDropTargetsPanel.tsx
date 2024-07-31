@@ -164,19 +164,17 @@ export function PreviewDropTargetsPanel() {
         <ListSubheader>
           <FormattedMessage defaultMessage="Compatible types" />
         </ListSubheader>
-        {allowedContentTypes?.map((contentType: ContentType, i: number) => {
-          return (
-            <ListItemButton
-              key={i}
-              onClick={() => {
-                setListMode(false);
-                handleSelectChange(contentType.id);
-              }}
-            >
-              <ContentTypeItem contentType={contentType} />
-            </ListItemButton>
-          );
-        })}
+        {allowedContentTypes?.map((contentType: ContentType, i: number) => (
+          <ListItemButton
+            key={i}
+            onClick={() => {
+              setListMode(false);
+              handleSelectChange(contentType.id);
+            }}
+          >
+            <ContentTypeItem contentType={contentType} />
+          </ListItemButton>
+        ))}
       </>
     ) : (
       <>
@@ -201,13 +199,11 @@ export function PreviewDropTargetsPanel() {
               <ListSubheader>
                 <FormattedMessage defaultMessage="Compatible types" />
               </ListSubheader>
-              {allowedContentTypes?.map((contentType: ContentType, i: number) => {
-                return (
-                  <MenuItem value={contentType.id} key={i}>
-                    <ContentTypeItem contentType={contentType} />
-                  </MenuItem>
-                );
-              })}
+              {allowedContentTypes?.map((contentType: ContentType, i: number) => (
+                <MenuItem value={contentType.id} key={i}>
+                  <ContentTypeItem contentType={contentType} />
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           {dropTargetsBranch?.selectedContentType && (
