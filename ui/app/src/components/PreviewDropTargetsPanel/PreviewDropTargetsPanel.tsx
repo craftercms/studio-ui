@@ -104,9 +104,7 @@ export function PreviewDropTargetsPanel() {
     const allowedTypes: ContentType[] = [];
     if (!contentTypes || !allowedTypesData) return allowedTypes;
     contentTypes.forEach((contentType) => {
-      if (allowedTypesData[contentType.id]?.shared) {
-        allowedTypes.push(contentType);
-      }
+      allowedTypesData[contentType.id] && allowedTypes.push(contentType);
     });
     return allowedTypes;
   }, [allowedTypesData, contentTypes]);
