@@ -55,6 +55,7 @@ import Tooltip from '@mui/material/Tooltip';
 import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
 import Alert from '@mui/material/Alert';
 import { EmptyState } from '../EmptyState';
+import Typography from '@mui/material/Typography';
 
 const translations = defineMessages({
   dropTargetsPanel: {
@@ -204,7 +205,7 @@ export function PreviewDropTargetsPanel() {
           </FormControl>
           {dropTargetsBranch?.selectedContentType && (
             <Tooltip title={<FormattedMessage defaultMessage="Cancel selection" />}>
-              <IconButton edge="end" sx={{ marginLeft: '5px' }} onClick={() => resetState()}>
+              <IconButton edge="end" sx={{ ml: 0.625 }} onClick={() => resetState()}>
                 <CloseRoundedIcon />
               </IconButton>
             </Tooltip>
@@ -227,7 +228,7 @@ export function PreviewDropTargetsPanel() {
       </>
     )
   ) : (
-    <EmptyState title="No compatible types were found." sxs={{ title: { textAlign: 'center' } }} />
+    <EmptyState title="No drop targets were found on the current view." sxs={{ title: { textAlign: 'center' } }} />
   );
 }
 
@@ -260,9 +261,7 @@ function ContentTypeItem(props: ContentTypeItemContentProps) {
           borderWidth: '1px'
         }}
       />
-      <Box sx={{ flexShrink: 1, flexGrow: 1, textOverflow: 'ellipsis', overflow: 'hidden' }} title={contentType.name}>
-        {contentType.name}
-      </Box>
+      <Typography noWrap>{contentType.name}</Typography>
     </Box>
   );
 }
