@@ -18,6 +18,9 @@ import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import CrafterCMSNextBridge from './components/CrafterCMSNextBridge';
 import Preview from './pages/Preview';
+import { createCodebaseBridge } from './env/codebase-bridge';
+
+createCodebaseBridge();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
