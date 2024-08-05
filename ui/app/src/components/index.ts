@@ -30,6 +30,7 @@ export * from './AuditManagement';
 export * from './AuthBoundary';
 export * from './AuthMonitor';
 export * from './BasePathSelector';
+export * from './BrokenReferencesDialog';
 export * from './BrowseFilesDialog';
 export * from './ChangeContentTypeDialog';
 export * from './CharCountStatus';
