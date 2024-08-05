@@ -45,8 +45,8 @@ import { useMount } from '../../hooks/useMount';
 
 const translations = defineMessages({
   dropTargetsPanel: {
-    id: 'previewDropTargetsPanel.title',
-    defaultMessage: 'Component Drop Targets'
+    id: 'previewDropTargetsPanelTitle',
+    defaultMessage: 'Drop Targets'
   },
   selectContentType: {
     id: 'previewDropTargetsPanel.selectContentType',
