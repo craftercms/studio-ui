@@ -17,7 +17,7 @@
 import prettierXmlPlugin from '@prettier/plugin-xml';
 import prettier from 'prettier/standalone';
 import { nnou } from './object';
-import { XMLParser, X2jOptionsOptional } from 'fast-xml-parser';
+import { XMLParser, X2jOptions } from 'fast-xml-parser';
 import { legacyUnescapeXml } from './string';
 
 export function fromString(xml: string): XMLDocument {
@@ -176,9 +176,9 @@ export function createElement(tagName: string, options?: ElementCreationOptions)
 
 export function deserialize(xml: string): any;
 export function deserialize(xml: Node): any;
-export function deserialize(xml: string, options: X2jOptionsOptional): any;
-export function deserialize(xml: Node, options: X2jOptionsOptional): any;
-export function deserialize(xml: string | Node, options?: X2jOptionsOptional): any {
+export function deserialize(xml: string, options: Partial<X2jOptions>): any;
+export function deserialize(xml: Node, options: Partial<X2jOptions>): any;
+export function deserialize(xml: string | Node, options?: Partial<X2jOptions>): any {
   const parser = new XMLParser({
     attributeNamePrefix: '',
     ignoreAttributes: false,
