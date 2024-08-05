@@ -14,18 +14,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import CrafterCMSNextBridge from './components/CrafterCMSNextBridge';
-import Preview from './pages/Preview';
-import { createCodebaseBridge } from './env/codebase-bridge';
-
-createCodebaseBridge();
-
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <CrafterCMSNextBridge>
-      <Preview />
-    </CrafterCMSNextBridge>
-  </StrictMode>
-);
+// In some browsers, the iframe is blocking the mouse events causing the resizing of toolPanels to malfunction. By
+// disabling pointer events and user select on the iframe, we can allow the resize to work as expected.
+export function blockPreviewIframePointerEvents(block: boolean) {
+  const previewIframe = document.getElementById('crafterCMSPreviewIframe');
+  if (previewIframe) {
+    previewIframe.style.pointerEvents = block ? 'none' : '';
+    previewIframe.style.userSelect = block ? 'none' : '';
+  }
+}

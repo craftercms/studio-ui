@@ -14,18 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import CrafterCMSNextBridge from './components/CrafterCMSNextBridge';
-import Preview from './pages/Preview';
-import { createCodebaseBridge } from './env/codebase-bridge';
+import { Tooltip, TooltipProps } from '@mui/material';
 
-createCodebaseBridge();
+export const UltraStyledTooltip = (props: TooltipProps) => {
+  return (
+    <Tooltip
+      {...props}
+      slotProps={{
+        ...props?.slotProps,
+        tooltip: { ...props.slotProps?.tooltip, sx: { ...props.slotProps?.tooltip?.sx, fontSize: 12 } }
+      }}
+    />
+  );
+};
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <CrafterCMSNextBridge>
-      <Preview />
-    </CrafterCMSNextBridge>
-  </StrictMode>
-);
+export default UltraStyledTooltip;

@@ -470,10 +470,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         _self.inputEl.title = _self.inputEl.value;
         _self._onChangeVal(null, _self);
         _self.adjustInputsWidth(_self.inputEl, _self.pathEl);
-        // enable input
-        _self.inputEl.disabled = false;
-        _self.inputEl.focus();
-        editFileNameEl.style.display = 'none';
       };
 
       const id = CStudioAuthoring.Utils.generateUUID();

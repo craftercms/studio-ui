@@ -16,7 +16,7 @@
 
 import React, { CSSProperties, ReactNode, useEffect, useRef, useState } from 'react';
 import { getZoneMarkerStyle } from '../utils/dom';
-import { Box, Paper, Popper, Theme, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, Paper, Popper, Theme, Typography, useTheme } from '@mui/material';
 import { SxProps } from '@mui/system';
 import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '@craftercms/studio-ui/models/CustomRecord';
 import LevelDescriptorIcon from '@craftercms/studio-ui/icons/LevelDescriptor';
@@ -29,6 +29,9 @@ import AllowedContentTypesData from '@craftercms/studio-ui/models/AllowedContent
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { getCachedContentTypes } from '../contentController';
 import { getAvatarWithIconColors } from '@craftercms/studio-ui/utils/contentType';
+import UltraStyledTypography from './UltraStyledTypography';
+import UltraStyledTooltip from './UltraStyledTooltip';
+import { SystemCssProperties } from '@mui/system/styleFunctionSx/styleFunctionSx';
 
 const AllowedTypeCircle = styled('div')({
   width: 20,
@@ -88,6 +91,7 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
     },
     icon: {
       marginRight: 1,
+      fontSize: 21,
       ...sx?.icon
     },
     tooltip: {
@@ -164,9 +168,9 @@ export function ZoneMarker(props: ZoneMarkerProps) {
               ) : (
                 <FieldIcon sx={sx.icon} />
               )}
-              <Typography title={label} noWrap>
+              <UltraStyledTypography title={label} noWrap sx={{ color: (sx?.paper as SystemCssProperties).color }}>
                 {label}
-              </Typography>
+              </UltraStyledTypography>
               {allowedTypesMeta && (
                 <Box
                   sx={{ ml: 1, pointerEvents: 'all', display: 'flex', alignItems: 'center' }}
@@ -180,7 +184,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                       darken
                     );
                     return (
-                      <Tooltip
+                      <UltraStyledTooltip
                         arrow
                         // TODO: i18n
                         title={`Drop target compatible with "${type?.name}" as ${Object.keys(modes)
@@ -196,7 +200,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                             borderColor: textColor
                           }}
                         />
-                      </Tooltip>
+                      </UltraStyledTooltip>
                     );
                   })}
                 </Box>
