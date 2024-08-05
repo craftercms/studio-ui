@@ -200,14 +200,11 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
       dispatch(
-        batchActions([
-          pathNavigatorTreeSetKeyword({
-            id,
-            path,
-            keyword
-          }),
-          pathNavigatorTreeBackgroundRefresh({ id })
-        ])
+        pathNavigatorTreeSetKeyword({
+          id,
+          path,
+          keyword
+        })
       );
     });
     return () => {
