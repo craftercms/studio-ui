@@ -312,7 +312,14 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                 'message-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
                 CMgs.format(langBundle, 'notification'),
-                CMgs.format(langBundle, 'addMoreItemsError'),
+                _self.formatMessage(
+                  {
+                    id: 'nodeSelector.maxItemsReached',
+                    defaultMessage:
+                      'A max of {maxSize} {maxSize, plural, one {item is} other {items are}} allowed. Please remove items to fit the limit before trying to add more.'
+                  },
+                  { maxSize: _self.maxSize }
+                ),
                 null,
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
                 'studioDialog'
@@ -461,7 +468,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
 
     if (this.maxSize > 0) {
-      return this.maxSize - this.items.length;
+      // There's this scenario where if there are items in the node selector and the max size is set to a number lower
+      // than the amount of items, itemsLeft should be 0.
+      return Math.max(0, this.maxSize - this.items.length);
     }
     return -1;
   },
