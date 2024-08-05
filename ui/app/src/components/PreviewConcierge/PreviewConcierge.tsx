@@ -30,6 +30,7 @@ import {
   duplicateItemOperationFailed,
   errorPageCheckIn,
   fetchContentTypes,
+  fetchContentTypesComplete,
   fetchGuestModel,
   fetchGuestModelComplete,
   fetchGuestModelsComplete,
@@ -1324,6 +1325,9 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
             );
           }
           break;
+        }
+        case fetchContentTypesComplete.type: {
+          hostToGuest$.next(reloadRequest());
         }
       }
     });
