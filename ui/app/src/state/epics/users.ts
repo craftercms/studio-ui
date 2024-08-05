@@ -27,7 +27,7 @@ import {
   fetchMyRolesInSiteFailed
 } from '../actions/user';
 import { CrafterCMSEpic } from '../store';
-import { changeSite } from '../actions/sites';
+import { changeSiteComplete } from '../actions/sites';
 import { catchAjaxError } from '../../utils/ajax';
 
 export default [
@@ -41,7 +41,7 @@ export default [
   // region changeSite
   (action$) =>
     action$.pipe(
-      ofType(changeSite.type),
+      ofType(changeSiteComplete.type),
       switchMap(() => [fetchMyRolesInSite(), fetchMyPermissionsInSite()])
     ),
   // endregion

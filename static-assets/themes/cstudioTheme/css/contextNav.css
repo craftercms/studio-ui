@@ -1103,3 +1103,19 @@ body.yui-skin-cstudioTheme .mask {
 #crop-popup-inner .error {
   border-color: rgba(169, 68, 66, 0.47);
 }
+
+/* Upload alert override */
+.yui-pe-content div .MuiAlert-root {
+  background-color: rgb(253, 237, 237);
+}
+
+.yui-pe-content div .MuiAlert-root .MuiTypography-root {
+  color: rgb(95, 33, 32) !important;
+}
+
+.yui-pe-content div .MuiAlert-root .MuiIconButton-root,
+.yui-pe-content div .MuiAlert-root .MuiIconButton-root:hover {
+  background-color: transparent;
+  box-shadow: none;
+  color: #ff3b30;
+}

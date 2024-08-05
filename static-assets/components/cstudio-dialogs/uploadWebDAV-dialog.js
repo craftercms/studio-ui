@@ -166,33 +166,9 @@ CStudioAuthoring.Dialogs.UploadWebDAVDialog = CStudioAuthoring.Dialogs.UploadWeb
         me.callback.success(uploaded);
         CStudioAuthoring.Dialogs.UploadWebDAVDialog.closeDialog();
       },
-      onError: function ({ response }) {
-        const res = JSON.parse(response.body.response).response,
-          errorMsg = `${res.message}. ${res.remedialAction}`;
-
+      onError: function () {
         me.uploadingFile = false;
         $('#uploadCancelButton').attr('disabled', false);
-
-        CStudioAuthoring.Operations.showSimpleDialog(
-          'uploadErrorDialog',
-          CStudioAuthoring.Operations.simpleDialogTypeINFO,
-          me.formatMessage(me.messages.notification),
-          errorMsg,
-          [
-            {
-              text: 'OK',
-              handler: function () {
-                this.destroy();
-                callback.failure(response);
-              },
-              isDefault: false
-            }
-          ],
-          YAHOO.widget.SimpleDialog.ICON_BLOCK,
-          'studioDialog',
-          null,
-          100104
-        );
       }
     });
 

@@ -24,7 +24,6 @@
     * `listItemProps` are routed to the list `ListItem` component instead of the `ListItemButton`
     * Added `listItemButtonProps` property
   * `DraggablePanelListItem` prop `onMenu` send the pointer event as its first and only argument instead of the anchor element attached to the event. Can get element through `event.currentTarget`.
-  * `PathNavigatorTree`:  Added `showPaginationOptions` prop to show/hide pagination options section in the component
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`
@@ -46,6 +45,7 @@
 * Remove legacy `browseCMIS` dialog and `openCMISBrowse` function from common-api.
 * Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources. 
 * `ICEConfig` TypeScript `interface` changed to be `type`. It now accepts either the (model) or (modelId & path).
+* The `acecode` TinyMCE plugin (for code-highlighted Rich Text Editor code editing), renders the code exactly as Tiny provides without decoding entities.
 
 ## 4.1.5
 * [common-api.js]

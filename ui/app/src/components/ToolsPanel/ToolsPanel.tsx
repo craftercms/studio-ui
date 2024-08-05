@@ -34,6 +34,7 @@ import LookupTable from '../../models/LookupTable';
 import { nnou } from '../../utils/object';
 import { getStoredPreviewToolsPanelPage, getStoredPreviewToolsPanelWidth } from '../../utils/state';
 import { useActiveSite } from '../../hooks/useActiveSite';
+import { blockPreviewIframePointerEvents } from '../Preview/utils';
 
 defineMessages({
   previewSiteExplorerPanelTitle: {
@@ -101,6 +102,8 @@ export function ToolsPanel() {
       maxWidth={windowSize}
       classes={{ drawerBody: classes.drawerBody }}
       onWidthChange={onWidthChange}
+      onResizeStart={() => blockPreviewIframePointerEvents(true)}
+      onResizeStop={() => blockPreviewIframePointerEvents(false)}
       styles={{
         resizeHandle: { backgroundColor: 'transparent' },
         drawerPaperBelowToolbar: { top: '64px' }

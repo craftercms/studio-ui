@@ -25,7 +25,6 @@ import {
   pathNavigatorTreeBulkRefresh,
   pathNavigatorTreeBulkRestoreComplete,
   pathNavigatorTreeBulkRestoreFailed,
-  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -160,8 +159,7 @@ export default [
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
                 expanded: updatedExpanded,
                 collapsed: state.pathNavigatorTree[id].collapsed,
-                keywordByPath: state.pathNavigatorTree[id].keywordByPath,
-                limit: state.pathNavigatorTree[id].limit
+                keywordByPath: state.pathNavigatorTree[id].keywordByPath
               });
             }
             return pathNavigatorTreeRestoreComplete({ id, expanded: updatedExpanded, collapsed, items, children });
@@ -172,8 +170,7 @@ export default [
               setStoredPathNavigatorTree(uuid, state.user.username, id, {
                 expanded: state.pathNavigatorTree[id].expanded,
                 collapsed: state.pathNavigatorTree[id].collapsed,
-                keywordByPath: state.pathNavigatorTree[id].keywordByPath,
-                limit: state.pathNavigatorTree[id].limit
+                keywordByPath: state.pathNavigatorTree[id].keywordByPath
               });
               return batchActions([pathNavigatorTreeUpdate({ id, expanded: [] }), pathNavigatorTreeRefresh({ id })]);
             } else {
@@ -185,24 +182,6 @@ export default [
     ),
   // endregion
 
-  // region pathNavigatorTreeUpdate
-  (action$, state$) =>
-    action$.pipe(
-      ofType(pathNavigatorTreeChangeLimit.type),
-      withLatestFrom(state$),
-      tap(([{ payload }, state]) => {
-        const { id, limit } = payload;
-        const uuid = state.sites.byId[state.sites.active].uuid;
-        setStoredPathNavigatorTree(uuid, state.user.username, id, {
-          expanded: state.pathNavigatorTree[id].expanded,
-          collapsed: state.pathNavigatorTree[id].collapsed,
-          keywordByPath: state.pathNavigatorTree[id].keywordByPath,
-          limit
-        });
-      }),
-      ignoreElements()
-    ),
-  // endregion
   // region pathNavigatorTreeBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(
@@ -255,8 +234,7 @@ export default [
                     setStoredPathNavigatorTree(uuid, state.user.username, id, {
                       expanded: updatedExpanded,
                       collapsed: state.pathNavigatorTree[id].collapsed,
-                      keywordByPath: state.pathNavigatorTree[id].keywordByPath,
-                      limit: state.pathNavigatorTree[id].limit
+                      keywordByPath: state.pathNavigatorTree[id].keywordByPath
                     });
                   }
 
@@ -413,13 +391,12 @@ export default [
       withLatestFrom(state$),
       tap(([{ payload }, state]) => {
         const { id } = payload;
-        const { expanded, collapsed, keywordByPath, limit } = state.pathNavigatorTree[id];
+        const { expanded, collapsed, keywordByPath } = state.pathNavigatorTree[id];
         const uuid = state.sites.byId[state.sites.active].uuid;
         setStoredPathNavigatorTree(uuid, state.user.username, id, {
           expanded,
           collapsed,
-          keywordByPath,
-          limit
+          keywordByPath
         });
       }),
       ignoreElements()
