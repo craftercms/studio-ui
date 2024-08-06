@@ -312,14 +312,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                 'message-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
                 CMgs.format(langBundle, 'notification'),
-                _self.formatMessage(
-                  {
-                    id: 'nodeSelector.maxItemsReached',
-                    defaultMessage:
-                      'A max of {maxSize} {maxSize, plural, one {item is} other {items are}} allowed. Please remove items to fit the limit before trying to add more.'
-                  },
-                  { maxSize: _self.maxSize }
-                ),
+                _self.formatMessage(_self.formEngineMessages.maxItemsReached, { maxSize: _self.maxSize }),
                 null,
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
                 'studioDialog'
