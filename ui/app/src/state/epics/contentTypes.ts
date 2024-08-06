@@ -41,8 +41,6 @@ import {
   fetchContentTypes as fetchContentTypesService
 } from '../../services/contentTypes';
 import { CrafterCMSEpic } from '../store';
-import { emitSystemEvent } from '../actions/system';
-import { batchActions } from '../actions/misc';
 
 export default [
   // region fetchContentTypes
@@ -57,15 +55,7 @@ export default [
             sites: { active: site }
           }
         ]) =>
-          fetchContentTypesService(site).pipe(
-            map((contentTypes) =>
-              batchActions([
-                fetchContentTypesComplete(contentTypes),
-                emitSystemEvent(fetchContentTypesComplete(contentTypes))
-              ])
-            ),
-            catchAjaxError(fetchContentTypesFailed)
-          )
+          fetchContentTypesService(site).pipe(map(fetchContentTypesComplete), catchAjaxError(fetchContentTypesFailed))
       )
     ),
   // endregion

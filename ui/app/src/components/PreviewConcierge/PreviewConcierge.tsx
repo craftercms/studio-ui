@@ -30,7 +30,6 @@ import {
   duplicateItemOperationFailed,
   errorPageCheckIn,
   fetchContentTypes,
-  fetchContentTypesComplete,
   fetchGuestModel,
   fetchGuestModelComplete,
   fetchGuestModelsComplete,
