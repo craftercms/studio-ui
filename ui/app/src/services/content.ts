@@ -1240,9 +1240,10 @@ export function fetchChildrenByPaths(
         map(({ response: { items } }) => {
           const data = {};
           items.forEach(({ children, levelDescriptor, total, offset, limit, path }) => {
+            const totalWithDescriptor = levelDescriptor ? total + 1 : total;
             data[path] = Object.assign(children ? children.map((child) => prepareVirtualItemProps(child)) : [], {
               levelDescriptor: levelDescriptor ? prepareVirtualItemProps(levelDescriptor) : null,
-              total,
+              total: totalWithDescriptor,
               offset,
               limit
             });
