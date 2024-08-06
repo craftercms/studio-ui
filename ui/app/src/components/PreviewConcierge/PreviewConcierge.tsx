@@ -1326,9 +1326,6 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           }
           break;
         }
-        case fetchContentTypesComplete.type: {
-          hostToGuest$.next(reloadRequest());
-        }
       }
     });
     return () => {
