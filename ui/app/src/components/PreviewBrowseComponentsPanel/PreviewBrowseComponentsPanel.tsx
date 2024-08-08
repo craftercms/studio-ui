@@ -96,7 +96,7 @@ export function PreviewBrowseComponentsPanel() {
   const onSearch$ = useDebouncedInput(onSearch, 600);
 
   function onPageChanged(newPage: number) {
-    dispatch(fetchComponentsByContentType({ offset: newPage }));
+    dispatch(fetchComponentsByContentType({ offset: newPage, sortBy: 'internalName', sortOrder: 'asc' }));
   }
 
   function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
