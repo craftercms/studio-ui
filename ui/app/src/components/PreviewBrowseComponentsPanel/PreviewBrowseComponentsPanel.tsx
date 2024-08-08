@@ -77,6 +77,9 @@ export function PreviewBrowseComponentsPanel() {
       } else {
         otherTypes.push(contentType);
       }
+      const sorter = (a: ContentType, b: ContentType) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+      allowedTypes.sort(sorter);
+      otherTypes.sort(sorter);
     });
     return result;
   }, [allowedTypesData, contentTypes]);
@@ -84,7 +87,7 @@ export function PreviewBrowseComponentsPanel() {
   useEffect(() => {
     // We want guest to check in, so we can retrieve the compatible types when fetching the items.
     if (siteId && contentTypesBranch.isFetching === false && !awaitingGuestCheckIn) {
-      dispatch(fetchComponentsByContentType({}));
+      dispatch(fetchComponentsByContentType({ sortBy: 'internalName', sortOrder: 'asc' }));
     }
   }, [siteId, contentTypesBranch, dispatch, awaitingGuestCheckIn]);
 
@@ -106,18 +109,21 @@ export function PreviewBrowseComponentsPanel() {
   const onDragEnd = () => hostToGuest$.next({ type: componentInstanceDragEnded.type });
 
   const onSearch = useCallback(
-    (keywords: string) => dispatch(fetchComponentsByContentType({ keywords, offset: 0 })),
+    (keywords: string) =>
+      dispatch(fetchComponentsByContentType({ keywords, offset: 0, sortBy: 'internalName', sortOrder: 'asc' })),
     [dispatch]
   );
 
   const onSearch$ = useDebouncedInput(onSearch, 600);
 
   function onPageChanged(newPage: number) {
-    dispatch(fetchComponentsByContentType({ offset: newPage }));
+    dispatch(fetchComponentsByContentType({ offset: newPage, sortBy: 'internalName', sortOrder: 'asc' }));
   }
 
   function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    dispatch(fetchComponentsByContentType({ offset: 0, limit: e.target.value }));
+    dispatch(
+      fetchComponentsByContentType({ offset: 0, limit: e.target.value, sortBy: 'internalName', sortOrder: 'asc' })
+    );
   }
 
   function handleSearchKeyword(keyword: string) {
