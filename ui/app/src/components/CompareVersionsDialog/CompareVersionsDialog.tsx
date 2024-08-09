@@ -80,7 +80,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
                 'aria-label': formatMessage(translations.backToSelectRevision)
               }
             ]
-          : null,
+          : leftActions,
         rightActions: [
           {
             icon: { id: '@mui/icons-material/CodeRounded' },
