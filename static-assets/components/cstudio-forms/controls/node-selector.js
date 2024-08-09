@@ -223,6 +223,14 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     $dropdown.append($addBtn);
     $dropdown.append($dropdownMenu);
 
+    // Prevent dropdown from opening if the items' limit has been reached.
+    $dropdown.on('show.bs.dropdown', function (e) {
+      const itemsLeftCount = _self.getItemsLeftCount();
+      if (itemsLeftCount === 0) {
+        e.preventDefault();
+      }
+    });
+
     $(nodeOptionsEl).append($dropdown);
 
     if (this.readonly == true) {
@@ -304,7 +312,7 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
                 'message-dialog',
                 CStudioAuthoring.Operations.simpleDialogTypeINFO,
                 CMgs.format(langBundle, 'notification'),
-                CMgs.format(langBundle, 'addMoreItemsError'),
+                _self.formatMessage(_self.formEngineMessages.maxItemsReached, { maxSize: _self.maxSize }),
                 null,
                 YAHOO.widget.SimpleDialog.ICON_BLOCK,
                 'studioDialog'
@@ -453,7 +461,9 @@ YAHOO.extend(CStudioForms.Controls.NodeSelector, CStudioForms.CStudioFormField, 
     }
 
     if (this.maxSize > 0) {
-      return this.maxSize - this.items.length;
+      // There's this scenario where if there are items in the node selector and the max size is set to a number lower
+      // than the amount of items, itemsLeft should be 0.
+      return Math.max(0, this.maxSize - this.items.length);
     }
     return -1;
   },

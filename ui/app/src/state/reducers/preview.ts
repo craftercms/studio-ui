@@ -137,7 +137,7 @@ const componentsInitialState = createEntityState({
     offset: 0,
     limit: 10
   },
-  contentTypeFilter: 'all',
+  contentTypeFilter: 'compatible',
   inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
 
@@ -811,6 +811,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       if (state.guest) state.guest.mainModelModifier = payload.user;
     })
     .addCase(allowedContentTypesUpdate, (state, { payload }) => {
+      if (!state.guest) return state;
       state.guest.allowedContentTypes = payload;
     });
 });

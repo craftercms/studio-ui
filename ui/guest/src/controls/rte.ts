@@ -16,7 +16,7 @@
 
 import { ElementRecord } from '../models/InContextEditing';
 import * as iceRegistry from '../iceRegistry';
-import { Editor } from 'tinymce';
+import { Editor, EditorEvent } from 'tinymce';
 import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
 import { post, message$ } from '../utils/communicator';
@@ -271,9 +271,9 @@ export function initTinyMCE(
 
         // In some cases the 'blur' event is getting caught somewhere along
         // the way. Focusout seems to be more reliable.
-        editor.on('focusout', (e) => {
+        editor.on('focusout', (e: EditorEvent<FocusEvent & { forced?: boolean }>) => {
           // Only consider 'focusout' events that are trusted and not at the bubbling phase.
-          if (e.isTrusted && e.eventPhase !== 3) {
+          if (e.forced || (e.isTrusted && e.eventPhase !== 3)) {
             let relatedTarget = e.relatedTarget as HTMLElement;
             let saved = false;
             // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
@@ -370,7 +370,8 @@ export function initTinyMCE(
           e.preventDefault();
           // Timeout to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"
           // Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
-          setTimeout(() => editor.fire('focusout'));
+          // @ts-ignore - Add "forced" property to be able to recognise this manually-triggered focusout on our handler.
+          setTimeout(() => editor.fire('focusout', { forced: true }));
         } else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
           // Avoid new line in plain text fields
           e.preventDefault();

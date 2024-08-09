@@ -15,8 +15,8 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useIntl } from 'react-intl';
-import { nnou } from '../../utils/object';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { nnou, nou } from '../../utils/object';
 import { ErrorBoundary } from '../ErrorBoundary/ErrorBoundary';
 import LoadingState from '../LoadingState/LoadingState';
 import ContentInstance from '../../models/ContentInstance';
@@ -40,11 +40,14 @@ import useStyles from './styles';
 import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import ListSubheader from '@mui/material/ListSubheader';
 
 export function PreviewBrowseComponentsPanel() {
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
+  const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
+  const awaitingGuestCheckIn = nou(allowedTypesData);
   const componentsState = useSelection((state) => state.preview.components);
   const [keyword, setKeyword] = useState(componentsState.query.keywords);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
@@ -56,19 +59,34 @@ export function PreviewBrowseComponentsPanel() {
     : null;
   const items = useMemo(() => {
     let items = componentsState.page[componentsState.pageNumber]?.map((id: string) => componentsState.byId[id]) ?? [];
-    if (componentsState.contentTypeFilter !== 'all') {
+    if (componentsState.contentTypeFilter !== 'compatible') {
       items = items.filter(
         (item: ContentInstance) => item.craftercms.contentTypeId === componentsState.contentTypeFilter
       );
     }
     return items;
   }, [componentsState]);
+  const contentTypeData = useMemo(() => {
+    const allowedTypes: ContentType[] = [];
+    const otherTypes: ContentType[] = [];
+    const result = { allowedTypes, otherTypes };
+    if (!contentTypes || !allowedTypesData) return result;
+    contentTypes.forEach((contentType) => {
+      if (allowedTypesData[contentType.id]?.shared) {
+        allowedTypes.push(contentType);
+      } else {
+        otherTypes.push(contentType);
+      }
+    });
+    return result;
+  }, [allowedTypesData, contentTypes]);
 
   useEffect(() => {
-    if (siteId && contentTypesBranch.isFetching === false) {
+    // We want guest to check in, so we can retrieve the compatible types when fetching the items.
+    if (siteId && contentTypesBranch.isFetching === false && !awaitingGuestCheckIn) {
       dispatch(fetchComponentsByContentType({}));
     }
-  }, [siteId, contentTypesBranch, dispatch]);
+  }, [siteId, contentTypesBranch, dispatch, awaitingGuestCheckIn]);
 
   const { formatMessage } = useIntl();
   const hostToGuest$ = getHostToGuestBus();
@@ -130,14 +148,31 @@ export function PreviewBrowseComponentsPanel() {
               className={classes.select}
               onChange={(event: any) => handleSelectChange(event.target.value)}
             >
-              <MenuItem value="all">{formatMessage(translations.allContentTypes)}</MenuItem>
-              {contentTypes.map((contentType: ContentType, i: number) => {
-                return (
+              <MenuItem value="compatible">
+                <FormattedMessage defaultMessage="Compatible Types" />
+              </MenuItem>
+              <ListSubheader>
+                <FormattedMessage defaultMessage="Compatible" />
+              </ListSubheader>
+              {contentTypeData.allowedTypes.length === 0 ? (
+                <MenuItem disabled>
+                  <FormattedMessage defaultMessage="No compatible types were found." />
+                </MenuItem>
+              ) : (
+                contentTypeData.allowedTypes.map((contentType: ContentType, i: number) => (
                   <MenuItem value={contentType.id} key={i}>
                     {contentType.name}
                   </MenuItem>
-                );
-              })}
+                ))
+              )}
+              <ListSubheader>
+                <FormattedMessage defaultMessage="Other" />
+              </ListSubheader>
+              {contentTypeData.otherTypes.map((contentType: ContentType, i: number) => (
+                <MenuItem value={contentType.id} key={i}>
+                  {contentType.name}
+                </MenuItem>
+              ))}
             </Select>
           )}
         </div>
@@ -149,6 +184,7 @@ export function PreviewBrowseComponentsPanel() {
           ((nnou(componentsState.pageNumber) && nnou(componentsState.page[componentsState.pageNumber])) ||
             !componentsState.contentTypeFilter) && (
             <PreviewBrowseComponentsPanelUI
+              awaitingGuestCheckIn={awaitingGuestCheckIn}
               items={items}
               count={componentsState.count}
               pageNumber={componentsState.pageNumber}

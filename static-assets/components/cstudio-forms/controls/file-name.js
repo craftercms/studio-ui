@@ -470,10 +470,6 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
         _self.inputEl.title = _self.inputEl.value;
         _self._onChangeVal(null, _self);
         _self.adjustInputsWidth(_self.inputEl, _self.pathEl);
-        // enable input
-        _self.inputEl.disabled = false;
-        _self.inputEl.focus();
-        editFileNameEl.style.display = 'none';
       };
 
       const id = CStudioAuthoring.Utils.generateUUID();
@@ -512,12 +508,14 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
     if (value == '') {
       this.value = this.defaultValue;
       this.inputEl.value = this.defaultValue;
+      this.defaultValue !== '' && this.filenameAvailable();
     } else {
       this.value = value;
       this.inputEl.value = this._getValue();
-      if (this.inputEl.value == '' && !this.isRootPath() && this.defaultValue != '') {
+      if (this.inputEl.value === '' && !this.isRootPath() && this.defaultValue !== '') {
         this.value = this.defaultValue;
         this.inputEl.value = this.defaultValue;
+        this.filenameAvailable();
       }
     }
     this.inputEl.title = this.inputEl.value;

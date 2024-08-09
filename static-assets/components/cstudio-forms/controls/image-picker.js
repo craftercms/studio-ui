@@ -662,7 +662,7 @@ YAHOO.extend(CStudioForms.Controls.ImagePicker, CStudioForms.CStudioFormField, {
           internalResult = true;
         } else {
           if (obj.exact !== '') {
-            if (obj.exact === srcValue) {
+            if (parseInt(obj.exact) === srcValue) {
               internalResult = true;
             }
           } else if (

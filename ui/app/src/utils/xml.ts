@@ -15,7 +15,7 @@
  */
 
 import prettierXmlPlugin from '@prettier/plugin-xml';
-import { format } from 'prettier/standalone.mjs';
+import { format } from 'prettier/standalone';
 import { nnou } from './object';
 import { XMLParser, X2jOptions } from 'fast-xml-parser';
 import { legacyUnescapeXml } from './string';

@@ -19,7 +19,6 @@ import PathNavigatorTreeUI, { PathNavigatorTreeUIProps } from './PathNavigatorTr
 import { useDispatch } from 'react-redux';
 import {
   pathNavigatorTreeBackgroundRefresh,
-  pathNavigatorTreeChangeLimit,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -65,7 +64,6 @@ import SystemType from '../../models/SystemType';
 import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import { UNDEFINED } from '../../utils/constants';
 import SimpleAjaxError from '../../models/SimpleAjaxError';
-import { SelectChangeEvent } from '@mui/material/Select';
 
 export interface PathNavigatorTreeProps
   extends Pick<
@@ -103,7 +101,6 @@ export interface PathNavigatorTreeStateProps {
   keywordByPath: LookupTable<string>;
   totalByPath: LookupTable<number>;
   offsetByPath: LookupTable<number>;
-  currentLimitByPath: LookupTable<number>;
   excludes: string[];
   systemTypes: SystemType[];
   error: ApiResponse;
@@ -204,14 +201,11 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
       dispatch(
-        batchActions([
-          pathNavigatorTreeSetKeyword({
-            id,
-            path,
-            keyword
-          }),
-          pathNavigatorTreeBackgroundRefresh({ id })
-        ])
+        pathNavigatorTreeSetKeyword({
+          id,
+          path,
+          keyword
+        })
       );
     });
     return () => {
@@ -337,12 +331,6 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
       );
     }
   };
-
-  const onLimitChange = (e: SelectChangeEvent<number>) => {
-    const limit = Number(e.target.value);
-    dispatch(pathNavigatorTreeChangeLimit({ id, limit }));
-  };
-
   // endregion
 
   return (
@@ -373,8 +361,6 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
         showPublishingTarget={showPublishingTarget}
         showWorkflowState={showWorkflowState}
         showItemMenu={showItemMenu}
-        limit={state.limit}
-        onLimitChange={onLimitChange}
       />
       <ContextMenu
         anchorEl={widgetMenu.anchorEl}
