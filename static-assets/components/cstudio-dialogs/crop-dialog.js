@@ -364,7 +364,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
 
       const canvas = $image.cropper('getCroppedCanvas');
       const isJpg = imageData.meta.type === 'image/jpeg' || imageData.meta.type === 'image/jpg';
-      const dataUrl = canvas.toDataURL(imageData.meta.type, isJpg ? 0.9 : null);
+      const dataUrl = canvas.toDataURL(imageData.meta.type, isJpg ? 0.9 : undefined);
 
       const file = {
         dataUrl,
