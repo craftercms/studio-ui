@@ -368,9 +368,17 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       if (!imageData.meta) {
         // imageData.meta doesn't come at all when coming from the existing images data source
         // SVG mime-type is 'image/svg+xml'
-        imageData.meta = {
-          type: `image/${imageData.fileExtension.toLowerCase()}${imageData.fileExtension === 'svg' ? '+xml' : ''}`
-        };
+        // for jpg extension, type needs to be 'image/jpeg'
+        const imageDataExt = imageData.fileExtension.toLowerCase();
+        let type = 'image/';
+        if (imageDataExt === 'svg') {
+          type += `${imageDataExt}+xml`;
+        } else if (imageDataExt === 'jpg') {
+          type += 'jpeg';
+        } else {
+          type += imageDataExt;
+        }
+        imageData.meta = { type };
       }
       const isJpg = imageData.meta.type === 'image/jpeg' || imageData.meta.type === 'image/jpg';
       const isPng = imageData.meta.type === 'image/png';
