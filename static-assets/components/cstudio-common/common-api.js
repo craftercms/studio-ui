@@ -2659,6 +2659,8 @@ var nodeOpen = false,
           moduleConfig,
           openCropperDialogCb
         );
+        CStudioAuthoring.Module.requireModule('pako', '/static-assets/libs/pako.js');
+        CStudioAuthoring.Module.requireModule('upng', '/static-assets/libs/upng.js');
         CStudioAuthoring.Module.requireModule('jquery-cropper', '/static-assets/libs/cropper/dist/cropper.js');
       },
 

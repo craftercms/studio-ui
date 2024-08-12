@@ -93,6 +93,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
     var divIdName = 'cstudio-wcm-popup-div';
     newdiv.setAttribute('id', divIdName);
     newdiv.className = 'yui-pe-content';
+    // region Dialog HTML
     newdiv.innerHTML =
       '<div class="contentTypePopupInner crop-image-dialog" id="crop-popup-inner">' +
       '<div class="contentTypePopupContent" id="contentTypePopupContent"> ' +
@@ -162,6 +163,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       '</div>' +
       '</div> ' +
       '</div>';
+    // endregion
 
     // Instantiate the Dialog
     crop_dialog = new YAHOO.widget.Dialog('cstudio-wcm-popup-div', {
@@ -356,107 +358,129 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       }
     }
 
-    function _cropImage(self, newName) {
-      var imageInformation = $image.cropper('getData', true),
-        path = imageData.relativeUrl,
-        site = CStudioAuthoringContext.site,
-        self = self;
-
+    function _cropImage(self, newFileName) {
+      const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl);
+      const fileExtension = /(?:\.([^.]+))?$/.exec(imageData.relativeUrl)[1];
+      const newFullName = newFileName ? `${newFileName}.${fileExtension}` : null;
+      const path = imageData.relativeUrl.replace(fileName, '').replace(/\/$/, ''); // Path without the file name
+      const site = CStudioAuthoringContext.site;
       const canvas = $image.cropper('getCroppedCanvas');
-      const isJpg = imageData.meta.type === 'image/jpeg' || imageData.meta.type === 'image/jpg';
-      const dataUrl = canvas.toDataURL(imageData.meta.type, isJpg ? 0.9 : undefined);
-
-      const file = {
-        dataUrl,
-        name: imageData.name,
-        type: imageData.type
-      };
-
-      var cropImageCallBack = {
-        success: function (content) {
-          self.callback.success(content);
-          self.cropPopupCancel();
-        },
-        failure: function (message) {
-          CStudioAuthoring.Operations.showSimpleDialog(
-            'error-dialog',
-            CStudioAuthoring.Operations.simpleDialogTypeINFO,
-            'notification',
-            JSON.parse(message.responseText).message,
-            null, // use default button
-            YAHOO.widget.SimpleDialog.ICON_BLOCK,
-            'studioDialog'
-          );
-          self.cropPopupCancel();
+      if (!imageData.meta) {
+        // imageData.meta doesn't come at all when coming from the existing images data source
+        // SVG mime-type is 'image/svg+xml'
+        // for jpg extension, type needs to be 'image/jpeg'
+        const imageDataExt = imageData.fileExtension.toLowerCase();
+        let type = 'image/';
+        if (imageDataExt === 'svg') {
+          type += `${imageDataExt}+xml`;
+        } else if (imageDataExt === 'jpg') {
+          type += 'jpeg';
+        } else {
+          type += imageDataExt;
         }
+        imageData.meta = { type };
+      }
+      const isJpg = imageData.meta.type === 'image/jpeg' || imageData.meta.type === 'image/jpg';
+      const isPng = imageData.meta.type === 'image/png';
+
+      const performUpload = (selectedFileName) => {
+        new Promise((resolve) => {
+          // Convert the canvas to a Blob
+          canvas.toBlob(
+            (blob) => {
+              if (isPng) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                  const arrayBuffer = event.target.result;
+
+                  // Decode the PNG image
+                  const img = UPNG.decode(arrayBuffer);
+                  const rgba = UPNG.toRGBA8(img)[0];
+
+                  // Optimize the PNG image
+                  const optimisedArrayBuffer = UPNG.encode([rgba], img.width, img.height, 256);
+                  const optimisedBitArray = new Uint8Array(optimisedArrayBuffer);
+                  const optimisedBlob = new Blob([optimisedBitArray]);
+
+                  // Trying pako directly to deflate the PNG data produced unreadable files.
+                  // There must be some nuance to how to use it directly.
+                  // https://nodeca.github.io/pako/#deflate
+                  // const deflated = new pako.deflate(
+                  //   new Uint8Array(arrayBuffer),
+                  //   { level: 0, memLevel: ? }
+                  // );
+                  // const compressedBlob = new Blob([deflated], { type: imageData.meta.type });
+
+                  resolve(optimisedBlob);
+                };
+                reader.readAsArrayBuffer(blob);
+              } else {
+                resolve(blob);
+              }
+            },
+            imageData.meta.type,
+            isJpg ? 0.9 : undefined
+          );
+        }).then((blob) => {
+          CrafterCMSNext.services.content
+            .uploadBlob(site, path, {
+              name: selectedFileName ?? fileName,
+              type: imageData.type,
+              blob
+            })
+            .subscribe({
+              next(response) {
+                if (response.type === 'complete') {
+                  self.callback.success(response.payload.body);
+                  self.cropPopupCancel();
+                }
+              },
+              error(error) {
+                console.error(error);
+                CStudioAuthoring.Operations.showSimpleDialog(
+                  'error-dialog',
+                  CStudioAuthoring.Operations.simpleDialogTypeINFO,
+                  'notification',
+                  JSON.parse(error?.responseText ?? '{}').message || 'An unknown error occurred.',
+                  null, // use default button
+                  YAHOO.widget.SimpleDialog.ICON_BLOCK,
+                  'studioDialog'
+                );
+                self.cropPopupCancel();
+              }
+            });
+        });
       };
 
-      const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl),
-        re = /(?:\.([^.]+))?$/,
-        ext = re.exec(imageData.relativeUrl)[1]; // get original image extension
-
-      if (newName) {
+      if (newFileName) {
+        const newFullPath = `${path}/${newFullName}`;
         const createNewNameFile = () => {
-          var relativeUrlLastSlashIndex = imageData.relativeUrl.lastIndexOf('/'),
-            previewUrlLastSlashIndex = imageData.previewUrl.lastIndexOf('/'),
-            relativeFolder = imageData.relativeUrl.substring(0, relativeUrlLastSlashIndex + 1),
-            previewFolder = imageData.previewUrl.substring(0, previewUrlLastSlashIndex + 1);
-
-          path = imageData.relativeUrl + '&newname=' + newName + '.' + ext;
-          imageData.renameRelativeUrl = relativeFolder + newName + '.' + ext;
-          imageData.renamePreviewUrl = previewFolder + newName + '.' + ext;
-
-          var contextExistsCallBack = {
-            site: site,
-            path: path,
-            imageInformation: imageInformation,
-            cropImageCallBack: cropImageCallBack,
+          imageData.renameRelativeUrl = imageData.relativeUrl.replace(fileName, newFullName);
+          imageData.renamePreviewUrl = imageData.previewUrl.replace(fileName, newFullName);
+          CStudioAuthoring.Service.contentExists(newFullPath, {
             exists: function (exists) {
               if (exists) {
                 CStudioAuthoring.Operations.showSimpleDialog(
                   'error-dialog',
                   CStudioAuthoring.Operations.simpleDialogTypeINFO,
                   'Notification',
-                  'Image filename already exists',
+                  `Filename "${newFullName}" already exists.`,
                   null, // use default button
                   YAHOO.widget.SimpleDialog.ICON_BLOCK,
                   'studioDialog imgExists'
                 );
                 YDom.getElementsByClassName('imgExists')[0].parentNode.classList.add('inc-zindex');
               } else {
-                const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl);
-                CrafterCMSNext.services.content
-                  .uploadDataUrl(
-                    site,
-                    {
-                      dataUrl,
-                      name: `${newName}.${ext}`
-                    },
-                    imageData.relativeUrl.replace(fileName, ''),
-                    '_csrf'
-                  )
-                  .subscribe({
-                    next: (response) => {
-                      if (response.type === 'complete') {
-                        cropImageCallBack.success(response.payload.body);
-                      }
-                    },
-                    error: (error) => {
-                      cropImageCallBack.failure(error);
-                    }
-                  });
+                performUpload(newFullName);
               }
             },
             failure: function () {}
-          };
-
-          CStudioAuthoring.Service.contentExists(imageData.renameRelativeUrl, contextExistsCallBack);
+          });
         };
-
         CrafterCMSNext.services.sites
           .validateActionPolicy(CStudioAuthoringContext.site, {
             type: 'CREATE',
-            target: `${imageData.relativeUrl.replace(fileName, '')}${newName}.${ext}`
+            target: newFullPath
           })
           .subscribe(({ allowed, modifiedValue, target }) => {
             if (allowed) {
@@ -477,19 +501,7 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
             }
           });
       } else {
-        const fileName = CrafterCMSNext.util.path.getFileNameFromPath(imageData.relativeUrl);
-        CrafterCMSNext.services.content
-          .uploadDataUrl(site, { dataUrl, name: fileName }, imageData.relativeUrl.replace(fileName, ''), '_csrf')
-          .subscribe({
-            next: (response) => {
-              if (response.type === 'complete') {
-                cropImageCallBack.success(response.payload.body);
-              }
-            },
-            error: (error) => {
-              cropImageCallBack.failure(error);
-            }
-          });
+        performUpload();
       }
     }
 
