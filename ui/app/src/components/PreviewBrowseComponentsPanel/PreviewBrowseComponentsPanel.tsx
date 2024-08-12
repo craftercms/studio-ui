@@ -50,9 +50,9 @@ export function PreviewBrowseComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const editMode = useSelection((state) => state.preview.editMode);
   const contentTypes = contentTypesBranch.byId
-    ? Object.values(contentTypesBranch.byId).filter(
-        (contentType) => contentType.type === 'component' && !contentType.id.includes('/level-descriptor')
-      )
+    ? Object.values(contentTypesBranch.byId)
+        .filter((contentType) => contentType.type === 'component' && !contentType.id.includes('/level-descriptor'))
+        .sort((a: ContentType, b: ContentType) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
     : null;
   const items = useMemo(() => {
     let items = componentsState.page[componentsState.pageNumber]?.map((id: string) => componentsState.byId[id]) ?? [];
@@ -66,7 +66,7 @@ export function PreviewBrowseComponentsPanel() {
 
   useEffect(() => {
     if (siteId && contentTypesBranch.isFetching === false) {
-      dispatch(fetchComponentsByContentType({}));
+      dispatch(fetchComponentsByContentType({ sortBy: 'internalName', sortOrder: 'asc' }));
     }
   }, [siteId, contentTypesBranch, dispatch]);
 
@@ -88,18 +88,21 @@ export function PreviewBrowseComponentsPanel() {
   const onDragEnd = () => hostToGuest$.next({ type: componentInstanceDragEnded.type });
 
   const onSearch = useCallback(
-    (keywords: string) => dispatch(fetchComponentsByContentType({ keywords, offset: 0 })),
+    (keywords: string) =>
+      dispatch(fetchComponentsByContentType({ keywords, offset: 0, sortBy: 'internalName', sortOrder: 'asc' })),
     [dispatch]
   );
 
   const onSearch$ = useDebouncedInput(onSearch, 600);
 
   function onPageChanged(newPage: number) {
-    dispatch(fetchComponentsByContentType({ offset: newPage }));
+    dispatch(fetchComponentsByContentType({ offset: newPage, sortBy: 'internalName', sortOrder: 'asc' }));
   }
 
   function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    dispatch(fetchComponentsByContentType({ offset: 0, limit: e.target.value }));
+    dispatch(
+      fetchComponentsByContentType({ offset: 0, limit: e.target.value, sortBy: 'internalName', sortOrder: 'asc' })
+    );
   }
 
   function handleSearchKeyword(keyword: string) {

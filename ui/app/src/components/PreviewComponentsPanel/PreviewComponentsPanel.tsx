@@ -79,6 +79,7 @@ export function PreviewComponentsPanel() {
               contentType.id.toLowerCase().includes(lowerCaseKeyword))
         )
         .map(([, contentType]) => contentType)
+        .sort((a: ContentType, b: ContentType) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
     : null;
   const { formatMessage } = useIntl();
   return (
