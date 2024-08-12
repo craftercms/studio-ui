@@ -33,6 +33,7 @@ import {
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
   fetchContentModelComplete,
+  fetchContentTypesComplete,
   fetchGuestModelsComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
@@ -328,7 +329,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
         modelIdByPath: null,
         selected: null,
         itemBeingDragged: null,
-        mainModelModifier: null
+        mainModelModifier: null,
+        contentTypesUpdated: false
       };
     })
     .addCase(guestCheckOut, (state) => {
@@ -813,6 +815,10 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
     .addCase(allowedContentTypesUpdate, (state, { payload }) => {
       if (!state.guest) return state;
       state.guest.allowedContentTypes = payload;
+    })
+    .addCase(fetchContentTypesComplete, (state) => {
+      if (!state.guest) return state;
+      state.guest.contentTypesUpdated = true;
     });
 });
 

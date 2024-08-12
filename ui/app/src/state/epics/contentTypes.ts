@@ -41,7 +41,6 @@ import {
   fetchContentTypes as fetchContentTypesService
 } from '../../services/contentTypes';
 import { CrafterCMSEpic } from '../store';
-import { asArray } from '../../utils/array';
 
 export default [
   // region fetchContentTypes

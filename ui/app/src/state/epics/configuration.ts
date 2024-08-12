@@ -30,7 +30,13 @@ import {
   fetchSiteUiConfig as fetchSiteUiConfigService
 } from '../../services/configuration';
 import { CrafterCMSEpic } from '../store';
-import { configurationEvent, emitSystemEvent, emitSystemEvents, showSystemNotification } from '../actions/system';
+import {
+  configurationEvent,
+  contentTypeUpdated,
+  emitSystemEvent,
+  emitSystemEvents,
+  showSystemNotification
+} from '../actions/system';
 import { defineMessages } from 'react-intl';
 import { Observable } from 'rxjs';
 import StandardAction from '../../models/StandardAction';
@@ -41,6 +47,21 @@ const configurationMessages = defineMessages({
     defaultMessage: 'Incorrect locale configuration: {message}. Using browser locale settings. Check site config xml.'
   }
 });
+
+function handleSystemEvent(action: StandardAction): StandardAction[] {
+  if (action.type !== configurationEvent.type) {
+    return [];
+  }
+  const targetPath = action.payload.targetPath;
+  if (targetPath === '/config/studio/ui.xml') {
+    return [fetchSiteUiConfig({ site: action.payload.siteId })];
+  } else if (targetPath === '/config/studio/site-config.xml') {
+    return [fetchSiteConfig()];
+  } else if (/^\/config\/studio\/content-types\/.*\/form-definition\.xml$/.test(targetPath)) {
+    return [contentTypeUpdated()];
+  }
+  return [];
+}
 
 export default [
   // fetchSiteUiConfig
@@ -96,30 +117,12 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(emitSystemEvent.type),
-      switchMap(({ payload: event }) =>
-        event.type !== configurationEvent.type
-          ? []
-          : event.payload.targetPath === '/config/studio/ui.xml'
-            ? [fetchSiteUiConfig({ site: event.payload.siteId })]
-            : event.payload.targetPath === '/config/studio/site-config.xml'
-              ? [fetchSiteConfig()]
-              : []
-      )
+      switchMap(({ payload }) => handleSystemEvent(payload))
     ),
   // emitSystemEvents
   (action$: Observable<StandardAction<ReturnType<typeof emitSystemEvents>['payload']>>) =>
     action$.pipe(
       ofType(emitSystemEvents.type),
-      switchMap((action) =>
-        action.payload.events.flatMap((eventAction) =>
-          eventAction.type !== configurationEvent.type
-            ? []
-            : eventAction.payload.targetPath === '/config/studio/ui.xml'
-              ? [fetchSiteUiConfig({ site: eventAction.payload.siteId })]
-              : eventAction.payload.targetPath === '/config/studio/site-config.xml'
-                ? [fetchSiteConfig()]
-                : []
-        )
-      )
+      switchMap((action) => action.payload.events.flatMap((eventAction) => handleSystemEvent(eventAction)))
     )
 ] as CrafterCMSEpic[];
