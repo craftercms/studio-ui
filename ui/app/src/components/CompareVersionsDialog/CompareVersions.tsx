@@ -44,7 +44,7 @@ import { showCompareVersionsDialog, showHistoryDialog } from '../../state/action
 import { useDispatch } from 'react-redux';
 import { diffArrays, getItemDiffStatus } from './utils';
 import useLocale from '../../hooks/useLocale';
-import { asLocalizedDateTime } from '../../utils/datetime';
+import { asLocalizedDateTime, convertTimeToTimezone } from '../../utils/datetime';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import Button from '@mui/material/Button';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -52,6 +52,8 @@ import { toColor } from '../../utils/string';
 import { PartialSxRecord } from '../../models';
 import CodeRounded from '@mui/icons-material/CodeRounded';
 import { fromString, serialize } from '../../utils/xml';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 const translations = defineMessages({
   changed: {
@@ -78,7 +80,7 @@ const translations = defineMessages({
 
 interface CompareVersionsProps {
   a: ContentInstance;
-  b: any;
+  b: ContentInstance;
   contentTypeId: string;
   contentTypes: LookupTable<ContentType>;
   compareXml: boolean;
@@ -132,7 +134,7 @@ export function CompareVersions(props: CompareVersionsProps) {
           <ListItemText
             primary={
               <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
-                <AsDayMonthDateTime date={a.dateModified} />
+                <AsDayMonthDateTime date={a.modifiedDate} />
                 <Tooltip title={<FormattedMessage defaultMessage="Edit" />}>
                   <IconButton onClick={() => compareTo(a.versionNumber)} sx={{ ml: 1 }}>
                     <EditRoundedIcon fontSize="small" />
@@ -164,7 +166,7 @@ export function CompareVersions(props: CompareVersionsProps) {
           <ListItemText
             primary={
               <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
-                <AsDayMonthDateTime date={b.dateModified} />
+                <AsDayMonthDateTime date={b.modifiedDate} />
                 <Tooltip title={<FormattedMessage defaultMessage="Edit" />}>
                   <IconButton onClick={() => compareTo(b.versionNumber)} sx={{ ml: 1 }}>
                     <EditRoundedIcon fontSize="small" />
@@ -212,6 +214,7 @@ interface CompareVersionsDetailsContainerProps {
   renderContent: (content) => React.ReactNode;
   noContent?: React.ReactNode;
 }
+
 function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerProps) {
   const {
     contentA,
@@ -266,6 +269,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
       case 'text':
       case 'html':
       case 'image':
+      case 'textarea':
         setUnChanged(contentA === contentB);
         break;
       case 'node-selector':
@@ -291,7 +295,9 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
           borderBottom: '1px solid rgba(0,0,0,0.12)'
         }
       }}
-      TransitionProps={{ mountOnEnter: true }}
+      slotProps={{
+        transition: { mountOnEnter: true }
+      }}
     >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
@@ -325,7 +331,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
         )}
       </AccordionSummary>
       <AccordionDetails>
-        {fieldType === 'text' || fieldType === 'html' ? (
+        {fieldType === 'text' || fieldType === 'textarea' || fieldType === 'html' ? (
           <MonacoWrapper contentA={contentA} contentB={contentB} isHTML={fieldType === 'html'} />
         ) : fieldType === 'node-selector' ? (
           compareXml ? (
@@ -339,7 +345,11 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
             contentB={(contentB ?? []).map((item) => item.key).join('\n')}
           />
         ) : fieldType === 'repeat' ? (
-          <RepeatGroupItems contentA={contentA} contentB={contentB} />
+          compareXml ? (
+            <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isHTML={false} />
+          ) : (
+            <RepeatGroupItems contentA={contentA} contentB={contentB} />
+          )
         ) : (
           <CompareVersionsDetailsContainer
             contentA={contentA}
@@ -356,9 +366,9 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
                   <Typography variant="subtitle2">{content}</Typography>
                 </Box>
               ) : fieldType === 'time' ? (
-                <Tooltip title={content}>
-                  <Typography>{content}</Typography>
-                </Tooltip>
+                <Typography>
+                  {content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
+                </Typography>
               ) : fieldType === 'date-time' ? (
                 <Tooltip title={content}>
                   <Typography>
