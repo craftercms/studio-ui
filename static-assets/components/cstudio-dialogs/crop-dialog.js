@@ -455,8 +455,8 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       if (newFileName) {
         const newFullPath = `${path}/${newFullName}`;
         const createNewNameFile = () => {
-          imageData.renameRelativeUrl = `${imageData.relativeUrl.replace(fileName, newFullName)}`;
-          imageData.renamePreviewUrl = `${imageData.previewUrl.replace(fileName, newFullName)}`;
+          imageData.renameRelativeUrl = imageData.relativeUrl.replace(fileName, newFullName);
+          imageData.renamePreviewUrl = imageData.previewUrl.replace(fileName, newFullName);
           CStudioAuthoring.Service.contentExists(newFullPath, {
             exists: function (exists) {
               if (exists) {
