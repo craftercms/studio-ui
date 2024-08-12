@@ -366,11 +366,19 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       const site = CStudioAuthoringContext.site;
       const canvas = $image.cropper('getCroppedCanvas');
       if (!imageData.meta) {
-        // TODO: check/handle svg mimetype
         // imageData.meta doesn't come at all when coming from the existing images data source
-        imageData.meta = {
-          type: `image/${imageData.fileExtension.toLowerCase()}`
-        };
+        // SVG mime-type is 'image/svg+xml'
+        // for jpg extension, type needs to be 'image/jpeg'
+        const imageDataExt = imageData.fileExtension.toLowerCase();
+        let type = 'image/';
+        if (imageDataExt === 'svg') {
+          type += `${imageDataExt}+xml`;
+        } else if (imageDataExt === 'jpg') {
+          type += 'jpeg';
+        } else {
+          type += imageDataExt;
+        }
+        imageData.meta = { type };
       }
       const isJpg = imageData.meta.type === 'image/jpeg' || imageData.meta.type === 'image/jpg';
       const isPng = imageData.meta.type === 'image/png';
@@ -423,8 +431,6 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
             .subscribe({
               next(response) {
                 if (response.type === 'complete') {
-                  // TODO: remove console.log
-                  console.log(response.payload.body);
                   self.callback.success(response.payload.body);
                   self.cropPopupCancel();
                 }
@@ -449,6 +455,8 @@ CStudioAuthoring.Dialogs.CropDialog = CStudioAuthoring.Dialogs.CropDialog || {
       if (newFileName) {
         const newFullPath = `${path}/${newFullName}`;
         const createNewNameFile = () => {
+          imageData.renameRelativeUrl = imageData.relativeUrl.replace(fileName, newFullName);
+          imageData.renamePreviewUrl = imageData.previewUrl.replace(fileName, newFullName);
           CStudioAuthoring.Service.contentExists(newFullPath, {
             exists: function (exists) {
               if (exists) {
