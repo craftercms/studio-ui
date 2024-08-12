@@ -48,23 +48,19 @@ const configurationMessages = defineMessages({
   }
 });
 
-function handleConfigurationEvent(action: StandardAction): StandardAction[] {
+function handleSystemEvent(action: StandardAction): StandardAction[] {
   if (action.type !== configurationEvent.type) {
     return [];
-  } else {
-    const targetPath = action.payload.targetPath;
-    const formDefRegex = /^\/config\/studio\/content-types\/.*\/form-definition\.xml$/;
-
-    if (targetPath === '/config/studio/ui.xml') {
-      return [fetchSiteUiConfig({ site: action.payload.siteId })];
-    } else if (targetPath === '/config/studio/site-config.xml') {
-      return [fetchSiteConfig()];
-    } else if (formDefRegex.test(targetPath)) {
-      return [emitSystemEvent(contentTypeUpdated())];
-    } else {
-      return [];
-    }
   }
+  const targetPath = action.payload.targetPath;
+  if (targetPath === '/config/studio/ui.xml') {
+    return [fetchSiteUiConfig({ site: action.payload.siteId })];
+  } else if (targetPath === '/config/studio/site-config.xml') {
+    return [fetchSiteConfig()];
+  } else if (/^\/config\/studio\/content-types\/.*\/form-definition\.xml$/.test(targetPath)) {
+    return [contentTypeUpdated()];
+  }
+  return [];
 }
 
 export default [
@@ -121,12 +117,12 @@ export default [
   (action$) =>
     action$.pipe(
       ofType(emitSystemEvent.type),
-      switchMap(({ payload: event }) => handleConfigurationEvent(event))
+      switchMap(({ payload }) => handleSystemEvent(payload))
     ),
   // emitSystemEvents
   (action$: Observable<StandardAction<ReturnType<typeof emitSystemEvents>['payload']>>) =>
     action$.pipe(
       ofType(emitSystemEvents.type),
-      switchMap((action) => action.payload.events.flatMap((eventAction) => handleConfigurationEvent(eventAction)))
+      switchMap((action) => action.payload.events.flatMap((eventAction) => handleSystemEvent(eventAction)))
     )
 ] as CrafterCMSEpic[];
