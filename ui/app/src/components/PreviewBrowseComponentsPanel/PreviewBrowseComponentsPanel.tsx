@@ -41,6 +41,7 @@ import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import ListSubheader from '@mui/material/ListSubheader';
+import Alert from '@mui/material/Alert';
 
 export function PreviewBrowseComponentsPanel() {
   const { classes } = useStyles();
@@ -48,6 +49,7 @@ export function PreviewBrowseComponentsPanel() {
   const siteId = useActiveSiteId();
   const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
   const awaitingGuestCheckIn = nou(allowedTypesData);
+  const contentTypesUpdated = useSelection((state) => state.preview.guest?.contentTypesUpdated);
   const componentsState = useSelection((state) => state.preview.components);
   const [keyword, setKeyword] = useState(componentsState.query.keywords);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
@@ -138,6 +140,11 @@ export function PreviewBrowseComponentsPanel() {
   return (
     <>
       <ErrorBoundary>
+        {contentTypesUpdated && (
+          <Alert severity="warning" variant="outlined" sx={{ border: 0 }}>
+            <FormattedMessage defaultMessage="Content type definitions have changed. Please refresh the preview application." />
+          </Alert>
+        )}
         <div className={classes.search}>
           <SearchBar
             placeholder={formatMessage(translations.filter)}

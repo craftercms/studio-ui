@@ -131,6 +131,7 @@ export function PreviewSearchPanel() {
   const dispatch = useDispatch();
   const editMode = useSelection((state) => state.preview.editMode);
   const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
+  const contentTypesUpdated = useSelection((state) => state.preview.guest?.contentTypesUpdated);
   const awaitingGuestCheckIn = nou(allowedTypesData);
   const contentTypes = useContentTypeList(
     (contentType) => contentType.id !== '/component/level-descriptor' && contentType.type === 'component'
@@ -268,6 +269,11 @@ export function PreviewSearchPanel() {
   return (
     <>
       <div className={classes.searchContainer}>
+        {contentTypesUpdated && (
+          <Alert severity="warning" variant="outlined" sx={{ border: 0 }}>
+            <FormattedMessage defaultMessage="Content type definitions have changed. Please refresh the preview application." />
+          </Alert>
+        )}
         <SearchBar
           keyword={keyword}
           placeholder={formatMessage(translations.previewSearchPanelTitle)}
