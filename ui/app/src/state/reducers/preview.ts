@@ -635,18 +635,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       };
     })
     .addCase(initToolsPanelConfig, (state, { payload }) => {
-      let toolsPanelConfig = {
-        widgets: [
-          {
-            id: 'craftercms.component.EmptyState',
-            uiKey: -1,
-            configuration: {
-              title: messages.noUiConfigMessageTitle,
-              subtitle: messages.noUiConfigMessageSubtitle
-            }
-          }
-        ]
-      };
+      let toolsPanelConfig = { widgets: [] };
       const arrays = ['widgets', 'permittedRoles', 'excludes'];
       const lookupTables = ['fields'];
       const configDOM = fromString(payload.configXml);
@@ -717,7 +706,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       let icePanelConfig = {
         widgets: [
           {
-            id: 'craftercms.component.EmptyState',
+            id: 'craftercms.components.EmptyState',
             uiKey: -1,
             configuration: {
               title: messages.noUiConfigMessageTitle,
