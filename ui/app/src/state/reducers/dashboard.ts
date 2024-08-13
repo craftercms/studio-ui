@@ -40,7 +40,7 @@ const reducer = createReducer<GlobalState['dashboard']>(null, (builder) => {
       let dashboardConfig = {
         widgets: [
           {
-            id: 'craftercms.component.EmptyState',
+            id: 'craftercms.components.EmptyState',
             uiKey: -1,
             configuration: {
               title: messages.noUiConfigMessageTitle,
