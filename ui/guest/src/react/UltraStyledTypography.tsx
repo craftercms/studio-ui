@@ -14,18 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import CrafterCMSNextBridge from './components/CrafterCMSNextBridge';
-import Preview from './pages/Preview';
-import { createCodebaseBridge } from './env/codebase-bridge';
+// Since this typography runs guest-side, there may be all sorts of styles that affect Typography styles.
+// The idea of this component is to be as specific as possible to avoid guest site styles to break ours.
 
-createCodebaseBridge();
+import { styled } from '@mui/material/styles';
+import { Typography } from '@mui/material';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <CrafterCMSNextBridge>
-      <Preview />
-    </CrafterCMSNextBridge>
-  </StrictMode>
-);
+export const UltraStyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  letterSpacing: 'unset',
+  fontSize: theme.typography.fontSize
+}));
+
+export default UltraStyledTypography;

@@ -77,7 +77,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
-import { clearAndListen$ } from '../store/subjects';
+import { clearAndListen$, guestCheckIn$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
@@ -278,7 +278,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // This requires maintenance as key shortcuts evolve/change.
   useHotkeys(
-    'a,r,m,e,p,shift+/,shift,/,shift+e',
+    'a,r,e,m,p,shift+slash,shift+e',
     (e) => {
       post(hotKey({ key: e.key, type: 'keyup', shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, metaKey: e.metaKey }));
     },
@@ -521,6 +521,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       });
 
     post(guestCheckIn({ location, path, site, version: process.env.VERSION }));
+    guestCheckIn$.next(true);
 
     return () => {
       post(guestCheckOut({ path }));
@@ -529,6 +530,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       refs.current.contentReady = false;
       flushRequestedPaths();
       operationsSubscription.unsubscribe();
+      guestCheckIn$.next(false);
     };
   }, [dispatch, path]);
 

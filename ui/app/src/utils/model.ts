@@ -78,7 +78,7 @@ export function isEmbedded(model: ContentInstance): boolean {
   return nou(prop(model, 'path'));
 }
 
-function extractCollectionPiece(model: ContentInstance, fieldId: string, index: string | number) {
+export function extractCollectionPiece(model: ContentInstance, fieldId: string, index: string | number) {
   const indexes = index === '' || nou(index) ? [] : `${index}`.split('.').map((i) => parseInt(i, 10));
   if (indexes.length === 0) {
     return retrieveProperty(model, fieldId);

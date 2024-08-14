@@ -32,14 +32,14 @@ import { StateStylingProps } from '../../models/UiConfig';
 import LookupTable from '../../models/LookupTable';
 import {
   getEditorMode,
+  isAudio,
   isEditableViaFormEditor,
   isImage,
+  isMediaContent,
   isNavigable,
-  isPreviewable,
-  isVideo,
   isPdfDocument,
-  isAudio,
-  isMediaContent
+  isPreviewable,
+  isVideo
 } from '../PathNavigator/utils';
 import ContextMenu, { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import { getNumOfMenuOptionsForItem, lookupItemByPath } from '../../utils/content';
@@ -201,14 +201,11 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   useEffect(() => {
     const subscription = onSearch$.pipe(debounceTime(400)).subscribe(({ keyword, path }) => {
       dispatch(
-        batchActions([
-          pathNavigatorTreeSetKeyword({
-            id,
-            path,
-            keyword
-          }),
-          pathNavigatorTreeBackgroundRefresh({ id })
-        ])
+        pathNavigatorTreeSetKeyword({
+          id,
+          path,
+          keyword
+        })
       );
     });
     return () => {
@@ -334,7 +331,6 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
       );
     }
   };
-
   // endregion
 
   return (

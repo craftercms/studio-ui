@@ -29,6 +29,8 @@ import { crafterConf } from '@craftercms/classes';
 import { fetchIsAuthoring, BaseCrafterConfig } from '@craftercms/ice';
 import { xbLoadedEvent } from './constants';
 import { foo } from './utils/util';
+import { guestCheckIn$ as guestCheckInInternal$ } from './store/subjects';
+import { filter, take } from 'rxjs/operators';
 
 export interface ICEAttributes {
   'data-craftercms-model-path': string;
@@ -39,28 +41,26 @@ export interface ICEAttributes {
   'data-craftercms-type'?: 'collection';
 }
 
-export interface ICEConfig {
-  model: ContentInstance;
+export type ICEConfig = {
+  isAuthoring: boolean;
   fieldId?: string;
   index?: string | number;
   label?: string;
-  isAuthoring: boolean;
-}
+  model?: ContentInstance;
+  modelId?: string;
+  path?: string;
+} & ({ model: ContentInstance } | { modelId: string; path: string });
 
 export function getICEAttributes(config: ICEConfig): ICEAttributes {
-  let { model, fieldId, index, label, isAuthoring = true } = config;
+  let { model, modelId, path, fieldId, index, label, isAuthoring = true } = config;
   let attributes = {} as ICEAttributes;
 
   if (!isAuthoring) {
     return attributes;
   }
 
-  if (label === null || label === undefined) {
-    label = model?.craftercms.label || '';
-  }
-
-  attributes['data-craftercms-model-id'] = model.craftercms.id;
-  attributes['data-craftercms-model-path'] = model.craftercms.path;
+  attributes['data-craftercms-model-id'] = model?.craftercms.id ?? modelId;
+  attributes['data-craftercms-model-path'] = model?.craftercms.path ?? path;
   nnou(fieldId) && (attributes['data-craftercms-field-id'] = fieldId);
   nnou(index) && (attributes['data-craftercms-index'] = index);
   nnou(label) && (attributes['data-craftercms-label'] = label);
@@ -103,6 +103,36 @@ export function initExperienceBuilder(props: ExperienceBuilderProps) {
 /** @deprecated Use `initExperienceBuilder` instead. */
 export const initInContextEditing = initExperienceBuilder;
 
+export const guestCheckIn$ = guestCheckInInternal$.pipe(
+  filter((checkedIn) => checkedIn),
+  take(1)
+);
+
 export { elementRegistry, iceRegistry, contentController, fromTopic, post };
 
 typeof document !== 'undefined' && setTimeout(() => document?.dispatchEvent(new CustomEvent(xbLoadedEvent)));
+
+export function registerElements(container: HTMLElement) {
+  if (container) {
+    container.querySelectorAll('[data-craftercms-model-id]').forEach((element) => {
+      elementRegistry.register({
+        element: element as HTMLElement,
+        path: element.getAttribute('data-craftercms-model-path'),
+        modelId: element.getAttribute('data-craftercms-model-id'),
+        fieldId: element.getAttribute('data-craftercms-field-id'),
+        index: element.getAttribute('data-craftercms-index'),
+        label: element.getAttribute('data-craftercms-label')
+      });
+    });
+  }
+}
+
+export function deregisterElements(container: HTMLElement) {
+  if (container) {
+    const elements = container.querySelectorAll('[data-craftercms-model-id]');
+    elements.forEach((element) => {
+      let record = elementRegistry.fromElement(element);
+      elementRegistry.deregister(record?.id);
+    });
+  }
+}

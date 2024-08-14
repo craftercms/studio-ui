@@ -19,6 +19,12 @@ import { filter, ignoreElements, map, mergeMap, switchMap, tap, throttleTime, wi
 import { CrafterCMSEpic } from '../store';
 import {
   pathNavigatorTreeBackgroundRefresh,
+  pathNavigatorTreeBulkFetchPathChildren,
+  pathNavigatorTreeBulkFetchPathChildrenComplete,
+  pathNavigatorTreeBulkFetchPathChildrenFailed,
+  pathNavigatorTreeBulkRefresh,
+  pathNavigatorTreeBulkRestoreComplete,
+  pathNavigatorTreeBulkRestoreFailed,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -36,14 +42,8 @@ import {
   pathNavigatorTreeSetKeyword,
   pathNavigatorTreeToggleCollapsed,
   pathNavigatorTreeUpdate,
-  pathNavigatorTreeBulkRefresh,
-  pathNavigatorTreeBulkFetchPathChildren,
-  pathNavigatorTreeBulkFetchPathChildrenComplete,
-  pathNavigatorTreeBulkFetchPathChildrenFailed,
-  pathNavigatorTreeBulkRestoreComplete,
-  pathNavigatorTreeBulkRestoreFailed,
-  PathNavTreeFetchPathChildrenPayload,
-  PathNavTreeBulkFetchPathChildrenPayload
+  PathNavTreeBulkFetchPathChildrenPayload,
+  PathNavTreeFetchPathChildrenPayload
 } from '../actions/pathNavigatorTree';
 import {
   checkPathExistence,
@@ -65,9 +65,9 @@ import {
 } from '../../utils/path';
 import { batchActions } from '../actions/misc';
 import {
-  deleteContentEvents,
   contentEvent,
   deleteContentEvent,
+  deleteContentEvents,
   moveContentEvent,
   pluginInstalled,
   publishEvent,
@@ -181,6 +181,7 @@ export default [
       })
     ),
   // endregion
+
   // region pathNavigatorTreeBulkBackgroundRefresh
   (action$, state$) =>
     action$.pipe(

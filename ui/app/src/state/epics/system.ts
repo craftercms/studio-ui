@@ -84,6 +84,7 @@ import StandardAction from '../../models/StandardAction';
 import { ProjectLifecycleEvent } from '../../models/ProjectLifecycleEvent';
 import { isDashboardAppUrl, isPreviewAppUrl, isProjectToolsAppUrl } from '../../utils/system';
 import { GlobalRoutes } from '../../env/routes';
+import { previewSwitch } from '../../services/security';
 
 const msgs = defineMessages({
   siteSwitchedOnAnotherTab: {
@@ -512,7 +513,10 @@ const systemEpics: CrafterCMSEpic[] = [
         const newProject = sites[newProjectId].name;
         createCustomDocumentEventListener(customEventId, ({ choice }) => {
           if (choice === 'ok') {
+            // Continue on current site (since it was changed on another tab we need to call previewSwitch, to re-set the
+            // current site)
             setSiteCookie(currentProjectId);
+            previewSwitch().subscribe();
           } else {
             setSiteCookie(newProjectId);
             setTimeout(() => {

@@ -33,6 +33,7 @@ import { useCurrentPreviewItem } from '../../hooks/useCurrentPreviewItem';
 import { getStoredICEToolsPanelPage, getStoredICEToolsPanelWidth } from '../../utils/state';
 import useActiveSite from '../../hooks/useActiveSite';
 import Alert from '@mui/material/Alert';
+import { blockPreviewIframePointerEvents } from '../Preview/utils';
 
 export function ICEToolsPanel() {
   const dispatch = useDispatch();
@@ -45,6 +46,7 @@ export function ICEToolsPanel() {
   const isOpen = editMode;
   const isLockedForMe = Boolean(item && isItemLockedForMe(item, username));
   const isStale = guest?.mainModelModifier ? guest.mainModelModifier.username !== username : false;
+  const previewIframe = document.getElementById('crafterCMSPreviewIframe');
 
   const onWidthChange = (width) => {
     dispatch(updateIcePanelWidth({ width }));
@@ -66,6 +68,8 @@ export function ICEToolsPanel() {
       width={width}
       maxWidth={windowSize}
       onWidthChange={onWidthChange}
+      onResizeStart={() => blockPreviewIframePointerEvents(true)}
+      onResizeStop={() => blockPreviewIframePointerEvents(false)}
       styles={{
         resizeHandle: { backgroundColor: 'transparent' },
         drawerPaperBelowToolbar: { top: '64px' }
