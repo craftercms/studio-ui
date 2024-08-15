@@ -42,8 +42,8 @@ import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   previewComponentsPanelTitle: {
-    id: 'previewComponentsPanel.title',
-    defaultMessage: 'Add Components'
+    id: 'previewComponentsPanelTitle',
+    defaultMessage: 'Create Content'
   },
   browse: {
     id: 'previewComponentsPanel.browse',
@@ -79,6 +79,7 @@ export function PreviewComponentsPanel() {
               contentType.id.toLowerCase().includes(lowerCaseKeyword))
         )
         .map(([, contentType]) => contentType)
+        .sort((a: ContentType, b: ContentType) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))
     : null;
   const { formatMessage } = useIntl();
   return (
@@ -144,7 +145,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
         setContentTypeFilter(menuContext.contentType.id),
         pushIcePanelPage(
           createToolsPanelPage(
-            { id: 'previewBrowseComponentsPanel.title' },
+            { id: 'previewBrowseComponentsPanelTitle' },
             [createWidgetDescriptor({ id: 'craftercms.components.PreviewBrowseComponentsPanel' })],
             'icePanel'
           )
@@ -172,7 +173,7 @@ export const ComponentsPanelUI: React.FC<ComponentsPanelUIProps> = (props) => {
     dispatch(
       pushIcePanelPage(
         createToolsPanelPage(
-          { id: 'previewDropTargetsPanel.title', defaultMessage: 'Component Drop Targets' },
+          { id: 'previewDropTargetsPanelTitle', defaultMessage: 'Drop Targets' },
           [createWidgetDescriptor({ id: 'craftercms.components.PreviewDropTargetsPanel' })],
           'icePanel'
         )
