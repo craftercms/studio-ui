@@ -267,3 +267,11 @@ export const replaceAccentedVowels = (input) => {
   };
   return input.replace(/[áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛäëïöüÄËÏÖÜ]/g, (match) => accentsMap[match]);
 };
+
+export function isPath(str: string): boolean {
+  return /^\/(?:[^/]+\/)*[^/]*$/.test(str);
+}
+
+export function isUUID(str: string): boolean {
+  return /^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(str);
+}
