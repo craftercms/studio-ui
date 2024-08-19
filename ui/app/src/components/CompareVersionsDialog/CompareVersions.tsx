@@ -49,11 +49,13 @@ import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import Button from '@mui/material/Button';
 import useSpreadState from '../../hooks/useSpreadState';
 import { toColor } from '../../utils/string';
-import { PartialSxRecord } from '../../models';
+import { ItemHistoryEntry, PartialSxRecord } from '../../models';
 import CodeRounded from '@mui/icons-material/CodeRounded';
 import { fromString, serialize } from '../../utils/xml';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CompareArrowsRoundedIcon from '@mui/icons-material/CompareArrowsRounded';
+import ArrowBackIosRounded from '@mui/icons-material/ArrowBackIosRounded';
 
 const translations = defineMessages({
   changed: {
@@ -78,9 +80,14 @@ const translations = defineMessages({
   }
 });
 
+interface CompareVersionsItem extends ItemHistoryEntry {
+  xml: string;
+  content: ContentInstance;
+}
+
 interface CompareVersionsProps {
-  a: ContentInstance;
-  b: ContentInstance;
+  a: CompareVersionsItem;
+  b: CompareVersionsItem;
   contentTypeId: string;
   contentTypes: LookupTable<ContentType>;
   compareXml: boolean;
@@ -245,8 +252,14 @@ function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerP
 }
 
 interface CompareFieldPanelProps {
-  a: ContentInstance;
-  b: ContentInstance;
+  a: {
+    xml: string;
+    content: ContentInstance;
+  };
+  b: {
+    xml: string;
+    content: ContentInstance;
+  };
   field: ContentTypeField;
 }
 
@@ -256,13 +269,12 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
   const fieldType = field.type;
   const locale = useLocale();
   const [compareXml, setCompareXml] = useState(false);
-  const aFieldDoc = fromString(a.xml).querySelector(`page > ${field.id}`);
+  const aFieldDoc = fromString(a.xml).querySelector(`page > ${field.id}`); // TODO: check this query selector as it may be incorrect (what about components for example?)
   const bFieldDoc = fromString(b.xml).querySelector(`page > ${field.id}`);
   const aFieldXml = aFieldDoc ? serialize(aFieldDoc) : '';
   const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
-
-  let contentA = a.content[field.id];
-  let contentB = b.content[field.id];
+  const contentA = a.content[field.id];
+  const contentB = b.content[field.id];
 
   useMount(() => {
     switch (fieldType) {
@@ -275,6 +287,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
       case 'node-selector':
       case 'checkbox-group':
       case 'repeat':
+        // TODO: stringify doesn't ensure order
         setUnChanged(JSON.stringify(contentA ?? '') === JSON.stringify(contentB ?? ''));
         break;
       default:
@@ -348,7 +361,13 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
           compareXml ? (
             <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isHTML={false} />
           ) : (
-            <RepeatGroupItems contentA={contentA} contentB={contentB} />
+            <RepeatGroupItems
+              contentA={contentA}
+              contentB={contentB}
+              aXml={aFieldXml}
+              bXml={bFieldXml}
+              fields={field.fields}
+            />
           )
         ) : (
           <CompareVersionsDetailsContainer
@@ -362,7 +381,7 @@ function CompareFieldPanel(props: CompareFieldPanelProps) {
                 </Box>
               ) : fieldType === 'video-picker' ? (
                 <Box sx={{ textAlign: 'center' }}>
-                  <AsyncVideoPlayer playerOptions={{ src: content, controls: true }} />
+                  <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
                   <Typography variant="subtitle2">{content}</Typography>
                 </Box>
               ) : fieldType === 'time' ? (
@@ -437,8 +456,8 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   useEffect(() => {
     setDiff(
       diffArrays(
-        (contentA ?? []).map((item, index) => item.craftercms?.id ?? item.key),
-        (contentB ?? []).map((item, index) => item.craftercms?.id ?? item.key)
+        (contentA ?? []).map((item) => item.craftercms?.id ?? item.key),
+        (contentB ?? []).map((item) => item.craftercms?.id ?? item.key)
       )
     );
   }, [contentA, contentB]);
@@ -513,24 +532,34 @@ function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
 }
 
 interface RepeatGroupItemsProps {
-  contentA: any[];
-  contentB: any[];
+  contentA: ContentInstance[];
+  contentB: ContentInstance[];
+  aXml: string;
+  bXml: string;
+  fields: LookupTable<ContentTypeField>;
 }
 
 function RepeatGroupItems(props: RepeatGroupItemsProps) {
-  const { contentA, contentB } = props;
+  const { contentA, contentB, aXml, bXml, fields } = props;
   const [diff, setDiff] = useState(null);
+  const [repDiff, setRepDiff] = useState([]);
   const [itemsById, setItemsById] = useSpreadState({});
+  const [repItemsCompare, setRepItemsCompare] = useSpreadState({
+    a: null,
+    b: null
+  });
+  const showRepItemsCompare = repItemsCompare.a?.content && repItemsCompare.b?.content;
+  const [compareRepItemVersionsMode, setCompareRepItemVersionsMode] = useState(false);
 
   useEffect(() => {
     setDiff(
       diffArrays(
-        (contentA ?? []).map((item, index) => {
+        (contentA ?? []).map((item) => {
           const hash = toColor(JSON.stringify(item));
           setItemsById({ [hash]: item });
           return hash;
         }),
-        (contentB ?? []).map((item, index) => {
+        (contentB ?? []).map((item) => {
           const hash = toColor(JSON.stringify(item));
           setItemsById({ [hash]: item });
           return hash;
@@ -538,6 +567,43 @@ function RepeatGroupItems(props: RepeatGroupItemsProps) {
       )
     );
   }, [contentA, contentB, setItemsById]);
+
+  useEffect(() => {
+    const contentALength = (contentA ?? []).length;
+    const contentBLength = (contentB ?? []).length;
+    const maxLength = contentALength > contentBLength ? contentALength : contentBLength;
+    const diffArray = [];
+
+    for (let x = 0; x < maxLength; x++) {
+      const itemA = contentA[x] ? JSON.stringify(contentA[x]) : null;
+      const itemB = contentB[x] ? JSON.stringify(contentB[x]) : null;
+
+      if (itemA && itemB) {
+        const result = itemA === itemB ? 'unchanged' : 'changed';
+        diffArray.push({ a: result, b: result });
+      } else {
+        diffArray.push({ a: itemA ? 'new' : null, b: itemB ? 'new' : null });
+      }
+    }
+    setRepDiff(diffArray);
+  }, [contentA, contentB, setRepDiff]);
+
+  const onSetRepItemsCompare = (event, side, index) => {
+    const content = side === 'a' ? contentA : contentB;
+    const xml = side === 'a' ? aXml : bXml;
+    // When selecting an item on the rep-group diff view, we need to calculate its xml (so the items can be compared
+    // using the CompareFieldPanel).
+    const doc = fromString(xml).querySelectorAll('item')[index];
+    const itemXml = doc ? serialize(doc) : '';
+    const item = content[index];
+    const isChecked = event.target.checked;
+    setRepItemsCompare({
+      [side]: {
+        content: isChecked ? item : null,
+        xml: isChecked ? itemXml : null
+      }
+    });
+  };
 
   return (
     <Box
@@ -548,20 +614,146 @@ function RepeatGroupItems(props: RepeatGroupItemsProps) {
         width: '100%'
       }}
     >
-      {diff?.length ? (
-        diff.map((part) =>
-          part.value.map((id, index) => (
-            <Box key={`${id}-${index}`}>
-              <Typography>
-                {`Item ${JSON.stringify(itemsById[id])}`} - {getItemDiffStatus(part)}
-              </Typography>
-            </Box>
-          ))
-        )
+      {compareRepItemVersionsMode ? (
+        <>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIosRounded />}
+            sx={{ mb: 2 }}
+            onClick={() => setCompareRepItemVersionsMode(false)}
+          >
+            <FormattedMessage defaultMessage="Go back" />
+          </Button>
+          <CompareRepGroupItemVersions a={repItemsCompare.a} b={repItemsCompare.b} fields={fields} />
+        </>
       ) : (
-        <></>
+        <>
+          {showRepItemsCompare && (
+            <Button
+              variant="outlined"
+              startIcon={<CompareArrowsRoundedIcon />}
+              sx={{ mb: 2 }}
+              onClick={() => {
+                setCompareRepItemVersionsMode(true);
+                console.log('repItemsCompare', repItemsCompare);
+              }}
+            >
+              <FormattedMessage defaultMessage="Compare" />
+            </Button>
+          )}
+          {repDiff.length &&
+            repDiff.map((item, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: '10px',
+                  marginBottom: '12px',
+                  '& .rep-group-compare': {
+                    padding: '4px 15px',
+                    borderRadius: '10px',
+                    width: '100%',
+                    '&.unchanged': {
+                      color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
+                    },
+                    '&.new': {
+                      color: palette.green.shade,
+                      backgroundColor: palette.green.highlight,
+                      marginLeft: 'auto'
+                    },
+                    '&.changed': {
+                      color: palette.yellow.shade,
+                      backgroundColor: palette.yellow.highlight
+                    }
+                  }
+                }}
+              >
+                {item.a === 'unchanged' ? (
+                  <Box className="rep-group-compare unchanged">
+                    <Typography>
+                      <FormattedMessage defaultMessage="Item {index} - Unchanged" values={{ index }} />
+                    </Typography>
+                  </Box>
+                ) : item.a === 'changed' ? (
+                  <>
+                    <Box className="rep-group-compare changed">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            sx={{ color: 'inherit', p: 1 }}
+                            checked={repItemsCompare.a?.content === contentA[index]}
+                            onChange={(e) => onSetRepItemsCompare(e, 'a', index)}
+                          />
+                        }
+                        label={<FormattedMessage defaultMessage="Item {index} - Changed" values={{ index }} />}
+                      />
+                    </Box>
+                    <Box className="rep-group-compare changed">
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            sx={{ color: 'inherit', p: 1 }}
+                            checked={repItemsCompare.b?.content === contentB[index]}
+                            onChange={(e) => onSetRepItemsCompare(e, 'b', index)}
+                          />
+                        }
+                        label={<FormattedMessage defaultMessage="Item {index} - Changed" values={{ index }} />}
+                      />
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    <Box className={`rep-group-compare ${item.a && 'new'}`}>
+                      {item.a === 'new' && (
+                        <>
+                          <FormControlLabel
+                            control={<Checkbox size="small" color="default" sx={{ padding: '4px ' }} />}
+                            label={<FormattedMessage defaultMessage="Item {index} - New" values={{ index }} />}
+                          />
+                        </>
+                      )}
+                    </Box>
+                    <Box className={`rep-group-compare ${item.b && 'new'}`}>
+                      {item.b === 'new' && (
+                        <>
+                          <FormControlLabel
+                            control={<Checkbox size="small" color="default" sx={{ padding: '4px ' }} />}
+                            label={<FormattedMessage defaultMessage="Item {index} - New" values={{ index }} />}
+                          />
+                        </>
+                      )}
+                    </Box>
+                  </>
+                )}
+              </Box>
+            ))}
+        </>
       )}
     </Box>
+  );
+}
+
+interface CompareRepGroupItemVersionsProps {
+  a: CompareVersionsItem;
+  b: CompareVersionsItem;
+  fields: LookupTable<ContentTypeField>;
+}
+
+function CompareRepGroupItemVersions(props: CompareRepGroupItemVersionsProps) {
+  const { a, b, fields } = props;
+
+  return (
+    <>
+      <Typography>Comparing rep-group items</Typography>
+      {Object.values(fields).map((field) => (
+        <CompareFieldPanel a={a} b={b} field={field} key={field.id} />
+      ))}
+    </>
   );
 }
 

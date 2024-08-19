@@ -101,8 +101,8 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         error={error}
         disableItemSwitching={disableItemSwitching}
         contentTypesBranch={contentTypesBranch}
-        selectedA={selectedA}
-        selectedB={selectedB}
+        selectedA={selectedB}
+        selectedB={selectedA}
         compareXml={compareXml}
       />
     </EnhancedDialog>

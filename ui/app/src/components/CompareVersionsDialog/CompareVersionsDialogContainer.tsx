@@ -114,7 +114,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       >
         {!compareMode && (
           <SingleItemSelector
-            sxs={{ root: { marginBottom: '10px' } }}
+            // sxs={{ root: { marginBottom: '10px' } }}
             label={<FormattedMessage id="words.item" defaultMessage="Item" />}
             disabled={disableItemSwitching}
             open={openSelector}
