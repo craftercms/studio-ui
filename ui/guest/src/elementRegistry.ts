@@ -79,7 +79,10 @@ export function setLabel(record: ElementRecord): void {
                   `${component.craftercms.label} (${getCachedContentType(component.craftercms.contentTypeId).name})`
                 );
               } else {
-                labels.push(`${field.name}`);
+                // When there's a symmetric combination (between fieldId and index), the label is the field name plus the index.
+                labels.push(
+                  `${field.name} item # ${parseInt(isSimple(index) ? String(index) : popPiece(String(index))) + 1}`
+                );
               }
             } else {
               labels.push(`${field.name}`);
