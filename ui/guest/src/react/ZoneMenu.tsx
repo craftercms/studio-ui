@@ -141,7 +141,8 @@ export function ZoneMenu(props: ZoneMenuProps) {
 
   // Use componentId to find the container modelId. If not a component, is unlikely to have a container, but in
   // cases where a page is being referenced by another model, we fall back to modelId.
-  const containerModelId = findParentModelId(componentId ?? modelId, modelHierarchyMap, models);
+  // If the current modelId is not being referenced by any other model (no parentModelId found), we use modelId.
+  const containerModelId = findParentModelId(componentId ?? modelId, modelHierarchyMap, models) ?? modelId;
   const containerItemAvailableActions = models[containerModelId]
     ? getCachedSandboxItem(models[containerModelId].craftercms.path).availableActionsMap
     : null;
@@ -178,9 +179,18 @@ export function ZoneMenu(props: ZoneMenuProps) {
         permissions.includes('content_create') &&
         (maxValidation ? maxValidation > numOfItemsInContainerCollection : true);
 
-      actions.isTrashable = trashableValidation && recordType !== 'field' && recordType !== 'page';
-      actions.showDuplicate =
-        duplicateValidation && !isItemFile && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
+      // The trash/duplicate are not applicable outside of item selector or repeat group type fields:
+      if (
+        // Record is an item, then options apply.
+        ['node-selector-item', 'repeat-item'].includes(recordType) ||
+        // A component has been directly selected (as opposed to an item selector item that was translated to a component):
+        // must determine if it is part of an item selector and not a standalone model being rendered on to the page.
+        Boolean(recordType === 'component' && nodeSelectorItemRecord)
+      ) {
+        actions.isTrashable = trashableValidation && recordType !== 'field' && recordType !== 'page';
+        actions.showDuplicate =
+          duplicateValidation && !isItemFile && ['repeat-item', 'component', 'node-selector-item'].includes(recordType);
+      }
     }
 
     return actions;
