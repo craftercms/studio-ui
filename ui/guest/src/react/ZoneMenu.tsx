@@ -143,7 +143,6 @@ export function ZoneMenu(props: ZoneMenuProps) {
   // cases where a page is being referenced by another model, we fall back to modelId.
   // If the current modelId is not being referenced by any other model (no parentModelId found), we use modelId.
   const containerModelId = findParentModelId(componentId ?? modelId, modelHierarchyMap, models) ?? modelId;
-  // const containerModelId = findParentModelId(componentId ?? modelId, modelHierarchyMap, models);
   const containerItemAvailableActions = models[containerModelId]
     ? getCachedSandboxItem(models[containerModelId].craftercms.path).availableActionsMap
     : null;
@@ -180,11 +179,12 @@ export function ZoneMenu(props: ZoneMenuProps) {
         permissions.includes('content_create') &&
         (maxValidation ? maxValidation > numOfItemsInContainerCollection : true);
 
-      // When dealing with 'component' as the recordType, it may happen that the field is rendered as a part of a
-      // collection and also as a separate component. We need to check that current item belongs to a collection in
-      // order to add the trashable and duplicate actions.
+      // The trash/duplicate are not applicable outside of item selector or repeat group type fields:
       if (
+        // Record is an item, then options apply.
         ['node-selector-item', 'repeat-item'].includes(recordType) ||
+        // A component has been directly selected (as opposed to an item selector item that was translated to a component):
+        // must determine if it is part of an item selector and not a standalone model being rendered on to the page.
         Boolean(recordType === 'component' && nodeSelectorItemRecord)
       ) {
         actions.isTrashable = trashableValidation && recordType !== 'field' && recordType !== 'page';
