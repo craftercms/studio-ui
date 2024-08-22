@@ -44,11 +44,13 @@ export type ItemMegaMenuProps = PropsWithChildren<
   ItemMegaMenuBaseProps & {
     anchorEl?: PopoverProps['anchorEl'];
     onClose?(): void;
+    onClosed?(): void;
   }
 >;
 
 export interface ItemMegaMenuStateProps extends ItemMegaMenuBaseProps {
   onClose?: StandardAction;
+  onClosed?: StandardAction;
 }
 
 export function ItemMegaMenu(props: ItemMegaMenuProps) {
@@ -56,6 +58,7 @@ export function ItemMegaMenu(props: ItemMegaMenuProps) {
     open,
     path,
     onClose,
+    onClosed,
     anchorEl,
     anchorOrigin,
     anchorReference = 'anchorEl',
@@ -87,7 +90,6 @@ export function ItemMegaMenu(props: ItemMegaMenuProps) {
   const options = generateSingleItemOptions(item, formatMessage, { hasClipboard });
   const editorialOptions = options[0];
   const nonEditorialOptions = options.slice(1);
-
   return (
     <ItemMegaMenuUI
       open={open}
@@ -104,6 +106,7 @@ export function ItemMegaMenu(props: ItemMegaMenuProps) {
       anchorPosition={anchorPosition}
       locale={locale}
       onClose={onClose}
+      onClosed={onClosed}
       onMenuItemClicked={onMenuItemClicked}
     />
   );

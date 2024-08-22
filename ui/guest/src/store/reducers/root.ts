@@ -801,7 +801,7 @@ const reducer = createReducer(initialState, {
     } else {
       delete nextState.lockedPaths[payload.targetPath];
     }
-    return state;
+    return nextState;
   },
   // endregion
   // region setLockedItems
