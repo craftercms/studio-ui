@@ -214,15 +214,16 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                 Locked by {lockInfo.username}
               </Typography>
             )}
+            {!isEditable && !isLockedItem && (
+              <Typography noWrap variant="body2" component="div">
+                {/* TODO: i18n */}
+                Not editable.
+              </Typography>
+            )}
             {isStale && (
               <Typography noWrap variant="body2" component="div">
                 {/* TODO: i18n */}
                 Item was modified. Refresh to enable editing.
-              </Typography>
-            )}
-            {!isEditable && !isLockedItem && (
-              <Typography noWrap variant="body2" component="div">
-                Item is not editable.
               </Typography>
             )}
             <div>{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}</div>
