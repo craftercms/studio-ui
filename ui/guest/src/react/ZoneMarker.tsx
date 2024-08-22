@@ -217,7 +217,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
             {!isEditable && !isLockedItem && (
               <Typography noWrap variant="body2" component="div">
                 {/* TODO: i18n */}
-                Not editable.
+                Not editable
               </Typography>
             )}
             {isStale && (
