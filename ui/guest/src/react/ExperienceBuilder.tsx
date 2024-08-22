@@ -193,16 +193,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           if (nullOrUndefined(record)) {
             console.error('[Guest] No record found for dispatcher element');
           } else {
-            if (
-              !isEditActionAvailable({
-                record,
-                models: getCachedModels(),
-                sandboxItemsByPath: getCachedSandboxItems(),
-                parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
-              })
-            ) {
-              return false;
-            }
             if (refs.current.keysPressed.z && type === 'click') {
               return false;
             }
@@ -272,6 +262,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     }
   }, [authoringBase, hasHost, dispatch]);
 
+  // TODO: update overrides with inactive styles
   const sxStylesConfig = useMemo(() => deepmerge(styleSxDefaults, sxOverrides), [sxOverrides]);
 
   // region Hotkeys
@@ -650,6 +641,12 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const lockInfo = isLocked ? state.lockedPaths[elementPath]?.user : null;
               const iceRecord = getById(elementRecord.iceIds[0]);
               const field = iceRecord.recordType === 'field' ? getReferentialEntries(iceRecord).field : undefined;
+              const isEditable = isEditActionAvailable({
+                record: elementRecord,
+                models: getCachedModels(),
+                sandboxItemsByPath: getCachedSandboxItems(),
+                parentModelId: getParentModelId(elementRecord.modelId, getCachedModels(), modelHierarchyMap)
+              });
               return (
                 <ZoneMarker
                   key={highlight.id}
@@ -658,6 +655,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                   inherited={highlight.inherited}
                   lockInfo={lockInfo}
                   isStale={isExternallyModified}
+                  isEditable={isEditable}
                   field={field}
                   onPopperClick={
                     isMoveMode && isFieldSelectedMode
@@ -687,10 +685,12 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                         : sxStylesConfig.zoneMarker.selectModeHighlight,
                       { clone: true }
                     ),
-                    hasValidations || isLocked || isExternallyModified
+                    hasValidations || isLocked || isExternallyModified || !isEditable
                       ? hasFailedRequired || isExternallyModified
                         ? sxStylesConfig.zoneMarker.errorHighlight
-                        : sxStylesConfig.zoneMarker.warnHighlight
+                        : isLocked
+                          ? sxStylesConfig.zoneMarker.warnHighlight
+                          : sxStylesConfig.zoneMarker.disabledHighlight
                       : null,
                     { clone: true }
                   )}

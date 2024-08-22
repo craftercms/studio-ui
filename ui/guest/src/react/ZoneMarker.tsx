@@ -57,6 +57,7 @@ export interface ZoneMarkerProps {
   menuItems?: ReactNode;
   lockInfo?: Person;
   isStale?: boolean;
+  isEditable: boolean;
   onPopperClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   // TODO: Receive zoneType and abstract icon display here?
   // zoneType: 'component' | 'page' | 'field';
@@ -118,6 +119,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
     onPopperClick,
     lockInfo = null,
     isStale = false,
+    isEditable,
     field
   } = props;
   const isLockedItem = Boolean(lockInfo);
@@ -216,6 +218,11 @@ export function ZoneMarker(props: ZoneMarkerProps) {
               <Typography noWrap variant="body2" component="div">
                 {/* TODO: i18n */}
                 Item was modified. Refresh to enable editing.
+              </Typography>
+            )}
+            {!isEditable && !isLockedItem && (
+              <Typography noWrap variant="body2" component="div">
+                Item is not editable.
               </Typography>
             )}
             <div>{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}</div>

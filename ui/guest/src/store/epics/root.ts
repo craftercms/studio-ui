@@ -27,7 +27,7 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import { not } from '../../utils/util';
+import { isEditActionAvailable, not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
 import { getById, getReferentialEntries, isTypeAcceptedAsByField } from '../../iceRegistry';
@@ -39,6 +39,7 @@ import {
   getCachedModels,
   getCachedModelsByPath,
   getCachedSandboxItem,
+  getCachedSandboxItems,
   getModelIdFromInheritedField,
   isInheritedField,
   modelHierarchyMap
@@ -518,7 +519,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       switchMap(([action, state]: [action: GuestStandardAction, state: GuestState]) => {
         const { record, event } = action.payload;
         const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
-        if (isLocked || isExternallyModified) {
+        const isEditable = isEditActionAvailable({
+          record,
+          models: getCachedModels(),
+          sandboxItemsByPath: getCachedSandboxItems(),
+          parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
+        });
+        if (isLocked || isExternallyModified || !isEditable) {
           return NEVER;
         } else if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
           let selected = {

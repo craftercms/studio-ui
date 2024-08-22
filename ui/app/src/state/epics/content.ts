@@ -103,7 +103,7 @@ import StandardAction from '../../models/StandardAction';
 import { asArray } from '../../utils/array';
 import { AjaxError } from 'rxjs/ajax';
 import { showErrorDialog } from '../reducers/dialogs/error';
-import { dissociateTemplate, updateFieldValueOperationComplete } from '../actions/preview';
+import { dissociateTemplate } from '../actions/preview';
 import { isBlank } from '../../utils/string';
 import SocketEvent, { MoveContentEventPayload } from '../../models/SocketEvent';
 
@@ -597,7 +597,7 @@ const content: CrafterCMSEpic[] = [
       switchMap(([{ payload }, state]) =>
         fetchSandboxItemService(state.sites.active, payload.targetPath).pipe(
           tap((item) => {
-            getHostToGuestBus().next(updateFieldValueOperationComplete({ item }));
+            getHostToGuestBus().next(fetchSandboxItemComplete({ item }));
           }),
           map((item) => fetchSandboxItemComplete({ item })),
           catchAjaxError(fetchSandboxItemFailed)
