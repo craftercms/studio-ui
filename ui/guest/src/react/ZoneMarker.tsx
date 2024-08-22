@@ -218,7 +218,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                 Item was modified. Refresh to enable editing.
               </Typography>
             )}
-            <div>{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}</div>
+            {menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}
           </Paper>
         </Popper>
       )}
