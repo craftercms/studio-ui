@@ -262,7 +262,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
     }
   }, [authoringBase, hasHost, dispatch]);
 
-  // TODO: update overrides with inactive styles
   const sxStylesConfig = useMemo(() => deepmerge(styleSxDefaults, sxOverrides), [sxOverrides]);
 
   // region Hotkeys
@@ -647,6 +646,18 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                 sandboxItemsByPath: getCachedSandboxItems(),
                 parentModelId: getParentModelId(elementRecord.modelId, getCachedModels(), modelHierarchyMap)
               });
+              // Styles for ZoneMarker that are not move or select mode.
+              let zoneMarkerAltModesStyles = null;
+              if (hasValidations || isLocked || isExternallyModified || !isEditable) {
+                if (hasFailedRequired || isExternallyModified) {
+                  zoneMarkerAltModesStyles = sxStylesConfig.zoneMarker.errorHighlight;
+                } else if (!isEditable && !isLocked) {
+                  zoneMarkerAltModesStyles = sxStylesConfig.zoneMarker.disabledHighlight;
+                } else {
+                  zoneMarkerAltModesStyles = sxStylesConfig.zoneMarker.warnHighlight;
+                }
+              }
+
               return (
                 <ZoneMarker
                   key={highlight.id}
@@ -685,13 +696,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                         : sxStylesConfig.zoneMarker.selectModeHighlight,
                       { clone: true }
                     ),
-                    hasValidations || isLocked || isExternallyModified || !isEditable
-                      ? hasFailedRequired || isExternallyModified
-                        ? sxStylesConfig.zoneMarker.errorHighlight
-                        : isLocked
-                          ? sxStylesConfig.zoneMarker.warnHighlight
-                          : sxStylesConfig.zoneMarker.disabledHighlight
-                      : null,
+                    zoneMarkerAltModesStyles,
                     { clone: true }
                   )}
                 />
