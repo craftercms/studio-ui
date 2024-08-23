@@ -24,7 +24,8 @@ import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import GroovyIcon from '@craftercms/studio-ui/icons/Groovy';
 import FreemarkerIcon from '@craftercms/studio-ui/icons/Freemarker';
 import UltraStyledIconButton from './UltraStyledIconButton';
-import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import MoreRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import {
@@ -59,6 +60,9 @@ import { beforeWrite$ } from '../store/util';
 import { useStore } from './GuestContext';
 import UltraStyledTypography from './UltraStyledTypography';
 import UltraStyledTooltip from './UltraStyledTooltip';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import { showItemMegaMenu } from '@craftercms/studio-ui/state/actions/dialogs';
 
 export interface ZoneMenuProps {
   record: ElementRecord;
@@ -131,9 +135,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
-
-  const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
-  const collectionContainsFiles = collection ? collection.some((item) => item.hasOwnProperty('key')) : false;
+  // TODO: Revisit how we detect files. Checking it has a key property doesn't feel robust.
+  // File validations only applies to node-selector, not to repeating-group
+  const isItemFile =
+    collection && recordType === 'node-selector-item'
+      ? Boolean(collection[elementIndex]?.hasOwnProperty('key'))
+      : false;
+  const collectionContainsFiles =
+    collection && recordType === 'node-selector-item' ? collection.some((item) => item.hasOwnProperty('key')) : false;
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection?.[elementIndex] : null;
   const componentPath = models[componentId]?.craftercms.path;
@@ -203,11 +212,12 @@ export function ZoneMenu(props: ZoneMenuProps) {
     recordType,
     isItemFile
   ]);
+  const showItemMenuButton = ['node-selector-item', 'component', 'page'].includes(recordType);
 
   const store = useStore();
   const getItemData = () => {
     const models = getCachedModels();
-    const isNodeSelectorItem = recordType === 'component' && nodeSelectorItemRecord;
+    const isNodeSelectorItem = recordType === 'component' && Boolean(nodeSelectorItemRecord);
     const itemModelId = isNodeSelectorItem ? nodeSelectorItemRecord.modelId : modelId;
     const itemFieldId = isNodeSelectorItem ? nodeSelectorItemRecord.fieldId : fieldId;
     const itemIndex = isNodeSelectorItem ? nodeSelectorItemRecord.index : index;
@@ -355,6 +365,21 @@ export function ZoneMenu(props: ZoneMenuProps) {
     });
   };
 
+  const handleRequestItemMenu = (e) => {
+    e.stopPropagation();
+    const path =
+      recordType === 'component' || recordType === 'node-selector-item' ? (componentPath ?? modelPath) : modelPath;
+    const top = e.clientY;
+    const left = e.clientX;
+    post(
+      showItemMegaMenu({
+        path,
+        anchorReference: 'anchorPosition',
+        anchorPosition: { top, left }
+      })
+    );
+  };
+
   // endregion
 
   const refs = useRef({ onMoveUp, onMoveDown, onTrash, doTrash, onCancel, isFirstItem, isLastItem });
@@ -399,82 +424,94 @@ export function ZoneMenu(props: ZoneMenuProps) {
 
   return (
     <>
-      <UltraStyledTooltip title="Cancel (Esc)" key="cancel">
-        <UltraStyledIconButton size="small" onClick={onCancel}>
-          <HighlightOffRoundedIcon />
-        </UltraStyledIconButton>
-      </UltraStyledTooltip>
-      {hasEditAction && !isLockedItem && (
-        <UltraStyledTooltip title="Edit" key="edit">
-          <UltraStyledIconButton size="small" onClick={onEdit}>
-            <PencilIcon />
+      <Box display="flex">
+        {hasEditAction && !isLockedItem && (
+          <UltraStyledTooltip title="Edit" key="edit">
+            <UltraStyledIconButton size="small" onClick={onEdit}>
+              <PencilIcon />
+            </UltraStyledIconButton>
+          </UltraStyledTooltip>
+        )}
+        {showCodeEditOptions && (
+          <>
+            {itemAvailableActions.editTemplate && (
+              <UltraStyledTooltip title="Edit template" key="editTemplate">
+                <UltraStyledIconButton size="small" onClick={onEditTemplate}>
+                  <FreemarkerIcon />
+                </UltraStyledIconButton>
+              </UltraStyledTooltip>
+            )}
+            {itemAvailableActions.editController && (
+              <UltraStyledTooltip title="Edit controller" key="editController">
+                <UltraStyledIconButton size="small" onClick={onEditController}>
+                  <GroovyIcon />
+                </UltraStyledIconButton>
+              </UltraStyledTooltip>
+            )}
+          </>
+        )}
+        {!isLockedItem && showAddItem && (
+          <UltraStyledTooltip title="Add new item" key="addNewItem">
+            <UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
+              <AddCircleOutlineRoundedIcon />
+            </UltraStyledIconButton>
+          </UltraStyledTooltip>
+        )}
+        {showDuplicate && (
+          <UltraStyledTooltip title="Duplicate item" key="duplicateItem">
+            <UltraStyledIconButton size="small" onClick={onDuplicateItem}>
+              <ContentCopyRoundedIcon />
+            </UltraStyledIconButton>
+          </UltraStyledTooltip>
+        )}
+        {isMovable &&
+          (!isLockedItem || !isEmbedded) &&
+          !isOnlyItem && [
+            !isFirstItem && (
+              <UltraStyledTooltip title="Move up/left (← or ↑)" key="moveUp">
+                <UltraStyledIconButton size="small" onClick={onMoveUp}>
+                  <ArrowUpwardRoundedIcon />
+                </UltraStyledIconButton>
+              </UltraStyledTooltip>
+            ),
+            !isLastItem && (
+              <UltraStyledTooltip title="Move down/right (→ or ↓)" key="moveDown">
+                <UltraStyledIconButton size="small" onClick={onMoveDown}>
+                  <ArrowDownwardRoundedIcon />
+                </UltraStyledIconButton>
+              </UltraStyledTooltip>
+            )
+          ]}
+        {isTrashable && !isLockedItem && (
+          <UltraStyledTooltip title="Trash (⌫)" key="trash">
+            <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
+              <DeleteOutlineRoundedIcon />
+            </UltraStyledIconButton>
+          </UltraStyledTooltip>
+        )}
+        {isMovable && (!isLockedItem || !isEmbedded) && (
+          <UltraStyledTooltip title="Move" key="move">
+            <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
+              <DragIndicatorRounded />
+            </UltraStyledIconButton>
+          </UltraStyledTooltip>
+        )}
+      </Box>
+      <Box display="flex">
+        <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+        {showItemMenuButton && (
+          <UltraStyledTooltip title="Options" onClick={handleRequestItemMenu}>
+            <UltraStyledIconButton size="small">
+              <MoreRoundedIcon />
+            </UltraStyledIconButton>
+          </UltraStyledTooltip>
+        )}
+        <UltraStyledTooltip title="Cancel (Esc)">
+          <UltraStyledIconButton size="small" onClick={onCancel}>
+            <CloseRoundedIcon />
           </UltraStyledIconButton>
         </UltraStyledTooltip>
-      )}
-      {showCodeEditOptions && (
-        <>
-          {itemAvailableActions.editTemplate && (
-            <UltraStyledTooltip title="Edit template" key="editTemplate">
-              <UltraStyledIconButton size="small" onClick={onEditTemplate}>
-                <FreemarkerIcon />
-              </UltraStyledIconButton>
-            </UltraStyledTooltip>
-          )}
-          {itemAvailableActions.editController && (
-            <UltraStyledTooltip title="Edit controller" key="editController">
-              <UltraStyledIconButton size="small" onClick={onEditController}>
-                <GroovyIcon />
-              </UltraStyledIconButton>
-            </UltraStyledTooltip>
-          )}
-        </>
-      )}
-      {!isLockedItem && showAddItem && (
-        <UltraStyledTooltip title="Add new item" key="addNewItem">
-          <UltraStyledIconButton size="small" onClick={onAddRepeatItem}>
-            <AddCircleOutlineRoundedIcon />
-          </UltraStyledIconButton>
-        </UltraStyledTooltip>
-      )}
-      {showDuplicate && (
-        <UltraStyledTooltip title="Duplicate item" key="duplicateItem">
-          <UltraStyledIconButton size="small" onClick={onDuplicateItem}>
-            <ContentCopyRoundedIcon />
-          </UltraStyledIconButton>
-        </UltraStyledTooltip>
-      )}
-      {isMovable &&
-        (!isLockedItem || !isEmbedded) &&
-        !isOnlyItem && [
-          !isFirstItem && (
-            <UltraStyledTooltip title="Move up/left (← or ↑)" key="moveUp">
-              <UltraStyledIconButton size="small" onClick={onMoveUp}>
-                <ArrowUpwardRoundedIcon />
-              </UltraStyledIconButton>
-            </UltraStyledTooltip>
-          ),
-          !isLastItem && (
-            <UltraStyledTooltip title="Move down/right (→ or ↓)" key="moveDown">
-              <UltraStyledIconButton size="small" onClick={onMoveDown}>
-                <ArrowDownwardRoundedIcon />
-              </UltraStyledIconButton>
-            </UltraStyledTooltip>
-          )
-        ]}
-      {isTrashable && !isLockedItem && (
-        <UltraStyledTooltip title="Trash (⌫)" key="trash">
-          <UltraStyledIconButton size="small" onClick={onTrash} ref={trashButtonRef}>
-            <DeleteOutlineRoundedIcon />
-          </UltraStyledIconButton>
-        </UltraStyledTooltip>
-      )}
-      {isMovable && (!isLockedItem || !isEmbedded) && (
-        <UltraStyledTooltip title="Move" key="move">
-          <UltraStyledIconButton size="small" draggable sx={{ cursor: 'grab' }} onDragStart={onDragStart}>
-            <DragIndicatorRounded />
-          </UltraStyledIconButton>
-        </UltraStyledTooltip>
-      )}
+      </Box>
       <Menu
         anchorEl={trashButtonRef.current}
         open={showTrashConfirmation}

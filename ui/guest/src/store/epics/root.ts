@@ -516,119 +516,131 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) ||
           (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.FIELD_SELECTED)
       ),
-      switchMap(([action, state]: [action: GuestStandardAction, state: GuestState]) => {
-        const { record, event } = action.payload;
-        const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
-        const isEditable = isEditActionAvailable({
-          record,
-          models: getCachedModels(),
-          sandboxItemsByPath: getCachedSandboxItems(),
-          parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
-        });
-        if (isLocked || isExternallyModified || !isEditable) {
-          return NEVER;
-        } else if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
-          let selected = {
-            modelId: null,
-            fieldId: [],
-            index: null,
-            coordinates: { x: event.clientX, y: event.clientY }
-          };
-          if (getById(record.iceIds[0]).recordType === 'node-selector-item') {
-            // When selecting the item on a node-selector the desired edit will be the item itself.
-            // The following will send the component model id instead of the item model id
-            selected.modelId = extractCollectionItem(getCachedModel(record.modelId), record.fieldId[0], record.index);
-          } else {
-            selected.modelId = record.modelId;
-            selected.index = record.index;
-            selected.fieldId = record.fieldId;
-          }
-          const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
-          const validations = field?.validations;
-          const type = field?.type;
-          switch (type) {
-            case 'html':
-            case 'text':
-            case 'textarea': {
-              if (!window.tinymce) {
-                alert(
-                  'Looks like tinymce is not added on the page. ' +
-                    'Please add tinymce on to the page to enable editing.'
-                );
-              } else if (not(validations?.readOnly?.value)) {
-                const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
-                const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
-                // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
-
-                const models = getCachedModels();
-                const modelId = action.payload.record.modelId;
-                const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
-                const path = models[parentModelId ?? modelId].craftercms.path;
-                const cachedSandboxItem = getCachedSandboxItem(path);
-
-                const pathToLock = isInheritedField(modelId, field.id)
-                  ? models[getModelIdFromInheritedField(modelId, field.id)].craftercms.path
-                  : path;
-
-                return beforeWrite$({
-                  path: pathToLock,
-                  site: state.activeSite,
-                  username: state.username,
-                  localItem: cachedSandboxItem
-                }).pipe(switchMap(() => initTinyMCE(pathToLock, record, validations, type === 'html' ? setup : {})));
-              }
-              break;
+      switchMap(
+        ([action, state]: [
+          action: GuestStandardAction<{ record: ElementRecord; event: PointerEvent }>,
+          state: GuestState
+        ]) => {
+          const { record, event } = action.payload;
+          const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
+          const isEditable = isEditActionAvailable({
+            record,
+            models: getCachedModels(),
+            sandboxItemsByPath: getCachedSandboxItems(),
+            parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
+          });
+          if (
+            isExternallyModified ||
+            // Selecting a page/component still has some value even if it's locked
+            // to access certain available actions or the item menu. For fields, no
+            // action can be performed so won't allow selection.
+            (isLocked && getById(record.iceIds[0]).recordType === 'field') ||
+            !isEditable
+          ) {
+            return NEVER;
+          } else if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
+            let selected = {
+              modelId: null,
+              fieldId: [],
+              index: null,
+              coordinates: { x: event.clientX, y: event.clientY }
+            };
+            if (getById(record.iceIds[0]).recordType === 'node-selector-item') {
+              // When selecting the item on a node-selector the desired edit will be the item itself.
+              // The following will send the component model id instead of the item model id
+              selected.modelId = extractCollectionItem(getCachedModel(record.modelId), record.fieldId[0], record.index);
+            } else {
+              selected.modelId = record.modelId;
+              selected.index = record.index;
+              selected.fieldId = record.fieldId;
             }
-            default: {
-              const sources: Observable<StandardAction>[] = [
+            const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
+            const validations = field?.validations;
+            const type = field?.type;
+            switch (type) {
+              case 'html':
+              case 'text':
+              case 'textarea': {
+                if (!window.tinymce) {
+                  alert(
+                    'Looks like tinymce is not added on the page. ' +
+                      'Please add tinymce on to the page to enable editing.'
+                  );
+                } else if (not(validations?.readOnly?.value)) {
+                  const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
+                  const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
+                  // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
+
+                  const models = getCachedModels();
+                  const modelId = action.payload.record.modelId;
+                  const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+                  const path = models[parentModelId ?? modelId].craftercms.path;
+                  const cachedSandboxItem = getCachedSandboxItem(path);
+
+                  const pathToLock = isInheritedField(modelId, field.id)
+                    ? models[getModelIdFromInheritedField(modelId, field.id)].craftercms.path
+                    : path;
+
+                  return beforeWrite$({
+                    path: pathToLock,
+                    site: state.activeSite,
+                    username: state.username,
+                    localItem: cachedSandboxItem
+                  }).pipe(switchMap(() => initTinyMCE(pathToLock, record, validations, type === 'html' ? setup : {})));
+                }
+                break;
+              }
+              default: {
+                const sources: Observable<StandardAction>[] = [
+                  escape$.pipe(
+                    takeUntil(clearAndListen$),
+                    tap(() => post(clearSelectedZones.type)),
+                    map(() => startListening()),
+                    take(1)
+                  ),
+                  of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
+                ];
+                // Rapid clicking (double-clicking) outside an RTE will cause the normal
+                // FIELD_SELECTED status but without a previous mouseover setting the highlight.
+                if (Object.values(state.highlighted).length === 0) {
+                  sources.unshift(of({ type: 'mouseover', payload: { record, event } }));
+                }
+                return merge(...sources);
+              }
+            }
+          } else if (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) {
+            const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
+            if (notNullOrUndefined(movableRecordId)) {
+              // Inform host of the field selection
+              // post();
+              // By this point element is already highlighted. We just need to freeze
+              // and change mode to reveal the move/sort options.
+              return merge(
                 escape$.pipe(
                   takeUntil(clearAndListen$),
+                  // TODO: stop & map to startListening when any pivoting action occurs
+                  // takeUntil(action$.pipe(ofType(componentInstanceDragStarted.type))),
                   tap(() => post(clearSelectedZones.type)),
                   map(() => startListening()),
                   take(1)
                 ),
                 of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
-              ];
-              // Rapid clicking (double-clicking) outside an RTE will cause the normal
-              // FIELD_SELECTED status but without a previous mouseover setting the highlight.
-              if (Object.values(state.highlighted).length === 0) {
-                sources.unshift(of({ type: 'mouseover', payload: { record, event } }));
-              }
-              return merge(...sources);
+              );
+            }
+          } else if (
+            state.status === EditingStatus.FIELD_SELECTED &&
+            state.highlightMode === HighlightMode.MOVE_TARGETS
+          ) {
+            const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
+            if (state.highlighted[movableRecordId] === void 0) {
+              post(clearSelectedZones.type);
+              return of(startListening());
             }
           }
-        } else if (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) {
-          const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
-          if (notNullOrUndefined(movableRecordId)) {
-            // Inform host of the field selection
-            // post();
-            // By this point element is already highlighted. We just need to freeze
-            // and change mode to reveal the move/sort options.
-            return merge(
-              escape$.pipe(
-                takeUntil(clearAndListen$),
-                // TODO: stop & map to startListening when any pivoting action occurs
-                // takeUntil(action$.pipe(ofType(componentInstanceDragStarted.type))),
-                tap(() => post(clearSelectedZones.type)),
-                map(() => startListening()),
-                take(1)
-              ),
-              of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
-            );
-          }
-        } else if (
-          state.status === EditingStatus.FIELD_SELECTED &&
-          state.highlightMode === HighlightMode.MOVE_TARGETS
-        ) {
-          const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
-          if (state.highlighted[movableRecordId] === void 0) {
-            post(clearSelectedZones.type);
-            return of(startListening());
-          }
+          // Note: Returning NEVER will unsubscribe from any previous stream returned on a prior click.
+          return NEVER;
         }
-        // Note: Returning NEVER will unsubscribe from any previous stream returned on a prior click.
-        return NEVER;
-      })
+      )
     ),
   // endregion
   // region computedDragEnd
