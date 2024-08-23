@@ -209,9 +209,9 @@ export function diffArrays(oldArray, newArray) {
     for (let diagonalPath = -1 * editLength; diagonalPath <= editLength; diagonalPath += 2) {
       let basePath = void 0;
 
-      let addPath = bestPath[diagonalPath - 1],
-        removePath = bestPath[diagonalPath + 1],
-        _oldPos = (removePath ? removePath.newPos : 0) - diagonalPath;
+      const addPath = bestPath[diagonalPath - 1];
+      const removePath = bestPath[diagonalPath + 1];
+      let _oldPos = (removePath ? removePath.newPos : 0) - diagonalPath;
 
       if (addPath) {
         // No one else is going to attempt to use this value, clear it
@@ -273,3 +273,7 @@ export const getItemDiffStatus = (diff): string => {
   }
   return 'unchanged';
 };
+
+export function removeTags(content: string) {
+  return content.replace(/<[^>]*>?/gm, '');
+}
