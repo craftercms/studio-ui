@@ -662,7 +662,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                   : sxStylesConfig.zoneMarker.selectModeHighlight;
               }
               const zoneMarkerSx = deepmerge(sxStylesConfig.zoneMarker.base, zoneMarkerModeStyles, { clone: true });
-
               return (
                 <ZoneMarker
                   key={highlight.id}
