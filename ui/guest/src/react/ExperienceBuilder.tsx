@@ -85,7 +85,7 @@ import { checkIfLockedOrModified, dragOk } from '../store/util';
 import { createLocationArgument, isEditActionAvailable } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
-import { Snackbar, SnackbarProps, ThemeOptions, ThemeProvider } from '@mui/material';
+import { Snackbar, SnackbarProps, Theme, ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 import ZoneMenu from './ZoneMenu';
 import {
@@ -120,6 +120,7 @@ import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/a
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 import { getById, getReferentialEntries, subscribeToAllowedContentTypes } from '../iceRegistry';
 import { getParentModelId } from '../utils/ice';
+import { SxProps } from '@mui/system';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -646,17 +647,21 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                 sandboxItemsByPath: getCachedSandboxItems(),
                 parentModelId: getParentModelId(elementRecord.modelId, getCachedModels(), modelHierarchyMap)
               });
-              // Styles for ZoneMarker that are not move or select mode.
-              let zoneMarkerAltModesStyles = null;
-              if (hasValidations || isLocked || isExternallyModified || !isEditable) {
-                if (hasFailedRequired || isExternallyModified) {
-                  zoneMarkerAltModesStyles = sxStylesConfig.zoneMarker.errorHighlight;
-                } else if (!isEditable && !isLocked) {
-                  zoneMarkerAltModesStyles = sxStylesConfig.zoneMarker.disabledHighlight;
-                } else {
-                  zoneMarkerAltModesStyles = sxStylesConfig.zoneMarker.warnHighlight;
-                }
+              let zoneMarkerModeStyles: Record<string, SxProps<Theme>>;
+              if (isLocked) {
+                zoneMarkerModeStyles = sxStylesConfig.zoneMarker.warnHighlight;
+              } else if (!isEditable) {
+                zoneMarkerModeStyles = sxStylesConfig.zoneMarker.disabledHighlight;
+              } else if (hasFailedRequired || isExternallyModified) {
+                zoneMarkerModeStyles = sxStylesConfig.zoneMarker.errorHighlight;
+              } else if (hasValidations) {
+                zoneMarkerModeStyles = sxStylesConfig.zoneMarker.warnHighlight;
+              } else {
+                zoneMarkerModeStyles = isMoveMode
+                  ? sxStylesConfig.zoneMarker.moveModeHighlight
+                  : sxStylesConfig.zoneMarker.selectModeHighlight;
               }
+              const zoneMarkerSx = deepmerge(sxStylesConfig.zoneMarker.base, zoneMarkerModeStyles, { clone: true });
 
               return (
                 <ZoneMarker
@@ -688,17 +693,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                       void 0
                     )
                   }
-                  sx={deepmerge(
-                    deepmerge(
-                      sxStylesConfig.zoneMarker.base,
-                      isMoveMode
-                        ? sxStylesConfig.zoneMarker.moveModeHighlight
-                        : sxStylesConfig.zoneMarker.selectModeHighlight,
-                      { clone: true }
-                    ),
-                    zoneMarkerAltModesStyles,
-                    { clone: true }
-                  )}
+                  sx={zoneMarkerSx}
                 />
               );
             })}
