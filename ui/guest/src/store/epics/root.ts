@@ -27,7 +27,7 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import { not } from '../../utils/util';
+import { isEditActionAvailable, not } from '../../utils/util';
 import { post } from '../../utils/communicator';
 import * as iceRegistry from '../../iceRegistry';
 import { getById, getReferentialEntries, isTypeAcceptedAsByField } from '../../iceRegistry';
@@ -39,6 +39,7 @@ import {
   getCachedModels,
   getCachedModelsByPath,
   getCachedSandboxItem,
+  getCachedSandboxItems,
   getModelIdFromInheritedField,
   isInheritedField,
   modelHierarchyMap
@@ -522,12 +523,19 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
         ]) => {
           const { record, event } = action.payload;
           const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
+          const isEditable = isEditActionAvailable({
+            record,
+            models: getCachedModels(),
+            sandboxItemsByPath: getCachedSandboxItems(),
+            parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
+          });
           if (
             isExternallyModified ||
             // Selecting a page/component still has some value even if it's locked
             // to access certain available actions or the item menu. For fields, no
             // action can be performed so won't allow selection.
-            (isLocked && getById(record.iceIds[0]).recordType === 'field')
+            (isLocked && getById(record.iceIds[0]).recordType === 'field') ||
+            !isEditable
           ) {
             return NEVER;
           } else if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {

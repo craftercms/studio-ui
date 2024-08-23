@@ -15,7 +15,7 @@
  */
 
 import { ofType } from 'redux-observable';
-import { filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import {
   clearClipboard,
   completeDetailedItem,
@@ -95,7 +95,7 @@ import {
   withIndex,
   withoutIndex
 } from '../../utils/path';
-import { getHostToHostBus } from '../../utils/subjects';
+import { getHostToGuestBus, getHostToHostBus } from '../../utils/subjects';
 import { validateActionPolicy } from '../../services/sites';
 import { defineMessages } from 'react-intl';
 import { CrafterCMSEpic } from '../store';
@@ -596,6 +596,9 @@ const content: CrafterCMSEpic[] = [
       filter(([{ payload }, state]) => Boolean(state.content.itemsByPath[payload.targetPath])),
       switchMap(([{ payload }, state]) =>
         fetchSandboxItemService(state.sites.active, payload.targetPath).pipe(
+          tap((item) => {
+            getHostToGuestBus().next(fetchSandboxItemComplete({ item }));
+          }),
           map((item) => fetchSandboxItemComplete({ item })),
           catchAjaxError(fetchSandboxItemFailed)
         )

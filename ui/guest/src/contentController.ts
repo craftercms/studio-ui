@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, merge, Observable, of, Subject } from 'rxjs';
 import { filter, map, switchMap, take, tap } from 'rxjs/operators';
 import * as Model from '@craftercms/studio-ui/utils/model';
 import { extractCollectionPiece } from '@craftercms/studio-ui/utils/model';
@@ -47,6 +47,7 @@ import { crafterConf } from '@craftercms/classes';
 import { getDefaultValue } from '@craftercms/studio-ui/utils/contentType';
 import { ModelHierarchyDescriptor, ModelHierarchyMap, modelsToLookup } from '@craftercms/studio-ui/utils/content';
 import { SandboxItem, StandardAction } from '@craftercms/studio-ui/models';
+import { fetchSandboxItemComplete } from '@craftercms/studio-ui/state/actions/content';
 
 // if (process.env.NODE_ENV === 'development') {
 // TODO: Notice
@@ -624,7 +625,7 @@ export function moveItem(
 
   const targetModel = models[targetModelId];
   const targetCollection = symmetricTarget
-    ? Model.extractCollection(targetModel, targetFieldId, targetIndex) ?? []
+    ? (Model.extractCollection(targetModel, targetFieldId, targetIndex) ?? [])
     : Model.extractCollectionItem(targetModel, targetFieldId, targetIndex);
   // Insert item in target collection @ the desired position
   const targetResult = targetCollection.slice(0);
@@ -805,7 +806,7 @@ fromTopic(fetchGuestModelComplete.type).subscribe((action: StandardAction<FetchG
   permissions$.next(permissions);
 });
 
-fromTopic(updateFieldValueOperationComplete.type)
+merge(fromTopic(updateFieldValueOperationComplete.type), fromTopic(fetchSandboxItemComplete.type))
   .pipe(map((action) => action?.payload))
   .subscribe(({ item }) => {
     items$.next({
