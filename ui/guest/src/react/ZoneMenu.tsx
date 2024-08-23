@@ -135,6 +135,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
+  // TODO: Revisit how we detect files. Checking it has a key property doesn't feel robust.
   // File validations only applies to node-selector, not to repeating-group
   const isItemFile =
     collection && recordType === 'node-selector-item'
