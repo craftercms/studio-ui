@@ -135,9 +135,14 @@ export function ZoneMenu(props: ZoneMenuProps) {
     // endregion
     [modelId, recordType, iceRecord]
   );
-
-  const isItemFile = collection ? Boolean(collection[elementIndex]?.hasOwnProperty('key')) : false;
-  const collectionContainsFiles = collection ? collection.some((item) => item.hasOwnProperty('key')) : false;
+  // TODO: Revisit how we detect files. Checking it has a key property doesn't feel robust.
+  // File validations only applies to node-selector, not to repeating-group
+  const isItemFile =
+    collection && recordType === 'node-selector-item'
+      ? Boolean(collection[elementIndex]?.hasOwnProperty('key'))
+      : false;
+  const collectionContainsFiles =
+    collection && recordType === 'node-selector-item' ? collection.some((item) => item.hasOwnProperty('key')) : false;
   const componentId =
     recordType === 'component' ? modelId : recordType === 'node-selector-item' ? collection?.[elementIndex] : null;
   const componentPath = models[componentId]?.craftercms.path;
