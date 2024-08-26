@@ -15,8 +15,8 @@
  */
 
 import { get, getGlobalHeaders, postJSON } from '../utils/ajax';
-import { catchError, map } from 'rxjs/operators';
-import { from, Observable, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { Observable, of, from } from 'rxjs';
 import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { Credentials } from '../models/Credentials';
@@ -51,7 +51,12 @@ export function login(credentials: Credentials): Observable<boolean> {
       redirect: 'manual',
       body: toQueryString({ username: credentials.username, password: credentials.password }, { prefix: '' })
     })
-  ).pipe(map(() => true));
+  ).pipe(
+    // With Spring 6, the XSRF token cookie is only removed but not written on the login post,
+    // so we need to do it "manually" after login by requesting a page that does write it.
+    switchMap(() => from(fetch('/studio', { method: 'GET', cache: 'no-cache', credentials: 'include' }))),
+    map(() => true)
+  );
 }
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
