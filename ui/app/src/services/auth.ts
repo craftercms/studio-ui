@@ -15,13 +15,14 @@
  */
 
 import { get, getGlobalHeaders, postJSON } from '../utils/ajax';
-import { catchError, map } from 'rxjs/operators';
-import { from, Observable, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { User } from '../models/User';
 import { AjaxError } from 'rxjs/ajax';
 import { Credentials } from '../models/Credentials';
 import { Api2ResponseFormat, ApiResponse } from '../models/ApiResponse';
 import { toQueryString } from '../utils/object';
+import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 interface FetchSSOLogoutUrlResponse {
   logoutUrl: string;
@@ -39,7 +40,7 @@ export function fetchSSOLogoutURL(): Observable<FetchSSOLogoutUrlResponse> {
 export function login(credentials: Credentials): Observable<boolean> {
   // Regular post works fine, but fetch provides the redirect: 'manual' option which cancels the 302
   // that's useless for when doing the async style login.
-  return from(
+  return fromPromise(
     fetch('/studio/login', {
       method: 'POST',
       cache: 'no-cache',
@@ -51,7 +52,12 @@ export function login(credentials: Credentials): Observable<boolean> {
       redirect: 'manual',
       body: toQueryString({ username: credentials.username, password: credentials.password }, { prefix: '' })
     })
-  ).pipe(map(() => true));
+  ).pipe(
+    // With Spring 6, the XSRF token cookie is only removed but not written on the login post,
+    // so we need to do it "manually" after login by requesting a page that does write it.
+    switchMap(() => fromPromise(fetch('/studio', { method: 'GET', cache: 'no-cache', credentials: 'include' }))),
+    map(() => true)
+  );
 }
 
 export function sendPasswordRecovery(username: string): Observable<ApiResponse> {
