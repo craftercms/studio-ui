@@ -263,7 +263,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       case 'node-selector':
       case 'checkbox-group':
       case 'repeat':
-        setUnChanged(areObjectsEqual(contentA, contentB));
+        setUnChanged(areObjectsEqual(contentA ?? {}, contentB ?? {}));
         break;
       default:
         setUnChanged(contentA === contentB);
