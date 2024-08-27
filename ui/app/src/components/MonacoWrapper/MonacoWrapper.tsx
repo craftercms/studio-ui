@@ -25,13 +25,16 @@ import { FormattedMessage } from 'react-intl';
 
 interface MonacoWrapperProps {
   contentA: string;
-  contentB: string;
+  contentB?: string;
   isHTML?: boolean;
+  isDiff?: boolean;
   sxs?: PartialSxRecord<'root' | 'editor'>;
 }
 
 export function MonacoWrapper(props: MonacoWrapperProps) {
-  const { contentA, contentB, isHTML = false, sxs } = props;
+  const { contentA, contentB, isHTML = false, sxs, isDiff = false } = props;
+  const diffRef = useRef(null);
+  diffRef.current = isDiff;
   const ref = useRef();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const [cleanText, setCleanText] = useState(false);
@@ -42,14 +45,25 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
   useEffect(() => {
     if (ref.current) {
       withMonaco((monaco) => {
-        setDiffEditor(
-          monaco.editor.createDiffEditor(ref.current, {
-            scrollbar: {
-              alwaysConsumeMouseWheel: false
-            },
-            readOnly: true
-          })
-        );
+        if (diffRef.current) {
+          setDiffEditor(
+            monaco.editor.createDiffEditor(ref.current, {
+              scrollbar: {
+                alwaysConsumeMouseWheel: false
+              },
+              readOnly: true
+            })
+          );
+        } else {
+          setDiffEditor(
+            monaco.editor.create(ref.current, {
+              scrollbar: {
+                alwaysConsumeMouseWheel: false
+              },
+              readOnly: true
+            })
+          );
+        }
       });
     }
   }, []);
@@ -57,16 +71,21 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
   useEffect(() => {
     if (diffEditor) {
       withMonaco((monaco) => {
-        const originalModel = monaco.editor.createModel(originalContent, 'html');
-        const modifiedModel = monaco.editor.createModel(modifiedContent, 'html');
         monaco.editor.setTheme(prefersDarkMode ? 'vs-dark' : 'vs');
-        diffEditor.setModel({
-          original: originalModel,
-          modified: modifiedModel
-        });
+        if (diffRef.current) {
+          const originalModel = monaco.editor.createModel(originalContent, 'html');
+          const modifiedModel = monaco.editor.createModel(modifiedContent, 'html');
+          diffEditor.setModel({
+            original: originalModel,
+            modified: modifiedModel
+          });
+        } else {
+          const model = monaco.editor.createModel(originalContent, isHTML ? 'html' : 'xml');
+          diffEditor.setModel(model);
+        }
       });
     }
-  }, [diffEditor, originalContent, modifiedContent, prefersDarkMode]);
+  }, [diffEditor, originalContent, modifiedContent, prefersDarkMode, isHTML]);
 
   return (
     <Box sx={sxs?.root}>

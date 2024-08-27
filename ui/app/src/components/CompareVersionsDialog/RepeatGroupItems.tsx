@@ -16,10 +16,8 @@
 
 import ContentInstance from '../../models/ContentInstance';
 import { ContentTypeField, LookupTable } from '../../models';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useSpreadState from '../../hooks/useSpreadState';
-import { diffArrays } from './utils';
-import { toColor } from '../../utils/string';
 import { fromString, serialize } from '../../utils/xml';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -30,7 +28,7 @@ import palette from '../../styles/palette';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { CompareFieldPanel, CompareVersionsItem } from './CompareVersions';
+import { CompareFieldPanel } from './CompareVersions';
 import { areObjectsEqual } from '../../utils/object';
 
 interface RepeatGroupItemsProps {
@@ -43,9 +41,7 @@ interface RepeatGroupItemsProps {
 
 export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   const { contentA, contentB, aXml, bXml, fields } = props;
-  const [diff, setDiff] = useState(null);
   const [repDiff, setRepDiff] = useState([]);
-  const [itemsById, setItemsById] = useSpreadState({});
   const [repItemsCompare, setRepItemsCompare] = useSpreadState({
     a: null,
     b: null
@@ -54,23 +50,6 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   const selectedItemsAreEqual =
     showRepItemsCompare && areObjectsEqual(repItemsCompare.a?.content, repItemsCompare.b?.content);
   const [compareRepItemVersionsMode, setCompareRepItemVersionsMode] = useState(false);
-
-  useEffect(() => {
-    setDiff(
-      diffArrays(
-        (contentA ?? []).map((item) => {
-          const hash = toColor(JSON.stringify(item));
-          setItemsById({ [hash]: item });
-          return hash;
-        }),
-        (contentB ?? []).map((item) => {
-          const hash = toColor(JSON.stringify(item));
-          setItemsById({ [hash]: item });
-          return hash;
-        })
-      )
-    );
-  }, [contentA, contentB, setItemsById]);
 
   useEffect(() => {
     const contentALength = (contentA ?? []).length;
@@ -128,7 +107,12 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
           >
             <FormattedMessage defaultMessage="Go back" />
           </Button>
-          <CompareRepGroupItemVersions a={repItemsCompare.a} b={repItemsCompare.b} fields={fields} />
+          <Typography>
+            <FormattedMessage defaultMessage="Comparing rep-group items" />
+          </Typography>
+          {Object.values(fields).map((field) => (
+            <CompareFieldPanel a={repItemsCompare.a} b={repItemsCompare.b} field={field} key={field.id} />
+          ))}
         </>
       ) : (
         <>
@@ -163,7 +147,10 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                     borderRadius: '10px',
                     width: '100%',
                     '&.unchanged': {
-                      color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+                      color: (theme) =>
+                        theme.palette.getContrastText(
+                          theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
+                        ),
                       backgroundColor: (theme) =>
                         theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
                     },
@@ -198,6 +185,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                           />
                         }
                         label={<FormattedMessage defaultMessage="Item {index} - Changed" values={{ index }} />}
+                        sx={{ width: '100%' }}
                       />
                     </Box>
                     <Box className="rep-group-compare changed">
@@ -211,6 +199,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                           />
                         }
                         label={<FormattedMessage defaultMessage="Item {index} - Changed" values={{ index }} />}
+                        sx={{ width: '100%' }}
                       />
                     </Box>
                   </>
@@ -243,25 +232,6 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
         </>
       )}
     </Box>
-  );
-}
-
-interface CompareRepGroupItemVersionsProps {
-  a: CompareVersionsItem;
-  b: CompareVersionsItem;
-  fields: LookupTable<ContentTypeField>;
-}
-
-function CompareRepGroupItemVersions(props: CompareRepGroupItemVersionsProps) {
-  const { a, b, fields } = props;
-
-  return (
-    <>
-      <Typography>Comparing rep-group items</Typography>
-      {Object.values(fields).map((field) => (
-        <CompareFieldPanel a={a} b={b} field={field} key={field.id} />
-      ))}
-    </>
   );
 }
 

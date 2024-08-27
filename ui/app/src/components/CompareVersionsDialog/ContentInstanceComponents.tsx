@@ -79,7 +79,10 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
                 borderRadius: '10px',
                 alignItems: 'center',
                 '&.unchanged': {
-                  color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+                  color: (theme) =>
+                    theme.palette.getContrastText(
+                      theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
+                    ),
                   backgroundColor: (theme) =>
                     theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
                 },
@@ -108,12 +111,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
             >
               <Typography sx={{ fontSize: '14px' }}> {getItemLabel(contentById[id])}</Typography>
               {getItemDiffStatus(part) === 'unchanged' && (
-                <Typography
-                  sx={{
-                    fontSize: '14px',
-                    color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4)
-                  }}
-                >
+                <Typography sx={{ fontSize: '14px' }}>
                   <FormattedMessage defaultMessage="unchanged" />
                 </Typography>
               )}

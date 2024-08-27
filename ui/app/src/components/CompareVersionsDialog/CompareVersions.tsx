@@ -169,7 +169,13 @@ export function CompareVersions(props: CompareVersionsProps) {
         }}
       >
         {compareXml ? (
-          <MonacoWrapper contentA={a.xml} contentB={b.xml} isHTML={false} sxs={{ editor: { height: '400px' } }} />
+          <MonacoWrapper
+            contentA={a.xml}
+            contentB={b.xml}
+            isHTML={false}
+            isDiff
+            sxs={{ editor: { height: '400px' } }}
+          />
         ) : (
           <Paper>
             {contentTypes &&
@@ -237,8 +243,10 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const fieldType = field.type;
   const locale = useLocale();
   const [compareXml, setCompareXml] = useState(false);
-  const aFieldDoc = fromString(a.xml).querySelector(`page > ${field.id}`); // TODO: check this query selector as it may be incorrect (what about components for example?)
-  const bFieldDoc = fromString(b.xml).querySelector(`page > ${field.id}`);
+  const aFieldDoc =
+    fromString(a.xml).querySelector(`page > ${field.id}`) ?? fromString(a.xml).querySelector(`component > ${field.id}`);
+  const bFieldDoc =
+    fromString(b.xml).querySelector(`page > ${field.id}`) ?? fromString(b.xml).querySelector(`component > ${field.id}`);
   const aFieldXml = aFieldDoc ? serialize(aFieldDoc) : '';
   const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
   const contentA = a.content[field.id];
@@ -312,21 +320,22 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       </AccordionSummary>
       <AccordionDetails>
         {fieldType === 'text' || fieldType === 'textarea' || fieldType === 'html' ? (
-          <MonacoWrapper contentA={contentA} contentB={contentB} isHTML={fieldType === 'html'} />
+          <MonacoWrapper contentA={contentA} contentB={contentB} isDiff isHTML={fieldType === 'html'} />
         ) : fieldType === 'node-selector' ? (
           compareXml ? (
-            <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isHTML={false} />
+            <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isDiff isHTML={false} />
           ) : (
             <ContentInstanceComponents contentA={contentA} contentB={contentB} />
           )
         ) : fieldType === 'checkbox-group' ? (
           <MonacoWrapper
-            contentA={(contentA ?? []).map((item) => item.key).join('\n')}
-            contentB={(contentB ?? []).map((item) => item.key).join('\n')}
+            contentA={(contentA ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n')}
+            contentB={(contentB ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n')}
+            isDiff
           />
         ) : fieldType === 'repeat' ? (
           compareXml ? (
-            <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isHTML={false} />
+            <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isHTML={false} isDiff />
           ) : (
             <RepeatGroupItems
               contentA={contentA}
@@ -393,3 +402,5 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     <></>
   );
 }
+
+export default CompareVersions;

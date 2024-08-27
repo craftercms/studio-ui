@@ -24,6 +24,7 @@ import { LookupTable } from '../../models/LookupTable';
 import { Resource } from '../../models/Resource';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { ItemHistoryEntry } from '../../models';
 
 export interface VersionViewProps {
   resource: Resource<VersionResource>;
@@ -37,7 +38,8 @@ export interface VersionResource {
 export interface ViewVersionDialogBaseProps {
   error: ApiResponse;
   isFetching: boolean;
-  version: any;
+  version: ItemHistoryEntry;
+  showXml: boolean;
 }
 
 export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, EnhancedDialogProps {

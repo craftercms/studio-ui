@@ -14,31 +14,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { VersionResource, ViewVersionDialogContainerProps } from './utils';
-import { useLogicResource } from '../../hooks/useLogicResource';
+import { ViewVersionDialogContainerProps } from './utils';
 import DialogBody from '../DialogBody/DialogBody';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
-import React from 'react';
-import LegacyVersionDialog from './LegacyVersionDialog';
+import React, { useEffect, useState } from 'react';
+import { fetchContentByCommitId } from '../../services/content';
+import useActiveSiteId from '../../hooks/useActiveSiteId';
+import { parseContentXML } from '../../utils/content';
+import { fromString } from '../../utils/xml';
+import VersionView from './VersionView';
 
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
-  const resource = useLogicResource<VersionResource, ViewVersionDialogContainerProps>(props, {
-    shouldResolve: (source) =>
-      source.version && source.contentTypesBranch.byId && !source.isFetching && !source.contentTypesBranch.isFetching,
-    shouldReject: (source) => Boolean(source.error) || Boolean(source.contentTypesBranch.error),
-    shouldRenew: (source, resource) => (source.isFetching || source.contentTypesBranch.isFetching) && resource.complete,
-    resultSelector: (source) => ({
-      version: source.version,
-      contentTypes: source.contentTypesBranch.byId
-    }),
-    errorSelector: (source) => source.error || source.contentTypesBranch.error
-  });
+  const { version, contentTypesBranch, showXml } = props;
+  const [content, setContent] = useState(null);
+  const [xml, setXml] = useState(null);
+  const siteId = useActiveSiteId();
+
+  useEffect(() => {
+    if (version) {
+      fetchContentByCommitId(siteId, version.path, version.versionNumber).subscribe((content) => {
+        setContent(parseContentXML(fromString(content as string), version.path, contentTypesBranch.byId, {}));
+        setXml(content);
+      });
+    }
+  }, [version, siteId, contentTypesBranch]);
 
   return (
     <DialogBody sx={{ p: 0 }}>
-      <SuspenseWithEmptyState resource={resource}>
-        <LegacyVersionDialog resource={resource} />
-      </SuspenseWithEmptyState>
+      {content && xml && (
+        <VersionView
+          version={props.version}
+          contentTypes={props.contentTypesBranch.byId}
+          content={content}
+          xml={xml}
+          showXml={showXml}
+        />
+      )}
     </DialogBody>
   );
 }

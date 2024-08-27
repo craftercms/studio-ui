@@ -14,37 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
-import { FormattedMessage } from 'react-intl';
-
-/*const versionViewStyles = makeStyles(() => ({
-  viewVersionBox: {
-    margin: '0 10px 10px 10px',
-    '& .blackText': {
-      color: palette.black
-    }
-  },
-  viewVersionContent: {
-    background: palette.white
-  },
-  root: {
-    margin: 0,
-    '&.Mui-expanded': {
-      margin: 0,
-      borderBottom: `1px solid rgba(0,0,0,0.12)`
-    }
-  },
-  bold: {
-    fontWeight: 600
-  },
-  singleItemSelector: {
-    marginBottom: '10px'
-  }
-})); */
+import { FormattedMessage, useIntl } from 'react-intl';
+import translations from '../CompareVersionsDialog/translations';
 
 export const getLegacyDialogStyles = makeStyles()(() => ({
   iframe: {
@@ -53,67 +29,24 @@ export const getLegacyDialogStyles = makeStyles()(() => ({
   }
 }));
 
-/*function VersionView(props: VersionViewProps) {
-  const { version, contentTypes } = props.resource.read();
-  const classes = versionViewStyles({});
-  const values = Object.values(contentTypes[version.contentTypeId].fields) as ContentTypeField[];
-  return (
-    <>
-      <section className={classes.viewVersionBox}>
-        <ListItemText
-          primary={<AsDayMonthDateTime date={version.lastModifiedDate} />}
-          secondary={
-            <FormattedMessage
-              id="historyDialog.versionNumber"
-              defaultMessage="Version: <span>{versionNumber}</span>"
-              values={{
-                versionNumber: version.versionNumber,
-                span: (msg) => <span className="blackText">{msg}</span>
-              }}
-            />
-          }
-        />
-      </section>
-      <section className={classes.viewVersionContent}>
-        {contentTypes &&
-          values.map((field) => (
-            <Accordion key={field.id} classes={{ root: classes.root }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Typography>
-                  <span className={classes.bold}>{field.name}</span> ({field.id})
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>
-                  {field.type === 'html' ? (
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: unescapeHTML(version.content[version.id][field.id])
-                      }}
-                    />
-                  ) : typeof version.content[version.id][field.id] === 'object' ? (
-                    JSON.stringify(version.content[version.id][field.id])
-                  ) : (
-                    version.content[version.id][field.id]
-                  )}
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-          ))}
-      </section>
-    </>
-  );
-} */
-
 export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
+  const [showXml, setShowXml] = useState(false);
+  const { formatMessage } = useIntl();
 
   return (
     <EnhancedDialog
       title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
       dialogHeaderProps={{
         leftActions,
-        rightActions
+        rightActions: [
+          {
+            icon: { id: '@mui/icons-material/CodeRounded' },
+            onClick: () => setShowXml(!showXml),
+            'aria-label': showXml ? formatMessage(translations.compareContent) : formatMessage(translations.compareXml)
+          },
+          ...(rightActions ?? [])
+        ]
       }}
       {...rest}
     >
@@ -122,6 +55,7 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
         contentTypesBranch={contentTypesBranch}
         error={error}
         isFetching={isFetching}
+        showXml={showXml}
       />
     </EnhancedDialog>
   );
