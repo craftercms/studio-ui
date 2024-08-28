@@ -356,14 +356,36 @@ export const systemPropsList = [
   'objectGroupId',
   'objectId',
   'file-name',
+  'fileName',
   'folder-name',
   'internal-name',
+  'internalName',
   'disabled',
   'createdDate',
   'createdDate_dt',
   'lastModifiedDate',
   'lastModifiedDate_dt'
 ];
+
+export const systemPropMap = {
+  guid: 'id',
+  cmsId: 'id',
+  objectId: 'id',
+  localId: 'path',
+  'file-name': 'fileName',
+  file__name: 'fileName',
+  fileName: 'fileName',
+  placeInNav: 'placeInNav',
+  'internal-name': 'label',
+  internal__name: 'label',
+  internalName: 'label',
+  'content-type': 'contentTypeId',
+  content__type: 'contentTypeId',
+  createdDate_dt: 'dateCreated',
+  lastModifiedDate_dt: 'dateModified',
+  disabled: 'disabled',
+  orderDefault_f: 'orderInNav'
+};
 
 /**
  * doc {XMLDocument}
@@ -1205,4 +1227,18 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
   context.fillText(attrs.text, attrs.textPositionX, attrs.textPositionY);
 
   return canvas.toDataURL();
+}
+
+// Returns the value of a contentInstance prop, considering the system props
+export function getContentInstanceValueFromProp(model: ContentInstance, prop: string) {
+  if (systemPropsList.includes(prop)) {
+    const systemProp = systemPropMap[prop];
+    if (systemProp === 'fileName') {
+      return model.craftercms.path;
+    } else {
+      return model.craftercms[systemProp];
+    }
+  } else {
+    return model[prop];
+  }
 }

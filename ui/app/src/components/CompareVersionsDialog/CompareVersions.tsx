@@ -29,7 +29,7 @@ import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import Typography from '@mui/material/Typography';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Box from '@mui/material/Box';
-import { systemPropsList } from '../../utils/content';
+import { getContentInstanceValueFromProp } from '../../utils/content';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -178,10 +178,7 @@ export function CompareVersions(props: CompareVersionsProps) {
           />
         ) : (
           <Paper>
-            {contentTypes &&
-              values
-                .filter((value) => !systemPropsList.includes(value.id))
-                .map((field) => <CompareFieldPanel a={a} b={b} field={field} key={field.id} />)}
+            {contentTypes && values.map((field) => <CompareFieldPanel a={a} b={b} field={field} key={field.id} />)}
           </Paper>
         )}
       </Box>
@@ -249,8 +246,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     fromString(b.xml).querySelector(`page > ${field.id}`) ?? fromString(b.xml).querySelector(`component > ${field.id}`);
   const aFieldXml = aFieldDoc ? serialize(aFieldDoc) : '';
   const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
-  const contentA = a.content[field.id];
-  const contentB = b.content[field.id];
+  const contentA = getContentInstanceValueFromProp(a.content, field.id);
+  const contentB = getContentInstanceValueFromProp(b.content, field.id);
 
   useMount(() => {
     switch (fieldType) {

@@ -34,7 +34,8 @@ const initialState: ViewVersionDialogStateProps = {
   hasPendingChanges: null,
   isFetching: null,
   error: null,
-  version: null
+  version: null,
+  showXml: false
 };
 
 export default createReducer<GlobalState['dialogs']['viewVersion']>(initialState, (builder) => {

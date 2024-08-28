@@ -36,6 +36,7 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import palette from '../../styles/palette';
 import ArrowBackIosRounded from '@mui/icons-material/ArrowBackIosRounded';
 import Button from '@mui/material/Button';
+import { getContentInstanceValueFromProp } from '../../utils/content';
 
 interface ViewFieldPanelProps {
   content: any;
@@ -74,7 +75,9 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        {field.type === 'html' ? (
+        {!content && field.type !== 'boolean' && field.type !== 'page-nav-order' ? (
+          <Typography color="textSecondary">no content set</Typography>
+        ) : field.type === 'html' ? (
           <MonacoWrapper contentA={content} isHTML={true} />
         ) : field.type === 'image' ? (
           <Box sx={{ textAlign: 'center' }}>
@@ -98,7 +101,7 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
                 : ''}
             </Typography>
           </Tooltip>
-        ) : field.type === 'boolean' ? (
+        ) : field.type === 'boolean' || field.type === 'page-nav-order' ? (
           <Typography>
             {content ? <FormattedMessage defaultMessage="Checked" /> : <FormattedMessage defaultMessage="Unchecked" />}
           </Typography>
@@ -152,7 +155,6 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
             </>
           ) : (
             content?.map((item, index) => {
-              console.log('item', item);
               return (
                 <Box
                   key={index}
@@ -177,10 +179,8 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
               );
             })
           )
-        ) : typeof content === 'object' ? (
-          JSON.stringify(content)
         ) : (
-          (content ?? <Typography color="textSecondary">no content set</Typography>)
+          content
         )}
       </AccordionDetails>
     </Accordion>
@@ -219,7 +219,15 @@ export function VersionView(props: VersionViewProps) {
         {showXml ? (
           <MonacoWrapper contentA={xml} isHTML={false} sxs={{ editor: { height: '400px' } }} />
         ) : contentTypes ? (
-          values.map((field, index) => <ViewFieldPanel key={index} content={content?.[field.id]} field={field} />)
+          values.map((field, index) => {
+            return (
+              <ViewFieldPanel
+                key={index}
+                content={content ? getContentInstanceValueFromProp(content, field.id) : null}
+                field={field}
+              />
+            );
+          })
         ) : null}
       </Box>
     </>
