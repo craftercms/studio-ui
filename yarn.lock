@@ -1544,7 +1544,7 @@ __metadata:
     "@emotion/css": "npm:^11.13.0"
     "@emotion/react": "npm:^11.13.3"
     "@emotion/styled": "npm:^11.13.0"
-    "@mui/icons-material": "npm:^5.15.20"
+    "@mui/icons-material": "npm:^6.0.0"
     "@mui/material": "npm:^5.16.7"
     "@reduxjs/toolkit": "npm:^2.2.5"
     "@rollup/plugin-alias": "npm:^5.1.0"
@@ -1667,7 +1667,7 @@ __metadata:
     "@emotion/styled": "npm:^11.13.0"
     "@formatjs/cli": "npm:^6.2.12"
     "@graphiql/plugin-explorer": "npm:^3.0.1"
-    "@mui/icons-material": "npm:^5.15.20"
+    "@mui/icons-material": "npm:^6.0.0"
     "@mui/lab": "npm:^5.0.0-alpha.173"
     "@mui/material": "npm:^5.16.7"
     "@mui/x-data-grid": "npm:^7.13.0"
@@ -2648,19 +2648,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^5.15.20":
-  version: 5.15.20
-  resolution: "@mui/icons-material@npm:5.15.20"
+"@mui/icons-material@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@mui/icons-material@npm:6.0.0"
   dependencies:
-    "@babel/runtime": "npm:^7.23.9"
+    "@babel/runtime": "npm:^7.25.0"
   peerDependencies:
-    "@mui/material": ^5.0.0
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
+    "@mui/material": ^6.0.0
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/fe83713840b84f745005ef457cf3a3672099d1cc9db538214016a2679d964a0b93b82bb6c33c27e405a6d0204c1d1325fc68f0d546b20b4d2d0b5a6a4bec152f
+  checksum: 10/6f6000366704f0991270d844b81812f9e11601b32ef1a7ed16c2232eb49cbf8f1652fdd1afa72ea9435e75c997b97049613c41e1cc125196ce4aee0e81f2b69b
   languageName: node
   linkType: hard
 
