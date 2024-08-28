@@ -64,13 +64,12 @@
 }
 
 .#{$ice-class-prefix}-indicator {
+  background-color: rgba(#fff, 0.7);
+  z-index: 9999;
   &.fa-spinner {
     background-color: transparent;
     box-sizing: content-box;
   }
-
-  background-color: rgba(#fff, 0.7);
-  z-index: 9999;
 }
 
 .#{$class-prefix}-dnd-controller-overlay {
