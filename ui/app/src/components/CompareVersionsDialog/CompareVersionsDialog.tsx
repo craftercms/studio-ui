@@ -23,6 +23,17 @@ import { AsDayMonthDateTime } from '../VersionList';
 import { compareVersion } from '../../state/actions/versions';
 import { translations } from './translations';
 import { useDispatch } from 'react-redux';
+import { TransitionProps } from '@mui/material/transitions';
+import Grow from '@mui/material/Grow';
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>
+) {
+  return <Grow ref={ref} {...props} timeout={props.in ? 500 : 100} />;
+});
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const isSelectMode = props.selectedA && !props.selectedB;
@@ -80,9 +91,16 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
               }
             ]
           : leftActions,
-        rightActions
+        rightActions,
+        sxs: {
+          root: {
+            backgroundColor: (theme) => `${theme.palette.primary.dark} !important`,
+            color: (theme) => `${theme.palette.getContrastText(theme.palette.primary.dark)} !important`
+          }
+        }
       }}
       maxWidth={isCompareMode ? 'xl' : 'md'}
+      TransitionComponent={Transition}
       {...rest}
     >
       <CompareVersionsDialogContainer

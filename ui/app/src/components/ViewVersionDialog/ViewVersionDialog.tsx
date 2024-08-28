@@ -113,7 +113,13 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
       title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
       dialogHeaderProps={{
         leftActions,
-        rightActions
+        rightActions,
+        sxs: {
+          root: {
+            backgroundColor: (theme) => `${theme.palette.primary.dark} !important`,
+            color: (theme) => `${theme.palette.getContrastText(theme.palette.primary.dark)} !important`
+          }
+        }
       }}
       {...rest}
     >
