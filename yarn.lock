@@ -2851,13 +2851,13 @@ __metadata:
   linkType: hard
 
 "@mui/x-date-pickers@npm:^7.13.0":
-  version: 7.13.0
-  resolution: "@mui/x-date-pickers@npm:7.13.0"
+  version: 7.14.0
+  resolution: "@mui/x-date-pickers@npm:7.14.0"
   dependencies:
     "@babel/runtime": "npm:^7.25.0"
-    "@mui/system": "npm:^5.16.5"
-    "@mui/utils": "npm:^5.16.5"
-    "@types/react-transition-group": "npm:^4.4.10"
+    "@mui/system": "npm:^5.16.7"
+    "@mui/utils": "npm:^5.16.6"
+    "@types/react-transition-group": "npm:^4.4.11"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
     react-transition-group: "npm:^4.4.5"
@@ -2893,7 +2893,7 @@ __metadata:
       optional: true
     moment-jalaali:
       optional: true
-  checksum: 10/b4a5d5a6c77f7896938c0f81a77e53b020216e3cce2e545f3877ed202cea1e91a1649dc1579ed25126a1ebeb6577e916e75ff570b5862b51c2b2d8e0cb0e3524
+  checksum: 10/f56524a25dc948c7fc72f4f1ec2652a9f579bfa4d0d226037355e0f1d99ca486ad9fb20983f2d5977dec7133e64bedd6b87421bb500ac511d9fe4affecc6dca1
   languageName: node
   linkType: hard
 
@@ -4431,6 +4431,15 @@ __metadata:
   dependencies:
     "@types/react": "npm:*"
   checksum: 10/b429f3bd54d9aea6c0395943ce2dda6b76fb458e902365bd91fd99bf72064fb5d59e2b74e78d10f2871908501d350da63e230d81bda2b616c967cab8dc51bd16
+  languageName: node
+  linkType: hard
+
+"@types/react-transition-group@npm:^4.4.11":
+  version: 4.4.11
+  resolution: "@types/react-transition-group@npm:4.4.11"
+  dependencies:
+    "@types/react": "npm:*"
+  checksum: 10/a7f4de6e5f57d9fcdea027e22873c633f96a803c96d422db8b99a45c36a9cceb7882d152136bbc31c7158fc1827e37aea5070d369724bb71dd11b5687332bc4d
   languageName: node
   linkType: hard
 
