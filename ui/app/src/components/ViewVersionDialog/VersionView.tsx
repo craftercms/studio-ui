@@ -104,12 +104,10 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
           </Typography>
         ) : field.type === 'checkbox-group' ? (
           <Box>
-            {content.map((item) => (
-              <Typography key={item.key}>{`${item.value_smv} (${item.key})`}</Typography>
-            ))}
+            {content?.map((item) => <Typography key={item.key}>{`${item.value_smv} (${item.key})`}</Typography>)}
           </Box>
         ) : field.type === 'node-selector' ? (
-          content.map((item) => {
+          content?.map((item) => {
             return (
               <Box
                 key={item.craftercms.path}
@@ -153,7 +151,7 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
               ))}
             </>
           ) : (
-            content.map((item, index) => {
+            content?.map((item, index) => {
               console.log('item', item);
               return (
                 <Box
@@ -182,7 +180,7 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
         ) : typeof content === 'object' ? (
           JSON.stringify(content)
         ) : (
-          (content ?? 'unset')
+          (content ?? <Typography color="textSecondary">no content set</Typography>)
         )}
       </AccordionDetails>
     </Accordion>
