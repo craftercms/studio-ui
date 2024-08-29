@@ -20,6 +20,7 @@ import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
+import { Slide } from '@mui/material';
 
 /*const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
@@ -113,14 +114,9 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
       title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
       dialogHeaderProps={{
         leftActions,
-        rightActions,
-        sxs: {
-          root: {
-            backgroundColor: (theme) => `${theme.palette.primary.dark} !important`,
-            color: (theme) => `${theme.palette.getContrastText(theme.palette.primary.dark)} !important`
-          }
-        }
+        rightActions
       }}
+      TransitionComponent={Slide}
       {...rest}
     >
       <ViewVersionDialogContainer

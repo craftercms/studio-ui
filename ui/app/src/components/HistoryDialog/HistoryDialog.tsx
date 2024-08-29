@@ -28,9 +28,6 @@ export const historyStyles = makeStyles()(() => ({
   },
   dialogFooter: {
     padding: 0
-  },
-  singleItemSelector: {
-    marginBottom: '10px'
   }
 }));
 

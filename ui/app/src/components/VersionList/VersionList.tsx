@@ -28,6 +28,9 @@ import { ItemHistoryEntry } from '../../models/Version';
 import palette from '../../styles/palette';
 import GlobalState from '../../models/GlobalState';
 import { useSelection } from '../../hooks/useSelection';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
 
 const versionListStyles = makeStyles()((theme) => ({
   list: {
@@ -92,26 +95,31 @@ interface VersionListProps {
   versions: ItemHistoryEntry[];
   selected?: string[];
   current?: string;
+  isSelectMode?: boolean;
   onItemClick(version: ItemHistoryEntry): void;
   onOpenMenu?(anchorEl: Element, version: ItemHistoryEntry, isCurrent: boolean, lastOne: boolean): void;
 }
 
 export function VersionList(props: VersionListProps) {
   const { classes, cx } = versionListStyles();
-  const { versions, onOpenMenu, onItemClick, current, selected } = props;
+  const { versions, onOpenMenu, onItemClick, current, selected, isSelectMode = false } = props;
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
 
   return (
     <List component="div" className={classes.list} disablePadding>
       {versions.map((version: ItemHistoryEntry, i: number) => {
         return (
-          <ListItem
+          <ListItemButton
             key={version.versionNumber}
             divider={versions.length - 1 !== i}
-            button
             onClick={() => onItemClick(version)}
             className={cx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
           >
+            {isSelectMode && (
+              <ListItemIcon>
+                <Checkbox checked={selected?.includes(version.versionNumber)} />
+              </ListItemIcon>
+            )}
             <ListItemText
               classes={{
                 multiline: classes.listItemTextMultiline,
@@ -135,16 +143,17 @@ export function VersionList(props: VersionListProps) {
               <ListItemSecondaryAction>
                 <IconButton
                   edge="end"
-                  onClick={(e) =>
-                    onOpenMenu(e.currentTarget, version, current === version.versionNumber, versions.length === i + 1)
-                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenMenu(e.currentTarget, version, current === version.versionNumber, versions.length === i + 1);
+                  }}
                   size="large"
                 >
                   <MoreVertIcon />
                 </IconButton>
               </ListItemSecondaryAction>
             )}
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
