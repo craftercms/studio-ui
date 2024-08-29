@@ -34,6 +34,8 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import IconButton from '@mui/material/IconButton';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import { AjaxError } from 'rxjs/ajax';
+import { LegacyFormDialog } from '../LegacyFormDialog';
+import useSpreadState from '../../hooks/useSpreadState';
 
 export interface RenameItemViewProps {
   name: string;
@@ -68,9 +70,20 @@ export function RenameItemView(props: RenameItemViewProps) {
   const { authoringBase } = useEnv();
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
+  const [legacyFormDialogState, setLegacyFormDialogState] = useSpreadState({
+    open: false,
+    path: null
+  });
 
   const handleEditorDisplay = (item: DetailedItem) => {
-    openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
+    if (item.systemType === 'component' || item.systemType === 'page') {
+      setLegacyFormDialogState({
+        open: true,
+        path: item.path
+      });
+    } else {
+      openItemEditor(item, authoringBase, siteId, dispatch, fetchRenameAssetDependants());
+    }
   };
 
   return fetchingDependantItems ? (
@@ -158,6 +171,13 @@ export function RenameItemView(props: RenameItemViewProps) {
           <FormattedMessage id="renameAsset.noDependentItems" defaultMessage="No dependent items" />
         </Typography>
       )}
+      <LegacyFormDialog
+        open={legacyFormDialogState.open}
+        authoringBase={authoringBase}
+        path={legacyFormDialogState.path}
+        site={siteId}
+        onClose={() => setLegacyFormDialogState({ open: false, path: null })}
+      />
     </>
   ) : (
     error && <ApiResponseErrorState error={error.response} />
