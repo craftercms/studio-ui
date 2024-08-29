@@ -19,17 +19,17 @@ import * as iceRegistry from '../iceRegistry';
 import { Editor, EditorEvent } from 'tinymce';
 import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
-import { post, message$ } from '../utils/communicator';
+import { message$, post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
-import { startWith } from 'rxjs/operators';
+import { filter, startWith, take } from 'rxjs/operators';
 import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
 import { rtePickerActionResult, showRtePickerActions } from '@craftercms/studio-ui/state/actions/dialogs';
-import { filter, take } from 'rxjs/operators';
+import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 
 export function initTinyMCE(
   path: string,
@@ -203,6 +203,11 @@ export function initTinyMCE(
         // 'Enter'
       ].filter(Boolean);
 
+      // Meant to avoid a hard refresh causing the item to stay locked. As more XB controls come to life,
+      // this may not be the best place to handle this.
+      const beforeUnloadFn = (event: BeforeUnloadEvent) => post(unlockItem({ path }));
+      window.addEventListener('beforeunload', beforeUnloadFn, { capture: true, passive: true });
+
       function save() {
         const content = getContent();
         if (changed) {
@@ -238,6 +243,8 @@ export function initTinyMCE(
         if (finalContent.trim() === '') {
           record.element.classList.add(emptyFieldClass);
         }
+
+        window.removeEventListener('beforeunload', beforeUnloadFn);
 
         // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
         // with the intention to exit editing.

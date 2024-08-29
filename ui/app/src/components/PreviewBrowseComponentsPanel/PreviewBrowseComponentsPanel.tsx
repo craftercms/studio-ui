@@ -41,6 +41,7 @@ import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import ListSubheader from '@mui/material/ListSubheader';
+import Alert from '@mui/material/Alert';
 
 export function PreviewBrowseComponentsPanel() {
   const { classes } = useStyles();
@@ -48,6 +49,7 @@ export function PreviewBrowseComponentsPanel() {
   const siteId = useActiveSiteId();
   const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
   const awaitingGuestCheckIn = nou(allowedTypesData);
+  const contentTypesUpdated = useSelection((state) => state.preview.guest?.contentTypesUpdated);
   const componentsState = useSelection((state) => state.preview.components);
   const [keyword, setKeyword] = useState(componentsState.query.keywords);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
@@ -77,6 +79,9 @@ export function PreviewBrowseComponentsPanel() {
       } else {
         otherTypes.push(contentType);
       }
+      const sorter = (a: ContentType, b: ContentType) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+      allowedTypes.sort(sorter);
+      otherTypes.sort(sorter);
     });
     return result;
   }, [allowedTypesData, contentTypes]);
@@ -84,7 +89,7 @@ export function PreviewBrowseComponentsPanel() {
   useEffect(() => {
     // We want guest to check in, so we can retrieve the compatible types when fetching the items.
     if (siteId && contentTypesBranch.isFetching === false && !awaitingGuestCheckIn) {
-      dispatch(fetchComponentsByContentType({}));
+      dispatch(fetchComponentsByContentType({ sortBy: 'internalName', sortOrder: 'asc' }));
     }
   }, [siteId, contentTypesBranch, dispatch, awaitingGuestCheckIn]);
 
@@ -106,18 +111,21 @@ export function PreviewBrowseComponentsPanel() {
   const onDragEnd = () => hostToGuest$.next({ type: componentInstanceDragEnded.type });
 
   const onSearch = useCallback(
-    (keywords: string) => dispatch(fetchComponentsByContentType({ keywords, offset: 0 })),
+    (keywords: string) =>
+      dispatch(fetchComponentsByContentType({ keywords, offset: 0, sortBy: 'internalName', sortOrder: 'asc' })),
     [dispatch]
   );
 
   const onSearch$ = useDebouncedInput(onSearch, 600);
 
   function onPageChanged(newPage: number) {
-    dispatch(fetchComponentsByContentType({ offset: newPage }));
+    dispatch(fetchComponentsByContentType({ offset: newPage, sortBy: 'internalName', sortOrder: 'asc' }));
   }
 
   function onRowsPerPageChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) {
-    dispatch(fetchComponentsByContentType({ offset: 0, limit: e.target.value }));
+    dispatch(
+      fetchComponentsByContentType({ offset: 0, limit: e.target.value, sortBy: 'internalName', sortOrder: 'asc' })
+    );
   }
 
   function handleSearchKeyword(keyword: string) {
@@ -132,6 +140,11 @@ export function PreviewBrowseComponentsPanel() {
   return (
     <>
       <ErrorBoundary>
+        {contentTypesUpdated && (
+          <Alert severity="warning" variant="outlined" sx={{ border: 0 }}>
+            <FormattedMessage defaultMessage="Content type definitions have changed. Please refresh the preview application." />
+          </Alert>
+        )}
         <div className={classes.search}>
           <SearchBar
             placeholder={formatMessage(translations.filter)}

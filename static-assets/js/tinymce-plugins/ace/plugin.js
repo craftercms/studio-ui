@@ -82,7 +82,7 @@
       if (!isActive) {
         // Code mode
         editor.mode.set('readonly');
-        editorTextareaEl.value = editor.dom.decode(getContent(editor));
+        editorTextareaEl.value = getContent(editor);
         editorTextareaEl.style.height = editor.getDoc().documentElement.scrollHeight;
 
         if (typeof ace !== 'undefined') {
@@ -128,8 +128,9 @@
             maxLines: Math.round(300 / 17)
           });
           aceEditor.on('change', function () {
-            editorTextareaEl.value = aceEditor.getValue();
-            editor.setContent(aceEditor.getValue());
+            let value = aceEditor.getValue();
+            editorTextareaEl.value = value;
+            editor.setContent(value);
           });
 
           editor.container.classList.add('hidden');
@@ -192,8 +193,9 @@
 
       const editorTextareaEl = document.querySelector(`#${CSS.escape(editor.id)}`);
       aceEditor.on('change', function () {
-        editorTextareaEl.value = aceEditor.getValue();
-        editor.setContent(aceEditor.getValue());
+        let value = aceEditor.getValue();
+        editorTextareaEl.value = value;
+        editor.setContent(value);
 
         if (inlineMode) {
           aceModes.inline.getSession().setValue(aceEditor.getValue());

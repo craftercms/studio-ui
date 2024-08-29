@@ -30,7 +30,7 @@ import {
 import { ContentType } from '../models/ContentType';
 import { createLookupTable, nnou, nou, toQueryString } from '../utils/object';
 import { LookupTable } from '../models/LookupTable';
-import { dataUriToBlob, isBlank, popPiece, removeLastPiece } from '../utils/string';
+import { dataUriToBlob, isBlank, isPath, popPiece, removeLastPiece } from '../utils/string';
 import ContentInstance, { InstanceRecord } from '../models/ContentInstance';
 import { AjaxResponse } from 'rxjs/ajax';
 import { ComponentsContentTypeParams, ContentInstancePage } from '../models/Search';
@@ -383,8 +383,8 @@ export function insertComponent(
     (element) => {
       const id = insertedContentInstance.craftercms.id;
       const path = isSharedInstance
-        ? insertedContentInstance.craftercms.path ??
-          generateComponentPath(id, insertedContentInstance.craftercms.contentTypeId)
+        ? (insertedContentInstance.craftercms.path ??
+          generateComponentPath(id, insertedContentInstance.craftercms.contentTypeId))
         : null;
 
       // Create the new `item` that holds or references (embedded vs shared) the component.
@@ -506,23 +506,39 @@ export function duplicateItem(
         parentElement = doc.querySelector(`[id="${modelId}"]`);
       }
 
+      const indexBeingDuplicated = parseInt(popPiece(`${targetIndex}`));
       const item: Element = extractNode(parentElement, fieldId, targetIndex).cloneNode(true) as Element;
-      const itemPath = item.querySelector(':scope > key').textContent.trim();
+      // If it has a `key` element, then it may be an item reference.
+      const itemPath = item.querySelector(':scope > key')?.textContent.trim();
       const isEmbedded = Boolean(item.querySelector(':scope > component'));
-      // removing last piece to get the parent of the item
+      // If not an item reference, duplicating a repeat item.
+      const isItemReference = isEmbedded || isPath(itemPath);
+      // Remove last piece to get the parent of the item (i.e. the field)
       const field: Element = extractNode(parentElement, fieldId, removeLastPiece(`${targetIndex}`));
+      const items = field.querySelectorAll(':scope > item');
+      const numOfItems = items.length;
 
-      const newItemData = updateItemId(item);
+      const newItemData = isItemReference ? updateItemId(item) : { modelId, path };
       newItemData.path = newItemData.path ?? path;
       updateModifiedDateElement(parentElement);
-      field.appendChild(item);
+
+      if (numOfItems - 1 === indexBeingDuplicated) {
+        field.appendChild(item);
+      } else {
+        field.insertBefore(item, items[indexBeingDuplicated + 1]);
+      }
 
       const returnValue = {
         updatedDocument: doc,
         newItem: newItemData
       };
 
-      if (isEmbedded) {
+      if (!isItemReference || isEmbedded) {
+        if (isEmbedded) {
+          const component = item.querySelector(':scope > component');
+          updateModifiedDateElement(component);
+          updateCreatedDateElement(component);
+        }
         return fromPromise(beautify(serialize(doc))).pipe(
           switchMap((xml) =>
             post(
@@ -539,11 +555,12 @@ export function duplicateItem(
       } else {
         return fetchContentDOM(site, itemPath).pipe(
           switchMap((componentDoc) => {
-            // update new shared component info  (ids/date)
+            // Update new shared component info  (ids/date)
             updateComponentId(componentDoc.documentElement, newItemData.modelId);
             updateModifiedDateElement(componentDoc.documentElement);
-
+            updateCreatedDateElement(componentDoc.documentElement);
             return forkJoin([
+              // Write the main document.
               fromPromise(beautify(serialize(doc))).pipe(
                 switchMap((xml) =>
                   post(
@@ -557,6 +574,7 @@ export function duplicateItem(
                   )
                 )
               ),
+              // Write the new/duplicated shared component.
               fromPromise(beautify(serialize(componentDoc))).pipe(
                 switchMap((xml) =>
                   post(
@@ -903,7 +921,11 @@ function updateItemId(item: Element, skipShared: boolean = false): { modelId: st
 function updateComponentId(component: Element, id: string): void {
   const objectId = component.querySelector(':scope > objectId');
   const fileName = component.querySelector(':scope > file-name');
+
   component.id = id;
+  // Update the file name even if not a UUID (manually assigned name). Otherwise, it could override
+  // the existing document when duplicating and the UI has no visibility of whether
+  // there could be other duplicates already to create a meaningful name.
   fileName.innerHTML = `${id}.xml`;
   objectId.innerHTML = id;
 
@@ -975,7 +997,15 @@ function createModifiedDate(): string {
 }
 
 function updateModifiedDateElement(doc: Element): void {
-  doc.querySelector(':scope > lastModifiedDate_dt').innerHTML = createModifiedDate();
+  const date = createModifiedDate();
+  (doc.querySelector(':scope > lastModifiedDate') ?? { innerHTML: '' }).innerHTML = date;
+  (doc.querySelector(':scope > lastModifiedDate_dt') ?? { innerHTML: '' }).innerHTML = date;
+}
+
+function updateCreatedDateElement(doc: Element): void {
+  const date = createModifiedDate();
+  (doc.querySelector(':scope > createdDate') ?? { innerHTML: '' }).innerHTML = date;
+  (doc.querySelector(':scope > createdDate_dt') ?? { innerHTML: '' }).innerHTML = date;
 }
 
 function insertCollectionItem(
@@ -1018,66 +1048,107 @@ export function createFileUpload(
   uploadUrl: string,
   file: any,
   path: string,
-  metaData: Record<string, unknown>,
-  xsrfArgumentName: string
+  uploadMeta: (Record<string, unknown> & { site: string }) | (Record<string, unknown> & { siteId: string }),
+  xsrfArgumentName: string = '_csrf'
 ): Observable<StandardAction> {
-  const qs = toQueryString({
+  const blob = dataUriToBlob(file.dataUrl);
+  return uploadBlob(
+    (uploadMeta?.site ?? uploadMeta?.siteId) as string,
     path,
-    site: metaData?.site ?? metaData?.siteId,
-    [xsrfArgumentName]: getRequestForgeryToken()
-  });
+    { name: file.name, type: file.type, blob },
+    uploadMeta,
+    uploadUrl,
+    xsrfArgumentName
+  );
+}
+
+// region uploadBlob
+export function uploadBlob(
+  site: string,
+  path: string,
+  fileData: {
+    name: string;
+    type: string;
+    blob: Blob;
+  }
+): Observable<StandardAction>;
+export function uploadBlob(
+  site: string,
+  path: string,
+  fileData: {
+    name: string;
+    type: string;
+    blob: Blob;
+  },
+  uploadMeta: Record<string, unknown>
+): Observable<StandardAction>;
+export function uploadBlob(
+  site: string,
+  path: string,
+  fileData: {
+    name: string;
+    type: string;
+    blob: Blob;
+  },
+  uploadMeta: Record<string, unknown>,
+  uploadUrl: string
+): Observable<StandardAction>;
+export function uploadBlob(
+  site: string,
+  path: string,
+  fileData: {
+    name: string;
+    type: string;
+    blob: Blob;
+  },
+  uploadMeta: Record<string, unknown>,
+  uploadUrl: string,
+  xsrfArgumentName: string
+): Observable<StandardAction>;
+export function uploadBlob(
+  site: string,
+  path: string,
+  fileData: {
+    name: string;
+    type: string;
+    blob: Blob;
+  },
+  uploadMeta: Record<string, unknown> = {},
+  uploadUrl: string = '/studio/api/1/services/api/1/content/write-content.json',
+  xsrfArgumentName: string = '_csrf'
+): Observable<StandardAction> {
+  const qs = toQueryString({ path, site, [xsrfArgumentName]: getRequestForgeryToken() });
   return new Observable((subscriber) => {
     const uppy = new Core({ autoProceed: true });
-    uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, headers: getGlobalHeaders() });
-    uppy.setMeta(metaData);
 
-    const blob = dataUriToBlob(file.dataUrl);
+    uppy.use(XHRUpload, { endpoint: `${uploadUrl}${qs}`, headers: getGlobalHeaders() });
+
+    uppy.setMeta({ ...uploadMeta, path, site });
 
     uppy.on('upload-success', (file, response) => {
-      subscriber.next({
-        type: 'complete',
-        payload: response
-      });
+      subscriber.next({ type: 'complete', payload: response });
       subscriber.complete();
     });
 
     uppy.on('upload-progress', (file, progress) => {
-      let type = 'progress';
-      subscriber.next({
-        type,
-        payload: {
-          file,
-          progress
-        }
-      });
+      subscriber.next({ type: 'progress', payload: { file, progress } });
     });
 
     uppy.on('upload-error', (file, error, response) => {
-      // @ts-ignore
+      // @ts-expect-error - The original response has a `status: number` and `body: any` only.
+      // Looks like trying to match other responses having the error property that further down the chain, handlers inspect.
       response.error = response;
-      subscriber.error(
-        response
-        // type CustomUploadError {
-        //   error: { request: XMLHttpRequest } & Error;
-        //   body: {
-        //     response: ApiResponse;
-        //     status: number;
-        //   };
-        // }
-      );
+      subscriber.error(response);
     });
 
-    uppy.addFile({
-      name: file.name,
-      type: file.type,
-      data: blob
-    });
+    uppy.addFile({ name: fileData.name, type: fileData.type, data: fileData.blob });
 
     return () => {
       uppy.cancelAll();
     };
   });
 }
+// endregion
 
 export function uploadDataUrl(
   site: string,
