@@ -119,7 +119,7 @@ const useLauncherStyles = makeStyles()((theme) => ({
     display: 'inline-flex'
   },
   sitesRail: {
-    backgroundColor: theme.palette.mode === 'dark' ? palette.gray.dark1 : palette.gray.light1
+    backgroundColor: theme.palette.background.default
   },
   appsRail: {},
   railTop: {

@@ -227,11 +227,10 @@ export function PreviewAddressBar(props: AddressBarProps) {
           padding: '2px 2px 2px 10px',
           display: 'flex',
           alignItems: 'center',
-          backgroundColor: theme.palette.background.default,
-          borderColor: theme.palette.mode === 'light' ? theme.palette.divider : theme.palette.grey[700],
+          backgroundColor: theme.palette.mode === 'light' ? theme.palette.background.paper : theme.palette.grey['800'],
+          borderColor: theme.palette.divider,
           ...(focus && {
-            border: `2px solid ${theme.palette.primary.main}`,
-            backgroundColor: theme.palette.background.paper
+            border: `2px solid ${theme.palette.primary.main}`
           })
         })}
       >
