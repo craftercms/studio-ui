@@ -132,7 +132,6 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
         onRenamed={onContentRenamed}
         path={renameContentDialogData.path}
         value={renameContentDialogData.value}
-        allowEditDependencies={false}
       />
     </>
   );

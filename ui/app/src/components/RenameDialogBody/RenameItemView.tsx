@@ -48,7 +48,6 @@ export interface RenameItemViewProps {
   onRename: () => void;
   onInputChanges: (event: React.ChangeEvent<HTMLInputElement>) => void;
   helperText?: ReactNode;
-  allowEditDependencies?: boolean;
 }
 
 export function RenameItemView(props: RenameItemViewProps) {
@@ -62,7 +61,6 @@ export function RenameItemView(props: RenameItemViewProps) {
     fetchingDependantItems,
     error,
     helperText,
-    allowEditDependencies = true,
     setConfirmBrokenReferences,
     onRename,
     onInputChanges
@@ -117,7 +115,7 @@ export function RenameItemView(props: RenameItemViewProps) {
             compactView={false}
             showTypes="all-deps"
             renderAction={(dependency) =>
-              allowEditDependencies && isEditableAsset(dependency.path) ? (
+              isEditableAsset(dependency.path) ? (
                 <IconButton onClick={() => handleEditorDisplay(dependency)}>
                   <EditRoundedIcon />
                 </IconButton>

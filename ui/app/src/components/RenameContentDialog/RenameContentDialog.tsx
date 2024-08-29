@@ -29,13 +29,12 @@ import { ensureSingleSlash, isBlank } from '../../utils/string';
 export interface RenameContentDialogProps extends EnhancedDialogProps {
   path: string;
   value?: string;
-  allowEditDependencies?: boolean;
   onRenamed(name: string): void;
   onSubmittingAndOrPendingChange(value: onSubmittingAndOrPendingChangeProps): void;
 }
 
 export function RenameContentDialog(props: RenameContentDialogProps) {
-  const { path, value, allowEditDependencies, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
+  const { path, value, onRenamed, onSubmittingAndOrPendingChange, ...dialogProps } = props;
   const [dependantItems, setDependantItems] = useState<DetailedItem[]>(null);
   const [fetchingDependantItems, setFetchingDependantItems] = useState(false);
   const [error, setError] = useState(null);
@@ -74,7 +73,6 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
         onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
         onRenamed={onRenamed}
         error={error}
-        allowEditDependencies={allowEditDependencies}
       />
     </EnhancedDialog>
   );
