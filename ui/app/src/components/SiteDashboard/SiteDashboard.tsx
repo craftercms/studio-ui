@@ -81,7 +81,7 @@ export function Dashboard(props: DashboardProps) {
         sx={{
           position: 'relative',
           p: 2,
-          bgcolor: `grey.${mode === 'light' ? 100 : 800}`,
+          bgcolor: 'background.default',
           ...(desktopScreen
             ? {
                 height: mountMode === 'dialog' ? '100%' : 'calc(100% - 65px)',
