@@ -381,8 +381,6 @@
       const contentStyle = (_a = getContentStyle(editor)) !== null && _a !== void 0 ? _a : '';
       const cors = shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
       const templatesCSS = editor.options.get('templates_css') ?? [];
-      console.log('templatesCSS', templatesCSS);
-      console.log('contentCSS', editor.contentCSS);
       global$2.each([...editor.contentCSS, ...templatesCSS], (url) => {
         contentCssEntries +=
           '<link type="text/css" rel="stylesheet" href="' + editor.documentBaseURI.toAbsolute(url) + '"' + cors + '>';
