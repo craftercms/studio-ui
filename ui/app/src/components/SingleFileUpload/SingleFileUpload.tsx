@@ -319,6 +319,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     setFile(null);
     setConfirm(null);
     setDescription(formatMessage(messages.selectFileMessage));
+    setDisableInput(false);
   };
 
   const onChange = ({ nativeEvent: event }) => {
