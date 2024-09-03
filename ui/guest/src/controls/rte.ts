@@ -415,6 +415,14 @@ export function initTinyMCE(
         e.stopPropagation();
       });
 
+      // Register 'templates_css' for a set of custom css styles (files) that will apply to the templates content
+      editor.options.register('templates_css', { processor: 'string[]' });
+      editor.options.set('templates_css', [
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? '/studio/static-assets/libs/tinymce/skins/content/dark/content.min.css'
+          : '/studio/static-assets/libs/tinymce/skins/content/default/content.min.css'
+      ]);
+
       // No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
       external.craftercms_tinymce_hooks &&
         pluginManager.waitFor(
