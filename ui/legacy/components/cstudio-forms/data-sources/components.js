@@ -33,6 +33,7 @@
     this.defaultBaseRepoPath = '/site/components';
     this.baseRepoPath = null;
     this.baseBrowsePath = '/site/components';
+    this.inserted = false;
 
     properties.forEach((prop) => {
       if (prop.value) {
@@ -391,7 +392,16 @@
         false,
         {
           success: function (contentTO, editorId, name, value, draft, action) {
-            control.newInsertItem(name, value, type);
+            if (type === 'embedded' && self.inserted) {
+              // Recently added item is in the last position
+              const itemIndex = control.items.length - 1;
+              // When adding a new embedded content, the form may be saved using the 'Save draft' or the 'Save & Minimize'
+              // options. When it happens, the next save operation will be an edition, not a creation.
+              control.updateEditedItem({ value }, self.id, itemIndex);
+            } else {
+              control.newInsertItem(name, value, type);
+              self.inserted = true;
+            }
             control._renderItems();
           },
           failure: function () {}
