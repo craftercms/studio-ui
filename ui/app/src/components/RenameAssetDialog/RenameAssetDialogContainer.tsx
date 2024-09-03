@@ -36,6 +36,9 @@ import { translations } from '../CreateFileDialog/translations';
 import { RenameItemView } from '../RenameDialogBody';
 import { applyAssetNameRules } from '../../utils/content';
 import { DialogBody } from '../DialogBody';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
+import { contentEvent } from '../../state/actions/system';
 
 export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
   const {
@@ -66,6 +69,16 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 
   useEffect(() => {
     dispatch(fetchRenameAssetDependants());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => e.type === contentEvent.type)).subscribe(() => {
+      dispatch(fetchRenameAssetDependants());
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [dispatch]);
 
   const onInputChanges = (newValue: string) => {
