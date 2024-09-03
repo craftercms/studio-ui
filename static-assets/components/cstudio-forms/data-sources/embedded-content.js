@@ -68,7 +68,6 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         false,
         {
           success: function (contentTO, editorId, name, value) {
-            debugger;
             if (!_self.inserted) {
               control.insertItem(name, value, null, null, _self.id);
               _self.inserted = true;
