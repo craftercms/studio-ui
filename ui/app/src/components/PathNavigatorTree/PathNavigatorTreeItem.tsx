@@ -366,7 +366,8 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                 </IconButton>
               </Tooltip>
             )}
-            {over && (showFilter || Boolean(item.childrenCount)) && (
+            {/* If filter is active, or if mouse is over content (and item has children), show Icon */}
+            {(showFilter || (over && Boolean(item.childrenCount))) && (
               <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
                 <IconButton
                   size="small"
