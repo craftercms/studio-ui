@@ -370,7 +370,9 @@
               <a class="cstudio-form-control-node-selector-add-container-item">${message}</a>
             </li>
           `);
+      const self = this;
       $option.on('click', function () {
+        self.inserted = false;
         callback();
       });
       return $option;
@@ -392,7 +394,7 @@
         false,
         {
           success: function (contentTO, editorId, name, value, draft, action) {
-            if (type === 'embedded' && self.inserted) {
+            if (self.inserted) {
               // Recently added item is in the last position
               const itemIndex = control.items.length - 1;
               // When adding a new embedded content, the form may be saved using the 'Save draft' or the 'Save & Minimize'

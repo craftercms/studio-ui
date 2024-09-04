@@ -48,7 +48,16 @@ YAHOO.extend(CStudioForms.Datasources.EmbeddedContent, CStudioForms.CStudioFormD
         false,
         {
           success: function (contentTO, editorId, name, value) {
-            control.insertItem(name, value, null, null, _self.id);
+            if (!_self.inserted) {
+              control.insertItem(name, value, null, null, _self.id);
+              _self.inserted = true;
+            } else {
+              // Recently added item is in the last position
+              const itemIndex = control.items.length - 1;
+              // When adding a new embedded content, the form may be saved using the 'Save draft' or the 'Save & Minimize'
+              // options. When it happens, the next save operation will be an edition, not a creation.
+              control.updateEditedItem({ value }, _self.id, itemIndex);
+            }
             control._renderItems();
           },
           failure: function () {}

@@ -25,6 +25,7 @@ CStudioForms.Datasources.SharedContent = function (id, form, properties, constra
   this.defaultEnableBrowseExisting = true;
   this.defaultEnableSearchExisting = false;
   this.countOptions = 0;
+  this.inserted = false;
   const i18n = CrafterCMSNext.i18n;
   (this.formatMessage = i18n.intl.formatMessage),
     (this.sharedContentDSMessages = i18n.messages.sharedContentDSMessages);
@@ -77,6 +78,7 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
   itemsAreContentReferences: true,
 
   createElementAction: function (control, _self) {
+    _self.inserted = false;
     if (_self.type === '') {
       CStudioAuthoring.Operations.createNewContent(
         CStudioAuthoringContext.site,
@@ -84,7 +86,27 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
         false,
         {
           success: function (formName, name, value) {
-            control.insertItem(value, formName.item.internalName, null, null, _self.id);
+            if (!_self.inserted) {
+              control.insertItem(value, formName.item.internalName, null, null, _self.id);
+              _self.inserted = true;
+            } else {
+              // Recently added item is in the last position
+              const itemIndex = control.items.length - 1;
+              // When adding a new embedded content, the form may be saved using the 'Save draft' or the 'Save & Minimize'
+              // options. When it happens, the next save operation will be an edition, not a creation.
+              control.updateEditedItem(
+                {
+                  ...(formName.item.internalName && {
+                    key: formName.item.internalName,
+                    include: formName.item.internalName
+                  }),
+                  value
+                },
+                _self.id,
+                itemIndex
+              );
+            }
+
             control._renderItems();
           },
           failure: function () {}
@@ -101,7 +123,17 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
         false,
         {
           success: function (contentTO, editorId, name, value) {
-            control.insertItem(name, value, null, null, _self.id);
+            if (!_self.inserted) {
+              control.insertItem(name, value, null, null, _self.id);
+              _self.inserted = true;
+            } else {
+              // Recently added item is in the last position
+              const itemIndex = control.items.length - 1;
+              // When adding a new embedded content, the form may be saved using the 'Save draft' or the 'Save & Minimize'
+              // options. When it happens, the next save operation will be an edition, not a creation.
+              control.updateEditedItem({ value }, _self.id, itemIndex);
+            }
+
             control._renderItems();
           },
           failure: function () {}
