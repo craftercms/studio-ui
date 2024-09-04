@@ -778,6 +778,7 @@ const initializeCStudioForms = () => {
         FORM_CANCEL_REQUEST = 'FORM_CANCEL_REQUEST',
         FORM_CANCEL = 'FORM_CANCEL',
         LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST',
+        EMBEDDED_FORM_DIALOG_CANCEL_REQUEST = 'EMBEDDED_FORM_DIALOG_CANCEL_REQUEST',
         CHILD_FORM_SUCCESS = 'CHILD_FORM_SUCCESS';
 
       const { fromEvent, map, filter, take } = CrafterCMSNext.rxjs;
@@ -1045,6 +1046,13 @@ const initializeCStudioForms = () => {
                 const dialog = CStudioAuthoring.InContextEdit.getDialog(cfe.engine.config.editorId);
                 const dialogs = CStudioAuthoring.InContextEdit.getDialogs();
                 if (dialog.stackNumber === dialogs.length) {
+                  cfe.engine.cancelForm();
+                }
+              } else if (message.type === EMBEDDED_FORM_DIALOG_CANCEL_REQUEST) {
+                const dialog = CStudioAuthoring.InContextEdit.getDialog(cfe.engine.config.editorId);
+                const dialogs = CStudioAuthoring.InContextEdit.getDialogs();
+                const isEmbedded = dialog.iframe.src.includes('isInclude=true');
+                if (isEmbedded && dialog.stackNumber === dialogs.length) {
                   cfe.engine.cancelForm();
                 }
               }
@@ -1349,7 +1357,7 @@ const initializeCStudioForms = () => {
               var folderName =
                 form.definition.contentAsFolder || form.definition.contentAsFolder === 'true'
                   ? useCurrentValidFolder
-                    ? CStudioForms.currentValidFolder ?? CStudioForms.initialModel['folder-name']
+                    ? (CStudioForms.currentValidFolder ?? CStudioForms.initialModel['folder-name'])
                     : form.model['folder-name']
                   : undefined;
               /*
@@ -1456,6 +1464,15 @@ const initializeCStudioForms = () => {
                 }
                 dialogEl.dialog.show();
                 setButtonsEnabled(true);
+
+                // If the dialog with the error is not the children dialog, we need to close the children dialog
+                // (if embedded, that is handled in the subscription of the message).
+                // At this point the parent's node-selector is already updated with the children changes
+                const iceDialog = CStudioAuthoring.InContextEdit.getDialog(cfe.engine.config.editorId);
+                const dialogs = CStudioAuthoring.InContextEdit.getDialogs();
+                if (iceDialog.stackNumber !== dialogs.length) {
+                  sendMessage({ type: EMBEDDED_FORM_DIALOG_CANCEL_REQUEST });
+                }
                 return;
               }
 
