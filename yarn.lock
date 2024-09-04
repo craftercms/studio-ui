@@ -1704,7 +1704,7 @@ __metadata:
     highlight.js: "npm:^11.9.0"
     jabber: "npm:^1.5.3"
     js-cookie: "npm:^3.0.5"
-    marked: "npm:^12.0.2"
+    marked: "npm:^14.1.1"
     marked-highlight: "npm:^2.1.1"
     moment-timezone: "npm:^0.5.45"
     nanoid: "npm:^5.0.7"
@@ -9384,12 +9384,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"marked@npm:^12.0.2":
-  version: 12.0.2
-  resolution: "marked@npm:12.0.2"
+"marked@npm:^14.1.1":
+  version: 14.1.1
+  resolution: "marked@npm:14.1.1"
   bin:
     marked: bin/marked.js
-  checksum: 10/24d4fc58d37c1779197fa7f93c504d8c71d4df54eb69cbbc14a55ba2a8e2ad83d723801fc25452c21ce74b38a483c5863c53449f130253a597be9e9c1d3e7e2b
+  checksum: 10/43851120b9292102b490999cdbd8148dc814992af17fde1eabca68efe841e56951c0d3b0f2fd11f9a2b746f48e16a1959f455e0694677df1091d06fc73b12fc3
   languageName: node
   linkType: hard
 
