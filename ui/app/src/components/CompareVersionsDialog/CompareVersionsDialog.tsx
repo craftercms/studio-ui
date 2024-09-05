@@ -51,7 +51,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         leftActions,
         rightActions
       }}
-      maxWidth={'xl'}
+      maxWidth="xl"
       TransitionComponent={Slide}
       {...rest}
     >
