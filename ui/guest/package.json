@@ -1,7 +1,7 @@
 {
   "name": "@craftercms/experience-builder",
   "description": "CrafterCMS' Experience Builder integration sdk.",
-  "version": "4.1.6",
+  "version": "4.1.7",
   "repository": {
     "type": "git",
     "url": "https://github.com/craftercms/studio-ui.git",
@@ -92,10 +92,10 @@
     "build:npm": "run-s clean:npm build:modern replace-env-version create-package-file"
   },
   "dependencies": {
-    "@craftercms/classes": "4.1.4",
-    "@craftercms/content": "4.1.4",
-    "@craftercms/ice": "4.1.4",
-    "@craftercms/search": "4.1.4",
+    "@craftercms/classes": "4.1.6",
+    "@craftercms/content": "4.1.6",
+    "@craftercms/ice": "4.1.6",
+    "@craftercms/search": "4.1.6",
     "@craftercms/studio-ui": "workspace:^",
     "@emotion/css": "^11.11.2",
     "@emotion/react": "^11.11.3",
