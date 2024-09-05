@@ -91,20 +91,18 @@ export function ContextMenu(props: ContextMenuProps) {
         </div>
       ) : (
         options.map((section: any, i: number) =>
-          section.map((option: ContextMenuOption, y: number) => {
-            return (
-              <MenuItem
-                dense
-                key={option.id}
-                divider={i !== options.length - 1 && y === section.length - 1}
-                onClick={(e) => onMenuItemClicked(option.id, e)}
-                className={propClasses?.menuItem}
-              >
-                <Typography variant="body2">{option.label}</Typography>
-                {option.icon && <SystemIcon icon={option.icon} sx={{ ml: 1 }} />}
-              </MenuItem>
-            );
-          })
+          section.map((option: ContextMenuOption, y: number) => (
+            <MenuItem
+              dense
+              key={option.id}
+              divider={i !== options.length - 1 && y === section.length - 1}
+              onClick={(e) => onMenuItemClicked(option.id, e)}
+              className={propClasses?.menuItem}
+            >
+              <Typography variant="body2">{option.label}</Typography>
+              {option.icon && <SystemIcon icon={option.icon} sx={{ ml: 1 }} />}
+            </MenuItem>
+          ))
         )
       )}
     </Menu>
