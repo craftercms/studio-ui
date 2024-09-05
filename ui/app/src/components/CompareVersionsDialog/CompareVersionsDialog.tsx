@@ -20,7 +20,7 @@ import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
 import { AsDayMonthDateTime } from '../VersionList';
-import { Slide } from '@mui/material';
+import Slide from '@mui/material/Slide';
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const {
