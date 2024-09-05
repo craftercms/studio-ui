@@ -49,11 +49,15 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
       dispatch(updateWidgetDialog(value));
     });
 
+  const onDrawerResize = (width) => {
+    setWidth(width > 240 ? width : 240);
+  };
+
   return (
     <SiteTools
       site={site}
       sidebarWidth={width}
-      onWidthChange={setWidth}
+      onWidthChange={onDrawerResize}
       onNavItemClick={onNavItemClick}
       sidebarBelowToolbar
       hideSidebarLogo
