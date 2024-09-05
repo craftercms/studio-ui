@@ -173,10 +173,16 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   };
 
   const compareBoth = (selected: string[]) => {
+    const selectedADate = new Date(versionsBranch.byId[selected[0]].modifiedDate);
+    const selectedBDate = new Date(versionsBranch.byId[selected[1]].modifiedDate);
+    // When comparing versions, we want to show what the new version did to the old. For that, we check for the most
+    // recent version and add it first in the list of versions to compare.
     dispatch(
       batchActions([
         fetchContentTypes(),
-        compareBothVersions({ versions: selected }),
+        compareBothVersions({
+          versions: selectedADate > selectedBDate ? [selected[0], selected[1]] : [selected[1], selected[0]]
+        }),
         compareVersionDialogWithActions()
       ])
     );
