@@ -1966,30 +1966,22 @@ const initializeCStudioForms = () => {
                     disablePortal: false,
                     storageKey: storedId,
                     options: [
-                      ...(!isEmbeddedForm
-                        ? [
-                            {
-                              id: 'saveDraft',
-                              label: formatMessage(formEngineMessages.saveDraft),
-                              callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
-                            }
-                          ]
-                        : []),
+                      !isEmbeddedForm && {
+                        id: 'saveDraft',
+                        label: formatMessage(formEngineMessages.saveDraft),
+                        callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
+                      },
                       {
                         id: 'saveAndClose',
                         label: formatMessage(formEngineMessages.saveAndClose),
                         callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndClose')
                       },
-                      ...(!isEmbeddedForm
-                        ? [
-                            {
-                              id: 'saveAndMinimize',
-                              label: formatMessage(formEngineMessages.saveAndMinimize),
-                              callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndMinimize')
-                            }
-                          ]
-                        : [])
-                    ]
+                      !isEmbeddedForm && {
+                        id: 'saveAndMinimize',
+                        label: formatMessage(formEngineMessages.saveAndMinimize),
+                        callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndMinimize')
+                      }
+                    ].filter(Boolean)
                   });
                 },
                 failure: function () {}
