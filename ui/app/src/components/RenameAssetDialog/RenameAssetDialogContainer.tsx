@@ -69,9 +69,6 @@ export function RenameAssetDialogContainer(props: RenameAssetContainerProps) {
 
   useEffect(() => {
     dispatch(fetchRenameAssetDependants());
-  }, [dispatch]);
-
-  useEffect(() => {
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => e.type === contentEvent.type)).subscribe(() => {
       dispatch(fetchRenameAssetDependants());

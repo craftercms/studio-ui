@@ -63,9 +63,6 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
 
   useEffect(() => {
     loadDependants(siteId, path, value);
-  }, [path, value, siteId, loadDependants]);
-
-  useEffect(() => {
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => e.type === contentEvent.type)).subscribe(() => {
       loadDependants(siteId, path, value);

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { LegacyFormDialogContainerProps } from './utils';
 import { getEditFormSrc } from '../../utils/path';
 import { useIntl } from 'react-intl';
@@ -51,7 +51,6 @@ import { useStyles } from './styles';
 import { hasEditAction } from '../../utils/content';
 import { nnou } from '../../utils/object';
 import { useFetchItem } from '../../hooks/useFetchItem';
-import { nanoid as uuid } from 'nanoid';
 
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
   props: LegacyFormDialogContainerProps,
@@ -96,7 +95,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       fieldsIndexes[id] = index;
     });
   }
-  const formId = useMemo(() => uuid(), []);
+  const formId = useId();
 
   const src = useMemo(
     () =>
