@@ -18,7 +18,6 @@ import { makeStyles } from 'tss-react/mui';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Chip from '@mui/material/Chip';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
@@ -31,6 +30,7 @@ import { useSelection } from '../../hooks/useSelection';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
+import { createPresenceTable } from '../../utils/array';
 
 const versionListStyles = makeStyles()((theme) => ({
   list: {
@@ -104,20 +104,21 @@ export function VersionList(props: VersionListProps) {
   const { classes, cx } = versionListStyles();
   const { versions, onOpenMenu, onItemClick, current, selected, isSelectMode = false } = props;
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
-
+  const selectedLookup = createPresenceTable(selected);
   return (
     <List component="div" className={classes.list} disablePadding>
       {versions.map((version: ItemHistoryEntry, i: number) => {
+        const isSelected = Boolean(selectedLookup[version.versionNumber]);
         return (
           <ListItemButton
             key={version.versionNumber}
             divider={versions.length - 1 !== i}
             onClick={() => onItemClick(version)}
-            className={cx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
+            className={cx(classes.listItem, isSelected && 'selected')}
           >
             {isSelectMode && (
               <ListItemIcon>
-                <Checkbox checked={selected?.includes(version.versionNumber)} />
+                <Checkbox checked={isSelected} />
               </ListItemIcon>
             )}
             <ListItemText
