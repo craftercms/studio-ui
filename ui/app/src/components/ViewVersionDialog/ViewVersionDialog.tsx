@@ -20,7 +20,7 @@ import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
-import { Slide } from '@mui/material';
+import Slide from '@mui/material/Slide';
 
 /*const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
