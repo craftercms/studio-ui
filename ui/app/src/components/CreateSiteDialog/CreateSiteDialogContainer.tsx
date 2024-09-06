@@ -57,6 +57,7 @@ import SecondaryButton from '../SecondaryButton';
 import useMount from '../../hooks/useMount';
 import ContentCopyIcon from '@mui/icons-material/ContentCopyRounded';
 import GitFilled from '../../icons/GitFilled';
+import { previewSwitch } from '../../services/security';
 
 interface SearchState {
   searchKey: string;
@@ -427,11 +428,13 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
         handleClose();
         // Prop differs between regular site and marketplace site due to API versions 1 vs 2 differences
         setSiteCookie(site.siteId, useBaseDomain);
-        window.location.href = getSystemLink({
-          systemLinkId: 'preview',
-          authoringBase,
-          site: site.siteId,
-          page: '/'
+        previewSwitch().subscribe(() => {
+          window.location.href = getSystemLink({
+            systemLinkId: 'preview',
+            authoringBase,
+            site: site.siteId,
+            page: '/'
+          });
         });
       }
     };

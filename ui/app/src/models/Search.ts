@@ -92,6 +92,8 @@ export interface SearchResult {
 
 export interface ComponentsContentTypeParams extends PaginationOptions {
   keywords?: string;
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 export interface ContentInstancePage {

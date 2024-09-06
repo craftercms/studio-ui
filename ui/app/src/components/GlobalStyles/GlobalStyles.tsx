@@ -21,6 +21,7 @@ import { staticGlobalStyles } from './css';
 import { useTheme } from '@mui/material/styles';
 import { useMemo } from 'react';
 import { Interpolation } from '@emotion/styled';
+import { typographyStyles } from './typography';
 
 export interface GlobalStylesProps {
   cssBaseline?: boolean;
@@ -56,6 +57,7 @@ export function GlobalStyles(props: GlobalStylesProps) {
       {cssBaseline && <CssBaseline enableColorScheme />}
       <Global styles={dynamicStyles} />
       <Global styles={staticGlobalStyles} />
+      <Global styles={typographyStyles} />
     </>
   );
 }

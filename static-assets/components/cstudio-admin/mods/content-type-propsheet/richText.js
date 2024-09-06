@@ -159,8 +159,10 @@ YAHOO.extend(
       richTextDialogEl.inputEl = inputEl;
 
       tinymce.init({
-        selector: '.' + rteUniqueInitClass,
-        height: 200,
+        target: inputEl,
+        promotion: false,
+        deprecation_warnings: false,
+        height: 400,
         encoding: 'xml',
         force_p_newlines: true,
         force_br_newlines: false,

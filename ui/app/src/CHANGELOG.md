@@ -54,6 +54,8 @@
 * Remove legacy `browseCMIS` dialog and `openCMISBrowse` function from common-api.
 * Remove `CMIS-repo`, `CMIS-upload`, `img-cmis-repo`, `img-CMIS-upload`, `video-cmis-repo` and `video-CMIS-upload` datasources. 
 * `ICEConfig` TypeScript `interface` changed to be `type`. It now accepts either the (model) or (modelId & path).
+* The `acecode` TinyMCE plugin (for code-highlighted Rich Text Editor code editing), renders the code exactly as Tiny provides without decoding entities.
+* `compareVersion` action creator was removed as the action is no longer in use and handled.
 
 ## 4.1.5
 * [common-api.js]

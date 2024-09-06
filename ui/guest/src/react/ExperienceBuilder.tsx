@@ -77,7 +77,7 @@ import {
 } from '@craftercms/studio-ui/state/actions/preview';
 import { createGuestStore } from '../store/store';
 import { Provider } from 'react-redux';
-import { clearAndListen$ } from '../store/subjects';
+import { clearAndListen$, guestCheckIn$ } from '../store/subjects';
 import { GuestState } from '../store/models/GuestStore';
 import { nnou, nullOrUndefined } from '@craftercms/studio-ui/utils/object';
 import { scrollToDropTargets } from '../utils/dom';
@@ -85,7 +85,7 @@ import { checkIfLockedOrModified, dragOk } from '../store/util';
 import { createLocationArgument, isEditActionAvailable } from '../utils/util';
 import FieldInstanceSwitcher from './FieldInstanceSwitcher';
 import LookupTable from '@craftercms/studio-ui/models/LookupTable';
-import { Snackbar, SnackbarProps, ThemeOptions, ThemeProvider } from '@mui/material';
+import { Snackbar, SnackbarProps, Theme, ThemeOptions, ThemeProvider } from '@mui/material';
 import { deepmerge } from '@mui/utils';
 import ZoneMenu from './ZoneMenu';
 import {
@@ -120,6 +120,7 @@ import { emitSystemEvent, emitSystemEvents } from '@craftercms/studio-ui/state/a
 import StandardAction from '@craftercms/studio-ui/models/StandardAction';
 import { getById, getReferentialEntries, subscribeToAllowedContentTypes } from '../iceRegistry';
 import { getParentModelId } from '../utils/ice';
+import { SxProps } from '@mui/system';
 
 // TODO: add themeOptions and global styles customising
 interface BaseXBProps {
@@ -193,16 +194,6 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
           if (nullOrUndefined(record)) {
             console.error('[Guest] No record found for dispatcher element');
           } else {
-            if (
-              !isEditActionAvailable({
-                record,
-                models: getCachedModels(),
-                sandboxItemsByPath: getCachedSandboxItems(),
-                parentModelId: getParentModelId(record.modelId, getCachedModels(), modelHierarchyMap)
-              })
-            ) {
-              return false;
-            }
             if (refs.current.keysPressed.z && type === 'click') {
               return false;
             }
@@ -278,7 +269,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
 
   // This requires maintenance as key shortcuts evolve/change.
   useHotkeys(
-    'a,r,m,e,p,shift+/,shift,/,shift+e',
+    'a,r,e,m,p,shift+slash,shift+e',
     (e) => {
       post(hotKey({ key: e.key, type: 'keyup', shiftKey: e.shiftKey, ctrlKey: e.ctrlKey, metaKey: e.metaKey }));
     },
@@ -521,6 +512,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       });
 
     post(guestCheckIn({ location, path, site, version: process.env.VERSION }));
+    guestCheckIn$.next(true);
 
     return () => {
       post(guestCheckOut({ path }));
@@ -529,6 +521,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
       refs.current.contentReady = false;
       flushRequestedPaths();
       operationsSubscription.unsubscribe();
+      guestCheckIn$.next(false);
     };
   }, [dispatch, path]);
 
@@ -648,6 +641,27 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const lockInfo = isLocked ? state.lockedPaths[elementPath]?.user : null;
               const iceRecord = getById(elementRecord.iceIds[0]);
               const field = iceRecord.recordType === 'field' ? getReferentialEntries(iceRecord).field : undefined;
+              const isEditable = isEditActionAvailable({
+                record: elementRecord,
+                models: getCachedModels(),
+                sandboxItemsByPath: getCachedSandboxItems(),
+                parentModelId: getParentModelId(elementRecord.modelId, getCachedModels(), modelHierarchyMap)
+              });
+              let zoneMarkerModeStyles: Record<string, SxProps<Theme>>;
+              if (isLocked) {
+                zoneMarkerModeStyles = sxStylesConfig.zoneMarker.warnHighlight;
+              } else if (!isEditable) {
+                zoneMarkerModeStyles = sxStylesConfig.zoneMarker.disabledHighlight;
+              } else if (hasFailedRequired || isExternallyModified) {
+                zoneMarkerModeStyles = sxStylesConfig.zoneMarker.errorHighlight;
+              } else if (hasValidations) {
+                zoneMarkerModeStyles = sxStylesConfig.zoneMarker.warnHighlight;
+              } else {
+                zoneMarkerModeStyles = isMoveMode
+                  ? sxStylesConfig.zoneMarker.moveModeHighlight
+                  : sxStylesConfig.zoneMarker.selectModeHighlight;
+              }
+              const zoneMarkerSx = deepmerge(sxStylesConfig.zoneMarker.base, zoneMarkerModeStyles, { clone: true });
               return (
                 <ZoneMarker
                   key={highlight.id}
@@ -656,6 +670,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                   inherited={highlight.inherited}
                   lockInfo={lockInfo}
                   isStale={isExternallyModified}
+                  isEditable={isEditable}
                   field={field}
                   onPopperClick={
                     isMoveMode && isFieldSelectedMode
@@ -677,21 +692,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                       void 0
                     )
                   }
-                  sx={deepmerge(
-                    deepmerge(
-                      sxStylesConfig.zoneMarker.base,
-                      isMoveMode
-                        ? sxStylesConfig.zoneMarker.moveModeHighlight
-                        : sxStylesConfig.zoneMarker.selectModeHighlight,
-                      { clone: true }
-                    ),
-                    hasValidations || isLocked || isExternallyModified
-                      ? hasFailedRequired || isExternallyModified
-                        ? sxStylesConfig.zoneMarker.errorHighlight
-                        : sxStylesConfig.zoneMarker.warnHighlight
-                      : null,
-                    { clone: true }
-                  )}
+                  sx={zoneMarkerSx}
                 />
               );
             })}

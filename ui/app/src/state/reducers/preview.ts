@@ -33,6 +33,7 @@ import {
   fetchComponentsByContentTypeComplete,
   fetchComponentsByContentTypeFailed,
   fetchContentModelComplete,
+  fetchContentTypesComplete,
   fetchGuestModelsComplete,
   fetchPrimaryGuestModelComplete,
   guestCheckIn,
@@ -137,7 +138,7 @@ const componentsInitialState = createEntityState({
     offset: 0,
     limit: 10
   },
-  contentTypeFilter: 'all',
+  contentTypeFilter: 'compatible',
   inPageInstances: {}
 }) as PagedEntityState<ContentInstance>;
 
@@ -328,7 +329,8 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
         modelIdByPath: null,
         selected: null,
         itemBeingDragged: null,
-        mainModelModifier: null
+        mainModelModifier: null,
+        contentTypesUpdated: false
       };
     })
     .addCase(guestCheckOut, (state) => {
@@ -633,18 +635,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       };
     })
     .addCase(initToolsPanelConfig, (state, { payload }) => {
-      let toolsPanelConfig = {
-        widgets: [
-          {
-            id: 'craftercms.component.EmptyState',
-            uiKey: -1,
-            configuration: {
-              title: messages.noUiConfigMessageTitle,
-              subtitle: messages.noUiConfigMessageSubtitle
-            }
-          }
-        ]
-      };
+      let toolsPanelConfig = { widgets: [] };
       const arrays = ['widgets', 'permittedRoles', 'excludes'];
       const lookupTables = ['fields'];
       const configDOM = fromString(payload.configXml);
@@ -715,7 +706,7 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       let icePanelConfig = {
         widgets: [
           {
-            id: 'craftercms.component.EmptyState',
+            id: 'craftercms.components.EmptyState',
             uiKey: -1,
             configuration: {
               title: messages.noUiConfigMessageTitle,
@@ -811,7 +802,12 @@ const reducer = createReducer<GlobalState['preview']>(initialState, (builder) =>
       if (state.guest) state.guest.mainModelModifier = payload.user;
     })
     .addCase(allowedContentTypesUpdate, (state, { payload }) => {
+      if (!state.guest) return state;
       state.guest.allowedContentTypes = payload;
+    })
+    .addCase(fetchContentTypesComplete, (state) => {
+      if (!state.guest) return state;
+      state.guest.contentTypesUpdated = true;
     });
 });
 

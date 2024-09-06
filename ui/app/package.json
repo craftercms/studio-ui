@@ -55,16 +55,16 @@
   },
   "dependencies": {
     "@craftercms/uppy": "workspace:^",
-    "@emotion/css": "^11.11.2",
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
+    "@emotion/css": "^11.13.0",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@graphiql/plugin-explorer": "^3.0.1",
     "@mui/icons-material": "^5.15.20",
-    "@mui/lab": "^5.0.0-alpha.170",
-    "@mui/material": "^5.15.20",
-    "@mui/x-data-grid": "^7.6.2",
-    "@mui/x-date-pickers": "^7.6.2",
-    "@mui/x-tree-view": "^7.6.2",
+    "@mui/lab": "^5.0.0-alpha.173",
+    "@mui/material": "^5.16.7",
+    "@mui/x-data-grid": "^7.13.0",
+    "@mui/x-date-pickers": "^7.13.0",
+    "@mui/x-tree-view": "^7.13.0",
     "@prettier/plugin-xml": "3.3.0",
     "@reduxjs/toolkit": "^2.2.5",
     "@stomp/stompjs": "^7.0.0",
@@ -105,7 +105,7 @@
     "slugify": "^1.6.6",
     "tss-react": "^4.9.10",
     "typescript": "^5.4.5",
-    "uppy": "^3.25.3",
+    "uppy": "^3.27.3",
     "video.js": "^8.14.0",
     "zxcvbn": "^4.4.2"
   },
@@ -129,7 +129,7 @@
     "npm-run-all": "^4.1.5",
     "prop-types": "^15.8.1",
     "rimraf": "^5.0.7",
-    "rollup": "^4.17.2",
-    "vite": "^5.2.11"
+    "rollup": "^4.21.0",
+    "vite": "^5.3.3"
   }
 }

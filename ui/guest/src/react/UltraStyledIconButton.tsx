@@ -15,6 +15,7 @@
  */
 
 import { IconButton, styled } from '@mui/material';
+import { svgIconClasses } from '@mui/material/SvgIcon';
 
 // Since this button runs guest-side, there may be all sorts of styles that affect button styles.
 // The idea of this component is to be as specific as possible to avoid guest site styles to break ours.
@@ -24,7 +25,10 @@ export const UltraStyledIconButton = styled(IconButton)({
   border: 'none !important',
   color: 'inherit !important',
   height: 'inherit !important',
-  width: 'inherit !important'
+  width: 'inherit !important',
+  [`& .${svgIconClasses.root}`]: {
+    fontSize: 21
+  }
 });
 
 export default UltraStyledIconButton;

@@ -61,7 +61,6 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
       .subscribe((e: any) => {
         switch (e.data.type) {
           case 'CONTENT_TYPES_ON_SAVED': {
-            dispatch(emitSystemEvent(contentTypeUpdated()));
             switch (e.data.saveType) {
               case 'saveAndClose':
                 onClose?.();

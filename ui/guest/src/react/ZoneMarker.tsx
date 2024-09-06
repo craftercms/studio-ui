@@ -16,7 +16,7 @@
 
 import React, { CSSProperties, ReactNode, useEffect, useRef, useState } from 'react';
 import { getZoneMarkerStyle } from '../utils/dom';
-import { Box, Paper, Popper, Theme, Tooltip, Typography, useTheme } from '@mui/material';
+import { Box, Paper, Popper, Theme, Typography, useTheme } from '@mui/material';
 import { SxProps } from '@mui/system';
 import { FullSxRecord, PartialClassRecord, PartialSxRecord } from '@craftercms/studio-ui/models/CustomRecord';
 import LevelDescriptorIcon from '@craftercms/studio-ui/icons/LevelDescriptor';
@@ -29,6 +29,9 @@ import AllowedContentTypesData from '@craftercms/studio-ui/models/AllowedContent
 import { ContentType, ContentTypeField } from '@craftercms/studio-ui/models/ContentType';
 import { getCachedContentTypes } from '../contentController';
 import { getAvatarWithIconColors } from '@craftercms/studio-ui/utils/contentType';
+import UltraStyledTypography from './UltraStyledTypography';
+import UltraStyledTooltip from './UltraStyledTooltip';
+import { SystemCssProperties } from '@mui/system/styleFunctionSx/styleFunctionSx';
 
 const AllowedTypeCircle = styled('div')({
   width: 20,
@@ -54,6 +57,7 @@ export interface ZoneMarkerProps {
   menuItems?: ReactNode;
   lockInfo?: Person;
   isStale?: boolean;
+  isEditable: boolean;
   onPopperClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   // TODO: Receive zoneType and abstract icon display here?
   // zoneType: 'component' | 'page' | 'field';
@@ -88,6 +92,7 @@ function getStyles(sx: ZoneMarkerPartialSx): ZoneMarkerFullSx {
     },
     icon: {
       marginRight: 1,
+      fontSize: 21,
       ...sx?.icon
     },
     tooltip: {
@@ -114,6 +119,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
     onPopperClick,
     lockInfo = null,
     isStale = false,
+    isEditable,
     field
   } = props;
   const isLockedItem = Boolean(lockInfo);
@@ -164,9 +170,9 @@ export function ZoneMarker(props: ZoneMarkerProps) {
               ) : (
                 <FieldIcon sx={sx.icon} />
               )}
-              <Typography title={label} noWrap>
+              <UltraStyledTypography title={label} noWrap sx={{ color: (sx?.paper as SystemCssProperties).color }}>
                 {label}
-              </Typography>
+              </UltraStyledTypography>
               {allowedTypesMeta && (
                 <Box
                   sx={{ ml: 1, pointerEvents: 'all', display: 'flex', alignItems: 'center' }}
@@ -174,9 +180,13 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                 >
                   {Object.entries(allowedTypesMeta).map(([id, modes]) => {
                     const type = contentTypes[id];
-                    const { backgroundColor, textColor } = getAvatarWithIconColors(type?.name, theme, darken);
+                    const { backgroundColor, textColor } = getAvatarWithIconColors(
+                      type?.id ?? type?.name,
+                      theme,
+                      darken
+                    );
                     return (
-                      <Tooltip
+                      <UltraStyledTooltip
                         arrow
                         // TODO: i18n
                         title={`Drop target compatible with "${type?.name}" as ${Object.keys(modes)
@@ -192,7 +202,7 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                             borderColor: textColor
                           }}
                         />
-                      </Tooltip>
+                      </UltraStyledTooltip>
                     );
                   })}
                 </Box>
@@ -204,13 +214,19 @@ export function ZoneMarker(props: ZoneMarkerProps) {
                 Locked by {lockInfo.username}
               </Typography>
             )}
+            {!isEditable && !isLockedItem && (
+              <Typography noWrap variant="body2" component="div">
+                {/* TODO: i18n */}
+                Not editable
+              </Typography>
+            )}
             {isStale && (
               <Typography noWrap variant="body2" component="div">
                 {/* TODO: i18n */}
                 Item was modified. Refresh to enable editing.
               </Typography>
             )}
-            <div>{menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}</div>
+            {menuItems && <Box sx={sx.menuItemsContainer}>{menuItems}</Box>}
           </Paper>
         </Popper>
       )}

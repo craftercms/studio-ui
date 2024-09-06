@@ -499,6 +499,10 @@ export const formEngineMessages = defineMessages({
   },
   keepItemInNodeSelector: {
     defaultMessage: 'Ignore'
+  },
+  maxItemsReached: {
+    defaultMessage:
+      'A max of {maxSize} {maxSize, plural, one {item is} other {items are}} allowed. Please remove items to fit the limit before trying to add more.'
   }
 });
 

@@ -108,7 +108,9 @@ export const checkIfLockedOrModified = (state: GuestState, record: ElementRecord
   if (fieldId.length > 0) {
     const entries = getReferentialEntries(record.iceIds[0]);
     if (entries.recordType === 'node-selector-item') {
-      model = getCachedModel(extractCollectionItem(model, fieldId[0], record.index));
+      // There can be a scenario where the node-selector item is a file. When it is, there is no model associated to
+      // that item, so we fall back to the current model.
+      model = getCachedModel(extractCollectionItem(model, fieldId[0], record.index)) ?? model;
       modelId = model.craftercms.id;
     }
   }

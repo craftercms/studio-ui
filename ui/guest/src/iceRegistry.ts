@@ -142,7 +142,12 @@ export function register(registration: ICERecordRegistration): number {
 
     record.recordType = determineRecordType(entities);
 
-    if (record.recordType === 'field' && field.type === 'node-selector' && field.validations.allowedContentTypes) {
+    if (
+      record.recordType === 'field' &&
+      // Null check field in case of a wrong field name in the registration.
+      field?.type === 'node-selector' &&
+      field.validations.allowedContentTypes
+    ) {
       const key = createAllowedContentTypesLookupKey(entities.contentTypeId, entities.fieldId);
       if (!allowedContentTypesData.allowedLookup[key]) {
         const validations = field.validations;
@@ -153,8 +158,10 @@ export function register(registration: ICERecordRegistration): number {
       }
       allowedContentTypesData.recordIdKeyLookup[record.id] = key;
       allowedContentTypesData.allowedLookup[key].recordIds.push(record.id);
-      collectAndEmitAllowedContentTypes();
     }
+    // Invoking all the time so that the `allowedContentTypes$` subject emits either way.
+    // Not emitting could cause UIs to be stuck in a loading state.
+    collectAndEmitAllowedContentTypes();
 
     registry.set(record.id, record);
     refCount[record.id] = 1;
@@ -700,13 +707,12 @@ function collectAndEmitAllowedContentTypes(): void {
   collectAndEmitAllowedContentTypes.timeout = setTimeout(() => {
     const result: LookupTable<AllowedContentTypesData> = {};
     const allowedLookup = allowedContentTypesData.allowedLookup;
+    // Iterate through the data of each typeId:fieldId pair
     for (let key in allowedLookup) {
       const allowed = allowedContentTypesData.allowedLookup[key].data;
+      // Iterate through each type id allowed by this field of the current typeId:fieldId
       for (let typeId in allowed) {
-        if (!result[typeId]) {
-          result[typeId] = { ...allowed[typeId] };
-          break;
-        }
+        result[typeId] = result[typeId] ?? {};
         Object.assign(result[typeId], allowed[typeId]);
       }
     }

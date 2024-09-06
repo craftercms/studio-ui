@@ -93,6 +93,7 @@ export function PreviewComponentsPanel() {
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
   const awaitingGuestCheckIn = nou(allowedTypesData);
+  const contentTypesUpdated = useSelection((state) => state.preview.guest?.contentTypesUpdated);
   const [keyword, setKeyword] = useState('');
   const { formatMessage } = useIntl();
   const contentTypeData: ContentTypeData = useMemo(() => {
@@ -198,6 +199,11 @@ export function PreviewComponentsPanel() {
   // endregion
   return (
     <ErrorBoundary>
+      {contentTypesUpdated && (
+        <Alert severity="warning" variant="outlined" sx={{ border: 0 }}>
+          <FormattedMessage defaultMessage="Content type definitions have changed. Please refresh the preview application." />
+        </Alert>
+      )}
       <Box sx={{ padding: (theme) => `${theme.spacing(1)} ${theme.spacing(1)} 0` }}>
         <SearchBar
           placeholder={formatMessage(translations.filter)}
@@ -247,6 +253,7 @@ export function PreviewComponentsPanel() {
                     <DraggablePanelListItem
                       key={contentType.id}
                       primaryText={contentType.name}
+                      avatarColorBase={contentType.id}
                       onDragStart={() => onDragStart(contentType)}
                       onDragEnd={onDragEnd}
                       onMenu={(e) => onMenuButtonClickHandler(e, contentType)}

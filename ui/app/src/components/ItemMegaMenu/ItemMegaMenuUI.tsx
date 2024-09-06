@@ -33,6 +33,7 @@ import GlobalState from '../../models/GlobalState';
 import Skeleton from '@mui/material/Skeleton';
 import { CSSObject as CSSProperties } from 'tss-react';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon/ItemPublishingTargetIcon';
+import useUnmount from '../../hooks/useUnmount';
 
 export type ItemMegaMenuUIClassKey =
   | 'root'
@@ -78,6 +79,7 @@ export interface ItemMegaMenuUIProps {
   contentType: string;
   locale: GlobalState['uiConfig']['locale'];
   onClose?(): void;
+  onClosed?(): void;
   onMenuItemClicked(option: string, event: React.MouseEvent<Element, MouseEvent>): void;
 }
 
@@ -215,6 +217,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
     contentType,
     locale,
     onClose,
+    onClosed,
     onMenuItemClicked,
     classes: propClasses
   } = props;
@@ -361,8 +364,14 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           </>
         )}
       </section>
+      <Unmount onClosed={onClosed} />
     </Popover>
   );
+}
+
+function Unmount(props: { onClosed?(): void }) {
+  useUnmount(props.onClosed);
+  return null;
 }
 
 export default ItemMegaMenuUI;

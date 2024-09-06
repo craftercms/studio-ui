@@ -366,26 +366,23 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                 </IconButton>
               </Tooltip>
             )}
-            {showFilter ||
-              (Boolean(item.childrenCount) && (
-                <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
-                  <IconButton
-                    size="small"
-                    className={classes.iconButton}
-                    sx={{
-                      opacity: over ? '1' : '.2'
-                    }}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onClearKeywords();
-                      onFilterButtonClick();
-                    }}
-                  >
-                    <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
-                  </IconButton>
-                </Tooltip>
-              ))}
+            {/* If filter is active, or if mouse is over content (and item has children), show Icon */}
+            {(showFilter || (over && Boolean(item.childrenCount))) && (
+              <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
+                <IconButton
+                  size="small"
+                  className={classes.iconButton}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onClearKeywords();
+                    onFilterButtonClick();
+                  }}
+                >
+                  <SearchRoundedIcon color={showFilter ? 'primary' : 'action'} />
+                </IconButton>
+              </Tooltip>
+            )}
           </section>
           {showFilter && (
             <section className={classes.filterSection}>

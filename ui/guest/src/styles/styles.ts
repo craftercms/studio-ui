@@ -47,6 +47,10 @@ export function useGuestTheme(styleConfig: ThemeOptions): Theme {
           secondary: {
             main: prefersDarkMode ? palette.indigo.tint : palette.purple.tint
           }
+        },
+        typography: {
+          fontFamily: '"Source Sans Pro", "Open Sans", sans-serif',
+          fontSize: 16
         }
       },
       styleConfig
@@ -57,7 +61,7 @@ export function useGuestTheme(styleConfig: ThemeOptions): Theme {
 type GuestStyleSxKeys = 'base' | 'selectModeHighlight' | 'moveModeHighlight';
 
 export interface GuestStylesSx {
-  zoneMarker: Record<GuestStyleSxKeys | 'errorHighlight' | 'warnHighlight', ZoneMarkerPartialSx>;
+  zoneMarker: Record<GuestStyleSxKeys | 'errorHighlight' | 'warnHighlight' | 'disabledHighlight', ZoneMarkerPartialSx>;
   dropMarker: Record<GuestStyleSxKeys, DropMarkerPartialSx>;
   ghostElement: SxProps<Theme>;
 }
@@ -103,6 +107,15 @@ export const styleSxDefaults: Partial<GuestStylesSx> = {
       },
       box: {
         outlineColor: (theme) => theme.palette.warning.light
+      }
+    },
+    disabledHighlight: {
+      paper: {
+        bgcolor: (theme) => theme.palette.grey[400],
+        color: (theme) => theme.palette.getContrastText(theme.palette.grey[400])
+      },
+      box: {
+        outlineColor: (theme) => theme.palette.grey[400]
       }
     }
   },

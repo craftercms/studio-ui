@@ -197,7 +197,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       valid;
 
     if (obj.required) {
-      if ((obj.showDate && dateValue == '') || (obj.showTime && timeValue == '')) {
+      if ((obj.showDate && !Boolean(dateValue)) || (obj.showTime && !Boolean(timeValue))) {
         obj.setError('required', 'Field is Required');
         obj.renderValidation(true);
         valid = false;
@@ -540,6 +540,7 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
     var self_ = this;
 
     if (inputTime == undefined) {
+      this.validate(null, this);
       if (this.timeEl.dataset.value != '') {
         CStudioAuthoring.Operations.showSimpleDialog(
           'timeFormatError-dialog',
@@ -1002,8 +1003,6 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
       }
 
       // Subscriptions
-      YAHOO.util.Event.addListener(timeEl, 'blur', this.updateTime, this, true);
-
       YAHOO.util.Event.addListener(
         timeEl,
         'click',
@@ -1405,11 +1404,9 @@ YAHOO.extend(CStudioForms.Controls.DateTime, CStudioForms.CStudioFormField, {
           true
         );
         _self.populateDateTime(adjustedTimeZoneObj, _self.dateEl, _self.timeEl, _self.showDate, _self.showTime);
-        _self.validate(null, _self);
       }
-      this.validate(null, this);
-      // this.displayTimezoneWarning(this.startDateTimeObj, this.startTzDateTimeStr);
     }
+    this.validate(null, this);
   },
 
   doDatePopulateExpression: function (currentDate) {

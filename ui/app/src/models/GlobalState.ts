@@ -102,6 +102,7 @@ export interface GuestData {
    */
   mainModelModifier: Person;
   allowedContentTypes: LookupTable<AllowedContentTypesData>;
+  contentTypesUpdated: boolean;
 }
 
 // TODO:

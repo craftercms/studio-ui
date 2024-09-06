@@ -28,7 +28,6 @@ import {
   historyDialogUpdate,
   showCompareVersionsDialog,
   showConfirmDialog,
-  showHistoryDialog,
   showPreviewDialog,
   showViewVersionDialog
 } from '../../state/actions/dialogs';
@@ -36,11 +35,10 @@ import translations from './translations';
 import { batchActions } from '../../state/actions/misc';
 import { fetchContentTypes } from '../../state/actions/preview';
 import { fetchContentByCommitId } from '../../services/content';
-import { getEditorMode, isImage, isPreviewable, isVideo, isPdfDocument } from '../PathNavigator/utils';
+import { getEditorMode, isImage, isPdfDocument, isPreviewable, isVideo } from '../PathNavigator/utils';
 import {
   compareBothVersions,
   compareToPreviousVersion,
-  compareVersion,
   revertContent,
   revertToPreviousVersion,
   versionsChangeItem,
@@ -59,6 +57,9 @@ import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { UNDEFINED } from '../../utils/constants';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { LoadingState } from '../LoadingState';
+import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
@@ -74,6 +75,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);
   const isItemPreviewable = isPreviewable(item);
+  const [compareMode, setCompareMode] = useState(false);
+  const [selectedCompareVersions, setSelectedCompareVersions] = useState([]);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
@@ -84,7 +87,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
       Object.entries(menuOptions).forEach(([key, value]) => {
         contextMenuOptions[key] = {
           id: value.id,
-          label: formatMessage(value.label, value.values)
+          label: formatMessage(value.label, value.values),
+          icon: value.id === 'compareToPrevious' ? { id: '@mui/icons-material/ArrowDownwardRounded' } : null
         };
       });
       const sections: ContextMenuOption[][] = [];
@@ -128,18 +132,13 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   );
   const hasMenuOptions = isItemPreviewable || count > 1;
 
-  const compareVersionDialogWithActions = () =>
-    showCompareVersionsDialog({
-      disableItemSwitching: true,
-      rightActions: [
-        {
-          icon: { id: '@mui/icons-material/HistoryRounded' },
-          onClick: showHistoryDialog({}),
-          'aria-label': formatMessage(translations.backToHistoryList)
-        }
-      ]
+  const compareVersionDialogWithActions = () => {
+    setCompareMode(false);
+    setSelectedCompareVersions([]);
+    return showCompareVersionsDialog({
+      disableItemSwitching: true
     });
-
+  };
   const handleViewItem = (version: ItemHistoryEntry) => {
     const supportsDiff = ['page', 'component', 'taxonomy'].includes(item.systemType);
     const versionPath = Boolean(version.path) && path !== version.path ? version.path : path;
@@ -149,15 +148,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         batchActions([
           fetchContentTypes(),
           fetchContentVersion({ path: versionPath, versionNumber: version.versionNumber }),
-          showViewVersionDialog({
-            rightActions: [
-              {
-                icon: { id: '@mui/icons-material/HistoryRounded' },
-                onClick: showHistoryDialog({}),
-                'aria-label': formatMessage(translations.backToHistoryList)
-              }
-            ]
-          })
+          showViewVersionDialog({})
         ])
       );
     } else if (isItemPreviewable) {
@@ -180,17 +171,17 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     }
   };
 
-  const compareTo = (versionNumber: string) => {
-    dispatch(
-      batchActions([fetchContentTypes(), compareVersion({ id: versionNumber }), compareVersionDialogWithActions()])
-    );
-  };
-
   const compareBoth = (selected: string[]) => {
+    const selectedADate = new Date(versionsBranch.byId[selected[0]].modifiedDate);
+    const selectedBDate = new Date(versionsBranch.byId[selected[1]].modifiedDate);
+    // When comparing versions, we want to show what the new version did to the old. For that, we check for the most
+    // recent version and add it first in the list of versions to compare.
     dispatch(
       batchActions([
         fetchContentTypes(),
-        compareBothVersions({ versions: selected }),
+        compareBothVersions({
+          versions: selectedADate > selectedBDate ? [selected[0], selected[1]] : [selected[1], selected[0]]
+        }),
         compareVersionDialogWithActions()
       ])
     );
@@ -256,7 +247,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
         break;
       }
       case 'compareTo': {
-        compareTo(activeItem.versionNumber);
+        setCompareMode(true);
+        onVersionSelected(activeItem);
         break;
       }
       case 'compareToCurrent': {
@@ -302,23 +294,45 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     dispatch(versionsChangeLimit({ limit }));
   };
 
+  const onVersionSelected = (version: ItemHistoryEntry) => {
+    const newSelectedVersions = selectedCompareVersions.includes(version.versionNumber)
+      ? selectedCompareVersions.filter((v) => v !== version.versionNumber)
+      : [...selectedCompareVersions, version.versionNumber];
+
+    if (newSelectedVersions.length === 2) {
+      compareBoth(newSelectedVersions);
+    } else {
+      setSelectedCompareVersions(newSelectedVersions);
+    }
+  };
+
   return (
     <>
       <DialogBody className={classes.dialogBody} minHeight>
-        <SingleItemSelector
-          classes={{ root: classes.singleItemSelector }}
-          label={<FormattedMessage id="words.item" defaultMessage="Item" />}
-          open={openSelector}
-          disabled={isConfig}
-          onClose={() => setOpenSelector(false)}
-          onDropdownClick={() => setOpenSelector(!openSelector)}
-          rootPath={rootPath}
-          selectedItem={item}
-          onItemClicked={(item) => {
-            setOpenSelector(false);
-            dispatch(versionsChangeItem({ item }));
-          }}
-        />
+        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+          <SingleItemSelector
+            label={<FormattedMessage id="words.item" defaultMessage="Item" />}
+            open={openSelector}
+            disabled={isConfig}
+            onClose={() => setOpenSelector(false)}
+            onDropdownClick={() => setOpenSelector(!openSelector)}
+            rootPath={rootPath}
+            selectedItem={item}
+            onItemClicked={(item) => {
+              setOpenSelector(false);
+              dispatch(versionsChangeItem({ item }));
+            }}
+          />
+          <FormControlLabel
+            value="start"
+            control={<Switch color="primary" checked={compareMode} />}
+            label={<FormattedMessage defaultMessage="Compare" />}
+            labelPlacement="start"
+            onChange={(e) => {
+              setCompareMode((e.currentTarget as HTMLInputElement).checked);
+            }}
+          />
+        </Box>
         <ErrorBoundary>
           {versionsBranch.isFetching ? (
             <LoadingState />
@@ -326,9 +340,11 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             versionsBranch.versions && (
               <VersionList
                 versions={versionsBranch.versions}
-                onOpenMenu={hasMenuOptions ? handleOpenMenu : null}
-                onItemClick={handleViewItem}
+                onOpenMenu={hasMenuOptions && !compareMode ? handleOpenMenu : null}
+                onItemClick={compareMode ? (version) => onVersionSelected(version) : handleViewItem}
+                selected={selectedCompareVersions}
                 current={current}
+                isSelectMode={compareMode}
               />
             )
           )}

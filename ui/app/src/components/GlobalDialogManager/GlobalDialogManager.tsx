@@ -370,6 +370,10 @@ function GlobalDialogManager() {
       {/* region Compare Versions */}
       <CompareVersionsDialog
         {...state.compareVersions}
+        leftActions={state.compareVersions.leftActions?.map((action) => ({
+          ...action,
+          onClick: createCallback(action.onClick, dispatch)
+        }))}
         rightActions={state.compareVersions.rightActions?.map((action) => ({
           ...action,
           onClick: createCallback(action.onClick, dispatch)
@@ -523,7 +527,11 @@ function GlobalDialogManager() {
       {/* endregion */}
 
       {/* region Item Mega Menu */}
-      <ItemMegaMenu {...state.itemMegaMenu} onClose={createCallback(state.itemMegaMenu.onClose, dispatch)} />
+      <ItemMegaMenu
+        {...state.itemMegaMenu}
+        onClose={createCallback(state.itemMegaMenu.onClose, dispatch)}
+        onClosed={createCallback(state.itemMegaMenu.onClosed, dispatch)}
+      />
       {/* endregion */}
 
       {/* region Launcher */}

@@ -139,6 +139,7 @@ import { getPathFromPreviewURL, processPathMacros, withIndex } from '../../utils
 import {
   closeItemMegaMenu,
   closeSingleFileUploadDialog,
+  itemMegaMenuClosed,
   rtePickerActionResult,
   showEditDialog,
   showItemMegaMenu,
@@ -187,6 +188,8 @@ import compatibilityList from './compatibilityList';
 import ContentType from '../../models/ContentType';
 import { Dispatch } from 'redux';
 import { ActionCreatorWithOptionalPayload } from '@reduxjs/toolkit';
+import { ItemMegaMenuStateProps } from '../ItemMegaMenu';
+import StandardAction from '../../models/StandardAction';
 
 const issueDescriptorRequest = (props: {
   site: string;
@@ -1119,6 +1122,18 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
           });
           break;
         }
+        case showItemMegaMenu.type: {
+          const extendedAction = action as StandardAction<Partial<ItemMegaMenuStateProps>>;
+          const iframe: HTMLIFrameElement = document.querySelector('#crafterCMSPreviewIframe');
+          const iframeRect = iframe.getBoundingClientRect();
+          const id = 'xbItemMegaMenuClosed';
+          extendedAction.payload.anchorPosition.top += iframeRect.top;
+          extendedAction.payload.anchorPosition.left += iframeRect.left;
+          extendedAction.payload.onClosed = batchActions([itemMegaMenuClosed(), dispatchDOMEvent({ id })]);
+          createCustomDocumentEventListener(id, () => iframe.contentWindow.focus());
+          dispatch(action);
+          break;
+        }
         // region actions whitelisted
         case unlockItem.type:
         case errorPageCheckIn.type:
@@ -1354,7 +1369,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
 
   // Host hotkeys
   useHotkeys(
-    'a,r,e,m,p,shift+/,shift,/,shift+e',
+    'a,r,e,m,p,shift+slash,shift+e',
     (e) => {
       upToDateRefs.current.onShortCutKeypress(e);
     },

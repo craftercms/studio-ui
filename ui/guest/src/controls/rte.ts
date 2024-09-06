@@ -16,20 +16,20 @@
 
 import { ElementRecord } from '../models/InContextEditing';
 import * as iceRegistry from '../iceRegistry';
-import { Editor } from 'tinymce';
+import { Editor, EditorEvent } from 'tinymce';
 import * as contentController from '../contentController';
 import { ContentTypeFieldValidations } from '@craftercms/studio-ui/models/ContentType';
-import { post, message$ } from '../utils/communicator';
+import { message$, post } from '../utils/communicator';
 import { GuestStandardAction } from '../store/models/GuestStandardAction';
 import { Observable, Subject } from 'rxjs';
-import { startWith } from 'rxjs/operators';
+import { filter, startWith, take } from 'rxjs/operators';
 import { reversePluckProps } from '@craftercms/studio-ui/utils/object';
 import { showEditDialog, snackGuestMessage } from '@craftercms/studio-ui/state/actions/preview';
 import { RteSetup } from '../models/Rte';
 import { editComponentInline, exitComponentInlineEdit } from '../store/actions';
 import { emptyFieldClass } from '../constants';
 import { rtePickerActionResult, showRtePickerActions } from '@craftercms/studio-ui/state/actions/dialogs';
-import { filter, take } from 'rxjs/operators';
+import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 
 export function initTinyMCE(
   path: string,
@@ -203,6 +203,11 @@ export function initTinyMCE(
         // 'Enter'
       ].filter(Boolean);
 
+      // Meant to avoid a hard refresh causing the item to stay locked. As more XB controls come to life,
+      // this may not be the best place to handle this.
+      const beforeUnloadFn = (event: BeforeUnloadEvent) => post(unlockItem({ path }));
+      window.addEventListener('beforeunload', beforeUnloadFn, { capture: true, passive: true });
+
       function save() {
         const content = getContent();
         if (changed) {
@@ -239,6 +244,8 @@ export function initTinyMCE(
           record.element.classList.add(emptyFieldClass);
         }
 
+        window.removeEventListener('beforeunload', beforeUnloadFn);
+
         // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
         // with the intention to exit editing.
         setTimeout(() => {
@@ -271,9 +278,9 @@ export function initTinyMCE(
 
         // In some cases the 'blur' event is getting caught somewhere along
         // the way. Focusout seems to be more reliable.
-        editor.on('focusout', (e) => {
+        editor.on('focusout', (e: EditorEvent<FocusEvent & { forced?: boolean }>) => {
           // Only consider 'focusout' events that are trusted and not at the bubbling phase.
-          if (e.isTrusted && e.eventPhase !== 3) {
+          if (e.forced || (e.isTrusted && e.eventPhase !== 3)) {
             let relatedTarget = e.relatedTarget as HTMLElement;
             let saved = false;
             // The 'change' event is not triggering until focusing out in v6. Reported in here https://github.com/tinymce/tinymce/issues/9132
@@ -370,7 +377,8 @@ export function initTinyMCE(
           e.preventDefault();
           // Timeout to avoid "Uncaught TypeError: Cannot read properties of null (reading 'getStart')"
           // Hypothesis is the focusout destroys the editor before some internal tiny thing runs.
-          setTimeout(() => editor.fire('focusout'));
+          // @ts-ignore - Add "forced" property to be able to recognise this manually-triggered focusout on our handler.
+          setTimeout(() => editor.fire('focusout', { forced: true }));
         } else if (e.key === 'Enter' && type !== 'html' && type !== 'textarea') {
           // Avoid new line in plain text fields
           e.preventDefault();
@@ -406,6 +414,14 @@ export function initTinyMCE(
         e.preventDefault();
         e.stopPropagation();
       });
+
+      // Register 'templates_css' for a set of custom css styles (files) that will apply to the templates content
+      editor.options.register('templates_css', { processor: 'string[]' });
+      editor.options.set('templates_css', [
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? '/studio/static-assets/libs/tinymce/skins/content/dark/content.min.css'
+          : '/studio/static-assets/libs/tinymce/skins/content/default/content.min.css'
+      ]);
 
       // No point in waiting for `craftercms_tinymce_hooks` if the hook won't be loaded at all.
       external.craftercms_tinymce_hooks &&
