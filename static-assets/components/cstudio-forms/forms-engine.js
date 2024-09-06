@@ -1900,7 +1900,8 @@ var CStudioForms =
             // This is really the right thing to do but previewable doesn't come through
             CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
               success: function (type) {
-                const storedId = 'formEditor';
+                const isEmbeddedForm = window.location.href.includes('isInclude=true');
+                const storedId = isEmbeddedForm ? 'formEditorEmbedded' : 'formEditor';
                 const defaultSelected = 'saveAndClose';
 
                 const onMultiChoiceSaveButtonClick = (e, type) => {
@@ -1945,7 +1946,7 @@ var CStudioForms =
                   disablePortal: false,
                   storageKey: storedId,
                   options: [
-                    {
+                    !isEmbeddedForm && {
                       id: 'saveDraft',
                       label: formatMessage(formEngineMessages.saveDraft),
                       callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
@@ -1955,12 +1956,12 @@ var CStudioForms =
                       label: formatMessage(formEngineMessages.saveAndClose),
                       callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndClose')
                     },
-                    {
+                    !isEmbeddedForm && {
                       id: 'saveAndMinimize',
                       label: formatMessage(formEngineMessages.saveAndMinimize),
                       callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndMinimize')
                     }
-                  ]
+                  ].filter(Boolean)
                 });
               },
               failure: function () {}
