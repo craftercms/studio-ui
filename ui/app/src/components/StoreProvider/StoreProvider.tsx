@@ -15,20 +15,13 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Resource } from '../../models/Resource';
 import { CrafterCMSStore } from '../../state/store';
 import { Provider } from 'react-redux';
 
-type StoreProviderPropsA = PropsWithChildren<{ resource: Resource<CrafterCMSStore> }>;
-type StoreProviderPropsB = PropsWithChildren<{ store: CrafterCMSStore }>;
-export type StoreProviderProps = StoreProviderPropsA | StoreProviderPropsB;
+export type StoreProviderProps = PropsWithChildren<{ store: CrafterCMSStore }>;
 
-export function StoreProvider(props: StoreProviderPropsA): JSX.Element;
-export function StoreProvider(props: StoreProviderPropsB): JSX.Element;
-export function StoreProvider(
-  props: PropsWithChildren<{ store?: CrafterCMSStore; resource?: Resource<CrafterCMSStore> }>
-) {
-  const store = props.store ?? props.resource.read();
+export function StoreProvider(props: StoreProviderProps): JSX.Element {
+  const { store } = props;
   return <Provider children={props.children} store={store} />;
 }
 

@@ -16,7 +16,6 @@
 
 import Grid from '@mui/material/Grid';
 import React from 'react';
-import { Resource } from '../../models/Resource';
 import { Site } from '../../models/Site';
 import SiteCard from '../SiteCard/SiteCard';
 import { useSitesGridStyles } from './styles';
@@ -24,7 +23,7 @@ import LookupTable from '../../models/LookupTable';
 import { PublishingStatus } from '../../models/Publishing';
 
 interface SitesGridProps {
-  resource: Resource<Site[]>;
+  sites: Site[];
   onSiteClick(site: Site): void;
   onDeleteSiteClick(site: Site): void;
   onEditSiteClick(site: Site): void;
@@ -40,7 +39,7 @@ interface SitesGridProps {
 
 export function SitesGrid(props: SitesGridProps) {
   const {
-    resource,
+    sites,
     onSiteClick,
     onDeleteSiteClick,
     onEditSiteClick,
@@ -49,7 +48,6 @@ export function SitesGrid(props: SitesGridProps) {
     onPublishButtonClick,
     disabledSitesLookup
   } = props;
-  const sites = resource.read();
   const { classes } = useSitesGridStyles();
   return (
     <section className={classes.root}>

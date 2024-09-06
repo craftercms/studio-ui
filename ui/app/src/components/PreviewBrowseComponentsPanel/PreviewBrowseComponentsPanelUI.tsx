@@ -27,14 +27,6 @@ import Pagination from '../Pagination';
 import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
 import Alert from '@mui/material/Alert';
 
-export interface ComponentResource {
-  count: number;
-  limit: number;
-  pageNumber: number;
-  contentTypeFilter: string;
-  items: Array<ContentInstance>;
-}
-
 export interface PreviewBrowseComponentsPanelUIProps {
   awaitingGuestCheckIn: boolean;
   items: Array<ContentInstance>;
