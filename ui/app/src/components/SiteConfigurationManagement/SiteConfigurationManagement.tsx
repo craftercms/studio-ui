@@ -235,12 +235,6 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
     setOpenDrawer(!openDrawer);
   };
 
-  const onDrawerResize = (width) => {
-    if (width > 240) {
-      setWidth(width);
-    }
-  };
-
   const showXmlParseError = (error: string) => {
     dispatch(
       showSystemNotification({
@@ -571,7 +565,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         open={openDrawer}
         width={width}
         classes={{ drawerPaper: clsx(classes.drawerPaper, embedded && 'embedded') }}
-        onWidthChange={onDrawerResize}
+        onWidthChange={setWidth}
       >
         <List
           className={classes.list}

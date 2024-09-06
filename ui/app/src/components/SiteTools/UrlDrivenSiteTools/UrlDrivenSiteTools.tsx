@@ -54,15 +54,11 @@ export function UrlDrivenSiteTools(props: UrlDrivenSiteToolsProps) {
     });
   };
 
-  const onDrawerResize = (width) => {
-    setWidth(width > 240 ? width : 240);
-  };
-
   return (
     <SiteTools
       site={site}
       sidebarWidth={width}
-      onWidthChange={onDrawerResize}
+      onWidthChange={setWidth}
       onNavItemClick={onNavItemClick}
       onBackClick={onBackClick}
       activeToolId={activeToolId}
