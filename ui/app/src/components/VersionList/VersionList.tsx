@@ -116,11 +116,6 @@ export function VersionList(props: VersionListProps) {
             onClick={() => onItemClick(version)}
             className={cx(classes.listItem, isSelected && 'selected')}
           >
-            {isSelectMode && (
-              <ListItemIcon>
-                <Checkbox checked={isSelected} />
-              </ListItemIcon>
-            )}
             <ListItemText
               classes={{
                 multiline: classes.listItemTextMultiline,
@@ -140,18 +135,26 @@ export function VersionList(props: VersionListProps) {
               }
               secondary={version.comment}
             />
-            {onOpenMenu && (
+            {(onOpenMenu || isSelectMode) && (
               <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenMenu(e.currentTarget, version, current === version.versionNumber, versions.length === i + 1);
-                  }}
-                  size="large"
-                >
-                  <MoreVertIcon />
-                </IconButton>
+                {isSelectMode && <Checkbox checked={isSelected} />}
+                {!isSelectMode && onOpenMenu && (
+                  <IconButton
+                    edge="end"
+                    size="large"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenMenu(
+                        e.currentTarget,
+                        version,
+                        current === version.versionNumber,
+                        versions.length === i + 1
+                      );
+                    }}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                )}
               </ListItemSecondaryAction>
             )}
           </ListItemButton>

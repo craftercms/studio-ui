@@ -57,10 +57,9 @@ import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { UNDEFINED } from '../../utils/constants';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { LoadingState } from '../LoadingState';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
-import CheckBoxOutlineBlankOutlinedIcon from '@mui/icons-material/CheckBoxOutlineBlankOutlined';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
@@ -324,13 +323,15 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
               dispatch(versionsChangeItem({ item }));
             }}
           />
-          <Button
-            variant="outlined"
-            endIcon={compareMode ? <CheckBoxOutlinedIcon /> : <CheckBoxOutlineBlankOutlinedIcon />}
-            onClick={() => setCompareMode(!compareMode)}
-          >
-            <FormattedMessage defaultMessage="Compare" />
-          </Button>
+          <FormControlLabel
+            value="start"
+            control={<Switch color="primary" checked={compareMode} />}
+            label={<FormattedMessage defaultMessage="Compare" />}
+            labelPlacement="start"
+            onChange={(e) => {
+              setCompareMode((e.currentTarget as HTMLInputElement).checked);
+            }}
+          />
         </Box>
         <ErrorBoundary>
           {versionsBranch.isFetching ? (
