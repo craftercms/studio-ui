@@ -24,7 +24,7 @@ import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { rand } from '../PathNavigator/utils';
 import Skeleton from '@mui/material/Skeleton';
 
-import { SystemIconDescriptor } from '../SystemIcon';
+import { SystemIcon, SystemIconDescriptor } from '../SystemIcon';
 
 export interface ContextMenuOption {
   id: string;
@@ -98,8 +98,10 @@ export function ContextMenu(props: ContextMenuProps) {
               divider={i !== options.length - 1 && y === section.length - 1}
               onClick={(e) => onMenuItemClicked(option.id, e)}
               className={propClasses?.menuItem}
-              children={option.label}
-            />
+            >
+              <Typography variant="body2">{option.label}</Typography>
+              {option.icon && <SystemIcon icon={option.icon} sx={{ ml: 1 }} />}
+            </MenuItem>
           ))
         )
       )}

@@ -23,7 +23,6 @@ import {
   compareBothVersionsComplete,
   compareBothVersionsFailed,
   compareToPreviousVersion,
-  compareVersion,
   fetchItemVersions,
   fetchItemVersionsComplete,
   fetchItemVersionsFailed,
@@ -94,10 +93,6 @@ const reducer = createReducer<GlobalState['versions']>(initialState, (builder) =
     .addCase(versionsChangeItem, (state, { payload }) => ({
       ...state,
       item: payload.item
-    }))
-    .addCase(compareVersion, (state, { payload }) => ({
-      ...state,
-      selected: payload ? [payload.id] : []
     }))
     .addCase(compareToPreviousVersion, (state, { payload }) => {
       let i = state.allVersions.findIndex((version) => version.versionNumber === payload.id);

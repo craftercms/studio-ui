@@ -20,6 +20,7 @@ import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
+import Slide from '@mui/material/Slide';
 
 /*const versionViewStyles = makeStyles(() => ({
   viewVersionBox: {
@@ -115,6 +116,7 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
         leftActions,
         rightActions
       }}
+      TransitionComponent={Slide}
       {...rest}
     >
       <ViewVersionDialogContainer
