@@ -40,6 +40,7 @@ interface ResizeableDrawerProps extends DrawerProps {
   open: boolean;
   width: number;
   maxWidth?: number;
+  minWidth?: number;
   belowToolbar?: boolean;
   classes?: DrawerProps['classes'] & Partial<Record<ResizeableDrawerClassKey, string>>;
   styles?: ResizeableDrawerStyles;
@@ -152,6 +153,7 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
     children,
     width,
     maxWidth = 500,
+    minWidth = 240,
     onWidthChange,
     onResizeStart,
     onResizeStop,
@@ -179,14 +181,15 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
     (e) => {
       if (onWidthChange) {
         e.preventDefault();
-        const newWidth =
+        let newWidth =
           (anchor === 'left'
             ? e.clientX - drawerRef.current.getBoundingClientRect().left
             : window.innerWidth - (e.clientX - drawerRef.current.getBoundingClientRect().left)) + 5;
-        onWidthChange(newWidth <= maxWidth ? newWidth : maxWidth);
+        newWidth = newWidth < minWidth ? minWidth : newWidth > maxWidth ? maxWidth : newWidth;
+        onWidthChange(newWidth);
       }
     },
-    [anchor, onWidthChange, maxWidth]
+    [anchor, onWidthChange, maxWidth, minWidth]
   );
 
   const handleMouseDown = onWidthChange
