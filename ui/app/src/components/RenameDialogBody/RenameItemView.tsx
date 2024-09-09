@@ -76,7 +76,7 @@ export function RenameItemView(props: RenameItemViewProps) {
   });
 
   const handleEditorDisplay = (item: DetailedItem) => {
-    if (item.systemType === 'component' || item.systemType === 'page') {
+    if (item.systemType === 'component' || item.systemType === 'page' || item.systemType === 'taxonomy') {
       setLegacyFormDialogState({
         open: true,
         path: item.path
