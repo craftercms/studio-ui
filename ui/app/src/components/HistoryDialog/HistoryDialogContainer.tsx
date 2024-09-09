@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -60,9 +60,10 @@ import { LoadingState } from '../LoadingState';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
-  const { versionsBranch } = props;
+  const { versionsBranch, error } = props;
   const { count, page, limit, current, rootPath, isConfig } = versionsBranch;
   useFetchSandboxItems([versionsBranch.item.path]);
   // TODO: It'd be best for the dialog to directly receive a live item. Must change versions branch to only hold the path.
@@ -131,6 +132,12 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     ]
   );
   const hasMenuOptions = isItemPreviewable || count > 1;
+
+  useEffect(() => {
+    if (error) {
+      dispatch(showErrorDialog({ error }));
+    }
+  }, [error, dispatch]);
 
   const compareVersionDialogWithActions = () => {
     setCompareMode(false);
