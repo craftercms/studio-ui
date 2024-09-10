@@ -21,6 +21,7 @@ import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import translations from '../CompareVersionsDialog/translations';
+import Slide from '@mui/material/Slide';
 
 export const getLegacyDialogStyles = makeStyles()(() => ({
   iframe: {
@@ -48,6 +49,7 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
           ...(rightActions ?? [])
         ]
       }}
+      TransitionComponent={Slide}
       {...rest}
     >
       <ViewVersionDialogContainer

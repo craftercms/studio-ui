@@ -356,10 +356,7 @@ export function ScheduledDashlet(props: ScheduledDashletProps) {
       )}
       {total === 0 && (
         <DashletEmptyMessage>
-          <FormattedMessage
-            id="pendingApprovalDashlet.noPendingItems"
-            defaultMessage="There are no items pending approval"
-          />
+          <FormattedMessage defaultMessage="There are no items scheduled for publish" />
         </DashletEmptyMessage>
       )}
     </DashletCard>

@@ -36,7 +36,9 @@ export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
           scrollbar: {
             alwaysConsumeMouseWheel: false
           },
-          readOnly: true
+          readOnly: true,
+          // Monaco editor has a breakpoint for split view, we had to decrease it for the split view to show in current dialog
+          renderSideBySideInlineBreakpoint: 300
         });
         diffEditor.setModel({
           original: studioVersion,

@@ -91,6 +91,7 @@ export function PreviewDropTargetsPanel() {
   const dropTargetsBranch = useSelection((state) => state.preview.dropTargets);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const editMode = useSelection((state) => state.preview.editMode);
+  const contentTypesUpdated = useSelection((state) => state.preview.guest?.contentTypesUpdated);
   const contentTypes = contentTypesBranch.byId
     ? Object.values(contentTypesBranch.byId).filter((contentType) => contentType.type === 'component')
     : null;
@@ -157,83 +158,92 @@ export function PreviewDropTargetsPanel() {
     <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
       <FormattedMessage defaultMessage="Waiting for the preview application to load." />
     </Alert>
-  ) : allowedContentTypes.length ? (
-    listMode ? (
-      <>
-        <FormHelperText sx={{ p: 2 }}>
-          <FormattedMessage defaultMessage="Select content type to view the available drop targets for it" />
-        </FormHelperText>
-        <ListSubheader>
-          <FormattedMessage defaultMessage="Compatible types" />
-        </ListSubheader>
-        {allowedContentTypes?.map((contentType: ContentType, i: number) => (
-          <ListItemButton
-            key={i}
-            onClick={() => {
-              setListMode(false);
-              handleSelectChange(contentType.id);
-            }}
-          >
-            <ContentTypeItem contentType={contentType} />
-          </ListItemButton>
-        ))}
-      </>
-    ) : (
-      <>
-        <Box className={classes.select} display="flex" alignItems="center">
-          <FormControl>
-            <InputLabel>{formatMessage(translations.selectedContentType)}</InputLabel>
-            <Select
-              value={dropTargetsBranch.selectedContentType || ''}
-              label={formatMessage(translations.selectedContentType)}
-              sx={{
-                [`& .${selectClasses.select}`]: {
-                  display: 'flex',
-                  alignItems: 'center',
-                  overflow: 'hidden'
-                }
-              }}
-              onChange={(event) => {
-                event.stopPropagation();
-                handleSelectChange(event.target.value);
-              }}
-            >
-              <ListSubheader>
-                <FormattedMessage defaultMessage="Compatible types" />
-              </ListSubheader>
-              {allowedContentTypes?.map((contentType: ContentType, i: number) => (
-                <MenuItem value={contentType.id} key={i}>
-                  <ContentTypeItem contentType={contentType} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {dropTargetsBranch?.selectedContentType && (
-            <Tooltip title={<FormattedMessage defaultMessage="Cancel selection" />}>
-              <IconButton edge="end" sx={{ ml: 0.625 }} onClick={() => resetState()}>
-                <CloseRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Box>
-        <List>
-          <SuspenseWithEmptyState
-            resource={dropTargetsResource}
-            withEmptyStateProps={{
-              emptyStateProps: {
-                title: dropTargetsBranch.selectedContentType
-                  ? formatMessage(translations.noResults)
-                  : formatMessage(translations.chooseContentType)
-              }
-            }}
-          >
-            <DropTargetsList resource={dropTargetsResource} onSelectedDropZone={onSelectedDropZone} />
-          </SuspenseWithEmptyState>
-        </List>
-      </>
-    )
   ) : (
-    <EmptyState title="No drop targets were found on the current view." sxs={{ title: { textAlign: 'center' } }} />
+    <>
+      {contentTypesUpdated && (
+        <Alert severity="warning" variant="outlined" sx={{ border: 0 }}>
+          <FormattedMessage defaultMessage="Content type definitions have changed. Please refresh the preview application." />
+        </Alert>
+      )}
+      {allowedContentTypes.length ? (
+        listMode ? (
+          <>
+            <FormHelperText sx={{ p: 2 }}>
+              <FormattedMessage defaultMessage="Select content type to view the available drop targets for it" />
+            </FormHelperText>
+            <ListSubheader>
+              <FormattedMessage defaultMessage="Compatible types" />
+            </ListSubheader>
+            {allowedContentTypes?.map((contentType: ContentType, i: number) => (
+              <ListItemButton
+                key={i}
+                onClick={() => {
+                  setListMode(false);
+                  handleSelectChange(contentType.id);
+                }}
+              >
+                <ContentTypeItem contentType={contentType} />
+              </ListItemButton>
+            ))}
+          </>
+        ) : (
+          <>
+            <Box className={classes.select} display="flex" alignItems="center">
+              <FormControl>
+                <InputLabel>{formatMessage(translations.selectedContentType)}</InputLabel>
+                <Select
+                  value={dropTargetsBranch.selectedContentType || ''}
+                  label={formatMessage(translations.selectedContentType)}
+                  sx={{
+                    [`& .${selectClasses.select}`]: {
+                      display: 'flex',
+                      alignItems: 'center',
+                      overflow: 'hidden'
+                    }
+                  }}
+                  onChange={(event) => {
+                    event.stopPropagation();
+                    handleSelectChange(event.target.value);
+                  }}
+                >
+                  <ListSubheader>
+                    <FormattedMessage defaultMessage="Compatible types" />
+                  </ListSubheader>
+                  {allowedContentTypes?.map((contentType: ContentType, i: number) => (
+                    <MenuItem value={contentType.id} key={i}>
+                      <ContentTypeItem contentType={contentType} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {dropTargetsBranch?.selectedContentType && (
+                <Tooltip title={<FormattedMessage defaultMessage="Cancel selection" />}>
+                  <IconButton edge="end" sx={{ ml: 0.625 }} onClick={() => resetState()}>
+                    <CloseRoundedIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Box>
+            <List>
+              <SuspenseWithEmptyState
+                resource={dropTargetsResource}
+                withEmptyStateProps={{
+                  emptyStateProps: {
+                    title: dropTargetsBranch.selectedContentType
+                      ? formatMessage(translations.noResults)
+                      : formatMessage(translations.chooseContentType)
+                  }
+                }}
+              >
+                <DropTargetsList resource={dropTargetsResource} onSelectedDropZone={onSelectedDropZone} />
+              </SuspenseWithEmptyState>
+            </List>
+          </>
+        )
+      ) : (
+        <EmptyState title="No drop targets were found on the current view." sxs={{ title: { textAlign: 'center' } }} />
+      )}
+    </>
   );
 }
 

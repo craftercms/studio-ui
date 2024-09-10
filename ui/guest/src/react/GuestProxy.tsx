@@ -329,6 +329,10 @@ export function GuestProxy() {
           const phyRecord = ElementRegistry.fromICEId(iceId);
 
           ElementRegistry.deregister(phyRecord.id);
+          // de-register all registered children of the deleted item (if exist)
+          phyRecord.element.querySelectorAll('[data-craftercms-model-id]').forEach((el) => {
+            ElementRegistry.deregister(ElementRegistry.fromElement(el).id);
+          });
 
           // Immediate removal of the element causes the dragend event not
           // to fire leaving the state corrupt - in a state of "SORTING".

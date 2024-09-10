@@ -18,7 +18,6 @@ import { makeStyles } from 'tss-react/mui';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Chip from '@mui/material/Chip';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
@@ -28,6 +27,10 @@ import { ItemHistoryEntry } from '../../models/Version';
 import palette from '../../styles/palette';
 import GlobalState from '../../models/GlobalState';
 import { useSelection } from '../../hooks/useSelection';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
+import { createPresenceTable } from '../../utils/array';
 
 const versionListStyles = makeStyles()((theme) => ({
   list: {
@@ -92,25 +95,26 @@ interface VersionListProps {
   versions: ItemHistoryEntry[];
   selected?: string[];
   current?: string;
+  isSelectMode?: boolean;
   onItemClick(version: ItemHistoryEntry): void;
   onOpenMenu?(anchorEl: Element, version: ItemHistoryEntry, isCurrent: boolean, lastOne: boolean): void;
 }
 
 export function VersionList(props: VersionListProps) {
   const { classes, cx } = versionListStyles();
-  const { versions, onOpenMenu, onItemClick, current, selected } = props;
+  const { versions, onOpenMenu, onItemClick, current, selected, isSelectMode = false } = props;
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
-
+  const selectedLookup = createPresenceTable(selected);
   return (
     <List component="div" className={classes.list} disablePadding>
       {versions.map((version: ItemHistoryEntry, i: number) => {
+        const isSelected = Boolean(selectedLookup[version.versionNumber]);
         return (
-          <ListItem
+          <ListItemButton
             key={version.versionNumber}
             divider={versions.length - 1 !== i}
-            button
             onClick={() => onItemClick(version)}
-            className={cx(classes.listItem, selected?.includes(version.versionNumber) && 'selected')}
+            className={cx(classes.listItem, isSelected && 'selected')}
           >
             <ListItemText
               classes={{
@@ -131,20 +135,29 @@ export function VersionList(props: VersionListProps) {
               }
               secondary={version.comment}
             />
-            {onOpenMenu && (
+            {(onOpenMenu || isSelectMode) && (
               <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={(e) =>
-                    onOpenMenu(e.currentTarget, version, current === version.versionNumber, versions.length === i + 1)
-                  }
-                  size="large"
-                >
-                  <MoreVertIcon />
-                </IconButton>
+                {isSelectMode && <Checkbox checked={isSelected} />}
+                {!isSelectMode && onOpenMenu && (
+                  <IconButton
+                    edge="end"
+                    size="large"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenMenu(
+                        e.currentTarget,
+                        version,
+                        current === version.versionNumber,
+                        versions.length === i + 1
+                      );
+                    }}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                )}
               </ListItemSecondaryAction>
             )}
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>

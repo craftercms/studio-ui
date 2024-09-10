@@ -20,13 +20,10 @@ import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AsDayMonthDateTime } from '../VersionList';
-import { compareVersion } from '../../state/actions/versions';
+import Slide from '@mui/material/Slide';
 import { translations } from './translations';
-import { useDispatch } from 'react-redux';
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const isSelectMode = props.selectedA && !props.selectedB;
-  const isCompareMode = props.selectedA && props.selectedB;
   const [compareXml, setCompareXml] = useState(false);
   const {
     selectedA,
@@ -40,47 +37,21 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     contentTypesBranch,
     ...rest
   } = props;
-
-  const dispatch = useDispatch();
   const { formatMessage } = useIntl();
 
   return (
     <EnhancedDialog
       title={
-        isSelectMode ? (
-          <FormattedMessage
-            id="compareVersionsDialog.headerSubtitleCompareTo"
-            defaultMessage="Select a revision to compare to “{selectedA}”"
-            values={{ selectedA: <AsDayMonthDateTime date={selectedA.modifiedDate} /> }}
-          />
-        ) : isCompareMode ? (
-          <FormattedMessage
-            defaultMessage="Comparing “{selectedA}” with “{selectedB}”"
-            values={{
-              selectedA: <AsDayMonthDateTime date={selectedA.modifiedDate} />,
-              selectedB: <AsDayMonthDateTime date={selectedB.modifiedDate} />
-            }}
-          />
-        ) : (
-          <FormattedMessage
-            id="compareVersionsDialog.headerSubtitleCompare"
-            defaultMessage="Select a revision to compare"
-          />
-        )
+        <FormattedMessage
+          defaultMessage="Comparing “{selectedA}” with “{selectedB}”"
+          values={{
+            selectedA: <AsDayMonthDateTime date={selectedA?.modifiedDate} />,
+            selectedB: <AsDayMonthDateTime date={selectedB?.modifiedDate} />
+          }}
+        />
       }
       dialogHeaderProps={{
-        subtitle: !isCompareMode && (
-          <FormattedMessage id="compareVersionsDialog.headerTitle" defaultMessage="Compare item versions" />
-        ),
-        leftActions: isCompareMode
-          ? [
-              {
-                icon: { id: '@mui/icons-material/ArrowBackIosRounded' },
-                onClick: () => dispatch(compareVersion({ id: versionsBranch.selected[0] })),
-                'aria-label': formatMessage(translations.backToSelectRevision)
-              }
-            ]
-          : leftActions,
+        leftActions,
         rightActions: [
           {
             icon: { id: '@mui/icons-material/CodeRounded' },
@@ -92,7 +63,8 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
           ...(rightActions ?? [])
         ]
       }}
-      maxWidth={isCompareMode ? 'lg' : 'md'}
+      maxWidth="xl"
+      TransitionComponent={Slide}
       {...rest}
     >
       <CompareVersionsDialogContainer

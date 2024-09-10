@@ -1349,7 +1349,7 @@ const initializeCStudioForms = () => {
               var folderName =
                 form.definition.contentAsFolder || form.definition.contentAsFolder === 'true'
                   ? useCurrentValidFolder
-                    ? CStudioForms.currentValidFolder ?? CStudioForms.initialModel['folder-name']
+                    ? (CStudioForms.currentValidFolder ?? CStudioForms.initialModel['folder-name'])
                     : form.model['folder-name']
                   : undefined;
               /*
@@ -1909,7 +1909,8 @@ const initializeCStudioForms = () => {
               // This is really the right thing to do but previewable doesn't come through
               CStudioAuthoring.Service.lookupContentType(CStudioAuthoringContext.site, contentType, {
                 success: function (type) {
-                  const storedId = 'formEditor';
+                  const isEmbeddedForm = window.location.href.includes('isInclude=true');
+                  const storedId = isEmbeddedForm ? 'formEditorEmbedded' : 'formEditor';
                   const defaultSelected = 'saveAndClose';
 
                   const onMultiChoiceSaveButtonClick = (e, type) => {
@@ -1965,7 +1966,7 @@ const initializeCStudioForms = () => {
                     disablePortal: false,
                     storageKey: storedId,
                     options: [
-                      {
+                      !isEmbeddedForm && {
                         id: 'saveDraft',
                         label: formatMessage(formEngineMessages.saveDraft),
                         callback: (e) => onMultiChoiceSaveButtonClick(e, 'save')
@@ -1975,12 +1976,12 @@ const initializeCStudioForms = () => {
                         label: formatMessage(formEngineMessages.saveAndClose),
                         callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndClose')
                       },
-                      {
+                      !isEmbeddedForm && {
                         id: 'saveAndMinimize',
                         label: formatMessage(formEngineMessages.saveAndMinimize),
                         callback: (e) => onMultiChoiceSaveButtonClick(e, 'saveAndMinimize')
                       }
-                    ]
+                    ].filter(Boolean)
                   });
                 },
                 failure: function () {}

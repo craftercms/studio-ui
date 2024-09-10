@@ -319,6 +319,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
     setFile(null);
     setConfirm(null);
     setDescription(formatMessage(messages.selectFileMessage));
+    setDisableInput(false);
   };
 
   const onChange = ({ nativeEvent: event }) => {
@@ -392,6 +393,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
             type="file"
             onChange={onChange}
             onClick={onInputClick}
+            disabled={disableInput}
           />
           <label htmlFor="contained-button-file">
             <Button variant="outlined" component="span" disabled={disableInput}>

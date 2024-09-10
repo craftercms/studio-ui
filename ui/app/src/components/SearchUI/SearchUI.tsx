@@ -445,6 +445,7 @@ export function SearchUI(props: SearchUIProps) {
               container
               spacing={3}
               minHeight="100%"
+              alignContent={isFetching || searchResults === null ? 'center' : 'start'}
               className={searchResults?.items.length === 0 ? classes.empty : ''}
             >
               {isFetching || searchResults === null ? (

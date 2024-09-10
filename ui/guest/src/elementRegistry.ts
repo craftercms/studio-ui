@@ -79,7 +79,10 @@ export function setLabel(record: ElementRecord): void {
                   `${component.craftercms.label} (${getCachedContentType(component.craftercms.contentTypeId).name})`
                 );
               } else {
-                labels.push(`${field.name}`);
+                // Cases where the item selector has files (not a model), we want the label to be similar to that of repeat group field items: the field name and the item position (e.g. "Features item # 1").
+                labels.push(
+                  `${field.name} item # ${parseInt(isSimple(index) ? String(index) : popPiece(String(index))) + 1}`
+                );
               }
             } else {
               labels.push(`${field.name}`);
