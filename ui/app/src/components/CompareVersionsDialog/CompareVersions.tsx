@@ -30,13 +30,8 @@ import Typography from '@mui/material/Typography';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Box from '@mui/material/Box';
 import { getContentInstanceValueFromProp } from '../../utils/content';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import { batchActions } from '../../state/actions/misc';
-import { compareVersion } from '../../state/actions/versions';
-import { showCompareVersionsDialog, showHistoryDialog } from '../../state/actions/dialogs';
-import { useDispatch } from 'react-redux';
 import useLocale from '../../hooks/useLocale';
 import { asLocalizedDateTime, convertTimeToTimezone } from '../../utils/datetime';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
@@ -64,23 +59,6 @@ interface CompareVersionsProps {
 export function CompareVersions(props: CompareVersionsProps) {
   const { a, b, contentTypes, contentTypeId, compareXml } = props;
   const values = Object.values(contentTypes[contentTypeId].fields) as ContentTypeField[];
-  const dispatch = useDispatch();
-
-  const compareVersionDialogWithActions = () =>
-    showCompareVersionsDialog({
-      disableItemSwitching: true,
-      rightActions: [
-        {
-          icon: { id: '@mui/icons-material/HistoryRounded' },
-          onClick: showHistoryDialog({}),
-          'aria-label': <FormattedMessage defaultMessage="Back to history list" />
-        }
-      ]
-    });
-
-  const compareTo = (versionNumber: string) => {
-    dispatch(batchActions([compareVersion({ id: versionNumber }), compareVersionDialogWithActions()]));
-  };
 
   return (
     <Box
@@ -110,11 +88,6 @@ export function CompareVersions(props: CompareVersionsProps) {
             primary={
               <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
                 <AsDayMonthDateTime date={a.modifiedDate} />
-                <Tooltip title={<FormattedMessage defaultMessage="Edit" />}>
-                  <IconButton onClick={() => compareTo(a.versionNumber)} sx={{ ml: 1 }}>
-                    <EditRoundedIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
               </Box>
             }
             secondary={
@@ -142,11 +115,6 @@ export function CompareVersions(props: CompareVersionsProps) {
             primary={
               <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
                 <AsDayMonthDateTime date={b.modifiedDate} />
-                <Tooltip title={<FormattedMessage defaultMessage="Edit" />}>
-                  <IconButton onClick={() => compareTo(b.versionNumber)} sx={{ ml: 1 }}>
-                    <EditRoundedIcon fontSize="small" />
-                  </IconButton>
-                </Tooltip>
               </Box>
             }
             secondary={
