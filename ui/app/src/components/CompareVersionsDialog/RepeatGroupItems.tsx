@@ -58,8 +58,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     const diffArray = [];
 
     for (let x = 0; x < maxLength; x++) {
-      const itemA = contentA[x] ? JSON.stringify(contentA[x]) : null;
-      const itemB = contentB[x] ? JSON.stringify(contentB[x]) : null;
+      const itemA = contentA?.[x] ? JSON.stringify(contentA[x]) : null;
+      const itemB = contentB?.[x] ? JSON.stringify(contentB[x]) : null;
 
       if (itemA && itemB) {
         const result = itemA === itemB ? 'unchanged' : 'changed';
