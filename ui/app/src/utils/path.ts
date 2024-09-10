@@ -214,7 +214,8 @@ export function getEditFormSrc({
   iceGroupId,
   newEmbedded,
   canEdit,
-  fieldsIndexes
+  fieldsIndexes,
+  formId
 }: {
   path: string;
   selectedFields?: string;
@@ -230,6 +231,7 @@ export function getEditFormSrc({
   newEmbedded?: string;
   canEdit?: boolean;
   fieldsIndexes?: string;
+  formId?: string;
 }): string {
   const qs = toQueryString({
     site,
@@ -244,7 +246,8 @@ export function getEditFormSrc({
     iceId: iceGroupId,
     newEmbedded,
     canEdit,
-    fieldsIndexes
+    fieldsIndexes,
+    formId
   });
   return `${authoringBase}/legacy/form${qs}`;
 }

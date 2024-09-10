@@ -104,12 +104,16 @@ export function LegacyFormDialog(props: LegacyFormDialogProps) {
             title={title}
             disabled={isSubmitting}
             onCloseButtonClick={onCloseButtonClick}
-            rightActions={[
-              {
-                icon: { id: '@mui/icons-material/RemoveRounded' },
-                onClick: onMinimize
-              }
-            ]}
+            rightActions={
+              onMinimize
+                ? [
+                    {
+                      icon: { id: '@mui/icons-material/RemoveRounded' },
+                      onClick: onMinimize
+                    }
+                  ]
+                : []
+            }
           />
         )}
         <EmbeddedLegacyContainer

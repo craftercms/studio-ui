@@ -91,6 +91,7 @@
     const newEmbedded = CStudioAuthoring.Utils.getQueryVariable(location.search, 'newEmbedded');
     const contentTypeId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'contentTypeId');
     const isNewContent = CStudioAuthoring.Utils.getQueryVariable(location.search, 'isNewContent') === 'true';
+    const formId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'formId');
     const LEGACY_FORM_DIALOG_CANCEL_REQUEST = 'LEGACY_FORM_DIALOG_CANCEL_REQUEST';
 
     CStudioAuthoring.OverlayRequiredResources.loadContextNavCss();
@@ -125,6 +126,7 @@
                       type: 'EMBEDDED_LEGACY_FORM_SUCCESS',
                       refresh: true,
                       tab: type,
+                      formId,
                       action
                     }, '*');
                   },
@@ -134,6 +136,7 @@
                       type: 'EMBEDDED_LEGACY_FORM_FAILURE',
                       refresh: false,
                       tab: type,
+                      formId,
                       action: 'failure',
                       message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
                     }, '*');
@@ -148,6 +151,7 @@
                       refresh: false,
                       close: close,
                       tab: type,
+                      formId,
                       action: 'cancelled'
                     }, '*');
                   },
@@ -168,24 +172,26 @@
                         }
                       });
                     } else {
-                      window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+                      window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', formId }, '*');
                     }
                   },
                   pendingChanges: () => {
                     window.parent.postMessage({
                       type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-                      action: 'pendingChanges'
+                      action: 'pendingChanges',
+                      formId
                     }, '*');
                   },
                   renderFailed(error) {
-                    window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error } }, '*');
+                    window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDER_FAILED', payload: { error }, formId }, '*');
                   },
                   changeToEditMode() {
-                    window.parent.postMessage({ type: 'EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE' }, '*');
+                    window.parent.postMessage({ type: 'EMBEDDED_LEGACY_CHANGE_TO_EDIT_MODE', formId }, '*');
                   },
                   minimize: () => {
                     window.parent.postMessage({
-                      type: 'EMBEDDED_LEGACY_MINIMIZE_REQUEST'
+                      type: 'EMBEDDED_LEGACY_MINIMIZE_REQUEST',
+                      formId
                     }, '*');
                   },
                   isParent: true,
@@ -204,6 +210,7 @@
                 refresh: false,
                 tab: type,
                 action: 'failure',
+                formId,
                 message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
               }, '*');
             }
@@ -227,7 +234,8 @@
                 tab: type,
                 redirectUrl: response.item?.browserUri,
                 action,
-                isNew: true
+                isNew: true,
+                formId
               }, '*');
             },
             failure: (error) => {
@@ -235,7 +243,8 @@
               window.parent.postMessage({
                 type: 'EMBEDDED_LEGACY_FORM_FAILURE',
                 refresh: false, tab: type, action: 'failure',
-                message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage)
+                message: formatMessage(embeddedLegacyFormMessages.contentFormFailedToLoadErrorMessage),
+                formId
               }, '*');
             },
             cancelled: () => {
@@ -244,16 +253,18 @@
                 type: 'EMBEDDED_LEGACY_FORM_CLOSE',
                 refresh: false,
                 tab: type,
-                action: 'cancelled'
+                action: 'cancelled',
+                formId
               }, '*');
             },
             renderComplete: () => {
-              window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED' }, '*');
+              window.parent.postMessage({ type: 'EMBEDDED_LEGACY_FORM_RENDERED', formId }, '*');
             },
             pendingChanges: () => {
               window.parent.postMessage({
                 type: 'EMBEDDED_LEGACY_FORM_PENDING_CHANGES',
-                action: 'pendingChanges'
+                action: 'pendingChanges',
+                formId
               }, '*');
             },
             id: type

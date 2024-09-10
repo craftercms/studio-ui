@@ -16,7 +16,7 @@
 
 import { EnhancedDialog, EnhancedDialogProps } from '../EnhancedDialog';
 import { FormattedMessage } from 'react-intl';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DetailedItem } from '../../models';
 import RenameContentDialogContainer from './RenameContentDialogContainer';
 import { fetchDependant } from '../../services/dependencies';
@@ -25,6 +25,9 @@ import { parseLegacyItemToDetailedItem } from '../../utils/content';
 import useWithPendingChangesCloseRequest from '../../hooks/useWithPendingChangesCloseRequest';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { ensureSingleSlash, isBlank } from '../../utils/string';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
+import { contentEvent } from '../../state/actions/system';
 
 export interface RenameContentDialogProps extends EnhancedDialogProps {
   path: string;
@@ -41,7 +44,7 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
   const siteId = useActiveSiteId();
   const pendingChangesCloseRequest = useWithPendingChangesCloseRequest(dialogProps.onClose);
 
-  useEffect(() => {
+  const loadDependants = useCallback((siteId, path, value) => {
     if (!isBlank(value) && !isBlank(path)) {
       setFetchingDependantItems(true);
       fetchDependant(siteId, ensureSingleSlash(`${path}/${value}`)).subscribe({
@@ -56,7 +59,18 @@ export function RenameContentDialog(props: RenameContentDialogProps) {
         }
       });
     }
-  }, [path, value, siteId]);
+  }, []);
+
+  useEffect(() => {
+    loadDependants(siteId, path, value);
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$.pipe(filter((e) => e.type === contentEvent.type)).subscribe(() => {
+      loadDependants(siteId, path, value);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [siteId, path, value, loadDependants]);
 
   return (
     <EnhancedDialog

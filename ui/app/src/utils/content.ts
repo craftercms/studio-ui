@@ -1109,7 +1109,7 @@ export const openItemEditor = (
 ) => {
   let type = 'controller';
 
-  if (item.systemType === 'component' || item.systemType === 'page') {
+  if (item.systemType === 'component' || item.systemType === 'page' || item.systemType === 'taxonomy') {
     type = 'form';
   } else if (item.contentTypeId === 'renderingTemplate') {
     type = 'template';

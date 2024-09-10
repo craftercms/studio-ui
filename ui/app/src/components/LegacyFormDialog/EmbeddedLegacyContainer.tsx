@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { LegacyFormDialogContainerProps } from './utils';
 import { getEditFormSrc } from '../../utils/path';
 import { useIntl } from 'react-intl';
@@ -95,6 +95,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       fieldsIndexes[id] = index;
     });
   }
+  const formId = useId();
 
   const src = useMemo(
     () =>
@@ -109,6 +110,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
         contentTypeId,
         isNewContent,
         iceGroupId,
+        formId,
         ...(nnou(availableActions) && !isNewContent ? { canEdit: hasEditAction(availableActions) } : {}),
         ...(selectedFields && selectedFields.length ? { selectedFields: JSON.stringify(selectedFields) } : {}),
         ...(newEmbedded ? { newEmbedded: JSON.stringify(newEmbedded) } : {}),
@@ -128,7 +130,8 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
       selectedFields,
       newEmbedded,
       availableActions,
-      fieldsIndexes
+      fieldsIndexes,
+      formId
     ]
   );
 
@@ -147,7 +150,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   );
 
   useEffect(() => {
-    const messagesSubscription = messages.subscribe((e: any) => {
+    const messagesSubscription = messages.pipe(filter((e) => e.data.formId === formId)).subscribe((e: any) => {
       switch (e.data.type) {
         case EMBEDDED_LEGACY_FORM_SUCCESS: {
           onSave(e.data);
@@ -259,7 +262,7 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
     return () => {
       messagesSubscription.unsubscribe();
     };
-  }, [inProgress, onSave, messages, dispatch, onClose, formatMessage, onMinimize, setIframeLoaded]);
+  }, [inProgress, onSave, messages, dispatch, onClose, formatMessage, onMinimize, setIframeLoaded, formId]);
 
   useUnmount(onClosed);
 
