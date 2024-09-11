@@ -111,7 +111,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
             <FormattedMessage defaultMessage="Comparing rep-group items" />
           </Typography>
           {Object.values(fields).map((field) => (
-            <CompareFieldPanel a={repItemsCompare.a} b={repItemsCompare.b} field={field} key={field.id} />
+            <CompareFieldPanel a={repItemsCompare.a} b={repItemsCompare.b} field={field} key={field.id} accordion />
           ))}
         </>
       ) : (

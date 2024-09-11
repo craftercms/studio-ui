@@ -200,10 +200,11 @@ interface CompareFieldPanelProps {
     content: ContentInstance;
   };
   field: ContentTypeField;
+  accordion?: boolean;
 }
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const { a, b, field } = props;
+  const { a, b, field, accordion } = props;
   const [unChanged, setUnChanged] = useState(true);
   const fieldType = field.type;
   const locale = useLocale();
@@ -236,26 +237,36 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     }
   });
 
-  return !unChanged ? (
-    <Accordion
-      key={field.id}
-      sx={{
-        margin: 0,
-        border: 0,
-        boxShadow: 'none',
-        '&.Mui-expanded': {
+  const ContainerComponent = (accordion ? Accordion : Box) as React.ElementType;
+  const containerProps = accordion
+    ? {
+        sx: {
           margin: 0,
-          borderBottom: '1px solid rgba(0,0,0,0.12)'
+          border: 0,
+          boxShadow: 'none',
+          '&.Mui-expanded': {
+            margin: 0,
+            borderBottom: '1px solid rgba(0,0,0,0.12)'
+          }
+        },
+        slotProps: {
+          transition: { mountOnEnter: true }
         }
-      }}
-      slotProps={{
-        transition: { mountOnEnter: true }
-      }}
-    >
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        sx={{ [`.${accordionSummaryClasses.content}`]: { justifyContent: 'space-between', alignItems: 'center' } }}
-      >
+      }
+    : { sx: { p: 2 } };
+  const HeaderComponent = (accordion ? AccordionSummary : Box) as React.ElementType;
+  const headerProps = accordion
+    ? {
+        expandIcon: <ExpandMoreIcon />,
+        sx: { [`.${accordionSummaryClasses.content}`]: { justifyContent: 'space-between', alignItems: 'center' } }
+      }
+    : { sx: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 } };
+  const ContentComponent = accordion ? AccordionDetails : Box;
+  const contentProps = accordion ? {} : { sx: { height: '500px' } };
+
+  return !unChanged ? (
+    <ContainerComponent {...containerProps}>
+      <HeaderComponent {...headerProps}>
         <Typography>
           <Box component="span" sx={{ fontWeight: 600 }}>
             {field.name}{' '}
@@ -282,10 +293,16 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             </IconButton>
           </Tooltip>
         )}
-      </AccordionSummary>
-      <AccordionDetails>
+      </HeaderComponent>
+      <ContentComponent {...contentProps}>
         {fieldType === 'text' || fieldType === 'textarea' || fieldType === 'html' ? (
-          <MonacoWrapper contentA={contentA} contentB={contentB} isDiff isHTML={fieldType === 'html'} />
+          <MonacoWrapper
+            contentA={contentA}
+            contentB={contentB}
+            isDiff
+            isHTML={fieldType === 'html'}
+            sxs={{ root: { height: '100%' }, editor: { height: '100%' } }}
+          />
         ) : fieldType === 'node-selector' ? (
           compareXml ? (
             <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isDiff isHTML={false} />
@@ -361,8 +378,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             }
           />
         )}
-      </AccordionDetails>
-    </Accordion>
+      </ContentComponent>
+    </ContainerComponent>
   ) : (
     <></>
   );
