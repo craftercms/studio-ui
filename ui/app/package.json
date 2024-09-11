@@ -82,7 +82,7 @@
     "highlight.js": "^11.9.0",
     "jabber": "^1.5.3",
     "js-cookie": "^3.0.5",
-    "marked": "^12.0.2",
+    "marked": "^14.1.2",
     "marked-highlight": "^2.1.1",
     "moment-timezone": "^0.5.45",
     "nanoid": "^5.0.7",
