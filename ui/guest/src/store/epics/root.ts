@@ -508,10 +508,13 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
   // region click
   (action$: MouseEventActionObservable, state$) =>
     action$.pipe(
-      ofType('click'),
+      // Note: when action is `triggered_click`, the event is the edit button click event.
+      ofType('click', 'triggered_click'),
       withLatestFrom(state$),
       filter(
-        ([, state]) =>
+        ([action, state]) =>
+          // @ts-ignore - Unsure why typescript doesn't correctly detect the action type. Complains about action not having a `type` as it perceives it to be never.
+          action.type === 'triggered_click' ||
           (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) ||
           (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) ||
           (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.FIELD_SELECTED)
@@ -521,8 +524,9 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
           action: GuestStandardAction<{ record: ElementRecord; event: PointerEvent }>,
           state: GuestState
         ]) => {
+          const actionType = action.type;
           const { record, event } = action.payload;
-          const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, record);
+          const { isLocked, isExternallyModified, isLockedByCurrentUser } = checkIfLockedOrModified(state, record);
           const isEditable = isEditActionAvailable({
             record,
             models: getCachedModels(),
@@ -533,12 +537,16 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             isExternallyModified ||
             // Selecting a page/component still has some value even if it's locked
             // to access certain available actions or the item menu. For fields, no
-            // action can be performed so won't allow selection.
-            (isLocked && getById(record.iceIds[0]).recordType === 'field') ||
+            // action can be performed so won't allow selection, except for the case where
+            // the lock owner is the current user. In those cases, allow for fields so user can unlock.
+            (isLocked && !isLockedByCurrentUser && getById(record.iceIds[0]).recordType === 'field') ||
             !isEditable
           ) {
             return NEVER;
-          } else if (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) {
+          } else if (
+            state.highlightMode === HighlightMode.ALL &&
+            (state.status === EditingStatus.LISTENING || actionType === 'triggered_click')
+          ) {
             let selected = {
               modelId: null,
               fieldId: [],
@@ -557,56 +565,54 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             const { field } = iceRegistry.getReferentialEntries(record.iceIds[0]);
             const validations = field?.validations;
             const type = field?.type;
-            switch (type) {
-              case 'html':
-              case 'text':
-              case 'textarea': {
-                if (!window.tinymce) {
-                  alert(
-                    'Looks like tinymce is not added on the page. ' +
-                      'Please add tinymce on to the page to enable editing.'
-                  );
-                } else if (not(validations?.readOnly?.value)) {
-                  const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
-                  const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
-                  // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
+            if (
+              // If it is locked, want the flow to go through the `else` statement even for these types of field — so people can unlock if they are the owner.
+              !isLocked &&
+              ['html', 'text', 'textarea'].includes(type)
+            ) {
+              if (!window.tinymce) {
+                alert(
+                  'Looks like tinymce is not added on the page. ' +
+                    'Please add tinymce on to the page to enable editing.'
+                );
+              } else if (not(validations?.readOnly?.value)) {
+                const setupId = field.properties?.rteConfiguration?.value ?? 'generic';
+                const setup = state.rteConfig[setupId] ?? Object.values(state.rteConfig)[0] ?? {};
+                // Only pass rte setup to html type, text/textarea (plaintext) controls won't show full rich-text-editing.
 
-                  const models = getCachedModels();
-                  const modelId = action.payload.record.modelId;
-                  const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
-                  const path = models[parentModelId ?? modelId].craftercms.path;
-                  const cachedSandboxItem = getCachedSandboxItem(path);
+                const models = getCachedModels();
+                const modelId = action.payload.record.modelId;
+                const parentModelId = getParentModelId(modelId, models, modelHierarchyMap);
+                const path = models[parentModelId ?? modelId].craftercms.path;
+                const cachedSandboxItem = getCachedSandboxItem(path);
 
-                  const pathToLock = isInheritedField(modelId, field.id)
-                    ? models[getModelIdFromInheritedField(modelId, field.id)].craftercms.path
-                    : path;
+                const pathToLock = isInheritedField(modelId, field.id)
+                  ? models[getModelIdFromInheritedField(modelId, field.id)].craftercms.path
+                  : path;
 
-                  return beforeWrite$({
-                    path: pathToLock,
-                    site: state.activeSite,
-                    username: state.username,
-                    localItem: cachedSandboxItem
-                  }).pipe(switchMap(() => initTinyMCE(pathToLock, record, validations, type === 'html' ? setup : {})));
-                }
-                break;
+                return beforeWrite$({
+                  path: pathToLock,
+                  site: state.activeSite,
+                  username: state.username,
+                  localItem: cachedSandboxItem
+                }).pipe(switchMap(() => initTinyMCE(pathToLock, record, validations, type === 'html' ? setup : {})));
               }
-              default: {
-                const sources: Observable<StandardAction>[] = [
-                  escape$.pipe(
-                    takeUntil(clearAndListen$),
-                    tap(() => post(clearSelectedZones.type)),
-                    map(() => startListening()),
-                    take(1)
-                  ),
-                  of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
-                ];
-                // Rapid clicking (double-clicking) outside an RTE will cause the normal
-                // FIELD_SELECTED status but without a previous mouseover setting the highlight.
-                if (Object.values(state.highlighted).length === 0) {
-                  sources.unshift(of({ type: 'mouseover', payload: { record, event } }));
-                }
-                return merge(...sources);
+            } else {
+              const sources: Observable<StandardAction>[] = [
+                escape$.pipe(
+                  takeUntil(clearAndListen$),
+                  tap(() => post(clearSelectedZones.type)),
+                  map(() => startListening()),
+                  take(1)
+                ),
+                of(setEditingStatus({ status: EditingStatus.FIELD_SELECTED }))
+              ];
+              // Rapid clicking (double-clicking) outside an RTE will cause the normal
+              // FIELD_SELECTED status but without a previous mouseover setting the highlight.
+              if (Object.values(state.highlighted).length === 0) {
+                sources.unshift(of({ type: 'mouseover', payload: { record, event } }));
               }
+              return merge(...sources);
             }
           } else if (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) {
             const movableRecordId = iceRegistry.getMovableParentRecord(record.iceIds[0]);
