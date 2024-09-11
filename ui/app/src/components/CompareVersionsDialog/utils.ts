@@ -19,10 +19,11 @@ import StandardAction from '../../models/StandardAction';
 import ApiResponse from '../../models/ApiResponse';
 import { ItemHistoryEntry, VersionsStateProps } from '../../models/Version';
 import { EntityState } from '../../models/EntityState';
-import ContentType from '../../models/ContentType';
+import ContentType, { ContentTypeField } from '../../models/ContentType';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
+import { areObjectsEqual } from '../../utils/object';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -277,3 +278,20 @@ export const getItemDiffStatus = (diff): string => {
 export function removeTags(content: string) {
   return content.replace(/<[^>]*>?/gm, '');
 }
+
+export const hasFieldChanged = (field: ContentTypeField, contentA, contentB) => {
+  const fieldType = field.type;
+  switch (fieldType) {
+    case 'text':
+    case 'html':
+    case 'image':
+    case 'textarea':
+      return contentA !== contentB;
+    case 'node-selector':
+    case 'checkbox-group':
+    case 'repeat':
+      return !areObjectsEqual(contentA ?? {}, contentB ?? {});
+    default:
+      return contentA !== contentB;
+  }
+};

@@ -41,7 +41,8 @@ import { fromString, serialize } from '../../utils/xml';
 import { MonacoWrapper } from '../MonacoWrapper';
 import ContentInstanceComponents from './ContentInstanceComponents';
 import RepeatGroupItems from './RepeatGroupItems';
-import { areObjectsEqual } from '../../utils/object';
+import { hasFieldChanged } from './utils';
+import Button from '@mui/material/Button';
 
 export interface CompareVersionsItem extends ItemHistoryEntry {
   xml: string;
@@ -219,22 +220,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
 
   useMount(() => {
-    switch (fieldType) {
-      case 'text':
-      case 'html':
-      case 'image':
-      case 'textarea':
-        setUnChanged(contentA === contentB);
-        break;
-      case 'node-selector':
-      case 'checkbox-group':
-      case 'repeat':
-        setUnChanged(areObjectsEqual(contentA ?? {}, contentB ?? {}));
-        break;
-      default:
-        setUnChanged(contentA === contentB);
-        break;
-    }
+    setUnChanged(!hasFieldChanged(field, contentA, contentB));
   });
 
   const ContainerComponent = (accordion ? Accordion : Box) as React.ElementType;
@@ -262,7 +248,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       }
     : { sx: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 } };
   const ContentComponent = accordion ? AccordionDetails : Box;
-  const contentProps = accordion ? {} : { sx: { height: '500px' } };
+  const contentProps = accordion ? { sx: { height: '200px' } } : { sx: { height: '600px' } };
+  const [cleanText, setCleanText] = useState(false);
 
   return !unChanged ? (
     <ContainerComponent {...containerProps}>
@@ -293,6 +280,21 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             </IconButton>
           </Tooltip>
         )}
+        {fieldType === 'html' && (
+          <Button
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              setCleanText(!cleanText);
+            }}
+          >
+            {cleanText ? (
+              <FormattedMessage defaultMessage="Show HTML" />
+            ) : (
+              <FormattedMessage defaultMessage="Show text" />
+            )}
+          </Button>
+        )}
       </HeaderComponent>
       <ContentComponent {...contentProps}>
         {fieldType === 'text' || fieldType === 'textarea' || fieldType === 'html' ? (
@@ -301,7 +303,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             contentB={contentB}
             isDiff
             isHTML={fieldType === 'html'}
-            sxs={{ root: { height: '100%' }, editor: { height: '100%' } }}
+            cleanText={cleanText}
           />
         ) : fieldType === 'node-selector' ? (
           compareXml ? (

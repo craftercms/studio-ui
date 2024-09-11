@@ -28,16 +28,16 @@ interface MonacoWrapperProps {
   contentB?: string;
   isHTML?: boolean;
   isDiff?: boolean;
+  cleanText?: boolean;
   sxs?: PartialSxRecord<'root' | 'editor'>;
 }
 
 export function MonacoWrapper(props: MonacoWrapperProps) {
-  const { contentA, contentB, isHTML = false, sxs, isDiff = false } = props;
+  const { contentA, contentB, isHTML = false, cleanText, sxs, isDiff = false } = props;
   const diffRef = useRef(null);
   diffRef.current = isDiff;
   const ref = useRef();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [cleanText, setCleanText] = useState(false);
   const originalContent = useMemo(() => (cleanText ? removeTags(contentA ?? '') : contentA), [cleanText, contentA]);
   const modifiedContent = useMemo(() => (cleanText ? removeTags(contentB ?? '') : contentB), [cleanText, contentB]);
   const [diffEditor, setDiffEditor] = useState(null);
@@ -48,18 +48,12 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
         if (diffRef.current) {
           setDiffEditor(
             monaco.editor.createDiffEditor(ref.current, {
-              scrollbar: {
-                alwaysConsumeMouseWheel: false
-              },
               readOnly: true
             })
           );
         } else {
           setDiffEditor(
             monaco.editor.create(ref.current, {
-              scrollbar: {
-                alwaysConsumeMouseWheel: false
-              },
               readOnly: true
             })
           );
@@ -88,28 +82,17 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
   }, [diffEditor, originalContent, modifiedContent, prefersDarkMode, isHTML]);
 
   return (
-    <Box sx={sxs?.root}>
-      {isHTML && (
-        <Button variant="outlined" onClick={() => setCleanText(!cleanText)}>
-          {cleanText ? (
-            <FormattedMessage defaultMessage="Show HTML" />
-          ) : (
-            <FormattedMessage defaultMessage="Show text" />
-          )}
-        </Button>
-      )}
-      <Box
-        ref={ref}
-        sx={{
-          width: '100%',
-          height: '150px',
-          '&.unChanged': {
-            height: 'auto'
-          },
-          ...sxs?.editor
-        }}
-      />
-    </Box>
+    <Box
+      ref={ref}
+      sx={{
+        width: '100%',
+        height: '100%',
+        ...sxs?.editor,
+        '&.unChanged': {
+          height: 'auto'
+        }
+      }}
+    />
   );
 }
 

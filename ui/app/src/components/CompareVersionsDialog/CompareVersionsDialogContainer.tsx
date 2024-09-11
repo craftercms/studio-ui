@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CompareVersionsDialogContainerProps } from './utils';
+import { CompareVersionsDialogContainerProps, hasFieldChanged } from './utils';
 import React, { useEffect, useState } from 'react';
 import { CompareFieldPanel } from './CompareVersions';
 import DialogBody from '../DialogBody/DialogBody';
@@ -24,9 +24,8 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { forkJoin } from 'rxjs';
 import { fetchContentByCommitId } from '../../services/content';
 import { fromString } from '../../utils/xml';
-import { parseContentXML } from '../../utils/content';
+import { getContentInstanceValueFromProp, parseContentXML } from '../../utils/content';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
-import { ContentTypeField } from '../../models';
 import { ResizeableDrawer } from '../ResizeableDrawer';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -54,8 +53,15 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     item?.contentTypeId &&
     selectionContent.contentA &&
     selectionContent.contentB;
-  // TODO: I need to filter this to only show fields with changes.
-  const contentTypeFields = Object.values(contentTypesBranch.byId[item.contentTypeId].fields) as ContentTypeField[];
+  const contentTypeFields = isCompareDataReady
+    ? Object.values(contentTypesBranch.byId[item.contentTypeId].fields).filter((field) =>
+        hasFieldChanged(
+          field,
+          getContentInstanceValueFromProp(selectionContent.contentA, field.id),
+          getContentInstanceValueFromProp(selectionContent.contentB, field.id)
+        )
+      )
+    : [];
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
   useEffect(() => {
