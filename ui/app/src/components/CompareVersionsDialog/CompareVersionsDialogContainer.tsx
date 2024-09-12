@@ -15,7 +15,7 @@
  */
 
 import { CompareVersionsDialogContainerProps, hasFieldChanged } from './utils';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CompareFieldPanel } from './CompareVersions';
 import DialogBody from '../DialogBody/DialogBody';
 import { LoadingState } from '../LoadingState';
@@ -53,15 +53,18 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     item?.contentTypeId &&
     selectionContent.contentA &&
     selectionContent.contentB;
-  const contentTypeFields = isCompareDataReady
-    ? Object.values(contentTypesBranch.byId[item.contentTypeId].fields).filter((field) =>
-        hasFieldChanged(
-          field,
-          getContentInstanceValueFromProp(selectionContent.contentA, field.id),
-          getContentInstanceValueFromProp(selectionContent.contentB, field.id)
+  const [selectedField, setSelectedField] = useState(null);
+  const contentTypeFields = useMemo(() => {
+    return isCompareDataReady
+      ? Object.values(contentTypesBranch.byId[item.contentTypeId].fields).filter((field) =>
+          hasFieldChanged(
+            field,
+            getContentInstanceValueFromProp(selectionContent.contentA, field.id),
+            getContentInstanceValueFromProp(selectionContent.contentB, field.id)
+          )
         )
-      )
-    : [];
+      : [];
+  }, [contentTypesBranch?.byId, isCompareDataReady, item?.contentTypeId, selectionContent]);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
 
   useEffect(() => {
@@ -79,7 +82,12 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       });
     }
   }, [selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch.byId]);
-  const [selectedField, setSelectedField] = useState(null);
+
+  useEffect(() => {
+    if (contentTypeFields?.length) {
+      setSelectedField(contentTypeFields[0]);
+    }
+  }, [contentTypeFields]);
 
   return (
     <>
