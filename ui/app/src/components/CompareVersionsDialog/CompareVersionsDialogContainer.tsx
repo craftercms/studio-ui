@@ -140,7 +140,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                 ))}
               </List>
             </ResizeableDrawer>
-            <Box sx={{ marginLeft: '280px' }}>
+            <Box sx={{ marginLeft: '280px', height: '100%' }}>
               {selectedField ? (
                 <CompareFieldPanel
                   a={{

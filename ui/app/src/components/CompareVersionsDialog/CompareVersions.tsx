@@ -239,7 +239,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
           transition: { mountOnEnter: true }
         }
       }
-    : { sx: { p: 2 } };
+    : { sx: { p: 2, height: '100%', display: 'flex', flexDirection: 'column' } };
   const HeaderComponent = (accordion ? AccordionSummary : Box) as React.ElementType;
   const headerProps = accordion
     ? {
@@ -248,7 +248,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       }
     : { sx: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 } };
   const ContentComponent = accordion ? AccordionDetails : Box;
-  const contentProps = accordion ? { sx: { height: '200px' } } : { sx: { height: '600px' } };
+  const contentProps = accordion ? { sx: { height: '200px' } } : { sx: { flexGrow: 1 } };
   const [cleanText, setCleanText] = useState(false);
 
   return !unChanged ? (
