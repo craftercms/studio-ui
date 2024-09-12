@@ -48,13 +48,15 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
         if (diffRef.current) {
           setDiffEditor(
             monaco.editor.createDiffEditor(ref.current, {
-              readOnly: true
+              readOnly: true,
+              automaticLayout: true
             })
           );
         } else {
           setDiffEditor(
             monaco.editor.create(ref.current, {
-              readOnly: true
+              readOnly: true,
+              automaticLayout: true
             })
           );
         }
