@@ -18,10 +18,12 @@ import React, { useState } from 'react';
 import { CompareVersionsDialogProps } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
+import { dialogClasses } from '@mui/material/Dialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AsDayMonthDateTime } from '../VersionList';
 import Slide from '@mui/material/Slide';
 import { translations } from './translations';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const [compareXml, setCompareXml] = useState(false);
@@ -38,6 +40,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     ...rest
   } = props;
   const { formatMessage } = useIntl();
+  const largeHeightScreen = useMediaQuery('(min-height: 880px)');
 
   return (
     <EnhancedDialog
@@ -65,6 +68,12 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
       }}
       maxWidth="xl"
       TransitionComponent={Slide}
+      sx={{
+        [`.${dialogClasses.paper}`]: {
+          height: largeHeightScreen ? 'calc(100% - 200px)' : 'calc(100% - 60px)',
+          maxHeight: '1000px'
+        }
+      }}
       {...rest}
     >
       <CompareVersionsDialogContainer
