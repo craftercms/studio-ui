@@ -24,6 +24,8 @@ import { AsDayMonthDateTime } from '../VersionList';
 import Slide from '@mui/material/Slide';
 import { translations } from './translations';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import useLocale from '../../hooks/useLocale';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const [compareXml, setCompareXml] = useState(false);
@@ -41,17 +43,17 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   } = props;
   const { formatMessage } = useIntl();
   const largeHeightScreen = useMediaQuery('(min-height: 880px)');
+  const locale = useLocale();
 
   return (
     <EnhancedDialog
-      title={
-        <FormattedMessage
-          defaultMessage="Comparing “{selectedA}” with “{selectedB}”"
-          values={{
-            selectedA: <AsDayMonthDateTime date={selectedA?.modifiedDate} />,
-            selectedB: <AsDayMonthDateTime date={selectedB?.modifiedDate} />
-          }}
-        />
+      title={<FormattedMessage defaultMessage="Compare Versions" />}
+      subtitle={
+        <>
+          <AsDayMonthDateTime date={selectedA?.modifiedDate} locale={locale} />
+          <CompareArrowsIcon fontSize="small" />
+          <AsDayMonthDateTime date={selectedB?.modifiedDate} locale={locale} />
+        </>
       }
       dialogHeaderProps={{
         leftActions,
@@ -64,7 +66,15 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
               : formatMessage(translations.compareXml)
           },
           ...(rightActions ?? [])
-        ]
+        ],
+        sxs: {
+          subtitle: {
+            display: 'flex',
+            color: (theme) => theme.palette.text.secondary,
+            alignItems: 'center',
+            gap: 1
+          }
+        }
       }}
       maxWidth="xl"
       TransitionComponent={Slide}

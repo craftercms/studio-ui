@@ -23,11 +23,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { AsDayMonthDateTime } from '../VersionList';
 import Paper from '@mui/material/Paper';
 import useMount from '../../hooks/useMount';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
-import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import Typography from '@mui/material/Typography';
-import AccordionDetails from '@mui/material/AccordionDetails';
 import Box from '@mui/material/Box';
 import { getContentInstanceValueFromProp } from '../../utils/content';
 import IconButton from '@mui/material/IconButton';
@@ -36,13 +32,17 @@ import useLocale from '../../hooks/useLocale';
 import { asLocalizedDateTime, convertTimeToTimezone } from '../../utils/datetime';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import { ItemHistoryEntry } from '../../models';
-import CodeRounded from '@mui/icons-material/CodeRounded';
 import { fromString, serialize } from '../../utils/xml';
 import { MonacoWrapper } from '../MonacoWrapper';
-import ContentInstanceComponents from './ContentInstanceComponents';
-import RepeatGroupItems from './RepeatGroupItems';
+import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
+import RepeatGroupItems from './FieldsTypesDiffViews/RepeatGroupItems';
 import { hasFieldChanged } from './utils';
 import Button from '@mui/material/Button';
+import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
+import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
+import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
+import Divider from '@mui/material/Divider';
 
 export interface CompareVersionsItem extends ItemHistoryEntry {
   xml: string;
@@ -147,7 +147,7 @@ export function CompareVersions(props: CompareVersionsProps) {
           />
         ) : (
           <Paper>
-            {contentTypes && values.map((field) => <CompareFieldPanel a={a} b={b} field={field} key={field.id} />)}
+            {/* {contentTypes && values.map((field) => <CompareFieldPanel a={a} b={b} field={field} key={field.id} />)}*/}
           </Paper>
         )}
       </Box>
@@ -162,7 +162,7 @@ interface CompareVersionsDetailsContainerProps {
   noContent?: React.ReactNode;
 }
 
-function CompareVersionsDetailsContainer(props: CompareVersionsDetailsContainerProps) {
+function DefaultDiffView(props: CompareVersionsDetailsContainerProps) {
   const {
     contentA,
     contentB,
@@ -201,11 +201,30 @@ interface CompareFieldPanelProps {
     content: ContentInstance;
   };
   field: ContentTypeField;
+  contentTypeFields: ContentTypeField[];
   accordion?: boolean;
+  onSelectNextField?: (fieldId: string) => void;
+  onSelectPreviousField?: (fieldId: string) => void;
 }
 
+const typesDiffMap = {
+  text: MonacoWrapper,
+  textarea: MonacoWrapper,
+  html: MonacoWrapper,
+  'node-selector': ContentInstanceComponents,
+  'checkbox-group': MonacoWrapper,
+  repeat: RepeatGroupItems,
+  image: DefaultDiffView,
+  'video-picker': DefaultDiffView,
+  time: DefaultDiffView,
+  'date-time': DefaultDiffView,
+  boolean: DefaultDiffView,
+  'numeric-input': DefaultDiffView,
+  dropdown: DefaultDiffView
+};
+
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const { a, b, field, accordion } = props;
+  const { a, b, field, contentTypeFields, onSelectNextField, onSelectPreviousField } = props;
   const [unChanged, setUnChanged] = useState(true);
   const fieldType = field.type;
   const locale = useLocale();
@@ -218,170 +237,140 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
   const contentA = getContentInstanceValueFromProp(a.content, field.id);
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
+  const currentFieldIndex = contentTypeFields.findIndex((f) => f.id === field.id);
+  const nextField = contentTypeFields[currentFieldIndex + 1] || contentTypeFields[0];
+  const previousField = contentTypeFields[currentFieldIndex - 1] || contentTypeFields[contentTypeFields.length - 1];
+  const [cleanText, setCleanText] = useState(false);
+  const showDivider = (fieldType === 'html' || fieldType === 'repeat') && !compareXml;
+
+  const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
+  const diffComponentProps = {
+    contentA:
+      fieldType !== 'checkbox-group'
+        ? contentA
+        : (contentA ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n'),
+    contentB:
+      fieldType !== 'checkbox-group'
+        ? contentB
+        : (contentB ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n'),
+    aXml: aFieldXml,
+    bXml: bFieldXml,
+    isDiff: true,
+    isHTML: fieldType === 'html',
+    fields: field.fields,
+    cleanText,
+    renderContent: null
+  };
+
+  if (DiffComponent === DefaultDiffView) {
+    diffComponentProps.renderContent = (content) =>
+      fieldType === 'image' ? (
+        <Box sx={{ textAlign: 'center' }}>
+          <img src={content} alt="" />
+          <Typography variant="subtitle2">{content}</Typography>
+        </Box>
+      ) : fieldType === 'video-picker' ? (
+        <Box sx={{ textAlign: 'center' }}>
+          <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
+          <Typography variant="subtitle2">{content}</Typography>
+        </Box>
+      ) : fieldType === 'time' ? (
+        <Typography>{content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}</Typography>
+      ) : fieldType === 'date-time' ? (
+        <Tooltip title={content}>
+          <Typography>
+            {content
+              ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
+              : ''}
+          </Typography>
+        </Tooltip>
+      ) : fieldType === 'boolean' ? (
+        <Typography>
+          {content ? <FormattedMessage defaultMessage="Checked" /> : <FormattedMessage defaultMessage="Unchecked" />}
+        </Typography>
+      ) : fieldType === 'checkbox-group' ? (
+        <Box>
+          {content.map((item) => (
+            <Typography>{item.key}</Typography>
+          ))}
+        </Box>
+      ) : (
+        <Box>{JSON.stringify(content)}</Box>
+      );
+  }
 
   useMount(() => {
     setUnChanged(!hasFieldChanged(field, contentA, contentB));
   });
 
-  const ContainerComponent = (accordion ? Accordion : Box) as React.ElementType;
-  const containerProps = accordion
-    ? {
-        sx: {
-          margin: 0,
-          border: 0,
-          boxShadow: 'none',
-          '&.Mui-expanded': {
-            margin: 0,
-            borderBottom: '1px solid rgba(0,0,0,0.12)'
-          }
-        },
-        slotProps: {
-          transition: { mountOnEnter: true }
-        }
-      }
-    : { sx: { p: 2, height: '100%', display: 'flex', flexDirection: 'column' } };
-  const HeaderComponent = (accordion ? AccordionSummary : Box) as React.ElementType;
-  const headerProps = accordion
-    ? {
-        expandIcon: <ExpandMoreIcon />,
-        sx: { [`.${accordionSummaryClasses.content}`]: { justifyContent: 'space-between', alignItems: 'center' } }
-      }
-    : { sx: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 } };
-  const ContentComponent = accordion ? AccordionDetails : Box;
-  const contentProps = accordion ? { sx: { height: '200px' } } : { sx: { flexGrow: 1 } };
-  const [cleanText, setCleanText] = useState(false);
-
   return !unChanged ? (
-    <ContainerComponent {...containerProps}>
-      <HeaderComponent {...headerProps}>
-        <Typography>
-          <Box component="span" sx={{ fontWeight: 600 }}>
-            {field.name}{' '}
-          </Box>
-          ({field.id})
-        </Typography>
-        {(fieldType === 'node-selector' || fieldType === 'repeat') && (
-          <Tooltip
-            title={
-              compareXml ? (
-                <FormattedMessage defaultMessage="Compare content" />
-              ) : (
-                <FormattedMessage defaultMessage="Compare xml" />
-              )
-            }
-          >
-            <IconButton
-              onClick={(e) => {
-                e.stopPropagation();
-                setCompareXml(!compareXml);
-              }}
-            >
-              <CodeRounded fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        )}
-        {fieldType === 'html' && (
-          <Button
-            variant="outlined"
-            onClick={(e) => {
-              e.stopPropagation();
-              setCleanText(!cleanText);
-            }}
-          >
-            {cleanText ? (
-              <FormattedMessage defaultMessage="Show HTML" />
-            ) : (
-              <FormattedMessage defaultMessage="Show text" />
-            )}
+    <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        {contentTypeFields.length > 1 && (
+          <Button startIcon={<ChevronLeftRoundedIcon />} onClick={() => onSelectPreviousField(field.id)}>
+            {previousField.name}
           </Button>
         )}
-      </HeaderComponent>
-      <ContentComponent {...contentProps}>
-        {fieldType === 'text' || fieldType === 'textarea' || fieldType === 'html' ? (
-          <MonacoWrapper
-            contentA={contentA}
-            contentB={contentB}
-            isDiff
-            isHTML={fieldType === 'html'}
-            cleanText={cleanText}
-          />
-        ) : fieldType === 'node-selector' ? (
-          compareXml ? (
-            <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isDiff isHTML={false} />
-          ) : (
-            <ContentInstanceComponents contentA={contentA} contentB={contentB} />
-          )
-        ) : fieldType === 'checkbox-group' ? (
-          <MonacoWrapper
-            contentA={(contentA ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n')}
-            contentB={(contentB ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n')}
-            isDiff
-          />
-        ) : fieldType === 'repeat' ? (
-          compareXml ? (
-            <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isHTML={false} isDiff />
-          ) : (
-            <RepeatGroupItems
-              contentA={contentA}
-              contentB={contentB}
-              aXml={aFieldXml}
-              bXml={bFieldXml}
-              fields={field.fields}
-            />
-          )
-        ) : (
-          <CompareVersionsDetailsContainer
-            contentA={contentA}
-            contentB={contentB}
-            renderContent={(content) =>
-              fieldType === 'image' ? (
-                <Box sx={{ textAlign: 'center' }}>
-                  <img src={content} alt="" />
-                  <Typography variant="subtitle2">{content}</Typography>
-                </Box>
-              ) : fieldType === 'video-picker' ? (
-                <Box sx={{ textAlign: 'center' }}>
-                  <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
-                  <Typography variant="subtitle2">{content}</Typography>
-                </Box>
-              ) : fieldType === 'time' ? (
-                <Typography>
-                  {content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
-                </Typography>
-              ) : fieldType === 'date-time' ? (
-                <Tooltip title={content}>
-                  <Typography>
-                    {content
-                      ? asLocalizedDateTime(
-                          new Date(content).getTime(),
-                          locale.localeCode,
-                          locale.dateTimeFormatOptions
-                        )
-                      : ''}
-                  </Typography>
-                </Tooltip>
-              ) : fieldType === 'boolean' ? (
-                <Typography>
-                  {content ? (
-                    <FormattedMessage defaultMessage="Checked" />
-                  ) : (
-                    <FormattedMessage defaultMessage="Unchecked" />
-                  )}
-                </Typography>
-              ) : fieldType === 'checkbox-group' ? (
-                <Box>
-                  {content.map((item) => (
-                    <Typography>{item.key}</Typography>
-                  ))}
-                </Box>
-              ) : (
-                <Box>{JSON.stringify(content)}</Box>
-              )
-            }
-          />
+        <Paper
+          elevation={0}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexGrow: 1,
+            pb: 1,
+            pt: 1,
+            pl: 2,
+            pr: 2,
+            ml: 2,
+            mr: 2,
+            border: (theme) => `1px solid ${theme.palette.divider}`
+          }}
+        >
+          <Typography sx={{ fontWeight: 'bold' }}>{field.name}</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {!compareXml && fieldType === 'html' && (
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCleanText(!cleanText);
+                }}
+              >
+                {cleanText ? (
+                  <FormattedMessage defaultMessage="Show HTML" />
+                ) : (
+                  <FormattedMessage defaultMessage="Show text" />
+                )}
+              </Button>
+            )}
+            {/* <Button>
+              <FormattedMessage defaultMessage="Compare" />
+            </Button> */}
+            {showDivider && (
+              <Divider orientation="vertical" sx={{ display: 'inline-flex', height: '25px', ml: 2, mr: 2 }} />
+            )}
+            <IconButton size="small" onClick={() => setCompareXml(false)} color={compareXml ? 'default' : 'primary'}>
+              <TextSnippetOutlinedIcon />
+            </IconButton>
+            <IconButton size="small" onClick={() => setCompareXml(true)} color={compareXml ? 'primary' : 'default'}>
+              <CodeOutlinedIcon />
+            </IconButton>
+          </Box>
+        </Paper>
+        {contentTypeFields.length > 1 && (
+          <Button endIcon={<NavigateNextRoundedIcon />} onClick={() => onSelectNextField(field.id)}>
+            {nextField.name}
+          </Button>
         )}
-      </ContentComponent>
-    </ContainerComponent>
+      </Box>
+      <Box sx={{ flexGrow: 1 }}>
+        {compareXml ? (
+          <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isDiff isHTML={false} />
+        ) : (
+          <DiffComponent {...diffComponentProps} />
+        )}
+      </Box>
+    </Box>
   ) : (
     <></>
   );

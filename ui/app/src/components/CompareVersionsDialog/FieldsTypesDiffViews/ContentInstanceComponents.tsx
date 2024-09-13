@@ -14,15 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentInstance from '../../models/ContentInstance';
+import ContentInstance from '../../../models/ContentInstance';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import useItemsByPath from '../../hooks/useItemsByPath';
-import { diffArrays, getItemDiffStatus } from './utils';
+import useItemsByPath from '../../../hooks/useItemsByPath';
+import { diffArrays, getItemDiffStatus } from '../utils';
 import Box from '@mui/material/Box';
-import palette from '../../styles/palette';
+import palette from '../../../styles/palette';
 import Typography from '@mui/material/Typography';
-import { EmptyState } from '../EmptyState';
+import { EmptyState } from '../../EmptyState';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];

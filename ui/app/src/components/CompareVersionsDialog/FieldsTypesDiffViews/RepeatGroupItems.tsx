@@ -14,22 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentInstance from '../../models/ContentInstance';
-import { ContentTypeField, LookupTable } from '../../models';
+import ContentInstance from '../../../models/ContentInstance';
+import { ContentTypeField, LookupTable } from '../../../models';
 import React, { useEffect, useState } from 'react';
-import useSpreadState from '../../hooks/useSpreadState';
-import { fromString, serialize } from '../../utils/xml';
+import useSpreadState from '../../../hooks/useSpreadState';
+import { fromString, serialize } from '../../../utils/xml';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ArrowBackIosRounded from '@mui/icons-material/ArrowBackIosRounded';
 import { FormattedMessage } from 'react-intl';
-import CompareArrowsRoundedIcon from '@mui/icons-material/CompareArrowsRounded';
-import palette from '../../styles/palette';
+import palette from '../../../styles/palette';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { CompareFieldPanel } from './CompareVersions';
-import { areObjectsEqual } from '../../utils/object';
+import { CompareFieldPanel } from '../CompareVersions';
+import { areObjectsEqual } from '../../../utils/object';
 
 interface RepeatGroupItemsProps {
   contentA: ContentInstance[];
@@ -110,13 +109,13 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
           <Typography>
             <FormattedMessage defaultMessage="Comparing rep-group items" />
           </Typography>
-          {Object.values(fields).map((field) => (
+          {/* {Object.values(fields).map((field) => (
             <CompareFieldPanel a={repItemsCompare.a} b={repItemsCompare.b} field={field} key={field.id} accordion />
-          ))}
+          ))}*/}
         </>
       ) : (
         <>
-          {showRepItemsCompare && (
+          {/* {showRepItemsCompare && (
             <Button
               variant="outlined"
               startIcon={<CompareArrowsRoundedIcon />}
@@ -132,7 +131,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                 <FormattedMessage defaultMessage="Compare" />
               )}
             </Button>
-          )}
+          )} */}
           {repDiff.length &&
             repDiff.map((item, index) => (
               <Box

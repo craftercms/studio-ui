@@ -15,7 +15,7 @@
  */
 
 import { CompareVersionsDialogContainerProps, hasFieldChanged } from './utils';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CompareFieldPanel } from './CompareVersions';
 import DialogBody from '../DialogBody/DialogBody';
 import { LoadingState } from '../LoadingState';
@@ -29,12 +29,12 @@ import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { ResizeableDrawer } from '../ResizeableDrawer';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
 import ListItemButton from '@mui/material/ListItemButton';
 import { FormattedMessage } from 'react-intl';
 import EmptyState from '../EmptyState';
 import useSelection from '../../hooks/useSelection';
 import { MonacoWrapper } from '../MonacoWrapper';
+import ListItemText from '@mui/material/ListItemText';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const { selectedA, selectedB, versionsBranch, contentTypesBranch, compareXml } = props;
@@ -66,6 +66,10 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       : [];
   }, [contentTypesBranch?.byId, isCompareDataReady, item?.contentTypeId, selectionContent]);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
+  const sidebarRefs = useRef({});
+  contentTypeFields?.forEach((field) => {
+    sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
+  });
 
   useEffect(() => {
     if (selectedA && selectedB) {
@@ -89,6 +93,20 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     }
   }, [contentTypeFields]);
 
+  const onSelectNextField = (fieldId: string) => {
+    const index = contentTypeFields.findIndex((f) => f.id === fieldId);
+    const nextField = contentTypeFields[index + 1] || contentTypeFields[0];
+    setSelectedField(nextField);
+    sidebarRefs.current[nextField.id].current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const onSelectPreviousField = (fieldId: string) => {
+    const index = contentTypeFields.findIndex((f) => f.id === fieldId);
+    const previousField = contentTypeFields[index - 1] || contentTypeFields[contentTypeFields.length - 1];
+    setSelectedField(previousField);
+    sidebarRefs.current[previousField.id].current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
       <DialogBody
@@ -109,7 +127,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
             contentB={selectionContent.contentBXml}
             isHTML={false}
             isDiff
-            sxs={{ editor: { height: '50vh' } }}
+            sxs={{ editor: { height: '100%' } }}
           />
         ) : (
           <>
@@ -126,16 +144,15 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                 }
               }}
             >
-              <List>
+              <List sx={{ p: 0 }}>
                 {contentTypeFields.map((field) => (
                   <ListItemButton
                     key={field.id}
                     onClick={() => setSelectedField(field)}
                     selected={selectedField?.id === field.id}
+                    ref={sidebarRefs.current[field.id]}
                   >
-                    <Typography>
-                      {field.name} ({field.id})
-                    </Typography>
+                    <ListItemText primary={field.name} secondary={`${field.id} - ${field.type}`} sx={{ m: 0 }} />
                   </ListItemButton>
                 ))}
               </List>
@@ -156,6 +173,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                     xml: selectionContent.contentBXml
                   }}
                   field={selectedField}
+                  contentTypeFields={contentTypeFields}
+                  onSelectNextField={onSelectNextField}
+                  onSelectPreviousField={onSelectPreviousField}
                 />
               ) : (
                 <EmptyState

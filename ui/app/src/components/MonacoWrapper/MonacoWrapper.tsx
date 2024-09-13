@@ -20,8 +20,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { removeTags } from '../CompareVersionsDialog';
 import { withMonaco } from '../../utils/system';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import { FormattedMessage } from 'react-intl';
 
 interface MonacoWrapperProps {
   contentA: string;
@@ -45,20 +43,16 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
   useEffect(() => {
     if (ref.current) {
       withMonaco((monaco) => {
+        const monacoOptions = {
+          readOnly: true,
+          automaticLayout: true,
+          fontSize: 14
+        };
+
         if (diffRef.current) {
-          setDiffEditor(
-            monaco.editor.createDiffEditor(ref.current, {
-              readOnly: true,
-              automaticLayout: true
-            })
-          );
+          setDiffEditor(monaco.editor.createDiffEditor(ref.current, monacoOptions));
         } else {
-          setDiffEditor(
-            monaco.editor.create(ref.current, {
-              readOnly: true,
-              automaticLayout: true
-            })
-          );
+          setDiffEditor(monaco.editor.create(ref.current, monacoOptions));
         }
       });
     }
