@@ -43,6 +43,7 @@ import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 import Divider from '@mui/material/Divider';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 export interface CompareVersionsItem extends ItemHistoryEntry {
   xml: string;
@@ -327,7 +328,10 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             border: (theme) => `1px solid ${theme.palette.divider}`
           }}
         >
-          <Typography sx={{ fontWeight: 'bold' }}>{field.name}</Typography>
+          <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
+            <Typography sx={{ fontWeight: 'bold' }}>{field.name}</Typography>
+            <InfoOutlinedIcon sx={{ ml: 2, color: (theme) => theme.palette.text.secondary }} />
+          </Box>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {!compareXml && fieldType === 'html' && (
               <Button
@@ -343,6 +347,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
                 )}
               </Button>
             )}
+            {/* TODO: compare button for repeat-group diff */}
             {/* <Button>
               <FormattedMessage defaultMessage="Compare" />
             </Button> */}
