@@ -46,7 +46,8 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
         const monacoOptions = {
           readOnly: true,
           automaticLayout: true,
-          fontSize: 14
+          fontSize: 14,
+          contextmenu: false
         };
 
         if (diffRef.current) {
