@@ -22,10 +22,10 @@ export const translations = defineMessages({
     defaultMessage: 'Back to select revision'
   },
   compareXml: {
-    defaultMessage: 'Compare XML'
+    defaultMessage: 'XML'
   },
   compareContent: {
-    defaultMessage: 'Compare Content'
+    defaultMessage: 'Content'
   }
 });
 

@@ -59,11 +59,16 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         leftActions,
         rightActions: [
           {
+            icon: { id: '@mui/icons-material/TextSnippetOutlined' },
+            onClick: () => setCompareXml(false),
+            'aria-label': formatMessage(translations.compareContent),
+            sx: { color: (theme) => !compareXml && theme.palette.primary.main }
+          },
+          {
             icon: { id: '@mui/icons-material/CodeRounded' },
-            onClick: () => setCompareXml(!compareXml),
-            'aria-label': compareXml
-              ? formatMessage(translations.compareContent)
-              : formatMessage(translations.compareXml)
+            onClick: () => setCompareXml(true),
+            'aria-label': formatMessage(translations.compareXml),
+            sx: { color: (theme) => compareXml && theme.palette.primary.main }
           },
           ...(rightActions ?? [])
         ],
