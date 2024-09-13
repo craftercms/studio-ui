@@ -35,6 +35,10 @@ import EmptyState from '../EmptyState';
 import useSelection from '../../hooks/useSelection';
 import { MonacoWrapper } from '../MonacoWrapper';
 import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import { ItemTypeIcon } from '../ItemTypeIcon';
+import palette from '../../styles/palette';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const { selectedA, selectedB, versionsBranch, contentTypesBranch, compareXml } = props;
@@ -54,9 +58,10 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     selectionContent.contentA &&
     selectionContent.contentB;
   const [selectedField, setSelectedField] = useState(null);
+  const contentType = contentTypesBranch?.byId[item.contentTypeId];
   const contentTypeFields = useMemo(() => {
     return isCompareDataReady
-      ? Object.values(contentTypesBranch.byId[item.contentTypeId].fields).filter((field) =>
+      ? Object.values(contentType.fields).filter((field) =>
           hasFieldChanged(
             field,
             getContentInstanceValueFromProp(selectionContent.contentA, field.id),
@@ -64,7 +69,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
           )
         )
       : [];
-  }, [contentTypesBranch?.byId, isCompareDataReady, item?.contentTypeId, selectionContent]);
+  }, [contentType, isCompareDataReady, selectionContent]);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const sidebarRefs = useRef({});
   contentTypeFields?.forEach((field) => {
@@ -136,15 +141,46 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
               width={280}
               styles={{
                 drawerBody: {
+                  display: 'flex',
+                  flexDirection: 'column',
                   overflowY: 'inherit'
                 },
                 drawerPaper: {
-                  overflow: 'auto',
+                  overflow: 'hidden',
                   position: 'absolute'
                 }
               }}
             >
-              <List sx={{ p: 0 }}>
+              {contentType && (
+                <Box pt={1} pb={1} pr={2} pl={2}>
+                  <Typography variant="body2" color="textSecondary">
+                    {contentType.id}
+                  </Typography>
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      mt: 1
+                    }}
+                  >
+                    <ItemTypeIcon
+                      item={item}
+                      sx={{ fontSize: '1.4rem', marginRight: '5px', color: palette.teal.main }}
+                    />
+                    <Typography>{contentType.name}</Typography>
+                  </Box>
+
+                  {/* TODO: we don't have description in the model, nor in the object we retrieve */}
+                  {/* {contentType.description && (
+                    <Typography variant="body2" color="textSecondary">
+                      {contentType.description}
+                    </Typography>
+                  )}*/}
+                </Box>
+              )}
+              <Divider />
+              <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
                 {contentTypeFields.map((field) => (
                   <ListItemButton
                     key={field.id}
