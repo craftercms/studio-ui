@@ -72,17 +72,17 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
           part.value.map((id, index) => (
             <Box
               sx={{
-                padding: '4px 15px',
                 marginBottom: '12px',
                 display: 'flex',
                 justifyContent: 'space-between',
-                borderRadius: '10px',
+                padding: '8.5px 10px',
+                borderRadius: '5px',
                 alignItems: 'center',
                 '&.unchanged': {
                   color: (theme) =>
-                    theme.palette.getContrastText(
-                      theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
-                    ),
+                    theme.palette.mode === 'dark'
+                      ? theme.palette.getContrastText(palette.gray.medium4)
+                      : palette.gray.medium4,
                   backgroundColor: (theme) =>
                     theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
                 },

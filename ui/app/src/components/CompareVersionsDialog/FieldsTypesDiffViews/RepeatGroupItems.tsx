@@ -29,6 +29,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { CompareFieldPanel } from '../CompareVersions';
 import { areObjectsEqual } from '../../../utils/object';
+import CompareArrowsRoundedIcon from '@mui/icons-material/CompareArrowsRounded';
 
 interface RepeatGroupItemsProps {
   contentA: ContentInstance[];
@@ -49,6 +50,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   const selectedItemsAreEqual =
     showRepItemsCompare && areObjectsEqual(repItemsCompare.a?.content, repItemsCompare.b?.content);
   const [compareRepItemVersionsMode, setCompareRepItemVersionsMode] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
 
   useEffect(() => {
     const contentALength = (contentA ?? []).length;
@@ -142,14 +144,16 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                   gap: '10px',
                   marginBottom: '12px',
                   '& .rep-group-compare': {
-                    padding: '4px 15px',
-                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8.5px 10px',
+                    borderRadius: '5px',
                     width: '100%',
                     '&.unchanged': {
                       color: (theme) =>
-                        theme.palette.getContrastText(
-                          theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
-                        ),
+                        theme.palette.mode === 'dark'
+                          ? theme.palette.getContrastText(palette.gray.medium4)
+                          : palette.gray.medium4,
                       backgroundColor: (theme) =>
                         theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
                     },
@@ -161,55 +165,52 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                     '&.changed': {
                       color: palette.yellow.shade,
                       backgroundColor: palette.yellow.highlight
+                    },
+                    '&.deleted': {
+                      color: palette.red.shade,
+                      backgroundColor: palette.red.highlight
                     }
                   }
                 }}
               >
-                {item.a === 'unchanged' ? (
-                  <Box className="rep-group-compare unchanged">
-                    <Typography>
-                      <FormattedMessage defaultMessage="Item {index} - Unchanged" values={{ index }} />
+                {item.a === 'unchanged' || item.a === 'changed' ? (
+                  <Box className={`rep-group-compare ${item.a}`}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          size="small"
+                          sx={{ color: 'inherit', p: 0, pr: 1, display: !compareMode && 'none' }}
+                          checked={repItemsCompare.a?.content === contentA[index]}
+                          onChange={(e) => onSetRepItemsCompare(e, 'a', index)}
+                        />
+                      }
+                      label={<FormattedMessage defaultMessage="Item {index}" values={{ index }} />}
+                      sx={{ width: '100%', marginLeft: !compareMode && 0 }}
+                    />
+                    <Typography variant="caption">
+                      {item.a === 'unchanged' ? (
+                        <FormattedMessage defaultMessage="Unchanged" />
+                      ) : (
+                        <FormattedMessage defaultMessage="Changed" />
+                      )}
                     </Typography>
                   </Box>
-                ) : item.a === 'changed' ? (
-                  <>
-                    <Box className="rep-group-compare changed">
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            sx={{ color: 'inherit', p: 1 }}
-                            checked={repItemsCompare.a?.content === contentA[index]}
-                            onChange={(e) => onSetRepItemsCompare(e, 'a', index)}
-                          />
-                        }
-                        label={<FormattedMessage defaultMessage="Item {index} - Changed" values={{ index }} />}
-                        sx={{ width: '100%' }}
-                      />
-                    </Box>
-                    <Box className="rep-group-compare changed">
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            size="small"
-                            sx={{ color: 'inherit', p: 1 }}
-                            checked={repItemsCompare.b?.content === contentB[index]}
-                            onChange={(e) => onSetRepItemsCompare(e, 'b', index)}
-                          />
-                        }
-                        label={<FormattedMessage defaultMessage="Item {index} - Changed" values={{ index }} />}
-                        sx={{ width: '100%' }}
-                      />
-                    </Box>
-                  </>
                 ) : (
                   <>
-                    <Box className={`rep-group-compare ${item.a && 'new'}`}>
+                    <Box className={`rep-group-compare ${item.a && 'deleted'}`}>
                       {item.a === 'new' && (
                         <>
                           <FormControlLabel
-                            control={<Checkbox size="small" color="default" sx={{ padding: '4px ' }} />}
-                            label={<FormattedMessage defaultMessage="Item {index} - New" values={{ index }} />}
+                            control={
+                              <Checkbox
+                                size="small"
+                                sx={{ color: 'inherit', p: 0, pr: 1, display: !compareMode && 'none' }}
+                                checked={repItemsCompare.b?.content === contentB[index]}
+                                onChange={(e) => onSetRepItemsCompare(e, 'a', index)}
+                              />
+                            }
+                            label={<FormattedMessage defaultMessage="Item {index}" values={{ index }} />}
+                            sx={{ marginLeft: !compareMode && 0 }}
                           />
                         </>
                       )}
@@ -218,8 +219,16 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                       {item.b === 'new' && (
                         <>
                           <FormControlLabel
-                            control={<Checkbox size="small" color="default" sx={{ padding: '4px ' }} />}
+                            control={
+                              <Checkbox
+                                size="small"
+                                sx={{ color: 'inherit', p: 0, pr: 1, display: !compareMode && 'none' }}
+                                checked={repItemsCompare.b?.content === contentB[index]}
+                                onChange={(e) => onSetRepItemsCompare(e, 'b', index)}
+                              />
+                            }
                             label={<FormattedMessage defaultMessage="Item {index} - New" values={{ index }} />}
+                            sx={{ marginLeft: !compareMode && 0 }}
                           />
                         </>
                       )}
