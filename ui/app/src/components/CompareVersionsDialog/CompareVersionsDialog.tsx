@@ -30,6 +30,7 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const [compareXml, setCompareXml] = useState(false);
   const {
+    subtitle,
     selectedA,
     selectedB,
     leftActions,
@@ -39,6 +40,9 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     error,
     disableItemSwitching,
     contentTypesBranch,
+    selectionContent,
+    fields,
+    subDialog,
     ...rest
   } = props;
   const { formatMessage } = useIntl();
@@ -49,27 +53,33 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     <EnhancedDialog
       title={<FormattedMessage defaultMessage="Compare Versions" />}
       subtitle={
-        <>
-          <AsDayMonthDateTime date={selectedA?.modifiedDate} locale={locale} />
-          <CompareArrowsIcon fontSize="small" />
-          <AsDayMonthDateTime date={selectedB?.modifiedDate} locale={locale} />
-        </>
+        subtitle ?? (
+          <>
+            <AsDayMonthDateTime date={selectedA?.modifiedDate} locale={locale} />
+            <CompareArrowsIcon fontSize="small" />
+            <AsDayMonthDateTime date={selectedB?.modifiedDate} locale={locale} />
+          </>
+        )
       }
       dialogHeaderProps={{
         leftActions,
         rightActions: [
-          {
-            icon: { id: '@mui/icons-material/TextSnippetOutlined' },
-            onClick: () => setCompareXml(false),
-            'aria-label': formatMessage(translations.compareContent),
-            sx: { color: (theme) => !compareXml && theme.palette.primary.main }
-          },
-          {
-            icon: { id: '@mui/icons-material/CodeRounded' },
-            onClick: () => setCompareXml(true),
-            'aria-label': formatMessage(translations.compareXml),
-            sx: { color: (theme) => compareXml && theme.palette.primary.main }
-          },
+          ...(!selectionContent
+            ? [
+                {
+                  icon: { id: '@mui/icons-material/TextSnippetOutlined' },
+                  onClick: () => setCompareXml(false),
+                  'aria-label': formatMessage(translations.compareContent),
+                  sx: { color: (theme) => !compareXml && theme.palette.primary.main }
+                },
+                {
+                  icon: { id: '@mui/icons-material/CodeRounded' },
+                  onClick: () => setCompareXml(true),
+                  'aria-label': formatMessage(translations.compareXml),
+                  sx: { color: (theme) => compareXml && theme.palette.primary.main }
+                }
+              ]
+            : []),
           ...(rightActions ?? [])
         ],
         sxs: {
@@ -86,7 +96,9 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
       sx={{
         [`.${dialogClasses.paper}`]: {
           height: largeHeightScreen ? 'calc(100% - 200px)' : 'calc(100% - 60px)',
-          maxHeight: '1000px'
+          marginLeft: subDialog && '10%',
+          maxHeight: '1000px',
+          width: subDialog ? 'calc(90% - 64px)' : 'calc(100% - 64px)'
         }
       }}
       {...rest}
@@ -100,6 +112,8 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         selectedA={selectedB}
         selectedB={selectedA}
         compareXml={compareXml}
+        selectionContent={selectionContent}
+        fields={fields}
       />
     </EnhancedDialog>
   );

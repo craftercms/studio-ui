@@ -24,6 +24,8 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { areObjectsEqual } from '../../utils/object';
+import ContentInstance from '../../models/ContentInstance';
+import { ReactNode } from 'react';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -32,12 +34,25 @@ export interface CompareVersionsDialogBaseProps {
 }
 
 export interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps, EnhancedDialogProps {
-  versionsBranch: VersionsStateProps;
-  selectedA: ItemHistoryEntry;
-  selectedB: ItemHistoryEntry;
+  subtitle?: ReactNode;
+  versionsBranch?: VersionsStateProps;
+  selectedA?: ItemHistoryEntry;
+  selectedB?: ItemHistoryEntry;
+  selectionContent?: {
+    a: {
+      xml: string;
+      content: ContentInstance;
+    };
+    b: {
+      xml: string;
+      content: ContentInstance;
+    };
+  };
+  fields?: ContentTypeField[];
   contentTypesBranch?: EntityState<ContentType>;
   leftActions?: DialogHeaderActionProps[];
   rightActions?: DialogHeaderActionProps[];
+  subDialog?: boolean;
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps, EnhancedDialogState {
@@ -51,7 +66,13 @@ export interface CompareVersionsDialogContainerProps
   extends CompareVersionsDialogBaseProps,
     Pick<
       CompareVersionsDialogProps,
-      'contentTypesBranch' | 'versionsBranch' | 'selectedA' | 'selectedB' | 'disableItemSwitching'
+      | 'contentTypesBranch'
+      | 'versionsBranch'
+      | 'selectedA'
+      | 'selectedB'
+      | 'disableItemSwitching'
+      | 'selectionContent'
+      | 'fields'
     > {
   compareXml: boolean;
 }

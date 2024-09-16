@@ -41,35 +41,65 @@ import { ItemTypeIcon } from '../ItemTypeIcon';
 import palette from '../../styles/palette';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
-  const { selectedA, selectedB, versionsBranch, contentTypesBranch, compareXml } = props;
-  const { compareVersionsBranch, item } = versionsBranch;
-  const compareMode = selectedA && selectedB;
-  const [selectionContent, setSelectionContent] = useSpreadState({
-    contentA: null,
-    contentB: null,
-    contentAXml: null,
-    contentBXml: null
-  });
+  const {
+    selectedA,
+    selectedB,
+    selectionContent: preFetchedContent,
+    fields,
+    versionsBranch,
+    contentTypesBranch,
+    compareXml
+  } = props;
+  const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
+  const item = versionsBranch?.item;
+
+  const [selectionContent, setSelectionContent] = useSpreadState(
+    preFetchedContent ?? {
+      a: {
+        content: null,
+        xml: null
+      },
+      b: {
+        content: null,
+        xml: null
+      }
+    }
+  );
+
   const siteId = useActiveSiteId();
-  const isCompareDataReady =
-    compareVersionsBranch?.compareVersions &&
-    contentTypesBranch?.byId &&
-    item?.contentTypeId &&
-    selectionContent.contentA &&
-    selectionContent.contentB;
+  const isCompareDataReady = useMemo(() => {
+    if (preFetchedContent) {
+      return selectionContent.a.content && selectionContent.b.content;
+    } else {
+      return (
+        compareVersionsBranch?.compareVersions &&
+        contentTypesBranch?.byId &&
+        item?.contentTypeId &&
+        selectionContent.a.content &&
+        selectionContent.b.content
+      );
+    }
+  }, [
+    preFetchedContent,
+    compareVersionsBranch?.compareVersions,
+    contentTypesBranch?.byId,
+    item?.contentTypeId,
+    selectionContent
+  ]);
+
   const [selectedField, setSelectedField] = useState(null);
   const contentType = contentTypesBranch?.byId[item.contentTypeId];
   const contentTypeFields = useMemo(() => {
     return isCompareDataReady
-      ? Object.values(contentType.fields).filter((field) =>
+      ? Object.values(fields ?? contentType.fields).filter((field) =>
           hasFieldChanged(
             field,
-            getContentInstanceValueFromProp(selectionContent.contentA, field.id),
-            getContentInstanceValueFromProp(selectionContent.contentB, field.id)
+            getContentInstanceValueFromProp(selectionContent.a.content, field.id),
+            getContentInstanceValueFromProp(selectionContent.b.content, field.id)
           )
         )
       : [];
-  }, [contentType, isCompareDataReady, selectionContent]);
+  }, [contentType, isCompareDataReady, selectionContent, fields]);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const sidebarRefs = useRef({});
   contentTypeFields?.forEach((field) => {
@@ -77,20 +107,27 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   });
 
   useEffect(() => {
-    if (selectedA && selectedB) {
+    // The dialog can handle 2 different set of props:
+    // - selected versions of the history of an item, so we need to fetch the content we're going to diff
+    // - pre-fetched content (and the fields of the content) so we don't need to fetch anything.
+    if (!preFetchedContent && selectedA && selectedB) {
       forkJoin([
         fetchContentByCommitId(siteId, selectedA.path, selectedA.versionNumber),
         fetchContentByCommitId(siteId, selectedB.path, selectedB.versionNumber)
       ]).subscribe(([contentA, contentB]) => {
         setSelectionContent({
-          contentA: parseContentXML(fromString(contentA as string), selectedA.path, contentTypesBranch.byId, {}),
-          contentB: parseContentXML(fromString(contentB as string), selectedB.path, contentTypesBranch.byId, {}),
-          contentAXml: contentA,
-          contentBXml: contentB
+          a: {
+            content: parseContentXML(fromString(contentA as string), selectedA.path, contentTypesBranch.byId, {}),
+            xml: contentA as string
+          },
+          b: {
+            content: parseContentXML(fromString(contentB as string), selectedB.path, contentTypesBranch.byId, {}),
+            xml: contentB as string
+          }
         });
       });
     }
-  }, [selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch.byId]);
+  }, [preFetchedContent, selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch?.byId]);
 
   useEffect(() => {
     if (contentTypeFields?.length) {
@@ -118,18 +155,18 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
         sx={{
           overflow: 'auto',
           minHeight: '50vh',
-          ...(compareMode && { padding: 0 }),
+          padding: 0,
           ...(!selectedField && { display: 'flex', justifyContent: 'center', alignItems: 'center' })
         }}
       >
         {!isCompareDataReady ? (
           <LoadingState />
-        ) : compareVersionsBranch.error || contentTypesBranch.error ? (
+        ) : compareVersionsBranch?.error || contentTypesBranch?.error ? (
           <ApiResponseErrorState error={compareVersionsBranch.error ?? contentTypesBranch.error} />
         ) : compareXml ? (
           <MonacoWrapper
-            contentA={selectionContent.contentAXml}
-            contentB={selectionContent.contentBXml}
+            contentA={selectionContent.a.xml}
+            contentB={selectionContent.b.xml}
             isHTML={false}
             isDiff
             sxs={{ editor: { height: '100%' } }}
@@ -198,15 +235,15 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                 <CompareFieldPanel
                   a={{
                     ...selectedA,
-                    ...compareVersionsBranch.compareVersions?.[0],
-                    content: selectionContent.contentA,
-                    xml: selectionContent.contentAXml
+                    ...compareVersionsBranch?.compareVersions?.[0],
+                    content: selectionContent.a.content,
+                    xml: selectionContent.a.xml
                   }}
                   b={{
                     ...selectedB,
-                    ...compareVersionsBranch.compareVersions?.[1],
-                    content: selectionContent.contentB,
-                    xml: selectionContent.contentBXml
+                    ...compareVersionsBranch?.compareVersions?.[1],
+                    content: selectionContent.b.content,
+                    xml: selectionContent.b.xml
                   }}
                   field={selectedField}
                   contentTypeFields={contentTypeFields}

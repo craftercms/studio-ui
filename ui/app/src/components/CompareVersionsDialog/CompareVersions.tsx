@@ -44,6 +44,7 @@ import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 import Divider from '@mui/material/Divider';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 
 export interface CompareVersionsItem extends ItemHistoryEntry {
   xml: string;
@@ -247,6 +248,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const nextField = contentTypeFields[currentFieldIndex + 1] || contentTypeFields[0];
   const previousField = contentTypeFields[currentFieldIndex - 1] || contentTypeFields[contentTypeFields.length - 1];
   const [cleanText, setCleanText] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
   const showDivider = (fieldType === 'html' || fieldType === 'repeat') && !compareXml;
 
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
@@ -265,8 +267,10 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     isHTML: fieldType === 'html',
     fields: field.fields,
     cleanText,
+    compareMode,
     verticalLayout: fieldType === 'image' || fieldType === 'video-picker',
-    renderContent: null
+    renderContent: null,
+    field
   };
 
   if (DiffComponent === DefaultDiffView) {
@@ -351,10 +355,15 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
                 )}
               </Button>
             )}
-            {/* TODO: compare button for repeat-group diff */}
-            {/* <Button>
-              <FormattedMessage defaultMessage="Compare" />
-            </Button> */}
+            {!compareXml && fieldType === 'repeat' && (
+              <Button
+                onClick={() => setCompareMode(!compareMode)}
+                startIcon={<CompareArrowsIcon />}
+                sx={{ color: (theme) => theme.palette.text.primary }}
+              >
+                <FormattedMessage defaultMessage="Compare" />
+              </Button>
+            )}
             {showDivider && (
               <Divider orientation="vertical" sx={{ display: 'inline-flex', height: '25px', ml: 2, mr: 2 }} />
             )}
