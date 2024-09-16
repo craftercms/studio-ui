@@ -161,6 +161,7 @@ interface CompareVersionsDetailsContainerProps {
   contentB: ContentInstance;
   renderContent: (content) => React.ReactNode;
   noContent?: React.ReactNode;
+  verticalLayout?: boolean;
 }
 
 function DefaultDiffView(props: CompareVersionsDetailsContainerProps) {
@@ -172,21 +173,25 @@ function DefaultDiffView(props: CompareVersionsDetailsContainerProps) {
       <Box>
         <Typography color="textSecondary">no content set</Typography>
       </Box>
-    )
+    ),
+    verticalLayout = false
   } = props;
 
   return (
     <Box
       sx={{
         display: 'flex',
-        alignItems: 'center',
+        height: '100%',
+        alignItems: verticalLayout ? 'center' : 'flex-start',
         justifyContent: 'space-around',
-        '& img': {
-          maxHeight: '200px'
+        flexDirection: verticalLayout ? 'column' : 'row',
+        '> div': {
+          flexGrow: verticalLayout && 1
         }
       }}
     >
       {contentA ? renderContent(contentA) : noContent}
+      {verticalLayout && <Divider sx={{ width: '100%', mt: 1, mb: 1 }} />}
       {contentB ? renderContent(contentB) : noContent}
     </Box>
   );
@@ -260,20 +265,19 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     isHTML: fieldType === 'html',
     fields: field.fields,
     cleanText,
+    verticalLayout: fieldType === 'image' || fieldType === 'video-picker',
     renderContent: null
   };
 
   if (DiffComponent === DefaultDiffView) {
     diffComponentProps.renderContent = (content) =>
       fieldType === 'image' ? (
-        <Box sx={{ textAlign: 'center' }}>
-          <img src={content} alt="" />
-          <Typography variant="subtitle2">{content}</Typography>
+        <Box sx={{ height: 'calc(50% - 9px)', textAlign: 'center' }}>
+          <img src={content} alt="" style={{ maxHeight: '100%' }} />
         </Box>
       ) : fieldType === 'video-picker' ? (
         <Box sx={{ textAlign: 'center' }}>
           <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
-          <Typography variant="subtitle2">{content}</Typography>
         </Box>
       ) : fieldType === 'time' ? (
         <Typography>{content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}</Typography>
@@ -368,7 +372,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
           </Button>
         )}
       </Box>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
         {compareXml ? (
           <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isDiff isHTML={false} />
         ) : (
