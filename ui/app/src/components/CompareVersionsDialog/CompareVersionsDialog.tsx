@@ -68,15 +68,21 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
             ? [
                 {
                   icon: { id: '@mui/icons-material/TextSnippetOutlined' },
+                  text: formatMessage(translations.compareContent),
                   onClick: () => setCompareXml(false),
-                  'aria-label': formatMessage(translations.compareContent),
-                  sx: { color: (theme) => !compareXml && theme.palette.primary.main }
+                  sx: {
+                    color: (theme) => (!compareXml ? theme.palette.primary.main : theme.palette.text.secondary),
+                    fontSize: 14
+                  }
                 },
                 {
                   icon: { id: '@mui/icons-material/CodeRounded' },
+                  text: formatMessage(translations.compareXml),
                   onClick: () => setCompareXml(true),
-                  'aria-label': formatMessage(translations.compareXml),
-                  sx: { color: (theme) => compareXml && theme.palette.primary.main }
+                  sx: {
+                    color: (theme) => (compareXml ? theme.palette.primary.main : theme.palette.text.secondary),
+                    fontSize: 14
+                  }
                 }
               ]
             : []),

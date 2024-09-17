@@ -356,11 +356,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
               </Button>
             )}
             {!compareXml && fieldType === 'repeat' && (
-              <Button
-                onClick={() => setCompareMode(!compareMode)}
-                startIcon={<CompareArrowsIcon />}
-                sx={{ color: (theme) => theme.palette.text.primary }}
-              >
+              <Button onClick={() => setCompareMode(!compareMode)} startIcon={<CompareArrowsIcon />}>
                 <FormattedMessage defaultMessage="Compare" />
               </Button>
             )}
