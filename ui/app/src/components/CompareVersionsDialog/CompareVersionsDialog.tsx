@@ -26,6 +26,23 @@ import { translations } from './translations';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useLocale from '../../hooks/useLocale';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
+import useSpreadState from '../../hooks/useSpreadState';
+import Drawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
+import { DialogHeader } from '../DialogHeader';
+
+const compareSubDialogInitialState = {
+  open: false,
+  isFetching: false,
+  error: null
+};
+
+const viewSubDialogInitialState = {
+  open: false,
+  isFetching: false,
+  error: null,
+  showXml: false
+};
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const [compareXml, setCompareXml] = useState(false);
@@ -42,12 +59,23 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     contentTypesBranch,
     selectionContent,
     fields,
-    subDialog,
+    TransitionComponent = Slide,
+    TransitionProps,
+    onClose,
     ...rest
   } = props;
   const { formatMessage } = useIntl();
   const largeHeightScreen = useMediaQuery('(min-height: 880px)');
   const locale = useLocale();
+
+  const [compareSubDialogState, setCompareSubDialogState] =
+    useSpreadState<CompareVersionsDialogProps>(compareSubDialogInitialState);
+  // const [viewSubDialogState, setViewSubDialogState] = useSpreadState<ViewVersionDialogProps>(viewSubDialogInitialState);
+
+  const onDialogClose = (event, reason) => {
+    setCompareSubDialogState(compareSubDialogInitialState);
+    onClose?.(event, reason);
+  };
 
   return (
     <EnhancedDialog
@@ -98,15 +126,17 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         }
       }}
       maxWidth="xl"
-      TransitionComponent={Slide}
+      TransitionComponent={TransitionComponent}
+      TransitionProps={TransitionProps}
       sx={{
         [`.${dialogClasses.paper}`]: {
           height: largeHeightScreen ? 'calc(100% - 200px)' : 'calc(100% - 60px)',
-          marginLeft: subDialog && '10%',
           maxHeight: '1000px',
-          width: subDialog ? 'calc(90% - 64px)' : 'calc(100% - 64px)'
+          width: 'calc(100% - 64px)',
+          overflow: 'hidden'
         }
       }}
+      onClose={onDialogClose}
       {...rest}
     >
       <CompareVersionsDialogContainer
@@ -120,7 +150,35 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         compareXml={compareXml}
         selectionContent={selectionContent}
         fields={fields}
+        setCompareSubDialogState={setCompareSubDialogState}
       />
+
+      {/* Sub-views for inner views */}
+      {/* region Compare */}
+      <Drawer
+        open={compareSubDialogState.open}
+        anchor="right"
+        variant="persistent"
+        sx={{
+          '& > .MuiDrawer-root': {
+            position: 'absolute'
+          },
+          '& > .MuiPaper-root': {
+            width: '90%',
+            position: 'absolute'
+          }
+        }}
+      >
+        <Box display="flex" flexDirection="column">
+          <DialogHeader
+            title={compareSubDialogState.title}
+            subtitle={compareSubDialogState.subtitle}
+            onCloseButtonClick={(e) => compareSubDialogState.onClose(e, null)}
+          />
+          <CompareVersionsDialogContainer {...compareSubDialogState} compareXml={false} />
+        </Box>
+      </Drawer>
+      {/* endregion */}
     </EnhancedDialog>
   );
 }

@@ -22,6 +22,10 @@ import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { FormattedMessage, useIntl } from 'react-intl';
 import translations from '../CompareVersionsDialog/translations';
 import Slide from '@mui/material/Slide';
+import { dialogClasses } from '@mui/material/Dialog';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { AsDayMonthDateTime } from '../VersionList';
+import useLocale from '../../hooks/useLocale';
 
 export const getLegacyDialogStyles = makeStyles()(() => ({
   iframe: {
@@ -34,10 +38,13 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
   const [showXml, setShowXml] = useState(false);
   const { formatMessage } = useIntl();
+  const largeHeightScreen = useMediaQuery('(min-height: 880px)');
+  const locale = useLocale();
 
   return (
     <EnhancedDialog
       title={<FormattedMessage id="viewVersionDialog.headerTitle" defaultMessage="Viewing item version" />}
+      subtitle={<AsDayMonthDateTime date={version?.modifiedDate} locale={locale} />}
       dialogHeaderProps={{
         leftActions,
         rightActions: [
@@ -49,7 +56,16 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
           ...(rightActions ?? [])
         ]
       }}
+      maxWidth="xl"
       TransitionComponent={Slide}
+      sx={{
+        [`.${dialogClasses.paper}`]: {
+          height: largeHeightScreen ? 'calc(100% - 200px)' : 'calc(100% - 60px)',
+          maxHeight: '1000px',
+          width: 'calc(100% - 64px)',
+          overflow: 'hidden'
+        }
+      }}
       {...rest}
     >
       <ViewVersionDialogContainer

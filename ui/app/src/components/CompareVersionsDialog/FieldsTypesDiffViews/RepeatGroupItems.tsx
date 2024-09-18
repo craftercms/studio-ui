@@ -25,9 +25,9 @@ import palette from '../../../styles/palette';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { areObjectsEqual } from '../../../utils/object';
+import { deepCopy } from '../../../utils/object';
 import { Alert } from '@mui/material';
-import CompareVersionsDialog from '../CompareVersionsDialog';
+import { CompareVersionsDialogProps } from '../utils';
 
 interface RepeatGroupItemsProps {
   contentA: ContentInstance[];
@@ -37,22 +37,17 @@ interface RepeatGroupItemsProps {
   compareMode: boolean;
   fields: LookupTable<ContentTypeField>;
   field: ContentTypeField;
+  setCompareSubDialogState?(props: Partial<CompareVersionsDialogProps>): void;
 }
 
 export function RepeatGroupItems(props: RepeatGroupItemsProps) {
-  const { contentA, contentB, aXml, bXml, compareMode, fields, field } = props;
+  const { contentA, contentB, aXml, bXml, compareMode, fields, field, setCompareSubDialogState } = props;
   const [repDiff, setRepDiff] = useState([]);
   const [repItemsCompare, setRepItemsCompare] = useSpreadState({ a: null, b: null });
   const showRepItemsCompare = repItemsCompare.a?.content && repItemsCompare.b?.content;
-  const selectedItemsAreEqual =
-    showRepItemsCompare && areObjectsEqual(repItemsCompare.a?.content, repItemsCompare.b?.content);
-  const [compareRepItemsDialogState, setCompareRepItemsDialogState] = useSpreadState({
-    open: false,
-    selectionContent: null,
-    fields: null
-  });
+  const selectedItemsAreEqual = showRepItemsCompare && repItemsCompare.a?.xml === repItemsCompare.b?.xml;
 
-  const onSetRepItemsCompare = (event, side, index) => {
+  const onSetRepItemsCompare = (event, side, index, multiSide = false) => {
     const content = side === 'a' ? contentA : contentB;
     const xml = side === 'a' ? aXml : bXml;
     // When selecting an item on the rep-group diff view, we need to calculate its xml (so the items can be compared
@@ -63,15 +58,25 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     const isChecked = event.target.checked;
     setRepItemsCompare({
       [side]: {
+        multiSide,
         content: isChecked ? item : null,
         xml: isChecked ? itemXml : null
       }
     });
   };
 
-  const onCloseSubDialog = () => {
-    setCompareRepItemsDialogState({ open: false });
-    setRepItemsCompare({ a: null, b: null });
+  const onSetDeletedItemCompare = (event, index) => {
+    // Deleted items will always show on the left side of the comparison (side 'a'), and since when selecting an 'unchanged'
+    // or 'changed' item we default it to side 'a', if theres a 'multiSide' item selected, switch it to side 'b'
+    if (repItemsCompare.a?.multiSide) {
+      const switchItem = deepCopy(repItemsCompare.a);
+      onSetRepItemsCompare(event, 'a', index);
+      setRepItemsCompare({
+        b: switchItem
+      });
+    } else {
+      onSetRepItemsCompare(event, 'a', index);
+    }
   };
 
   useEffect(() => {
@@ -95,14 +100,20 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   }, [contentA, contentB, setRepDiff]);
 
   useEffect(() => {
-    if (compareMode && repItemsCompare.a?.content && repItemsCompare.b?.content) {
-      setCompareRepItemsDialogState({
+    if (repItemsCompare.a?.content && repItemsCompare.b?.content) {
+      setCompareSubDialogState({
         open: true,
-        selectionContent: repItemsCompare,
-        fields
+        selectionContent: deepCopy(repItemsCompare),
+        fields,
+        title: field.name,
+        subtitle: <FormattedMessage defaultMessage="{fieldId} - Repeat Group" values={{ fieldId: field.id }} />,
+        onClose: () => {
+          setCompareSubDialogState({ open: false });
+        }
       });
+      setRepItemsCompare({ a: null, b: null });
     }
-  }, [repItemsCompare, fields, compareMode, setCompareRepItemsDialogState]);
+  }, [repItemsCompare, fields, compareMode, setCompareSubDialogState, field?.id, setRepItemsCompare, field?.name]);
 
   return (
     <>
@@ -111,7 +122,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          width: '100%'
+          width: '100%',
+          alignItems: 'center'
         }}
       >
         {compareMode && selectedItemsAreEqual && (
@@ -128,6 +140,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                 justifyContent: 'space-between',
                 gap: '10px',
                 marginBottom: '12px',
+                width: '100%',
+                maxWidth: '1100px',
                 '& .rep-group-compare': {
                   display: 'flex',
                   alignItems: 'center',
@@ -164,12 +178,20 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                     control={
                       <Checkbox
                         size="small"
-                        sx={{ color: 'inherit', p: 0, pr: 1, display: !compareMode && 'none' }}
+                        sx={{
+                          color: 'inherit',
+                          p: 0,
+                          pr: 1,
+                          display: !compareMode && 'none'
+                        }}
                         checked={repItemsCompare.a?.content === contentA[index]}
                         onChange={(e) => {
-                          // TODO: not sure about this logic
+                          // Maybe if something else is selected, set to opposite side (?)
                           if (compareMode) {
+                            onSetRepItemsCompare(e, 'a', index, true);
+                          } else {
                             onSetRepItemsCompare(e, 'a', index);
+                            // If items have changed Compare both versions on current item
                             if (item.a === 'changed') {
                               onSetRepItemsCompare(e, 'b', index);
                             }
@@ -177,8 +199,15 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                         }}
                       />
                     }
-                    label={<FormattedMessage defaultMessage="Item {index}" values={{ index }} />}
-                    sx={{ width: '100%', marginLeft: !compareMode && 0 }}
+                    label={
+                      <Typography sx={{ fontSize: 14 }}>
+                        <FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />
+                      </Typography>
+                    }
+                    sx={{
+                      width: '100%',
+                      marginLeft: !compareMode && 0
+                    }}
                   />
                   <Typography variant="caption">
                     {item.a === 'unchanged' ? (
@@ -197,13 +226,22 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                           control={
                             <Checkbox
                               size="small"
-                              sx={{ color: 'inherit', p: 0, pr: 1, display: !compareMode && 'none' }}
+                              sx={{
+                                color: 'inherit',
+                                p: 0,
+                                pr: 1,
+                                display: !compareMode && 'none'
+                              }}
                               checked={repItemsCompare.b?.content === contentB[index]}
-                              onChange={(e) => compareMode && onSetRepItemsCompare(e, 'a', index)}
+                              onChange={(e) => compareMode && onSetDeletedItemCompare(e, index)}
                             />
                           }
-                          label={<FormattedMessage defaultMessage="Item {index}" values={{ index }} />}
-                          sx={{ marginLeft: !compareMode && 0 }}
+                          label={
+                            <Typography sx={{ fontSize: 14 }}>
+                              <FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />
+                            </Typography>
+                          }
+                          sx={{ marginLeft: !compareMode && 0, cursor: !compareMode && 'default', width: '100%' }}
                         />
                       </>
                     )}
@@ -215,13 +253,22 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                           control={
                             <Checkbox
                               size="small"
-                              sx={{ color: 'inherit', p: 0, pr: 1, display: !compareMode && 'none' }}
+                              sx={{
+                                color: 'inherit',
+                                p: 0,
+                                pr: 1,
+                                display: !compareMode && 'none'
+                              }}
                               checked={repItemsCompare.b?.content === contentB[index]}
                               onChange={(e) => compareMode && onSetRepItemsCompare(e, 'b', index)}
                             />
                           }
-                          label={<FormattedMessage defaultMessage="Item {index} - New" values={{ index }} />}
-                          sx={{ marginLeft: !compareMode && 0 }}
+                          label={
+                            <Typography sx={{ fontSize: 14 }}>
+                              <FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />
+                            </Typography>
+                          }
+                          sx={{ marginLeft: !compareMode && 0, cursor: !compareMode && 'default', width: '100%' }}
                         />
                       </>
                     )}
@@ -231,14 +278,6 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
             </Box>
           ))}
       </Box>
-      <CompareVersionsDialog
-        subDialog
-        {...compareRepItemsDialogState}
-        subtitle={<FormattedMessage defaultMessage="{fieldId} - Repeat Group" values={{ fieldId: field.id }} />}
-        error={null}
-        isFetching={false}
-        onClose={onCloseSubDialog}
-      />
     </>
   );
 }

@@ -36,7 +36,7 @@ import { fromString, serialize } from '../../utils/xml';
 import { MonacoWrapper } from '../MonacoWrapper';
 import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
 import RepeatGroupItems from './FieldsTypesDiffViews/RepeatGroupItems';
-import { hasFieldChanged } from './utils';
+import { CompareVersionsDialogProps, hasFieldChanged } from './utils';
 import Button from '@mui/material/Button';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
@@ -212,6 +212,7 @@ interface CompareFieldPanelProps {
   accordion?: boolean;
   onSelectNextField?: (fieldId: string) => void;
   onSelectPreviousField?: (fieldId: string) => void;
+  setCompareSubDialogState?(props: CompareVersionsDialogProps): void;
 }
 
 const typesDiffMap = {
@@ -231,7 +232,7 @@ const typesDiffMap = {
 };
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const { a, b, field, contentTypeFields, onSelectNextField, onSelectPreviousField } = props;
+  const { a, b, field, contentTypeFields, onSelectNextField, onSelectPreviousField, setCompareSubDialogState } = props;
   const [unChanged, setUnChanged] = useState(true);
   const fieldType = field.type;
   const locale = useLocale();
@@ -270,7 +271,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     compareMode,
     verticalLayout: fieldType === 'image' || fieldType === 'video-picker',
     renderContent: null,
-    field
+    field,
+    setCompareSubDialogState
   };
 
   if (DiffComponent === DefaultDiffView) {

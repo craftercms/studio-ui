@@ -48,7 +48,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     fields,
     versionsBranch,
     contentTypesBranch,
-    compareXml
+    compareXml,
+    setCompareSubDialogState
   } = props;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
   const item = versionsBranch?.item;
@@ -65,6 +66,12 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       }
     }
   );
+
+  useEffect(() => {
+    if (preFetchedContent) {
+      setSelectionContent(preFetchedContent);
+    }
+  }, [preFetchedContent, setSelectionContent]);
 
   const siteId = useActiveSiteId();
   const isCompareDataReady = useMemo(() => {
@@ -189,34 +196,36 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
               }}
             >
               {contentType && (
-                <Box pt={1} pb={1} pr={2} pl={2}>
-                  <Typography variant="body2" color="textSecondary">
-                    {contentType.id}
-                  </Typography>
-                  <Box
-                    component="span"
-                    sx={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      mt: 1
-                    }}
-                  >
-                    <ItemTypeIcon
-                      item={item}
-                      sx={{ fontSize: '1.4rem', marginRight: '5px', color: palette.teal.main }}
-                    />
-                    <Typography>{contentType.name}</Typography>
-                  </Box>
+                <>
+                  <Box pt={1} pb={1} pr={2} pl={2}>
+                    <Typography variant="body2" color="textSecondary">
+                      {contentType.id}
+                    </Typography>
+                    <Box
+                      component="span"
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        mt: 1
+                      }}
+                    >
+                      <ItemTypeIcon
+                        item={item}
+                        sx={{ fontSize: '1.4rem', marginRight: '5px', color: palette.teal.main }}
+                      />
+                      <Typography>{contentType.name}</Typography>
+                    </Box>
 
-                  {/* TODO: we don't have description in the model, nor in the object we retrieve */}
-                  {/* {contentType.description && (
+                    {/* TODO: we don't have description in the model, nor in the object we retrieve */}
+                    {/* {contentType.description && (
                     <Typography variant="body2" color="textSecondary">
                       {contentType.description}
                     </Typography>
                   )}*/}
-                </Box>
+                  </Box>
+                  <Divider />
+                </>
               )}
-              <Divider />
               <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
                 {contentTypeFields.map((field) => (
                   <ListItemButton
@@ -249,6 +258,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   contentTypeFields={contentTypeFields}
                   onSelectNextField={onSelectNextField}
                   onSelectPreviousField={onSelectPreviousField}
+                  setCompareSubDialogState={setCompareSubDialogState}
                 />
               ) : (
                 <EmptyState

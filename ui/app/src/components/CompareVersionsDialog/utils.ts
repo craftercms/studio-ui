@@ -26,6 +26,7 @@ import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { areObjectsEqual } from '../../utils/object';
 import ContentInstance from '../../models/ContentInstance';
 import { ReactNode } from 'react';
+import { LookupTable } from '../../models';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -48,11 +49,10 @@ export interface CompareVersionsDialogProps extends CompareVersionsDialogBasePro
       content: ContentInstance;
     };
   };
-  fields?: ContentTypeField[];
+  fields?: LookupTable<ContentTypeField>;
   contentTypesBranch?: EntityState<ContentType>;
   leftActions?: DialogHeaderActionProps[];
   rightActions?: DialogHeaderActionProps[];
-  subDialog?: boolean;
 }
 
 export interface CompareVersionsDialogStateProps extends CompareVersionsDialogBaseProps, EnhancedDialogState {
@@ -75,6 +75,7 @@ export interface CompareVersionsDialogContainerProps
       | 'fields'
     > {
   compareXml: boolean;
+  setCompareSubDialogState?(props: CompareVersionsDialogProps): void;
 }
 
 // region diffArrays

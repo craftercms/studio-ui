@@ -19,15 +19,29 @@ import DialogBody from '../DialogBody/DialogBody';
 import React, { useEffect, useState } from 'react';
 import { fetchContentByCommitId } from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-import { parseContentXML } from '../../utils/content';
+import { getContentInstanceValueFromProp, parseContentXML } from '../../utils/content';
 import { fromString } from '../../utils/xml';
-import VersionView from './VersionView';
+import { ContentTypeField } from '../../models';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
+import { MonacoWrapper } from '../MonacoWrapper';
+import Box from '@mui/material/Box';
+import { ResizeableDrawer } from '../ResizeableDrawer';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import List from '@mui/material/List';
+import ViewField from './ViewField';
 
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
-  const { version, contentTypesBranch, showXml } = props;
+  const { version, contentTypesBranch, showXml, error } = props;
   const [content, setContent] = useState(null);
   const [xml, setXml] = useState(null);
   const siteId = useActiveSiteId();
+  const fields = content
+    ? (Object.values(contentTypesBranch.byId[content.craftercms.contentTypeId].fields) as ContentTypeField[])
+    : [];
+  const isViewDateReady = content && xml;
+  const [selectedField, setSelectedField] = useState(null);
 
   useEffect(() => {
     if (version) {
@@ -39,15 +53,61 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   }, [version, siteId, contentTypesBranch]);
 
   return (
-    <DialogBody sx={{ p: 0 }}>
-      {content && xml && (
-        <VersionView
-          version={props.version}
-          contentTypes={props.contentTypesBranch.byId}
-          content={content}
-          xml={xml}
-          showXml={showXml}
-        />
+    <DialogBody sx={{ overflow: 'auto', minHeight: '50vh', p: 0 }}>
+      {!isViewDateReady ? (
+        <LoadingState />
+      ) : error ? (
+        <ApiResponseErrorState error={error} />
+      ) : showXml ? (
+        <MonacoWrapper contentA={xml} isHTML={false} sxs={{ editor: { height: '100%' } }} />
+      ) : (
+        <>
+          <ResizeableDrawer
+            open={true}
+            width={280}
+            styles={{
+              drawerBody: {
+                display: 'flex',
+                flexDirection: 'column',
+                overflowY: 'inherit'
+              },
+              drawerPaper: {
+                overflow: 'hidden',
+                position: 'absolute'
+              }
+            }}
+          >
+            <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
+              {fields.map((field) => (
+                <ListItemButton
+                  key={field.id}
+                  onClick={() => setSelectedField(field)}
+                  selected={selectedField?.id === field.id}
+                  // ref={sidebarRefs.current[field.id]}
+                >
+                  <ListItemText primary={field.name} secondary={`${field.id} - ${field.type}`} sx={{ m: 0 }} />
+                </ListItemButton>
+              ))}
+            </List>
+          </ResizeableDrawer>
+          <Box sx={{ marginLeft: '280px', height: '100%' }}>
+            {selectedField && (
+              <ViewField
+                content={content && getContentInstanceValueFromProp(content, selectedField.id)}
+                field={selectedField}
+              />
+            )}
+            {/* {fields?.map((field, index) => {
+              return (
+                <ViewFieldPanel
+                  key={index}
+                  content={content ? getContentInstanceValueFromProp(content, field.id) : null}
+                  field={field}
+                />
+              );
+            })}*/}
+          </Box>
+        </>
       )}
     </DialogBody>
   );

@@ -63,64 +63,73 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
       component="section"
       sx={{
         display: 'flex',
-        flexDirection: 'column',
-        width: '100%'
+        width: '100%',
+        justifyContent: 'center'
       }}
     >
-      {diff?.length ? (
-        diff.map((part) =>
-          part.value.map((id, index) => (
-            <Box
-              sx={{
-                marginBottom: '12px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '8.5px 10px',
-                borderRadius: '5px',
-                alignItems: 'center',
-                '&.unchanged': {
-                  color: (theme) =>
-                    theme.palette.mode === 'dark'
-                      ? theme.palette.getContrastText(palette.gray.medium4)
-                      : palette.gray.medium4,
-                  backgroundColor: (theme) =>
-                    theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
-                },
-                '&.new': {
-                  color: palette.green.shade,
-                  backgroundColor: palette.green.highlight,
-                  width: '50%',
-                  marginLeft: 'auto'
-                },
-                '&.changed': {
-                  color: palette.yellow.shade,
-                  backgroundColor: palette.yellow.highlight
-                },
-                '&.deleted': {
-                  color: palette.red.shade,
-                  backgroundColor: palette.red.highlight,
-                  width: '50%',
-                  marginRight: 'auto'
-                },
-                '&:last-child': {
-                  marginBottom: 0
-                }
-              }}
-              className={getItemDiffStatus(part) ?? ''}
-              key={`${id}-${index}`}
-            >
-              <Typography sx={{ fontSize: '14px' }}> {getItemLabel(contentById[id])}</Typography>
-              {getItemDiffStatus(part) === 'unchanged' && (
-                <Typography sx={{ fontSize: '14px' }}>
-                  <FormattedMessage defaultMessage="unchanged" />
-                </Typography>
-              )}
-            </Box>
-          ))
-        )
-      ) : (
-        <EmptyState title={<FormattedMessage defaultMessage="No items" />} />
-      )}
+      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '1100px' }}>
+        {diff?.length ? (
+          diff.map((part) =>
+            part.value.map((id, index) => (
+              <Box
+                sx={{
+                  marginBottom: '12px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  padding: '8.5px 10px',
+                  borderRadius: '5px',
+                  alignItems: 'center',
+                  '&.unchanged': {
+                    color: (theme) =>
+                      theme.palette.mode === 'dark'
+                        ? theme.palette.getContrastText(palette.gray.medium4)
+                        : palette.gray.medium4,
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
+                  },
+                  '&.new': {
+                    color: palette.green.shade,
+                    backgroundColor: palette.green.highlight,
+                    width: '50%',
+                    marginLeft: 'auto'
+                  },
+                  '&.changed': {
+                    color: palette.yellow.shade,
+                    backgroundColor: palette.yellow.highlight
+                  },
+                  '&.deleted': {
+                    color: palette.red.shade,
+                    backgroundColor: palette.red.highlight,
+                    width: '50%',
+                    marginRight: 'auto'
+                  },
+                  '&:last-child': {
+                    marginBottom: 0
+                  }
+                }}
+                className={getItemDiffStatus(part) ?? ''}
+                key={`${id}-${index}`}
+              >
+                <Box component="span" display="inline-flex">
+                  <Typography sx={{ fontSize: '14px' }}> {getItemLabel(contentById[id])}</Typography>
+                  {contentById[id].craftercms && (
+                    <Typography sx={{ fontSize: '14px', ml: 1 }}>
+                      {contentById[id].craftercms.path ?? <FormattedMessage defaultMessage="(Embedded)" />}
+                    </Typography>
+                  )}
+                </Box>
+                {getItemDiffStatus(part) === 'unchanged' && (
+                  <Typography variant="caption">
+                    <FormattedMessage defaultMessage="Unchanged" />
+                  </Typography>
+                )}
+              </Box>
+            ))
+          )
+        ) : (
+          <EmptyState title={<FormattedMessage defaultMessage="No items" />} />
+        )}
+      </Box>
     </Box>
   );
 }
