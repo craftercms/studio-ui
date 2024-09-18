@@ -28,6 +28,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { deepCopy } from '../../../utils/object';
 import { Alert } from '@mui/material';
 import { CompareVersionsDialogProps } from '../utils';
+import { ViewVersionDialogProps } from '../../ViewVersionDialog/utils';
 
 interface RepeatGroupItemsProps {
   contentA: ContentInstance[];
@@ -38,16 +39,27 @@ interface RepeatGroupItemsProps {
   fields: LookupTable<ContentTypeField>;
   field: ContentTypeField;
   setCompareSubDialogState?(props: Partial<CompareVersionsDialogProps>): void;
+  setViewSubDialogState?(props: Partial<ViewVersionDialogProps>): void;
 }
 
 export function RepeatGroupItems(props: RepeatGroupItemsProps) {
-  const { contentA, contentB, aXml, bXml, compareMode, fields, field, setCompareSubDialogState } = props;
+  const {
+    contentA,
+    contentB,
+    aXml,
+    bXml,
+    compareMode,
+    fields,
+    field,
+    setCompareSubDialogState,
+    setViewSubDialogState
+  } = props;
   const [repDiff, setRepDiff] = useState([]);
   const [repItemsCompare, setRepItemsCompare] = useSpreadState({ a: null, b: null });
   const showRepItemsCompare = repItemsCompare.a?.content && repItemsCompare.b?.content;
   const selectedItemsAreEqual = showRepItemsCompare && repItemsCompare.a?.xml === repItemsCompare.b?.xml;
 
-  const onSetRepItemsCompare = (event, side, index, multiSide = false) => {
+  const getItemDataAtVersion = (side, index) => {
     const content = side === 'a' ? contentA : contentB;
     const xml = side === 'a' ? aXml : bXml;
     // When selecting an item on the rep-group diff view, we need to calculate its xml (so the items can be compared
@@ -55,12 +67,21 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     const doc = fromString(xml).querySelectorAll('item')[index];
     const itemXml = doc ? serialize(doc) : '';
     const item = content[index];
+
+    return {
+      content: item,
+      xml: itemXml
+    };
+  };
+
+  const onSetRepItemsCompare = (event, side, index, multiSide = false) => {
+    const { content, xml } = getItemDataAtVersion(side, index);
     const isChecked = event.target.checked;
     setRepItemsCompare({
       [side]: {
         multiSide,
-        content: isChecked ? item : null,
-        xml: isChecked ? itemXml : null
+        content: isChecked ? content : null,
+        xml: isChecked ? xml : null
       }
     });
   };
@@ -77,6 +98,21 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     } else {
       onSetRepItemsCompare(event, 'a', index);
     }
+  };
+
+  const onViewItemVersion = (side, index) => {
+    const { content, xml } = getItemDataAtVersion(side, index);
+    setViewSubDialogState({
+      open: true,
+      data: {
+        content,
+        xml,
+        fields
+      },
+      title: field.name,
+      subtitle: <FormattedMessage defaultMessage="{fieldId} - Repeat Group" values={{ fieldId: field.id }} />,
+      onClose: () => setViewSubDialogState({ open: false })
+    });
   };
 
   useEffect(() => {
@@ -107,9 +143,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
         fields,
         title: field.name,
         subtitle: <FormattedMessage defaultMessage="{fieldId} - Repeat Group" values={{ fieldId: field.id }} />,
-        onClose: () => {
-          setCompareSubDialogState({ open: false });
-        }
+        onClose: () => setCompareSubDialogState({ open: false })
       });
       setRepItemsCompare({ a: null, b: null });
     }
@@ -159,7 +193,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                   '&.new': {
                     color: palette.green.shade,
                     backgroundColor: palette.green.highlight,
-                    marginLeft: 'auto'
+                    marginLeft: 'auto',
+                    width: '50%'
                   },
                   '&.changed': {
                     color: palette.yellow.shade,
@@ -167,7 +202,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                   },
                   '&.deleted': {
                     color: palette.red.shade,
-                    backgroundColor: palette.red.highlight
+                    backgroundColor: palette.red.highlight,
+                    width: '50%'
                   }
                 }
               }}
@@ -219,58 +255,42 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                 </Box>
               ) : (
                 <>
-                  <Box className={`rep-group-compare ${item.a && 'deleted'}`}>
-                    {item.a === 'new' && (
-                      <>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              size="small"
-                              sx={{
-                                color: 'inherit',
-                                p: 0,
-                                pr: 1,
-                                display: !compareMode && 'none'
-                              }}
-                              checked={repItemsCompare.b?.content === contentB[index]}
-                              onChange={(e) => compareMode && onSetDeletedItemCompare(e, index)}
-                            />
-                          }
-                          label={
-                            <Typography sx={{ fontSize: 14 }}>
-                              <FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />
-                            </Typography>
-                          }
-                          sx={{ marginLeft: !compareMode && 0, cursor: !compareMode && 'default', width: '100%' }}
-                        />
-                      </>
-                    )}
-                  </Box>
-                  <Box className={`rep-group-compare ${item.b && 'new'}`}>
-                    {item.b === 'new' && (
-                      <>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              size="small"
-                              sx={{
-                                color: 'inherit',
-                                p: 0,
-                                pr: 1,
-                                display: !compareMode && 'none'
-                              }}
-                              checked={repItemsCompare.b?.content === contentB[index]}
-                              onChange={(e) => compareMode && onSetRepItemsCompare(e, 'b', index)}
-                            />
-                          }
-                          label={
-                            <Typography sx={{ fontSize: 14 }}>
-                              <FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />
-                            </Typography>
-                          }
-                          sx={{ marginLeft: !compareMode && 0, cursor: !compareMode && 'default', width: '100%' }}
-                        />
-                      </>
+                  <Box className={`rep-group-compare ${item.a && 'deleted'} ${item.b && 'new'}`}>
+                    {(item.a === 'new' || item.b === 'new') && (
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            size="small"
+                            sx={{
+                              color: 'inherit',
+                              p: 0,
+                              pr: 1,
+                              display: !compareMode && 'none'
+                            }}
+                            checked={
+                              item.a === 'new'
+                                ? repItemsCompare.a?.content === contentA[index]
+                                : repItemsCompare.b?.content === contentB[index]
+                            }
+                            onChange={(e) => {
+                              if (compareMode) {
+                                if (item.a === 'new') {
+                                  onSetDeletedItemCompare(e, index);
+                                } else {
+                                  onSetRepItemsCompare(e, 'b', index);
+                                }
+                              }
+                            }}
+                          />
+                        }
+                        label={
+                          <Typography sx={{ fontSize: 14 }}>
+                            <FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />
+                          </Typography>
+                        }
+                        sx={{ marginLeft: !compareMode && 0, width: '100%' }}
+                        onClick={() => !compareMode && onViewItemVersion(item.a === 'new' ? 'a' : 'b', index)}
+                      />
                     )}
                   </Box>
                 </>
