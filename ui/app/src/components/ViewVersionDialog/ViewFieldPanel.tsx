@@ -27,10 +27,12 @@ import ViewField from './ViewField';
 interface ViewFieldPanelProps {
   content: any;
   field: ContentTypeField;
+  xml: string;
+  contentTypeFields: ContentTypeField[];
 }
 
 export function ViewFieldPanel(props: ViewFieldPanelProps) {
-  const { content, field } = props;
+  const { content, field, contentTypeFields, xml } = props;
   return (
     <Accordion
       sx={{
@@ -50,7 +52,13 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <ViewField content={content} field={field} />
+        <ViewField
+          content={content}
+          field={field}
+          contentTypeFields={contentTypeFields}
+          xml={xml}
+          showToolbar={false}
+        />
       </AccordionDetails>
     </Accordion>
   );

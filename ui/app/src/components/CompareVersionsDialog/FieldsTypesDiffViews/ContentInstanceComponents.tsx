@@ -23,6 +23,7 @@ import Box from '@mui/material/Box';
 import palette from '../../../styles/palette';
 import Typography from '@mui/material/Typography';
 import { EmptyState } from '../../EmptyState';
+import LookupTable from '../../../models/LookupTable';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
@@ -31,9 +32,10 @@ interface ContentInstanceComponentsProps {
 
 export function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const { contentA, contentB } = props;
+  console.log('props', props);
   const [diff, setDiff] = useState(null);
   const itemsByPath = useItemsByPath();
-  const contentById = useMemo(() => {
+  const contentById: LookupTable<ContentInstance> = useMemo(() => {
     const byId = {};
     [...(contentA ?? []), ...(contentB ?? [])].forEach((item) => {
       if (item.craftercms?.id) {
@@ -45,9 +47,15 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
     return byId;
   }, [contentA, contentB]);
 
-  const getItemLabel = (item) => {
+  const getItemLabel = (item: ContentInstance) => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
+
+  const isEmbedded = (item: ContentInstance) => {
+    return item?.craftercms && !item.craftercms.path;
+  };
+
+  const onCompareEmbedded = (index: number) => {};
 
   useEffect(() => {
     setDiff(
@@ -109,12 +117,22 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
                 }}
                 className={getItemDiffStatus(part) ?? ''}
                 key={`${id}-${index}`}
+                onClick={() => {
+                  const item = contentById[id];
+                  if (isEmbedded(item)) {
+                    onCompareEmbedded(index);
+                  }
+                }}
               >
                 <Box component="span" display="inline-flex">
                   <Typography sx={{ fontSize: '14px' }}> {getItemLabel(contentById[id])}</Typography>
                   {contentById[id].craftercms && (
                     <Typography sx={{ fontSize: '14px', ml: 1 }}>
-                      {contentById[id].craftercms.path ?? <FormattedMessage defaultMessage="(Embedded)" />}
+                      {isEmbedded(contentById[id]) ? (
+                        <FormattedMessage defaultMessage="(Embedded)" />
+                      ) : (
+                        contentById[id].craftercms.path
+                      )}
                     </Typography>
                   )}
                 </Box>

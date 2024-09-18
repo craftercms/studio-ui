@@ -26,7 +26,6 @@ import useMount from '../../hooks/useMount';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { getContentInstanceValueFromProp } from '../../utils/content';
-import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import useLocale from '../../hooks/useLocale';
 import { asLocalizedDateTime, convertTimeToTimezone } from '../../utils/datetime';
@@ -38,13 +37,9 @@ import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceCom
 import RepeatGroupItems from './FieldsTypesDiffViews/RepeatGroupItems';
 import { CompareVersionsDialogProps, hasFieldChanged } from './utils';
 import Button from '@mui/material/Button';
-import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
-import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 import Divider from '@mui/material/Divider';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
+import FieldVersionToolbar from './FieldVersionToolbar';
 
 export interface CompareVersionsItem extends ItemHistoryEntry {
   xml: string;
@@ -210,8 +205,7 @@ interface CompareFieldPanelProps {
   field: ContentTypeField;
   contentTypeFields: ContentTypeField[];
   accordion?: boolean;
-  onSelectNextField?: (fieldId: string) => void;
-  onSelectPreviousField?: (fieldId: string) => void;
+  onSelectField?(field: ContentTypeField): void;
   setCompareSubDialogState?(props: CompareVersionsDialogProps): void;
 }
 
@@ -232,7 +226,7 @@ const typesDiffMap = {
 };
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const { a, b, field, contentTypeFields, onSelectNextField, onSelectPreviousField, setCompareSubDialogState } = props;
+  const { a, b, field, contentTypeFields, onSelectField, setCompareSubDialogState } = props;
   const [unChanged, setUnChanged] = useState(true);
   const fieldType = field.type;
   const locale = useLocale();
@@ -245,12 +239,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
   const contentA = getContentInstanceValueFromProp(a.content, field.id);
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
-  const currentFieldIndex = contentTypeFields.findIndex((f) => f.id === field.id);
-  const nextField = contentTypeFields[currentFieldIndex + 1] || contentTypeFields[0];
-  const previousField = contentTypeFields[currentFieldIndex - 1] || contentTypeFields[contentTypeFields.length - 1];
   const [cleanText, setCleanText] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
-  const showDivider = (fieldType === 'html' || fieldType === 'repeat') && !compareXml;
 
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
   const diffComponentProps = {
@@ -316,33 +306,14 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
 
   return !unChanged ? (
     <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-        {contentTypeFields.length > 1 && (
-          <Button startIcon={<ChevronLeftRoundedIcon />} onClick={() => onSelectPreviousField(field.id)}>
-            {previousField.name}
-          </Button>
-        )}
-        <Paper
-          elevation={0}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexGrow: 1,
-            pb: 1,
-            pt: 1,
-            pl: 2,
-            pr: 2,
-            ml: 2,
-            mr: 2,
-            border: (theme) => `1px solid ${theme.palette.divider}`
-          }}
-        >
-          <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
-            <Typography sx={{ fontWeight: 'bold' }}>{field.name}</Typography>
-            <InfoOutlinedIcon sx={{ ml: 2, color: (theme) => theme.palette.text.secondary }} />
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <FieldVersionToolbar
+        field={field}
+        contentTypeFields={contentTypeFields}
+        compareXml={compareXml}
+        setCompareXml={setCompareXml}
+        onSelectField={onSelectField}
+        actions={
+          <>
             {!compareXml && fieldType === 'html' && (
               <Button
                 onClick={(e) => {
@@ -362,23 +333,9 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
                 <FormattedMessage defaultMessage="Compare" />
               </Button>
             )}
-            {showDivider && (
-              <Divider orientation="vertical" sx={{ display: 'inline-flex', height: '25px', ml: 2, mr: 2 }} />
-            )}
-            <IconButton size="small" onClick={() => setCompareXml(false)} color={compareXml ? 'default' : 'primary'}>
-              <TextSnippetOutlinedIcon />
-            </IconButton>
-            <IconButton size="small" onClick={() => setCompareXml(true)} color={compareXml ? 'primary' : 'default'}>
-              <CodeOutlinedIcon />
-            </IconButton>
-          </Box>
-        </Paper>
-        {contentTypeFields.length > 1 && (
-          <Button endIcon={<NavigateNextRoundedIcon />} onClick={() => onSelectNextField(field.id)}>
-            {nextField.name}
-          </Button>
-        )}
-      </Box>
+          </>
+        }
+      />
       <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
         {compareXml ? (
           <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isDiff isHTML={false} />

@@ -39,7 +39,6 @@ export interface ViewVersionDialogBaseProps {
   error: ApiResponse;
   isFetching: boolean;
   version: ItemHistoryEntry;
-  showXml: boolean;
 }
 
 export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, EnhancedDialogProps {
@@ -57,4 +56,6 @@ export interface ViewVersionDialogStateProps extends ViewVersionDialogBaseProps,
 
 export interface ViewVersionDialogContainerProps
   extends ViewVersionDialogBaseProps,
-    Pick<ViewVersionDialogProps, 'contentTypesBranch'> {}
+    Pick<ViewVersionDialogProps, 'contentTypesBranch'> {
+  showXml: boolean;
+}

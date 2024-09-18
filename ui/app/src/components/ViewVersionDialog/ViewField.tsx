@@ -29,121 +29,170 @@ import React, { useState } from 'react';
 import ViewFieldPanel from './ViewFieldPanel';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import useLocale from '../../hooks/useLocale';
+import FieldVersionToolbar from '../CompareVersionsDialog/FieldVersionToolbar';
+import { fromString, serialize } from '../../utils/xml';
 
 interface ViewFieldProps {
   content: any;
   field: ContentTypeField;
+  xml?: string;
+  showToolbar?: boolean;
+  contentTypeFields: ContentTypeField[];
+  onSelectField?(field: ContentTypeField): void;
 }
 
 export function ViewField(props: ViewFieldProps) {
-  const { content, field } = props;
+  const { content, field, contentTypeFields, xml = '', showToolbar = true, onSelectField } = props;
   const itemsByPath = useItemsByPath();
   const locale = useLocale();
   const [repItemView, setRepItemView] = useState({
     item: null,
     index: null
   });
+  const fieldDoc =
+    fromString(xml).querySelector(`page > ${field.id}`) ?? fromString(xml).querySelector(`component > ${field.id}`);
+  const fieldXml = fieldDoc ? serialize(fieldDoc) : '';
+  const [compareXml, setCompareXml] = useState(false);
   const getItemLabel = (item) => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
 
-  return !content && field.type !== 'boolean' && field.type !== 'page-nav-order' ? (
-    <Typography color="textSecondary">no content set</Typography>
-  ) : field.type === 'html' ? (
-    <MonacoWrapper contentA={content} isHTML={true} />
-  ) : field.type === 'image' ? (
-    <Box sx={{ textAlign: 'center' }}>
-      <img src={content} alt="" />
-      <Typography variant="subtitle2">{content}</Typography>
+  return (
+    <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {showToolbar && (
+        <FieldVersionToolbar
+          field={field}
+          contentTypeFields={contentTypeFields}
+          compareXml={compareXml}
+          setCompareXml={setCompareXml}
+          onSelectField={onSelectField}
+        />
+      )}
+      <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
+        {compareXml ? (
+          <MonacoWrapper contentA={fieldXml} isHTML={true} />
+        ) : (
+          <>
+            {!content && field.type !== 'boolean' && field.type !== 'page-nav-order' ? (
+              <Typography color="textSecondary">no content set</Typography>
+            ) : field.type === 'html' ? (
+              <MonacoWrapper contentA={content} isHTML={true} />
+            ) : field.type === 'image' ? (
+              <Box sx={{ textAlign: 'center' }}>
+                <img src={content} alt="" />
+                <Typography variant="subtitle2">{content}</Typography>
+              </Box>
+            ) : field.type === 'video-picker' ? (
+              <Box sx={{ textAlign: 'center' }}>
+                <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
+                <Typography variant="subtitle2">{content}</Typography>
+              </Box>
+            ) : field.type === 'time' ? (
+              <Typography>
+                {content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
+              </Typography>
+            ) : field.type === 'date-time' ? (
+              <Tooltip title={content}>
+                <Typography>
+                  {content
+                    ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
+                    : ''}
+                </Typography>
+              </Tooltip>
+            ) : field.type === 'boolean' || field.type === 'page-nav-order' ? (
+              <Typography>
+                {content ? (
+                  <FormattedMessage defaultMessage="Checked" />
+                ) : (
+                  <FormattedMessage defaultMessage="Unchecked" />
+                )}
+              </Typography>
+            ) : field.type === 'checkbox-group' ? (
+              <Box>
+                {content?.map((item) => <Typography key={item.key}>{`${item.value_smv} (${item.key})`}</Typography>)}
+              </Box>
+            ) : field.type === 'node-selector' ? (
+              content?.map((item) => {
+                return (
+                  <Box
+                    key={item.craftercms.path}
+                    sx={{
+                      padding: '4px 15px',
+                      marginBottom: '12px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      borderRadius: '10px',
+                      alignItems: 'center',
+                      color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '14px' }}> {getItemLabel(item)}</Typography>
+                  </Box>
+                );
+              })
+            ) : field.type === 'repeat' ? (
+              repItemView.item ? (
+                <>
+                  <Button
+                    variant="outlined"
+                    startIcon={<ArrowBackIosRounded />}
+                    sx={{ mb: 2 }}
+                    onClick={() => setRepItemView({ item: null, index: null })}
+                    fullWidth
+                  >
+                    <FormattedMessage defaultMessage="Go back" />
+                  </Button>
+                  <Typography>
+                    <FormattedMessage
+                      defaultMessage="Viewing rep-group item {index}"
+                      values={{ index: repItemView.index }}
+                    />
+                  </Typography>
+                  {/* Iterate the rep-group item fields */}
+                  {Object.values(field.fields).map((field) => (
+                    <ViewFieldPanel
+                      content={repItemView.item[field.id]}
+                      field={field}
+                      contentTypeFields={contentTypeFields}
+                      xml={fieldXml}
+                    />
+                  ))}
+                </>
+              ) : (
+                content?.map((item, index) => {
+                  return (
+                    <Box
+                      key={index}
+                      sx={{
+                        padding: '4px 15px',
+                        marginBottom: '12px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        borderRadius: '10px',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
+                        backgroundColor: (theme) =>
+                          theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
+                      }}
+                      onClick={() => setRepItemView({ item, index })}
+                    >
+                      <Typography sx={{ fontSize: '14px' }}>
+                        <FormattedMessage defaultMessage="Item {index}" values={{ index }} />
+                      </Typography>
+                    </Box>
+                  );
+                })
+              )
+            ) : (
+              content
+            )}
+          </>
+        )}
+      </Box>
     </Box>
-  ) : field.type === 'video-picker' ? (
-    <Box sx={{ textAlign: 'center' }}>
-      <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
-      <Typography variant="subtitle2">{content}</Typography>
-    </Box>
-  ) : field.type === 'time' ? (
-    <Typography>{content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}</Typography>
-  ) : field.type === 'date-time' ? (
-    <Tooltip title={content}>
-      <Typography>
-        {content
-          ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
-          : ''}
-      </Typography>
-    </Tooltip>
-  ) : field.type === 'boolean' || field.type === 'page-nav-order' ? (
-    <Typography>
-      {content ? <FormattedMessage defaultMessage="Checked" /> : <FormattedMessage defaultMessage="Unchecked" />}
-    </Typography>
-  ) : field.type === 'checkbox-group' ? (
-    <Box>{content?.map((item) => <Typography key={item.key}>{`${item.value_smv} (${item.key})`}</Typography>)}</Box>
-  ) : field.type === 'node-selector' ? (
-    content?.map((item) => {
-      return (
-        <Box
-          key={item.craftercms.path}
-          sx={{
-            padding: '4px 15px',
-            marginBottom: '12px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            borderRadius: '10px',
-            alignItems: 'center',
-            color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
-            backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1)
-          }}
-        >
-          <Typography sx={{ fontSize: '14px' }}> {getItemLabel(item)}</Typography>
-        </Box>
-      );
-    })
-  ) : field.type === 'repeat' ? (
-    repItemView.item ? (
-      <>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIosRounded />}
-          sx={{ mb: 2 }}
-          onClick={() => setRepItemView({ item: null, index: null })}
-          fullWidth
-        >
-          <FormattedMessage defaultMessage="Go back" />
-        </Button>
-        <Typography>
-          <FormattedMessage defaultMessage="Viewing rep-group item {index}" values={{ index: repItemView.index }} />
-        </Typography>
-        {/* Iterate the rep-group item fields */}
-        {Object.values(field.fields).map((field) => (
-          <ViewFieldPanel content={repItemView.item[field.id]} field={field} />
-        ))}
-      </>
-    ) : (
-      content?.map((item, index) => {
-        return (
-          <Box
-            key={index}
-            sx={{
-              padding: '4px 15px',
-              marginBottom: '12px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              borderRadius: '10px',
-              alignItems: 'center',
-              cursor: 'pointer',
-              color: (theme) => (theme.palette.mode === 'dark' ? palette.gray.dark7 : palette.gray.medium4),
-              backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1)
-            }}
-            onClick={() => setRepItemView({ item, index })}
-          >
-            <Typography sx={{ fontSize: '14px' }}>
-              <FormattedMessage defaultMessage="Item {index}" values={{ index }} />
-            </Typography>
-          </Box>
-        );
-      })
-    )
-  ) : (
-    content
   );
 }
 

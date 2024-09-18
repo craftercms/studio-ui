@@ -16,7 +16,7 @@
 
 import { ViewVersionDialogContainerProps } from './utils';
 import DialogBody from '../DialogBody/DialogBody';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchContentByCommitId } from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { getContentInstanceValueFromProp, parseContentXML } from '../../utils/content';
@@ -37,11 +37,17 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   const [content, setContent] = useState(null);
   const [xml, setXml] = useState(null);
   const siteId = useActiveSiteId();
-  const fields = content
-    ? (Object.values(contentTypesBranch.byId[content.craftercms.contentTypeId].fields) as ContentTypeField[])
-    : [];
+  const fields = useMemo(() => {
+    return content
+      ? (Object.values(contentTypesBranch.byId[content.craftercms.contentTypeId].fields) as ContentTypeField[])
+      : [];
+  }, [content, contentTypesBranch?.byId]);
   const isViewDateReady = content && xml;
   const [selectedField, setSelectedField] = useState(null);
+  const sidebarRefs = useRef({});
+  fields?.forEach((field) => {
+    sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
+  });
 
   useEffect(() => {
     if (version) {
@@ -51,6 +57,17 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
       });
     }
   }, [version, siteId, contentTypesBranch]);
+
+  useEffect(() => {
+    if (fields?.length) {
+      setSelectedField(fields[0]);
+    }
+  }, [fields]);
+
+  const onSelectField = (field) => {
+    setSelectedField(field);
+    sidebarRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <DialogBody sx={{ overflow: 'auto', minHeight: '50vh', p: 0 }}>
@@ -83,7 +100,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                   key={field.id}
                   onClick={() => setSelectedField(field)}
                   selected={selectedField?.id === field.id}
-                  // ref={sidebarRefs.current[field.id]}
+                  ref={sidebarRefs.current[field.id]}
                 >
                   <ListItemText primary={field.name} secondary={`${field.id} - ${field.type}`} sx={{ m: 0 }} />
                 </ListItemButton>
@@ -95,17 +112,11 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
               <ViewField
                 content={content && getContentInstanceValueFromProp(content, selectedField.id)}
                 field={selectedField}
+                contentTypeFields={fields}
+                xml={xml}
+                onSelectField={onSelectField}
               />
             )}
-            {/* {fields?.map((field, index) => {
-              return (
-                <ViewFieldPanel
-                  key={index}
-                  content={content ? getContentInstanceValueFromProp(content, field.id) : null}
-                  field={field}
-                />
-              );
-            })}*/}
           </Box>
         </>
       )}

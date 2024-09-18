@@ -134,7 +134,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
         });
       });
     }
-  }, [preFetchedContent, selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch?.byId]);
+  }, [preFetchedContent, selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch]);
 
   useEffect(() => {
     if (contentTypeFields?.length) {
@@ -142,18 +142,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     }
   }, [contentTypeFields]);
 
-  const onSelectNextField = (fieldId: string) => {
-    const index = contentTypeFields.findIndex((f) => f.id === fieldId);
-    const nextField = contentTypeFields[index + 1] || contentTypeFields[0];
-    setSelectedField(nextField);
-    sidebarRefs.current[nextField.id].current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const onSelectPreviousField = (fieldId: string) => {
-    const index = contentTypeFields.findIndex((f) => f.id === fieldId);
-    const previousField = contentTypeFields[index - 1] || contentTypeFields[contentTypeFields.length - 1];
-    setSelectedField(previousField);
-    sidebarRefs.current[previousField.id].current?.scrollIntoView({ behavior: 'smooth' });
+  const onSelectField = (field) => {
+    setSelectedField(field);
+    sidebarRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -256,8 +247,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   }}
                   field={selectedField}
                   contentTypeFields={contentTypeFields}
-                  onSelectNextField={onSelectNextField}
-                  onSelectPreviousField={onSelectPreviousField}
+                  onSelectField={onSelectField}
                   setCompareSubDialogState={setCompareSubDialogState}
                 />
               ) : (
