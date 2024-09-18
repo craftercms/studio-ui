@@ -40,6 +40,7 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import FieldVersionToolbar from './FieldVersionToolbar';
+import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 
 export interface CompareVersionsItem extends ItemHistoryEntry {
   xml: string;
@@ -207,6 +208,7 @@ interface CompareFieldPanelProps {
   accordion?: boolean;
   onSelectField?(field: ContentTypeField): void;
   setCompareSubDialogState?(props: CompareVersionsDialogProps): void;
+  setViewSubDialogState?(props: ViewVersionDialogProps): void;
 }
 
 const typesDiffMap = {
@@ -226,7 +228,7 @@ const typesDiffMap = {
 };
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const { a, b, field, contentTypeFields, onSelectField, setCompareSubDialogState } = props;
+  const { a, b, field, contentTypeFields, onSelectField, setCompareSubDialogState, setViewSubDialogState } = props;
   const [unChanged, setUnChanged] = useState(true);
   const fieldType = field.type;
   const locale = useLocale();
@@ -262,7 +264,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     verticalLayout: fieldType === 'image' || fieldType === 'video-picker',
     renderContent: null,
     field,
-    setCompareSubDialogState
+    setCompareSubDialogState,
+    setViewSubDialogState
   };
 
   if (DiffComponent === DefaultDiffView) {

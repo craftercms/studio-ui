@@ -49,7 +49,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     versionsBranch,
     contentTypesBranch,
     compareXml,
-    setCompareSubDialogState
+    setCompareSubDialogState,
+    setViewSubDialogState
   } = props;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
   const item = versionsBranch?.item;
@@ -249,6 +250,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   contentTypeFields={contentTypeFields}
                   onSelectField={onSelectField}
                   setCompareSubDialogState={setCompareSubDialogState}
+                  setViewSubDialogState={setViewSubDialogState}
                 />
               ) : (
                 <EmptyState

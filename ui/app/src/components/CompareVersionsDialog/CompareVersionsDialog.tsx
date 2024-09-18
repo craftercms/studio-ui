@@ -30,6 +30,8 @@ import useSpreadState from '../../hooks/useSpreadState';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import { DialogHeader } from '../DialogHeader';
+import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
+import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 
 const compareSubDialogInitialState = {
   open: false,
@@ -40,8 +42,7 @@ const compareSubDialogInitialState = {
 const viewSubDialogInitialState = {
   open: false,
   isFetching: false,
-  error: null,
-  showXml: false
+  error: null
 };
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
@@ -70,10 +71,11 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
 
   const [compareSubDialogState, setCompareSubDialogState] =
     useSpreadState<CompareVersionsDialogProps>(compareSubDialogInitialState);
-  // const [viewSubDialogState, setViewSubDialogState] = useSpreadState<ViewVersionDialogProps>(viewSubDialogInitialState);
+  const [viewSubDialogState, setViewSubDialogState] = useSpreadState<ViewVersionDialogProps>(viewSubDialogInitialState);
 
   const onDialogClose = (event, reason) => {
     setCompareSubDialogState(compareSubDialogInitialState);
+    setViewSubDialogState(viewSubDialogInitialState);
     onClose?.(event, reason);
   };
 
@@ -151,6 +153,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         selectionContent={selectionContent}
         fields={fields}
         setCompareSubDialogState={setCompareSubDialogState}
+        setViewSubDialogState={setViewSubDialogState}
       />
 
       {/* Sub-views for inner views */}
@@ -177,6 +180,29 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
           />
           <CompareVersionsDialogContainer {...compareSubDialogState} compareXml={false} />
         </Box>
+      </Drawer>
+      {/* endregion */}
+      {/* region View */}
+      <Drawer
+        open={viewSubDialogState.open}
+        anchor="right"
+        variant="persistent"
+        sx={{
+          '& > .MuiDrawer-root': {
+            position: 'absolute'
+          },
+          '& > .MuiPaper-root': {
+            width: '90%',
+            position: 'absolute'
+          }
+        }}
+      >
+        <DialogHeader
+          title={viewSubDialogState.title}
+          subtitle={viewSubDialogState.subtitle}
+          onCloseButtonClick={(e) => viewSubDialogState.onClose(e, null)}
+        />
+        <ViewVersionDialogContainer {...viewSubDialogState} showXml={false} />
       </Drawer>
       {/* endregion */}
     </EnhancedDialog>

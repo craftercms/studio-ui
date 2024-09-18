@@ -21,7 +21,6 @@ import { fetchContentByCommitId } from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { getContentInstanceValueFromProp, parseContentXML } from '../../utils/content';
 import { fromString } from '../../utils/xml';
-import { ContentTypeField } from '../../models';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { MonacoWrapper } from '../MonacoWrapper';
@@ -33,15 +32,15 @@ import List from '@mui/material/List';
 import ViewField from './ViewField';
 
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
-  const { version, contentTypesBranch, showXml, error } = props;
-  const [content, setContent] = useState(null);
-  const [xml, setXml] = useState(null);
+  const { version, contentTypesBranch, showXml, data: preFetchedData, error } = props;
+  const [content, setContent] = useState(preFetchedData?.content);
+  const [xml, setXml] = useState(preFetchedData?.xml);
   const siteId = useActiveSiteId();
   const fields = useMemo(() => {
     return content
-      ? (Object.values(contentTypesBranch.byId[content.craftercms.contentTypeId].fields) as ContentTypeField[])
+      ? Object.values(preFetchedData?.fields ?? contentTypesBranch.byId[content.craftercms.contentTypeId].fields)
       : [];
-  }, [content, contentTypesBranch?.byId]);
+  }, [content, contentTypesBranch?.byId, preFetchedData?.fields]);
   const isViewDateReady = content && xml;
   const [selectedField, setSelectedField] = useState(null);
   const sidebarRefs = useRef({});
@@ -50,10 +49,17 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   });
 
   useEffect(() => {
+    if (preFetchedData) {
+      setContent(preFetchedData.content);
+      setXml(preFetchedData.xml);
+    }
+  }, [preFetchedData]);
+
+  useEffect(() => {
     if (version) {
       fetchContentByCommitId(siteId, version.path, version.versionNumber).subscribe((content) => {
         setContent(parseContentXML(fromString(content as string), version.path, contentTypesBranch.byId, {}));
-        setXml(content);
+        setXml(content as string);
       });
     }
   }, [version, siteId, contentTypesBranch]);

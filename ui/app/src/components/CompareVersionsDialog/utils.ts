@@ -27,6 +27,7 @@ import { areObjectsEqual } from '../../utils/object';
 import ContentInstance from '../../models/ContentInstance';
 import { ReactNode } from 'react';
 import { LookupTable } from '../../models';
+import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -76,6 +77,7 @@ export interface CompareVersionsDialogContainerProps
     > {
   compareXml: boolean;
   setCompareSubDialogState?(props: CompareVersionsDialogProps): void;
+  setViewSubDialogState?(props: ViewVersionDialogProps): void;
 }
 
 // region diffArrays

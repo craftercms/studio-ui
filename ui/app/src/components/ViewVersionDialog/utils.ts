@@ -15,7 +15,7 @@
  */
 
 import { EntityState } from '../../models/EntityState';
-import ContentType from '../../models/ContentType';
+import ContentType, { ContentTypeField } from '../../models/ContentType';
 import { DialogHeaderStateAction } from '../DialogHeader';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { ApiResponse } from '../../models/ApiResponse';
@@ -24,7 +24,7 @@ import { LookupTable } from '../../models/LookupTable';
 import { Resource } from '../../models/Resource';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
-import { ItemHistoryEntry } from '../../models';
+import { ContentInstance, ItemHistoryEntry } from '../../models';
 
 export interface VersionViewProps {
   resource: Resource<VersionResource>;
@@ -38,11 +38,16 @@ export interface VersionResource {
 export interface ViewVersionDialogBaseProps {
   error: ApiResponse;
   isFetching: boolean;
-  version: ItemHistoryEntry;
+  version?: ItemHistoryEntry;
+  data?: {
+    content: ContentInstance;
+    xml: string;
+    fields: LookupTable<ContentTypeField>;
+  };
 }
 
 export interface ViewVersionDialogProps extends ViewVersionDialogBaseProps, EnhancedDialogProps {
-  contentTypesBranch: EntityState<ContentType>;
+  contentTypesBranch?: EntityState<ContentType>;
   leftActions?: DialogHeaderActionProps[];
   rightActions?: DialogHeaderActionProps[];
 }
