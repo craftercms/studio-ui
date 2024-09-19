@@ -18,21 +18,28 @@ import ContentInstance from '../../../models/ContentInstance';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import useItemsByPath from '../../../hooks/useItemsByPath';
-import { diffArrays, getItemDiffStatus } from '../utils';
+import { CompareVersionsDialogProps, diffArrays, getItemDiffStatus } from '../utils';
 import Box from '@mui/material/Box';
 import palette from '../../../styles/palette';
 import Typography from '@mui/material/Typography';
 import { EmptyState } from '../../EmptyState';
 import LookupTable from '../../../models/LookupTable';
+import { areObjectsEqual } from '../../../utils/object';
+import useSelection from '../../../hooks/useSelection';
+import { ContentTypeField } from '../../../models';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
   contentB: ContentInstance[];
+  aXml: string;
+  bXml: string;
+  field: ContentTypeField;
+  setCompareSubDialogState?(props: Partial<CompareVersionsDialogProps>): void;
 }
 
 export function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
-  const { contentA, contentB } = props;
-  console.log('props', props);
+  const { contentA, contentB, aXml, bXml, field, setCompareSubDialogState } = props;
+  const contentTypesBranch = useSelection((state) => state.contentTypes);
   const [diff, setDiff] = useState(null);
   const itemsByPath = useItemsByPath();
   const contentById: LookupTable<ContentInstance> = useMemo(() => {
@@ -55,7 +62,39 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
     return item?.craftercms && !item.craftercms.path;
   };
 
-  const onCompareEmbedded = (index: number) => {};
+  const getEmbeddedVersions = (id: string) => {
+    return {
+      embeddedA: contentA.find((item) => item.craftercms?.id === id),
+      embeddedB: contentB.find((item) => item.craftercms?.id === id)
+    };
+  };
+
+  const embeddedItemChanged = (id) => {
+    const { embeddedA, embeddedB } = getEmbeddedVersions(id);
+    return !areObjectsEqual(embeddedA, embeddedB);
+  };
+
+  const onCompareEmbedded = (id: string) => {
+    const { embeddedA, embeddedB } = getEmbeddedVersions(id);
+    const fields = contentTypesBranch.byId[embeddedA.craftercms.contentTypeId].fields;
+    setCompareSubDialogState?.({
+      open: true,
+      selectionContent: {
+        a: {
+          content: embeddedA,
+          xml: aXml
+        },
+        b: {
+          content: embeddedB,
+          xml: bXml
+        }
+      },
+      fields,
+      title: field.name,
+      subtitle: <FormattedMessage defaultMessage="{fieldId}" values={{ fieldId: field.id }} />,
+      onClose: () => setCompareSubDialogState({ open: false })
+    });
+  };
 
   useEffect(() => {
     setDiff(
@@ -118,9 +157,8 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
                 className={getItemDiffStatus(part) ?? ''}
                 key={`${id}-${index}`}
                 onClick={() => {
-                  const item = contentById[id];
-                  if (isEmbedded(item)) {
-                    onCompareEmbedded(index);
+                  if (isEmbedded(contentById[id]) && embeddedItemChanged(id)) {
+                    onCompareEmbedded(id);
                   }
                 }}
               >
@@ -136,9 +174,9 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
                     </Typography>
                   )}
                 </Box>
-                {getItemDiffStatus(part) === 'unchanged' && (
+                {isEmbedded(contentById[id]) && embeddedItemChanged(id) && (
                   <Typography variant="caption">
-                    <FormattedMessage defaultMessage="Unchanged" />
+                    <FormattedMessage defaultMessage="Changed" />
                   </Typography>
                 )}
               </Box>
