@@ -162,14 +162,16 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
                   }
                 }}
               >
-                <Box component="span" display="inline-flex">
-                  <Typography sx={{ fontSize: '14px' }}> {getItemLabel(contentById[id])}</Typography>
+                <Box component="span" display="inline-flex" width="100%">
+                  <Typography sx={{ fontSize: '14px' }} noWrap title={getItemLabel(contentById[id])}>
+                    {getItemLabel(contentById[id])}
+                  </Typography>
                   {contentById[id].craftercms && (
-                    <Typography sx={{ fontSize: '14px', ml: 1 }}>
+                    <Typography sx={{ fontSize: '14px', ml: 1 }} noWrap>
                       {isEmbedded(contentById[id]) ? (
                         <FormattedMessage defaultMessage="(Embedded)" />
                       ) : (
-                        contentById[id].craftercms.path
+                        (contentById[id].craftercms?.path ?? contentById[id].value)
                       )}
                     </Typography>
                   )}

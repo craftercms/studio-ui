@@ -58,8 +58,14 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
       {contentTypeFields.length > 1 && (
-        <Button startIcon={<ChevronLeftRoundedIcon />} onClick={() => onSelectPreviousField(field.id)}>
-          {previousField.name}
+        <Button
+          startIcon={<ChevronLeftRoundedIcon />}
+          onClick={() => onSelectPreviousField(field.id)}
+          title={previousField.name}
+        >
+          <Typography variant="subtitle2" noWrap sx={{ maxWidth: 160 }}>
+            {previousField.name}
+          </Typography>
         </Button>
       )}
       <Paper
@@ -96,8 +102,14 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
         </Box>
       </Paper>
       {contentTypeFields.length > 1 && (
-        <Button endIcon={<NavigateNextRoundedIcon />} onClick={() => onSelectNextField(field.id)}>
-          {nextField.name}
+        <Button
+          endIcon={<NavigateNextRoundedIcon />}
+          onClick={() => onSelectNextField(field.id)}
+          title={nextField.name}
+        >
+          <Typography variant="subtitle2" noWrap sx={{ maxWidth: 160 }}>
+            {nextField.name}
+          </Typography>
         </Button>
       )}
     </Box>

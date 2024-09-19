@@ -56,6 +56,7 @@ export function ViewField(props: ViewFieldProps) {
   const getItemLabel = (item) => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
+  const [cleanText, setCleanText] = useState(false);
 
   return (
     <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -66,6 +67,24 @@ export function ViewField(props: ViewFieldProps) {
           compareXml={compareXml}
           setCompareXml={setCompareXml}
           onSelectField={onSelectField}
+          actions={
+            <>
+              {!compareXml && field.type === 'html' && (
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCleanText(!cleanText);
+                  }}
+                >
+                  {cleanText ? (
+                    <FormattedMessage defaultMessage="Show HTML" />
+                  ) : (
+                    <FormattedMessage defaultMessage="Show text" />
+                  )}
+                </Button>
+              )}
+            </>
+          }
         />
       )}
       <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
@@ -76,7 +95,7 @@ export function ViewField(props: ViewFieldProps) {
             {!content && field.type !== 'boolean' && field.type !== 'page-nav-order' ? (
               <Typography color="textSecondary">no content set</Typography>
             ) : field.type === 'html' ? (
-              <MonacoWrapper contentA={content} isHTML={true} />
+              <MonacoWrapper contentA={content} isHTML={true} cleanText={cleanText} />
             ) : field.type === 'image' ? (
               <Box sx={{ textAlign: 'center' }}>
                 <img src={content} alt="" />
