@@ -32,6 +32,7 @@ import Box from '@mui/material/Box';
 import { DialogHeader } from '../DialogHeader';
 import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
+import { Backdrop } from '@mui/material';
 
 const compareSubDialogInitialState = {
   open: false,
@@ -157,6 +158,14 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
       />
 
       {/* Sub-views for inner views */}
+      <Backdrop
+        open={compareSubDialogState.open || viewSubDialogState.open}
+        sx={{ /* position: 'absolute', */ zIndex: 1200 }}
+        onClick={() => {
+          setCompareSubDialogState({ open: false });
+          setViewSubDialogState({ open: false });
+        }}
+      />
       {/* region Compare */}
       <Drawer
         open={compareSubDialogState.open}
@@ -172,7 +181,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
           }
         }}
       >
-        <Box display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column" height="100%">
           <DialogHeader
             title={compareSubDialogState.title}
             subtitle={compareSubDialogState.subtitle}
