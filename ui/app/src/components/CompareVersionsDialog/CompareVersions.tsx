@@ -136,13 +136,7 @@ export function CompareVersions(props: CompareVersionsProps) {
         }}
       >
         {compareXml ? (
-          <MonacoWrapper
-            contentA={a.xml}
-            contentB={b.xml}
-            isHTML={false}
-            isDiff
-            sxs={{ editor: { height: '400px' } }}
-          />
+          <MonacoWrapper contentA={a.xml} contentB={b.xml} isHTML={false} isDiff editorProps={{ height: '400px' }} />
         ) : (
           <Paper>
             {/* {contentTypes && values.map((field) => <CompareFieldPanel a={a} b={b} field={field} key={field.id} />)}*/}

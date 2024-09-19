@@ -59,6 +59,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@graphiql/plugin-explorer": "^3.0.1",
+    "@monaco-editor/react": "^4.6.0",
     "@mui/icons-material": "^5.15.20",
     "@mui/lab": "^5.0.0-alpha.173",
     "@mui/material": "^5.16.7",

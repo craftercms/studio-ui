@@ -82,7 +82,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
       ) : error ? (
         <ApiResponseErrorState error={error} />
       ) : showXml ? (
-        <MonacoWrapper contentA={xml} isHTML={false} sxs={{ editor: { height: '100%' } }} />
+        <MonacoWrapper contentA={xml} isHTML={false} editorProps={{ height: '100%' }} />
       ) : (
         <>
           <ResizeableDrawer

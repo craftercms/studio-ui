@@ -168,7 +168,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
             contentB={selectionContent.b.xml}
             isHTML={false}
             isDiff
-            sxs={{ editor: { height: '100%' } }}
+            editorProps={{ height: '100%' }}
           />
         ) : (
           <>
