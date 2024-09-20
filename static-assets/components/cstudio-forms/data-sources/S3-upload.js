@@ -82,9 +82,9 @@ YAHOO.extend(CStudioForms.Datasources.S3Upload, CStudioForms.CStudioFormDatasour
         success: function (fileData) {
           if (control) {
             var item = fileData,
-              fileName = item,
+              fileName = item.name,
               fileExtension = fileName.split('.').pop();
-            control.insertItem(item, item, fileExtension, null, me.id);
+            control.insertItem(item.url, item.name, fileExtension, null, me.id);
             if (control._renderItems) {
               control._renderItems();
             }
