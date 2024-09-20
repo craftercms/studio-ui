@@ -28,6 +28,7 @@ import ContentInstance from '../../models/ContentInstance';
 import { ReactNode } from 'react';
 import { LookupTable } from '../../models';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
+import { ItemDiffState } from './FieldsTypesDiffViews/RepeatGroupItems';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -289,7 +290,7 @@ export function diffArrays(oldArray, newArray) {
 }
 // endregion
 
-export const getItemDiffStatus = (diff): string => {
+export const getItemDiffStatus = (diff): ItemDiffState => {
   if (diff.added) {
     return 'new';
   }

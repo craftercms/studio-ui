@@ -238,6 +238,10 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const [cleanText, setCleanText] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
 
+  // region MonacoEditor options
+  const [hideWhiteSpaces, setHideWhiteSpaces] = useState(false);
+  const [splitView, setSplitView] = useState(true);
+
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
   const diffComponentProps = {
     contentA:
@@ -330,12 +334,41 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
                 <FormattedMessage defaultMessage="Compare" />
               </Button>
             )}
+            {compareXml && (
+              <>
+                <Button onClick={() => setHideWhiteSpaces(!hideWhiteSpaces)}>
+                  {hideWhiteSpaces ? (
+                    <FormattedMessage defaultMessage="Show whitespace" />
+                  ) : (
+                    <FormattedMessage defaultMessage="Hide whitespace" />
+                  )}
+                </Button>
+                <Button onClick={() => setSplitView(!splitView)}>
+                  {splitView ? (
+                    <FormattedMessage defaultMessage="Unified view" />
+                  ) : (
+                    <FormattedMessage defaultMessage="Split view" />
+                  )}
+                </Button>
+              </>
+            )}
           </>
         }
       />
       <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
         {compareXml ? (
-          <MonacoWrapper contentA={aFieldXml} contentB={bFieldXml} isDiff isHTML={false} />
+          <MonacoWrapper
+            contentA={aFieldXml}
+            contentB={bFieldXml}
+            isDiff
+            isHTML={false}
+            editorProps={{
+              options: {
+                ignoreTrimWhitespace: hideWhiteSpaces,
+                renderSideBySide: splitView
+              }
+            }}
+          />
         ) : (
           <DiffComponent {...diffComponentProps} />
         )}

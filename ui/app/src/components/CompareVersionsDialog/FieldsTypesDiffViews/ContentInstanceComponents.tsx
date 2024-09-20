@@ -18,15 +18,15 @@ import ContentInstance from '../../../models/ContentInstance';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import useItemsByPath from '../../../hooks/useItemsByPath';
-import { CompareVersionsDialogProps, diffArrays, getItemDiffStatus } from '../utils';
+import { CompareVersionsDialogProps, getItemDiffStatus } from '../utils';
+import { diffArrays } from 'diff/lib/diff/array.js';
 import Box from '@mui/material/Box';
-import palette from '../../../styles/palette';
-import Typography from '@mui/material/Typography';
 import { EmptyState } from '../../EmptyState';
 import LookupTable from '../../../models/LookupTable';
 import { areObjectsEqual } from '../../../utils/object';
 import useSelection from '../../../hooks/useSelection';
 import { ContentTypeField } from '../../../models';
+import DiffStateItem from './DiffStateItem';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
@@ -74,6 +74,10 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
     return !areObjectsEqual(embeddedA, embeddedB);
   };
 
+  const isEmbeddedWithChanges = (id) => {
+    return isEmbedded(contentById[id]) && embeddedItemChanged(id);
+  };
+
   const onCompareEmbedded = (id: string) => {
     const { embeddedA, embeddedB } = getEmbeddedVersions(id);
     const fields = contentTypesBranch.byId[embeddedA.craftercms.contentTypeId].fields;
@@ -114,74 +118,32 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
         justifyContent: 'center'
       }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '1100px' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '1100px', gap: '10px' }}>
         {diff?.length ? (
           diff.map((part) =>
-            part.value.map((id, index) => (
-              <Box
-                sx={{
-                  marginBottom: '12px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  padding: '8.5px 10px',
-                  borderRadius: '5px',
-                  alignItems: 'center',
-                  '&.unchanged': {
-                    color: (theme) =>
-                      theme.palette.mode === 'dark'
-                        ? theme.palette.getContrastText(palette.gray.medium4)
-                        : palette.gray.medium4,
-                    backgroundColor: (theme) =>
-                      theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1
-                  },
-                  '&.new': {
-                    color: palette.green.shade,
-                    backgroundColor: palette.green.highlight,
-                    width: '50%',
-                    marginLeft: 'auto'
-                  },
-                  '&.changed': {
-                    color: palette.yellow.shade,
-                    backgroundColor: palette.yellow.highlight
-                  },
-                  '&.deleted': {
-                    color: palette.red.shade,
-                    backgroundColor: palette.red.highlight,
-                    width: '50%',
-                    marginRight: 'auto'
-                  },
-                  '&:last-child': {
-                    marginBottom: 0
-                  }
-                }}
-                className={getItemDiffStatus(part) ?? ''}
-                key={`${id}-${index}`}
-                onClick={() => {
-                  if (isEmbedded(contentById[id]) && embeddedItemChanged(id)) {
+            part.value.map((id) => (
+              <DiffStateItem
+                state={isEmbeddedWithChanges(id) ? 'changed' : getItemDiffStatus(part)}
+                label={
+                  <>
+                    {getItemLabel(contentById[id])}
+                    <Box component="span" ml={1}>
+                      {contentById[id].craftercms &&
+                        (isEmbedded(contentById[id]) ? (
+                          <FormattedMessage defaultMessage="(Embedded)" />
+                        ) : (
+                          (contentById[id].craftercms?.path ?? contentById[id].value)
+                        ))}
+                    </Box>
+                  </>
+                }
+                onSelect={() => {
+                  if (isEmbeddedWithChanges(id)) {
                     onCompareEmbedded(id);
                   }
                 }}
-              >
-                <Box component="span" display="inline-flex" width="100%">
-                  <Typography sx={{ fontSize: '14px' }} noWrap title={getItemLabel(contentById[id])}>
-                    {getItemLabel(contentById[id])}
-                  </Typography>
-                  {contentById[id].craftercms && (
-                    <Typography sx={{ fontSize: '14px', ml: 1 }} noWrap>
-                      {isEmbedded(contentById[id]) ? (
-                        <FormattedMessage defaultMessage="(Embedded)" />
-                      ) : (
-                        (contentById[id].craftercms?.path ?? contentById[id].value)
-                      )}
-                    </Typography>
-                  )}
-                </Box>
-                {isEmbedded(contentById[id]) && embeddedItemChanged(id) && (
-                  <Typography variant="caption">
-                    <FormattedMessage defaultMessage="Changed" />
-                  </Typography>
-                )}
-              </Box>
+                disableHighlight={!isEmbeddedWithChanges(id)}
+              />
             ))
           )
         ) : (
