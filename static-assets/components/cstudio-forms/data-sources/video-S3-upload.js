@@ -57,8 +57,8 @@ YAHOO.extend(CStudioForms.Datasources.VideoS3Upload, CStudioForms.CStudioFormDat
 
     var callback = {
       success: function (fileData) {
-        var uri = fileData;
-        var fileExtension = fileData.split('.').pop();
+        var uri = fileData.url ? fileData.url : fileData;
+        var fileExtension = uri.split('.').pop();
 
         var videoData = {
           previewUrl: uri,
