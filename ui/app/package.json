@@ -76,7 +76,7 @@
     "@types/video.js": "^7.3.58",
     "autosuggest-highlight": "^3.3.4",
     "clsx": "^2.1.1",
-    "diff": "^5.1.0",
+    "diff": "^7.0.0",
     "fast-xml-parser": "^4.3.6",
     "graphiql": "^3.2.2",
     "graphql": "^16.8.1",
