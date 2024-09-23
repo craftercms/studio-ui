@@ -59,7 +59,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   const showRepItemsCompare = repItemsCompare.a?.content && repItemsCompare.b?.content;
   const selectedItemsAreEqual = showRepItemsCompare && repItemsCompare.a?.xml === repItemsCompare.b?.xml;
 
-  const getItemDataAtVersion = (side, index) => {
+  const getItemDataAtVersion = (side: string, index: number): { content: ContentInstance; xml: string } => {
     const content = side === 'a' ? contentA : contentB;
     const xml = side === 'a' ? aXml : bXml;
     // When selecting an item on the rep-group diff view, we need to calculate its xml (so the items can be compared
@@ -122,7 +122,13 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   const onSelectItemAction = (checked: boolean, side: 'a' | 'b', index: number, diffState: ItemDiffState) => {
     if (diffState === 'changed' || diffState === 'unchanged') {
       if (compareMode) {
-        onSetRepItemsCompare(checked, side, index, true);
+        const oppositeSide = side === 'a' ? 'b' : 'a';
+        let selectSide = side;
+        // If current side already has a value (an item selected), and it's multi-side, add the selection to the opposite side.
+        if (repItemsCompare[side]?.multiSide) {
+          selectSide = oppositeSide;
+        }
+        onSetRepItemsCompare(checked, selectSide, index, true);
       } else {
         if (diffState === 'changed') {
           onSetRepItemsCompare(checked, 'a', index);
@@ -203,57 +209,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                 gap: '10px',
                 marginBottom: '12px',
                 width: '100%',
-                maxWidth: '1100px',
-                '& .rep-group-compare': {
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '8.5px 10px',
-                  borderRadius: '5px',
-                  width: '100%',
-                  '&.unchanged': {
-                    color: (theme) =>
-                      theme.palette.mode === 'dark'
-                        ? theme.palette.getContrastText(palette.gray.medium4)
-                        : palette.gray.medium4,
-                    backgroundColor: (theme) =>
-                      theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1,
-                    '&:hover, &.selected': {
-                      color: (theme) =>
-                        theme.palette.mode === 'dark'
-                          ? theme.palette.getContrastText(palette.gray.medium7)
-                          : palette.gray.medium4,
-                      backgroundColor: (theme) =>
-                        theme.palette.mode === 'dark' ? palette.gray.medium7 : palette.gray.light5
-                    }
-                  },
-                  '&.new': {
-                    color: palette.green.shade,
-                    backgroundColor: palette.green.highlight,
-                    marginLeft: 'auto',
-                    width: '50%',
-                    '&:hover, &.selected': {
-                      backgroundColor: palette.green.main,
-                      color: (theme) => theme.palette.getContrastText(palette.green.main)
-                    }
-                  },
-                  '&.changed': {
-                    color: palette.yellow.shade,
-                    backgroundColor: palette.yellow.highlight,
-                    '&:hover, &.selected': {
-                      background: palette.yellow.main,
-                      color: (theme) => theme.palette.getContrastText(palette.yellow.main)
-                    }
-                  },
-                  '&.deleted': {
-                    color: palette.red.shade,
-                    backgroundColor: palette.red.highlight,
-                    width: '50%',
-                    '&:hover, &.selected': {
-                      background: palette.red.tint,
-                      color: (theme) => theme.palette.getContrastText(palette.red.tint)
-                    }
-                  }
-                }
+                maxWidth: '1100px'
               }}
             >
               <DiffStateItem

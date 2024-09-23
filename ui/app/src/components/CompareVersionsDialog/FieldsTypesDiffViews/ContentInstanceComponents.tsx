@@ -123,6 +123,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
           diff.map((part) =>
             part.value.map((id) => (
               <DiffStateItem
+                key={id}
                 state={isEmbeddedWithChanges(id) ? 'changed' : getItemDiffStatus(part)}
                 label={
                   <>
