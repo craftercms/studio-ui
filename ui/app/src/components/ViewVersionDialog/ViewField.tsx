@@ -50,7 +50,9 @@ export function ViewField(props: ViewFieldProps) {
     index: null
   });
   const fieldDoc =
-    fromString(xml).querySelector(`page > ${field.id}`) ?? fromString(xml).querySelector(`component > ${field.id}`);
+    fromString(xml).querySelector(`page > ${field.id}`) ??
+    fromString(xml).querySelector(`component > ${field.id}`) ??
+    fromString(xml).querySelector(`item > ${field.id}`);
   const fieldXml = fieldDoc ? serialize(fieldDoc) : '';
   const [compareXml, setCompareXml] = useState(false);
   const getItemLabel = (item) => {

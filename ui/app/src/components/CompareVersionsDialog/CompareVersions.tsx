@@ -228,9 +228,13 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const locale = useLocale();
   const [compareXml, setCompareXml] = useState(false);
   const aFieldDoc =
-    fromString(a.xml).querySelector(`page > ${field.id}`) ?? fromString(a.xml).querySelector(`component > ${field.id}`);
+    fromString(a.xml).querySelector(`page > ${field.id}`) ??
+    fromString(a.xml).querySelector(`component > ${field.id}`) ??
+    fromString(a.xml).querySelector(`item > ${field.id}`);
   const bFieldDoc =
-    fromString(b.xml).querySelector(`page > ${field.id}`) ?? fromString(b.xml).querySelector(`component > ${field.id}`);
+    fromString(b.xml).querySelector(`page > ${field.id}`) ??
+    fromString(b.xml).querySelector(`component > ${field.id}`) ??
+    fromString(b.xml).querySelector(`item > ${field.id}`);
   const aFieldXml = aFieldDoc ? serialize(aFieldDoc) : '';
   const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
   const contentA = getContentInstanceValueFromProp(a.content, field.id);
