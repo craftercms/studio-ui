@@ -41,6 +41,7 @@ import Divider from '@mui/material/Divider';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import FieldVersionToolbar from './FieldVersionToolbar';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
+import useMonacoOptions from '../../hooks/useMonacoOptions';
 
 export interface CompareVersionsItem extends ItemHistoryEntry {
   xml: string;
@@ -243,9 +244,12 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const [compareMode, setCompareMode] = useState(false);
 
   // region MonacoEditor options
-  const [hideWhiteSpaces, setHideWhiteSpaces] = useState(false);
-  const [splitView, setSplitView] = useState(true);
-
+  const {
+    options: xmlEditorOptions,
+    toggleIgnoreTrimWhitespace,
+    toggleRenderSideBySide,
+    toggleDiffWordWrap
+  } = useMonacoOptions();
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
   const diffComponentProps = {
     contentA:
@@ -267,7 +271,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     renderContent: null,
     field,
     setCompareSubDialogState,
-    setViewSubDialogState
+    setViewSubDialogState,
+    editorProps: { options: xmlEditorOptions }
   };
 
   if (DiffComponent === DefaultDiffView) {
@@ -338,20 +343,27 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
                 <FormattedMessage defaultMessage="Compare" />
               </Button>
             )}
-            {compareXml && (
+            {(compareXml || typesDiffMap[fieldType] === MonacoWrapper) && (
               <>
-                <Button onClick={() => setHideWhiteSpaces(!hideWhiteSpaces)}>
-                  {hideWhiteSpaces ? (
+                <Button onClick={() => toggleIgnoreTrimWhitespace()}>
+                  {xmlEditorOptions.ignoreTrimWhitespace ? (
                     <FormattedMessage defaultMessage="Show whitespace" />
                   ) : (
                     <FormattedMessage defaultMessage="Hide whitespace" />
                   )}
                 </Button>
-                <Button onClick={() => setSplitView(!splitView)}>
-                  {splitView ? (
+                <Button onClick={() => toggleRenderSideBySide()}>
+                  {xmlEditorOptions.renderSideBySide ? (
                     <FormattedMessage defaultMessage="Unified view" />
                   ) : (
                     <FormattedMessage defaultMessage="Split view" />
+                  )}
+                </Button>
+                <Button onClick={() => toggleDiffWordWrap()}>
+                  {xmlEditorOptions.diffWordWrap === 'on' ? (
+                    <FormattedMessage defaultMessage="!Wrap text" />
+                  ) : (
+                    <FormattedMessage defaultMessage="Wrap text" />
                   )}
                 </Button>
               </>
@@ -367,10 +379,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             isDiff
             isHTML={false}
             editorProps={{
-              options: {
-                ignoreTrimWhitespace: hideWhiteSpaces,
-                renderSideBySide: splitView
-              }
+              options: xmlEditorOptions
             }}
           />
         ) : (

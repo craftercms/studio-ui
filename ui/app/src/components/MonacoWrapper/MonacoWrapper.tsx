@@ -34,7 +34,7 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
   const originalContent = useMemo(() => (cleanText ? removeTags(contentA ?? '') : contentA), [cleanText, contentA]);
   const modifiedContent = useMemo(() => (cleanText ? removeTags(contentB ?? '') : contentB), [cleanText, contentB]);
 
-  const monacoOptions = {
+  const monacoOptions: EditorProps['options'] | DiffEditorProps['options'] = {
     readOnly: true,
     automaticLayout: true,
     fontSize: 14,
@@ -58,7 +58,7 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
       value={originalContent}
       theme={prefersDarkMode ? 'vs-dark' : 'vs'}
       {...(editorProps as EditorProps)}
-      options={{ ...monacoOptions, wordWrap: 'off', ...editorProps.options }}
+      options={{ ...monacoOptions, ...editorProps.options }}
     />
   );
 }
