@@ -77,7 +77,13 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const siteId = useActiveSiteId();
   const isCompareDataReady = useMemo(() => {
     if (preFetchedContent) {
-      return selectionContent.a.content && selectionContent.b.content;
+      // Check that selectionContent is complete and synced with prefetchedContent
+      return (
+        selectionContent.a.content &&
+        selectionContent.b.content &&
+        selectionContent.a.xml === preFetchedContent.a.xml &&
+        selectionContent.b.xml === preFetchedContent.b.xml
+      );
     } else {
       return (
         compareVersionsBranch?.compareVersions &&

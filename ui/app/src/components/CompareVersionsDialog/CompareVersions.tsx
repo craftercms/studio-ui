@@ -242,8 +242,6 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
   const [cleanText, setCleanText] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
-
-  // region MonacoEditor options
   const {
     options: xmlEditorOptions,
     toggleIgnoreTrimWhitespace,

@@ -115,7 +115,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
                   setShowCleanText(true);
                   setCompareXml(false);
                 }}
-                color={showCleanText ? 'primary' : 'default'}
+                color={showCleanText && !compareXml ? 'primary' : 'default'}
               >
                 <NotesRoundedIcon />
               </IconButton>

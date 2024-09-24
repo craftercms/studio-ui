@@ -21,17 +21,20 @@ export const useMonacoOptions = () => {
   const [options, setOptions] = useSpreadState<DiffEditorProps['options']>({
     ignoreTrimWhitespace: false,
     renderSideBySide: true,
-    diffWordWrap: 'off'
+    diffWordWrap: 'off', // for diff editor
+    wordWrap: 'on' // for regular editor
   });
   const toggleIgnoreTrimWhitespace = () => setOptions({ ignoreTrimWhitespace: !options.ignoreTrimWhitespace });
   const toggleRenderSideBySide = () => setOptions({ renderSideBySide: !options.renderSideBySide });
   const toggleDiffWordWrap = () => setOptions({ diffWordWrap: options.diffWordWrap === 'on' ? 'off' : 'on' });
+  const toggleWordWrap = () => setOptions({ wordWrap: options.wordWrap === 'on' ? 'off' : 'on' });
 
   return {
     options,
     toggleIgnoreTrimWhitespace,
     toggleRenderSideBySide,
-    toggleDiffWordWrap
+    toggleDiffWordWrap,
+    toggleWordWrap
   };
 };
 

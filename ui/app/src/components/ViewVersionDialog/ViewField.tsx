@@ -31,6 +31,7 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import useLocale from '../../hooks/useLocale';
 import FieldVersionToolbar from '../CompareVersionsDialog/FieldVersionToolbar';
 import { fromString, serialize } from '../../utils/xml';
+import useMonacoOptions from '../../hooks/useMonacoOptions';
 
 interface ViewFieldProps {
   content: any;
@@ -54,11 +55,12 @@ export function ViewField(props: ViewFieldProps) {
     fromString(xml).querySelector(`component > ${field.id}`) ??
     fromString(xml).querySelector(`item > ${field.id}`);
   const fieldXml = fieldDoc ? serialize(fieldDoc) : '';
-  const [compareXml, setCompareXml] = useState(false);
+  const [viewXml, setViewXml] = useState(false);
   const getItemLabel = (item) => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
   const [cleanText, setCleanText] = useState(false);
+  const { options: xmlEditorOptions, toggleWordWrap } = useMonacoOptions();
 
   return (
     <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -66,38 +68,38 @@ export function ViewField(props: ViewFieldProps) {
         <FieldVersionToolbar
           field={field}
           contentTypeFields={contentTypeFields}
-          compareXml={compareXml}
-          setCompareXml={setCompareXml}
+          compareXml={viewXml}
+          setCompareXml={setViewXml}
+          showCleanText={cleanText}
+          setShowCleanText={setCleanText}
           onSelectField={onSelectField}
           actions={
-            <>
-              {!compareXml && field.type === 'html' && (
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCleanText(!cleanText);
-                  }}
-                >
-                  {cleanText ? (
-                    <FormattedMessage defaultMessage="Show HTML" />
-                  ) : (
-                    <FormattedMessage defaultMessage="Show text" />
-                  )}
-                </Button>
-              )}
-            </>
+            (field.type === 'html' || viewXml) && (
+              <Button onClick={() => toggleWordWrap()}>
+                {xmlEditorOptions.wordWrap === 'on' ? (
+                  <FormattedMessage defaultMessage="No Wrap" />
+                ) : (
+                  <FormattedMessage defaultMessage="Wrap" />
+                )}
+              </Button>
+            )
           }
         />
       )}
       <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
-        {compareXml ? (
+        {viewXml ? (
           <MonacoWrapper contentA={fieldXml} isHTML={true} />
         ) : (
           <>
             {!content && field.type !== 'boolean' && field.type !== 'page-nav-order' ? (
               <Typography color="textSecondary">no content set</Typography>
             ) : field.type === 'html' ? (
-              <MonacoWrapper contentA={content} isHTML={true} cleanText={cleanText} />
+              <MonacoWrapper
+                contentA={content}
+                isHTML={true}
+                cleanText={cleanText}
+                editorProps={{ options: xmlEditorOptions }}
+              />
             ) : field.type === 'image' ? (
               <Box sx={{ textAlign: 'center' }}>
                 <img src={content} alt="" />
