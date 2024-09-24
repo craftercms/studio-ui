@@ -32,7 +32,7 @@ import List from '@mui/material/List';
 import ViewField from './ViewField';
 
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
-  const { version, contentTypesBranch, showXml, data: preFetchedData, error } = props;
+  const { version, contentTypesBranch, showXml, data: preFetchedData, error, setViewSubDialogState } = props;
   const [content, setContent] = useState(preFetchedData?.content);
   const [xml, setXml] = useState(preFetchedData?.xml);
   const siteId = useActiveSiteId();
@@ -121,6 +121,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                 contentTypeFields={fields}
                 xml={xml}
                 onSelectField={onSelectField}
+                setViewSubDialogState={setViewSubDialogState}
               />
             )}
           </Box>

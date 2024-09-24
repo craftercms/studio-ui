@@ -29,12 +29,12 @@ interface DiffStateItemProps {
   selected?: boolean;
   selectionMode?: boolean;
   disableHighlight?: boolean;
+  hideState?: boolean;
   onSelect?(selected: boolean): void;
-  // checkboxProps
 }
 
-export function DiffStateItem(props: DiffStateItemProps) {
-  const { state, label, selected = false, disableHighlight = false, onSelect, selectionMode } = props;
+export function StateItem(props: DiffStateItemProps) {
+  const { state, label, selected = false, disableHighlight = false, onSelect, selectionMode, hideState } = props;
   const { cx } = useStyles();
 
   return (
@@ -113,12 +113,12 @@ export function DiffStateItem(props: DiffStateItemProps) {
           cursor: disableHighlight && 'default'
         }}
       />
-      {state === 'changed' && (
+      {!hideState && state === 'changed' && (
         <Typography variant="caption">
           <FormattedMessage defaultMessage="Changed" />
         </Typography>
       )}
-      {state === 'unchanged' && (
+      {!hideState && state === 'unchanged' && (
         <Typography variant="caption">
           <FormattedMessage defaultMessage="Unchanged" />
         </Typography>
@@ -127,4 +127,4 @@ export function DiffStateItem(props: DiffStateItemProps) {
   );
 }
 
-export default DiffStateItem;
+export default StateItem;

@@ -242,6 +242,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
   const [cleanText, setCleanText] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
+  const [compareModeDisabled, setCompareModeDisabled] = useState(false);
   const {
     options: xmlEditorOptions,
     toggleIgnoreTrimWhitespace,
@@ -270,6 +271,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     field,
     setCompareSubDialogState,
     setViewSubDialogState,
+    setCompareModeDisabled,
     editorProps: { options: xmlEditorOptions }
   };
 
@@ -325,7 +327,11 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
         actions={
           <>
             {!compareXml && fieldType === 'repeat' && (
-              <Button onClick={() => setCompareMode(!compareMode)} startIcon={<CompareArrowsIcon />}>
+              <Button
+                onClick={() => setCompareMode(!compareMode)}
+                startIcon={<CompareArrowsIcon />}
+                disabled={compareModeDisabled}
+              >
                 <FormattedMessage defaultMessage="Compare" />
               </Button>
             )}

@@ -21,12 +21,11 @@ import useSpreadState from '../../../hooks/useSpreadState';
 import { fromString, serialize } from '../../../utils/xml';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
-import palette from '../../../styles/palette';
-import { deepCopy } from '../../../utils/object';
+import { deepCopy, nou } from '../../../utils/object';
 import { Alert } from '@mui/material';
 import { CompareVersionsDialogProps } from '../utils';
 import { ViewVersionDialogProps } from '../../ViewVersionDialog/utils';
-import DiffStateItem from './DiffStateItem';
+import StateItem from './StateItem';
 
 interface RepeatGroupItemsProps {
   contentA: ContentInstance[];
@@ -36,6 +35,7 @@ interface RepeatGroupItemsProps {
   compareMode: boolean;
   fields: LookupTable<ContentTypeField>;
   field: ContentTypeField;
+  setCompareModeDisabled?(disabled: boolean): void;
   setCompareSubDialogState?(props: Partial<CompareVersionsDialogProps>): void;
   setViewSubDialogState?(props: Partial<ViewVersionDialogProps>): void;
 }
@@ -52,7 +52,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     fields,
     field,
     setCompareSubDialogState,
-    setViewSubDialogState
+    setViewSubDialogState,
+    setCompareModeDisabled
   } = props;
   const [repDiff, setRepDiff] = useState([]);
   const [repItemsCompare, setRepItemsCompare] = useSpreadState({ a: null, b: null });
@@ -183,6 +184,15 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     }
   }, [repItemsCompare, fields, compareMode, setCompareSubDialogState, field?.id, setRepItemsCompare, field?.name]);
 
+  useEffect(() => {
+    const diffItemsSameSide = repDiff.every((entry) => nou(entry.a)) || repDiff.every((entry) => nou(entry.b));
+    if (diffItemsSameSide) {
+      setCompareModeDisabled(true);
+    } else {
+      setCompareModeDisabled(false);
+    }
+  }, [setCompareModeDisabled, repDiff]);
+
   return (
     <>
       <Box
@@ -212,7 +222,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
                 maxWidth: '1100px'
               }}
             >
-              <DiffStateItem
+              <StateItem
                 state={item.a ?? item.b}
                 label={<FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />}
                 selectionMode={compareMode}

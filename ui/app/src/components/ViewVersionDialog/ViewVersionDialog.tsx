@@ -26,6 +26,10 @@ import { dialogClasses } from '@mui/material/Dialog';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { AsDayMonthDateTime } from '../VersionList';
 import useLocale from '../../hooks/useLocale';
+import { Backdrop } from '@mui/material';
+import Drawer from '@mui/material/Drawer';
+import useSpreadState from '../../hooks/useSpreadState';
+import { DialogHeader } from '../DialogHeader';
 
 export const getLegacyDialogStyles = makeStyles()(() => ({
   iframe: {
@@ -34,12 +38,19 @@ export const getLegacyDialogStyles = makeStyles()(() => ({
   }
 }));
 
+const viewSubDialogInitialState = {
+  open: false,
+  isFetching: false,
+  error: null
+};
+
 export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, ...rest } = props;
   const [showXml, setShowXml] = useState(false);
   const { formatMessage } = useIntl();
   const largeHeightScreen = useMediaQuery('(min-height: 880px)');
   const locale = useLocale();
+  const [viewSubDialogState, setViewSubDialogState] = useSpreadState<ViewVersionDialogProps>(viewSubDialogInitialState);
 
   return (
     <EnhancedDialog
@@ -74,7 +85,36 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
         error={error}
         isFetching={isFetching}
         showXml={showXml}
+        setViewSubDialogState={setViewSubDialogState}
       />
+
+      {/* Sub-view for inner viewVersionDialog */}
+      <Backdrop
+        open={viewSubDialogState.open}
+        sx={{ /* position: 'absolute', */ zIndex: 1200 }}
+        onClick={() => setViewSubDialogState({ open: false })}
+      />
+      <Drawer
+        open={viewSubDialogState.open}
+        anchor="right"
+        variant="persistent"
+        sx={{
+          '& > .MuiDrawer-root': {
+            position: 'absolute'
+          },
+          '& > .MuiPaper-root': {
+            width: '90%',
+            position: 'absolute'
+          }
+        }}
+      >
+        <DialogHeader
+          title={viewSubDialogState.title}
+          subtitle={viewSubDialogState.subtitle}
+          onCloseButtonClick={(e) => viewSubDialogState.onClose(e, null)}
+        />
+        <ViewVersionDialogContainer {...viewSubDialogState} showXml={false} />
+      </Drawer>
     </EnhancedDialog>
   );
 }

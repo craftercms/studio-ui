@@ -63,4 +63,5 @@ export interface ViewVersionDialogContainerProps
   extends ViewVersionDialogBaseProps,
     Pick<ViewVersionDialogProps, 'contentTypesBranch'> {
   showXml: boolean;
+  setViewSubDialogState?(props: ViewVersionDialogProps): void;
 }

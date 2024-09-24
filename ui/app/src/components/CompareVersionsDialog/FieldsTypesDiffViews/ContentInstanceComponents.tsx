@@ -26,7 +26,7 @@ import LookupTable from '../../../models/LookupTable';
 import { areObjectsEqual } from '../../../utils/object';
 import useSelection from '../../../hooks/useSelection';
 import { ContentTypeField } from '../../../models';
-import DiffStateItem from './DiffStateItem';
+import StateItem from './StateItem';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
@@ -71,7 +71,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 
   const embeddedItemChanged = (id) => {
     const { embeddedA, embeddedB } = getEmbeddedVersions(id);
-    return !areObjectsEqual(embeddedA, embeddedB);
+    return !areObjectsEqual(embeddedA ?? {}, embeddedB ?? {});
   };
 
   const isEmbeddedWithChanges = (id) => {
@@ -122,7 +122,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
         {diff?.length ? (
           diff.map((part) =>
             part.value.map((id) => (
-              <DiffStateItem
+              <StateItem
                 key={id}
                 state={isEmbeddedWithChanges(id) ? 'changed' : getItemDiffStatus(part)}
                 label={
