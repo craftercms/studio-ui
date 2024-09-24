@@ -1242,3 +1242,15 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
     return model[prop];
   }
 }
+
+export const mockContentInstance = {
+  craftercms: {
+    id: null,
+    path: null,
+    label: null,
+    dateCreated: null,
+    dateModified: null,
+    contentTypeId: null,
+    disabled: false
+  }
+};
