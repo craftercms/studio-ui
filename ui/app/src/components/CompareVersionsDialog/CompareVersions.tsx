@@ -321,23 +321,11 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
         contentTypeFields={contentTypeFields}
         compareXml={compareXml}
         setCompareXml={setCompareXml}
+        showCleanText={cleanText}
+        setShowCleanText={setCleanText}
         onSelectField={onSelectField}
         actions={
           <>
-            {!compareXml && fieldType === 'html' && (
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setCleanText(!cleanText);
-                }}
-              >
-                {cleanText ? (
-                  <FormattedMessage defaultMessage="Show HTML" />
-                ) : (
-                  <FormattedMessage defaultMessage="Show text" />
-                )}
-              </Button>
-            )}
             {!compareXml && fieldType === 'repeat' && (
               <Button onClick={() => setCompareMode(!compareMode)} startIcon={<CompareArrowsIcon />}>
                 <FormattedMessage defaultMessage="Compare" />
@@ -361,9 +349,9 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
                 </Button>
                 <Button onClick={() => toggleDiffWordWrap()}>
                   {xmlEditorOptions.diffWordWrap === 'on' ? (
-                    <FormattedMessage defaultMessage="!Wrap text" />
+                    <FormattedMessage defaultMessage="No Wrap" />
                   ) : (
-                    <FormattedMessage defaultMessage="Wrap text" />
+                    <FormattedMessage defaultMessage="Wrap" />
                   )}
                 </Button>
               </>

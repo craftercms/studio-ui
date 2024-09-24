@@ -38,7 +38,10 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
     readOnly: true,
     automaticLayout: true,
     fontSize: 14,
-    contextmenu: false
+    contextmenu: false,
+    scrollBeyondLastLine: false,
+    renderWhitespace: 'none',
+    renderIndicators: false
   };
 
   return isDiff ? (

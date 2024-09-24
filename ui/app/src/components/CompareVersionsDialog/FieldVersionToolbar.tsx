@@ -27,18 +27,32 @@ import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import React, { ReactNode } from 'react';
 import { ContentTypeField } from '../../models';
+import Tooltip from '@mui/material/Tooltip';
+import { FormattedMessage } from 'react-intl';
+import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
 
 interface FieldVersionToolbarProps {
   field: ContentTypeField;
   contentTypeFields: ContentTypeField[];
   compareXml: boolean;
+  showCleanText: boolean;
   actions?: ReactNode;
   setCompareXml(value: boolean): void;
+  setShowCleanText(value: boolean): void;
   onSelectField?(field: ContentTypeField): void;
 }
 
 export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
-  const { field, contentTypeFields, onSelectField, compareXml, setCompareXml, actions } = props;
+  const {
+    field,
+    contentTypeFields,
+    onSelectField,
+    compareXml,
+    setCompareXml,
+    showCleanText,
+    setShowCleanText,
+    actions
+  } = props;
   const currentFieldIndex = contentTypeFields.findIndex((f) => f.id === field.id);
   const nextField = contentTypeFields[currentFieldIndex + 1] || contentTypeFields[0];
   const previousField = contentTypeFields[currentFieldIndex - 1] || contentTypeFields[contentTypeFields.length - 1];
@@ -93,12 +107,37 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
           {Boolean(actions) && (
             <Divider orientation="vertical" sx={{ display: 'inline-flex', height: '25px', ml: 2, mr: 2 }} />
           )}
-          <IconButton size="small" onClick={() => setCompareXml(false)} color={compareXml ? 'default' : 'primary'}>
-            <TextSnippetOutlinedIcon />
-          </IconButton>
-          <IconButton size="small" onClick={() => setCompareXml(true)} color={compareXml ? 'primary' : 'default'}>
-            <CodeOutlinedIcon />
-          </IconButton>
+          {field.type === 'html' && (
+            <Tooltip title={<FormattedMessage defaultMessage="Show clean text" />}>
+              <IconButton
+                size="small"
+                onClick={() => {
+                  setShowCleanText(true);
+                  setCompareXml(false);
+                }}
+                color={showCleanText ? 'primary' : 'default'}
+              >
+                <NotesRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          <Tooltip title={<FormattedMessage defaultMessage="Compare" />}>
+            <IconButton
+              size="small"
+              onClick={() => {
+                setShowCleanText(false);
+                setCompareXml(false);
+              }}
+              color={!showCleanText && !compareXml ? 'primary' : 'default'}
+            >
+              <TextSnippetOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={<FormattedMessage defaultMessage="Compare XML" />}>
+            <IconButton size="small" onClick={() => setCompareXml(true)} color={compareXml ? 'primary' : 'default'}>
+              <CodeOutlinedIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
       </Paper>
       {contentTypeFields.length > 1 && (
