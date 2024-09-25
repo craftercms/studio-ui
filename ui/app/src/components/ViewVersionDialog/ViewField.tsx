@@ -102,7 +102,9 @@ function DefaultView(props: DefaultViewProps) {
   return (
     <>
       {!content && fieldType !== 'boolean' && fieldType !== 'page-nav-order' ? (
-        <Typography color="textSecondary">no content set</Typography>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography color="textSecondary">no content set</Typography>
+        </Box>
       ) : fieldType === 'image' ? (
         <Box sx={{ textAlign: 'center' }}>
           <img src={content} alt="" />
@@ -114,21 +116,31 @@ function DefaultView(props: DefaultViewProps) {
           <Typography variant="subtitle2">{content}</Typography>
         </Box>
       ) : fieldType === 'time' ? (
-        <Typography>{content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}</Typography>
-      ) : fieldType === 'date-time' ? (
-        <Tooltip title={content}>
+        <Box sx={{ textAlign: 'center' }}>
           <Typography>
-            {content
-              ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
-              : ''}
+            {content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
           </Typography>
-        </Tooltip>
+        </Box>
+      ) : fieldType === 'date-time' ? (
+        <Box sx={{ textAlign: 'center' }}>
+          <Tooltip title={content}>
+            <Typography>
+              {content
+                ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
+                : ''}
+            </Typography>
+          </Tooltip>
+        </Box>
       ) : fieldType === 'boolean' || field.type === 'page-nav-order' ? (
-        <Typography>
-          {content ? <FormattedMessage defaultMessage="Checked" /> : <FormattedMessage defaultMessage="Unchecked" />}
-        </Typography>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography>
+            {content ? <FormattedMessage defaultMessage="Checked" /> : <FormattedMessage defaultMessage="Unchecked" />}
+          </Typography>
+        </Box>
       ) : fieldType === 'checkbox-group' ? (
-        <Box>{content?.map((item) => <Typography key={item.key}>{`${item.value_smv} (${item.key})`}</Typography>)}</Box>
+        <Box sx={{ textAlign: 'center' }}>
+          {content?.map((item) => <Typography key={item.key}>{`${item.value_smv} (${item.key})`}</Typography>)}
+        </Box>
       ) : fieldType === 'node-selector' || fieldType === 'repeat' ? (
         <Box component="section" sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '1100px', gap: '10px' }}>
@@ -174,7 +186,7 @@ function DefaultView(props: DefaultViewProps) {
           </Box>
         </Box>
       ) : (
-        content
+        <Box sx={{ textAlign: 'center' }}>{content}</Box>
       )}
     </>
   );
@@ -199,7 +211,7 @@ export function ViewField(props: ViewFieldProps) {
   const [cleanText, setCleanText] = useState(false);
   const { options: xmlEditorOptions, toggleWordWrap } = useMonacoOptions();
 
-  const ViewComponent = typesRenderMap[field.type];
+  const ViewComponent = typesRenderMap[field.type] ?? DefaultView;
   const viewComponentProps = {
     contentA: content,
     xml: fieldXml,
@@ -224,7 +236,7 @@ export function ViewField(props: ViewFieldProps) {
           setShowCleanText={setCleanText}
           onSelectField={onSelectField}
           actions={
-            (field.type === 'html' || viewXml) && (
+            (ViewComponent === MonacoWrapper || viewXml) && (
               <Button onClick={() => toggleWordWrap()}>
                 {xmlEditorOptions.wordWrap === 'on' ? (
                   <FormattedMessage defaultMessage="No Wrap" />
@@ -238,7 +250,7 @@ export function ViewField(props: ViewFieldProps) {
       )}
       <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
         {viewXml ? (
-          <MonacoWrapper contentA={fieldXml} isHTML={true} />
+          <MonacoWrapper contentA={fieldXml} isHTML={true} editorProps={{ options: xmlEditorOptions }} />
         ) : nnou(ViewComponent) ? (
           <ViewComponent {...viewComponentProps} />
         ) : (
