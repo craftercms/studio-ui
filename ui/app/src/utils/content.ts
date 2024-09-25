@@ -430,6 +430,7 @@ export function parseContentXML(
     );
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
+    current.craftercms.disabled = JSON.parse(getInnerHtml(doc.querySelector(':scope > disabled')));
   }
   id && (instanceLookup[id] = current);
   if (nnou(doc)) {
@@ -1235,6 +1236,8 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
     const systemProp = systemPropMap[prop];
     if (systemProp === 'fileName') {
       return model.craftercms.path;
+    } else if (systemProp === 'disabled') {
+      return model.craftercms.disabled;
     } else {
       return model.craftercms[systemProp];
     }
