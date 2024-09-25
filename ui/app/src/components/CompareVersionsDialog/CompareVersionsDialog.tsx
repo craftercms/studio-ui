@@ -187,7 +187,9 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
             subtitle={compareSubDialogState.subtitle}
             onCloseButtonClick={(e) => compareSubDialogState.onClose(e, null)}
           />
-          <CompareVersionsDialogContainer {...compareSubDialogState} compareXml={false} />
+          {compareSubDialogState.open && (
+            <CompareVersionsDialogContainer {...compareSubDialogState} compareXml={false} />
+          )}
         </Box>
       </Drawer>
       {/* endregion */}
@@ -211,7 +213,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
           subtitle={viewSubDialogState.subtitle}
           onCloseButtonClick={(e) => viewSubDialogState.onClose(e, null)}
         />
-        <ViewVersionDialogContainer {...viewSubDialogState} showXml={false} />
+        {viewSubDialogState.open && <ViewVersionDialogContainer {...viewSubDialogState} showXml={false} />}
       </Drawer>
       {/* endregion */}
     </EnhancedDialog>
