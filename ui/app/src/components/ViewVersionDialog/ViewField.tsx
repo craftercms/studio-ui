@@ -101,7 +101,7 @@ function DefaultView(props: DefaultViewProps) {
 
   return (
     <>
-      {!content && fieldType !== 'boolean' && fieldType !== 'page-nav-order' ? (
+      {(!content && fieldType !== 'boolean' && fieldType !== 'page-nav-order') || content?.length === 0 ? (
         <Box sx={{ textAlign: 'center' }}>
           <Typography color="textSecondary">no content set</Typography>
         </Box>
