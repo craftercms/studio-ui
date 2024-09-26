@@ -1236,8 +1236,6 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
     const systemProp = systemPropMap[prop];
     if (systemProp === 'fileName') {
       return model.craftercms.path;
-    } else if (systemProp === 'disabled') {
-      return model.craftercms.disabled;
     } else {
       return model.craftercms[systemProp];
     }
