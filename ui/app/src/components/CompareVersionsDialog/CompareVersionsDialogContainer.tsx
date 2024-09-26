@@ -39,6 +39,7 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { ItemTypeIcon } from '../ItemTypeIcon';
 import palette from '../../styles/palette';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -239,25 +240,27 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
             </ResizeableDrawer>
             <Box sx={{ marginLeft: '280px', height: '100%' }}>
               {selectedField ? (
-                <CompareFieldPanel
-                  a={{
-                    ...selectedA,
-                    ...compareVersionsBranch?.compareVersions?.[0],
-                    content: selectionContent.a.content,
-                    xml: selectionContent.a.xml
-                  }}
-                  b={{
-                    ...selectedB,
-                    ...compareVersionsBranch?.compareVersions?.[1],
-                    content: selectionContent.b.content,
-                    xml: selectionContent.b.xml
-                  }}
-                  field={selectedField}
-                  contentTypeFields={contentTypeFields}
-                  onSelectField={onSelectField}
-                  setCompareSubDialogState={setCompareSubDialogState}
-                  setViewSubDialogState={setViewSubDialogState}
-                />
+                <ErrorBoundary errorStateProps={{ onButtonClick: () => setSelectedField(null) }}>
+                  <CompareFieldPanel
+                    a={{
+                      ...selectedA,
+                      ...compareVersionsBranch?.compareVersions?.[0],
+                      content: selectionContent.a.content,
+                      xml: selectionContent.a.xml
+                    }}
+                    b={{
+                      ...selectedB,
+                      ...compareVersionsBranch?.compareVersions?.[1],
+                      content: selectionContent.b.content,
+                      xml: selectionContent.b.xml
+                    }}
+                    field={selectedField}
+                    contentTypeFields={contentTypeFields}
+                    onSelectField={onSelectField}
+                    setCompareSubDialogState={setCompareSubDialogState}
+                    setViewSubDialogState={setViewSubDialogState}
+                  />
+                </ErrorBoundary>
               ) : (
                 <EmptyState
                   styles={{ root: { height: '100%', margin: 0 } }}

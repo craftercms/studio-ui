@@ -116,7 +116,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   };
 
   const isItemSelected = (side, index) => {
-    const contentToCompare = side === 'a' ? contentA[index] : contentB[index];
+    const contentToCompare = side === 'a' ? contentA?.[index] : contentB?.[index];
     return compareMode && repItemsCompare[side]?.content === contentToCompare;
   };
 
@@ -194,46 +194,44 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   }, [setCompareModeDisabled, repDiff]);
 
   return (
-    <>
-      <Box
-        component="section"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          alignItems: 'center'
-        }}
-      >
-        {compareMode && selectedItemsAreEqual && (
-          <Alert severity="warning" variant="outlined" sx={{ pt: 0, pb: 0, pl: 1, pr: 1, mb: 2 }}>
-            <FormattedMessage defaultMessage="Selected items are the same" />
-          </Alert>
-        )}
-        {repDiff.length &&
-          repDiff.map((item, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                gap: '10px',
-                marginBottom: '12px',
-                width: '100%',
-                maxWidth: '1100px'
-              }}
-            >
-              <StateItem
-                state={item.a ?? item.b}
-                label={<FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />}
-                selectionMode={compareMode}
-                selected={isItemSelected(item.a ? 'a' : 'b', index)}
-                onSelect={(selected) => onSelectItemAction(selected, item.a ? 'a' : 'b', index, item.a ?? item.b)}
-                disableHighlight={(item.a ?? item.b) === 'unchanged'}
-              />
-            </Box>
-          ))}
-      </Box>
-    </>
+    <Box
+      component="section"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        alignItems: 'center'
+      }}
+    >
+      {compareMode && selectedItemsAreEqual && (
+        <Alert severity="warning" variant="outlined" sx={{ pt: 0, pb: 0, pl: 1, pr: 1, mb: 2 }}>
+          <FormattedMessage defaultMessage="Selected items are the same" />
+        </Alert>
+      )}
+      {repDiff.length &&
+        repDiff.map((item, index) => (
+          <Box
+            key={index}
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: '10px',
+              marginBottom: '12px',
+              width: '100%',
+              maxWidth: '1100px'
+            }}
+          >
+            <StateItem
+              state={item.a ?? item.b}
+              label={<FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />}
+              selectionMode={compareMode}
+              selected={isItemSelected(item.a ? 'a' : 'b', index)}
+              onSelect={(selected) => onSelectItemAction(selected, item.a ? 'a' : 'b', index, item.a ?? item.b)}
+              disableHighlight={(item.a ?? item.b) === 'unchanged'}
+            />
+          </Box>
+        ))}
+    </Box>
   );
 }
 
