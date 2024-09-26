@@ -210,7 +210,6 @@ export function ViewField(props: ViewFieldProps) {
   const [viewXml, setViewXml] = useState(false);
   const [cleanText, setCleanText] = useState(false);
   const { options: xmlEditorOptions, toggleWordWrap } = useMonacoOptions();
-
   const ViewComponent = typesRenderMap[field.type] ?? DefaultView;
   const viewComponentProps = {
     contentA: content,

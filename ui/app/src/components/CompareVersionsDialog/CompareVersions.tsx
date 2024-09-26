@@ -385,7 +385,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       content={contentA}
       field={field}
       contentTypeFields={contentTypeFields}
-      xml={aFieldXml}
+      xml={a.xml}
       onSelectField={onSelectField}
       setViewSubDialogState={setViewSubDialogState}
     />
