@@ -75,9 +75,11 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const [viewSubDialogState, setViewSubDialogState] = useSpreadState<ViewVersionDialogProps>(viewSubDialogInitialState);
 
   const onDialogClose = (event, reason) => {
+    if (!(compareSubDialogState.open || viewSubDialogState.open)) {
+      onClose?.(event, reason);
+    }
     setCompareSubDialogState(compareSubDialogInitialState);
     setViewSubDialogState(viewSubDialogInitialState);
-    onClose?.(event, reason);
   };
 
   return (
