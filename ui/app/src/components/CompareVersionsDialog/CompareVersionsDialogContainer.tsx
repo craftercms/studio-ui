@@ -34,12 +34,13 @@ import { FormattedMessage } from 'react-intl';
 import EmptyState from '../EmptyState';
 import useSelection from '../../hooks/useSelection';
 import { MonacoWrapper } from '../MonacoWrapper';
-import ListItemText from '@mui/material/ListItemText';
+import ListItemText, { listItemTextClasses } from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { ItemTypeIcon } from '../ItemTypeIcon';
 import palette from '../../styles/palette';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { Badge, badgeClasses } from '@mui/material';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -105,16 +106,17 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const [selectedField, setSelectedField] = useState(null);
   const contentType = contentTypesBranch?.byId[item.contentTypeId];
   const contentTypeFields = useMemo(() => {
-    return isCompareDataReady
-      ? Object.values(fields ?? contentType.fields).filter((field) =>
-          hasFieldChanged(
-            field,
-            getContentInstanceValueFromProp(selectionContent.a.content, field.id),
-            getContentInstanceValueFromProp(selectionContent.b.content, field.id)
-          )
-        )
-      : [];
-  }, [contentType, isCompareDataReady, selectionContent, fields]);
+    return isCompareDataReady ? Object.values(fields ?? contentType.fields) : [];
+  }, [contentType, fields, isCompareDataReady]);
+  const fieldIdsWithChanges = contentTypeFields
+    .filter((field) =>
+      hasFieldChanged(
+        field,
+        getContentInstanceValueFromProp(selectionContent.a.content, field.id),
+        getContentInstanceValueFromProp(selectionContent.b.content, field.id)
+      )
+    )
+    .map((field) => field.id);
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const sidebarRefs = useRef({});
   contentTypeFields?.forEach((field) => {
@@ -227,14 +229,30 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
               )}
               <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
                 {contentTypeFields.map((field) => (
-                  <ListItemButton
-                    key={field.id}
-                    onClick={() => setSelectedField(field)}
-                    selected={selectedField?.id === field.id}
-                    ref={sidebarRefs.current[field.id]}
+                  <Badge
+                    color="info"
+                    variant="dot"
+                    invisible={!fieldIdsWithChanges.includes(field.id)}
+                    sx={{ width: '100%', [`& .${badgeClasses.badge}`]: { top: 10, right: 10 } }}
                   >
-                    <ListItemText primary={field.name} secondary={`${field.id} - ${field.type}`} sx={{ m: 0 }} />
-                  </ListItemButton>
+                    <ListItemButton
+                      key={field.id}
+                      onClick={() => setSelectedField(field)}
+                      selected={selectedField?.id === field.id}
+                      ref={sidebarRefs.current[field.id]}
+                    >
+                      <ListItemText
+                        primary={field.name}
+                        secondary={`${field.id} - ${field.type}`}
+                        sx={{
+                          m: 0,
+                          [`& .${listItemTextClasses.primary}, & .${listItemTextClasses.secondary}`]: {
+                            fontWeight: fieldIdsWithChanges.includes(field.id) ? 600 : 'normal'
+                          }
+                        }}
+                      />
+                    </ListItemButton>
+                  </Badge>
                 ))}
               </List>
             </ResizeableDrawer>

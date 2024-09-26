@@ -17,7 +17,7 @@
 import ContentInstance from '../../models/ContentInstance';
 import { LookupTable } from '../../models/LookupTable';
 import ContentType, { ContentTypeField } from '../../models/ContentType';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import ListItemText from '@mui/material/ListItemText';
 import { AsDayMonthDateTime } from '../VersionList';
@@ -42,6 +42,7 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import FieldVersionToolbar from './FieldVersionToolbar';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 import useMonacoOptions from '../../hooks/useMonacoOptions';
+import ViewField from '../ViewVersionDialog/ViewField';
 
 export interface CompareVersionsItem extends ItemHistoryEntry {
   xml: string;
@@ -310,9 +311,9 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       );
   }
 
-  useMount(() => {
+  useEffect(() => {
     setUnChanged(!hasFieldChanged(field, contentA, contentB));
-  });
+  }, [contentA, contentB, field]);
 
   return !unChanged ? (
     <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -380,7 +381,14 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       </Box>
     </Box>
   ) : (
-    <></>
+    <ViewField
+      content={contentA}
+      field={field}
+      contentTypeFields={contentTypeFields}
+      xml={aFieldXml}
+      onSelectField={onSelectField}
+      setViewSubDialogState={setViewSubDialogState}
+    />
   );
 }
 
