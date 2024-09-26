@@ -102,7 +102,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
 
   const onViewItemVersion = (side, index) => {
     const { content, xml } = getItemDataAtVersion(side, index);
-    setViewSubDialogState({
+    setViewSubDialogState?.({
       open: true,
       data: {
         content,
@@ -135,6 +135,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
           onSetRepItemsCompare(checked, 'a', index);
           // If items have changed Compare both versions on current item
           onSetRepItemsCompare(checked, 'b', index);
+        } else {
+          onViewItemVersion(side, index);
         }
       }
     } else {
@@ -227,7 +229,6 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
               selectionMode={compareMode}
               selected={isItemSelected(item.a ? 'a' : 'b', index)}
               onSelect={(selected) => onSelectItemAction(selected, item.a ? 'a' : 'b', index, item.a ?? item.b)}
-              disableHighlight={(item.a ?? item.b) === 'unchanged'}
             />
           </Box>
         ))}

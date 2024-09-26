@@ -230,13 +230,13 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
               <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
                 {contentTypeFields.map((field) => (
                   <Badge
+                    key={field.id}
                     color="info"
                     variant="dot"
                     invisible={!fieldIdsWithChanges.includes(field.id)}
                     sx={{ width: '100%', [`& .${badgeClasses.badge}`]: { top: 10, right: 10 } }}
                   >
                     <ListItemButton
-                      key={field.id}
                       onClick={() => setSelectedField(field)}
                       selected={selectedField?.id === field.id}
                       ref={sidebarRefs.current[field.id]}

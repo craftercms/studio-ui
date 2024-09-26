@@ -28,6 +28,7 @@ import useSelection from '../../../hooks/useSelection';
 import { ContentTypeField } from '../../../models';
 import StateItem from './StateItem';
 import { mockContentInstance } from '../../../utils/content';
+import { ViewVersionDialogProps } from '../../ViewVersionDialog/utils';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
@@ -36,10 +37,11 @@ interface ContentInstanceComponentsProps {
   bXml: string;
   field: ContentTypeField;
   setCompareSubDialogState?(props: Partial<CompareVersionsDialogProps>): void;
+  setViewSubDialogState?(props: Partial<ViewVersionDialogProps>): void;
 }
 
 export function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
-  const { contentA, contentB, aXml, bXml, field, setCompareSubDialogState } = props;
+  const { contentA, contentB, aXml, bXml, field, setCompareSubDialogState, setViewSubDialogState } = props;
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const [diff, setDiff] = useState(null);
   const itemsByPath = useItemsByPath();
@@ -103,6 +105,22 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
     });
   };
 
+  const onViewEmbedded = (id: string) => {
+    const { embeddedA } = getEmbeddedVersions(id);
+    const fields = contentTypesBranch.byId[embeddedA.craftercms.contentTypeId].fields;
+    setViewSubDialogState?.({
+      open: true,
+      data: {
+        content: embeddedA,
+        xml: aXml,
+        fields
+      },
+      title: field.name,
+      subtitle: <FormattedMessage defaultMessage="{fieldId}" values={{ fieldId: field.id }} />,
+      onClose: () => setViewSubDialogState({ open: false })
+    });
+  };
+
   useEffect(() => {
     setDiff(
       diffArrays(
@@ -142,11 +160,11 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
                   </>
                 }
                 onSelect={() => {
-                  if (isEmbeddedWithChanges(id)) {
-                    onCompareEmbedded(id);
+                  if (isEmbedded(contentById[id])) {
+                    isEmbeddedWithChanges(id) ? onCompareEmbedded(id) : onViewEmbedded(id);
                   }
                 }}
-                disableHighlight={!isEmbeddedWithChanges(id)}
+                disableHighlight={!isEmbedded(contentById[id])}
               />
             ))
           )
