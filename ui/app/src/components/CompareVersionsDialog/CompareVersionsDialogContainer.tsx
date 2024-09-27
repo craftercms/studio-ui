@@ -30,7 +30,7 @@ import { ResizeableDrawer } from '../ResizeableDrawer';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import EmptyState from '../EmptyState';
 import useSelection from '../../hooks/useSelection';
 import { MonacoWrapper } from '../MonacoWrapper';
@@ -41,6 +41,8 @@ import { ItemTypeIcon } from '../ItemTypeIcon';
 import palette from '../../styles/palette';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { Badge, badgeClasses } from '@mui/material';
+import Button from '@mui/material/Button';
+import { getStudioContentInternalFields } from '../../utils/contentType';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -56,7 +58,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   } = props;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
   const item = versionsBranch?.item;
-
+  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
+  const { formatMessage } = useIntl();
   const [selectionContent, setSelectionContent] = useSpreadState(
     preFetchedContent ?? {
       a: {
@@ -69,13 +72,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       }
     }
   );
-
-  useEffect(() => {
-    if (preFetchedContent) {
-      setSelectionContent(preFetchedContent);
-    }
-  }, [preFetchedContent, setSelectionContent]);
-
   const siteId = useActiveSiteId();
   const isCompareDataReady = useMemo(() => {
     if (preFetchedContent) {
@@ -102,12 +98,13 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     item?.contentTypeId,
     selectionContent
   ]);
-
   const [selectedField, setSelectedField] = useState(null);
   const contentType = contentTypesBranch?.byId[item.contentTypeId];
   const contentTypeFields = useMemo(() => {
-    return isCompareDataReady ? Object.values(fields ?? contentType.fields) : [];
-  }, [contentType, fields, isCompareDataReady]);
+    return isCompareDataReady
+      ? [...Object.values(fields ?? contentType.fields), ...getStudioContentInternalFields(formatMessage)]
+      : [];
+  }, [contentType, fields, isCompareDataReady, formatMessage]);
   const fieldIdsWithChanges = contentTypeFields
     .filter((field) =>
       hasFieldChanged(
@@ -117,11 +114,17 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       )
     )
     .map((field) => field.id);
-  const baseUrl = useSelection<string>((state) => state.env.authoringBase);
+  const [showOnlyChanges, setShowOnlyChanges] = useState(false);
   const sidebarRefs = useRef({});
   contentTypeFields?.forEach((field) => {
     sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
   });
+
+  useEffect(() => {
+    if (preFetchedContent) {
+      setSelectionContent(preFetchedContent);
+    }
+  }, [preFetchedContent, setSelectionContent]);
 
   useEffect(() => {
     // The dialog can handle 2 different set of props:
@@ -155,6 +158,13 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const onSelectField = (field) => {
     setSelectedField(field);
     sidebarRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const onToggleShowOnlyChanges = () => {
+    setSelectedField(
+      contentTypeFields.filter((field) => (!showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))[0]
+    );
+    setShowOnlyChanges(!showOnlyChanges);
   };
 
   return (
@@ -228,32 +238,36 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                 </>
               )}
               <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
-                {contentTypeFields.map((field) => (
-                  <Badge
-                    key={field.id}
-                    color="info"
-                    variant="dot"
-                    invisible={!fieldIdsWithChanges.includes(field.id)}
-                    sx={{ width: '100%', [`& .${badgeClasses.badge}`]: { top: 10, right: 10 } }}
-                  >
-                    <ListItemButton
-                      onClick={() => setSelectedField(field)}
-                      selected={selectedField?.id === field.id}
-                      ref={sidebarRefs.current[field.id]}
+                {contentTypeFields
+                  .filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))
+                  .map((field) => (
+                    <Badge
+                      key={field.id}
+                      color="info"
+                      variant="dot"
+                      invisible={showOnlyChanges || !fieldIdsWithChanges.includes(field.id)}
+                      sx={{ width: '100%', [`& .${badgeClasses.badge}`]: { top: 10, right: 10 } }}
                     >
-                      <ListItemText
-                        primary={field.name}
-                        secondary={`${field.id} - ${field.type}`}
-                        sx={{
-                          m: 0,
-                          [`& .${listItemTextClasses.primary}, & .${listItemTextClasses.secondary}`]: {
-                            fontWeight: fieldIdsWithChanges.includes(field.id) ? 600 : 'normal'
-                          }
-                        }}
-                      />
-                    </ListItemButton>
-                  </Badge>
-                ))}
+                      <ListItemButton
+                        onClick={() => setSelectedField(field)}
+                        selected={selectedField?.id === field.id}
+                        ref={sidebarRefs.current[field.id]}
+                      >
+                        <ListItemText
+                          primary={field.name}
+                          secondary={`${field.id} - ${field.type}`}
+                          sx={{
+                            m: 0,
+                            ...(!showOnlyChanges && {
+                              [`& .${listItemTextClasses.primary}, & .${listItemTextClasses.secondary}`]: {
+                                fontWeight: fieldIdsWithChanges.includes(field.id) ? 600 : 'normal'
+                              }
+                            })
+                          }}
+                        />
+                      </ListItemButton>
+                    </Badge>
+                  ))}
               </List>
             </ResizeableDrawer>
             <Box sx={{ marginLeft: '280px', height: '100%' }}>

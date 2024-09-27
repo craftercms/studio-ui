@@ -381,7 +381,9 @@ export const systemPropMap = {
   internalName: 'label',
   'content-type': 'contentTypeId',
   content__type: 'contentTypeId',
+  createdDate: 'dateCreated',
   createdDate_dt: 'dateCreated',
+  lastModifiedDate: 'dateModified',
   lastModifiedDate_dt: 'dateModified',
   disabled: 'disabled',
   orderDefault_f: 'orderInNav'
