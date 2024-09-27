@@ -30,15 +30,21 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
 import ViewField from './ViewField';
+import { useIntl } from 'react-intl';
+import { getStudioContentInternalFields } from '../../utils/contentType';
 
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
   const { version, contentTypesBranch, showXml, data: preFetchedData, error, setViewSubDialogState } = props;
   const [content, setContent] = useState(preFetchedData?.content);
   const [xml, setXml] = useState(preFetchedData?.xml);
   const siteId = useActiveSiteId();
+  const { formatMessage } = useIntl();
   const fields = useMemo(() => {
     return content
-      ? Object.values(preFetchedData?.fields ?? contentTypesBranch.byId[content.craftercms.contentTypeId].fields)
+      ? [
+          ...Object.values(preFetchedData?.fields ?? contentTypesBranch.byId[content.craftercms.contentTypeId].fields),
+          ...getStudioContentInternalFields(formatMessage)
+        ]
       : [];
   }, [content, contentTypesBranch?.byId, preFetchedData?.fields]);
   const isViewDateReady = content && xml;
