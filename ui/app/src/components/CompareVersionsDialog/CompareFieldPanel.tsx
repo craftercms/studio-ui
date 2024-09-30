@@ -163,7 +163,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     toggleDiffWordWrap
   } = useMonacoOptions();
   const longerXmlContent = aFieldXml.length > bFieldXml.length ? aFieldXml : bFieldXml;
-  const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(longerXmlContent) < 15 ? '200px' : '600px';
+  const monacoEditorHeight = dynamicHeight ? (countLines(longerXmlContent) < 15 ? '200px' : '600px') : '100%';
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
   const diffComponentProps = {
     contentA:
@@ -230,7 +230,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   }, [contentA, contentB, field]);
 
   return !unChanged ? (
-    <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <FieldVersionToolbar
         field={field}
         contentTypeFields={contentTypeFields}
@@ -311,7 +311,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
 
 export function CompareFieldPanelAccordion(props: CompareFieldPanelAccordionProps) {
   const { fieldRef, selected, ...rest } = props;
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   useEffect(() => {
     if (selected) {
@@ -328,6 +328,7 @@ export function CompareFieldPanelAccordion(props: CompareFieldPanelAccordionProp
         margin: 0,
         border: 0,
         boxShadow: 'none',
+        background: 'none',
         '&.Mui-expanded': {
           margin: 0,
           borderBottom: (theme) => `1px solid ${theme.palette.divider}`
@@ -346,7 +347,7 @@ export function CompareFieldPanelAccordion(props: CompareFieldPanelAccordionProp
           ({props.field.id})
         </Typography>
       </AccordionSummary>
-      <AccordionDetails sx={{ maxHeight: '600px' }}>
+      <AccordionDetails>
         <CompareFieldPanel {...rest} showFieldsNavigation={false} dynamicHeight />
       </AccordionDetails>
     </Accordion>

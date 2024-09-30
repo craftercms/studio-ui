@@ -259,7 +259,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                           sx={{
                             m: 0,
                             ...(!showOnlyChanges && {
-                              [`& .${listItemTextClasses.primary}, & .${listItemTextClasses.secondary}`]: {
+                              [`.${listItemTextClasses.primary}`]: {
                                 fontWeight: fieldIdsWithChanges.includes(field.id) ? 600 : 'normal'
                               }
                             })
@@ -272,7 +272,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
               <Box width="100%" borderTop={1} borderColor="divider">
                 <Button onClick={() => onToggleShowOnlyChanges()}>
                   {showOnlyChanges ? (
-                    <FormattedMessage defaultMessage="All fields" />
+                    <FormattedMessage defaultMessage="Entire version" />
                   ) : (
                     <FormattedMessage defaultMessage="Changed fields" />
                   )}
@@ -315,25 +315,27 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                       />
                     ))
                 ) : selectedField ? (
-                  <CompareFieldPanel
-                    a={{
-                      ...selectedA,
-                      ...compareVersionsBranch?.compareVersions?.[0],
-                      content: selectionContent.a.content,
-                      xml: selectionContent.a.xml
-                    }}
-                    b={{
-                      ...selectedB,
-                      ...compareVersionsBranch?.compareVersions?.[1],
-                      content: selectionContent.b.content,
-                      xml: selectionContent.b.xml
-                    }}
-                    field={selectedField}
-                    contentTypeFields={contentTypeFields}
-                    onSelectField={onSelectFieldFromContent}
-                    setCompareSubDialogState={setCompareSubDialogState}
-                    setViewSubDialogState={setViewSubDialogState}
-                  />
+                  <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
+                    <CompareFieldPanel
+                      a={{
+                        ...selectedA,
+                        ...compareVersionsBranch?.compareVersions?.[0],
+                        content: selectionContent.a.content,
+                        xml: selectionContent.a.xml
+                      }}
+                      b={{
+                        ...selectedB,
+                        ...compareVersionsBranch?.compareVersions?.[1],
+                        content: selectionContent.b.content,
+                        xml: selectionContent.b.xml
+                      }}
+                      field={selectedField}
+                      contentTypeFields={contentTypeFields}
+                      onSelectField={onSelectFieldFromContent}
+                      setCompareSubDialogState={setCompareSubDialogState}
+                      setViewSubDialogState={setViewSubDialogState}
+                    />
+                  </Box>
                 ) : (
                   <EmptyState
                     styles={{ root: { height: '100%', margin: 0 } }}

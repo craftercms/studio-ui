@@ -75,6 +75,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
       {showFieldsNavigation && contentTypeFields.length > 1 && (
         <Button
+          sx={{ mx: 1 }}
           startIcon={<ChevronLeftRoundedIcon />}
           onClick={() => onSelectPreviousField(field.id)}
           title={previousField.name}
@@ -86,18 +87,14 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
       )}
       <Paper
         elevation={0}
+        variant="outlined"
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexGrow: 1,
-          pb: 1,
-          pt: 1,
-          pl: 2,
-          pr: 2,
-          ml: 2,
-          mr: 2,
-          border: (theme) => `1px solid ${theme.palette.divider}`
+          py: 1,
+          px: 2
         }}
       >
         <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -144,6 +141,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
       </Paper>
       {showFieldsNavigation && contentTypeFields.length > 1 && (
         <Button
+          sx={{ mx: 1 }}
           endIcon={<NavigateNextRoundedIcon />}
           onClick={() => onSelectNextField(field.id)}
           title={nextField.name}

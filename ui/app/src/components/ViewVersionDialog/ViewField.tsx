@@ -231,7 +231,7 @@ export function ViewField(props: ViewFieldProps) {
   };
 
   return (
-    <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <>
       {showToolbar && (
         <FieldVersionToolbar
           field={field}
@@ -264,7 +264,7 @@ export function ViewField(props: ViewFieldProps) {
           <></>
         )}
       </Box>
-    </Box>
+    </>
   );
 }
 
