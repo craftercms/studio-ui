@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography';
 import { MonacoWrapper } from '../MonacoWrapper';
 import Box from '@mui/material/Box';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
-import { asLocalizedDateTime, convertTimeToTimezone } from '../../utils/datetime';
+import { asLocalizedDateTime, convertUtcTimeToTimezone } from '../../utils/datetime';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
@@ -121,7 +121,7 @@ function DefaultView(props: DefaultViewProps) {
       ) : fieldType === 'time' ? (
         <Box sx={{ textAlign: 'center' }}>
           <Typography>
-            {content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
+            {content ? convertUtcTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
           </Typography>
         </Box>
       ) : fieldType === 'date-time' ? (

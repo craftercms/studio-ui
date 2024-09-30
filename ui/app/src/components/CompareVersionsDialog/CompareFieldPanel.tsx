@@ -23,7 +23,7 @@ import Box from '@mui/material/Box';
 import { getContentInstanceValueFromProp } from '../../utils/content';
 import Tooltip from '@mui/material/Tooltip';
 import useLocale from '../../hooks/useLocale';
-import { asLocalizedDateTime, convertTimeToTimezone } from '../../utils/datetime';
+import { asLocalizedDateTime, convertUtcTimeToTimezone } from '../../utils/datetime';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import { fromString, serialize } from '../../utils/xml';
 import { MonacoWrapper } from '../MonacoWrapper';
@@ -201,7 +201,9 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
           <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
         </Box>
       ) : fieldType === 'time' ? (
-        <Typography>{content ? convertTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}</Typography>
+        <Typography>
+          {content ? convertUtcTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
+        </Typography>
       ) : fieldType === 'date-time' ? (
         <Tooltip title={content}>
           <Typography>

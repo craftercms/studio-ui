@@ -100,7 +100,7 @@ export function isSameDay(date1: Date, date2: Date) {
  * @param timezone - The target timezone.
  * @returns The time string in the target timezone.
  */
-export function convertTimeToTimezone(timeString: string, timezone: string = getUserTimeZone()): string {
+export function convertUtcTimeToTimezone(timeString: string, timezone: string = getUserTimeZone()): string {
   // Parse the time string in UTC
   const timeInUTC = moment.utc(timeString, 'HH:mm:ss');
 
