@@ -358,7 +358,8 @@ CStudioAuthoring.Module.requireModule(
             ...rteConfig.tinymceOptions?.external_plugins,
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
             craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
-            template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js'
+            template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js',
+            paste_plugin: '/studio/static-assets/js/tinymce-plugins/paste_plugin/plugin.js'
           };
 
           tinymce.init({
