@@ -42,6 +42,7 @@ import AccordionSummary, { accordionSummaryClasses } from '@mui/material/Accordi
 import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { countLines } from '../../utils/string';
+import { ErrorBoundary } from '../ErrorBoundary';
 
 interface CompareVersionsDetailsContainerProps {
   contentA: ContentInstance;
@@ -288,7 +289,9 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             editorProps={diffComponentProps.editorProps}
           />
         ) : (
-          <DiffComponent {...diffComponentProps} />
+          <ErrorBoundary key={field.id}>
+            <DiffComponent {...diffComponentProps} />
+          </ErrorBoundary>
         )}
       </Box>
     </Box>

@@ -287,7 +287,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
               </Box>
             </ResizeableDrawer>
             <Box sx={{ marginLeft: '280px', height: '100%', overflowY: 'auto' }}>
-              <ErrorBoundary errorStateProps={{ onButtonClick: () => setSelectedField(null) }}>
+              <ErrorBoundary>
                 {accordionView ? (
                   contentTypeFields
                     .filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))

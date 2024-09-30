@@ -67,8 +67,8 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 
   const getEmbeddedVersions = (id: string) => {
     return {
-      embeddedA: contentA.find((item) => item.craftercms?.id === id),
-      embeddedB: contentB.find((item) => item.craftercms?.id === id)
+      embeddedA: contentA?.find((item) => item.craftercms?.id === id),
+      embeddedB: contentB?.find((item) => item.craftercms?.id === id)
     };
   };
 
