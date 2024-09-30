@@ -36,7 +36,7 @@ import ContentInstance from '../../models/ContentInstance';
 import useSelection from '../../hooks/useSelection';
 import { countLines } from '../../utils/string';
 
-interface ViewFieldProps {
+interface ContentFieldViewProps {
   content: any;
   field: ContentTypeField;
   xml?: string;
@@ -195,7 +195,7 @@ function DefaultView(props: DefaultViewProps) {
   );
 }
 
-export function ViewField(props: ViewFieldProps) {
+export function ContentFieldView(props: ContentFieldViewProps) {
   const {
     content,
     field,
@@ -268,4 +268,4 @@ export function ViewField(props: ViewFieldProps) {
   );
 }
 
-export default ViewField;
+export default ContentFieldView;

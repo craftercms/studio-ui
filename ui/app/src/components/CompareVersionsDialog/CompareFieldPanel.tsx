@@ -36,7 +36,7 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import FieldVersionToolbar from './FieldVersionToolbar';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 import useMonacoOptions from '../../hooks/useMonacoOptions';
-import ViewField from '../ViewVersionDialog/ViewField';
+import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
@@ -298,7 +298,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       </Box>
     </Box>
   ) : (
-    <ViewField
+    <ContentFieldView
       content={contentA}
       field={field}
       contentTypeFields={contentTypeFields}

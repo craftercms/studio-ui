@@ -29,7 +29,7 @@ import { ResizeableDrawer } from '../ResizeableDrawer';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
-import ViewField from './ViewField';
+import ContentFieldView from './ContentFieldView';
 import { useIntl } from 'react-intl';
 import { getStudioContentInternalFields } from '../../utils/contentType';
 
@@ -121,7 +121,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
           </ResizeableDrawer>
           <Box sx={{ marginLeft: '280px', height: '100%' }}>
             {selectedField && (
-              <ViewField
+              <ContentFieldView
                 content={content && getContentInstanceValueFromProp(content, selectedField.id)}
                 field={selectedField}
                 contentTypeFields={fields}

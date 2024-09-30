@@ -22,7 +22,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import Typography from '@mui/material/Typography';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import React from 'react';
-import ViewField from './ViewField';
+import ContentFieldView from './ContentFieldView';
 
 interface ViewFieldPanelProps {
   content: any;
@@ -52,7 +52,7 @@ export function ViewFieldPanel(props: ViewFieldPanelProps) {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <ViewField
+        <ContentFieldView
           content={content}
           field={field}
           contentTypeFields={contentTypeFields}
