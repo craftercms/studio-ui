@@ -37,6 +37,7 @@ interface FieldVersionToolbarProps {
   compareXml: boolean;
   showCleanText: boolean;
   actions?: ReactNode;
+  showFieldsNavigation?: boolean;
   setCompareXml(value: boolean): void;
   setShowCleanText(value: boolean): void;
   onSelectField?(field: ContentTypeField): void;
@@ -51,7 +52,8 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
     setCompareXml,
     showCleanText,
     setShowCleanText,
-    actions
+    actions,
+    showFieldsNavigation = true
   } = props;
   const currentFieldIndex = contentTypeFields.findIndex((f) => f.id === field.id);
   const nextField = contentTypeFields[currentFieldIndex + 1] || contentTypeFields[0];
@@ -71,7 +73,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-      {contentTypeFields.length > 1 && (
+      {showFieldsNavigation && contentTypeFields.length > 1 && (
         <Button
           startIcon={<ChevronLeftRoundedIcon />}
           onClick={() => onSelectPreviousField(field.id)}
@@ -140,7 +142,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
           </Tooltip>
         </Box>
       </Paper>
-      {contentTypeFields.length > 1 && (
+      {showFieldsNavigation && contentTypeFields.length > 1 && (
         <Button
           endIcon={<NavigateNextRoundedIcon />}
           onClick={() => onSelectNextField(field.id)}

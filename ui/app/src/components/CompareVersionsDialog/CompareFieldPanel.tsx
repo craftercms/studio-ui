@@ -15,14 +15,9 @@
  */
 
 import ContentInstance from '../../models/ContentInstance';
-import { LookupTable } from '../../models/LookupTable';
-import ContentType, { ContentTypeField } from '../../models/ContentType';
-import React, { useEffect, useState } from 'react';
+import { ContentTypeField } from '../../models/ContentType';
+import React, { RefObject, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import ListItemText from '@mui/material/ListItemText';
-import { AsDayMonthDateTime } from '../VersionList';
-import Paper from '@mui/material/Paper';
-import useMount from '../../hooks/useMount';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { getContentInstanceValueFromProp } from '../../utils/content';
@@ -30,7 +25,6 @@ import Tooltip from '@mui/material/Tooltip';
 import useLocale from '../../hooks/useLocale';
 import { asLocalizedDateTime, convertTimeToTimezone } from '../../utils/datetime';
 import AsyncVideoPlayer from '../AsyncVideoPlayer';
-import { ItemHistoryEntry } from '../../models';
 import { fromString, serialize } from '../../utils/xml';
 import { MonacoWrapper } from '../MonacoWrapper';
 import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
@@ -43,111 +37,11 @@ import FieldVersionToolbar from './FieldVersionToolbar';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 import useMonacoOptions from '../../hooks/useMonacoOptions';
 import ViewField from '../ViewVersionDialog/ViewField';
-
-export interface CompareVersionsItem extends ItemHistoryEntry {
-  xml: string;
-  content: ContentInstance;
-}
-
-interface CompareVersionsProps {
-  a: CompareVersionsItem;
-  b: CompareVersionsItem;
-  contentTypeId: string;
-  contentTypes: LookupTable<ContentType>;
-  compareXml: boolean;
-}
-
-export function CompareVersions(props: CompareVersionsProps) {
-  const { a, b, contentTypes, contentTypeId, compareXml } = props;
-  const values = Object.values(contentTypes[contentTypeId].fields) as ContentTypeField[];
-
-  return (
-    <Box
-      sx={{
-        p: 1,
-        background: (theme) =>
-          theme.palette.mode === 'dark' ? theme.palette.background.paper : theme.palette.background.default
-      }}
-    >
-      <Box
-        component="section"
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-around'
-        }}
-      >
-        <Box
-          sx={{
-            flexBasis: '50%',
-            margin: '0 10px 10px 10px',
-            '& .primaryText': {
-              color: (theme) => theme.palette.text.primary
-            }
-          }}
-        >
-          <ListItemText
-            primary={
-              <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
-                <AsDayMonthDateTime date={a.modifiedDate} />
-              </Box>
-            }
-            secondary={
-              <FormattedMessage
-                id="historyDialog.versionNumber"
-                defaultMessage="Version: <span>{versionNumber}</span>"
-                values={{
-                  versionNumber: a.versionNumber,
-                  span: (msg) => <span className="primaryText">{msg}</span>
-                }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          sx={{
-            flexBasis: '50%',
-            margin: '0 10px 10px 10px',
-            '& .primaryText': {
-              color: (theme) => theme.palette.text.primary
-            }
-          }}
-        >
-          <ListItemText
-            primary={
-              <Box component="span" sx={{ display: 'flex', alignItems: 'center' }}>
-                <AsDayMonthDateTime date={b.modifiedDate} />
-              </Box>
-            }
-            secondary={
-              <FormattedMessage
-                id="historyDialog.versionNumber"
-                defaultMessage="Version: <span>{versionNumber}</span>"
-                values={{
-                  versionNumber: b.versionNumber,
-                  span: (msg) => <span className="primaryText">{msg}</span>
-                }}
-              />
-            }
-          />
-        </Box>
-      </Box>
-      <Box
-        component="section"
-        sx={{
-          background: (theme) => theme.palette.background.paper
-        }}
-      >
-        {compareXml ? (
-          <MonacoWrapper contentA={a.xml} contentB={b.xml} isHTML={false} isDiff editorProps={{ height: '400px' }} />
-        ) : (
-          <Paper>
-            {/* {contentTypes && values.map((field) => <CompareFieldPanel a={a} b={b} field={field} key={field.id} />)}*/}
-          </Paper>
-        )}
-      </Box>
-    </Box>
-  );
-}
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import { countLines } from '../../utils/string';
 
 interface CompareVersionsDetailsContainerProps {
   contentA: ContentInstance;
@@ -156,6 +50,44 @@ interface CompareVersionsDetailsContainerProps {
   noContent?: React.ReactNode;
   verticalLayout?: boolean;
 }
+interface CompareFieldPanelProps {
+  a: {
+    xml: string;
+    content: ContentInstance;
+  };
+  b: {
+    xml: string;
+    content: ContentInstance;
+  };
+  field: ContentTypeField;
+  contentTypeFields: ContentTypeField[];
+  accordion?: boolean;
+  dynamicHeight?: boolean;
+  onSelectField?(field: ContentTypeField): void;
+  setCompareSubDialogState?(props: CompareVersionsDialogProps): void;
+  setViewSubDialogState?(props: ViewVersionDialogProps): void;
+  showFieldsNavigation?: boolean;
+}
+interface CompareFieldPanelAccordionProps extends CompareFieldPanelProps {
+  selected: boolean;
+  fieldRef: RefObject<HTMLDivElement>;
+}
+
+const typesDiffMap = {
+  text: MonacoWrapper,
+  textarea: MonacoWrapper,
+  html: MonacoWrapper,
+  'node-selector': ContentInstanceComponents,
+  'checkbox-group': MonacoWrapper,
+  repeat: RepeatGroupItems,
+  image: DefaultDiffView,
+  'video-picker': DefaultDiffView,
+  time: DefaultDiffView,
+  'date-time': DefaultDiffView,
+  boolean: DefaultDiffView,
+  'numeric-input': DefaultDiffView,
+  dropdown: DefaultDiffView
+};
 
 function DefaultDiffView(props: CompareVersionsDetailsContainerProps) {
   const {
@@ -190,41 +122,18 @@ function DefaultDiffView(props: CompareVersionsDetailsContainerProps) {
   );
 }
 
-interface CompareFieldPanelProps {
-  a: {
-    xml: string;
-    content: ContentInstance;
-  };
-  b: {
-    xml: string;
-    content: ContentInstance;
-  };
-  field: ContentTypeField;
-  contentTypeFields: ContentTypeField[];
-  accordion?: boolean;
-  onSelectField?(field: ContentTypeField): void;
-  setCompareSubDialogState?(props: CompareVersionsDialogProps): void;
-  setViewSubDialogState?(props: ViewVersionDialogProps): void;
-}
-
-const typesDiffMap = {
-  text: MonacoWrapper,
-  textarea: MonacoWrapper,
-  html: MonacoWrapper,
-  'node-selector': ContentInstanceComponents,
-  'checkbox-group': MonacoWrapper,
-  repeat: RepeatGroupItems,
-  image: DefaultDiffView,
-  'video-picker': DefaultDiffView,
-  time: DefaultDiffView,
-  'date-time': DefaultDiffView,
-  boolean: DefaultDiffView,
-  'numeric-input': DefaultDiffView,
-  dropdown: DefaultDiffView
-};
-
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const { a, b, field, contentTypeFields, onSelectField, setCompareSubDialogState, setViewSubDialogState } = props;
+  const {
+    a,
+    b,
+    field,
+    contentTypeFields,
+    onSelectField,
+    setCompareSubDialogState,
+    setViewSubDialogState,
+    showFieldsNavigation = true,
+    dynamicHeight
+  } = props;
   const [unChanged, setUnChanged] = useState(true);
   const fieldType = field.type;
   const locale = useLocale();
@@ -250,6 +159,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     toggleRenderSideBySide,
     toggleDiffWordWrap
   } = useMonacoOptions();
+  const longerXmlContent = aFieldXml.length > bFieldXml.length ? aFieldXml : bFieldXml;
+  const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(longerXmlContent) < 15 ? '200px' : '600px';
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
   const diffComponentProps = {
     contentA:
@@ -273,7 +184,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     setCompareSubDialogState,
     setViewSubDialogState,
     setCompareModeDisabled,
-    editorProps: { options: xmlEditorOptions }
+    editorProps: { options: xmlEditorOptions, height: monacoEditorHeight }
   };
 
   if (DiffComponent === DefaultDiffView) {
@@ -325,6 +236,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
         showCleanText={cleanText}
         setShowCleanText={setCleanText}
         onSelectField={onSelectField}
+        showFieldsNavigation={showFieldsNavigation}
         actions={
           <>
             {!compareXml && fieldType === 'repeat' && (
@@ -371,9 +283,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             contentB={bFieldXml}
             isDiff
             isHTML={false}
-            editorProps={{
-              options: xmlEditorOptions
-            }}
+            editorProps={diffComponentProps.editorProps}
           />
         ) : (
           <DiffComponent {...diffComponentProps} />
@@ -388,8 +298,54 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       xml={a.xml}
       onSelectField={onSelectField}
       setViewSubDialogState={setViewSubDialogState}
+      showToolbarFieldNavigation={showFieldsNavigation}
+      dynamicHeight={dynamicHeight}
     />
   );
 }
 
-export default CompareVersions;
+export function CompareFieldPanelAccordion(props: CompareFieldPanelAccordionProps) {
+  const { fieldRef, selected, ...rest } = props;
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (selected) {
+      setExpanded(true);
+    }
+  }, [selected, setExpanded]);
+
+  return (
+    <Accordion
+      ref={fieldRef}
+      expanded={expanded}
+      onChange={() => setExpanded(!expanded)}
+      sx={{
+        margin: 0,
+        border: 0,
+        boxShadow: 'none',
+        '&.Mui-expanded': {
+          margin: 0,
+          borderBottom: (theme) => `1px solid ${theme.palette.divider}`
+        }
+      }}
+      slotProps={{ transition: { mountOnEnter: true } }}
+    >
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        sx={{ [`.${accordionSummaryClasses.content}`]: { justifyContent: 'space-between', alignItems: 'center' } }}
+      >
+        <Typography>
+          <Box component="span" sx={{ fontWeight: 600 }}>
+            {props.field.name}{' '}
+          </Box>
+          ({props.field.id})
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails sx={{ maxHeight: '600px' }}>
+        <CompareFieldPanel {...rest} showFieldsNavigation={false} dynamicHeight />
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
+export default CompareFieldPanel;

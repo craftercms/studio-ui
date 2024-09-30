@@ -41,7 +41,8 @@ export function MonacoWrapper(props: MonacoWrapperProps) {
     contextmenu: false,
     scrollBeyondLastLine: false,
     renderWhitespace: 'none',
-    renderIndicators: false
+    renderIndicators: false,
+    scrollbar: { alwaysConsumeMouseWheel: false }
   };
 
   return isDiff ? (

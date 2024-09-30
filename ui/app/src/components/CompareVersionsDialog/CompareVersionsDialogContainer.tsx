@@ -16,7 +16,7 @@
 
 import { CompareVersionsDialogContainerProps, hasFieldChanged } from './utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { CompareFieldPanel } from './CompareVersions';
+import { CompareFieldPanel, CompareFieldPanelAccordion } from './CompareFieldPanel';
 import DialogBody from '../DialogBody/DialogBody';
 import { LoadingState } from '../LoadingState';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -60,6 +60,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const item = versionsBranch?.item;
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { formatMessage } = useIntl();
+  const [listView, setListView] = useState(true);
   const [selectionContent, setSelectionContent] = useSpreadState(
     preFetchedContent ?? {
       a: {
@@ -116,8 +117,10 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     .map((field) => field.id);
   const [showOnlyChanges, setShowOnlyChanges] = useState(false);
   const sidebarRefs = useRef({});
+  const fieldsRefs = useRef({});
   contentTypeFields?.forEach((field) => {
     sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
+    fieldsRefs.current[field.id] = React.createRef<HTMLDivElement>();
   });
 
   useEffect(() => {
@@ -155,9 +158,16 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     }
   }, [contentTypeFields]);
 
-  const onSelectField = (field) => {
+  const onSelectFieldFromContent = (field) => {
     setSelectedField(field);
     sidebarRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const onSelectFieldFromList = (field) => {
+    setSelectedField(field);
+    if (listView) {
+      fieldsRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const onToggleShowOnlyChanges = () => {
@@ -233,6 +243,24 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                       {contentType.description}
                     </Typography>
                   )}*/}
+                    <Box width="100%" textAlign="right">
+                      <Button onClick={() => onToggleShowOnlyChanges()}>
+                        {showOnlyChanges ? (
+                          <FormattedMessage defaultMessage="Show all fields" />
+                        ) : (
+                          <FormattedMessage defaultMessage="Show only changes" />
+                        )}
+                      </Button>
+                    </Box>
+                    <Box width="100%" textAlign="right">
+                      <Button onClick={() => setListView(!listView)}>
+                        {listView ? (
+                          <FormattedMessage defaultMessage="Single field view" />
+                        ) : (
+                          <FormattedMessage defaultMessage="Accordion view" />
+                        )}
+                      </Button>
+                    </Box>
                   </Box>
                   <Divider />
                 </>
@@ -249,8 +277,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                       sx={{ width: '100%', [`& .${badgeClasses.badge}`]: { top: 10, right: 10 } }}
                     >
                       <ListItemButton
-                        onClick={() => setSelectedField(field)}
-                        selected={selectedField?.id === field.id}
+                        onClick={() => onSelectFieldFromList(field)}
+                        selected={!listView && selectedField?.id === field.id}
                         ref={sidebarRefs.current[field.id]}
                       >
                         <ListItemText
@@ -270,9 +298,35 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   ))}
               </List>
             </ResizeableDrawer>
-            <Box sx={{ marginLeft: '280px', height: '100%' }}>
-              {selectedField ? (
-                <ErrorBoundary errorStateProps={{ onButtonClick: () => setSelectedField(null) }}>
+            <Box sx={{ marginLeft: '280px', height: '100%', overflowY: 'auto' }}>
+              <ErrorBoundary errorStateProps={{ onButtonClick: () => setSelectedField(null) }}>
+                {listView ? (
+                  contentTypeFields
+                    .filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))
+                    .map((field) => (
+                      <CompareFieldPanelAccordion
+                        key={field.id}
+                        a={{
+                          ...selectedA,
+                          ...compareVersionsBranch?.compareVersions?.[0],
+                          content: selectionContent.a.content,
+                          xml: selectionContent.a.xml
+                        }}
+                        b={{
+                          ...selectedB,
+                          ...compareVersionsBranch?.compareVersions?.[1],
+                          content: selectionContent.b.content,
+                          xml: selectionContent.b.xml
+                        }}
+                        field={field}
+                        contentTypeFields={contentTypeFields}
+                        setCompareSubDialogState={setCompareSubDialogState}
+                        setViewSubDialogState={setViewSubDialogState}
+                        fieldRef={fieldsRefs.current[field.id]}
+                        selected={selectedField?.id === field.id}
+                      />
+                    ))
+                ) : selectedField ? (
                   <CompareFieldPanel
                     a={{
                       ...selectedA,
@@ -288,20 +342,23 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                     }}
                     field={selectedField}
                     contentTypeFields={contentTypeFields}
-                    onSelectField={onSelectField}
+                    onSelectField={onSelectFieldFromContent}
                     setCompareSubDialogState={setCompareSubDialogState}
                     setViewSubDialogState={setViewSubDialogState}
                   />
-                </ErrorBoundary>
-              ) : (
-                <EmptyState
-                  styles={{ root: { height: '100%', margin: 0 } }}
-                  title={
-                    <FormattedMessage id="siteTools.selectTool" defaultMessage="Please select a field from the left." />
-                  }
-                  image={`${baseUrl}/static-assets/images/choose_option.svg`}
-                />
-              )}
+                ) : (
+                  <EmptyState
+                    styles={{ root: { height: '100%', margin: 0 } }}
+                    title={
+                      <FormattedMessage
+                        id="siteTools.selectTool"
+                        defaultMessage="Please select a field from the left."
+                      />
+                    }
+                    image={`${baseUrl}/static-assets/images/choose_option.svg`}
+                  />
+                )}
+              </ErrorBoundary>
             </Box>
           </>
         )}

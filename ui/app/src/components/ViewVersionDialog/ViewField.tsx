@@ -34,6 +34,7 @@ import StateItem from '../CompareVersionsDialog/FieldsTypesDiffViews/StateItem';
 import { ViewVersionDialogProps } from './utils';
 import ContentInstance from '../../models/ContentInstance';
 import useSelection from '../../hooks/useSelection';
+import { countLines } from '../../utils/string';
 
 interface ViewFieldProps {
   content: any;
@@ -41,6 +42,8 @@ interface ViewFieldProps {
   xml?: string;
   showToolbar?: boolean;
   contentTypeFields: ContentTypeField[];
+  showToolbarFieldNavigation?: boolean;
+  dynamicHeight?: boolean;
   onSelectField?(field: ContentTypeField): void;
   setViewSubDialogState?(props: Partial<ViewVersionDialogProps>): void;
 }
@@ -199,6 +202,8 @@ export function ViewField(props: ViewFieldProps) {
     contentTypeFields,
     xml = '',
     showToolbar = true,
+    showToolbarFieldNavigation = true,
+    dynamicHeight,
     onSelectField,
     setViewSubDialogState
   } = props;
@@ -210,6 +215,7 @@ export function ViewField(props: ViewFieldProps) {
   const [viewXml, setViewXml] = useState(false);
   const [cleanText, setCleanText] = useState(false);
   const { options: xmlEditorOptions, toggleWordWrap } = useMonacoOptions();
+  const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(xml) < 15 ? '200px' : '600px';
   const ViewComponent = typesRenderMap[field.type] ?? DefaultView;
   const viewComponentProps = {
     contentA: content,
@@ -218,7 +224,8 @@ export function ViewField(props: ViewFieldProps) {
     isHTML: true,
     cleanText,
     editorProps: {
-      options: xmlEditorOptions
+      options: xmlEditorOptions,
+      height: monacoEditorHeight
     },
     setViewSubDialogState
   };
@@ -234,6 +241,7 @@ export function ViewField(props: ViewFieldProps) {
           showCleanText={cleanText}
           setShowCleanText={setCleanText}
           onSelectField={onSelectField}
+          showFieldsNavigation={showToolbarFieldNavigation}
           actions={
             (ViewComponent === MonacoWrapper || viewXml) && (
               <Button onClick={() => toggleWordWrap()}>
@@ -249,7 +257,7 @@ export function ViewField(props: ViewFieldProps) {
       )}
       <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
         {viewXml ? (
-          <MonacoWrapper contentA={fieldXml} isHTML={true} editorProps={{ options: xmlEditorOptions }} />
+          <MonacoWrapper contentA={fieldXml} isHTML={true} editorProps={viewComponentProps.editorProps} />
         ) : nnou(ViewComponent) ? (
           <ViewComponent {...viewComponentProps} />
         ) : (
