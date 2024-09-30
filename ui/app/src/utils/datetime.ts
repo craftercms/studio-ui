@@ -96,16 +96,16 @@ export function isSameDay(date1: Date, date2: Date) {
 
 /**
  * Convert a time string from UTC to a custom timezone.
- * @param timeString - The time string in HH:MM:SS format.
- * @param timezone - The target timezone.
- * @returns The time string in the target timezone.
+ * @param utcTime {string} The time string in HH:MM:SS format.
+ * @param targetTimezone {string} The target timezone.
+ * @returns {string} The time string in the target timezone.
  */
-export function convertUtcTimeToTimezone(timeString: string, timezone: string = getUserTimeZone()): string {
+export function convertUtcTimeToTimezone(utcTime: string, targetTimezone: string = getUserTimeZone()): string {
   // Parse the time string in UTC
-  const timeInUTC = moment.utc(timeString, 'HH:mm:ss');
+  const timeInUTC = moment.utc(utcTime, 'HH:mm:ss');
 
   // Convert the time to the desired timezone
-  const timeInTargetZone = timeInUTC.tz(timezone);
+  const timeInTargetZone = timeInUTC.tz(targetTimezone);
 
   // Format the time in the desired timezone
   return timeInTargetZone.format('HH:mm:ss');
