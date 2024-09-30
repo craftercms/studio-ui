@@ -50,6 +50,7 @@ interface CompareVersionsDetailsContainerProps {
   noContent?: React.ReactNode;
   verticalLayout?: boolean;
 }
+
 interface CompareFieldPanelProps {
   a: {
     xml: string;
@@ -68,6 +69,7 @@ interface CompareFieldPanelProps {
   setViewSubDialogState?(props: ViewVersionDialogProps): void;
   showFieldsNavigation?: boolean;
 }
+
 interface CompareFieldPanelAccordionProps extends CompareFieldPanelProps {
   selected: boolean;
   fieldRef: RefObject<HTMLDivElement>;

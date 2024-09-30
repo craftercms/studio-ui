@@ -60,7 +60,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const item = versionsBranch?.item;
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { formatMessage } = useIntl();
-  const [listView, setListView] = useState(true);
+  const [accordionView, setAccordionView] = useState(false);
   const [selectionContent, setSelectionContent] = useSpreadState(
     preFetchedContent ?? {
       a: {
@@ -165,7 +165,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 
   const onSelectFieldFromList = (field) => {
     setSelectedField(field);
-    if (listView) {
+    if (accordionView) {
       fieldsRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -217,53 +217,25 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
               }}
             >
               {contentType && (
-                <>
-                  <Box pt={1} pb={1} pr={2} pl={2}>
-                    <Typography variant="body2" color="textSecondary">
-                      {contentType.id}
-                    </Typography>
-                    <Box
-                      component="span"
-                      sx={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        mt: 1
-                      }}
-                    >
-                      <ItemTypeIcon
-                        item={item}
-                        sx={{ fontSize: '1.4rem', marginRight: '5px', color: palette.teal.main }}
-                      />
-                      <Typography>{contentType.name}</Typography>
-                    </Box>
-
-                    {/* TODO: we don't have description in the model, nor in the object we retrieve */}
-                    {/* {contentType.description && (
-                    <Typography variant="body2" color="textSecondary">
-                      {contentType.description}
-                    </Typography>
-                  )}*/}
-                    <Box width="100%" textAlign="right">
-                      <Button onClick={() => onToggleShowOnlyChanges()}>
-                        {showOnlyChanges ? (
-                          <FormattedMessage defaultMessage="Show all fields" />
-                        ) : (
-                          <FormattedMessage defaultMessage="Show only changes" />
-                        )}
-                      </Button>
-                    </Box>
-                    <Box width="100%" textAlign="right">
-                      <Button onClick={() => setListView(!listView)}>
-                        {listView ? (
-                          <FormattedMessage defaultMessage="Single field view" />
-                        ) : (
-                          <FormattedMessage defaultMessage="Accordion view" />
-                        )}
-                      </Button>
-                    </Box>
+                <Box pt={1} pb={1} pr={2} pl={2} borderBottom={1} borderColor="divider">
+                  <Typography variant="body2" color="textSecondary">
+                    {contentType.id}
+                  </Typography>
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      mt: 1
+                    }}
+                  >
+                    <ItemTypeIcon
+                      item={item}
+                      sx={{ fontSize: '1.4rem', marginRight: '5px', color: palette.teal.main }}
+                    />
+                    <Typography>{contentType.name}</Typography>
                   </Box>
-                  <Divider />
-                </>
+                </Box>
               )}
               <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
                 {contentTypeFields
@@ -278,7 +250,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                     >
                       <ListItemButton
                         onClick={() => onSelectFieldFromList(field)}
-                        selected={!listView && selectedField?.id === field.id}
+                        selected={!accordionView && selectedField?.id === field.id}
                         ref={sidebarRefs.current[field.id]}
                       >
                         <ListItemText
@@ -297,10 +269,26 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                     </Badge>
                   ))}
               </List>
+              <Box width="100%" borderTop={1} borderColor="divider">
+                <Button onClick={() => onToggleShowOnlyChanges()}>
+                  {showOnlyChanges ? (
+                    <FormattedMessage defaultMessage="All fields" />
+                  ) : (
+                    <FormattedMessage defaultMessage="Changed fields" />
+                  )}
+                </Button>
+                <Button onClick={() => setAccordionView(!accordionView)}>
+                  {accordionView ? (
+                    <FormattedMessage defaultMessage="Single field" />
+                  ) : (
+                    <FormattedMessage defaultMessage="All fields" />
+                  )}
+                </Button>
+              </Box>
             </ResizeableDrawer>
             <Box sx={{ marginLeft: '280px', height: '100%', overflowY: 'auto' }}>
               <ErrorBoundary errorStateProps={{ onButtonClick: () => setSelectedField(null) }}>
-                {listView ? (
+                {accordionView ? (
                   contentTypeFields
                     .filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))
                     .map((field) => (
