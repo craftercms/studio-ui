@@ -768,11 +768,15 @@
     });
     if (/(bold)/i.test(outputStyles['font-weight'])) {
       delete outputStyles['font-weight'];
-      node.wrap(new global$2('b', 1));
+      if (node.name !== 'li') {
+        node.wrap(new global$2('b', 1));
+      }
     }
     if (/(italic)/i.test(outputStyles['font-style'])) {
       delete outputStyles['font-style'];
-      node.wrap(new global$2('i', 1));
+      if (node.name !== 'li') {
+        node.wrap(new global$2('i', 1));
+      }
     }
     var outputStyle = editor.dom.serializeStyle(outputStyles, node.name);
     if (outputStyle) {
