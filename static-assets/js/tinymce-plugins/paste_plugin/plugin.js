@@ -754,6 +754,11 @@
             return;
           }
           break;
+        case 'text-decoration':
+          if (value === 'line-through' || value === 'underline') {
+            outputStyles[name] = value;
+          }
+          return;
       }
       if (name.indexOf('mso-comment') === 0) {
         node.remove();

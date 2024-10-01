@@ -21,11 +21,17 @@
   var hookPluginName = 'craftercms_tinymce_hooks';
 
   function removeElAttributes(element) {
+    const textDecoration = element.style?.textDecoration;
     element.getAttributeNames().forEach((attrName) => {
       if (attrName !== 'href') {
         element.removeAttribute(attrName);
       }
     });
+    // We need to keep the textDecoration style under the 'style' attribute if it exists. That's to be able to support
+    // strikethrough and underline formatting when pasting content.
+    if (textDecoration) {
+      element.style.textDecoration = textDecoration;
+    }
   }
 
   // There's an issue in tinymce when pasting lists where it doesn't wrap the 'li' elements property in their own 'ol' or 'ul'.
