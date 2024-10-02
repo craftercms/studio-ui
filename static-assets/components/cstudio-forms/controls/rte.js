@@ -399,7 +399,7 @@ CStudioAuthoring.Module.requireModule(
                 ? 'dark'
                 : 'default',
             external_plugins: external,
-            paste_remove_styles_if_webkit: false,
+
             file_picker_callback: function (cb, value, meta) {
               // meta contains info about type (image, media, etc). Used to properly add DS to dialogs.
               _thisControl.createControl(cb, meta);
