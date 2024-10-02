@@ -110,15 +110,19 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       ? [...Object.values(fields ?? contentType.fields), ...getStudioContentInternalFields(formatMessage)]
       : [];
   }, [contentType, fields, isCompareDataReady, formatMessage]);
-  const fieldIdsWithChanges = contentTypeFields
-    .filter((field) =>
-      hasFieldChanged(
-        field,
-        getContentInstanceValueFromProp(selectionContent.a.content, field.id),
-        getContentInstanceValueFromProp(selectionContent.b.content, field.id)
-      )
-    )
-    .map((field) => field.id);
+  const fieldIdsWithChanges = useMemo(
+    () =>
+      contentTypeFields
+        .filter((field) =>
+          hasFieldChanged(
+            field,
+            getContentInstanceValueFromProp(selectionContent.a.content, field.id),
+            getContentInstanceValueFromProp(selectionContent.b.content, field.id)
+          )
+        )
+        .map((field) => field.id),
+    [contentTypeFields, selectionContent.a, selectionContent.b]
+  );
   const [showOnlyChanges, setShowOnlyChanges] = useState(true);
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
@@ -158,9 +162,22 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 
   useEffect(() => {
     if (contentTypeFields?.length) {
-      setSelectedField(contentTypeFields[0]);
+      // setSelectedField(contentTypeFields[0]);
+
+      console.log(
+        'ad',
+        contentTypeFields.filter((field) => {
+          // console.log('field', field);
+          // console.log('fieldIdsWithChanges', fieldIdsWithChanges);
+          return showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true;
+        })
+      );
+
+      setSelectedField(
+        contentTypeFields.filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))[0]
+      );
     }
-  }, [contentTypeFields]);
+  }, [contentTypeFields, fieldIdsWithChanges, showOnlyChanges]);
 
   const onSelectFieldFromContent = (field) => {
     setSelectedField(field);
@@ -175,9 +192,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   };
 
   const onToggleShowOnlyChanges = () => {
-    setSelectedField(
-      contentTypeFields.filter((field) => (!showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))[0]
-    );
     setShowOnlyChanges(!showOnlyChanges);
   };
 
