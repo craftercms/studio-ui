@@ -334,7 +334,9 @@ CStudioAuthoring.Module.requireModule(
           // https://www.tiny.cloud/docs/plugins/
           // paste plugin is hardcoded in order to enable drag and drop functionality (and avoid it being removed from
           // configuration file).
-          pluginList = [rteConfig.tinymceOptions?.plugins, this.autoGrow && 'autoresize'].filter(Boolean).join(' ');
+          pluginList = [rteConfig.tinymceOptions?.plugins, 'craftercms_paste', this.autoGrow && 'autoresize']
+            .filter(Boolean)
+            .join(' ');
 
           const $editorContainer = $(`#${rteId}`).parent(),
             editorContainerWidth = $editorContainer.width(),
@@ -358,7 +360,8 @@ CStudioAuthoring.Module.requireModule(
             ...rteConfig.tinymceOptions?.external_plugins,
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
             craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
-            template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js'
+            template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js',
+            craftercms_paste: '/studio/static-assets/js/tinymce-plugins/craftercms_paste/plugin.js'
           };
 
           tinymce.init({
