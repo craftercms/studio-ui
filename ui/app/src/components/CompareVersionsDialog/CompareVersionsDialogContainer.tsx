@@ -104,6 +104,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     selectionContent
   ]);
   const [selectedField, setSelectedField] = useState(null);
+  const selectedFieldRef = useRef(null);
+  selectedFieldRef.current = selectedField;
   const contentType = contentTypesBranch?.byId[item.contentTypeId];
   const contentTypeFields = useMemo(() => {
     return isCompareDataReady
@@ -161,18 +163,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   }, [preFetchedContent, selectedA, selectedB, siteId, setSelectionContent, contentTypesBranch]);
 
   useEffect(() => {
-    if (contentTypeFields?.length) {
-      // setSelectedField(contentTypeFields[0]);
-
-      console.log(
-        'ad',
-        contentTypeFields.filter((field) => {
-          // console.log('field', field);
-          // console.log('fieldIdsWithChanges', fieldIdsWithChanges);
-          return showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true;
-        })
-      );
-
+    if (contentTypeFields?.length && !fieldIdsWithChanges.includes(selectedFieldRef.current?.id)) {
       setSelectedField(
         contentTypeFields.filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))[0]
       );
