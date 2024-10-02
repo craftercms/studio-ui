@@ -21,11 +21,13 @@ import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import palette from '../../../styles/palette';
 import { FormattedMessage } from 'react-intl';
-import useStyles from '../../UserManagement/styles';
+import clsx from 'clsx';
+import { lighten, useTheme } from '@mui/material/styles';
 
-interface DiffStateItemProps {
+export interface DiffCollectionItemProps {
   state: 'new' | 'deleted' | 'changed' | 'unchanged';
-  label: ReactNode;
+  primaryText: ReactNode;
+  secondaryText?: ReactNode;
   selected?: boolean;
   selectionMode?: boolean;
   disableHighlight?: boolean;
@@ -33,68 +35,81 @@ interface DiffStateItemProps {
   onSelect?(selected: boolean): void;
 }
 
-export function StateItem(props: DiffStateItemProps) {
-  const { state, label, selected = false, disableHighlight = false, onSelect, selectionMode, hideState } = props;
-  const { cx } = useStyles();
+export function DiffCollectionItem(props: DiffCollectionItemProps) {
+  const {
+    state,
+    primaryText,
+    secondaryText,
+    selected = false,
+    disableHighlight = false,
+    onSelect,
+    selectionMode,
+    hideState
+  } = props;
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
 
   return (
     <Box
+      className={clsx(state, selected && 'selected', disableHighlight && 'disable-highlight')}
       sx={{
         display: 'flex',
         alignItems: 'center',
         paddingRight: '10px',
-        borderRadius: '5px',
+        borderRadius: 1,
+        borderStyle: 'solid',
+        borderWidth: '1px',
         width: '100%',
         '&.unchanged': {
-          color: (theme) =>
-            theme.palette.mode === 'dark' ? theme.palette.getContrastText(palette.gray.medium4) : palette.gray.medium4,
-          backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium4 : palette.gray.light1),
+          color: theme.palette.getContrastText(isDarkMode ? palette.gray.light7 : palette.gray.light3),
+          backgroundColor: isDarkMode ? palette.gray.light7 : palette.gray.light3,
+          borderColor: 'divider',
           '&:hover:not(.disable-highlight), &.selected': {
-            color: (theme) =>
-              theme.palette.mode === 'dark'
-                ? theme.palette.getContrastText(palette.gray.medium7)
-                : palette.gray.medium4,
-            backgroundColor: (theme) => (theme.palette.mode === 'dark' ? palette.gray.medium7 : palette.gray.light5)
+            color: theme.palette.getContrastText(palette.gray.light5),
+            backgroundColor: palette.gray.light5,
+            borderColor: palette.gray.light5
           }
         },
         '&.new': {
-          color: palette.green.shade,
-          backgroundColor: palette.green.highlight,
-          marginLeft: 'auto',
           width: '50%',
+          marginLeft: 'auto',
+          color: theme.palette.getContrastText(palette.green.highlight),
+          borderColor: palette.green.tint,
+          backgroundColor: palette.green.highlight,
           '&:hover:not(.disable-highlight), &.selected': {
-            backgroundColor: palette.green.main,
-            color: (theme) => theme.palette.getContrastText(palette.green.main)
+            color: theme.palette.getContrastText(lighten(palette.green.highlight, 0.5)),
+            backgroundColor: lighten(palette.green.highlight, 0.5)
           }
         },
         '&.changed': {
-          color: palette.yellow.shade,
+          color: theme.palette.getContrastText(palette.yellow.highlight),
           backgroundColor: palette.yellow.highlight,
+          borderColor: palette.yellow.tint,
           '&:hover:not(.disable-highlight), &.selected': {
-            background: palette.yellow.main,
-            color: (theme) => theme.palette.getContrastText(palette.yellow.main)
+            color: theme.palette.getContrastText(lighten(palette.yellow.highlight, 0.5)),
+            backgroundColor: lighten(palette.yellow.highlight, 0.5)
           }
         },
         '&.deleted': {
-          color: palette.red.shade,
-          backgroundColor: palette.red.highlight,
           width: '50%',
+          color: theme.palette.getContrastText(palette.red.highlight),
+          backgroundColor: palette.red.highlight,
+          borderColor: palette.red.tint,
           '&:hover:not(.disable-highlight), &.selected': {
-            background: palette.red.tint,
-            color: (theme) => theme.palette.getContrastText(palette.red.tint)
+            color: theme.palette.getContrastText(lighten(palette.red.highlight, 0.5)),
+            backgroundColor: lighten(palette.red.highlight, 0.5)
           }
         }
       }}
-      className={cx(state, selected && 'selected', disableHighlight && 'disable-highlight')}
     >
       <FormControlLabel
         control={
           <Checkbox
             size="small"
             sx={{
-              color: 'inherit',
               p: 0,
               pr: 1,
+              color: 'inherit',
               display: !selectionMode && 'none'
             }}
             checked={selected}
@@ -102,13 +117,15 @@ export function StateItem(props: DiffStateItemProps) {
           />
         }
         label={
-          <Typography noWrap sx={{ fontSize: 14 }}>
-            {label}
-          </Typography>
+          <>
+            <Typography component="div" variant="body1" children={primaryText} />
+            <Typography component="div" variant="body2" children={secondaryText} />
+          </>
         }
         sx={{
           width: '100%',
-          padding: '8.5px 10px',
+          py: 1,
+          px: 1.25,
           marginLeft: !selectionMode && 0,
           cursor: disableHighlight && 'default'
         }}
@@ -127,4 +144,4 @@ export function StateItem(props: DiffStateItemProps) {
   );
 }
 
-export default StateItem;
+export default DiffCollectionItem;

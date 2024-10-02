@@ -77,8 +77,6 @@ export interface CompareVersionsDialogContainerProps
       | 'fields'
     > {
   compareXml: boolean;
-  setCompareSubDialogState?(props: CompareVersionsDialogProps): void;
-  setViewSubDialogState?(props: ViewVersionDialogProps): void;
 }
 
 export const getItemDiffStatus = (diff): ItemDiffState => {

@@ -86,7 +86,6 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
         </Button>
       )}
       <Paper
-        elevation={0}
         variant="outlined"
         sx={{
           display: 'flex',
@@ -99,7 +98,6 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
       >
         <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
           <Typography sx={{ fontWeight: 'bold' }}>{field.name}</Typography>
-          <InfoOutlinedIcon sx={{ ml: 2, color: (theme) => theme.palette.text.secondary }} />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {actions}

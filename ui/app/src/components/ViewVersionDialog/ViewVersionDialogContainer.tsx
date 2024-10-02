@@ -16,7 +16,7 @@
 
 import { ViewVersionDialogContainerProps } from './utils';
 import DialogBody from '../DialogBody/DialogBody';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchContentByCommitId } from '../../services/content';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { getContentInstanceValueFromProp, parseContentXML } from '../../utils/content';
@@ -33,6 +33,8 @@ import ContentFieldView from './ContentFieldView';
 import { useIntl } from 'react-intl';
 import { getStudioContentInternalFields } from '../../utils/contentType';
 
+const VersionDialogContext = createContext(null);
+
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
   const { version, contentTypesBranch, showXml, data: preFetchedData, error, setViewSubDialogState } = props;
   const [content, setContent] = useState(preFetchedData?.content);
@@ -40,15 +42,16 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   const siteId = useActiveSiteId();
   const { formatMessage } = useIntl();
   const fields = useMemo(() => {
-    return content
+    return content && (preFetchedData?.fields || contentTypesBranch?.byId[content.craftercms.contentTypeId].fields)
       ? [
-          ...Object.values(preFetchedData?.fields ?? contentTypesBranch.byId[content.craftercms.contentTypeId].fields),
+          ...Object.values(preFetchedData?.fields ?? contentTypesBranch?.byId[content.craftercms.contentTypeId].fields),
           ...getStudioContentInternalFields(formatMessage)
         ]
       : [];
-  }, [content, contentTypesBranch?.byId, preFetchedData?.fields]);
+  }, [content, contentTypesBranch?.byId, formatMessage, preFetchedData?.fields]);
   const isViewDateReady = content && xml;
   const [selectedField, setSelectedField] = useState(null);
+  const context = useMemo(() => ({ content, fields }), [content, fields]);
   const sidebarRefs = useRef({});
   fields?.forEach((field) => {
     sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
@@ -83,56 +86,58 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
 
   return (
     <DialogBody sx={{ overflow: 'auto', minHeight: '50vh', p: 0 }}>
-      {!isViewDateReady ? (
-        <LoadingState />
-      ) : error ? (
-        <ApiResponseErrorState error={error} />
-      ) : showXml ? (
-        <MonacoWrapper contentA={xml} isHTML={false} editorProps={{ height: '100%' }} />
-      ) : (
-        <>
-          <ResizeableDrawer
-            open={true}
-            width={280}
-            styles={{
-              drawerBody: {
-                display: 'flex',
-                flexDirection: 'column',
-                overflowY: 'inherit'
-              },
-              drawerPaper: {
-                overflow: 'hidden',
-                position: 'absolute'
-              }
-            }}
-          >
-            <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
-              {fields.map((field) => (
-                <ListItemButton
-                  key={field.id}
-                  onClick={() => setSelectedField(field)}
-                  selected={selectedField?.id === field.id}
-                  ref={sidebarRefs.current[field.id]}
-                >
-                  <ListItemText primary={field.name} secondary={`${field.id} - ${field.type}`} sx={{ m: 0 }} />
-                </ListItemButton>
-              ))}
-            </List>
-          </ResizeableDrawer>
-          <Box sx={{ marginLeft: '280px', height: '100%' }}>
-            {selectedField && (
-              <ContentFieldView
-                content={content && getContentInstanceValueFromProp(content, selectedField.id)}
-                field={selectedField}
-                contentTypeFields={fields}
-                xml={xml}
-                onSelectField={onSelectField}
-                setViewSubDialogState={setViewSubDialogState}
-              />
-            )}
-          </Box>
-        </>
-      )}
+      <VersionDialogContext.Provider value={context}>
+        {!isViewDateReady ? (
+          <LoadingState />
+        ) : error ? (
+          <ApiResponseErrorState error={error} />
+        ) : showXml ? (
+          <MonacoWrapper contentA={xml} isHTML={false} editorProps={{ height: '100%' }} />
+        ) : (
+          <>
+            <ResizeableDrawer
+              open={true}
+              width={280}
+              styles={{
+                drawerBody: {
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflowY: 'inherit'
+                },
+                drawerPaper: {
+                  overflow: 'hidden',
+                  position: 'absolute'
+                }
+              }}
+            >
+              <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
+                {fields.map((field) => (
+                  <ListItemButton
+                    key={field.id}
+                    onClick={() => setSelectedField(field)}
+                    selected={selectedField?.id === field.id}
+                    ref={sidebarRefs.current[field.id]}
+                  >
+                    <ListItemText primary={field.name} secondary={`${field.id} - ${field.type}`} sx={{ m: 0 }} />
+                  </ListItemButton>
+                ))}
+              </List>
+            </ResizeableDrawer>
+            <Box sx={{ marginLeft: '280px', height: '100%' }}>
+              {selectedField && (
+                <ContentFieldView
+                  content={content && getContentInstanceValueFromProp(content, selectedField.id)}
+                  field={selectedField}
+                  contentTypeFields={fields}
+                  xml={xml}
+                  onSelectField={onSelectField}
+                  setViewSubDialogState={setViewSubDialogState}
+                />
+              )}
+            </Box>
+          </>
+        )}
+      </VersionDialogContext.Provider>
     </DialogBody>
   );
 }

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { createContext, MutableRefObject, useContext, useMemo, useRef, useState } from 'react';
 import { CompareVersionsDialogProps } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -26,28 +26,34 @@ import { translations } from './translations';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useLocale from '../../hooks/useLocale';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
-import useSpreadState from '../../hooks/useSpreadState';
-import Drawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import { DialogHeader } from '../DialogHeader';
-import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
-import { Backdrop } from '@mui/material';
 
-const compareSubDialogInitialState = {
-  open: false,
-  isFetching: false,
-  error: null
-};
+export interface VersionsDialogContextProps {
+  compareSlideOutState: CompareVersionsDialogProps;
+  viewSlideOutState: ViewVersionDialogProps;
+}
 
-const viewSubDialogInitialState = {
-  open: false,
-  isFetching: false,
-  error: null
-};
+export interface VersionsDialogContextApi {
+  setState: (state: Partial<VersionsDialogContextProps>) => void;
+  setCompareSlideOutState: (props: Partial<CompareVersionsDialogProps>) => void;
+  setViewSlideOutState: (props: Partial<ViewVersionDialogProps>) => void;
+  closeSlideOuts: () => void;
+}
+
+export type VersionsDialogContextType = [VersionsDialogContextProps, MutableRefObject<VersionsDialogContextApi>];
+
+const VersionsDialogContext = createContext<VersionsDialogContextType>(null);
+
+export function useVersionsDialogContext() {
+  const context = useContext(VersionsDialogContext);
+  if (!context) {
+    throw new Error('useMyContext must be used within a MyProvider');
+  }
+  return context;
+}
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
-  const [compareXml, setCompareXml] = useState(false);
+  // region const { ... } = props
   const {
     subtitle,
     selectedA,
@@ -66,20 +72,47 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
     onClose,
     ...rest
   } = props;
+  // endregion
+  const [compareXml, setCompareXml] = useState(false);
   const { formatMessage } = useIntl();
   const largeHeightScreen = useMediaQuery('(min-height: 880px)');
   const locale = useLocale();
 
-  const [compareSubDialogState, setCompareSubDialogState] =
-    useSpreadState<CompareVersionsDialogProps>(compareSubDialogInitialState);
-  const [viewSubDialogState, setViewSubDialogState] = useSpreadState<ViewVersionDialogProps>(viewSubDialogInitialState);
+  // region Dialog Context
+  const [state, setState] = useState<VersionsDialogContextProps>({
+    compareSlideOutState: { open: false, isFetching: false, error: null },
+    viewSlideOutState: { open: false, isFetching: false, error: null }
+  });
+  const contextRef = useRef(null);
+  const context = useMemo<VersionsDialogContextType>(() => {
+    contextRef.current = {
+      setState(nextState: Partial<VersionsDialogContextProps>) {
+        setState({ ...state, ...nextState });
+      },
+      setCompareSlideOutState(props: Partial<CompareVersionsDialogProps>) {
+        setState({ ...state, compareSlideOutState: { ...state.compareSlideOutState, ...props } });
+      },
+      setViewSlideOutState(props: Partial<ViewVersionDialogProps>) {
+        setState({ ...state, viewSlideOutState: { ...state.viewSlideOutState, ...props } });
+      },
+      closeSlideOuts() {
+        setState({
+          ...state,
+          compareSlideOutState: { ...state.compareSlideOutState, open: false },
+          viewSlideOutState: { ...state.viewSlideOutState, open: false }
+        });
+      }
+    };
+    return [state, contextRef];
+  }, [state]);
+  // endregion
 
+  // TODO: Add typings
   const onDialogClose = (event, reason) => {
-    if (!(compareSubDialogState.open || viewSubDialogState.open)) {
+    if (!(state.compareSlideOutState?.open || state.viewSlideOutState?.open)) {
       onClose?.(event, reason);
     }
-    setCompareSubDialogState(compareSubDialogInitialState);
-    setViewSubDialogState(viewSubDialogInitialState);
+    context[1].current.closeSlideOuts();
   };
 
   return (
@@ -144,80 +177,20 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
       onClose={onDialogClose}
       {...rest}
     >
-      <CompareVersionsDialogContainer
-        versionsBranch={versionsBranch}
-        isFetching={isFetching}
-        error={error}
-        disableItemSwitching={disableItemSwitching}
-        contentTypesBranch={contentTypesBranch}
-        selectedA={selectedB}
-        selectedB={selectedA}
-        compareXml={compareXml}
-        selectionContent={selectionContent}
-        fields={fields}
-        setCompareSubDialogState={setCompareSubDialogState}
-        setViewSubDialogState={setViewSubDialogState}
-      />
-
-      {/* Sub-views for inner views */}
-      <Backdrop
-        open={compareSubDialogState.open || viewSubDialogState.open}
-        sx={{ /* position: 'absolute', */ zIndex: 1200 }}
-        onClick={() => {
-          setCompareSubDialogState({ open: false });
-          setViewSubDialogState({ open: false });
-        }}
-      />
-      {/* region Compare */}
-      <Drawer
-        open={compareSubDialogState.open}
-        anchor="right"
-        variant="persistent"
-        sx={{
-          '& > .MuiDrawer-root': {
-            position: 'absolute'
-          },
-          '& > .MuiPaper-root': {
-            width: '90%',
-            position: 'absolute'
-          }
-        }}
-      >
-        <Box display="flex" flexDirection="column" height="100%">
-          <DialogHeader
-            title={compareSubDialogState.title}
-            subtitle={compareSubDialogState.subtitle}
-            onCloseButtonClick={(e) => compareSubDialogState.onClose(e, null)}
-          />
-          {compareSubDialogState.open && (
-            <CompareVersionsDialogContainer {...compareSubDialogState} compareXml={false} />
-          )}
-        </Box>
-      </Drawer>
-      {/* endregion */}
-      {/* region View */}
-      <Drawer
-        open={viewSubDialogState.open}
-        anchor="right"
-        variant="persistent"
-        sx={{
-          '& > .MuiDrawer-root': {
-            position: 'absolute'
-          },
-          '& > .MuiPaper-root': {
-            width: '90%',
-            position: 'absolute'
-          }
-        }}
-      >
-        <DialogHeader
-          title={viewSubDialogState.title}
-          subtitle={viewSubDialogState.subtitle}
-          onCloseButtonClick={(e) => viewSubDialogState.onClose(e, null)}
+      <VersionsDialogContext.Provider value={context}>
+        <CompareVersionsDialogContainer
+          versionsBranch={versionsBranch}
+          isFetching={isFetching}
+          error={error}
+          disableItemSwitching={disableItemSwitching}
+          contentTypesBranch={contentTypesBranch}
+          selectedA={selectedB}
+          selectedB={selectedA}
+          compareXml={compareXml}
+          selectionContent={selectionContent}
+          fields={fields}
         />
-        {viewSubDialogState.open && <ViewVersionDialogContainer {...viewSubDialogState} showXml={false} />}
-      </Drawer>
-      {/* endregion */}
+      </VersionsDialogContext.Provider>
     </EnhancedDialog>
   );
 }

@@ -19,5 +19,3 @@ export { default } from './ViewVersionDialog';
 export * from './ViewVersionDialog';
 
 export * from './ViewVersionDialogContainer';
-
-export * from './LegacyVersionDialog';

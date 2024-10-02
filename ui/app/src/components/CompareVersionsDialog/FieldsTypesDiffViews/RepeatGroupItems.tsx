@@ -24,8 +24,8 @@ import { FormattedMessage } from 'react-intl';
 import { deepCopy, nou } from '../../../utils/object';
 import { Alert } from '@mui/material';
 import { CompareVersionsDialogProps } from '../utils';
-import { ViewVersionDialogProps } from '../../ViewVersionDialog/utils';
-import StateItem from './StateItem';
+import DiffCollectionItem from './DiffCollectionItem';
+import { useVersionsDialogContext } from '../CompareVersionsDialog';
 
 interface RepeatGroupItemsProps {
   contentA: ContentInstance[];
@@ -36,29 +36,27 @@ interface RepeatGroupItemsProps {
   fields: LookupTable<ContentTypeField>;
   field: ContentTypeField;
   setCompareModeDisabled?(disabled: boolean): void;
-  setCompareSubDialogState?(props: Partial<CompareVersionsDialogProps>): void;
-  setViewSubDialogState?(props: Partial<ViewVersionDialogProps>): void;
 }
 
 export type ItemDiffState = 'changed' | 'unchanged' | 'new' | 'deleted';
 
 export function RepeatGroupItems(props: RepeatGroupItemsProps) {
-  const {
-    contentA,
-    contentB,
-    aXml,
-    bXml,
-    compareMode,
-    fields,
-    field,
-    setCompareSubDialogState,
-    setViewSubDialogState,
-    setCompareModeDisabled
-  } = props;
+  const { contentA, contentB, aXml, bXml, compareMode, fields, field, setCompareModeDisabled } = props;
   const [repDiff, setRepDiff] = useState([]);
-  const [repItemsCompare, setRepItemsCompare] = useSpreadState({ a: null, b: null });
+  const [repItemsCompare, setRepItemsCompare] = useSpreadState<{
+    a: CompareVersionsDialogProps['selectionContent']['a'] & {
+      multiSide: boolean;
+    };
+    b: CompareVersionsDialogProps['selectionContent']['a'] & {
+      multiSide: boolean;
+    };
+  }>({
+    a: null,
+    b: null
+  });
   const showRepItemsCompare = repItemsCompare.a?.content && repItemsCompare.b?.content;
   const selectedItemsAreEqual = showRepItemsCompare && repItemsCompare.a?.xml === repItemsCompare.b?.xml;
+  const [context, contextApiRef] = useVersionsDialogContext();
 
   const getItemDataAtVersion = (side: string, index: number): { content: ContentInstance; xml: string } => {
     const content = side === 'a' ? contentA : contentB;
@@ -75,7 +73,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     };
   };
 
-  const onSetRepItemsCompare = (checked, side, index, multiSide = false) => {
+  const onSetRepItemsCompare = (checked: boolean, side: 'a' | 'b', index: number, multiSide = false) => {
     const { content, xml } = getItemDataAtVersion(side, index);
     setRepItemsCompare({
       [side]: {
@@ -88,33 +86,30 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
 
   const onSetDeletedItemCompare = (checked: boolean, index: number) => {
     // Deleted items will always show on the left side of the comparison (side 'a'), and since when selecting an 'unchanged'
-    // or 'changed' item we default it to side 'a', if theres a 'multiSide' item selected, switch it to side 'b'
+    // or 'changed' item we default it to side 'a', if there's a 'multiSide' item selected, switch it to side 'b'
     if (repItemsCompare.a?.multiSide) {
       const switchItem = deepCopy(repItemsCompare.a);
       onSetRepItemsCompare(checked, 'a', index);
-      setRepItemsCompare({
-        b: switchItem
-      });
+      setRepItemsCompare({ b: switchItem });
     } else {
       onSetRepItemsCompare(checked, 'a', index);
     }
   };
 
-  const onViewItemVersion = (side, index) => {
+  const onViewItemVersion = (side: 'a' | 'b', index: number) => {
     const { content, xml } = getItemDataAtVersion(side, index);
-    setViewSubDialogState?.({
+    contextApiRef.current.setViewSlideOutState({
       open: true,
-      data: {
-        content,
-        xml,
-        fields
-      },
+      error: null,
+      isFetching: false,
+      data: { content, xml, fields },
       title: field.name,
       subtitle: <FormattedMessage defaultMessage="{fieldId} - Repeat Group" values={{ fieldId: field.id }} />,
-      onClose: () => setViewSubDialogState({ open: false })
+      onClose: () => contextApiRef.current.closeSlideOuts()
     });
   };
 
+  // TODO: add typing
   const isItemSelected = (side, index) => {
     const contentToCompare = side === 'a' ? contentA?.[index] : contentB?.[index];
     return compareMode && repItemsCompare[side]?.content === contentToCompare;
@@ -174,17 +169,28 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
 
   useEffect(() => {
     if (repItemsCompare.a?.content && repItemsCompare.b?.content) {
-      setCompareSubDialogState?.({
+      contextApiRef.current.setCompareSlideOutState({
         open: true,
+        error: null,
+        isFetching: false,
         selectionContent: deepCopy(repItemsCompare),
         fields,
         title: field.name,
         subtitle: <FormattedMessage defaultMessage="{fieldId} - Repeat Group" values={{ fieldId: field.id }} />,
-        onClose: () => setCompareSubDialogState({ open: false })
+        onClose: () => contextApiRef.current.closeSlideOuts()
       });
       setRepItemsCompare?.({ a: null, b: null });
     }
-  }, [repItemsCompare, fields, compareMode, setCompareSubDialogState, field?.id, setRepItemsCompare, field?.name]);
+  }, [
+    repItemsCompare,
+    fields,
+    compareMode,
+    field.id,
+    setRepItemsCompare,
+    field.name,
+    contextApiRef,
+    context.compareSlideOutState
+  ]);
 
   useEffect(() => {
     const diffItemsSameSide = repDiff.every((entry) => nou(entry.a)) || repDiff.every((entry) => nou(entry.b));
@@ -223,9 +229,9 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
               maxWidth: '1100px'
             }}
           >
-            <StateItem
+            <DiffCollectionItem
               state={item.a ?? item.b}
-              label={<FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />}
+              primaryText={<FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />}
               selectionMode={compareMode}
               selected={isItemSelected(item.a ? 'a' : 'b', index)}
               onSelect={(selected) => onSelectItemAction(selected, item.a ? 'a' : 'b', index, item.a ?? item.b)}

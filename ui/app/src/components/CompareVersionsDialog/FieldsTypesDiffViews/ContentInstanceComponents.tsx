@@ -18,7 +18,7 @@ import ContentInstance from '../../../models/ContentInstance';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import useItemsByPath from '../../../hooks/useItemsByPath';
-import { CompareVersionsDialogProps, getItemDiffStatus } from '../utils';
+import { getItemDiffStatus } from '../utils';
 import { diffArrays } from 'diff/lib/diff/array.js';
 import Box from '@mui/material/Box';
 import { EmptyState } from '../../EmptyState';
@@ -26,9 +26,9 @@ import LookupTable from '../../../models/LookupTable';
 import { areObjectsEqual } from '../../../utils/object';
 import useSelection from '../../../hooks/useSelection';
 import { ContentTypeField } from '../../../models';
-import StateItem from './StateItem';
+import DiffCollectionItem from './DiffCollectionItem';
 import { mockContentInstance } from '../../../utils/content';
-import { ViewVersionDialogProps } from '../../ViewVersionDialog/utils';
+import { useVersionsDialogContext } from '../CompareVersionsDialog';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
@@ -36,12 +36,10 @@ interface ContentInstanceComponentsProps {
   aXml: string;
   bXml: string;
   field: ContentTypeField;
-  setCompareSubDialogState?(props: Partial<CompareVersionsDialogProps>): void;
-  setViewSubDialogState?(props: Partial<ViewVersionDialogProps>): void;
 }
 
 export function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
-  const { contentA, contentB, aXml, bXml, field, setCompareSubDialogState, setViewSubDialogState } = props;
+  const { contentA, contentB, aXml, bXml, field } = props;
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const [diff, setDiff] = useState(null);
   const itemsByPath = useItemsByPath();
@@ -56,6 +54,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
     });
     return byId;
   }, [contentA, contentB]);
+  const [, contextApiRef] = useVersionsDialogContext();
 
   const getItemLabel = (item: ContentInstance) => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
@@ -86,7 +85,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
     const fields = contentTypesBranch.byId[(embeddedA ?? embeddedB).craftercms.contentTypeId].fields;
     // It may happen that one of the embedded components we're comparing is null (doesn't exist at a specific version),
     // in that scenario we use a mock (empty) content instance.
-    setCompareSubDialogState?.({
+    contextApiRef.current.setCompareSlideOutState({
       open: true,
       selectionContent: {
         a: {
@@ -101,14 +100,14 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
       fields,
       title: field.name,
       subtitle: <FormattedMessage defaultMessage="{fieldId}" values={{ fieldId: field.id }} />,
-      onClose: () => setCompareSubDialogState({ open: false })
+      onClose: () => contextApiRef.current.closeSlideOuts()
     });
   };
 
   const onViewEmbedded = (id: string) => {
     const { embeddedA } = getEmbeddedVersions(id);
     const fields = contentTypesBranch.byId[embeddedA.craftercms.contentTypeId].fields;
-    setViewSubDialogState?.({
+    contextApiRef.current.setViewSlideOutState({
       open: true,
       data: {
         content: embeddedA,
@@ -117,7 +116,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
       },
       title: field.name,
       subtitle: <FormattedMessage defaultMessage="{fieldId}" values={{ fieldId: field.id }} />,
-      onClose: () => setViewSubDialogState({ open: false })
+      onClose: () => contextApiRef.current.closeSlideOuts()
     });
   };
 
@@ -143,21 +142,17 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
         {diff?.length ? (
           diff.map((part) =>
             part.value.map((id) => (
-              <StateItem
+              <DiffCollectionItem
                 key={id}
                 state={isEmbeddedWithChanges(id) ? 'changed' : getItemDiffStatus(part)}
-                label={
-                  <>
-                    {getItemLabel(contentById[id])}
-                    <Box component="span" ml={1}>
-                      {contentById[id].craftercms &&
-                        (isEmbedded(contentById[id]) ? (
-                          <FormattedMessage defaultMessage="(Embedded)" />
-                        ) : (
-                          (contentById[id].craftercms?.path ?? contentById[id].value)
-                        ))}
-                    </Box>
-                  </>
+                primaryText={getItemLabel(contentById[id])}
+                secondaryText={
+                  contentById[id].craftercms &&
+                  (isEmbedded(contentById[id]) ? (
+                    <FormattedMessage defaultMessage="Embedded" />
+                  ) : (
+                    (contentById[id].craftercms?.path ?? contentById[id].value)
+                  ))
                 }
                 onSelect={() => {
                   if (isEmbedded(contentById[id])) {

@@ -31,7 +31,7 @@ export interface VersionViewProps {
 }
 
 export interface VersionResource {
-  version: any;
+  version: any; // TODO: add typing
   contentTypes: LookupTable<ContentType>;
 }
 

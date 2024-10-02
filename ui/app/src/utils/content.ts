@@ -432,7 +432,7 @@ export function parseContentXML(
     );
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
-    current.craftercms.disabled = getInnerHtml(doc.querySelector(':scope > disabled')).trim() === 'true';
+    current.craftercms.disabled = getInnerHtml(doc.querySelector(':scope > disabled'), { trim: true }) === 'true';
   }
   id && (instanceLookup[id] = current);
   if (nnou(doc)) {

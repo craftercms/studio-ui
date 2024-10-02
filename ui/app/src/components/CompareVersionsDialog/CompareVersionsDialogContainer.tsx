@@ -16,7 +16,7 @@
 
 import { CompareVersionsDialogContainerProps, hasFieldChanged } from './utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { CompareFieldPanel, CompareFieldPanelAccordion } from './CompareFieldPanel';
+import { CompareFieldPanel } from './CompareFieldPanel';
 import DialogBody from '../DialogBody/DialogBody';
 import { LoadingState } from '../LoadingState';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -35,14 +35,19 @@ import EmptyState from '../EmptyState';
 import useSelection from '../../hooks/useSelection';
 import { MonacoWrapper } from '../MonacoWrapper';
 import ListItemText, { listItemTextClasses } from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { ItemTypeIcon } from '../ItemTypeIcon';
 import palette from '../../styles/palette';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { Badge, badgeClasses } from '@mui/material';
+import Badge, { badgeClasses } from '@mui/material/Badge';
 import Button from '@mui/material/Button';
 import { getStudioContentInternalFields } from '../../utils/contentType';
+import { CompareFieldAccordionPanel } from './CompareFieldAccordionPanel';
+import { Backdrop } from '@mui/material';
+import Drawer from '@mui/material/Drawer';
+import { DialogHeader } from '../DialogHeader';
+import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
+import { useVersionsDialogContext } from './CompareVersionsDialog';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -52,10 +57,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     fields,
     versionsBranch,
     contentTypesBranch,
-    compareXml,
-    setCompareSubDialogState,
-    setViewSubDialogState
+    compareXml
   } = props;
+  const [{ compareSlideOutState, viewSlideOutState }, setState] = useVersionsDialogContext();
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
   const item = versionsBranch?.item;
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
@@ -115,7 +119,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       )
     )
     .map((field) => field.id);
-  const [showOnlyChanges, setShowOnlyChanges] = useState(false);
+  const [showOnlyChanges, setShowOnlyChanges] = useState(true);
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
   contentTypeFields?.forEach((field) => {
@@ -292,7 +296,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   contentTypeFields
                     .filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))
                     .map((field) => (
-                      <CompareFieldPanelAccordion
+                      <CompareFieldAccordionPanel
                         key={field.id}
                         a={{
                           ...selectedA,
@@ -308,34 +312,28 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                         }}
                         field={field}
                         contentTypeFields={contentTypeFields}
-                        setCompareSubDialogState={setCompareSubDialogState}
-                        setViewSubDialogState={setViewSubDialogState}
                         fieldRef={fieldsRefs.current[field.id]}
                         selected={selectedField?.id === field.id}
                       />
                     ))
                 ) : selectedField ? (
-                  <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
-                    <CompareFieldPanel
-                      a={{
-                        ...selectedA,
-                        ...compareVersionsBranch?.compareVersions?.[0],
-                        content: selectionContent.a.content,
-                        xml: selectionContent.a.xml
-                      }}
-                      b={{
-                        ...selectedB,
-                        ...compareVersionsBranch?.compareVersions?.[1],
-                        content: selectionContent.b.content,
-                        xml: selectionContent.b.xml
-                      }}
-                      field={selectedField}
-                      contentTypeFields={contentTypeFields}
-                      onSelectField={onSelectFieldFromContent}
-                      setCompareSubDialogState={setCompareSubDialogState}
-                      setViewSubDialogState={setViewSubDialogState}
-                    />
-                  </Box>
+                  <CompareFieldPanel
+                    a={{
+                      ...selectedA,
+                      ...compareVersionsBranch?.compareVersions?.[0],
+                      content: selectionContent.a.content,
+                      xml: selectionContent.a.xml
+                    }}
+                    b={{
+                      ...selectedB,
+                      ...compareVersionsBranch?.compareVersions?.[1],
+                      content: selectionContent.b.content,
+                      xml: selectionContent.b.xml
+                    }}
+                    field={selectedField}
+                    contentTypeFields={contentTypeFields}
+                    onSelectField={onSelectFieldFromContent}
+                  />
                 ) : (
                   <EmptyState
                     styles={{ root: { height: '100%', margin: 0 } }}
@@ -353,6 +351,49 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
           </>
         )}
       </DialogBody>
+      {/* region In-dialog slide-out panel */}
+      <Backdrop
+        open={Boolean(compareSlideOutState?.open || viewSlideOutState?.open)}
+        sx={{ zIndex: (theme) => theme.zIndex.drawer, position: 'absolute' }}
+        onClick={() => {
+          setState.current.closeSlideOuts();
+        }}
+      />
+      <Drawer
+        open={Boolean(compareSlideOutState?.open || viewSlideOutState?.open)}
+        anchor="right"
+        variant="persistent"
+        sx={{
+          '& > .MuiDrawer-root': { position: 'absolute' },
+          '& > .MuiPaper-root': { width: '90%', position: 'absolute' }
+        }}
+      >
+        {/* region Compare */}
+        {compareSlideOutState.open && (
+          <Box display="flex" flexDirection="column" height="100%">
+            <DialogHeader
+              title={compareSlideOutState.title}
+              subtitle={compareSlideOutState.subtitle}
+              onCloseButtonClick={compareSlideOutState.onClose}
+            />
+            <CompareVersionsDialogContainer {...compareSlideOutState} compareXml={false} />
+          </Box>
+        )}
+        {/* endregion */}
+        {/* region View */}
+        {viewSlideOutState.open && (
+          <>
+            <DialogHeader
+              title={viewSlideOutState.title}
+              subtitle={viewSlideOutState.subtitle}
+              onCloseButtonClick={viewSlideOutState.onClose}
+            />
+            <ViewVersionDialogContainer {...viewSlideOutState} showXml={false} />
+          </>
+        )}
+        {/* endregion */}
+      </Drawer>
+      {/* endregion */}
     </>
   );
 }

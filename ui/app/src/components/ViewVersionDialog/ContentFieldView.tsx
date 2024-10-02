@@ -30,14 +30,14 @@ import FieldVersionToolbar from '../CompareVersionsDialog/FieldVersionToolbar';
 import { fromString, serialize } from '../../utils/xml';
 import useMonacoOptions from '../../hooks/useMonacoOptions';
 import { nnou } from '../../utils/object';
-import StateItem from '../CompareVersionsDialog/FieldsTypesDiffViews/StateItem';
-import { ViewVersionDialogProps } from './utils';
+import DiffCollectionItem from '../CompareVersionsDialog/FieldsTypesDiffViews/DiffCollectionItem';
 import ContentInstance from '../../models/ContentInstance';
 import useSelection from '../../hooks/useSelection';
 import { countLines } from '../../utils/string';
+import { useVersionsDialogContext } from '../CompareVersionsDialog';
 
 interface ContentFieldViewProps {
-  content: any;
+  content: any; // TODO: add typing
   field: ContentTypeField;
   xml?: string;
   showToolbar?: boolean;
@@ -45,7 +45,6 @@ interface ContentFieldViewProps {
   showToolbarFieldNavigation?: boolean;
   dynamicHeight?: boolean;
   onSelectField?(field: ContentTypeField): void;
-  setViewSubDialogState?(props: Partial<ViewVersionDialogProps>): void;
 }
 
 const typesRenderMap = {
@@ -66,17 +65,17 @@ const typesRenderMap = {
 
 interface DefaultViewProps {
   field: ContentTypeField;
-  contentA: any;
+  contentA: any; // TODO: Add typing
   xml: string;
-  setViewSubDialogState?(props: Partial<ViewVersionDialogProps>): void;
 }
 
 function DefaultView(props: DefaultViewProps) {
-  const { field, contentA: content, xml, setViewSubDialogState } = props;
+  const { field, contentA: content, xml } = props;
   const fieldType = field.type;
   const locale = useLocale();
   const itemsByPath = useItemsByPath();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const [, contextApiRef] = useVersionsDialogContext();
   const getItemLabel = (item) => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
@@ -89,7 +88,7 @@ function DefaultView(props: DefaultViewProps) {
     const isEmbeddedComponent = isEmbedded(item);
     const fields = isEmbeddedComponent ? contentTypesBranch.byId[item.craftercms.contentTypeId].fields : field.fields;
 
-    setViewSubDialogState({
+    contextApiRef.current.setViewSlideOutState({
       open: true,
       data: {
         content: item,
@@ -98,7 +97,7 @@ function DefaultView(props: DefaultViewProps) {
       },
       title: field.name,
       subtitle: <FormattedMessage defaultMessage="{fieldId} - Repeat Group" values={{ fieldId: field.id }} />,
-      onClose: () => setViewSubDialogState({ open: false })
+      onClose: () => contextApiRef.current.closeSlideOuts()
     });
   };
 
@@ -149,20 +148,16 @@ function DefaultView(props: DefaultViewProps) {
           <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '1100px', gap: '10px' }}>
             {fieldType === 'node-selector'
               ? content?.map((item) => (
-                  <StateItem
+                  <DiffCollectionItem
                     key={item.craftercms.path}
                     state="unchanged"
-                    label={
-                      <>
-                        {getItemLabel(item)}
-                        <Box component="span" ml={1}>
-                          {item.craftercms && isEmbedded(item) ? (
-                            <FormattedMessage defaultMessage="(Embedded)" />
-                          ) : (
-                            (item.craftercms?.path ?? item.value)
-                          )}
-                        </Box>
-                      </>
+                    primaryText={getItemLabel(item)}
+                    secondaryText={
+                      item.craftercms && isEmbedded(item) ? (
+                        <FormattedMessage defaultMessage="Embedded" />
+                      ) : (
+                        (item.craftercms?.path ?? item.value)
+                      )
                     }
                     disableHighlight={!isEmbedded(item)}
                     hideState
@@ -174,14 +169,10 @@ function DefaultView(props: DefaultViewProps) {
                   />
                 ))
               : content?.map((item, index) => (
-                  <StateItem
+                  <DiffCollectionItem
                     key={index}
                     state="unchanged"
-                    label={
-                      <Typography sx={{ fontSize: '14px' }}>
-                        <FormattedMessage defaultMessage="Item {index}" values={{ index }} />
-                      </Typography>
-                    }
+                    primaryText={<FormattedMessage defaultMessage="Item {index}" values={{ index }} />}
                     onSelect={() => onSelectStateItem(item)}
                     hideState
                   />
@@ -204,8 +195,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
     showToolbar = true,
     showToolbarFieldNavigation = true,
     dynamicHeight,
-    onSelectField,
-    setViewSubDialogState
+    onSelectField
   } = props;
   const fieldDoc =
     fromString(xml).querySelector(`page > ${field.id}`) ??
@@ -226,8 +216,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
     editorProps: {
       options: xmlEditorOptions,
       height: monacoEditorHeight
-    },
-    setViewSubDialogState
+    }
   };
 
   return (
@@ -260,9 +249,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
           <MonacoWrapper contentA={fieldXml} isHTML={true} editorProps={viewComponentProps.editorProps} />
         ) : nnou(ViewComponent) ? (
           <ViewComponent {...viewComponentProps} />
-        ) : (
-          <></>
-        )}
+        ) : null}
       </Box>
     </>
   );
