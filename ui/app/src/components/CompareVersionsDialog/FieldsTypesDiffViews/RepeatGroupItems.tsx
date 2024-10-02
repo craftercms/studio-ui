@@ -56,7 +56,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   });
   const showRepItemsCompare = repItemsCompare.a?.content && repItemsCompare.b?.content;
   const selectedItemsAreEqual = showRepItemsCompare && repItemsCompare.a?.xml === repItemsCompare.b?.xml;
-  const [context, contextApiRef] = useVersionsDialogContext();
+  const [, contextApiRef] = useVersionsDialogContext();
 
   const getItemDataAtVersion = (side: string, index: number): { content: ContentInstance; xml: string } => {
     const content = side === 'a' ? contentA : contentB;
@@ -181,16 +181,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
       });
       setRepItemsCompare?.({ a: null, b: null });
     }
-  }, [
-    repItemsCompare,
-    fields,
-    compareMode,
-    field.id,
-    setRepItemsCompare,
-    field.name,
-    contextApiRef,
-    context.compareSlideOutState
-  ]);
+  }, [repItemsCompare, fields, compareMode, field.id, setRepItemsCompare, field.name, contextApiRef]);
 
   useEffect(() => {
     const diffItemsSameSide = repDiff.every((entry) => nou(entry.a)) || repDiff.every((entry) => nou(entry.b));
