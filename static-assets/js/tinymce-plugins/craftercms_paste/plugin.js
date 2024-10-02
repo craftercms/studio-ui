@@ -1858,7 +1858,7 @@
   };
 
   function Plugin() {
-    global$b.add('paste_plugin', function (editor) {
+    global$b.add('craftercms_paste', function (editor) {
       if (hasProPlugin(editor) === false) {
         var draggingInternallyState = Cell(false);
         var pasteFormat = Cell(isPasteAsTextEnabled(editor) ? 'text' : 'html');
