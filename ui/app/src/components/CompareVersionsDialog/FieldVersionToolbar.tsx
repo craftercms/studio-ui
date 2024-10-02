@@ -19,7 +19,6 @@ import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
@@ -30,6 +29,7 @@ import { ContentTypeField } from '../../models';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 interface FieldVersionToolbarProps {
   field: ContentTypeField;
@@ -70,6 +70,17 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
     const previousField = contentTypeFields[index - 1] || contentTypeFields[contentTypeFields.length - 1];
     onSelectField?.(previousField);
   };
+
+  useHotkeys('ArrowLeft,ArrowRight', (event) => {
+    switch (event.key) {
+      case 'ArrowLeft':
+        onSelectPreviousField(field.id);
+        break;
+      case 'ArrowRight':
+        onSelectNextField(field.id);
+        break;
+    }
+  });
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
