@@ -30,16 +30,18 @@ import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { initialFieldViewState, useVersionsDialogContext } from './CompareVersionsDialog';
+import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
+import { MonacoWrapper } from '../MonacoWrapper';
+import { typesDiffMap } from './CompareFieldPanel';
 
 interface FieldVersionToolbarProps {
   field: ContentTypeField;
   contentTypeFields: ContentTypeField[];
-  compareXml: boolean;
-  showCleanText: boolean;
+  isDiff?: boolean;
   actions?: ReactNode;
   showFieldsNavigation?: boolean;
-  setCompareXml(value: boolean): void;
-  setShowCleanText(value: boolean): void;
+  justContent?: boolean;
   onSelectField?(field: ContentTypeField): void;
 }
 
@@ -48,16 +50,24 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
     field,
     contentTypeFields,
     onSelectField,
-    compareXml,
-    setCompareXml,
-    showCleanText,
-    setShowCleanText,
     actions,
-    showFieldsNavigation = true
+    showFieldsNavigation = true,
+    isDiff = true,
+    justContent
   } = props;
+  const fieldType = field.type;
   const currentFieldIndex = contentTypeFields.findIndex((f) => f.id === field.id);
   const nextField = contentTypeFields[currentFieldIndex + 1] || contentTypeFields[0];
   const previousField = contentTypeFields[currentFieldIndex - 1] || contentTypeFields[contentTypeFields.length - 1];
+
+  const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
+  const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
+  const { compareXml, cleanText, xmlEditorOptions, compareMode, compareModeDisabled } = viewState;
+  const showDivider =
+    (!compareXml && fieldType === 'repeat') ||
+    compareXml ||
+    typesDiffMap[fieldType] === MonacoWrapper ||
+    Boolean(actions);
 
   const onSelectNextField = (fieldId: string) => {
     const index = contentTypeFields.findIndex((f) => f.id === fieldId);
@@ -83,7 +93,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
   });
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', mb: justContent ? 0 : 2 }}>
       {showFieldsNavigation && contentTypeFields.length > 1 && (
         <Button
           sx={{ mx: 1 }}
@@ -104,26 +114,90 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
           justifyContent: 'space-between',
           flexGrow: 1,
           py: 1,
-          px: 2
+          px: 2,
+          ...(justContent && {
+            background: 'none',
+            border: 'none',
+            p: 0
+          })
         }}
       >
         <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center' }}>
           <Typography sx={{ fontWeight: 'bold' }}>{field.name}</Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mr: justContent && 1 }} onClick={(e) => e.stopPropagation()}>
           {actions}
-          {Boolean(actions) && (
+          {!compareXml && fieldType === 'repeat' && (
+            <Button
+              onClick={() =>
+                contextApiRef.current.setFieldViewState(field.id, {
+                  compareMode: !compareMode
+                })
+              }
+              startIcon={<CompareArrowsIcon />}
+              disabled={compareModeDisabled}
+            >
+              <FormattedMessage defaultMessage="Compare" />
+            </Button>
+          )}
+          {(compareXml || typesDiffMap[fieldType] === MonacoWrapper) && (
+            <>
+              {isDiff && (
+                <>
+                  <Button
+                    onClick={() => {
+                      contextApiRef.current.setFieldViewEditorOptionsState(field.id, {
+                        ignoreTrimWhitespace: !xmlEditorOptions.ignoreTrimWhitespace
+                      });
+                    }}
+                  >
+                    {viewState?.xmlEditorOptions.ignoreTrimWhitespace ? (
+                      <FormattedMessage defaultMessage="Show whitespace" />
+                    ) : (
+                      <FormattedMessage defaultMessage="Hide whitespace" />
+                    )}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      contextApiRef.current.setFieldViewEditorOptionsState(field.id, {
+                        renderSideBySide: !xmlEditorOptions.renderSideBySide
+                      });
+                    }}
+                  >
+                    {xmlEditorOptions.renderSideBySide ? (
+                      <FormattedMessage defaultMessage="Unified view" />
+                    ) : (
+                      <FormattedMessage defaultMessage="Split view" />
+                    )}
+                  </Button>
+                </>
+              )}
+              <Button
+                onClick={() => {
+                  contextApiRef.current.setFieldViewEditorOptionsState(field.id, {
+                    diffWordWrap: xmlEditorOptions.diffWordWrap === 'on' ? 'off' : 'on'
+                  });
+                }}
+              >
+                {xmlEditorOptions.diffWordWrap === 'on' ? (
+                  <FormattedMessage defaultMessage="No Wrap" />
+                ) : (
+                  <FormattedMessage defaultMessage="Wrap" />
+                )}
+              </Button>
+            </>
+          )}
+          {showDivider && (
             <Divider orientation="vertical" sx={{ display: 'inline-flex', height: '25px', ml: 2, mr: 2 }} />
           )}
-          {field.type === 'html' && (
+          {fieldType === 'html' && (
             <Tooltip title={<FormattedMessage defaultMessage="Show clean text" />}>
               <IconButton
                 size="small"
-                onClick={() => {
-                  setShowCleanText(true);
-                  setCompareXml(false);
-                }}
-                color={showCleanText && !compareXml ? 'primary' : 'default'}
+                onClick={() =>
+                  contextApiRef.current.setFieldViewState?.(field.id, { cleanText: true, compareXml: false })
+                }
+                color={cleanText && !compareXml ? 'primary' : 'default'}
               >
                 <NotesRoundedIcon />
               </IconButton>
@@ -132,17 +206,20 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
           <Tooltip title={<FormattedMessage defaultMessage="Compare" />}>
             <IconButton
               size="small"
-              onClick={() => {
-                setShowCleanText(false);
-                setCompareXml(false);
-              }}
-              color={!showCleanText && !compareXml ? 'primary' : 'default'}
+              onClick={() =>
+                contextApiRef.current.setFieldViewState?.(field.id, { cleanText: false, compareXml: false })
+              }
+              color={!cleanText && !compareXml ? 'primary' : 'default'}
             >
               <TextSnippetOutlinedIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title={<FormattedMessage defaultMessage="Compare XML" />}>
-            <IconButton size="small" onClick={() => setCompareXml(true)} color={compareXml ? 'primary' : 'default'}>
+            <IconButton
+              size="small"
+              onClick={() => contextApiRef.current.setFieldViewState?.(field.id, { compareXml: true })}
+              color={compareXml ? 'primary' : 'default'}
+            >
               <CodeOutlinedIcon />
             </IconButton>
           </Tooltip>

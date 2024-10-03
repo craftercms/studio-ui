@@ -16,7 +16,7 @@
 
 import ContentInstance from '../../models/ContentInstance';
 import { ContentTypeField } from '../../models/ContentType';
-import React, { ElementType, ReactNode, useEffect, useState } from 'react';
+import React, { ElementType, ReactNode, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -30,15 +30,11 @@ import { MonacoWrapper } from '../MonacoWrapper';
 import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
 import RepeatGroupItems from './FieldsTypesDiffViews/RepeatGroupItems';
 import { hasFieldChanged } from './utils';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
-import FieldVersionToolbar from './FieldVersionToolbar';
-import useMonacoOptions from '../../hooks/useMonacoOptions';
 import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import { countLines } from '../../utils/string';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { useVersionsDialogContext } from './CompareVersionsDialog';
+import { initialFieldViewState, useVersionsDialogContext } from './CompareVersionsDialog';
 
 export interface CompareVersionsDetailsContainerProps {
   contentA: ContentInstance;
@@ -65,7 +61,7 @@ export interface CompareFieldPanelProps {
   showFieldsNavigation?: boolean;
 }
 
-const typesDiffMap: Record<string, ElementType> = {
+export const typesDiffMap: Record<string, ElementType> = {
   text: MonacoWrapper,
   textarea: MonacoWrapper,
   html: MonacoWrapper,
@@ -133,19 +129,20 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
   const contentA = getContentInstanceValueFromProp(a.content, field.id);
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
-  const [compareMode, setCompareMode] = useState(false);
-  const [compareModeDisabled, setCompareModeDisabled] = useState(false);
-  const {
-    options: xmlEditorOptions,
-    toggleIgnoreTrimWhitespace,
-    toggleRenderSideBySide,
-    toggleDiffWordWrap
-  } = useMonacoOptions();
   const longerXmlContent = aFieldXml.length > bFieldXml.length ? aFieldXml : bFieldXml;
   const monacoEditorHeight = dynamicHeight ? (countLines(longerXmlContent) < 15 ? '200px' : '600px') : '100%';
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultFieldDiffView;
   const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
-  const { compareXml, cleanText } = fieldsViewState[field.id];
+  const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
+  const { compareXml, cleanText, xmlEditorOptions, compareMode } = viewState;
+  const setCompareModeDisabled = useMemo(
+    () => (disabled: boolean) => {
+      contextApiRef.current.setFieldViewState(field.id, {
+        compareModeDisabled: disabled
+      });
+    },
+    [contextApiRef, field.id]
+  );
   const diffComponentProps = {
     contentA:
       fieldType !== 'checkbox-group'
@@ -211,7 +208,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   }, [contentA, contentB, field]);
 
   return (
-    <Box height="100%" display="flex" flexDirection="column" p={2}>
+    <Box height="calc(100% - 60px)" display="flex" flexDirection="column">
       {unchanged ? (
         <ContentFieldView
           content={contentA}
@@ -223,71 +220,21 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
           dynamicHeight={dynamicHeight}
         />
       ) : (
-        <>
-          <FieldVersionToolbar
-            field={field}
-            contentTypeFields={contentTypeFields}
-            compareXml={compareXml}
-            setCompareXml={(value) => contextApiRef.current.setFieldViewState(field.id, { compareXml: value })}
-            showCleanText={cleanText}
-            setShowCleanText={(value) => contextApiRef.current.setFieldViewState(field.id, { cleanText: value })}
-            onSelectField={onSelectField}
-            showFieldsNavigation={showFieldsNavigation}
-            actions={
-              <>
-                {!compareXml && fieldType === 'repeat' && (
-                  <Button
-                    onClick={() => setCompareMode(!compareMode)}
-                    startIcon={<CompareArrowsIcon />}
-                    disabled={compareModeDisabled}
-                  >
-                    <FormattedMessage defaultMessage="Compare" />
-                  </Button>
-                )}
-                {(compareXml || typesDiffMap[fieldType] === MonacoWrapper) && (
-                  <>
-                    <Button onClick={() => toggleIgnoreTrimWhitespace()}>
-                      {xmlEditorOptions.ignoreTrimWhitespace ? (
-                        <FormattedMessage defaultMessage="Show whitespace" />
-                      ) : (
-                        <FormattedMessage defaultMessage="Hide whitespace" />
-                      )}
-                    </Button>
-                    <Button onClick={() => toggleRenderSideBySide()}>
-                      {xmlEditorOptions.renderSideBySide ? (
-                        <FormattedMessage defaultMessage="Unified view" />
-                      ) : (
-                        <FormattedMessage defaultMessage="Split view" />
-                      )}
-                    </Button>
-                    <Button onClick={() => toggleDiffWordWrap()}>
-                      {xmlEditorOptions.diffWordWrap === 'on' ? (
-                        <FormattedMessage defaultMessage="No Wrap" />
-                      ) : (
-                        <FormattedMessage defaultMessage="Wrap" />
-                      )}
-                    </Button>
-                  </>
-                )}
-              </>
-            }
-          />
-          <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
-            {compareXml ? (
-              <MonacoWrapper
-                contentA={aFieldXml}
-                contentB={bFieldXml}
-                isDiff
-                isHTML={false}
-                editorProps={diffComponentProps.editorProps}
-              />
-            ) : (
-              <ErrorBoundary key={field.id}>
-                <DiffComponent {...diffComponentProps} />
-              </ErrorBoundary>
-            )}
-          </Box>
-        </>
+        <Box sx={{ flexGrow: 1 }}>
+          {compareXml ? (
+            <MonacoWrapper
+              contentA={aFieldXml}
+              contentB={bFieldXml}
+              isDiff
+              isHTML={false}
+              editorProps={diffComponentProps.editorProps}
+            />
+          ) : (
+            <ErrorBoundary key={field.id}>
+              <DiffComponent {...diffComponentProps} />
+            </ErrorBoundary>
+          )}
+        </Box>
       )}
     </Box>
   );

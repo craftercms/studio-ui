@@ -33,21 +33,41 @@ import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import { DialogHeader } from '../DialogHeader';
 import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
+import { DiffEditorProps } from '@monaco-editor/react';
+
+export interface FieldViewState {
+  compareXml: boolean;
+  cleanText: boolean;
+  compareMode: boolean;
+  compareModeDisabled: boolean;
+  xmlEditorOptions: DiffEditorProps['options'];
+}
 
 export interface VersionsDialogContextProps {
   compareSlideOutState: CompareVersionsDialogProps;
   viewSlideOutState: ViewVersionDialogProps;
-  fieldsViewState: LookupTable<{
-    compareXml: boolean;
-    cleanText: boolean;
-  }>;
+  fieldsViewState: LookupTable<FieldViewState>;
 }
+
+export const initialFieldViewState = {
+  compareXml: false,
+  cleanText: false,
+  compareMode: false,
+  compareModeDisabled: false,
+  xmlEditorOptions: {
+    ignoreTrimWhitespace: false,
+    renderSideBySide: true,
+    diffWordWrap: 'off' as DiffEditorProps['options']['diffWordWrap'],
+    wordWrap: 'on' as DiffEditorProps['options']['wordWrap']
+  }
+};
 
 export interface VersionsDialogContextApi {
   setState: (state: Partial<VersionsDialogContextProps>) => void;
   setCompareSlideOutState: (props: Partial<CompareVersionsDialogProps>) => void;
   setViewSlideOutState: (props: Partial<ViewVersionDialogProps>) => void;
-  setFieldViewState: (fieldId: string, viewState: Partial<{ compareXml: boolean; cleanText: boolean }>) => void;
+  setFieldViewState: (fieldId: string, viewState: Partial<FieldViewState>) => void;
+  setFieldViewEditorOptionsState: (fieldId: string, options: DiffEditorProps['options']) => void;
   closeSlideOuts: () => void;
 }
 
@@ -111,6 +131,18 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         setState({
           ...state,
           fieldsViewState: { ...state.fieldsViewState, [fieldId]: { ...state.fieldsViewState[fieldId], ...viewState } }
+        });
+      },
+      setFieldViewEditorOptionsState(fieldId: string, options: DiffEditorProps['options']) {
+        setState({
+          ...state,
+          fieldsViewState: {
+            ...state.fieldsViewState,
+            [fieldId]: {
+              ...state.fieldsViewState[fieldId],
+              xmlEditorOptions: { ...state.fieldsViewState[fieldId].xmlEditorOptions, ...options }
+            }
+          }
         });
       },
       closeSlideOuts() {

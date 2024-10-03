@@ -220,38 +220,13 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   };
 
   return (
-    <>
-      {showToolbar && (
-        <FieldVersionToolbar
-          field={field}
-          contentTypeFields={contentTypeFields}
-          compareXml={viewXml}
-          setCompareXml={setViewXml}
-          showCleanText={cleanText}
-          setShowCleanText={setCleanText}
-          onSelectField={onSelectField}
-          showFieldsNavigation={showToolbarFieldNavigation}
-          actions={
-            (ViewComponent === MonacoWrapper || viewXml) && (
-              <Button onClick={() => toggleWordWrap()}>
-                {xmlEditorOptions.wordWrap === 'on' ? (
-                  <FormattedMessage defaultMessage="No Wrap" />
-                ) : (
-                  <FormattedMessage defaultMessage="Wrap" />
-                )}
-              </Button>
-            )
-          }
-        />
-      )}
-      <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
-        {viewXml ? (
-          <MonacoWrapper contentA={fieldXml} isHTML={true} editorProps={viewComponentProps.editorProps} />
-        ) : nnou(ViewComponent) ? (
-          <ViewComponent {...viewComponentProps} />
-        ) : null}
-      </Box>
-    </>
+    <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
+      {viewXml ? (
+        <MonacoWrapper contentA={fieldXml} isHTML={true} editorProps={viewComponentProps.editorProps} />
+      ) : nnou(ViewComponent) ? (
+        <ViewComponent {...viewComponentProps} />
+      ) : null}
+    </Box>
   );
 }
 

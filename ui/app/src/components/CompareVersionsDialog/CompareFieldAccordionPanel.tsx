@@ -22,21 +22,15 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import { CompareFieldPanel, CompareFieldPanelProps } from './CompareFieldPanel';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
-import { FormattedMessage } from 'react-intl';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
-import IconButton from '@mui/material/IconButton';
-import CodeOutlinedIcon from '@mui/icons-material/CodeOutlined';
 
 export interface CompareFieldPanelAccordionProps extends CompareFieldPanelProps {
   selected: boolean;
   fieldRef: RefObject<HTMLDivElement>;
+  summary?: React.ReactNode;
 }
 
 export function CompareFieldAccordionPanel(props: CompareFieldPanelAccordionProps) {
-  const { fieldRef, selected, ...rest } = props;
+  const { fieldRef, selected, summary, ...rest } = props;
   const [expanded, setExpanded] = useState(true);
 
   useEffect(() => {
@@ -66,33 +60,16 @@ export function CompareFieldAccordionPanel(props: CompareFieldPanelAccordionProp
         expandIcon={<ExpandMoreIcon />}
         sx={{ [`.${accordionSummaryClasses.content}`]: { justifyContent: 'space-between', alignItems: 'center' } }}
       >
-        <Typography>
-          <Box component="span" sx={{ fontWeight: 600 }}>
-            {props.field.name}{' '}
-          </Box>
-          ({props.field.id})
-        </Typography>
-        <Box>
-          <Button startIcon={<CompareArrowsIcon />}>
-            <FormattedMessage defaultMessage="Compare" />
-          </Button>
-          <Button>
-            <FormattedMessage defaultMessage="Show whitespace" />
-          </Button>
-          <Button>
-            <FormattedMessage defaultMessage="Split view" />
-          </Button>
-          <Button>
-            <FormattedMessage defaultMessage="No Wrap" />
-          </Button>
-          <Divider orientation="vertical" sx={{ display: 'inline-flex', height: '25px', ml: 2, mr: 2 }} />
-          <IconButton size="small" color={'primary'}>
-            <TextSnippetOutlinedIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" color={'default'}>
-            <CodeOutlinedIcon fontSize="small" />
-          </IconButton>
-        </Box>
+        {summary ? (
+          <Box width="100%">{summary}</Box>
+        ) : (
+          <Typography>
+            <Box component="span" sx={{ fontWeight: 600 }}>
+              {props.field.name}{' '}
+            </Box>
+            ({props.field.id})
+          </Typography>
+        )}
       </AccordionSummary>
       <AccordionDetails sx={{ p: 0 }}>
         <CompareFieldPanel {...rest} showFieldsNavigation={false} dynamicHeight />

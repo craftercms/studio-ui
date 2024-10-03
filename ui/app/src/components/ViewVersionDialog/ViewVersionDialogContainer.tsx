@@ -32,6 +32,7 @@ import List from '@mui/material/List';
 import ContentFieldView from './ContentFieldView';
 import { useIntl } from 'react-intl';
 import { getStudioContentInternalFields } from '../../utils/contentType';
+import FieldVersionToolbar from '../CompareVersionsDialog/FieldVersionToolbar';
 
 const VersionDialogContext = createContext(null);
 
@@ -125,13 +126,21 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
             </ResizeableDrawer>
             <Box sx={{ marginLeft: '280px', height: '100%' }}>
               {selectedField && (
-                <ContentFieldView
-                  content={content && getContentInstanceValueFromProp(content, selectedField.id)}
-                  field={selectedField}
-                  contentTypeFields={fields}
-                  xml={xml}
-                  onSelectField={onSelectField}
-                />
+                <>
+                  <FieldVersionToolbar
+                    field={selectedField}
+                    contentTypeFields={fields}
+                    isDiff={false}
+                    onSelectField={onSelectField}
+                  />
+                  <ContentFieldView
+                    content={content && getContentInstanceValueFromProp(content, selectedField.id)}
+                    field={selectedField}
+                    contentTypeFields={fields}
+                    xml={xml}
+                    onSelectField={onSelectField}
+                  />
+                </>
               )}
             </Box>
           </>

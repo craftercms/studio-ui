@@ -43,7 +43,8 @@ import Badge, { badgeClasses } from '@mui/material/Badge';
 import Button from '@mui/material/Button';
 import { getStudioContentInternalFields } from '../../utils/contentType';
 import { CompareFieldAccordionPanel } from './CompareFieldAccordionPanel';
-import { useVersionsDialogContext, VersionsDialogContextProps } from './CompareVersionsDialog';
+import { initialFieldViewState, useVersionsDialogContext, VersionsDialogContextProps } from './CompareVersionsDialog';
+import FieldVersionToolbar from './FieldVersionToolbar';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -173,10 +174,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     contentTypeFields?.forEach((field) => {
       sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
       fieldsRefs.current[field.id] = React.createRef<HTMLDivElement>();
-      fieldsViewStateRef.current[field.id] = {
-        compareXml: false,
-        cleanText: false
-      };
+      fieldsViewStateRef.current[field.id] = initialFieldViewState;
     });
   }, [contentTypeFields]);
 
@@ -329,28 +327,47 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                         contentTypeFields={contentTypeFields}
                         fieldRef={fieldsRefs.current[field.id]}
                         selected={selectedField?.id === field.id}
+                        summary={
+                          <FieldVersionToolbar
+                            field={field}
+                            showFieldsNavigation={false}
+                            contentTypeFields={contentTypeFields}
+                            isDiff={fieldIdsWithChanges.includes(field.id)}
+                            justContent={true}
+                          />
+                        }
                       />
                     ))
                 ) : selectedField ? (
-                  <CompareFieldPanel
-                    a={{
-                      ...selectedA,
-                      ...compareVersionsBranch?.compareVersions?.[0],
-                      content: selectionContent.a.content,
-                      xml: selectionContent.a.xml
-                    }}
-                    b={{
-                      ...selectedB,
-                      ...compareVersionsBranch?.compareVersions?.[1],
-                      content: selectionContent.b.content,
-                      xml: selectionContent.b.xml
-                    }}
-                    field={selectedField}
-                    contentTypeFields={contentTypeFields.filter((field) =>
-                      showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true
-                    )}
-                    onSelectField={onSelectFieldFromContent}
-                  />
+                  <Box p={2} height="100%">
+                    <FieldVersionToolbar
+                      field={selectedField}
+                      contentTypeFields={contentTypeFields.filter((field) =>
+                        showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true
+                      )}
+                      onSelectField={onSelectFieldFromContent}
+                      isDiff={fieldIdsWithChanges.includes(selectedField.id)}
+                    />
+                    <CompareFieldPanel
+                      a={{
+                        ...selectedA,
+                        ...compareVersionsBranch?.compareVersions?.[0],
+                        content: selectionContent.a.content,
+                        xml: selectionContent.a.xml
+                      }}
+                      b={{
+                        ...selectedB,
+                        ...compareVersionsBranch?.compareVersions?.[1],
+                        content: selectionContent.b.content,
+                        xml: selectionContent.b.xml
+                      }}
+                      field={selectedField}
+                      contentTypeFields={contentTypeFields.filter((field) =>
+                        showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true
+                      )}
+                      onSelectField={onSelectFieldFromContent}
+                    />
+                  </Box>
                 ) : (
                   <EmptyState
                     styles={{ root: { height: '100%', margin: 0 } }}
