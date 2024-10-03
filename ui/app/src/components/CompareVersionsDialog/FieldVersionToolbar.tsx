@@ -81,12 +81,14 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
     onSelectField?.(previousField);
   };
 
-  useHotkeys('ArrowLeft,ArrowRight', (event) => {
+  useHotkeys('ArrowLeft,ArrowRight,ArrowUp,ArrowDown', (event) => {
     switch (event.key) {
       case 'ArrowLeft':
+      case 'ArrowUp':
         onSelectPreviousField(field.id);
         break;
       case 'ArrowRight':
+      case 'ArrowDown':
         onSelectNextField(field.id);
         break;
     }
