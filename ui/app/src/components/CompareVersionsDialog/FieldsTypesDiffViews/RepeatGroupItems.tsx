@@ -25,7 +25,7 @@ import { deepCopy, nou } from '../../../utils/object';
 import { Alert } from '@mui/material';
 import { CompareVersionsDialogProps } from '../utils';
 import DiffCollectionItem from './DiffCollectionItem';
-import { useVersionsDialogContext } from '../CompareVersionsDialog';
+import { useVersionsDialogContext } from '../VersionsDialogContext';
 
 interface RepeatGroupItemsProps {
   contentA: ContentInstance[];

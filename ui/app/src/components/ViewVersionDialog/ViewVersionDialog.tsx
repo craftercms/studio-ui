@@ -14,8 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
+import React, { useMemo, useRef, useState } from 'react';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -30,13 +29,13 @@ import { Backdrop } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import useSpreadState from '../../hooks/useSpreadState';
 import { DialogHeader } from '../DialogHeader';
-
-export const getLegacyDialogStyles = makeStyles()(() => ({
-  iframe: {
-    border: 'none',
-    height: '80vh'
-  }
-}));
+import {
+  FieldViewState,
+  VersionsDialogContext,
+  VersionsDialogContextProps,
+  VersionsDialogContextType
+} from '../CompareVersionsDialog/VersionsDialogContext';
+import { DiffEditorProps } from '@monaco-editor/react';
 
 const viewSubDialogInitialState = {
   open: false,
@@ -52,6 +51,51 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const locale = useLocale();
   const [viewSubDialogState, setViewSubDialogState] = useSpreadState<ViewVersionDialogProps>(viewSubDialogInitialState);
 
+  // region Dialog Content
+  const [state, setState] = useState<VersionsDialogContextProps>({
+    viewSlideOutState: { open: false, isFetching: false, error: null },
+    fieldsViewState: {}
+  });
+  const contextRef = useRef(null);
+  const context = useMemo<VersionsDialogContextType>(() => {
+    contextRef.current = {
+      setState(nextState: Partial<VersionsDialogContextProps>) {
+        setState({ ...state, ...nextState });
+      },
+      setViewSlideOutState(props: Partial<ViewVersionDialogProps>) {
+        setState({ ...state, viewSlideOutState: { ...state.viewSlideOutState, ...props } });
+      },
+      setFieldViewState(fieldId: string, viewState: Partial<FieldViewState>) {
+        console.log('fieldId', fieldId, viewState);
+        setState({
+          ...state,
+          fieldsViewState: { ...state.fieldsViewState, [fieldId]: { ...state.fieldsViewState[fieldId], ...viewState } }
+        });
+      },
+      setFieldViewEditorOptionsState(fieldId: string, options: DiffEditorProps['options']) {
+        setState({
+          ...state,
+          fieldsViewState: {
+            ...state.fieldsViewState,
+            [fieldId]: {
+              ...state.fieldsViewState[fieldId],
+              xmlEditorOptions: { ...state.fieldsViewState[fieldId].xmlEditorOptions, ...options }
+            }
+          }
+        });
+      },
+      closeSlideOuts() {
+        setState({
+          ...state,
+          viewSlideOutState: { ...state.viewSlideOutState, open: false }
+        });
+      }
+    };
+    return [state, contextRef];
+  }, [state]);
+  // endregion
+
+  // TODO: Add typings
   const onDialogClose = (event, reason) => {
     if (!viewSubDialogState.open) {
       onClose?.(event, reason);
@@ -87,42 +131,43 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
       onClose={onDialogClose}
       {...rest}
     >
-      <ViewVersionDialogContainer
-        version={version}
-        contentTypesBranch={contentTypesBranch}
-        error={error}
-        isFetching={isFetching}
-        showXml={showXml}
-        setViewSubDialogState={setViewSubDialogState}
-      />
-
-      {/* Sub-view for inner viewVersionDialog */}
-      <Backdrop
-        open={viewSubDialogState.open}
-        sx={{ /* position: 'absolute', */ zIndex: 1200 }}
-        onClick={() => setViewSubDialogState({ open: false })}
-      />
-      <Drawer
-        open={viewSubDialogState.open}
-        anchor="right"
-        variant="persistent"
-        sx={{
-          '& > .MuiDrawer-root': {
-            position: 'absolute'
-          },
-          '& > .MuiPaper-root': {
-            width: '90%',
-            position: 'absolute'
-          }
-        }}
-      >
-        <DialogHeader
-          title={viewSubDialogState.title}
-          subtitle={viewSubDialogState.subtitle}
-          onCloseButtonClick={(e) => viewSubDialogState.onClose(e, null)}
+      <VersionsDialogContext.Provider value={context}>
+        <ViewVersionDialogContainer
+          version={version}
+          contentTypesBranch={contentTypesBranch}
+          error={error}
+          isFetching={isFetching}
+          showXml={showXml}
         />
-        <ViewVersionDialogContainer {...viewSubDialogState} showXml={false} />
-      </Drawer>
+
+        {/* Sub-view for inner viewVersionDialog */}
+        <Backdrop
+          open={viewSubDialogState.open}
+          sx={{ zIndex: 1200 }}
+          onClick={() => setViewSubDialogState({ open: false })}
+        />
+        <Drawer
+          open={viewSubDialogState.open}
+          anchor="right"
+          variant="persistent"
+          sx={{
+            '& > .MuiDrawer-root': {
+              position: 'absolute'
+            },
+            '& > .MuiPaper-root': {
+              width: '90%',
+              position: 'absolute'
+            }
+          }}
+        >
+          <DialogHeader
+            title={viewSubDialogState.title}
+            subtitle={viewSubDialogState.subtitle}
+            onCloseButtonClick={(e) => viewSubDialogState.onClose(e, null)}
+          />
+          <ViewVersionDialogContainer {...viewSubDialogState} showXml={false} />
+        </Drawer>
+      </VersionsDialogContext.Provider>
     </EnhancedDialog>
   );
 }

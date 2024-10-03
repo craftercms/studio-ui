@@ -43,8 +43,8 @@ import Badge, { badgeClasses } from '@mui/material/Badge';
 import Button from '@mui/material/Button';
 import { getStudioContentInternalFields } from '../../utils/contentType';
 import { CompareFieldAccordionPanel } from './CompareFieldAccordionPanel';
-import { initialFieldViewState, useVersionsDialogContext, VersionsDialogContextProps } from './CompareVersionsDialog';
 import FieldVersionToolbar from './FieldVersionToolbar';
+import { initialFieldViewState, useVersionsDialogContext, VersionsDialogContextProps } from './VersionsDialogContext';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {

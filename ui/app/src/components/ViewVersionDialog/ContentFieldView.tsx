@@ -22,19 +22,16 @@ import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import { asLocalizedDateTime, convertUtcTimeToTimezone } from '../../utils/datetime';
 import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
-import Button from '@mui/material/Button';
-import React, { useState } from 'react';
+import React from 'react';
 import useItemsByPath from '../../hooks/useItemsByPath';
 import useLocale from '../../hooks/useLocale';
-import FieldVersionToolbar from '../CompareVersionsDialog/FieldVersionToolbar';
 import { fromString, serialize } from '../../utils/xml';
-import useMonacoOptions from '../../hooks/useMonacoOptions';
 import { nnou } from '../../utils/object';
 import DiffCollectionItem from '../CompareVersionsDialog/FieldsTypesDiffViews/DiffCollectionItem';
 import ContentInstance from '../../models/ContentInstance';
 import useSelection from '../../hooks/useSelection';
 import { countLines } from '../../utils/string';
-import { useVersionsDialogContext } from '../CompareVersionsDialog';
+import { initialFieldViewState, useVersionsDialogContext } from '../CompareVersionsDialog/VersionsDialogContext';
 
 interface ContentFieldViewProps {
   content: any; // TODO: add typing
@@ -187,24 +184,15 @@ function DefaultView(props: DefaultViewProps) {
 }
 
 export function ContentFieldView(props: ContentFieldViewProps) {
-  const {
-    content,
-    field,
-    contentTypeFields,
-    xml = '',
-    showToolbar = true,
-    showToolbarFieldNavigation = true,
-    dynamicHeight,
-    onSelectField
-  } = props;
+  const { content, field, xml = '', dynamicHeight } = props;
   const fieldDoc =
     fromString(xml).querySelector(`page > ${field.id}`) ??
     fromString(xml).querySelector(`component > ${field.id}`) ??
     fromString(xml).querySelector(`item > ${field.id}`);
   const fieldXml = fieldDoc ? serialize(fieldDoc) : '';
-  const [viewXml, setViewXml] = useState(false);
-  const [cleanText, setCleanText] = useState(false);
-  const { options: xmlEditorOptions, toggleWordWrap } = useMonacoOptions();
+  const [{ fieldsViewState }] = useVersionsDialogContext();
+  const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
+  const { compareXml: viewXml, cleanText, xmlEditorOptions } = viewState;
   const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(xml) < 15 ? '200px' : '600px';
   const ViewComponent = typesRenderMap[field.type] ?? DefaultView;
   const viewComponentProps = {

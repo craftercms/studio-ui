@@ -28,7 +28,7 @@ import useSelection from '../../../hooks/useSelection';
 import { ContentTypeField } from '../../../models';
 import DiffCollectionItem from './DiffCollectionItem';
 import { mockContentInstance } from '../../../utils/content';
-import { useVersionsDialogContext } from '../CompareVersionsDialog';
+import { useVersionsDialogContext } from '../VersionsDialogContext';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];

@@ -30,10 +30,10 @@ import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { initialFieldViewState, useVersionsDialogContext } from './CompareVersionsDialog';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import { MonacoWrapper } from '../MonacoWrapper';
 import { typesDiffMap } from './CompareFieldPanel';
+import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialogContext';
 
 interface FieldVersionToolbarProps {
   field: ContentTypeField;
@@ -175,7 +175,8 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
               <Button
                 onClick={() => {
                   contextApiRef.current.setFieldViewEditorOptionsState(field.id, {
-                    diffWordWrap: xmlEditorOptions.diffWordWrap === 'on' ? 'off' : 'on'
+                    diffWordWrap: xmlEditorOptions.diffWordWrap === 'on' ? 'off' : 'on',
+                    wordWrap: xmlEditorOptions.wordWrap === 'on' ? 'off' : 'on'
                   });
                 }}
               >

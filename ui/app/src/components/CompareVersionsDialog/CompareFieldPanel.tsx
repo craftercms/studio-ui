@@ -34,7 +34,7 @@ import Divider from '@mui/material/Divider';
 import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import { countLines } from '../../utils/string';
 import { ErrorBoundary } from '../ErrorBoundary';
-import { initialFieldViewState, useVersionsDialogContext } from './CompareVersionsDialog';
+import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialogContext';
 
 export interface CompareVersionsDetailsContainerProps {
   contentA: ContentInstance;

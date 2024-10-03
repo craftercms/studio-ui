@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { createContext, MutableRefObject, useContext, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { CompareVersionsDialogProps } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -27,61 +27,18 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import useLocale from '../../hooks/useLocale';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
-import { LookupTable } from '../../models';
 import { Backdrop } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import { DialogHeader } from '../DialogHeader';
 import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
 import { DiffEditorProps } from '@monaco-editor/react';
-
-export interface FieldViewState {
-  compareXml: boolean;
-  cleanText: boolean;
-  compareMode: boolean;
-  compareModeDisabled: boolean;
-  xmlEditorOptions: DiffEditorProps['options'];
-}
-
-export interface VersionsDialogContextProps {
-  compareSlideOutState: CompareVersionsDialogProps;
-  viewSlideOutState: ViewVersionDialogProps;
-  fieldsViewState: LookupTable<FieldViewState>;
-}
-
-export const initialFieldViewState = {
-  compareXml: false,
-  cleanText: false,
-  compareMode: false,
-  compareModeDisabled: false,
-  xmlEditorOptions: {
-    ignoreTrimWhitespace: false,
-    renderSideBySide: true,
-    diffWordWrap: 'off' as DiffEditorProps['options']['diffWordWrap'],
-    wordWrap: 'on' as DiffEditorProps['options']['wordWrap']
-  }
-};
-
-export interface VersionsDialogContextApi {
-  setState: (state: Partial<VersionsDialogContextProps>) => void;
-  setCompareSlideOutState: (props: Partial<CompareVersionsDialogProps>) => void;
-  setViewSlideOutState: (props: Partial<ViewVersionDialogProps>) => void;
-  setFieldViewState: (fieldId: string, viewState: Partial<FieldViewState>) => void;
-  setFieldViewEditorOptionsState: (fieldId: string, options: DiffEditorProps['options']) => void;
-  closeSlideOuts: () => void;
-}
-
-export type VersionsDialogContextType = [VersionsDialogContextProps, MutableRefObject<VersionsDialogContextApi>];
-
-const VersionsDialogContext = createContext<VersionsDialogContextType>(null);
-
-export function useVersionsDialogContext() {
-  const context = useContext(VersionsDialogContext);
-  if (!context) {
-    throw new Error('useMyContext must be used within a MyProvider');
-  }
-  return context;
-}
+import {
+  FieldViewState,
+  VersionsDialogContext,
+  VersionsDialogContextProps,
+  VersionsDialogContextType
+} from './VersionsDialogContext';
 
 export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   // region const { ... } = props
@@ -127,7 +84,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
       setViewSlideOutState(props: Partial<ViewVersionDialogProps>) {
         setState({ ...state, viewSlideOutState: { ...state.viewSlideOutState, ...props } });
       },
-      setFieldViewState(fieldId: string, viewState: Partial<{ compareXml: boolean; cleanText: boolean }>) {
+      setFieldViewState(fieldId: string, viewState: Partial<FieldViewState>) {
         setState({
           ...state,
           fieldsViewState: { ...state.fieldsViewState, [fieldId]: { ...state.fieldsViewState[fieldId], ...viewState } }

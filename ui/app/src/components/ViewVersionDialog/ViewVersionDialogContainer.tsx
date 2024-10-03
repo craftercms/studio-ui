@@ -33,11 +33,16 @@ import ContentFieldView from './ContentFieldView';
 import { useIntl } from 'react-intl';
 import { getStudioContentInternalFields } from '../../utils/contentType';
 import FieldVersionToolbar from '../CompareVersionsDialog/FieldVersionToolbar';
+import {
+  initialFieldViewState,
+  useVersionsDialogContext,
+  VersionsDialogContextProps
+} from '../CompareVersionsDialog/VersionsDialogContext';
 
 const VersionDialogContext = createContext(null);
 
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
-  const { version, contentTypesBranch, showXml, data: preFetchedData, error, setViewSubDialogState } = props;
+  const { version, contentTypesBranch, showXml, data: preFetchedData, error } = props;
   const [content, setContent] = useState(preFetchedData?.content);
   const [xml, setXml] = useState(preFetchedData?.xml);
   const siteId = useActiveSiteId();
@@ -54,9 +59,10 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   const [selectedField, setSelectedField] = useState(null);
   const context = useMemo(() => ({ content, fields }), [content, fields]);
   const sidebarRefs = useRef({});
-  fields?.forEach((field) => {
-    sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
-  });
+  const fieldsRefs = useRef({});
+  const [{ fieldsViewState }] = useVersionsDialogContext();
+  const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
+  fieldsViewStateRef.current = fieldsViewState;
 
   useEffect(() => {
     if (preFetchedData) {
@@ -78,6 +84,14 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
     if (fields?.length) {
       setSelectedField(fields[0]);
     }
+  }, [fields]);
+
+  useEffect(() => {
+    fields?.forEach((field) => {
+      sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
+      fieldsRefs.current[field.id] = React.createRef<HTMLDivElement>();
+      fieldsViewStateRef.current[field.id] = initialFieldViewState;
+    });
   }, [fields]);
 
   const onSelectField = (field) => {
