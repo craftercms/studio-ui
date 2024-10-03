@@ -336,7 +336,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                       xml: selectionContent.b.xml
                     }}
                     field={selectedField}
-                    contentTypeFields={contentTypeFields}
+                    contentTypeFields={contentTypeFields.filter((field) =>
+                      showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true
+                    )}
                     onSelectField={onSelectFieldFromContent}
                   />
                 ) : (
