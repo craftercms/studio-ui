@@ -59,7 +59,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     contentTypesBranch,
     compareXml
   } = props;
-  const [{ compareSlideOutState, viewSlideOutState }, setState] = useVersionsDialogContext();
+  const [{ compareSlideOutState, viewSlideOutState, fieldsViewState }, setState] = useVersionsDialogContext();
+  const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
+  fieldsViewStateRef.current = fieldsViewState;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
   const item = versionsBranch?.item;
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
@@ -128,10 +130,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const [showOnlyChanges, setShowOnlyChanges] = useState(true);
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
-  contentTypeFields?.forEach((field) => {
-    sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
-    fieldsRefs.current[field.id] = React.createRef<HTMLDivElement>();
-  });
 
   useEffect(() => {
     if (preFetchedContent) {
@@ -169,6 +167,17 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       );
     }
   }, [contentTypeFields, fieldIdsWithChanges, showOnlyChanges]);
+
+  useEffect(() => {
+    contentTypeFields?.forEach((field) => {
+      sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
+      fieldsRefs.current[field.id] = React.createRef<HTMLDivElement>();
+      fieldsViewStateRef.current[field.id] = {
+        compareXml: false,
+        cleanText: false
+      };
+    });
+  }, [contentTypeFields]);
 
   const onSelectFieldFromContent = (field) => {
     setSelectedField(field);

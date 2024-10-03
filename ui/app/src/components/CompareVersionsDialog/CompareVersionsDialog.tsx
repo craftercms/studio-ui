@@ -27,16 +27,22 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import useLocale from '../../hooks/useLocale';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
+import { LookupTable } from '../../models';
 
 export interface VersionsDialogContextProps {
   compareSlideOutState: CompareVersionsDialogProps;
   viewSlideOutState: ViewVersionDialogProps;
+  fieldsViewState: LookupTable<{
+    compareXml: boolean;
+    cleanText: boolean;
+  }>;
 }
 
 export interface VersionsDialogContextApi {
   setState: (state: Partial<VersionsDialogContextProps>) => void;
   setCompareSlideOutState: (props: Partial<CompareVersionsDialogProps>) => void;
   setViewSlideOutState: (props: Partial<ViewVersionDialogProps>) => void;
+  setFieldViewState: (fieldId: string, viewState: Partial<{ compareXml: boolean; cleanText: boolean }>) => void;
   closeSlideOuts: () => void;
 }
 
@@ -81,7 +87,8 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   // region Dialog Context
   const [state, setState] = useState<VersionsDialogContextProps>({
     compareSlideOutState: { open: false, isFetching: false, error: null },
-    viewSlideOutState: { open: false, isFetching: false, error: null }
+    viewSlideOutState: { open: false, isFetching: false, error: null },
+    fieldsViewState: {}
   });
   const contextRef = useRef(null);
   const context = useMemo<VersionsDialogContextType>(() => {
@@ -94,6 +101,12 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
       },
       setViewSlideOutState(props: Partial<ViewVersionDialogProps>) {
         setState({ ...state, viewSlideOutState: { ...state.viewSlideOutState, ...props } });
+      },
+      setFieldViewState(fieldId: string, viewState: Partial<{ compareXml: boolean; cleanText: boolean }>) {
+        setState({
+          ...state,
+          fieldsViewState: { ...state.fieldsViewState, [fieldId]: { ...state.fieldsViewState[fieldId], ...viewState } }
+        });
       },
       closeSlideOuts() {
         setState({

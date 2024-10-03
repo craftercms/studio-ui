@@ -38,6 +38,7 @@ import useMonacoOptions from '../../hooks/useMonacoOptions';
 import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import { countLines } from '../../utils/string';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { useVersionsDialogContext } from './CompareVersionsDialog';
 
 export interface CompareVersionsDetailsContainerProps {
   contentA: ContentInstance;
@@ -118,7 +119,6 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const [unchanged, setUnchanged] = useState(true);
   const fieldType = field.type;
   const locale = useLocale();
-  const [compareXml, setCompareXml] = useState(false);
   const aXmlDoc = fromString(a.xml);
   const bXmlDoc = fromString(b.xml);
   const aFieldDoc =
@@ -133,7 +133,6 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
   const contentA = getContentInstanceValueFromProp(a.content, field.id);
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
-  const [cleanText, setCleanText] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
   const [compareModeDisabled, setCompareModeDisabled] = useState(false);
   const {
@@ -145,6 +144,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const longerXmlContent = aFieldXml.length > bFieldXml.length ? aFieldXml : bFieldXml;
   const monacoEditorHeight = dynamicHeight ? (countLines(longerXmlContent) < 15 ? '200px' : '600px') : '100%';
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultFieldDiffView;
+  const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
+  const { compareXml, cleanText } = fieldsViewState[field.id];
   const diffComponentProps = {
     contentA:
       fieldType !== 'checkbox-group'
@@ -227,9 +228,9 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
             field={field}
             contentTypeFields={contentTypeFields}
             compareXml={compareXml}
-            setCompareXml={setCompareXml}
+            setCompareXml={(value) => contextApiRef.current.setFieldViewState(field.id, { compareXml: value })}
             showCleanText={cleanText}
-            setShowCleanText={setCleanText}
+            setShowCleanText={(value) => contextApiRef.current.setFieldViewState(field.id, { cleanText: value })}
             onSelectField={onSelectField}
             showFieldsNavigation={showFieldsNavigation}
             actions={
