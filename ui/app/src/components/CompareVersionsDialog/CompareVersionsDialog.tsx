@@ -114,8 +114,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   }, [state]);
   // endregion
 
-  // TODO: Add typings
-  const onDialogClose = (event, reason) => {
+  const onDialogClose = (event: React.SyntheticEvent, reason: 'backdropClick' | 'escapeKeyDown'): void => {
     if (!(state.compareSlideOutState?.open || state.viewSlideOutState?.open)) {
       onClose?.(event, reason);
     }

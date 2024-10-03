@@ -27,7 +27,6 @@ import { areObjectsEqual } from '../../utils/object';
 import ContentInstance from '../../models/ContentInstance';
 import { ReactNode } from 'react';
 import { LookupTable } from '../../models';
-import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 import { ItemDiffState } from './FieldsTypesDiffViews/RepeatGroupItems';
 
 export interface CompareVersionsDialogBaseProps {
@@ -36,20 +35,19 @@ export interface CompareVersionsDialogBaseProps {
   disableItemSwitching?: boolean;
 }
 
+export interface SelectionContentVersion {
+  xml: string;
+  content: ContentInstance;
+}
+
 export interface CompareVersionsDialogProps extends CompareVersionsDialogBaseProps, EnhancedDialogProps {
   subtitle?: ReactNode;
   versionsBranch?: VersionsStateProps;
   selectedA?: ItemHistoryEntry;
   selectedB?: ItemHistoryEntry;
   selectionContent?: {
-    a: {
-      xml: string;
-      content: ContentInstance;
-    };
-    b: {
-      xml: string;
-      content: ContentInstance;
-    };
+    a: SelectionContentVersion;
+    b: SelectionContentVersion;
   };
   fields?: LookupTable<ContentTypeField>;
   contentTypesBranch?: EntityState<ContentType>;
@@ -79,7 +77,14 @@ export interface CompareVersionsDialogContainerProps
   compareXml: boolean;
 }
 
-export const getItemDiffStatus = (diff): ItemDiffState => {
+export type ContentInstanceComponentsDiffResult = {
+  count: number;
+  added: boolean;
+  removed: boolean;
+  value: string[];
+};
+
+export const getItemDiffStatus = (diff: ContentInstanceComponentsDiffResult): ItemDiffState => {
   if (diff.added) {
     return 'new';
   }
@@ -89,7 +94,7 @@ export const getItemDiffStatus = (diff): ItemDiffState => {
   return 'unchanged';
 };
 
-export function removeTags(content: string) {
+export function removeTags(content: string): string {
   return content.replace(/<[^>]*>?/gm, '');
 }
 

@@ -42,16 +42,17 @@ import Button from '@mui/material/Button';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { FieldAccordionPanel } from '../CompareVersionsDialog/FieldAccordionPanel';
 import { ContentTypeField } from '../../models';
+import ContentInstance from '../../models/ContentInstance';
 
 const VersionDialogContext = createContext(null);
 
 export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProps) {
   const { version, contentTypesBranch, showXml, data: preFetchedData, error } = props;
-  const [content, setContent] = useState(preFetchedData?.content);
-  const [xml, setXml] = useState(preFetchedData?.xml);
+  const [content, setContent] = useState<ContentInstance>(preFetchedData?.content);
+  const [xml, setXml] = useState<string>(preFetchedData?.xml);
   const siteId = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const fields = useMemo(() => {
+  const fields: ContentTypeField[] = useMemo(() => {
     return content && (preFetchedData?.fields || contentTypesBranch?.byId[content.craftercms.contentTypeId].fields)
       ? [
           ...Object.values(preFetchedData?.fields ?? contentTypesBranch?.byId[content.craftercms.contentTypeId].fields),
@@ -59,15 +60,15 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
         ]
       : [];
   }, [content, contentTypesBranch?.byId, formatMessage, preFetchedData?.fields]);
-  const isViewDateReady = content && xml;
-  const [selectedField, setSelectedField] = useState(null);
+  const isViewDateReady = Boolean(content && xml);
+  const [selectedField, setSelectedField] = useState<ContentTypeField>(null);
   const context = useMemo(() => ({ content, fields }), [content, fields]);
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
-  const [accordionView, setAccordionView] = useState(false);
+  const [accordionView, setAccordionView] = useState<boolean>(false);
 
   useEffect(() => {
     if (preFetchedData) {

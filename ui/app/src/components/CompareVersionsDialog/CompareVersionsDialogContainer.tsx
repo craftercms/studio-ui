@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CompareVersionsDialogContainerProps, hasFieldChanged } from './utils';
+import { CompareVersionsDialogContainerProps, hasFieldChanged, SelectionContentVersion } from './utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CompareFieldPanel } from './CompareFieldPanel';
 import DialogBody from '../DialogBody/DialogBody';
@@ -64,8 +64,11 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const item = versionsBranch?.item;
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { formatMessage } = useIntl();
-  const [accordionView, setAccordionView] = useState(false);
-  const [selectionContent, setSelectionContent] = useSpreadState(
+  const [accordionView, setAccordionView] = useState<boolean>(false);
+  const [selectionContent, setSelectionContent] = useSpreadState<{
+    a: SelectionContentVersion;
+    b: SelectionContentVersion;
+  }>(
     preFetchedContent ?? {
       a: {
         content: null,
@@ -103,7 +106,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     item?.contentTypeId,
     selectionContent
   ]);
-  const [selectedField, setSelectedField] = useState(null);
+  const [selectedField, setSelectedField] = useState<ContentTypeField>(null);
   const selectedFieldRef = useRef(null);
   selectedFieldRef.current = selectedField;
   const contentType = contentTypesBranch?.byId[item.contentTypeId];
@@ -130,7 +133,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
         .map((field) => field.id),
     [contentTypeFields, selectionContent.a, selectionContent.b]
   );
-  const [showOnlyChanges, setShowOnlyChanges] = useState(true);
+  const [showOnlyChanges, setShowOnlyChanges] = useState<boolean>(true);
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
 

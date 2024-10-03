@@ -29,7 +29,7 @@ import { fromString, serialize } from '../../utils/xml';
 import { MonacoWrapper } from '../MonacoWrapper';
 import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
 import RepeatGroupItems from './FieldsTypesDiffViews/RepeatGroupItems';
-import { hasFieldChanged } from './utils';
+import { hasFieldChanged, SelectionContentVersion } from './utils';
 import Divider from '@mui/material/Divider';
 import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import { countLines } from '../../utils/string';
@@ -45,14 +45,8 @@ export interface CompareVersionsDetailsContainerProps {
 }
 
 export interface CompareFieldPanelProps {
-  a: {
-    xml: string;
-    content: ContentInstance;
-  };
-  b: {
-    xml: string;
-    content: ContentInstance;
-  };
+  a: SelectionContentVersion;
+  b: SelectionContentVersion;
   field: ContentTypeField;
   contentTypeFields: ContentTypeField[];
   accordion?: boolean;
@@ -112,7 +106,7 @@ function DefaultFieldDiffView(props: CompareVersionsDetailsContainerProps) {
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const { a, b, field, contentTypeFields, onSelectField, showFieldsNavigation = true, dynamicHeight } = props;
-  const [unchanged, setUnchanged] = useState(true);
+  const [unchanged, setUnchanged] = useState<boolean>(true);
   const fieldType = field.type;
   const locale = useLocale();
   const aXmlDoc = fromString(a.xml);

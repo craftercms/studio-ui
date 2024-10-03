@@ -21,19 +21,9 @@ import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import StandardAction from '../../models/StandardAction';
 import { LookupTable } from '../../models/LookupTable';
-import { Resource } from '../../models/Resource';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { ContentInstance, ItemHistoryEntry } from '../../models';
-
-export interface VersionViewProps {
-  resource: Resource<VersionResource>;
-}
-
-export interface VersionResource {
-  version: any; // TODO: add typing
-  contentTypes: LookupTable<ContentType>;
-}
 
 export interface ViewVersionDialogBaseProps {
   error: ApiResponse;

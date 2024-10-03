@@ -94,8 +94,7 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
   }, [state]);
   // endregion
 
-  // TODO: Add typings
-  const onDialogClose = (event, reason) => {
+  const onDialogClose = (event: React.SyntheticEvent, reason: 'backdropClick' | 'escapeKeyDown') => {
     if (!viewSubDialogState.open) {
       onClose?.(event, reason);
     }

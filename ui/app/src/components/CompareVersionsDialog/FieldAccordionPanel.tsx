@@ -33,7 +33,7 @@ export interface CompareFieldPanelAccordionProps {
 
 export function FieldAccordionPanel(props: CompareFieldPanelAccordionProps) {
   const { fieldRef, selected, summary, details } = props;
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState<boolean>(true);
 
   useEffect(() => {
     if (selected) {

@@ -73,15 +73,15 @@ function DefaultView(props: DefaultViewProps) {
   const itemsByPath = useItemsByPath();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const [, contextApiRef] = useVersionsDialogContext();
-  const getItemLabel = (item) => {
+  const getItemLabel = (item: ContentInstance): string => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
 
-  const isEmbedded = (item: ContentInstance) => {
+  const isEmbedded = (item: ContentInstance): boolean => {
     return item?.craftercms && !item.craftercms.path;
   };
 
-  const onSelectStateItem = (item) => {
+  const onSelectStateItem = (item: ContentInstance) => {
     const isEmbeddedComponent = isEmbedded(item);
     const fields = isEmbeddedComponent ? contentTypesBranch.byId[item.craftercms.contentTypeId].fields : field.fields;
 

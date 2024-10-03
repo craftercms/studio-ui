@@ -18,7 +18,7 @@ import ContentInstance from '../../../models/ContentInstance';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import useItemsByPath from '../../../hooks/useItemsByPath';
-import { getItemDiffStatus } from '../utils';
+import { ContentInstanceComponentsDiffResult, getItemDiffStatus } from '../utils';
 import { diffArrays } from 'diff/lib/diff/array.js';
 import Box from '@mui/material/Box';
 import { EmptyState } from '../../EmptyState';
@@ -41,7 +41,7 @@ interface ContentInstanceComponentsProps {
 export function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
   const { contentA, contentB, aXml, bXml, field } = props;
   const contentTypesBranch = useSelection((state) => state.contentTypes);
-  const [diff, setDiff] = useState(null);
+  const [diff, setDiff] = useState<ContentInstanceComponentsDiffResult[]>(null);
   const itemsByPath = useItemsByPath();
   const contentById: LookupTable<ContentInstance> = useMemo(() => {
     const byId = {};
@@ -56,27 +56,32 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
   }, [contentA, contentB]);
   const [, contextApiRef] = useVersionsDialogContext();
 
-  const getItemLabel = (item: ContentInstance) => {
+  const getItemLabel = (item: ContentInstance): string => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
 
-  const isEmbedded = (item: ContentInstance) => {
+  const isEmbedded = (item: ContentInstance): boolean => {
     return item?.craftercms && !item.craftercms.path;
   };
 
-  const getEmbeddedVersions = (id: string) => {
+  const getEmbeddedVersions = (
+    id: string
+  ): {
+    embeddedA: ContentInstance;
+    embeddedB: ContentInstance;
+  } => {
     return {
       embeddedA: contentA?.find((item) => item.craftercms?.id === id),
       embeddedB: contentB?.find((item) => item.craftercms?.id === id)
     };
   };
 
-  const embeddedItemChanged = (id) => {
+  const embeddedItemChanged = (id: string): boolean => {
     const { embeddedA, embeddedB } = getEmbeddedVersions(id);
     return !areObjectsEqual(embeddedA ?? {}, embeddedB ?? {});
   };
 
-  const isEmbeddedWithChanges = (id) => {
+  const isEmbeddedWithChanges = (id: string): boolean => {
     return isEmbedded(contentById[id]) && embeddedItemChanged(id);
   };
 

@@ -75,8 +75,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);
   const isItemPreviewable = isPreviewable(item);
-  const [compareMode, setCompareMode] = useState(false);
-  const [selectedCompareVersions, setSelectedCompareVersions] = useState([]);
+  const [compareMode, setCompareMode] = useState<boolean>(false);
+  const [selectedCompareVersions, setSelectedCompareVersions] = useState<string[]>([]);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 

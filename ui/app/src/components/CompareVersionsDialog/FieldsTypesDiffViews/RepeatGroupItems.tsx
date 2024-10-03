@@ -39,6 +39,7 @@ interface RepeatGroupItemsProps {
 }
 
 export type ItemDiffState = 'changed' | 'unchanged' | 'new' | 'deleted';
+type RepItemDiffSide = 'a' | 'b';
 
 export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   const { contentA, contentB, aXml, bXml, compareMode, fields, field, setCompareModeDisabled } = props;
@@ -58,7 +59,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   const selectedItemsAreEqual = showRepItemsCompare && repItemsCompare.a?.xml === repItemsCompare.b?.xml;
   const [, contextApiRef] = useVersionsDialogContext();
 
-  const getItemDataAtVersion = (side: string, index: number): { content: ContentInstance; xml: string } => {
+  const getItemDataAtVersion = (side: RepItemDiffSide, index: number): { content: ContentInstance; xml: string } => {
     const content = side === 'a' ? contentA : contentB;
     const xml = side === 'a' ? aXml : bXml;
     // When selecting an item on the rep-group diff view, we need to calculate its xml (so the items can be compared
@@ -73,7 +74,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     };
   };
 
-  const onSetRepItemsCompare = (checked: boolean, side: 'a' | 'b', index: number, multiSide = false) => {
+  const onSetRepItemsCompare = (checked: boolean, side: RepItemDiffSide, index: number, multiSide = false): void => {
     const { content, xml } = getItemDataAtVersion(side, index);
     setRepItemsCompare({
       [side]: {
@@ -84,7 +85,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     });
   };
 
-  const onSetDeletedItemCompare = (checked: boolean, index: number) => {
+  const onSetDeletedItemCompare = (checked: boolean, index: number): void => {
     // Deleted items will always show on the left side of the comparison (side 'a'), and since when selecting an 'unchanged'
     // or 'changed' item we default it to side 'a', if there's a 'multiSide' item selected, switch it to side 'b'
     if (repItemsCompare.a?.multiSide) {
@@ -96,7 +97,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     }
   };
 
-  const onViewItemVersion = (side: 'a' | 'b', index: number) => {
+  const onViewItemVersion = (side: RepItemDiffSide, index: number): void => {
     const { content, xml } = getItemDataAtVersion(side, index);
     contextApiRef.current.setViewSlideOutState({
       open: true,
@@ -109,13 +110,17 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     });
   };
 
-  // TODO: add typing
-  const isItemSelected = (side, index) => {
+  const isItemSelected = (side: RepItemDiffSide, index: number): boolean => {
     const contentToCompare = side === 'a' ? contentA?.[index] : contentB?.[index];
     return compareMode && repItemsCompare[side]?.content === contentToCompare;
   };
 
-  const onSelectItemAction = (checked: boolean, side: 'a' | 'b', index: number, diffState: ItemDiffState) => {
+  const onSelectItemAction = (
+    checked: boolean,
+    side: RepItemDiffSide,
+    index: number,
+    diffState: ItemDiffState
+  ): void => {
     if (diffState === 'changed' || diffState === 'unchanged') {
       if (compareMode) {
         const oppositeSide = side === 'a' ? 'b' : 'a';
