@@ -28,6 +28,11 @@ import useLocale from '../../hooks/useLocale';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
 import { LookupTable } from '../../models';
+import { Backdrop } from '@mui/material';
+import Drawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
+import { DialogHeader } from '../DialogHeader';
+import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
 
 export interface VersionsDialogContextProps {
   compareSlideOutState: CompareVersionsDialogProps;
@@ -203,6 +208,50 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
           selectionContent={selectionContent}
           fields={fields}
         />
+
+        {/* region In-dialog slide-out panel */}
+        <Backdrop
+          open={Boolean(state.compareSlideOutState?.open || state.viewSlideOutState?.open)}
+          sx={{ zIndex: (theme) => theme.zIndex.drawer, position: 'absolute' }}
+          onClick={() => {
+            context[1].current.closeSlideOuts();
+          }}
+        />
+        <Drawer
+          open={Boolean(state.compareSlideOutState?.open || state.viewSlideOutState?.open)}
+          anchor="right"
+          variant="persistent"
+          sx={{
+            '& > .MuiDrawer-root': { position: 'absolute' },
+            '& > .MuiPaper-root': { width: '90%', position: 'absolute' }
+          }}
+        >
+          {/* region Compare */}
+          {state.compareSlideOutState.open && (
+            <Box display="flex" flexDirection="column" height="100%">
+              <DialogHeader
+                title={state.compareSlideOutState.title}
+                subtitle={state.compareSlideOutState.subtitle}
+                onCloseButtonClick={state.compareSlideOutState.onClose}
+              />
+              <CompareVersionsDialogContainer {...state.compareSlideOutState} compareXml={false} />
+            </Box>
+          )}
+          {/* endregion */}
+          {/* region View */}
+          {state.viewSlideOutState.open && (
+            <>
+              <DialogHeader
+                title={state.viewSlideOutState.title}
+                subtitle={state.viewSlideOutState.subtitle}
+                onCloseButtonClick={state.viewSlideOutState.onClose}
+              />
+              <ViewVersionDialogContainer {...state.viewSlideOutState} showXml={false} />
+            </>
+          )}
+          {/* endregion */}
+        </Drawer>
+        {/* endregion */}
       </VersionsDialogContext.Provider>
     </EnhancedDialog>
   );

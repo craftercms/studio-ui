@@ -45,7 +45,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
     return content && (preFetchedData?.fields || contentTypesBranch?.byId[content.craftercms.contentTypeId].fields)
       ? [
           ...Object.values(preFetchedData?.fields ?? contentTypesBranch?.byId[content.craftercms.contentTypeId].fields),
-          ...getStudioContentInternalFields(formatMessage)
+          ...(content.crafterms ? getStudioContentInternalFields(formatMessage) : [])
         ]
       : [];
   }, [content, contentTypesBranch?.byId, formatMessage, preFetchedData?.fields]);
@@ -131,7 +131,6 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                   contentTypeFields={fields}
                   xml={xml}
                   onSelectField={onSelectField}
-                  setViewSubDialogState={setViewSubDialogState}
                 />
               )}
             </Box>

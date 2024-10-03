@@ -43,11 +43,7 @@ import Badge, { badgeClasses } from '@mui/material/Badge';
 import Button from '@mui/material/Button';
 import { getStudioContentInternalFields } from '../../utils/contentType';
 import { CompareFieldAccordionPanel } from './CompareFieldAccordionPanel';
-import { Backdrop } from '@mui/material';
-import Drawer from '@mui/material/Drawer';
-import { DialogHeader } from '../DialogHeader';
-import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
-import { useVersionsDialogContext } from './CompareVersionsDialog';
+import { useVersionsDialogContext, VersionsDialogContextProps } from './CompareVersionsDialog';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -59,7 +55,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     contentTypesBranch,
     compareXml
   } = props;
-  const [{ compareSlideOutState, viewSlideOutState, fieldsViewState }, setState] = useVersionsDialogContext();
+  const [{ fieldsViewState }] = useVersionsDialogContext();
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
@@ -111,9 +107,14 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const contentType = contentTypesBranch?.byId[item.contentTypeId];
   const contentTypeFields = useMemo(() => {
     return isCompareDataReady
-      ? [...Object.values(fields ?? contentType.fields), ...getStudioContentInternalFields(formatMessage)]
+      ? [
+          ...Object.values(fields ?? contentType.fields),
+          ...((selectionContent.a.content ?? selectionContent.b.content).craftercms
+            ? getStudioContentInternalFields(formatMessage)
+            : [])
+        ]
       : [];
-  }, [contentType, fields, isCompareDataReady, formatMessage]);
+  }, [contentType, fields, isCompareDataReady, formatMessage, selectionContent]);
   const fieldIdsWithChanges = useMemo(
     () =>
       contentTypeFields
@@ -367,49 +368,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
           </>
         )}
       </DialogBody>
-      {/* region In-dialog slide-out panel */}
-      <Backdrop
-        open={Boolean(compareSlideOutState?.open || viewSlideOutState?.open)}
-        sx={{ zIndex: (theme) => theme.zIndex.drawer, position: 'absolute' }}
-        onClick={() => {
-          setState.current.closeSlideOuts();
-        }}
-      />
-      <Drawer
-        open={Boolean(compareSlideOutState?.open || viewSlideOutState?.open)}
-        anchor="right"
-        variant="persistent"
-        sx={{
-          '& > .MuiDrawer-root': { position: 'absolute' },
-          '& > .MuiPaper-root': { width: '90%', position: 'absolute' }
-        }}
-      >
-        {/* region Compare */}
-        {compareSlideOutState.open && (
-          <Box display="flex" flexDirection="column" height="100%">
-            <DialogHeader
-              title={compareSlideOutState.title}
-              subtitle={compareSlideOutState.subtitle}
-              onCloseButtonClick={compareSlideOutState.onClose}
-            />
-            <CompareVersionsDialogContainer {...compareSlideOutState} compareXml={false} />
-          </Box>
-        )}
-        {/* endregion */}
-        {/* region View */}
-        {viewSlideOutState.open && (
-          <>
-            <DialogHeader
-              title={viewSlideOutState.title}
-              subtitle={viewSlideOutState.subtitle}
-              onCloseButtonClick={viewSlideOutState.onClose}
-            />
-            <ViewVersionDialogContainer {...viewSlideOutState} showXml={false} />
-          </>
-        )}
-        {/* endregion */}
-      </Drawer>
-      {/* endregion */}
     </>
   );
 }
