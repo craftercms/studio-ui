@@ -21,16 +21,18 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import { CompareFieldPanel, CompareFieldPanelProps } from './CompareFieldPanel';
+import { ContentTypeField } from '../../models';
 
-export interface CompareFieldPanelAccordionProps extends CompareFieldPanelProps {
+export interface CompareFieldPanelAccordionProps {
+  field: ContentTypeField;
+  details: React.ReactNode;
   selected: boolean;
   fieldRef: RefObject<HTMLDivElement>;
   summary?: React.ReactNode;
 }
 
-export function CompareFieldAccordionPanel(props: CompareFieldPanelAccordionProps) {
-  const { fieldRef, selected, summary, ...rest } = props;
+export function FieldAccordionPanel(props: CompareFieldPanelAccordionProps) {
+  const { fieldRef, selected, summary, details } = props;
   const [expanded, setExpanded] = useState(true);
 
   useEffect(() => {
@@ -71,9 +73,7 @@ export function CompareFieldAccordionPanel(props: CompareFieldPanelAccordionProp
           </Typography>
         )}
       </AccordionSummary>
-      <AccordionDetails sx={{ p: 0 }}>
-        <CompareFieldPanel {...rest} showFieldsNavigation={false} dynamicHeight />
-      </AccordionDetails>
+      <AccordionDetails sx={{ py: 2 }}>{details}</AccordionDetails>
     </Accordion>
   );
 }

@@ -42,9 +42,10 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import Badge, { badgeClasses } from '@mui/material/Badge';
 import Button from '@mui/material/Button';
 import { getStudioContentInternalFields } from '../../utils/contentType';
-import { CompareFieldAccordionPanel } from './CompareFieldAccordionPanel';
+import { FieldAccordionPanel } from './FieldAccordionPanel';
 import FieldVersionToolbar from './FieldVersionToolbar';
 import { initialFieldViewState, useVersionsDialogContext, VersionsDialogContextProps } from './VersionsDialogContext';
+import { ContentTypeField } from '../../models';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -178,12 +179,12 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     });
   }, [contentTypeFields]);
 
-  const onSelectFieldFromContent = (field) => {
+  const onSelectFieldFromContent = (field: ContentTypeField) => {
     setSelectedField(field);
     sidebarRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const onSelectFieldFromList = (field) => {
+  const onSelectFieldFromList = (field: ContentTypeField) => {
     setSelectedField(field);
     if (accordionView) {
       fieldsRefs.current[field.id].current?.scrollIntoView({ behavior: 'smooth' });
@@ -309,22 +310,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   contentTypeFields
                     .filter((field) => (showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true))
                     .map((field) => (
-                      <CompareFieldAccordionPanel
+                      <FieldAccordionPanel
                         key={field.id}
-                        a={{
-                          ...selectedA,
-                          ...compareVersionsBranch?.compareVersions?.[0],
-                          content: selectionContent.a.content,
-                          xml: selectionContent.a.xml
-                        }}
-                        b={{
-                          ...selectedB,
-                          ...compareVersionsBranch?.compareVersions?.[1],
-                          content: selectionContent.b.content,
-                          xml: selectionContent.b.xml
-                        }}
                         field={field}
-                        contentTypeFields={contentTypeFields}
                         fieldRef={fieldsRefs.current[field.id]}
                         selected={selectedField?.id === field.id}
                         summary={
@@ -334,6 +322,26 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                             contentTypeFields={contentTypeFields}
                             isDiff={fieldIdsWithChanges.includes(field.id)}
                             justContent={true}
+                          />
+                        }
+                        details={
+                          <CompareFieldPanel
+                            a={{
+                              ...selectedA,
+                              ...compareVersionsBranch?.compareVersions?.[0],
+                              content: selectionContent.a.content,
+                              xml: selectionContent.a.xml
+                            }}
+                            b={{
+                              ...selectedB,
+                              ...compareVersionsBranch?.compareVersions?.[1],
+                              content: selectionContent.b.content,
+                              xml: selectionContent.b.xml
+                            }}
+                            field={field}
+                            contentTypeFields={contentTypeFields}
+                            onSelectField={onSelectFieldFromContent}
+                            dynamicHeight
                           />
                         }
                       />
