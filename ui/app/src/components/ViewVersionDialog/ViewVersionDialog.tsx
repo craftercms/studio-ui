@@ -66,7 +66,6 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
         setState({ ...state, viewSlideOutState: { ...state.viewSlideOutState, ...props } });
       },
       setFieldViewState(fieldId: string, viewState: Partial<FieldViewState>) {
-        console.log('fieldId', fieldId, viewState);
         setState({
           ...state,
           fieldsViewState: { ...state.fieldsViewState, [fieldId]: { ...state.fieldsViewState[fieldId], ...viewState } }

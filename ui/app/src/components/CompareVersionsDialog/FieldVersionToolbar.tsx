@@ -180,7 +180,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
                   });
                 }}
               >
-                {xmlEditorOptions.diffWordWrap === 'on' ? (
+                {(isDiff ? xmlEditorOptions.diffWordWrap : xmlEditorOptions.wordWrap) === 'on' ? (
                   <FormattedMessage defaultMessage="No Wrap" />
                 ) : (
                   <FormattedMessage defaultMessage="Wrap" />

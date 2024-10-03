@@ -138,7 +138,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                 ))}
               </List>
             </ResizeableDrawer>
-            <Box sx={{ marginLeft: '280px', height: '100%' }}>
+            <Box sx={{ marginLeft: '280px', height: '100%', overflowY: 'auto', p: 2 }}>
               {selectedField && (
                 <>
                   <FieldVersionToolbar
@@ -147,13 +147,15 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                     isDiff={false}
                     onSelectField={onSelectField}
                   />
-                  <ContentFieldView
-                    content={content && getContentInstanceValueFromProp(content, selectedField.id)}
-                    field={selectedField}
-                    contentTypeFields={fields}
-                    xml={xml}
-                    onSelectField={onSelectField}
-                  />
+                  <Box height="calc(100% - 60px)" display="flex" flexDirection="column">
+                    <ContentFieldView
+                      content={content && getContentInstanceValueFromProp(content, selectedField.id)}
+                      field={selectedField}
+                      contentTypeFields={fields}
+                      xml={xml}
+                      onSelectField={onSelectField}
+                    />
+                  </Box>
                 </>
               )}
             </Box>
