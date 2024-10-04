@@ -200,7 +200,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
   const { compareXml: viewXml, cleanText, xmlEditorOptions } = viewState;
-  const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(xml) < 15 ? '200px' : '600px';
+  const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(fieldXml ?? '') < 15 ? '200px' : '600px';
   const ViewComponent = typesRenderMap[field.type] ?? DefaultView;
   const viewComponentProps = {
     contentA: content,
