@@ -109,21 +109,21 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const [unchanged, setUnchanged] = useState<boolean>(true);
   const fieldType = field.type;
   const locale = useLocale();
-  const aXmlDoc = fromString(a.xml);
-  const bXmlDoc = fromString(b.xml);
-  const aFieldDoc =
-    aXmlDoc.querySelector(`page > ${field.id}`) ??
-    aXmlDoc.querySelector(`component > ${field.id}`) ??
-    aXmlDoc.querySelector(`item > ${field.id}`);
-  const bFieldDoc =
-    bXmlDoc.querySelector(`page > ${field.id}`) ??
-    bXmlDoc.querySelector(`component > ${field.id}`) ??
-    bXmlDoc.querySelector(`item > ${field.id}`);
-  const aFieldXml = aFieldDoc ? serialize(aFieldDoc) : '';
-  const bFieldXml = bFieldDoc ? serialize(bFieldDoc) : '';
+  const versionAXmlDoc = fromString(a.xml);
+  const versionBXmlDoc = fromString(b.xml);
+  const versionAFieldDoc =
+    versionAXmlDoc.querySelector(`page > ${field.id}`) ??
+    versionAXmlDoc.querySelector(`component > ${field.id}`) ??
+    versionAXmlDoc.querySelector(`item > ${field.id}`);
+  const versionBFieldDoc =
+    versionBXmlDoc.querySelector(`page > ${field.id}`) ??
+    versionBXmlDoc.querySelector(`component > ${field.id}`) ??
+    versionBXmlDoc.querySelector(`item > ${field.id}`);
+  const versionAFieldXml = versionAFieldDoc ? serialize(versionAFieldDoc) : '';
+  const versionBFieldXml = versionBFieldDoc ? serialize(versionBFieldDoc) : '';
   const contentA = getContentInstanceValueFromProp(a.content, field.id);
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
-  const longerXmlContent = aFieldXml.length > bFieldXml.length ? aFieldXml : bFieldXml;
+  const longerXmlContent = versionAFieldXml.length > versionBFieldXml.length ? versionAFieldXml : versionBFieldXml;
   const monacoEditorHeight = dynamicHeight ? (countLines(longerXmlContent) < 15 ? '200px' : '600px') : '100%';
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultFieldDiffView;
   const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
@@ -146,8 +146,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
       fieldType !== 'checkbox-group'
         ? contentB
         : (contentB ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n'),
-    aXml: aFieldXml,
-    bXml: bFieldXml,
+    aXml: versionAFieldXml,
+    bXml: versionBFieldXml,
     isDiff: true,
     isHTML: fieldType === 'html',
     fields: field.fields,
@@ -217,8 +217,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
         <Box sx={{ flexGrow: 1 }}>
           {compareXml ? (
             <MonacoWrapper
-              contentA={aFieldXml}
-              contentB={bFieldXml}
+              contentA={versionAFieldXml}
+              contentB={versionBFieldXml}
               isDiff
               isHTML={false}
               editorProps={diffComponentProps.editorProps}

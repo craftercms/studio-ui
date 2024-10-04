@@ -60,7 +60,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
         ]
       : [];
   }, [content, contentTypesBranch?.byId, formatMessage, preFetchedData?.fields]);
-  const isViewDateReady = Boolean(content && xml);
+  const isViewDataReady = Boolean(content && xml);
   const [selectedField, setSelectedField] = useState<ContentTypeField>(null);
   const context = useMemo(() => ({ content, fields }), [content, fields]);
   const sidebarRefs = useRef({});
@@ -115,7 +115,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   return (
     <DialogBody sx={{ overflow: 'auto', minHeight: '50vh', p: 0 }}>
       <VersionDialogContext.Provider value={context}>
-        {!isViewDateReady ? (
+        {!isViewDataReady ? (
           <LoadingState />
         ) : error ? (
           <ApiResponseErrorState error={error} />
