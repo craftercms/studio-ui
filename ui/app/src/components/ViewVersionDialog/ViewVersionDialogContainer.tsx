@@ -43,6 +43,8 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { FieldAccordionPanel } from '../CompareVersionsDialog/FieldAccordionPanel';
 import { ContentTypeField } from '../../models';
 import ContentInstance from '../../models/ContentInstance';
+import useActiveUser from '../../hooks/useActiveUser';
+import { getViewVersionDialogViewModes, setViewVersionDialogViewModes } from '../../utils/state';
 
 const VersionDialogContext = createContext(null);
 
@@ -68,7 +70,8 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
-  const [accordionView, setAccordionView] = useState<boolean>(false);
+  const { username } = useActiveUser();
+  const [accordionView, setAccordionView] = useState<boolean>(getViewVersionDialogViewModes(username) ?? false);
 
   useEffect(() => {
     if (preFetchedData) {
@@ -112,6 +115,11 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
     setSelectedField(field);
   };
 
+  const onSetAccordionView = (value: boolean) => {
+    setAccordionView(value);
+    setViewVersionDialogViewModes(username, value);
+  };
+
   return (
     <DialogBody sx={{ overflow: 'auto', minHeight: '50vh', p: 0 }}>
       <VersionDialogContext.Provider value={context}>
@@ -151,7 +159,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                 ))}
               </List>
               <Box width="100%" borderTop={1} borderColor="divider">
-                <Button onClick={() => setAccordionView(!accordionView)}>
+                <Button onClick={() => onSetAccordionView(!accordionView)}>
                   {accordionView ? (
                     <FormattedMessage defaultMessage="Single field" />
                   ) : (

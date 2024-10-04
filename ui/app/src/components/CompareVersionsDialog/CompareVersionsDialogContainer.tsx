@@ -46,6 +46,8 @@ import { FieldAccordionPanel } from './FieldAccordionPanel';
 import FieldVersionToolbar from './FieldVersionToolbar';
 import { initialFieldViewState, useVersionsDialogContext, VersionsDialogContextProps } from './VersionsDialogContext';
 import { ContentTypeField } from '../../models';
+import { getCompareVersionDialogViewModes, setCompareVersionDialogViewModes } from '../../utils/state';
+import useActiveUser from '../../hooks/useActiveUser';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -64,7 +66,10 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const item = versionsBranch?.item;
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { formatMessage } = useIntl();
-  const [accordionView, setAccordionView] = useState<boolean>(false);
+  const { username } = useActiveUser();
+  const viewModes = getCompareVersionDialogViewModes(username);
+  const [accordionView, setAccordionView] = useState<boolean>(viewModes?.accordionView ?? false);
+  const [showOnlyChanges, setShowOnlyChanges] = useState<boolean>(viewModes?.entireDiff ?? true);
   const [selectionContent, setSelectionContent] = useSpreadState<{
     a: SelectionContentVersion;
     b: SelectionContentVersion;
@@ -133,7 +138,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
         .map((field) => field.id),
     [contentTypeFields, selectionContent.a, selectionContent.b]
   );
-  const [showOnlyChanges, setShowOnlyChanges] = useState<boolean>(true);
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
 
@@ -196,6 +200,12 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
 
   const onToggleShowOnlyChanges = () => {
     setShowOnlyChanges(!showOnlyChanges);
+    setCompareVersionDialogViewModes(username, { entireDiff: !showOnlyChanges, accordionView });
+  };
+
+  const onSetAccordionView = (value: boolean) => {
+    setAccordionView(value);
+    setCompareVersionDialogViewModes(username, { entireDiff: showOnlyChanges, accordionView: value });
   };
 
   return (
@@ -298,7 +308,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                     <FormattedMessage defaultMessage="Changed fields" />
                   )}
                 </Button>
-                <Button onClick={() => setAccordionView(!accordionView)}>
+                <Button onClick={() => onSetAccordionView(!accordionView)}>
                   {accordionView ? (
                     <FormattedMessage defaultMessage="Single field" />
                   ) : (

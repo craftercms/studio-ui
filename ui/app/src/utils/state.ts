@@ -440,3 +440,30 @@ export function setStoredWidgetsAccordion(
 export function removeStoredWidgetsAccordion(siteIdentifier: string, user: string, id: string): void {
   window.localStorage.removeItem(`craftercms.${user}.widgetsAccordion.${siteIdentifier}.${id}`);
 }
+
+export function getCompareVersionDialogViewModes(username: string): { entireDiff: boolean; accordionView: boolean } {
+  return JSON.parse(localStorage.getItem(`craftercms.${username}.compareVersionDialog.viewModes`));
+}
+
+export function setCompareVersionDialogViewModes(
+  username: string,
+  viewModes: { entireDiff: boolean; accordionView: boolean }
+) {
+  localStorage.setItem(`craftercms.${username}.compareVersionDialog.viewModes`, JSON.stringify(viewModes));
+}
+
+export function removeCompareVersionDialogViewModes(username: string) {
+  localStorage.removeItem(`craftercms.${username}.compareVersionDialog.viewModes`);
+}
+
+export function getViewVersionDialogViewModes(username: string) {
+  return localStorage.getItem(`craftercms.${username}.viewVersionDialog.viewModes`) === 'true';
+}
+
+export function setViewVersionDialogViewModes(username: string, singleFieldView: boolean) {
+  localStorage.setItem(`craftercms.${username}.viewVersionDialog.viewModes`, String(singleFieldView));
+}
+
+export function removeViewVersionDialogViewModes(username: string) {
+  localStorage.removeItem(`craftercms.${username}.viewVersionDialog.viewModes`);
+}
