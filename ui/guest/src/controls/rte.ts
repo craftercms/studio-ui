@@ -245,7 +245,7 @@ export function initTinyMCE(
           record.element.classList.add(emptyFieldClass);
         }
 
-        window.removeEventListener('beforeunload', beforeUnloadFn);
+        window.removeEventListener('beforeunload', beforeUnloadFn, { capture: true });
 
         // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
         // with the intention to exit editing.
