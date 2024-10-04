@@ -18,6 +18,7 @@ import * as React from 'react';
 import { Dispatch, useEffect, useMemo, useState } from 'react';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import PencilIcon from '@mui/icons-material/EditOutlined';
+import UnlockIcon from '@craftercms/studio-ui/icons/Unlock';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
@@ -63,16 +64,18 @@ import UltraStyledTooltip from './UltraStyledTooltip';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { showItemMegaMenu } from '@craftercms/studio-ui/state/actions/dialogs';
+import { unlockItem } from '@craftercms/studio-ui/state/actions/content';
 
 export interface ZoneMenuProps {
   record: ElementRecord;
   dispatch: Dispatch<AnyAction>;
   isHeadlessMode: boolean;
   isLockedItem?: boolean;
+  isLockedByCurrentUser?: boolean;
 }
 
 export function ZoneMenu(props: ZoneMenuProps) {
-  const { record, dispatch, isHeadlessMode, isLockedItem = false } = props;
+  const { record, dispatch, isHeadlessMode, isLockedItem = false, isLockedByCurrentUser = false } = props;
   const {
     modelId,
     fieldId: [fieldId],
@@ -273,7 +276,16 @@ export function ZoneMenu(props: ZoneMenuProps) {
   };
 
   const onEdit = (e) => {
-    commonEdit(e, 'content');
+    // When the item is locked, text fields get the selection & ZoneMenu (as opposed to direct
+    // activation of the RTE) so the user can unlock. After unlocking, the edit action will show
+    // up and this logic routes that logic to edit inline instead of opening the form.
+    const { field } = getReferentialEntries(record.iceIds[0]);
+    if (field != null && ['html', 'text', 'textarea'].includes(field.type)) {
+      e.stopPropagation();
+      store.dispatch({ type: 'triggered_click', payload: { record, event: e } });
+    } else {
+      commonEdit(e, 'content');
+    }
   };
 
   const onEditController = (e) => {
@@ -380,6 +392,13 @@ export function ZoneMenu(props: ZoneMenuProps) {
     );
   };
 
+  const onUnlock = (e) => {
+    e.stopPropagation();
+    const path =
+      recordType === 'component' || recordType === 'node-selector-item' ? (componentPath ?? modelPath) : modelPath;
+    post(unlockItem({ path }));
+  };
+
   // endregion
 
   const refs = useRef({ onMoveUp, onMoveDown, onTrash, doTrash, onCancel, isFirstItem, isLastItem });
@@ -429,6 +448,13 @@ export function ZoneMenu(props: ZoneMenuProps) {
           <UltraStyledTooltip title="Edit" key="edit">
             <UltraStyledIconButton size="small" onClick={onEdit}>
               <PencilIcon />
+            </UltraStyledIconButton>
+          </UltraStyledTooltip>
+        )}
+        {isLockedByCurrentUser && (
+          <UltraStyledTooltip title="Unlock" key="unlock">
+            <UltraStyledIconButton size="small" onClick={onUnlock}>
+              <UnlockIcon />
             </UltraStyledIconButton>
           </UltraStyledTooltip>
         )}

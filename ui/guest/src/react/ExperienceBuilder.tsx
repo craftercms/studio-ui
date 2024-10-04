@@ -637,7 +637,10 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
               const hasFailedRequired = validations.some(({ level }) => level === 'required');
               const elementRecord = elementRegistry.get(highlight.id);
               const elementPath = models[elementRecord.modelId]?.craftercms.path ?? path;
-              const { isLocked, isExternallyModified } = checkIfLockedOrModified(state, elementRecord);
+              const { isLocked, isExternallyModified, isLockedByCurrentUser } = checkIfLockedOrModified(
+                state,
+                elementRecord
+              );
               const lockInfo = isLocked ? state.lockedPaths[elementPath]?.user : null;
               const iceRecord = getById(elementRecord.iceIds[0]);
               const field = iceRecord.recordType === 'field' ? getReferentialEntries(iceRecord).field : undefined;
@@ -687,6 +690,7 @@ function ExperienceBuilderInternal(props: InternalGuestProps) {
                         dispatch={dispatch}
                         isHeadlessMode={isHeadlessMode}
                         isLockedItem={isLocked}
+                        isLockedByCurrentUser={isLockedByCurrentUser}
                       />
                     ) : (
                       void 0
