@@ -202,7 +202,6 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   const { compareXml: viewXml, cleanText, xmlEditorOptions } = viewState;
   const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(xml) < 15 ? '200px' : '600px';
   const ViewComponent = typesRenderMap[field.type] ?? DefaultView;
-  console.log('content', content);
   const viewComponentProps = {
     contentA: content,
     xml: fieldXml,

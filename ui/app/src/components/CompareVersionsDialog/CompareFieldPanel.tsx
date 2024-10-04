@@ -164,7 +164,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     diffComponentProps.renderContent = (content) =>
       fieldType === 'image' ? (
         <Box sx={{ height: 'calc(50% - 9px)', textAlign: 'center' }}>
-          <img src={content} alt="" style={{ maxHeight: '100%' }} />
+          <img src={content} alt="" style={{ maxHeight: 'calc(100% - 20px)' }} />
+          <Typography variant="subtitle2">{content}</Typography>
         </Box>
       ) : fieldType === 'video-picker' ? (
         <Box sx={{ textAlign: 'center' }}>
@@ -202,7 +203,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   }, [contentA, contentB, field]);
 
   return (
-    <Box height="calc(100% - 60px)" display="flex" flexDirection="column">
+    <Box height="calc(100% - 70px)" display="flex" flexDirection="column">
       {unchanged ? (
         <ContentFieldView
           content={contentA}
@@ -214,7 +215,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
           dynamicHeight={dynamicHeight}
         />
       ) : (
-        <Box sx={{ flexGrow: 1 }}>
+        <>
           {compareXml ? (
             <MonacoWrapper
               contentA={versionAFieldXml}
@@ -228,7 +229,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
               <DiffComponent {...diffComponentProps} />
             </ErrorBoundary>
           )}
-        </Box>
+        </>
       )}
     </Box>
   );
