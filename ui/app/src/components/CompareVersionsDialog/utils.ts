@@ -24,7 +24,7 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import { areObjectsEqual } from '../../utils/object';
-import ContentInstance from '../../models/ContentInstance';
+import ContentInstance, { Primitive } from '../../models/ContentInstance';
 import { ReactNode } from 'react';
 import { LookupTable } from '../../models';
 import { ItemDiffState } from './FieldsTypesDiffViews/RepeatGroupItems';
@@ -98,7 +98,7 @@ export function removeTags(content: string): string {
   return content.replace(/<[^>]*>?/gm, '');
 }
 
-export const hasFieldChanged = (field: ContentTypeField, contentA, contentB) => {
+export const hasFieldChanged = (field: ContentTypeField, contentA: Primitive, contentB: Primitive): boolean => {
   const fieldType = field.type;
   switch (fieldType) {
     case 'text':

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField } from '../../models';
+import { ContentTypeField, InstanceRecord, Primitive } from '../../models';
 import Typography from '@mui/material/Typography';
 import { MonacoWrapper } from '../MonacoWrapper';
 import Box from '@mui/material/Box';
@@ -34,7 +34,7 @@ import { countLines } from '../../utils/string';
 import { initialFieldViewState, useVersionsDialogContext } from '../CompareVersionsDialog/VersionsDialogContext';
 
 interface ContentFieldViewProps {
-  content: any; // TODO: add typing
+  content: Primitive;
   field: ContentTypeField;
   xml?: string;
   showToolbar?: boolean;
@@ -62,7 +62,7 @@ const typesRenderMap = {
 
 interface DefaultViewProps {
   field: ContentTypeField;
-  contentA: any; // TODO: Add typing
+  contentA: Primitive;
   xml: string;
 }
 
@@ -100,32 +100,37 @@ function DefaultView(props: DefaultViewProps) {
 
   return (
     <>
-      {(!content && fieldType !== 'boolean' && fieldType !== 'page-nav-order') || content?.length === 0 ? (
+      {(!content && fieldType !== 'boolean' && fieldType !== 'page-nav-order') ||
+      (content as Primitive[])?.length === 0 ? (
         <Box sx={{ textAlign: 'center' }}>
           <Typography color="textSecondary">no content set</Typography>
         </Box>
       ) : fieldType === 'image' ? (
         <Box sx={{ textAlign: 'center' }}>
-          <img src={content} alt="" />
-          <Typography variant="subtitle2">{content}</Typography>
+          <img src={content as string} alt="" />
+          <Typography variant="subtitle2">{content as string}</Typography>
         </Box>
       ) : fieldType === 'video-picker' ? (
         <Box sx={{ textAlign: 'center' }}>
-          <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
-          <Typography variant="subtitle2">{content}</Typography>
+          <AsyncVideoPlayer playerOptions={{ src: content as string, controls: true, width: 400 }} />
+          <Typography variant="subtitle2">{content as string}</Typography>
         </Box>
       ) : fieldType === 'time' ? (
         <Box sx={{ textAlign: 'center' }}>
           <Typography>
-            {content ? convertUtcTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
+            {content ? convertUtcTimeToTimezone(content as string, locale.dateTimeFormatOptions?.timeZone) : ''}
           </Typography>
         </Box>
       ) : fieldType === 'date-time' ? (
         <Box sx={{ textAlign: 'center' }}>
-          <Tooltip title={content}>
+          <Tooltip title={content as string}>
             <Typography>
               {content
-                ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
+                ? asLocalizedDateTime(
+                    new Date(content as string).getTime(),
+                    locale.localeCode,
+                    locale.dateTimeFormatOptions
+                  )
                 : ''}
             </Typography>
           </Tooltip>
@@ -138,13 +143,15 @@ function DefaultView(props: DefaultViewProps) {
         </Box>
       ) : fieldType === 'checkbox-group' ? (
         <Box sx={{ textAlign: 'center' }}>
-          {content?.map((item) => <Typography key={item.key}>{`${item.value_smv} (${item.key})`}</Typography>)}
+          {(content as InstanceRecord[])?.map((item) => (
+            <Typography key={item.key as string}>{`${item.value_smv} (${item.key})`}</Typography>
+          ))}
         </Box>
       ) : fieldType === 'node-selector' || fieldType === 'repeat' ? (
         <Box component="section" sx={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '1100px', gap: '10px' }}>
             {fieldType === 'node-selector'
-              ? content?.map((item) => (
+              ? (content as ContentInstance[])?.map((item) => (
                   <DiffCollectionItem
                     key={item.craftercms.path}
                     state="unchanged"
@@ -165,7 +172,7 @@ function DefaultView(props: DefaultViewProps) {
                     }}
                   />
                 ))
-              : content?.map((item, index) => (
+              : (content as ContentInstance[])?.map((item, index) => (
                   <DiffCollectionItem
                     key={index}
                     state="unchanged"
@@ -177,7 +184,7 @@ function DefaultView(props: DefaultViewProps) {
           </Box>
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center' }}>{content}</Box>
+        <Box sx={{ textAlign: 'center' }}>{content as string}</Box>
       )}
     </>
   );
@@ -195,6 +202,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   const { compareXml: viewXml, cleanText, xmlEditorOptions } = viewState;
   const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(xml) < 15 ? '200px' : '600px';
   const ViewComponent = typesRenderMap[field.type] ?? DefaultView;
+  console.log('content', content);
   const viewComponentProps = {
     contentA: content,
     xml: fieldXml,
