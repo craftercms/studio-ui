@@ -23,7 +23,6 @@ import { useDispatch } from 'react-redux';
 import { useSelection } from '../../hooks/useSelection';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { useEnv } from '../../hooks/useEnv';
-import { useDetailedItems } from '../../hooks/useDetailedItems';
 import { ContextMenuOption } from '../ContextMenu';
 import { showEditDialog, showItemMegaMenu, showPreviewDialog, updatePreviewDialog } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem, getSystemTypeFromPath } from '../../utils/content';
@@ -37,6 +36,7 @@ import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { fetchContentXML } from '../../services/content';
 import { getPreviewURLFromPath } from '../../utils/path';
+import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 
 export const drawerWidth = 300;
 
@@ -191,7 +191,9 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   const [selected, setSelected] = useState<string[]>([]);
   const [searchResults, setSearchResults] = useState<SearchResult>(null);
   const [selectedPath, setSelectedPath] = useState<string>(searchParameters.path ?? '');
-  const { itemsByPath, isFetching } = useDetailedItems(selected);
+  useFetchSandboxItems(selected);
+  const { itemsBeingFetchedByPath, itemsByPath } = useSelection((state) => state.content);
+  const isFetching = selected.some((path) => itemsBeingFetchedByPath[path]);
   const [drawerOpen, setDrawerOpen] = useState(window.innerWidth > 960);
   const [currentView, setCurrentView] = useState<'grid' | 'list'>('grid');
   const [error, setError] = useState<ApiResponse>(null);
