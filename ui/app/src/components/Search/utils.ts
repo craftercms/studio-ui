@@ -31,7 +31,7 @@ import { search } from '../../services/search';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { translations } from './translations';
 import { ApiResponse } from '../../models/ApiResponse';
-import { contentEvent, deleteContentEvent } from '../../state/actions/system';
+import { contentEvent, deleteContentEvent, deleteContentEvents } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { fetchContentXML } from '../../services/content';
@@ -450,7 +450,7 @@ export const useSearchState = ({ searchParameters, onSelect }: useSearchStatePro
   };
 
   useEffect(() => {
-    const eventsThatNeedReaction = [contentEvent.type, deleteContentEvent.type];
+    const eventsThatNeedReaction = [contentEvent.type, deleteContentEvent.type, deleteContentEvents.type];
     const hostToHost$ = getHostToHostBus();
     const subscription = hostToHost$.pipe(filter((e) => eventsThatNeedReaction.includes(e.type))).subscribe(() => {
       handleClearSelected();
