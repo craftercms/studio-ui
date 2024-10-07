@@ -1237,12 +1237,36 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
   if (systemPropsList.includes(prop)) {
     const systemProp = systemPropMap[prop];
     if (systemProp === 'fileName') {
-      return model.craftercms.path;
+      return getContentInstanceFileName(model);
     } else {
       return model.craftercms[systemProp];
     }
   } else {
     return model[prop];
+  }
+}
+
+export function getContentInstanceFileName(model: ContentInstance) {
+  const path = model.craftercms.path;
+  let fileName = '';
+
+  if (path) {
+    fileName = path.replace('/site/website', '');
+
+    if (path.includes('.xml')) {
+      if (path.endsWith('/index.xml')) {
+        fileName = fileName.replace('/index.xml', '');
+        fileName = fileName.substring(fileName.lastIndexOf('/'));
+        if (fileName === '') {
+          fileName = '/';
+        }
+      } else {
+        fileName = fileName.substring(fileName.lastIndexOf('/') + 1).replace('.xml', '');
+      }
+    }
+    return fileName;
+  } else {
+    return null;
   }
 }
 

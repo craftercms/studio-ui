@@ -33,7 +33,7 @@ import useSelection from '../../hooks/useSelection';
 import { countLines } from '../../utils/string';
 import { initialFieldViewState, useVersionsDialogContext } from '../CompareVersionsDialog/VersionsDialogContext';
 
-interface ContentFieldViewProps {
+export interface ContentFieldViewProps {
   content: Primitive;
   field: ContentTypeField;
   xml?: string;
