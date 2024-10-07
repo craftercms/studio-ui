@@ -55,9 +55,9 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     a: null,
     b: null
   });
-  const enableItemsCompareMode = itemsCompareModeSelection.a?.content && itemsCompareModeSelection.b?.content;
+  const isCompareModeEnabled = itemsCompareModeSelection.a?.content && itemsCompareModeSelection.b?.content;
   const areSelectedItemsEqual =
-    enableItemsCompareMode && itemsCompareModeSelection.a?.xml === itemsCompareModeSelection.b?.xml;
+    isCompareModeEnabled && itemsCompareModeSelection.a?.xml === itemsCompareModeSelection.b?.xml;
   const [, contextApiRef] = useVersionsDialogContext();
 
   const getItemDataAtVersion = (side: RepItemDiffSide, index: number): { content: ContentInstance; xml: string } => {
