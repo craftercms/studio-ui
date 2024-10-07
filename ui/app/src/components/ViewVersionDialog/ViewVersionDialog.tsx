@@ -49,7 +49,6 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { formatMessage } = useIntl();
   const largeHeightScreen = useMediaQuery('(min-height: 880px)');
   const locale = useLocale();
-  const [viewSubDialogState, setViewSubDialogState] = useSpreadState<ViewVersionDialogProps>(viewSubDialogInitialState);
 
   // region Dialog Content
   const [state, setState] = useState<VersionsDialogContextProps>({
@@ -95,10 +94,10 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
   // endregion
 
   const onDialogClose = (event: React.SyntheticEvent, reason: 'backdropClick' | 'escapeKeyDown') => {
-    if (!viewSubDialogState.open) {
+    if (!state.viewSlideOutState.open) {
       onClose?.(event, reason);
     }
-    setViewSubDialogState(viewSubDialogInitialState);
+    context[1].current.closeSlideOuts();
   };
 
   return (
@@ -140,12 +139,14 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
 
         {/* Sub-view for inner viewVersionDialog */}
         <Backdrop
-          open={viewSubDialogState.open}
+          open={state.viewSlideOutState.open}
           sx={{ zIndex: 1200 }}
-          onClick={() => setViewSubDialogState({ open: false })}
+          onClick={() => {
+            context[1].current.closeSlideOuts();
+          }}
         />
         <Drawer
-          open={viewSubDialogState.open}
+          open={state.viewSlideOutState.open}
           anchor="right"
           variant="persistent"
           sx={{
@@ -159,11 +160,11 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
           }}
         >
           <DialogHeader
-            title={viewSubDialogState.title}
-            subtitle={viewSubDialogState.subtitle}
-            onCloseButtonClick={(e) => viewSubDialogState.onClose(e, null)}
+            title={state.viewSlideOutState.title}
+            subtitle={state.viewSlideOutState.subtitle}
+            onCloseButtonClick={(e) => state.viewSlideOutState.onClose(e, null)}
           />
-          <ViewVersionDialogContainer {...viewSubDialogState} showXml={false} />
+          <ViewVersionDialogContainer {...state.viewSlideOutState} showXml={false} />
         </Drawer>
       </VersionsDialogContext.Provider>
     </EnhancedDialog>
