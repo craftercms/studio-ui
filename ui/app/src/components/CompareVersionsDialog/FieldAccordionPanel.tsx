@@ -39,7 +39,7 @@ export function FieldAccordionPanel(props: CompareFieldPanelAccordionProps) {
     if (selected) {
       setExpanded(true);
     }
-  }, [selected, setExpanded]);
+  }, [selected]);
 
   return (
     <Accordion
