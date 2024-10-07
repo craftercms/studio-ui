@@ -14,9 +14,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import ContentInstance from '../../models/ContentInstance';
 import { ContentTypeField } from '../../models/ContentType';
-import React, { ElementType, ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { ElementType, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -30,19 +29,11 @@ import { MonacoWrapper } from '../MonacoWrapper';
 import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
 import RepeatGroupItems from './FieldsTypesDiffViews/RepeatGroupItems';
 import { hasFieldChanged, SelectionContentVersion } from './utils';
-import Divider from '@mui/material/Divider';
 import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import { countLines } from '../../utils/string';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialogContext';
-
-export interface CompareVersionsDetailsContainerProps {
-  contentA: ContentInstance;
-  contentB: ContentInstance;
-  renderContent: (content) => ReactNode;
-  noContent?: ReactNode;
-  verticalLayout?: boolean;
-}
+import DefaultFieldDiffView from './FieldsTypesDiffViews/DefaultFieldDiffView';
 
 export interface CompareFieldPanelProps {
   a: SelectionContentVersion;
@@ -70,39 +61,6 @@ export const typesDiffMap: Record<string, ElementType> = {
   'numeric-input': DefaultFieldDiffView,
   dropdown: DefaultFieldDiffView
 };
-
-function DefaultFieldDiffView(props: CompareVersionsDetailsContainerProps) {
-  const {
-    contentA,
-    contentB,
-    renderContent,
-    noContent = (
-      <Box>
-        <Typography color="textSecondary">no content set</Typography>
-      </Box>
-    ),
-    verticalLayout = false
-  } = props;
-
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        height: '100%',
-        alignItems: verticalLayout ? 'center' : 'flex-start',
-        justifyContent: 'space-around',
-        flexDirection: verticalLayout ? 'column' : 'row',
-        '> div': {
-          flexGrow: verticalLayout && 1
-        }
-      }}
-    >
-      {contentA ? renderContent(contentA) : noContent}
-      {verticalLayout && <Divider sx={{ width: '100%', mt: 1, mb: 1 }} />}
-      {contentB ? renderContent(contentB) : noContent}
-    </Box>
-  );
-}
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const { a, b, field, contentTypeFields, onSelectField, showFieldsNavigation = true, dynamicHeight } = props;
