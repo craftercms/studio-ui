@@ -222,28 +222,27 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
           <FormattedMessage defaultMessage="Selected items are the same" />
         </Alert>
       )}
-      {repeatGroupDiff.length &&
-        repeatGroupDiff.map((item, index) => (
-          <Box
-            key={index}
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              gap: '10px',
-              marginBottom: '12px',
-              width: '100%',
-              maxWidth: '1100px'
-            }}
-          >
-            <DiffCollectionItem
-              state={item.a ?? item.b}
-              primaryText={<FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />}
-              selectionMode={compareMode}
-              selected={isItemSelected(item.a ? 'a' : 'b', index)}
-              onSelect={(selected) => onSelectItemAction(selected, item.a ? 'a' : 'b', index, item.a ?? item.b)}
-            />
-          </Box>
-        ))}
+      {repeatGroupDiff?.map((item, index) => (
+        <Box
+          key={index}
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            gap: '10px',
+            marginBottom: '12px',
+            width: '100%',
+            maxWidth: '1100px'
+          }}
+        >
+          <DiffCollectionItem
+            state={item.a ?? item.b}
+            primaryText={<FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />}
+            selectionMode={compareMode}
+            selected={isItemSelected(item.a ? 'a' : 'b', index)}
+            onSelect={(selected) => onSelectItemAction(selected, item.a ? 'a' : 'b', index, item.a ?? item.b)}
+          />
+        </Box>
+      ))}
     </Box>
   );
 }
