@@ -29,6 +29,7 @@ import { Backdrop } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
 import { DialogHeader } from '../DialogHeader';
 import {
+  dialogInitialState,
   FieldViewState,
   VersionsDialogContext,
   VersionsDialogContextProps,
@@ -43,11 +44,8 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const largeHeightScreen = useMediaQuery('(min-height: 880px)');
   const locale = useLocale();
 
-  // region Dialog Content
-  const [state, setState] = useState<VersionsDialogContextProps>({
-    viewSlideOutState: { open: false, isFetching: false, error: null },
-    fieldsViewState: {}
-  });
+  // region Dialog Context
+  const [state, setState] = useState<VersionsDialogContextProps>(dialogInitialState);
   const contextRef = useRef(null);
   const context = useMemo<VersionsDialogContextType>(() => {
     contextRef.current = {

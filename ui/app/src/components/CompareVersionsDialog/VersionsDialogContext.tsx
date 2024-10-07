@@ -18,7 +18,8 @@ import { createContext, MutableRefObject, useContext } from 'react';
 import { DiffEditorProps } from '@monaco-editor/react';
 import { CompareVersionsDialogProps } from './utils';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
-import { LookupTable } from '../../models';
+import { ContentTypeField, LookupTable } from '../../models';
+import ContentType from '../../models/ContentType';
 
 export interface FieldViewState {
   compareXml: boolean;
@@ -32,6 +33,11 @@ export interface VersionsDialogContextProps {
   compareSlideOutState?: CompareVersionsDialogProps;
   viewSlideOutState: ViewVersionDialogProps;
   fieldsViewState: LookupTable<FieldViewState>;
+  contentType: ContentType;
+  contentTypeFields: ContentTypeField[];
+  fieldIdsWithChanges: string[];
+  showOnlyChanges: boolean;
+  accordionView: boolean;
 }
 
 export const initialFieldViewState = {
@@ -45,6 +51,17 @@ export const initialFieldViewState = {
     diffWordWrap: 'off' as DiffEditorProps['options']['diffWordWrap'],
     wordWrap: 'on' as DiffEditorProps['options']['wordWrap']
   }
+};
+
+export const dialogInitialState: VersionsDialogContextProps = {
+  compareSlideOutState: { open: false, isFetching: false, error: null },
+  viewSlideOutState: { open: false, isFetching: false, error: null },
+  fieldsViewState: {},
+  contentType: null,
+  contentTypeFields: [],
+  fieldIdsWithChanges: [],
+  showOnlyChanges: true,
+  accordionView: false
 };
 
 export interface VersionsDialogContextApi {

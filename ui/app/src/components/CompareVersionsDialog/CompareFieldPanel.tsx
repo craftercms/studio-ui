@@ -39,8 +39,6 @@ export interface CompareFieldPanelProps {
   a: SelectionContentVersion;
   b: SelectionContentVersion;
   field: ContentTypeField;
-  contentTypeFields: ContentTypeField[];
-  accordion?: boolean;
   dynamicHeight?: boolean;
   onSelectField?(field: ContentTypeField): void;
   showFieldsNavigation?: boolean;
@@ -63,7 +61,8 @@ export const typesDiffMap: Record<string, ElementType> = {
 };
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const { a, b, field, contentTypeFields, onSelectField, showFieldsNavigation = true, dynamicHeight } = props;
+  const { a, b, field, onSelectField, showFieldsNavigation = true, dynamicHeight } = props;
+  const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
   const [unchanged, setUnchanged] = useState<boolean>(true);
   const fieldType = field.type;
   const locale = useLocale();
@@ -84,7 +83,6 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const longerXmlContent = versionAFieldXml.length > versionBFieldXml.length ? versionAFieldXml : versionBFieldXml;
   const monacoEditorHeight = dynamicHeight ? (countLines(longerXmlContent) < 15 ? '200px' : '600px') : '100%';
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultFieldDiffView;
-  const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
   const { compareXml, cleanText, xmlEditorOptions, compareMode } = viewState;
   const setCompareModeDisabled = useMemo(
@@ -166,7 +164,6 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
         <ContentFieldView
           content={contentA}
           field={field}
-          contentTypeFields={contentTypeFields}
           xml={a.xml}
           onSelectField={onSelectField}
           showToolbarFieldNavigation={showFieldsNavigation}

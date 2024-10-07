@@ -45,6 +45,7 @@ import { ContentTypeField } from '../../models';
 import ContentInstance from '../../models/ContentInstance';
 import useActiveUser from '../../hooks/useActiveUser';
 import { getViewVersionDialogViewModes, setViewVersionDialogViewModes } from '../../utils/state';
+import useMount from '../../hooks/useMount';
 
 const VersionDialogContext = createContext(null);
 
@@ -54,24 +55,32 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   const [xml, setXml] = useState<string>(preFetchedData?.xml);
   const siteId = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const fields: ContentTypeField[] = useMemo(() => {
-    return content && (preFetchedData?.fields || contentTypesBranch?.byId[content.craftercms.contentTypeId].fields)
-      ? [
-          ...Object.values(preFetchedData?.fields ?? contentTypesBranch?.byId[content.craftercms.contentTypeId].fields),
-          ...(content.crafterms ? getStudioContentInternalFields(formatMessage) : [])
-        ]
-      : [];
-  }, [content, contentTypesBranch?.byId, formatMessage, preFetchedData?.fields]);
+  const [{ fieldsViewState, accordionView, contentTypeFields }, contextApiRef] = useVersionsDialogContext();
   const isViewDataReady = Boolean(content && xml);
   const [selectedField, setSelectedField] = useState<ContentTypeField>(null);
-  const context = useMemo(() => ({ content, fields }), [content, fields]);
+  const context = useMemo(() => ({ content, fields: contentTypeFields }), [content, contentTypeFields]);
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
-  const [{ fieldsViewState }] = useVersionsDialogContext();
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
   const { username } = useActiveUser();
-  const [accordionView, setAccordionView] = useState<boolean>(getViewVersionDialogViewModes(username) ?? false);
+
+  useMount(() => {
+    contextApiRef.current.setState({
+      accordionView: getViewVersionDialogViewModes(username) ?? false
+    });
+  });
+
+  useEffect(() => {
+    if (content && (preFetchedData?.fields || contentTypesBranch?.byId[content.craftercms.contentTypeId].fields)) {
+      contextApiRef.current.setState({
+        contentTypeFields: [
+          ...Object.values(preFetchedData?.fields ?? contentTypesBranch?.byId[content.craftercms.contentTypeId].fields),
+          ...(content.crafterms ? getStudioContentInternalFields(formatMessage) : [])
+        ]
+      });
+    }
+  }, [content, contentTypesBranch?.byId, preFetchedData?.fields, contextApiRef, formatMessage]);
 
   useEffect(() => {
     if (preFetchedData) {
@@ -90,18 +99,18 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   }, [version, siteId, contentTypesBranch]);
 
   useEffect(() => {
-    if (fields?.length) {
-      setSelectedField(fields[0]);
+    if (contentTypeFields?.length) {
+      setSelectedField(contentTypeFields[0]);
     }
-  }, [fields]);
+  }, [contentTypeFields]);
 
   useEffect(() => {
-    fields?.forEach((field) => {
+    contentTypeFields?.forEach((field) => {
       sidebarRefs.current[field.id] = React.createRef<HTMLDivElement>();
       fieldsRefs.current[field.id] = React.createRef<HTMLDivElement>();
       fieldsViewStateRef.current[field.id] = initialFieldViewState;
     });
-  }, [fields]);
+  }, [contentTypeFields]);
 
   const onSelectField = (field: ContentTypeField) => {
     setSelectedField(field);
@@ -116,7 +125,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   };
 
   const onSetAccordionView = (value: boolean) => {
-    setAccordionView(value);
+    contextApiRef.current.setState({ accordionView: value });
     setViewVersionDialogViewModes(username, value);
   };
 
@@ -147,7 +156,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
               }}
             >
               <List sx={{ flexGrow: 1, overflow: 'auto', p: 0 }}>
-                {fields.map((field) => (
+                {contentTypeFields.map((field) => (
                   <ListItemButton
                     key={field.id}
                     onClick={() => onSelectFieldFromList(field)}
@@ -171,7 +180,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
             <Box sx={{ marginLeft: '280px', height: '100%', overflowY: 'auto', p: 2 }}>
               <ErrorBoundary>
                 {accordionView ? (
-                  fields.map((field) => (
+                  contentTypeFields.map((field) => (
                     <FieldAccordionPanel
                       key={field.id}
                       field={field}
@@ -181,7 +190,6 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                         <FieldVersionToolbar
                           field={field}
                           showFieldsNavigation={false}
-                          contentTypeFields={fields}
                           isDiff={false}
                           justContent={true}
                         />
@@ -190,7 +198,6 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                         <ContentFieldView
                           content={content && getContentInstanceValueFromProp(content, field.id)}
                           field={field}
-                          contentTypeFields={fields}
                           xml={xml}
                           onSelectField={onSelectField}
                           dynamicHeight
@@ -200,17 +207,11 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                   ))
                 ) : selectedField ? (
                   <>
-                    <FieldVersionToolbar
-                      field={selectedField}
-                      contentTypeFields={fields}
-                      isDiff={false}
-                      onSelectField={onSelectField}
-                    />
+                    <FieldVersionToolbar field={selectedField} isDiff={false} onSelectField={onSelectField} />
                     <Box height="calc(100% - 60px)" display="flex" flexDirection="column">
                       <ContentFieldView
                         content={content && getContentInstanceValueFromProp(content, selectedField.id)}
                         field={selectedField}
-                        contentTypeFields={fields}
                         xml={xml}
                         onSelectField={onSelectField}
                       />

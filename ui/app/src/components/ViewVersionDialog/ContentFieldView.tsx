@@ -29,7 +29,6 @@ export interface ContentFieldViewProps {
   field: ContentTypeField;
   xml?: string;
   showToolbar?: boolean;
-  contentTypeFields: ContentTypeField[];
   showToolbarFieldNavigation?: boolean;
   dynamicHeight?: boolean;
   onSelectField?(field: ContentTypeField): void;

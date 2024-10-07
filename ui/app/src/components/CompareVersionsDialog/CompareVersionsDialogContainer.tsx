@@ -48,6 +48,7 @@ import { initialFieldViewState, useVersionsDialogContext, VersionsDialogContextP
 import { ContentTypeField } from '../../models';
 import { getCompareVersionDialogViewModes, setCompareVersionDialogViewModes } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
+import useMount from '../../hooks/useMount';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -59,7 +60,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     contentTypesBranch,
     compareXml
   } = props;
-  const [{ fieldsViewState }] = useVersionsDialogContext();
+  const [{ fieldsViewState, contentTypeFields, fieldIdsWithChanges, showOnlyChanges, accordionView }, contextApiRef] =
+    useVersionsDialogContext();
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
@@ -67,9 +69,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { formatMessage } = useIntl();
   const { username } = useActiveUser();
-  const viewModes = getCompareVersionDialogViewModes(username);
-  const [accordionView, setAccordionView] = useState<boolean>(viewModes?.accordionView ?? false);
-  const [showOnlyChanges, setShowOnlyChanges] = useState<boolean>(viewModes?.entireDiff ?? true);
   const [selectionContent, setSelectionContent] = useSpreadState<{
     a: SelectionContentVersion;
     b: SelectionContentVersion;
@@ -115,19 +114,26 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const selectedFieldRef = useRef(null);
   selectedFieldRef.current = selectedField;
   const contentType = contentTypesBranch?.byId[item.contentTypeId];
-  const contentTypeFields = useMemo(() => {
-    return isCompareDataReady
-      ? [
-          ...Object.values(fields ?? contentType.fields),
-          ...((selectionContent.a.content ?? selectionContent.b.content).craftercms
-            ? getStudioContentInternalFields(formatMessage)
-            : [])
-        ]
-      : [];
-  }, [contentType, fields, isCompareDataReady, formatMessage, selectionContent]);
-  const fieldIdsWithChanges = useMemo(
-    () =>
-      contentTypeFields
+  const sidebarRefs = useRef({});
+  const fieldsRefs = useRef({});
+
+  useMount(() => {
+    const viewModes = getCompareVersionDialogViewModes(username);
+    contextApiRef.current.setState({
+      showOnlyChanges: viewModes?.entireDiff ?? true,
+      accordionView: viewModes?.accordionView ?? false
+    });
+  });
+
+  useEffect(() => {
+    if (isCompareDataReady) {
+      const contentTypeFields = [
+        ...Object.values(fields ?? contentType.fields),
+        ...((selectionContent.a.content ?? selectionContent.b.content).craftercms
+          ? getStudioContentInternalFields(formatMessage)
+          : [])
+      ];
+      const fieldIdsWithChanges = contentTypeFields
         .filter((field) =>
           hasFieldChanged(
             field,
@@ -135,11 +141,18 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
             getContentInstanceValueFromProp(selectionContent.b.content, field.id)
           )
         )
-        .map((field) => field.id),
-    [contentTypeFields, selectionContent.a, selectionContent.b]
-  );
-  const sidebarRefs = useRef({});
-  const fieldsRefs = useRef({});
+        .map((field) => field.id);
+      contextApiRef.current.setState({ contentTypeFields, fieldIdsWithChanges });
+    }
+  }, [
+    isCompareDataReady,
+    contentType?.fields,
+    fields,
+    selectionContent?.a.content,
+    selectionContent?.b.content,
+    contextApiRef,
+    formatMessage
+  ]);
 
   useEffect(() => {
     if (preFetchedContent) {
@@ -199,12 +212,12 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   };
 
   const onToggleShowOnlyChanges = () => {
-    setShowOnlyChanges(!showOnlyChanges);
+    contextApiRef.current.setState({ showOnlyChanges: !showOnlyChanges });
     setCompareVersionDialogViewModes(username, { entireDiff: !showOnlyChanges, accordionView });
   };
 
   const onSetAccordionView = (value: boolean) => {
-    setAccordionView(value);
+    contextApiRef.current.setState({ accordionView: value });
     setCompareVersionDialogViewModes(username, { entireDiff: showOnlyChanges, accordionView: value });
   };
 
@@ -332,7 +345,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                           <FieldVersionToolbar
                             field={field}
                             showFieldsNavigation={false}
-                            contentTypeFields={contentTypeFields}
                             isDiff={fieldIdsWithChanges.includes(field.id)}
                             justContent={true}
                           />
@@ -352,7 +364,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                               xml: selectionContent.b.xml
                             }}
                             field={field}
-                            contentTypeFields={contentTypeFields}
                             onSelectField={onSelectFieldFromContent}
                             dynamicHeight
                           />
@@ -363,9 +374,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   <Box p={2} height="100%">
                     <FieldVersionToolbar
                       field={selectedField}
-                      contentTypeFields={contentTypeFields.filter((field) =>
-                        showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true
-                      )}
                       onSelectField={onSelectFieldFromContent}
                       isDiff={fieldIdsWithChanges.includes(selectedField.id)}
                     />
@@ -383,9 +391,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                         xml: selectionContent.b.xml
                       }}
                       field={selectedField}
-                      contentTypeFields={contentTypeFields.filter((field) =>
-                        showOnlyChanges ? fieldIdsWithChanges.includes(field.id) : true
-                      )}
                       onSelectField={onSelectFieldFromContent}
                     />
                   </Box>

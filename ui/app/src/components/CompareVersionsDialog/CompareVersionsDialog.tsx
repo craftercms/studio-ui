@@ -34,6 +34,7 @@ import { DialogHeader } from '../DialogHeader';
 import ViewVersionDialogContainer from '../ViewVersionDialog/ViewVersionDialogContainer';
 import { DiffEditorProps } from '@monaco-editor/react';
 import {
+  dialogInitialState,
   FieldViewState,
   VersionsDialogContext,
   VersionsDialogContextProps,
@@ -67,11 +68,7 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
   const locale = useLocale();
 
   // region Dialog Context
-  const [state, setState] = useState<VersionsDialogContextProps>({
-    compareSlideOutState: { open: false, isFetching: false, error: null },
-    viewSlideOutState: { open: false, isFetching: false, error: null },
-    fieldsViewState: {}
-  });
+  const [state, setState] = useState<VersionsDialogContextProps>(dialogInitialState);
   const contextRef = useRef(null);
   const context = useMemo<VersionsDialogContextType>(() => {
     contextRef.current = {
