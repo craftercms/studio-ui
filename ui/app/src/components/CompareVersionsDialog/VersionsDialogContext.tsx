@@ -63,7 +63,7 @@ export const VersionsDialogContext = createContext<VersionsDialogContextType>(nu
 export function useVersionsDialogContext() {
   const context = useContext(VersionsDialogContext);
   if (!context) {
-    throw new Error('useMyContext must be used within a MyProvider');
+    throw new Error('useVersionsDialogContext must be used within a VersionsDialogContext');
   }
   return context;
 }
