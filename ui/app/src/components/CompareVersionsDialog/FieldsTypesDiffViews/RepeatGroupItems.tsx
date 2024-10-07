@@ -237,8 +237,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
           <DiffCollectionItem
             state={item.a ?? item.b}
             primaryText={<FormattedMessage defaultMessage="Item {index}" values={{ index: index + 1 }} />}
-            selectionMode={compareMode}
-            selected={isItemSelected(item.a ? 'a' : 'b', index)}
+            isSelectionMode={compareMode}
+            isSelected={isItemSelected(item.a ? 'a' : 'b', index)}
             onSelect={(selected) => onSelectItemAction(selected, item.a ? 'a' : 'b', index, item.a ?? item.b)}
           />
         </Box>

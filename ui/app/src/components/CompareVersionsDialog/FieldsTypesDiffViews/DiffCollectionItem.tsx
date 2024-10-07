@@ -28,8 +28,8 @@ export interface DiffCollectionItemProps {
   state: 'new' | 'deleted' | 'changed' | 'unchanged';
   primaryText: ReactNode;
   secondaryText?: ReactNode;
-  selected?: boolean;
-  selectionMode?: boolean;
+  isSelected?: boolean;
+  isSelectionMode?: boolean;
   disableHighlight?: boolean;
   hideState?: boolean;
   onSelect?(selected: boolean): void;
@@ -40,10 +40,10 @@ export function DiffCollectionItem(props: DiffCollectionItemProps) {
     state,
     primaryText,
     secondaryText,
-    selected = false,
+    isSelected = false,
     disableHighlight = false,
     onSelect,
-    selectionMode,
+    isSelectionMode,
     hideState
   } = props;
   const theme = useTheme();
@@ -51,7 +51,7 @@ export function DiffCollectionItem(props: DiffCollectionItemProps) {
 
   return (
     <Box
-      className={clsx(state, selected && 'selected', disableHighlight && 'disable-highlight')}
+      className={clsx(state, isSelected && 'selected', disableHighlight && 'disable-highlight')}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -110,9 +110,9 @@ export function DiffCollectionItem(props: DiffCollectionItemProps) {
               p: 0,
               pr: 1,
               color: 'inherit',
-              display: !selectionMode && 'none'
+              display: !isSelectionMode && 'none'
             }}
-            checked={selected}
+            checked={isSelected}
             onChange={(e) => onSelect?.(e.target.checked)}
           />
         }
@@ -126,7 +126,7 @@ export function DiffCollectionItem(props: DiffCollectionItemProps) {
           width: '100%',
           py: 1,
           px: 1.25,
-          marginLeft: !selectionMode && 0,
+          marginLeft: !isSelectionMode && 0,
           cursor: disableHighlight && 'default'
         }}
       />
