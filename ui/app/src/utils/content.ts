@@ -1228,7 +1228,13 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
   return canvas.toDataURL();
 }
 
-// Returns the value of a contentInstance prop, considering the system props
+/**
+ * Retrieves the value of a property from a content instance model, considering system properties.
+ *
+ * @param model - The content instance model to retrieve the value from.
+ * @param prop - The property to retrieve the value from.
+ * @returns The value of the property from the model.
+ * */
 export function getContentInstanceValueFromProp(model: ContentInstance, prop: string) {
   const systemProp = systemPropMap[prop];
   if (systemProp) {
@@ -1242,6 +1248,12 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
   }
 }
 
+/**
+ * Retrieves the file name from the given content instance model.
+ *
+ * @param model - The content instance model containing the path.
+ * @returns The file name extracted from the model's path, or null if the path is not defined.
+ */
 export function getContentInstanceFileName(model: ContentInstance) {
   const path = model.craftercms.path;
   if (!path) return null;

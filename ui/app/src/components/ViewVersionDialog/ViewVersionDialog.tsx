@@ -27,7 +27,6 @@ import { AsDayMonthDateTime } from '../VersionList';
 import useLocale from '../../hooks/useLocale';
 import { Backdrop } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
-import useSpreadState from '../../hooks/useSpreadState';
 import { DialogHeader } from '../DialogHeader';
 import {
   FieldViewState,
@@ -36,12 +35,6 @@ import {
   VersionsDialogContextType
 } from '../CompareVersionsDialog/VersionsDialogContext';
 import { DiffEditorProps } from '@monaco-editor/react';
-
-const viewSubDialogInitialState = {
-  open: false,
-  isFetching: false,
-  error: null
-};
 
 export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, onClose, ...rest } = props;

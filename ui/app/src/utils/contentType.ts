@@ -197,6 +197,12 @@ export function getAvatarWithIconColors(
   return { backgroundColor, textColor };
 }
 
+/**
+ * Retrieves the internal content-type fields used by studio.
+ *
+ * @param formatMessage - i18n formatter.
+ * @returns An array of `ContentTypeField` objects representing the internal fields.
+ */
 export function getStudioContentInternalFields(formatMessage: IntlShape['formatMessage']): ContentTypeField[] {
   return [
     {

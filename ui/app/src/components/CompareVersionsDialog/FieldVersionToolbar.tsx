@@ -81,6 +81,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
     onSelectField?.(previousField);
   };
 
+  // Keyboard navigation - Left and Up to select previous field, Right and Down to select next field
   useHotkeys('ArrowLeft,ArrowRight,ArrowUp,ArrowDown', (event) => {
     switch (event.key) {
       case 'ArrowLeft':

@@ -276,6 +276,12 @@ export function isUUID(str: string): boolean {
   return /^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(str);
 }
 
+/**
+ * Counts the number of lines in a given text based on the break lines it has.
+ *
+ * @param text - The text to count lines in.
+ * @returns The number of lines in the text. Returns 0 if the text is empty or undefined.
+ */
 export function countLines(text: string): number {
   if (!text) {
     return 0;

@@ -17,10 +17,6 @@
 import { defineMessages } from 'react-intl';
 
 export const translations = defineMessages({
-  backToSelectRevision: {
-    id: 'compareVersionsDialog.back.selectRevision',
-    defaultMessage: 'Back to select revision'
-  },
   compareXml: {
     defaultMessage: 'XML'
   },

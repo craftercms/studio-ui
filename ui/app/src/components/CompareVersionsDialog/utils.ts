@@ -84,6 +84,12 @@ export type ContentInstanceComponentsDiffResult = {
   value: string[];
 };
 
+/**
+ * Determines the ItemDiffState, based on the result object given by jsdiff.diffArrays.
+ *
+ * @param {ContentInstanceComponentsDiffResult} diff - The diff result of the content.
+ * @returns {ItemDiffState} - The status of the item difference: 'new', 'deleted', or 'unchanged'.
+ */
 export const getItemDiffStatus = (diff: ContentInstanceComponentsDiffResult): ItemDiffState => {
   if (diff.added) {
     return 'new';
@@ -94,10 +100,25 @@ export const getItemDiffStatus = (diff: ContentInstanceComponentsDiffResult): It
   return 'unchanged';
 };
 
+/**
+ * Removes all HTML tags from the given content string.
+ *
+ * @param {string} content - The content string from which to remove HTML tags.
+ * @returns {string} - The content string without HTML tags.
+ */
 export function removeTags(content: string): string {
   return content.replace(/<[^>]*>?/gm, '');
 }
 
+/**
+ * Checks if a field has changed between two content instances. Values may be of different types (Primitive) so the
+ * comparison depends on the field type.
+ *
+ * @param {ContentTypeField} field - The field to check.
+ * @param {Primitive} contentA - The content value A.
+ * @param {Primitive} contentB - The content value B.
+ * @returns {boolean} - True if the field has changed, false otherwise.
+ */
 export const hasFieldChanged = (field: ContentTypeField, contentA: Primitive, contentB: Primitive): boolean => {
   const fieldType = field.type;
   switch (fieldType) {

@@ -198,6 +198,9 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   ]);
 
   useEffect(() => {
+    // When selecting 'unchanged' or 'changed' items (not 'new' or 'deleted'), we default the selection to side 'a',
+    // so if we then select a 'new' or 'deleted' item, we need to switch the selection to the opposite side. Here we
+    // check if the selected items are both in the same side and switch accordingly.
     const diffItemsSameSide =
       repeatGroupDiff.every((entry) => nou(entry.a)) || repeatGroupDiff.every((entry) => nou(entry.b));
     if (diffItemsSameSide) {
