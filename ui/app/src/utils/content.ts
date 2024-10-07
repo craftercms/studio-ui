@@ -356,10 +356,8 @@ export const systemPropsList = [
   'objectGroupId',
   'objectId',
   'file-name',
-  'fileName',
   'folder-name',
   'internal-name',
-  'internalName',
   'disabled',
   'createdDate',
   'createdDate_dt',
@@ -374,11 +372,9 @@ export const systemPropMap = {
   localId: 'path',
   'file-name': 'fileName',
   file__name: 'fileName',
-  fileName: 'fileName',
   placeInNav: 'placeInNav',
   'internal-name': 'label',
   internal__name: 'label',
-  internalName: 'label',
   'content-type': 'contentTypeId',
   content__type: 'contentTypeId',
   createdDate: 'dateCreated',
@@ -1234,8 +1230,8 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
 
 // Returns the value of a contentInstance prop, considering the system props
 export function getContentInstanceValueFromProp(model: ContentInstance, prop: string) {
-  if (systemPropsList.includes(prop)) {
-    const systemProp = systemPropMap[prop];
+  const systemProp = systemPropMap[prop];
+  if (systemProp) {
     if (systemProp === 'fileName') {
       return getContentInstanceFileName(model);
     } else {
