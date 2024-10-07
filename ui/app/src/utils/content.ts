@@ -1248,26 +1248,19 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
 
 export function getContentInstanceFileName(model: ContentInstance) {
   const path = model.craftercms.path;
-  let fileName = '';
+  if (!path) return null;
 
-  if (path) {
-    fileName = path.replace('/site/website', '');
+  let fileName = path.replace('/site/website', '');
 
-    if (path.includes('.xml')) {
-      if (path.endsWith('/index.xml')) {
-        fileName = fileName.replace('/index.xml', '');
-        fileName = fileName.substring(fileName.lastIndexOf('/'));
-        if (fileName === '') {
-          fileName = '/';
-        }
-      } else {
-        fileName = fileName.substring(fileName.lastIndexOf('/') + 1).replace('.xml', '');
-      }
-    }
-    return fileName;
-  } else {
-    return null;
+  if (path.endsWith('/index.xml')) {
+    fileName = fileName.replace('/index.xml', '');
+    return fileName.substring(fileName.lastIndexOf('/')) || '/';
   }
+
+  if (path.includes('.xml')) {
+    return fileName.substring(fileName.lastIndexOf('/') + 1).replace('.xml', '');
+  }
+  return fileName;
 }
 
 export const mockContentInstance = {
