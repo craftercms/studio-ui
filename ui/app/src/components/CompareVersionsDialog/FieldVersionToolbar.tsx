@@ -34,6 +34,7 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
 import { MonacoWrapper } from '../MonacoWrapper';
 import { typesDiffMap } from './CompareFieldPanel';
 import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialogContext';
+import { typesViewMap } from '../ViewVersionDialog/ContentFieldView';
 
 interface FieldVersionToolbarProps {
   field: ContentTypeField;
@@ -67,6 +68,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
     compareXml ||
     typesDiffMap[fieldType] === MonacoWrapper ||
     Boolean(actions);
+  const isMappedFieldType = isDiff ? Boolean(typesDiffMap[fieldType]) : Boolean(typesViewMap[fieldType]);
 
   const onSelectNextField = (fieldId: string) => {
     const index = contentTypeFields.findIndex((f) => f.id === fieldId);
@@ -206,26 +208,30 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
               </IconButton>
             </Tooltip>
           )}
-          <Tooltip title={<FormattedMessage defaultMessage="Compare" />}>
-            <IconButton
-              size="small"
-              onClick={() =>
-                contextApiRef.current.setFieldViewState?.(field.id, { cleanText: false, compareXml: false })
-              }
-              color={!cleanText && !compareXml ? 'primary' : 'default'}
-            >
-              <TextSnippetOutlinedIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={<FormattedMessage defaultMessage="Compare XML" />}>
-            <IconButton
-              size="small"
-              onClick={() => contextApiRef.current.setFieldViewState?.(field.id, { compareXml: true })}
-              color={compareXml ? 'primary' : 'default'}
-            >
-              <CodeOutlinedIcon />
-            </IconButton>
-          </Tooltip>
+          {isMappedFieldType && (
+            <>
+              <Tooltip title={<FormattedMessage defaultMessage="Compare" />}>
+                <IconButton
+                  size="small"
+                  onClick={() =>
+                    contextApiRef.current.setFieldViewState?.(field.id, { cleanText: false, compareXml: false })
+                  }
+                  color={!cleanText && !compareXml ? 'primary' : 'default'}
+                >
+                  <TextSnippetOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={<FormattedMessage defaultMessage="Compare XML" />}>
+                <IconButton
+                  size="small"
+                  onClick={() => contextApiRef.current.setFieldViewState?.(field.id, { compareXml: true })}
+                  color={compareXml ? 'primary' : 'default'}
+                >
+                  <CodeOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
         </Box>
       </Paper>
       {showFieldsNavigation && contentTypeFields.length > 1 && (

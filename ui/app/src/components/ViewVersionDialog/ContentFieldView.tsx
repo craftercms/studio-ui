@@ -22,32 +22,43 @@ import { fromString, serialize } from '../../utils/xml';
 import { nnou } from '../../utils/object';
 import { countLines } from '../../utils/string';
 import { initialFieldViewState, useVersionsDialogContext } from '../CompareVersionsDialog/VersionsDialogContext';
-import DefaultView from './ViewVersionDefaultFieldView';
+import DefaultView from './FieldTypesViews/DefaultView';
+import Image from './FieldTypesViews/Image';
+import Video from './FieldTypesViews/Video';
+import Time from './FieldTypesViews/Time';
+import DateTime from './FieldTypesViews/DateTime';
+import BooleanView from './FieldTypesViews/Boolean';
+import NodeSelector from './FieldTypesViews/NodeSelector';
+import RepeatGroup from './FieldTypesViews/RepeatGroup';
+import Number from './FieldTypesViews/Number';
+import Typography from '@mui/material/Typography';
+import { FormattedMessage } from 'react-intl';
+import CheckboxGroup from './FieldTypesViews/CheckboxGroup';
 
 export interface ContentFieldViewProps {
   content: Primitive;
   field: ContentTypeField;
   xml?: string;
   showToolbar?: boolean;
-  showToolbarFieldNavigation?: boolean;
   dynamicHeight?: boolean;
   onSelectField?(field: ContentTypeField): void;
 }
 
-const typesRenderMap = {
+export const typesViewMap = {
   text: MonacoWrapper,
   textarea: MonacoWrapper,
   html: MonacoWrapper,
-  'node-selector': DefaultView,
-  'checkbox-group': DefaultView,
-  repeat: DefaultView,
-  image: DefaultView,
-  'video-picker': DefaultView,
-  time: DefaultView,
-  'date-time': DefaultView,
-  boolean: DefaultView,
-  'numeric-input': DefaultView,
-  dropdown: DefaultView
+  'node-selector': NodeSelector,
+  'checkbox-group': CheckboxGroup,
+  repeat: RepeatGroup,
+  image: Image,
+  'video-picker': Video,
+  time: Time,
+  'date-time': DateTime,
+  boolean: BooleanView,
+  'page-nav-order': BooleanView,
+  'numeric-input': Number,
+  dropdown: MonacoWrapper
 };
 
 export function ContentFieldView(props: ContentFieldViewProps) {
@@ -61,7 +72,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
   const { compareXml: viewXml, cleanText, xmlEditorOptions } = viewState;
   const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(fieldXml ?? '') < 15 ? '200px' : '600px';
-  const ViewComponent = typesRenderMap[field.type] ?? DefaultView;
+  const ViewComponent = typesViewMap[field.type] ?? DefaultView;
   const viewComponentProps = {
     contentA: content,
     xml: fieldXml,
@@ -73,13 +84,22 @@ export function ContentFieldView(props: ContentFieldViewProps) {
       height: monacoEditorHeight
     }
   };
+  const noContentSet = ViewComponent !== Boolean && !content;
 
   return (
     <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
       {viewXml ? (
         <MonacoWrapper contentA={fieldXml} isHTML={true} editorProps={viewComponentProps.editorProps} />
       ) : nnou(ViewComponent) ? (
-        <ViewComponent {...viewComponentProps} />
+        noContentSet ? (
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography color="textSecondary">
+              <FormattedMessage defaultMessage="No content set" />
+            </Typography>
+          </Box>
+        ) : (
+          <ViewComponent {...viewComponentProps} />
+        )
       ) : null}
     </Box>
   );
