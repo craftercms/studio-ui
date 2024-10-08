@@ -18,17 +18,21 @@ import ContentInstance from '../../../models/ContentInstance';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import useItemsByPath from '../../../hooks/useItemsByPath';
-import { ContentInstanceComponentsDiffResult, getItemDiffStatus } from '../utils';
-import { diffArrays } from 'diff/lib/diff/array.js';
+import {
+  ContentInstanceComponentsDiffResult,
+  getContentInstanceXmlItemFromIndex,
+  getItemDiffStatus,
+  SelectionContentVersion
+} from '../utils';
+import { diffArrays } from 'diff/lib/diff/array';
 import Box from '@mui/material/Box';
 import { EmptyState } from '../../EmptyState';
 import LookupTable from '../../../models/LookupTable';
-import { areObjectsEqual } from '../../../utils/object';
 import useSelection from '../../../hooks/useSelection';
 import { ContentTypeField } from '../../../models';
 import DiffCollectionItem from './DiffCollectionItem';
-import { mockContentInstance } from '../../../utils/content';
 import { useVersionsDialogContext } from '../VersionsDialogContext';
+import { mockContentInstance } from '../../../utils/content';
 
 interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
@@ -70,15 +74,23 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
     embeddedA: ContentInstance;
     embeddedB: ContentInstance;
   } => {
+    const embeddedAIndex = contentA.findIndex((item) => item.craftercms?.id === id);
+    const embeddedBIndex = contentB.findIndex((item) => item.craftercms?.id === id);
     return {
-      embeddedA: contentA?.find((item) => item.craftercms?.id === id),
-      embeddedB: contentB?.find((item) => item.craftercms?.id === id)
+      embeddedA: {
+        content: contentA[embeddedAIndex] ?? mockContentInstance,
+        xml: getContentInstanceXmlItemFromIndex(aXml, embeddedAIndex)
+      },
+      embeddedB: {
+        content: contentB[embeddedBIndex] ?? mockContentInstance,
+        xml: getContentInstanceXmlItemFromIndex(bXml, embeddedBIndex)
+      }
     };
   };
 
   const embeddedItemChanged = (id: string): boolean => {
     const { embeddedA, embeddedB } = getEmbeddedVersions(id);
-    return !areObjectsEqual(embeddedA ?? {}, embeddedB ?? {});
+    return embeddedA.xml !== embeddedB.xml;
   };
 
   const isEmbeddedWithChanges = (id: string): boolean => {
@@ -87,20 +99,14 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 
   const onCompareEmbedded = (id: string) => {
     const { embeddedA, embeddedB } = getEmbeddedVersions(id);
-    const fields = contentTypesBranch.byId[(embeddedA ?? embeddedB).craftercms.contentTypeId].fields;
+    const fields = contentTypesBranch.byId[(embeddedA.content ?? embeddedB.content).craftercms.contentTypeId].fields;
     // It may happen that one of the embedded components we're comparing is null (doesn't exist at a specific version),
     // in that scenario we use a mock (empty) content instance.
     contextApiRef.current.setCompareSlideOutState({
       open: true,
       selectionContent: {
-        a: {
-          content: embeddedA ?? mockContentInstance,
-          xml: aXml
-        },
-        b: {
-          content: embeddedB ?? mockContentInstance,
-          xml: bXml
-        }
+        a: embeddedA,
+        b: embeddedB
       },
       fields,
       title: field.name,
@@ -111,11 +117,11 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 
   const onViewEmbedded = (id: string) => {
     const { embeddedA } = getEmbeddedVersions(id);
-    const fields = contentTypesBranch.byId[embeddedA.craftercms.contentTypeId].fields;
+    const fields = contentTypesBranch.byId[embeddedA.content.craftercms.contentTypeId].fields;
     contextApiRef.current.setViewSlideOutState({
       open: true,
       data: {
-        content: embeddedA,
+        content: embeddedA.content,
         xml: aXml,
         fields
       },

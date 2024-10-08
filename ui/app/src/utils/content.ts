@@ -20,7 +20,7 @@ import { nnou, nou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
 import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
-import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
+import { deserialize, fromString, getInnerHtml, getInnerHtmlNumber, serialize, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, replaceAccentedVowels, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
@@ -1246,6 +1246,11 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
   } else {
     return model[prop];
   }
+}
+
+export function getContentInstanceXmlValueFromProp(xml: string, prop: string): string {
+  const doc = fromString(xml).querySelector(prop);
+  return doc ? serialize(doc) : '';
 }
 
 /**

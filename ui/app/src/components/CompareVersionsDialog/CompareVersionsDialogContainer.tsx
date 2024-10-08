@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CompareVersionsDialogContainerProps, hasFieldChanged, SelectionContentVersion } from './utils';
+import { CompareVersionsDialogContainerProps, SelectionContentVersion } from './utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CompareFieldPanel } from './CompareFieldPanel';
 import DialogBody from '../DialogBody/DialogBody';
@@ -24,7 +24,7 @@ import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { forkJoin } from 'rxjs';
 import { fetchContentByCommitId } from '../../services/content';
 import { fromString } from '../../utils/xml';
-import { getContentInstanceValueFromProp, parseContentXML } from '../../utils/content';
+import { getContentInstanceXmlValueFromProp, parseContentXML } from '../../utils/content';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { ResizeableDrawer } from '../ResizeableDrawer';
 import Box from '@mui/material/Box';
@@ -134,13 +134,12 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
           : [])
       ];
       const fieldIdsWithChanges = contentTypeFields
-        .filter((field) =>
-          hasFieldChanged(
-            field,
-            getContentInstanceValueFromProp(selectionContent.a.content, field.id),
-            getContentInstanceValueFromProp(selectionContent.b.content, field.id)
-          )
-        )
+        .filter((field) => {
+          return (
+            getContentInstanceXmlValueFromProp(selectionContent.a.xml, field.id) !==
+            getContentInstanceXmlValueFromProp(selectionContent.b.xml, field.id)
+          );
+        })
         .map((field) => field.id);
       contextApiRef.current.setState({ contentTypeFields, fieldIdsWithChanges });
     }
@@ -150,6 +149,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     fields,
     selectionContent?.a.content,
     selectionContent?.b.content,
+    selectionContent?.a.xml,
+    selectionContent?.b.xml,
     contextApiRef,
     formatMessage
   ]);

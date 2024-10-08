@@ -23,11 +23,11 @@ import ContentType, { ContentTypeField } from '../../models/ContentType';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
-import { areObjectsEqual } from '../../utils/object';
-import ContentInstance, { Primitive } from '../../models/ContentInstance';
+import ContentInstance from '../../models/ContentInstance';
 import { ReactNode } from 'react';
 import { LookupTable } from '../../models';
 import { ItemDiffState } from './FieldsTypesDiffViews/RepeatGroupItems';
+import { fromString, serialize } from '../../utils/xml';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -110,28 +110,7 @@ export function removeTags(content: string): string {
   return content.replace(/<[^>]*>?/gm, '');
 }
 
-/**
- * Checks if a field has changed between two content instances. Values may be of different types (Primitive) so the
- * comparison depends on the field type.
- *
- * @param {ContentTypeField} field - The field to check.
- * @param {Primitive} contentA - The content value A.
- * @param {Primitive} contentB - The content value B.
- * @returns {boolean} - True if the field has changed, false otherwise.
- */
-export const hasFieldChanged = (field: ContentTypeField, contentA: Primitive, contentB: Primitive): boolean => {
-  const fieldType = field.type;
-  switch (fieldType) {
-    case 'text':
-    case 'html':
-    case 'image':
-    case 'textarea':
-      return contentA !== contentB;
-    case 'node-selector':
-    case 'checkbox-group':
-    case 'repeat':
-      return !areObjectsEqual(contentA ?? {}, contentB ?? {});
-    default:
-      return contentA !== contentB;
-  }
+export const getContentInstanceXmlItemFromIndex = (xml: string, index: number): string => {
+  const doc = fromString(xml).querySelectorAll('item')[index];
+  return doc ? serialize(doc) : '';
 };
