@@ -60,8 +60,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     contentTypesBranch,
     compareXml
   } = props;
-  const [{ fieldsViewState, contentTypeFields, fieldIdsWithChanges, showOnlyChanges, accordionView }, contextApiRef] =
-    useVersionsDialogContext();
+  const [{ fieldsViewState, showOnlyChanges, accordionView }, contextApiRef] = useVersionsDialogContext();
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
@@ -114,6 +113,31 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const selectedFieldRef = useRef(null);
   selectedFieldRef.current = selectedField;
   const contentType = contentTypesBranch?.byId[item.contentTypeId];
+  const contentTypeFields = useMemo(() => {
+    return isCompareDataReady
+      ? [
+          ...Object.values(fields ?? contentType.fields),
+          ...((selectionContent.a.content ?? selectionContent.b.content).craftercms
+            ? getStudioContentInternalFields(formatMessage)
+            : [])
+        ]
+      : [];
+  }, [contentType, fields, isCompareDataReady, formatMessage, selectionContent]);
+  const fieldIdsWithChanges = useMemo(
+    () =>
+      contentTypeFields
+        .filter(
+          (field) =>
+            getContentInstanceXmlValueFromProp(selectionContent.a.xml, field.id) !==
+            getContentInstanceXmlValueFromProp(selectionContent.b.xml, field.id)
+        )
+        .map((field) => field.id),
+    [contentTypeFields, selectionContent.a, selectionContent.b]
+  );
+  const filteredContentTypeFields = showOnlyChanges
+    ? contentTypeFields.filter((field) => fieldIdsWithChanges.includes(field.id))
+    : contentTypeFields;
+
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
 
@@ -124,36 +148,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
       accordionView: viewModes?.accordionView ?? false
     });
   });
-
-  useEffect(() => {
-    if (isCompareDataReady) {
-      const contentTypeFields = [
-        ...Object.values(fields ?? contentType.fields),
-        ...((selectionContent.a.content ?? selectionContent.b.content).craftercms
-          ? getStudioContentInternalFields(formatMessage)
-          : [])
-      ];
-      const fieldIdsWithChanges = contentTypeFields
-        .filter((field) => {
-          return (
-            getContentInstanceXmlValueFromProp(selectionContent.a.xml, field.id) !==
-            getContentInstanceXmlValueFromProp(selectionContent.b.xml, field.id)
-          );
-        })
-        .map((field) => field.id);
-      contextApiRef.current.setState({ contentTypeFields, fieldIdsWithChanges });
-    }
-  }, [
-    isCompareDataReady,
-    contentType?.fields,
-    fields,
-    selectionContent?.a.content,
-    selectionContent?.b.content,
-    selectionContent?.a.xml,
-    selectionContent?.b.xml,
-    contextApiRef,
-    formatMessage
-  ]);
 
   useEffect(() => {
     if (preFetchedContent) {
@@ -346,6 +340,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                           <FieldVersionToolbar
                             field={field}
                             showFieldsNavigation={false}
+                            contentTypeFields={filteredContentTypeFields}
                             isDiff={fieldIdsWithChanges.includes(field.id)}
                             justContent={true}
                           />
@@ -375,6 +370,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   <Box p={2} height="100%">
                     <FieldVersionToolbar
                       field={selectedField}
+                      contentTypeFields={filteredContentTypeFields}
                       onSelectField={onSelectFieldFromContent}
                       isDiff={fieldIdsWithChanges.includes(selectedField.id)}
                     />

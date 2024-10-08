@@ -15,7 +15,7 @@
  */
 
 import { ContentTypeField } from '../../models/ContentType';
-import React, { ElementType, useEffect, useMemo, useState } from 'react';
+import React, { ElementType, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -28,7 +28,7 @@ import { fromString, serialize } from '../../utils/xml';
 import { MonacoWrapper } from '../MonacoWrapper';
 import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
 import RepeatGroupItems from './FieldsTypesDiffViews/RepeatGroupItems';
-import { hasFieldChanged, SelectionContentVersion } from './utils';
+import { SelectionContentVersion } from './utils';
 import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import { countLines } from '../../utils/string';
 import { ErrorBoundary } from '../ErrorBoundary';
@@ -63,7 +63,6 @@ export const typesDiffMap: Record<string, ElementType> = {
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const { a, b, field, onSelectField, showFieldsNavigation = true, dynamicHeight } = props;
   const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
-  const [unchanged, setUnchanged] = useState<boolean>(true);
   const fieldType = field.type;
   const locale = useLocale();
   const versionAXmlDoc = fromString(a.xml);
@@ -78,6 +77,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     versionBXmlDoc.querySelector(`item > ${field.id}`);
   const versionAFieldXml = versionAFieldDoc ? serialize(versionAFieldDoc) : '';
   const versionBFieldXml = versionBFieldDoc ? serialize(versionBFieldDoc) : '';
+  const unchanged = versionAFieldXml === versionBFieldXml;
   const contentA = getContentInstanceValueFromProp(a.content, field.id);
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
   const longerXmlContent = versionAFieldXml.length > versionBFieldXml.length ? versionAFieldXml : versionBFieldXml;
@@ -153,10 +153,6 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
         <Box>{JSON.stringify(content)}</Box>
       );
   }
-
-  useEffect(() => {
-    setUnchanged(!hasFieldChanged(field, contentA, contentB));
-  }, [contentA, contentB, field]);
 
   return (
     <Box height="calc(100% - 70px)" display="flex" flexDirection="column">

@@ -37,6 +37,7 @@ import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialo
 
 interface FieldVersionToolbarProps {
   field: ContentTypeField;
+  contentTypeFields: ContentTypeField[];
   isDiff?: boolean;
   actions?: ReactNode;
   showFieldsNavigation?: boolean;
@@ -45,15 +46,17 @@ interface FieldVersionToolbarProps {
 }
 
 export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
-  const { field, onSelectField, actions, showFieldsNavigation = true, isDiff = true, justContent } = props;
+  const {
+    field,
+    contentTypeFields,
+    onSelectField,
+    actions,
+    showFieldsNavigation = true,
+    isDiff = true,
+    justContent
+  } = props;
   const fieldType = field.type;
-  const [
-    { fieldsViewState, contentTypeFields: unfilteredFields, fieldIdsWithChanges, showOnlyChanges },
-    contextApiRef
-  ] = useVersionsDialogContext();
-  const contentTypeFields = unfilteredFields.filter((f) =>
-    showOnlyChanges ? fieldIdsWithChanges.includes(f.id) : true
-  );
+  const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
   const currentFieldIndex = contentTypeFields.findIndex((f) => f.id === field.id);
   const nextField = contentTypeFields[currentFieldIndex + 1] || contentTypeFields[0];
   const previousField = contentTypeFields[currentFieldIndex - 1] || contentTypeFields[contentTypeFields.length - 1];

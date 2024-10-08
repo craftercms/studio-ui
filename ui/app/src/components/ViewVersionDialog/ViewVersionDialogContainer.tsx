@@ -55,7 +55,15 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   const [xml, setXml] = useState<string>(preFetchedData?.xml);
   const siteId = useActiveSiteId();
   const { formatMessage } = useIntl();
-  const [{ fieldsViewState, accordionView, contentTypeFields }, contextApiRef] = useVersionsDialogContext();
+  const contentTypeFields: ContentTypeField[] = useMemo(() => {
+    return content && (preFetchedData?.fields || contentTypesBranch?.byId[content.craftercms.contentTypeId].fields)
+      ? [
+          ...Object.values(preFetchedData?.fields ?? contentTypesBranch?.byId[content.craftercms.contentTypeId].fields),
+          ...(content.crafterms ? getStudioContentInternalFields(formatMessage) : [])
+        ]
+      : [];
+  }, [content, contentTypesBranch?.byId, formatMessage, preFetchedData?.fields]);
+  const [{ fieldsViewState, accordionView }, contextApiRef] = useVersionsDialogContext();
   const isViewDataReady = Boolean(content && xml);
   const [selectedField, setSelectedField] = useState<ContentTypeField>(null);
   const context = useMemo(() => ({ content, fields: contentTypeFields }), [content, contentTypeFields]);
@@ -70,17 +78,6 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
       accordionView: getViewVersionDialogViewModes(username) ?? false
     });
   });
-
-  useEffect(() => {
-    if (content && (preFetchedData?.fields || contentTypesBranch?.byId[content.craftercms.contentTypeId].fields)) {
-      contextApiRef.current.setState({
-        contentTypeFields: [
-          ...Object.values(preFetchedData?.fields ?? contentTypesBranch?.byId[content.craftercms.contentTypeId].fields),
-          ...(content.crafterms ? getStudioContentInternalFields(formatMessage) : [])
-        ]
-      });
-    }
-  }, [content, contentTypesBranch?.byId, preFetchedData?.fields, contextApiRef, formatMessage]);
 
   useEffect(() => {
     if (preFetchedData) {
@@ -189,6 +186,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                       summary={
                         <FieldVersionToolbar
                           field={field}
+                          contentTypeFields={contentTypeFields}
                           showFieldsNavigation={false}
                           isDiff={false}
                           justContent={true}
@@ -207,7 +205,12 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                   ))
                 ) : selectedField ? (
                   <>
-                    <FieldVersionToolbar field={selectedField} isDiff={false} onSelectField={onSelectField} />
+                    <FieldVersionToolbar
+                      field={selectedField}
+                      contentTypeFields={contentTypeFields}
+                      isDiff={false}
+                      onSelectField={onSelectField}
+                    />
                     <Box height="calc(100% - 60px)" display="flex" flexDirection="column">
                       <ContentFieldView
                         content={content && getContentInstanceValueFromProp(content, selectedField.id)}
