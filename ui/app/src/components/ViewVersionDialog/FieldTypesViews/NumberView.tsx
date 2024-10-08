@@ -14,19 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@mui/material/Typography';
+// TODO: props, need to inherit from some other prop
 import Box from '@mui/material/Box';
 import React from 'react';
 
-// TODO: props, need to inherit from some other prop
-export function Image(props) {
+export function NumberView(props) {
   const { contentA: content } = props;
-  return (
-    <Box sx={{ textAlign: 'center' }}>
-      <img src={content as string} alt="" />
-      <Typography variant="subtitle2">{content as string}</Typography>
-    </Box>
-  );
+  return <Box sx={{ textAlign: 'center' }}>{`${content}`}</Box>;
 }
 
-export default Image;
+export default NumberView;

@@ -23,7 +23,7 @@ import React from 'react';
 import useSelection from '../../../hooks/useSelection';
 import { useVersionsDialogContext } from '../../CompareVersionsDialog/VersionsDialogContext';
 
-export function RepeatGroup(props) {
+export function RepeatGroupView(props) {
   const { contentA: content, xml, field } = props;
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const [, contextApiRef] = useVersionsDialogContext();
@@ -66,4 +66,4 @@ export function RepeatGroup(props) {
   );
 }
 
-export default RepeatGroup;
+export default RepeatGroupView;

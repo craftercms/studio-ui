@@ -14,20 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import AsyncVideoPlayer from '../../AsyncVideoPlayer';
-import React from 'react';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import DiffViewLayout from './DiffViewLayout';
+import CheckboxGroupView from '../../ViewVersionDialog/FieldTypesViews/CheckboxGroupView';
 
 // TODO: props, need to inherit from some other prop
-export function Video(props) {
-  const { contentA: content } = props;
+export function CheckboxGroupDiffView(props) {
+  const { contentA, contentB, field } = props;
   return (
-    <Box sx={{ textAlign: 'center' }}>
-      <AsyncVideoPlayer playerOptions={{ src: content as string, controls: true, width: 400 }} />
-      <Typography variant="subtitle2">{content as string}</Typography>
-    </Box>
+    <DiffViewLayout
+      contentA={contentA}
+      contentB={contentB}
+      field={field}
+      renderContent={(content) => <CheckboxGroupView contentA={content} />}
+    />
   );
 }
 
-export default Video;
+export default CheckboxGroupDiffView;

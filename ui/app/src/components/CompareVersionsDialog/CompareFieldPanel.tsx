@@ -16,14 +16,8 @@
 
 import { ContentTypeField } from '../../models/ContentType';
 import React, { ElementType, useMemo } from 'react';
-import { FormattedMessage } from 'react-intl';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { getContentInstanceValueFromProp } from '../../utils/content';
-import Tooltip from '@mui/material/Tooltip';
-import useLocale from '../../hooks/useLocale';
-import { asLocalizedDateTime, convertUtcTimeToTimezone } from '../../utils/datetime';
-import AsyncVideoPlayer from '../AsyncVideoPlayer';
 import { fromString, serialize } from '../../utils/xml';
 import { MonacoWrapper } from '../MonacoWrapper';
 import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
@@ -33,7 +27,14 @@ import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import { countLines } from '../../utils/string';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialogContext';
-import DefaultFieldDiffView from './FieldsTypesDiffViews/DefaultFieldDiffView';
+import DefaultDiffView from './FieldsTypesDiffViews/DefaultDiffView';
+import BooleanDiffView from './FieldsTypesDiffViews/BooleanDiffView';
+import CheckboxGroupDiffView from './FieldsTypesDiffViews/CheckboxGroupDiffView';
+import ImageDiffView from './FieldsTypesDiffViews/ImageDiffView';
+import VideoDiffView from './FieldsTypesDiffViews/VideoDiffView';
+import TimeDiffView from './FieldsTypesDiffViews/TimeDiffView';
+import DateTimeDiffView from './FieldsTypesDiffViews/DateTimeDiffView';
+import { NumberDiffView } from './FieldsTypesDiffViews/NumberDiffView';
 
 export interface CompareFieldPanelProps {
   a: SelectionContentVersion;
@@ -41,7 +42,6 @@ export interface CompareFieldPanelProps {
   field: ContentTypeField;
   dynamicHeight?: boolean;
   onSelectField?(field: ContentTypeField): void;
-  showFieldsNavigation?: boolean;
 }
 
 export const typesDiffMap: Record<string, ElementType> = {
@@ -49,22 +49,21 @@ export const typesDiffMap: Record<string, ElementType> = {
   textarea: MonacoWrapper,
   html: MonacoWrapper,
   'node-selector': ContentInstanceComponents,
-  'checkbox-group': MonacoWrapper,
+  'checkbox-group': CheckboxGroupDiffView,
   repeat: RepeatGroupItems,
-  image: DefaultFieldDiffView,
-  'video-picker': DefaultFieldDiffView,
-  time: DefaultFieldDiffView,
-  'date-time': DefaultFieldDiffView,
-  boolean: DefaultFieldDiffView,
-  'numeric-input': DefaultFieldDiffView,
-  dropdown: DefaultFieldDiffView
+  image: ImageDiffView,
+  'video-picker': VideoDiffView,
+  time: TimeDiffView,
+  'date-time': DateTimeDiffView,
+  boolean: BooleanDiffView,
+  'numeric-input': NumberDiffView,
+  dropdown: MonacoWrapper
 };
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
-  const { a, b, field, onSelectField, showFieldsNavigation = true, dynamicHeight } = props;
+  const { a, b, field, onSelectField, dynamicHeight } = props;
   const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
   const fieldType = field.type;
-  const locale = useLocale();
   const versionAXmlDoc = fromString(a.xml);
   const versionBXmlDoc = fromString(b.xml);
   const versionAFieldDoc =
@@ -82,7 +81,7 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const contentB = getContentInstanceValueFromProp(b.content, field.id);
   const longerXmlContent = versionAFieldXml.length > versionBFieldXml.length ? versionAFieldXml : versionBFieldXml;
   const monacoEditorHeight = dynamicHeight ? (countLines(longerXmlContent) < 15 ? '200px' : '600px') : '100%';
-  const DiffComponent = typesDiffMap[fieldType] ?? DefaultFieldDiffView;
+  const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
   const { compareXml, cleanText, xmlEditorOptions, compareMode } = viewState;
   const setCompareModeDisabled = useMemo(
@@ -94,65 +93,18 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
     [contextApiRef, field.id]
   );
   const diffComponentProps = {
-    contentA:
-      fieldType !== 'checkbox-group'
-        ? contentA
-        : (contentA ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n'),
-    contentB:
-      fieldType !== 'checkbox-group'
-        ? contentB
-        : (contentB ?? []).map((item) => `${item.value_smv} (${item.key})`).join('\n'),
+    contentA,
+    contentB,
     aXml: versionAFieldXml,
     bXml: versionBFieldXml,
     isDiff: true,
     isHTML: fieldType === 'html',
-    fields: field.fields,
     cleanText,
     compareMode,
-    verticalLayout: fieldType === 'image' || fieldType === 'video-picker',
-    renderContent: null,
     field,
     setCompareModeDisabled,
     editorProps: { options: xmlEditorOptions, height: monacoEditorHeight }
   };
-
-  if (DiffComponent === DefaultFieldDiffView) {
-    diffComponentProps.renderContent = (content) =>
-      fieldType === 'image' ? (
-        <Box sx={{ height: 'calc(50% - 9px)', textAlign: 'center' }}>
-          <img src={content} alt="" style={{ maxHeight: 'calc(100% - 20px)' }} />
-          <Typography variant="subtitle2">{content}</Typography>
-        </Box>
-      ) : fieldType === 'video-picker' ? (
-        <Box sx={{ textAlign: 'center' }}>
-          <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
-        </Box>
-      ) : fieldType === 'time' ? (
-        <Typography>
-          {content ? convertUtcTimeToTimezone(content, locale.dateTimeFormatOptions?.timeZone) : ''}
-        </Typography>
-      ) : fieldType === 'date-time' ? (
-        <Tooltip title={content}>
-          <Typography>
-            {content
-              ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
-              : ''}
-          </Typography>
-        </Tooltip>
-      ) : fieldType === 'boolean' ? (
-        <Typography>
-          {content ? <FormattedMessage defaultMessage="Checked" /> : <FormattedMessage defaultMessage="Unchecked" />}
-        </Typography>
-      ) : fieldType === 'checkbox-group' ? (
-        <Box>
-          {content.map((item) => (
-            <Typography>{item.key}</Typography>
-          ))}
-        </Box>
-      ) : (
-        <Box>{JSON.stringify(content)}</Box>
-      );
-  }
 
   return (
     <Box height="calc(100% - 70px)" display="flex" flexDirection="column">
@@ -162,7 +114,6 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
           field={field}
           xml={a.xml}
           onSelectField={onSelectField}
-          showToolbarFieldNavigation={showFieldsNavigation}
           dynamicHeight={dynamicHeight}
         />
       ) : (

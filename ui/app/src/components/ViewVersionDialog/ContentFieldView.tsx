@@ -23,17 +23,17 @@ import { nnou } from '../../utils/object';
 import { countLines } from '../../utils/string';
 import { initialFieldViewState, useVersionsDialogContext } from '../CompareVersionsDialog/VersionsDialogContext';
 import DefaultView from './FieldTypesViews/DefaultView';
-import Image from './FieldTypesViews/Image';
-import Video from './FieldTypesViews/Video';
-import Time from './FieldTypesViews/Time';
-import DateTime from './FieldTypesViews/DateTime';
-import BooleanView from './FieldTypesViews/Boolean';
+import ImageView from './FieldTypesViews/ImageView';
+import VideoView from './FieldTypesViews/VideoView';
+import TimeView from './FieldTypesViews/TimeView';
+import DateTimeView from './FieldTypesViews/DateTimeView';
+import BooleanView from './FieldTypesViews/BooleanView';
 import NodeSelector from './FieldTypesViews/NodeSelector';
-import RepeatGroup from './FieldTypesViews/RepeatGroup';
-import Number from './FieldTypesViews/Number';
+import RepeatGroupView from './FieldTypesViews/RepeatGroupView';
+import NumberView from './FieldTypesViews/NumberView';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import CheckboxGroup from './FieldTypesViews/CheckboxGroup';
+import CheckboxGroupView from './FieldTypesViews/CheckboxGroupView';
 
 export interface ContentFieldViewProps {
   content: Primitive;
@@ -49,15 +49,15 @@ export const typesViewMap = {
   textarea: MonacoWrapper,
   html: MonacoWrapper,
   'node-selector': NodeSelector,
-  'checkbox-group': CheckboxGroup,
-  repeat: RepeatGroup,
-  image: Image,
-  'video-picker': Video,
-  time: Time,
-  'date-time': DateTime,
+  'checkbox-group': CheckboxGroupView,
+  repeat: RepeatGroupView,
+  image: ImageView,
+  'video-picker': VideoView,
+  time: TimeView,
+  'date-time': DateTimeView,
   boolean: BooleanView,
   'page-nav-order': BooleanView,
-  'numeric-input': Number,
+  'numeric-input': NumberView,
   dropdown: MonacoWrapper
 };
 

@@ -14,13 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
+import Typography from '@mui/material/Typography';
+import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import React from 'react';
 
-export function Number(props) {
+// TODO: props, need to inherit from some other prop
+export function BooleanView(props) {
   const { contentA: content } = props;
-  return <Box sx={{ textAlign: 'center' }}>{`${content}`}</Box>;
+  return (
+    <Box sx={{ textAlign: 'center' }}>
+      <Typography>
+        {content ? <FormattedMessage defaultMessage="Checked" /> : <FormattedMessage defaultMessage="Unchecked" />}
+      </Typography>
+    </Box>
+  );
 }
 
-export default Number;
+export default BooleanView;

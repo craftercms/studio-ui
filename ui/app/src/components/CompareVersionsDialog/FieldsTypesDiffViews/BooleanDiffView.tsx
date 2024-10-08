@@ -14,23 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
-import Typography from '@mui/material/Typography';
-import { convertUtcTimeToTimezone } from '../../../utils/datetime';
-import Box from '@mui/material/Box';
-import React from 'react';
-import useLocale from '../../../hooks/useLocale';
+import DiffViewLayout from './DiffViewLayout';
+import BooleanView from '../../ViewVersionDialog/FieldTypesViews/BooleanView';
 
-export function Time(props) {
-  const { contentA: content } = props;
-  const locale = useLocale();
+// TODO: props, need to inherit from some other prop
+export function BooleanDiffView(props) {
+  const { contentA, contentB, field } = props;
   return (
-    <Box sx={{ textAlign: 'center' }}>
-      <Typography>
-        {content ? convertUtcTimeToTimezone(content as string, locale.dateTimeFormatOptions?.timeZone) : ''}
-      </Typography>
-    </Box>
+    <DiffViewLayout
+      contentA={contentA}
+      contentB={contentB}
+      field={field}
+      renderContent={(content) => <BooleanView contentA={content} />}
+    />
   );
 }
 
-export default Time;
+export default BooleanDiffView;

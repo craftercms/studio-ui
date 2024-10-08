@@ -34,7 +34,7 @@ import DiffCollectionItem from './DiffCollectionItem';
 import { useVersionsDialogContext } from '../VersionsDialogContext';
 import { mockContentInstance } from '../../../utils/content';
 
-interface ContentInstanceComponentsProps {
+export interface ContentInstanceComponentsProps {
   contentA: ContentInstance[];
   contentB: ContentInstance[];
   aXml: string;
@@ -71,8 +71,8 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
   const getEmbeddedVersions = (
     id: string
   ): {
-    embeddedA: ContentInstance;
-    embeddedB: ContentInstance;
+    embeddedA: SelectionContentVersion;
+    embeddedB: SelectionContentVersion;
   } => {
     const embeddedAIndex = contentA.findIndex((item) => item.craftercms?.id === id);
     const embeddedBIndex = contentB.findIndex((item) => item.craftercms?.id === id);

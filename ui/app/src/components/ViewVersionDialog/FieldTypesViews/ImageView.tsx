@@ -19,13 +19,14 @@ import Box from '@mui/material/Box';
 import React from 'react';
 
 // TODO: props, need to inherit from some other prop
-export function CheckboxGroup(props) {
+export function ImageView(props) {
   const { contentA: content } = props;
   return (
     <Box sx={{ textAlign: 'center' }}>
-      {content?.map((item) => <Typography key={item.key as string}>{`${item.value_smv} (${item.key})`}</Typography>)}
+      <img src={content as string} alt="" />
+      <Typography variant="subtitle2">{content as string}</Typography>
     </Box>
   );
 }
 
-export default CheckboxGroup;
+export default ImageView;

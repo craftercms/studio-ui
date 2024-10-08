@@ -14,21 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Typography from '@mui/material/Typography';
-import { FormattedMessage } from 'react-intl';
-import Box from '@mui/material/Box';
-import React from 'react';
+import DiffViewLayout from './DiffViewLayout';
+import TimeView from '../../ViewVersionDialog/FieldTypesViews/TimeView';
 
 // TODO: props, need to inherit from some other prop
-export function Boolean(props) {
-  const { contentA: content } = props;
+export function TimeDiffView(props) {
+  const { contentA, contentB, field } = props;
   return (
-    <Box sx={{ textAlign: 'center' }}>
-      <Typography>
-        {content ? <FormattedMessage defaultMessage="Checked" /> : <FormattedMessage defaultMessage="Unchecked" />}
-      </Typography>
-    </Box>
+    <DiffViewLayout
+      contentA={contentA}
+      contentB={contentB}
+      field={field}
+      renderContent={(content) => <TimeView contentA={content} />}
+    />
   );
 }
 
-export default Boolean;
+export default TimeDiffView;

@@ -27,13 +27,12 @@ import { SelectionContentVersion } from '../utils';
 import DiffCollectionItem from './DiffCollectionItem';
 import { useVersionsDialogContext } from '../VersionsDialogContext';
 
-interface RepeatGroupItemsProps {
+export interface RepeatGroupItemsProps {
   contentA: ContentInstance[];
   contentB: ContentInstance[];
   aXml: string;
   bXml: string;
   compareMode: boolean;
-  fields: LookupTable<ContentTypeField>;
   field: ContentTypeField;
   setCompareModeDisabled?(disabled: boolean): void;
 }
@@ -42,7 +41,8 @@ export type ItemDiffState = 'changed' | 'unchanged' | 'new' | 'deleted';
 type RepItemDiffSide = 'a' | 'b';
 
 export function RepeatGroupItems(props: RepeatGroupItemsProps) {
-  const { contentA, contentB, aXml, bXml, compareMode, fields, field, setCompareModeDisabled } = props;
+  const { contentA, contentB, aXml, bXml, compareMode, field, setCompareModeDisabled } = props;
+  const fields = field.fields;
   const [repeatGroupDiff, setRepeatGroupDiff] = useState([]);
   const [itemsCompareModeSelection, setItemsCompareModeSelection] = useSpreadState<{
     a: SelectionContentVersion & {
@@ -204,6 +204,7 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     const diffItemsSameSide =
       repeatGroupDiff.every((entry) => nou(entry.a)) || repeatGroupDiff.every((entry) => nou(entry.b));
     if (diffItemsSameSide) {
+      // TODO: contextApiRef.current.setFieldViewState...
       setCompareModeDisabled(true);
     } else {
       setCompareModeDisabled(false);

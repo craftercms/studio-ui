@@ -14,32 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
-import Box from '@mui/material/Box';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import { asLocalizedDateTime } from '../../../utils/datetime';
+import AsyncVideoPlayer from '../../AsyncVideoPlayer';
 import React from 'react';
-import useLocale from '../../../hooks/useLocale';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
-export function DateTime(props) {
+// TODO: props, need to inherit from some other prop
+export function VideoView(props) {
   const { contentA: content } = props;
-  const locale = useLocale();
   return (
     <Box sx={{ textAlign: 'center' }}>
-      <Tooltip title={content as string}>
-        <Typography>
-          {content
-            ? asLocalizedDateTime(
-                new Date(content as string).getTime(),
-                locale.localeCode,
-                locale.dateTimeFormatOptions
-              )
-            : ''}
-        </Typography>
-      </Tooltip>
+      <AsyncVideoPlayer playerOptions={{ src: content as string, controls: true, width: 400 }} />
+      <Typography variant="subtitle2">{content as string}</Typography>
     </Box>
   );
 }
 
-export default DateTime;
+export default VideoView;

@@ -18,28 +18,30 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import React, { ReactNode } from 'react';
-import ContentInstance from '../../../models/ContentInstance';
+import { Primitive } from '../../../models/ContentInstance';
+import { ContentTypeField } from '../../../models';
 
 export interface DefaultFieldDiffViewProps {
-  contentA: ContentInstance;
-  contentB: ContentInstance;
+  contentA: Primitive;
+  contentB: Primitive;
+  field: ContentTypeField;
   renderContent: (content) => ReactNode;
   noContent?: ReactNode;
-  verticalLayout?: boolean;
 }
 
-export function DefaultFieldDiffView(props: DefaultFieldDiffViewProps) {
+export function DiffViewLayout(props: DefaultFieldDiffViewProps) {
   const {
     contentA,
     contentB,
+    field,
     renderContent,
     noContent = (
       <Box>
         <Typography color="textSecondary">no content set</Typography>
       </Box>
-    ),
-    verticalLayout = false
+    )
   } = props;
+  const verticalLayout = field.type === 'image' || field.type === 'video-picker';
 
   return (
     <Box
@@ -61,4 +63,4 @@ export function DefaultFieldDiffView(props: DefaultFieldDiffViewProps) {
   );
 }
 
-export default DefaultFieldDiffView;
+export default DiffViewLayout;
