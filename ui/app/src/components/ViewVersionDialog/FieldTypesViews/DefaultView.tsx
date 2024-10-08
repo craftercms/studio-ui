@@ -15,18 +15,12 @@
  */
 
 import React from 'react';
-import { MonacoWrapper } from '../../MonacoWrapper';
-
-// interface DefaultViewProps {
-//   field: ContentTypeField;
-//   contentA: Primitive;
-//   xml: string;
-// }
+import TextView from './TextView';
 
 // TODO: props, need to inherit from some other prop
 export function DefaultView(props) {
   const { xml, editorProps } = props;
-  return <MonacoWrapper contentA={xml} editorProps={editorProps} />;
+  return <TextView contentA={xml} editorProps={editorProps} />;
 }
 
 export default DefaultView;

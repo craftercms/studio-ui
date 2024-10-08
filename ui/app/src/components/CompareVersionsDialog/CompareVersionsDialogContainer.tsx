@@ -33,7 +33,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { FormattedMessage, useIntl } from 'react-intl';
 import EmptyState from '../EmptyState';
 import useSelection from '../../hooks/useSelection';
-import { MonacoWrapper } from '../MonacoWrapper';
 import ListItemText, { listItemTextClasses } from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { ItemTypeIcon } from '../ItemTypeIcon';
@@ -49,6 +48,7 @@ import { ContentTypeField } from '../../models';
 import { getCompareVersionDialogViewModes, setCompareVersionDialogViewModes } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import useMount from '../../hooks/useMount';
+import TextDiffView from './FieldsTypesDiffViews/TextDiffView';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const {
@@ -231,11 +231,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
         ) : compareVersionsBranch?.error || contentTypesBranch?.error ? (
           <ApiResponseErrorState error={compareVersionsBranch.error ?? contentTypesBranch.error} />
         ) : compareXml ? (
-          <MonacoWrapper
+          <TextDiffView
             contentA={selectionContent.a.xml}
             contentB={selectionContent.b.xml}
-            isHTML={false}
-            isDiff
             editorProps={{ height: '100%' }}
           />
         ) : (

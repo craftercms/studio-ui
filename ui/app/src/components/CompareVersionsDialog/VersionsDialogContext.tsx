@@ -18,7 +18,7 @@ import { createContext, MutableRefObject, useContext } from 'react';
 import { DiffEditorProps } from '@monaco-editor/react';
 import { CompareVersionsDialogProps } from './utils';
 import { ViewVersionDialogProps } from '../ViewVersionDialog/utils';
-import { ContentTypeField, LookupTable } from '../../models';
+import { LookupTable } from '../../models';
 import ContentType from '../../models/ContentType';
 
 export interface FieldViewState {
@@ -26,7 +26,7 @@ export interface FieldViewState {
   cleanText: boolean;
   compareMode: boolean;
   compareModeDisabled: boolean;
-  xmlEditorOptions: DiffEditorProps['options'];
+  monacoOptions: DiffEditorProps['options'];
 }
 
 export interface VersionsDialogContextProps {
@@ -43,7 +43,7 @@ export const initialFieldViewState = {
   cleanText: false,
   compareMode: false,
   compareModeDisabled: false,
-  xmlEditorOptions: {
+  monacoOptions: {
     ignoreTrimWhitespace: false,
     renderSideBySide: true,
     diffWordWrap: 'off' as DiffEditorProps['options']['diffWordWrap'],

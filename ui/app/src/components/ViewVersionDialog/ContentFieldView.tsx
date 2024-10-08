@@ -15,7 +15,6 @@
  */
 
 import { ContentTypeField, Primitive } from '../../models';
-import { MonacoWrapper } from '../MonacoWrapper';
 import Box from '@mui/material/Box';
 import React from 'react';
 import { fromString, serialize } from '../../utils/xml';
@@ -34,6 +33,7 @@ import NumberView from './FieldTypesViews/NumberView';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import CheckboxGroupView from './FieldTypesViews/CheckboxGroupView';
+import TextView from './FieldTypesViews/TextView';
 
 export interface ContentFieldViewProps {
   content: Primitive;
@@ -45,9 +45,9 @@ export interface ContentFieldViewProps {
 }
 
 export const typesViewMap = {
-  text: MonacoWrapper,
-  textarea: MonacoWrapper,
-  html: MonacoWrapper,
+  text: TextView,
+  textarea: TextView,
+  html: TextView,
   'node-selector': NodeSelector,
   'checkbox-group': CheckboxGroupView,
   repeat: RepeatGroupView,
@@ -58,7 +58,7 @@ export const typesViewMap = {
   boolean: BooleanView,
   'page-nav-order': BooleanView,
   'numeric-input': NumberView,
-  dropdown: MonacoWrapper
+  dropdown: TextView
 };
 
 export function ContentFieldView(props: ContentFieldViewProps) {
@@ -70,7 +70,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   const fieldXml = fieldDoc ? serialize(fieldDoc) : '';
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
-  const { compareXml: viewXml, cleanText, xmlEditorOptions } = viewState;
+  const { compareXml: viewXml, cleanText, monacoOptions } = viewState;
   const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(fieldXml ?? '') < 15 ? '200px' : '600px';
   const ViewComponent = typesViewMap[field.type] ?? DefaultView;
   const viewComponentProps = {
@@ -80,7 +80,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
     isHTML: true,
     cleanText,
     editorProps: {
-      options: xmlEditorOptions,
+      options: monacoOptions,
       height: monacoEditorHeight
     }
   };
@@ -89,7 +89,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   return (
     <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
       {viewXml ? (
-        <MonacoWrapper contentA={fieldXml} isHTML={true} editorProps={viewComponentProps.editorProps} />
+        <TextView contentA={fieldXml} editorProps={viewComponentProps.editorProps} />
       ) : nnou(ViewComponent) ? (
         noContentSet ? (
           <Box sx={{ textAlign: 'center' }}>

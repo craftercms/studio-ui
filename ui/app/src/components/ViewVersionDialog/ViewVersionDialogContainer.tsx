@@ -23,7 +23,6 @@ import { getContentInstanceValueFromProp, parseContentXML } from '../../utils/co
 import { fromString } from '../../utils/xml';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
-import { MonacoWrapper } from '../MonacoWrapper';
 import Box from '@mui/material/Box';
 import { ResizeableDrawer } from '../ResizeableDrawer';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -46,6 +45,7 @@ import ContentInstance from '../../models/ContentInstance';
 import useActiveUser from '../../hooks/useActiveUser';
 import { getViewVersionDialogViewModes, setViewVersionDialogViewModes } from '../../utils/state';
 import useMount from '../../hooks/useMount';
+import TextView from './FieldTypesViews/TextView';
 
 const VersionDialogContext = createContext(null);
 
@@ -134,7 +134,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
         ) : error ? (
           <ApiResponseErrorState error={error} />
         ) : showXml ? (
-          <MonacoWrapper contentA={xml} isHTML={false} editorProps={{ height: '100%' }} />
+          <TextView contentA={xml} editorProps={{ height: '100%' }} />
         ) : (
           <>
             <ResizeableDrawer

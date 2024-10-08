@@ -31,10 +31,11 @@ import { FormattedMessage } from 'react-intl';
 import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
 import { useHotkeys } from 'react-hotkeys-hook';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
-import { MonacoWrapper } from '../MonacoWrapper';
 import { typesDiffMap } from './CompareFieldPanel';
 import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialogContext';
 import { typesViewMap } from '../ViewVersionDialog/ContentFieldView';
+import TextView from '../ViewVersionDialog/FieldTypesViews/TextView';
+import TextDiffView from './FieldsTypesDiffViews/TextDiffView';
 
 interface FieldVersionToolbarProps {
   field: ContentTypeField;
@@ -62,11 +63,12 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
   const nextField = contentTypeFields[currentFieldIndex + 1] || contentTypeFields[0];
   const previousField = contentTypeFields[currentFieldIndex - 1] || contentTypeFields[contentTypeFields.length - 1];
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
-  const { compareXml, cleanText, xmlEditorOptions, compareMode, compareModeDisabled } = viewState;
+  const { compareXml, cleanText, monacoOptions, compareMode, compareModeDisabled } = viewState;
   const showDivider =
     (!compareXml && fieldType === 'repeat') ||
     compareXml ||
-    typesDiffMap[fieldType] === MonacoWrapper ||
+    typesDiffMap[fieldType] === TextView ||
+    typesDiffMap[fieldType] === TextDiffView ||
     Boolean(actions);
   const isMappedFieldType = isDiff ? Boolean(typesDiffMap[fieldType]) : Boolean(typesViewMap[fieldType]);
 
@@ -144,18 +146,18 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
               <FormattedMessage defaultMessage="Compare" />
             </Button>
           )}
-          {(compareXml || typesDiffMap[fieldType] === MonacoWrapper) && (
+          {(compareXml || typesDiffMap[fieldType] === TextDiffView || typesViewMap[fieldType] === TextView) && (
             <>
               {isDiff && (
                 <>
                   <Button
                     onClick={() => {
                       contextApiRef.current.setFieldViewEditorOptionsState(field.id, {
-                        ignoreTrimWhitespace: !xmlEditorOptions.ignoreTrimWhitespace
+                        ignoreTrimWhitespace: !monacoOptions.ignoreTrimWhitespace
                       });
                     }}
                   >
-                    {viewState?.xmlEditorOptions.ignoreTrimWhitespace ? (
+                    {viewState?.monacoOptions.ignoreTrimWhitespace ? (
                       <FormattedMessage defaultMessage="Show whitespace" />
                     ) : (
                       <FormattedMessage defaultMessage="Hide whitespace" />
@@ -164,11 +166,11 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
                   <Button
                     onClick={() => {
                       contextApiRef.current.setFieldViewEditorOptionsState(field.id, {
-                        renderSideBySide: !xmlEditorOptions.renderSideBySide
+                        renderSideBySide: !monacoOptions.renderSideBySide
                       });
                     }}
                   >
-                    {xmlEditorOptions.renderSideBySide ? (
+                    {monacoOptions.renderSideBySide ? (
                       <FormattedMessage defaultMessage="Unified view" />
                     ) : (
                       <FormattedMessage defaultMessage="Split view" />
@@ -179,12 +181,12 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
               <Button
                 onClick={() => {
                   contextApiRef.current.setFieldViewEditorOptionsState(field.id, {
-                    diffWordWrap: xmlEditorOptions.diffWordWrap === 'on' ? 'off' : 'on',
-                    wordWrap: xmlEditorOptions.wordWrap === 'on' ? 'off' : 'on'
+                    diffWordWrap: monacoOptions.diffWordWrap === 'on' ? 'off' : 'on',
+                    wordWrap: monacoOptions.wordWrap === 'on' ? 'off' : 'on'
                   });
                 }}
               >
-                {(isDiff ? xmlEditorOptions.diffWordWrap : xmlEditorOptions.wordWrap) === 'on' ? (
+                {(isDiff ? monacoOptions.diffWordWrap : monacoOptions.wordWrap) === 'on' ? (
                   <FormattedMessage defaultMessage="No Wrap" />
                 ) : (
                   <FormattedMessage defaultMessage="Wrap" />

@@ -68,7 +68,7 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
             ...state.fieldsViewState,
             [fieldId]: {
               ...state.fieldsViewState[fieldId],
-              xmlEditorOptions: { ...state.fieldsViewState[fieldId].xmlEditorOptions, ...options }
+              monacoOptions: { ...state.fieldsViewState[fieldId].monacoOptions, ...options }
             }
           }
         });

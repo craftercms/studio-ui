@@ -15,20 +15,12 @@
  */
 
 import React from 'react';
-import { MonacoWrapper } from '../../MonacoWrapper';
-
-// export interface DefaultFieldDiffViewProps {
-//   contentA: Primitive;
-//   contentB: Primitive;
-//   field: ContentTypeField;
-//   renderContent: (content) => ReactNode;
-//   noContent?: ReactNode;
-// }
+import TextDiffView from './TextDiffView';
 
 // TODO: props, need to inherit from some other prop
 export function DefaultDiffView(props) {
   const { aXml, bXml, editorProps } = props;
-  return <MonacoWrapper contentA={aXml} contentB={bXml} editorProps={editorProps} isDiff={true} />;
+  return <TextDiffView contentA={aXml} contentB={bXml} editorProps={editorProps} />;
 }
 
 export default DefaultDiffView;
