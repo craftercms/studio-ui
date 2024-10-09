@@ -81,11 +81,11 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
     const embeddedAIndex = contentA.findIndex((item) => item.craftercms?.id === id);
     const embeddedBIndex = contentB.findIndex((item) => item.craftercms?.id === id);
     return {
-      embeddedA: {
+      embeddedA: embeddedAIndex !== -1 && {
         content: contentA[embeddedAIndex] ?? mockContentInstance,
         xml: getContentInstanceXmlItemFromIndex(aXml, embeddedAIndex)
       },
-      embeddedB: {
+      embeddedB: embeddedBIndex !== -1 && {
         content: contentB[embeddedBIndex] ?? mockContentInstance,
         xml: getContentInstanceXmlItemFromIndex(bXml, embeddedBIndex)
       }
@@ -94,7 +94,12 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 
   const embeddedItemChanged = (id: string): boolean => {
     const { embeddedA, embeddedB } = getEmbeddedVersions(id);
-    return embeddedA.xml !== embeddedB.xml;
+    // If one of the embedded components doesn't exist at a specific version, we consider it unchanged (because it's a new or deleted state, not changed).
+    if (!embeddedA || !embeddedB) {
+      return false;
+    } else {
+      return embeddedA.xml !== embeddedB.xml;
+    }
   };
 
   const isEmbeddedWithChanges = (id: string): boolean => {
@@ -103,7 +108,8 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 
   const onCompareEmbedded = (id: string) => {
     const { embeddedA, embeddedB } = getEmbeddedVersions(id);
-    const fields = contentTypes[(embeddedA.content ?? embeddedB.content).craftercms.contentTypeId].fields;
+    const contentTypeId = embeddedA?.content?.craftercms.contentTypeId ?? embeddedB?.content?.craftercms.contentTypeId;
+    const fields = contentTypes[contentTypeId].fields;
     // It may happen that one of the embedded components we're comparing is null (doesn't exist at a specific version),
     // in that scenario we use a mock (empty) content instance.
     contextApiRef.current.setCompareSlideOutState({
