@@ -23,6 +23,7 @@ import React from 'react';
 import { parseElementByContentType } from '../../../utils/content';
 import { fromString } from '../../../utils/xml';
 import useContentTypes from '../../../hooks/useContentTypes';
+import { textViewLanguageMap } from '../../ViewVersionDialog/utils';
 
 export interface TextDiffViewProps extends Pick<DiffViewComponentBaseProps, 'aXml' | 'bXml'> {
   field?: ContentTypeField;
@@ -41,7 +42,7 @@ export function TextDiffView(props: TextDiffViewProps) {
   const originalContent = cleanText ? removeTags(contentA ?? '') : contentA;
   const modifiedContent = cleanText ? removeTags(contentB ?? '') : contentB;
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const isHTML = field?.type === 'html'; // TODO: more accurate language depending on field.type
+  const language = textViewLanguageMap[field?.type] || 'xml';
 
   const monacoOptions: DiffEditorProps['options'] = {
     readOnly: true,
@@ -58,7 +59,7 @@ export function TextDiffView(props: TextDiffViewProps) {
   return (
     <DiffEditor
       height="100%"
-      language={isHTML ? 'html' : 'xml'} // TODO: more accurate language depending on field.type
+      language={language}
       original={originalContent}
       modified={modifiedContent}
       theme={prefersDarkMode ? 'vs-dark' : 'vs'}

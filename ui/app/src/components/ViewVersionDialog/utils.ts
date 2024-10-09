@@ -59,3 +59,11 @@ export interface ViewComponentBaseProps {
   xml: string;
   field: ContentTypeField;
 }
+
+export const textViewLanguageMap = {
+  'file-name': 'text',
+  text: 'text',
+  textarea: 'text',
+  html: 'html',
+  dropdown: 'text'
+};

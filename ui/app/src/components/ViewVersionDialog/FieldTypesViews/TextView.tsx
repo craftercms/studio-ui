@@ -19,7 +19,7 @@ import React from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useVersionsDialogContext } from '../../CompareVersionsDialog/VersionsDialogContext';
 import { removeTags } from '../../CompareVersionsDialog';
-import { ViewComponentBaseProps } from '../utils';
+import { textViewLanguageMap, ViewComponentBaseProps } from '../utils';
 import { fromString } from '../../../utils/xml';
 import { ContentTypeField } from '../../../models';
 import { systemPropToXmlMap } from '../../../utils/content';
@@ -36,10 +36,8 @@ export function TextView(props: TextViewProps) {
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const cleanText = field && fieldsViewState[field.id]?.cleanText;
   const value = cleanText ? removeTags(content ?? '') : content;
-
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const isHTML = field?.type === 'html'; // TODO: more accurate language depending on field.type - get from context
-
+  const language = textViewLanguageMap[field?.type] || 'xml';
   const monacoOptions: EditorProps['options'] = {
     readOnly: true,
     automaticLayout: true,
@@ -54,7 +52,7 @@ export function TextView(props: TextViewProps) {
   return (
     <Editor
       height="100%"
-      language={isHTML ? 'html' : 'xml'} // TODO: more accurate language depending on field.type - get from context
+      language={language}
       value={value}
       theme={prefersDarkMode ? 'vs-dark' : 'vs'}
       {...(editorProps as EditorProps)}
