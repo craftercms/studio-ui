@@ -366,17 +366,10 @@ export const systemPropsList = [
 ];
 
 export const systemPropMap = {
-  guid: 'id',
-  cmsId: 'id',
-  objectId: 'id',
-  localId: 'path',
-  'file-name': 'fileName',
-  file__name: 'fileName',
+  fileName: 'fileName',
   placeInNav: 'placeInNav',
-  'internal-name': 'label',
-  internal__name: 'label',
+  internalName: 'label',
   'content-type': 'contentTypeId',
-  content__type: 'contentTypeId',
   createdDate: 'dateCreated',
   createdDate_dt: 'dateCreated',
   lastModifiedDate: 'dateModified',
@@ -1248,9 +1241,29 @@ export function getContentInstanceValueFromProp(model: ContentInstance, prop: st
   }
 }
 
+export const systemPropToXmlMap = {
+  fileName: 'file-name',
+  internalName: 'internal-name'
+};
+
 export function getContentInstanceXmlValueFromProp(xml: string, prop: string): string {
-  const doc = fromString(xml).querySelector(prop);
+  const selectionProp = systemPropToXmlMap[prop] ?? prop;
+  const doc = fromString(xml).querySelector(selectionProp);
   return doc ? serialize(doc) : '';
+}
+
+export function getContentFileNameFromPath(path: string): string {
+  let fileName = path.replace('/site/website', '');
+
+  if (path.endsWith('/index.xml')) {
+    fileName = fileName.replace('/index.xml', '');
+    return fileName.substring(fileName.lastIndexOf('/')) || '/';
+  }
+
+  if (path.includes('.xml')) {
+    return fileName.substring(fileName.lastIndexOf('/') + 1).replace('.xml', '');
+  }
+  return fileName;
 }
 
 /**
@@ -1263,17 +1276,7 @@ export function getContentInstanceFileName(model: ContentInstance) {
   const path = model.craftercms.path;
   if (!path) return null;
 
-  let fileName = path.replace('/site/website', '');
-
-  if (path.endsWith('/index.xml')) {
-    fileName = fileName.replace('/index.xml', '');
-    return fileName.substring(fileName.lastIndexOf('/')) || '/';
-  }
-
-  if (path.includes('.xml')) {
-    return fileName.substring(fileName.lastIndexOf('/') + 1).replace('.xml', '');
-  }
-  return fileName;
+  return getContentFileNameFromPath(path);
 }
 
 export const mockContentInstance = {

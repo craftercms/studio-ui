@@ -37,6 +37,7 @@ import TimeDiffView from './FieldsTypesDiffViews/TimeDiffView';
 import DateTimeDiffView from './FieldsTypesDiffViews/DateTimeDiffView';
 import BooleanDiffView from './FieldsTypesDiffViews/BooleanDiffView';
 import { NumberDiffView } from './FieldsTypesDiffViews/NumberDiffView';
+import FileNameDiffView from './FieldsTypesDiffViews/FileNameDiffView';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -131,6 +132,7 @@ export const getContentInstanceXmlItemFromIndex = (xml: string, index: number): 
 };
 
 export const typesDiffMap: Record<string, ElementType> = {
+  'file-name': FileNameDiffView,
   text: TextDiffView,
   textarea: TextDiffView,
   html: TextDiffView,

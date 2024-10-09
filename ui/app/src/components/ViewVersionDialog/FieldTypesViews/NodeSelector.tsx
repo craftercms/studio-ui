@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
 import Box from '@mui/material/Box';
 import ContentInstance from '../../../models/ContentInstance';
 import DiffCollectionItem from '../../CompareVersionsDialog/FieldsTypesDiffViews/DiffCollectionItem';
@@ -38,7 +37,6 @@ export function NodeSelector(props: NodeSelectorViewProps) {
     ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
     : [];
 
-  // TODO: move functions to utils
   const getItemLabel = (item: ContentInstance): string => {
     return item.craftercms?.label ?? itemsByPath?.[item.craftercms?.path]?.label ?? item.craftercms?.id ?? item.key;
   };
@@ -46,7 +44,6 @@ export function NodeSelector(props: NodeSelectorViewProps) {
   const isEmbedded = (item: ContentInstance): boolean => {
     return item?.craftercms && !item.craftercms.path;
   };
-  // TODO: ^
 
   const onSelectStateItem = (item: ContentInstance) => {
     const isEmbeddedComponent = isEmbedded(item);

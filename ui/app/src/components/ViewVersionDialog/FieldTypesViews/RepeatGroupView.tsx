@@ -35,13 +35,8 @@ export function RepeatGroupView(props: RepeatGroupViewProps) {
     ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
     : [];
 
-  const isEmbedded = (item: ContentInstance): boolean => {
-    return item?.craftercms && !item.craftercms.path;
-  };
-
   const onSelectStateItem = (item: ContentInstance) => {
-    const isEmbeddedComponent = isEmbedded(item);
-    const fields = isEmbeddedComponent ? contentTypes[item.craftercms.contentTypeId].fields : field.fields;
+    const fields = field.fields;
 
     contextApiRef.current.setViewSlideOutState({
       open: true,

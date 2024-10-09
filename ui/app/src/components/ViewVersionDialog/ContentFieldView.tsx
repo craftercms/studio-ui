@@ -36,6 +36,8 @@ import CheckboxGroupView from './FieldTypesViews/CheckboxGroupView';
 import TextView from './FieldTypesViews/TextView';
 import { EditorProps } from '@monaco-editor/react';
 import { ViewComponentBaseProps } from './utils';
+import { getContentInstanceXmlValueFromProp } from '../../utils/content';
+import FileNameView from './FieldTypesViews/FileNameView';
 
 export interface ContentFieldViewProps {
   content: Primitive;
@@ -51,6 +53,7 @@ export interface ViewComponentProps extends Pick<ViewComponentBaseProps, 'xml' |
 }
 
 export const typesViewMap = {
+  'file-name': FileNameView,
   text: TextView,
   textarea: TextView,
   html: TextView,
@@ -69,11 +72,7 @@ export const typesViewMap = {
 
 export function ContentFieldView(props: ContentFieldViewProps) {
   const { content, field, xml = '', dynamicHeight } = props;
-  const fieldDoc =
-    fromString(xml).querySelector(`page > ${field.id}`) ??
-    fromString(xml).querySelector(`component > ${field.id}`) ??
-    fromString(xml).querySelector(`item > ${field.id}`);
-  const fieldXml = fieldDoc ? serialize(fieldDoc) : '';
+  const fieldXml = getContentInstanceXmlValueFromProp(xml, field.id);
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
   const { compareXml: viewXml, monacoOptions } = viewState;
