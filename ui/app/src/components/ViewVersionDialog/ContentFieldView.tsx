@@ -34,6 +34,8 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import CheckboxGroupView from './FieldTypesViews/CheckboxGroupView';
 import TextView from './FieldTypesViews/TextView';
+import { EditorProps } from '@monaco-editor/react';
+import { ViewComponentBaseProps } from './utils';
 
 export interface ContentFieldViewProps {
   content: Primitive;
@@ -42,6 +44,10 @@ export interface ContentFieldViewProps {
   showToolbar?: boolean;
   dynamicHeight?: boolean;
   onSelectField?(field: ContentTypeField): void;
+}
+
+export interface ViewComponentProps extends Pick<ViewComponentBaseProps, 'xml' | 'field'> {
+  editorProps?: EditorProps;
 }
 
 export const typesViewMap = {
@@ -70,15 +76,12 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   const fieldXml = fieldDoc ? serialize(fieldDoc) : '';
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
-  const { compareXml: viewXml, cleanText, monacoOptions } = viewState;
+  const { compareXml: viewXml, monacoOptions } = viewState;
   const monacoEditorHeight = !dynamicHeight ? '100%' : countLines(fieldXml ?? '') < 15 ? '200px' : '600px';
   const ViewComponent = typesViewMap[field.type] ?? DefaultView;
-  const viewComponentProps = {
-    contentA: content,
+  const viewComponentProps: ViewComponentProps = {
     xml: fieldXml,
     field,
-    isHTML: true,
-    cleanText,
     editorProps: {
       options: monacoOptions,
       height: monacoEditorHeight

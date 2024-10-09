@@ -36,8 +36,7 @@ export interface CompareFieldPanelProps {
   onSelectField?(field: ContentTypeField): void;
 }
 
-export interface DiffComponentProps extends Pick<DiffViewComponentBaseProps, 'aXml' | 'bXml'> {
-  field?: ContentTypeField;
+export interface DiffComponentProps extends Pick<DiffViewComponentBaseProps, 'aXml' | 'bXml' | 'field'> {
   editorProps?: DiffEditorProps;
 }
 
