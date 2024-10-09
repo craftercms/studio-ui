@@ -47,7 +47,6 @@ import { initialFieldViewState, useVersionsDialogContext, VersionsDialogContextP
 import { ContentTypeField } from '../../models';
 import { getCompareVersionDialogViewModes, setCompareVersionDialogViewModes } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
-import useMount from '../../hooks/useMount';
 import TextDiffView from './FieldsTypesDiffViews/TextDiffView';
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
@@ -60,7 +59,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     contentTypesBranch,
     compareXml
   } = props;
-  const [{ fieldsViewState, showOnlyChanges, accordionView }, contextApiRef] = useVersionsDialogContext();
+  const [{ fieldsViewState }] = useVersionsDialogContext();
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
@@ -68,6 +67,9 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const { formatMessage } = useIntl();
   const { username } = useActiveUser();
+  const viewModes = getCompareVersionDialogViewModes(username);
+  const [showOnlyChanges, setShowOnlyChanges] = useState<boolean>(viewModes?.entireDiff ?? true);
+  const [accordionView, setAccordionView] = useState<boolean>(viewModes?.accordionView ?? false);
   const [selectionContent, setSelectionContent] = useSpreadState<{
     a: SelectionContentVersion;
     b: SelectionContentVersion;
@@ -141,14 +143,6 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
 
-  useMount(() => {
-    const viewModes = getCompareVersionDialogViewModes(username);
-    contextApiRef.current.setState({
-      showOnlyChanges: viewModes?.entireDiff ?? true,
-      accordionView: viewModes?.accordionView ?? false
-    });
-  });
-
   useEffect(() => {
     if (preFetchedContent) {
       setSelectionContent(preFetchedContent);
@@ -207,12 +201,12 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   };
 
   const onToggleShowOnlyChanges = () => {
-    contextApiRef.current.setState({ showOnlyChanges: !showOnlyChanges });
+    setShowOnlyChanges(!showOnlyChanges);
     setCompareVersionDialogViewModes(username, { entireDiff: !showOnlyChanges, accordionView });
   };
 
   const onSetAccordionView = (value: boolean) => {
-    contextApiRef.current.setState({ accordionView: value });
+    setAccordionView(value);
     setCompareVersionDialogViewModes(username, { entireDiff: showOnlyChanges, accordionView: value });
   };
 
