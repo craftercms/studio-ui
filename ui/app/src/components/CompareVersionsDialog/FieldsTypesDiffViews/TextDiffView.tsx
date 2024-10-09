@@ -53,7 +53,7 @@ export function TextDiffView(props: TextDiffViewProps) {
     renderWhitespace: 'none',
     renderIndicators: false,
     scrollbar: { alwaysConsumeMouseWheel: false },
-    ...editorProps.options
+    ...editorProps?.options
   };
 
   return (
