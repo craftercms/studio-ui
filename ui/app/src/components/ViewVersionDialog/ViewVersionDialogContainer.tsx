@@ -59,7 +59,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
     return content && (preFetchedData?.fields || contentTypesBranch?.byId[content.craftercms.contentTypeId].fields)
       ? [
           ...Object.values(preFetchedData?.fields ?? contentTypesBranch?.byId[content.craftercms.contentTypeId].fields),
-          ...(content.crafterms ? getStudioContentInternalFields(formatMessage) : [])
+          ...(content.craftercms ? getStudioContentInternalFields(formatMessage) : [])
         ]
       : [];
   }, [content, contentTypesBranch?.byId, formatMessage, preFetchedData?.fields]);
