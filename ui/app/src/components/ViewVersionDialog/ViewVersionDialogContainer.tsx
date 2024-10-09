@@ -44,7 +44,6 @@ import { ContentTypeField } from '../../models';
 import ContentInstance from '../../models/ContentInstance';
 import useActiveUser from '../../hooks/useActiveUser';
 import { getViewVersionDialogViewModes, setViewVersionDialogViewModes } from '../../utils/state';
-import useMount from '../../hooks/useMount';
 import TextView from './FieldTypesViews/TextView';
 
 const VersionDialogContext = createContext(null);
@@ -63,7 +62,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
         ]
       : [];
   }, [content, contentTypesBranch?.byId, formatMessage, preFetchedData?.fields]);
-  const [{ fieldsViewState, accordionView }, contextApiRef] = useVersionsDialogContext();
+  const [{ fieldsViewState }] = useVersionsDialogContext();
   const isViewDataReady = Boolean(content && xml);
   const [selectedField, setSelectedField] = useState<ContentTypeField>(null);
   const context = useMemo(() => ({ content, fields: contentTypeFields }), [content, contentTypeFields]);
@@ -72,12 +71,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
   const { username } = useActiveUser();
-
-  useMount(() => {
-    contextApiRef.current.setState({
-      accordionView: getViewVersionDialogViewModes(username) ?? false
-    });
-  });
+  const [accordionView, setAccordionView] = useState<boolean>(getViewVersionDialogViewModes(username) ?? false);
 
   useEffect(() => {
     if (preFetchedData) {
@@ -122,7 +116,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
   };
 
   const onSetAccordionView = (value: boolean) => {
-    contextApiRef.current.setState({ accordionView: value });
+    setAccordionView(value);
     setViewVersionDialogViewModes(username, value);
   };
 
