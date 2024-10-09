@@ -21,21 +21,26 @@ import { fromString } from '../../../utils/xml';
 import { ViewComponentBaseProps } from '../utils';
 import { parseElementByContentType } from '../../../utils/content';
 import useContentTypes from '../../../hooks/useContentTypes';
+import { PartialSxRecord } from '../../../models';
 
-export interface ImageViewProps extends ViewComponentBaseProps {}
+export interface ImageViewProps extends ViewComponentBaseProps {
+  sxs?: PartialSxRecord<'image' | 'label'>;
+}
 
 export function ImageView(props: ImageViewProps) {
-  const { xml, field } = props;
+  const { xml, field, sxs } = props;
   const contentTypes = useContentTypes();
   const content = xml
     ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
     : '';
 
   return (
-    <Box sx={{ textAlign: 'center' }}>
-      <img src={content} alt="" />
-      <Typography variant="subtitle2">{content}</Typography>
-    </Box>
+    <>
+      <Box component="img" src={content} alt="" sx={{ maxWidth: '100%', ...sxs?.image }} />
+      <Typography variant="subtitle2" sx={{ ...sxs?.label }}>
+        {content}
+      </Typography>
+    </>
   );
 }
 

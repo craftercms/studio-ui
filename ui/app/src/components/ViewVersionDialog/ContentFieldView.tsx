@@ -89,7 +89,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   const noContentSet = ViewComponent !== Boolean && !content;
 
   return (
-    <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
+    <Box sx={{ flexGrow: 1 }}>
       {viewXml ? (
         <TextView xml={fieldXml} editorProps={viewComponentProps.editorProps} />
       ) : nnou(ViewComponent) ? (

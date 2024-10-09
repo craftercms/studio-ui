@@ -211,7 +211,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
                       isDiff={false}
                       onSelectField={onSelectField}
                     />
-                    <Box height="calc(100% - 60px)" display="flex" flexDirection="column">
+                    <Box height="calc(100% - 68px)" display="flex" flexDirection="column">
                       <ContentFieldView
                         content={content && getContentInstanceValueFromProp(content, selectedField.id)}
                         field={selectedField}
