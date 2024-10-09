@@ -15,30 +15,34 @@
  */
 
 import { ContentTypeField } from '../../../models';
-import { DiffEditor, DiffEditorProps, EditorProps } from '@monaco-editor/react';
+import { DiffEditor, DiffEditorProps } from '@monaco-editor/react';
 import { useVersionsDialogContext } from '../VersionsDialogContext';
-import { removeTags } from '../utils';
+import { DiffViewComponentBaseProps, removeTags } from '../utils';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
+import { parseElementByContentType } from '../../../utils/content';
+import { fromString } from '../../../utils/xml';
+import useContentTypes from '../../../hooks/useContentTypes';
 
-export interface TextViewProps {
-  contentA: string;
-  contentB: string;
+export interface TextDiffViewProps extends Pick<DiffViewComponentBaseProps, 'aXml' | 'bXml'> {
   field?: ContentTypeField;
-  editorProps?: EditorProps;
+  editorProps?: DiffEditorProps;
 }
 
-export function TextDiffView(props) {
-  const { contentA, contentB, field, editorProps } = props;
+export function TextDiffView(props: TextDiffViewProps) {
+  const { aXml, bXml, field, editorProps } = props;
+  const contentTypes = useContentTypes();
+  const contentA =
+    aXml && field ? parseElementByContentType(fromString(aXml).querySelector(field.id), field, contentTypes, {}) : aXml;
+  const contentB =
+    bXml && field ? parseElementByContentType(fromString(bXml).querySelector(field.id), field, contentTypes, {}) : bXml;
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const cleanText = field && fieldsViewState[field.id]?.cleanText;
   const originalContent = cleanText ? removeTags(contentA ?? '') : contentA;
   const modifiedContent = cleanText ? removeTags(contentB ?? '') : contentB;
-
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const isHTML = field?.type === 'html'; // TODO: more accurate language depending on field.type
 
-  // TODO: move to context
   const monacoOptions: DiffEditorProps['options'] = {
     readOnly: true,
     automaticLayout: true,
@@ -52,13 +56,13 @@ export function TextDiffView(props) {
   };
 
   return (
-    <DiffEditor // text diff
+    <DiffEditor
       height="100%"
       language={isHTML ? 'html' : 'xml'} // TODO: more accurate language depending on field.type
       original={originalContent}
       modified={modifiedContent}
       theme={prefersDarkMode ? 'vs-dark' : 'vs'}
-      {...(editorProps as DiffEditorProps)}
+      {...editorProps}
       options={monacoOptions}
     />
   );

@@ -231,11 +231,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
         ) : compareVersionsBranch?.error || contentTypesBranch?.error ? (
           <ApiResponseErrorState error={compareVersionsBranch.error ?? contentTypesBranch.error} />
         ) : compareXml ? (
-          <TextDiffView
-            contentA={selectionContent.a.xml}
-            contentB={selectionContent.b.xml}
-            editorProps={{ height: '100%' }}
-          />
+          <TextDiffView aXml={selectionContent.a.xml} bXml={selectionContent.b.xml} editorProps={{ height: '100%' }} />
         ) : (
           <>
             <ResizeableDrawer

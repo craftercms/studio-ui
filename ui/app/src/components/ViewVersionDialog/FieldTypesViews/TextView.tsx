@@ -21,8 +21,10 @@ import { useVersionsDialogContext } from '../../CompareVersionsDialog/VersionsDi
 import { removeTags } from '../../CompareVersionsDialog';
 import { ViewComponentBaseProps } from '../utils';
 import { fromString } from '../../../utils/xml';
+import { ContentTypeField } from '../../../models';
 
-export interface TextViewProps extends ViewComponentBaseProps {
+export interface TextViewProps extends Pick<ViewComponentBaseProps, 'xml'> {
+  field?: ContentTypeField;
   editorProps?: EditorProps;
 }
 
@@ -36,7 +38,6 @@ export function TextView(props: TextViewProps) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const isHTML = field?.type === 'html'; // TODO: more accurate language depending on field.type - get from context
 
-  // TODO: move to context
   const monacoOptions: EditorProps['options'] = {
     readOnly: true,
     automaticLayout: true,

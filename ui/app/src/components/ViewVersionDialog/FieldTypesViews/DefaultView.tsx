@@ -18,7 +18,7 @@ import React from 'react';
 import TextView from './TextView';
 import { ViewComponentBaseProps } from '../utils';
 
-export interface DefaultViewProps extends ViewComponentBaseProps {}
+export interface DefaultViewProps extends Pick<ViewComponentBaseProps, 'xml'> {}
 
 export function DefaultView(props: DefaultViewProps) {
   const { xml } = props;

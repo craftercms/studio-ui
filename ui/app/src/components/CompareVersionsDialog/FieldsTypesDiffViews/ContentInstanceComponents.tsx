@@ -20,6 +20,7 @@ import { FormattedMessage } from 'react-intl';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import {
   ContentInstanceComponentsDiffResult,
+  DiffViewComponentBaseProps,
   getContentInstanceXmlItemFromIndex,
   getItemDiffStatus,
   SelectionContentVersion
@@ -28,23 +29,26 @@ import { diffArrays } from 'diff/lib/diff/array';
 import Box from '@mui/material/Box';
 import { EmptyState } from '../../EmptyState';
 import LookupTable from '../../../models/LookupTable';
-import useSelection from '../../../hooks/useSelection';
-import { ContentTypeField } from '../../../models';
 import DiffCollectionItem from './DiffCollectionItem';
 import { useVersionsDialogContext } from '../VersionsDialogContext';
-import { mockContentInstance } from '../../../utils/content';
+import { mockContentInstance, parseElementByContentType } from '../../../utils/content';
+import useContentTypes from '../../../hooks/useContentTypes';
+import { fromString } from '../../../utils/xml';
 
-export interface ContentInstanceComponentsProps {
-  contentA: ContentInstance[];
-  contentB: ContentInstance[];
-  aXml: string;
-  bXml: string;
-  field: ContentTypeField;
-}
+export interface ContentInstanceComponentsProps extends DiffViewComponentBaseProps {}
 
 export function ContentInstanceComponents(props: ContentInstanceComponentsProps) {
-  const { contentA, contentB, aXml, bXml, field } = props;
-  const contentTypesBranch = useSelection((state) => state.contentTypes);
+  const { aXml, bXml, field } = props;
+  const contentTypes = useContentTypes();
+  const { contentA, contentB } = useMemo(
+    () => ({
+      contentA: aXml
+        ? parseElementByContentType(fromString(aXml).querySelector(field.id), field, contentTypes, {})
+        : [],
+      contentB: bXml ? parseElementByContentType(fromString(bXml).querySelector(field.id), field, contentTypes, {}) : []
+    }),
+    [aXml, bXml, contentTypes, field]
+  );
   const [diff, setDiff] = useState<ContentInstanceComponentsDiffResult[]>(null);
   const itemsByPath = useItemsByPath();
   const contentById: LookupTable<ContentInstance> = useMemo(() => {
@@ -99,7 +103,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 
   const onCompareEmbedded = (id: string) => {
     const { embeddedA, embeddedB } = getEmbeddedVersions(id);
-    const fields = contentTypesBranch.byId[(embeddedA.content ?? embeddedB.content).craftercms.contentTypeId].fields;
+    const fields = contentTypes[(embeddedA.content ?? embeddedB.content).craftercms.contentTypeId].fields;
     // It may happen that one of the embedded components we're comparing is null (doesn't exist at a specific version),
     // in that scenario we use a mock (empty) content instance.
     contextApiRef.current.setCompareSlideOutState({
@@ -117,7 +121,7 @@ export function ContentInstanceComponents(props: ContentInstanceComponentsProps)
 
   const onViewEmbedded = (id: string) => {
     const { embeddedA } = getEmbeddedVersions(id);
-    const fields = contentTypesBranch.byId[embeddedA.content.craftercms.contentTypeId].fields;
+    const fields = contentTypes[embeddedA.content.craftercms.contentTypeId].fields;
     contextApiRef.current.setViewSlideOutState({
       open: true,
       data: {

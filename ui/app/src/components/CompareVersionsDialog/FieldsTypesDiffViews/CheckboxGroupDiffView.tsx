@@ -16,16 +16,18 @@
 
 import DiffViewLayout from './DiffViewLayout';
 import CheckboxGroupView from '../../ViewVersionDialog/FieldTypesViews/CheckboxGroupView';
+import { DiffViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function CheckboxGroupDiffView(props) {
-  const { contentA, contentB, field } = props;
+export interface CheckboxGroupDiffViewProps extends DiffViewComponentBaseProps {}
+
+export function CheckboxGroupDiffView(props: CheckboxGroupDiffViewProps) {
+  const { aXml, bXml, field } = props;
   return (
     <DiffViewLayout
-      contentA={contentA}
-      contentB={contentB}
+      aXml={aXml}
+      bXml={bXml}
       field={field}
-      renderContent={(content) => <CheckboxGroupView contentA={content} />}
+      renderContent={(xml) => <CheckboxGroupView xml={xml} field={field} />}
     />
   );
 }

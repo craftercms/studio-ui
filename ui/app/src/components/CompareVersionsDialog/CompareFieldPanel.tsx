@@ -15,26 +15,18 @@
  */
 
 import { ContentTypeField } from '../../models/ContentType';
-import React, { ElementType, useMemo } from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import { getContentInstanceValueFromProp } from '../../utils/content';
 import { fromString, serialize } from '../../utils/xml';
-import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
-import RepeatGroupItems from './FieldsTypesDiffViews/RepeatGroupItems';
-import { SelectionContentVersion } from './utils';
+import { DiffViewComponentBaseProps, SelectionContentVersion, typesDiffMap } from './utils';
 import ContentFieldView from '../ViewVersionDialog/ContentFieldView';
 import { countLines } from '../../utils/string';
 import { ErrorBoundary } from '../ErrorBoundary';
 import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialogContext';
 import DefaultDiffView from './FieldsTypesDiffViews/DefaultDiffView';
-import BooleanDiffView from './FieldsTypesDiffViews/BooleanDiffView';
-import CheckboxGroupDiffView from './FieldsTypesDiffViews/CheckboxGroupDiffView';
-import ImageDiffView from './FieldsTypesDiffViews/ImageDiffView';
-import VideoDiffView from './FieldsTypesDiffViews/VideoDiffView';
-import TimeDiffView from './FieldsTypesDiffViews/TimeDiffView';
-import DateTimeDiffView from './FieldsTypesDiffViews/DateTimeDiffView';
-import { NumberDiffView } from './FieldsTypesDiffViews/NumberDiffView';
 import TextDiffView from './FieldsTypesDiffViews/TextDiffView';
+import { DiffEditorProps } from '@monaco-editor/react';
 
 export interface CompareFieldPanelProps {
   a: SelectionContentVersion;
@@ -44,25 +36,14 @@ export interface CompareFieldPanelProps {
   onSelectField?(field: ContentTypeField): void;
 }
 
-export const typesDiffMap: Record<string, ElementType> = {
-  text: TextDiffView,
-  textarea: TextDiffView,
-  html: TextDiffView,
-  'node-selector': ContentInstanceComponents,
-  'checkbox-group': CheckboxGroupDiffView,
-  repeat: RepeatGroupItems,
-  image: ImageDiffView,
-  'video-picker': VideoDiffView,
-  time: TimeDiffView,
-  'date-time': DateTimeDiffView,
-  boolean: BooleanDiffView,
-  'numeric-input': NumberDiffView,
-  dropdown: TextDiffView
-};
+export interface DiffComponentProps extends Pick<DiffViewComponentBaseProps, 'aXml' | 'bXml'> {
+  field?: ContentTypeField;
+  editorProps?: DiffEditorProps;
+}
 
 export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const { a, b, field, onSelectField, dynamicHeight } = props;
-  const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
+  const [{ fieldsViewState }] = useVersionsDialogContext();
   const fieldType = field.type;
   const versionAXmlDoc = fromString(a.xml);
   const versionBXmlDoc = fromString(b.xml);
@@ -78,31 +59,15 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
   const versionBFieldXml = versionBFieldDoc ? serialize(versionBFieldDoc) : '';
   const unchanged = versionAFieldXml === versionBFieldXml;
   const contentA = getContentInstanceValueFromProp(a.content, field.id);
-  const contentB = getContentInstanceValueFromProp(b.content, field.id);
   const longerXmlContent = versionAFieldXml.length > versionBFieldXml.length ? versionAFieldXml : versionBFieldXml;
   const monacoEditorHeight = dynamicHeight ? (countLines(longerXmlContent) < 15 ? '200px' : '600px') : '100%';
   const DiffComponent = typesDiffMap[fieldType] ?? DefaultDiffView;
   const viewState = fieldsViewState[field.id] ?? initialFieldViewState;
-  const { compareXml, cleanText, monacoOptions, compareMode } = viewState;
-  const setCompareModeDisabled = useMemo(
-    () => (disabled: boolean) => {
-      contextApiRef.current.setFieldViewState(field.id, {
-        compareModeDisabled: disabled
-      });
-    },
-    [contextApiRef, field.id]
-  );
-  const diffComponentProps = {
-    contentA,
-    contentB,
+  const { compareXml, monacoOptions } = viewState;
+  const diffComponentProps: DiffComponentProps = {
     aXml: versionAFieldXml,
     bXml: versionBFieldXml,
-    isDiff: true,
-    isHTML: fieldType === 'html',
-    cleanText,
-    compareMode,
     field,
-    setCompareModeDisabled,
     editorProps: { options: monacoOptions, height: monacoEditorHeight }
   };
 
@@ -120,8 +85,8 @@ export function CompareFieldPanel(props: CompareFieldPanelProps) {
         <>
           {compareXml ? (
             <TextDiffView
-              contentA={versionAFieldXml}
-              contentB={versionBFieldXml}
+              aXml={versionAFieldXml}
+              bXml={versionBFieldXml}
               editorProps={diffComponentProps.editorProps}
             />
           ) : (

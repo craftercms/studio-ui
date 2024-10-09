@@ -16,16 +16,18 @@
 
 import DiffViewLayout from './DiffViewLayout';
 import TimeView from '../../ViewVersionDialog/FieldTypesViews/TimeView';
+import { DiffViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function TimeDiffView(props) {
-  const { contentA, contentB, field } = props;
+export interface TimeDiffViewProps extends DiffViewComponentBaseProps {}
+
+export function TimeDiffView(props: TimeDiffViewProps) {
+  const { aXml, bXml, field } = props;
   return (
     <DiffViewLayout
-      contentA={contentA}
-      contentB={contentB}
+      aXml={aXml}
+      bXml={bXml}
       field={field}
-      renderContent={(content) => <TimeView contentA={content} />}
+      renderContent={(xml) => <TimeView xml={xml} field={field} />}
     />
   );
 }

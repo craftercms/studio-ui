@@ -14,18 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
 import VideoView from '../../ViewVersionDialog/FieldTypesViews/VideoView';
 import DiffViewLayout from './DiffViewLayout';
+import { DiffViewComponentBaseProps } from '../utils';
 
-export function VideoDiffView(props) {
-  const { contentA, contentB, field } = props;
+export interface VideoDiffViewProps extends DiffViewComponentBaseProps {}
+
+export function VideoDiffView(props: VideoDiffViewProps) {
+  const { aXml, bXml, field } = props;
   return (
     <DiffViewLayout
-      contentA={contentA}
-      contentB={contentB}
+      aXml={aXml}
+      bXml={bXml}
       field={field}
-      renderContent={(content) => <VideoView contentA={content} />}
+      renderContent={(xml) => <VideoView xml={xml} field={field} />}
     />
   );
 }

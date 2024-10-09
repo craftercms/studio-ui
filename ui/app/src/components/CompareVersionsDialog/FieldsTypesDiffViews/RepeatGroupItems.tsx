@@ -15,33 +15,45 @@
  */
 
 import ContentInstance from '../../../models/ContentInstance';
-import { ContentTypeField, LookupTable } from '../../../models';
-import React, { useEffect, useState } from 'react';
+import { ContentTypeField } from '../../../models';
+import React, { useEffect, useMemo, useState } from 'react';
 import useSpreadState from '../../../hooks/useSpreadState';
 import { fromString, serialize } from '../../../utils/xml';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
 import { deepCopy, nou } from '../../../utils/object';
 import { Alert } from '@mui/material';
-import { SelectionContentVersion } from '../utils';
+import { DiffViewComponentBaseProps, SelectionContentVersion } from '../utils';
 import DiffCollectionItem from './DiffCollectionItem';
 import { useVersionsDialogContext } from '../VersionsDialogContext';
+import useContentTypes from '../../../hooks/useContentTypes';
+import { parseElementByContentType } from '../../../utils/content';
 
 export interface RepeatGroupItemsProps {
   contentA: ContentInstance[];
   contentB: ContentInstance[];
   aXml: string;
   bXml: string;
-  compareMode: boolean;
   field: ContentTypeField;
-  setCompareModeDisabled?(disabled: boolean): void;
 }
 
 export type ItemDiffState = 'changed' | 'unchanged' | 'new' | 'deleted';
 type RepItemDiffSide = 'a' | 'b';
 
+export interface RepeatGroupItemsProps extends DiffViewComponentBaseProps {}
+
 export function RepeatGroupItems(props: RepeatGroupItemsProps) {
-  const { contentA, contentB, aXml, bXml, compareMode, field, setCompareModeDisabled } = props;
+  const { aXml, bXml, field } = props;
+  const contentTypes = useContentTypes();
+  const { contentA, contentB } = useMemo(
+    () => ({
+      contentA: aXml
+        ? parseElementByContentType(fromString(aXml).querySelector(field.id), field, contentTypes, {})
+        : [],
+      contentB: bXml ? parseElementByContentType(fromString(bXml).querySelector(field.id), field, contentTypes, {}) : []
+    }),
+    [aXml, bXml, contentTypes, field]
+  );
   const fields = field.fields;
   const [repeatGroupDiff, setRepeatGroupDiff] = useState([]);
   const [itemsCompareModeSelection, setItemsCompareModeSelection] = useSpreadState<{
@@ -58,7 +70,8 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
   const isCompareModeEnabled = itemsCompareModeSelection.a?.content && itemsCompareModeSelection.b?.content;
   const areSelectedItemsEqual =
     isCompareModeEnabled && itemsCompareModeSelection.a?.xml === itemsCompareModeSelection.b?.xml;
-  const [, contextApiRef] = useVersionsDialogContext();
+  const [{ fieldsViewState }, contextApiRef] = useVersionsDialogContext();
+  const compareMode = fieldsViewState[field.id]?.compareMode;
 
   const getItemDataAtVersion = (side: RepItemDiffSide, index: number): { content: ContentInstance; xml: string } => {
     const content = side === 'a' ? contentA : contentB;
@@ -203,13 +216,10 @@ export function RepeatGroupItems(props: RepeatGroupItemsProps) {
     // check if the selected items are both in the same side and switch accordingly.
     const diffItemsSameSide =
       repeatGroupDiff.every((entry) => nou(entry.a)) || repeatGroupDiff.every((entry) => nou(entry.b));
-    if (diffItemsSameSide) {
-      // TODO: contextApiRef.current.setFieldViewState...
-      setCompareModeDisabled(true);
-    } else {
-      setCompareModeDisabled(false);
-    }
-  }, [setCompareModeDisabled, repeatGroupDiff]);
+    contextApiRef.current.setFieldViewState(field.id, {
+      compareModeDisabled: diffItemsSameSide
+    });
+  }, [contextApiRef, repeatGroupDiff, field?.id]);
 
   return (
     <Box

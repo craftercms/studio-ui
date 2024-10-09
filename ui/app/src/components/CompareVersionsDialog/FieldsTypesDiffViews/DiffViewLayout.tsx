@@ -18,21 +18,20 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import React, { ReactNode } from 'react';
-import { Primitive } from '../../../models/ContentInstance';
 import { ContentTypeField } from '../../../models';
 
 export interface DefaultFieldDiffViewProps {
-  contentA: Primitive;
-  contentB: Primitive;
+  aXml: string;
+  bXml: string;
   field: ContentTypeField;
-  renderContent: (content) => ReactNode;
+  renderContent: (xml: string) => ReactNode;
   noContent?: ReactNode;
 }
 
 export function DiffViewLayout(props: DefaultFieldDiffViewProps) {
   const {
-    contentA,
-    contentB,
+    aXml,
+    bXml,
     field,
     renderContent,
     noContent = (
@@ -56,9 +55,9 @@ export function DiffViewLayout(props: DefaultFieldDiffViewProps) {
         }
       }}
     >
-      {contentA ? renderContent(contentA) : noContent}
+      {aXml ? renderContent(aXml) : noContent}
       {verticalLayout && <Divider sx={{ width: '100%', mt: 1, mb: 1 }} />}
-      {contentB ? renderContent(contentB) : noContent}
+      {bXml ? renderContent(bXml) : noContent}
     </Box>
   );
 }

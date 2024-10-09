@@ -16,16 +16,18 @@
 
 import DiffViewLayout from './DiffViewLayout';
 import BooleanView from '../../ViewVersionDialog/FieldTypesViews/BooleanView';
+import { DiffViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function BooleanDiffView(props) {
-  const { contentA, contentB, field } = props;
+export interface BooleanDiffViewProps extends DiffViewComponentBaseProps {}
+
+export function BooleanDiffView(props: BooleanDiffViewProps) {
+  const { aXml, bXml, field } = props;
   return (
     <DiffViewLayout
-      contentA={contentA}
-      contentB={contentB}
+      aXml={aXml}
+      bXml={bXml}
       field={field}
-      renderContent={(content) => <BooleanView contentA={content} />}
+      renderContent={(xml) => <BooleanView xml={xml} field={field} />}
     />
   );
 }

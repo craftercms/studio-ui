@@ -16,16 +16,18 @@
 
 import DiffViewLayout from './DiffViewLayout';
 import NumberView from '../../ViewVersionDialog/FieldTypesViews/NumberView';
+import { DiffViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function NumberDiffView(props) {
-  const { contentA, contentB, field } = props;
+export interface NumberDiffViewProps extends DiffViewComponentBaseProps {}
+
+export function NumberDiffView(props: NumberDiffViewProps) {
+  const { aXml, bXml, field } = props;
   return (
     <DiffViewLayout
-      contentA={contentA}
-      contentB={contentB}
+      aXml={aXml}
+      bXml={bXml}
       field={field}
-      renderContent={(content) => <NumberView contentA={content} />}
+      renderContent={(xml) => <NumberView xml={xml} field={field} />}
     />
   );
 }

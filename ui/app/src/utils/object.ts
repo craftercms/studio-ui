@@ -284,21 +284,3 @@ export function isAjaxError(source: object): boolean {
     Object.prototype.hasOwnProperty.call(source, 'name')
   );
 }
-
-export function areObjectsEqual(obj1, obj2) {
-  const sortedObj1 = Object.keys(obj1)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = obj1[key];
-      return acc;
-    }, {});
-
-  const sortedObj2 = Object.keys(obj2)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = obj2[key];
-      return acc;
-    }, {});
-
-  return JSON.stringify(sortedObj1) === JSON.stringify(sortedObj2);
-}

@@ -31,11 +31,11 @@ import { FormattedMessage } from 'react-intl';
 import NotesRoundedIcon from '@mui/icons-material/NotesRounded';
 import { useHotkeys } from 'react-hotkeys-hook';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrowsRounded';
-import { typesDiffMap } from './CompareFieldPanel';
 import { initialFieldViewState, useVersionsDialogContext } from './VersionsDialogContext';
 import { typesViewMap } from '../ViewVersionDialog/ContentFieldView';
 import TextView from '../ViewVersionDialog/FieldTypesViews/TextView';
 import TextDiffView from './FieldsTypesDiffViews/TextDiffView';
+import { typesDiffMap } from './utils';
 
 interface FieldVersionToolbarProps {
   field: ContentTypeField;

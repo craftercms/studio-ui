@@ -16,11 +16,13 @@
 
 import React from 'react';
 import TextDiffView from './TextDiffView';
+import { DiffViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function DefaultDiffView(props) {
-  const { aXml, bXml, editorProps } = props;
-  return <TextDiffView contentA={aXml} contentB={bXml} editorProps={editorProps} />;
+export interface DefaultDiffViewProps extends Pick<DiffViewComponentBaseProps, 'aXml' | 'bXml'> {}
+
+export function DefaultDiffView(props: DefaultDiffViewProps) {
+  const { aXml, bXml } = props;
+  return <TextDiffView aXml={aXml} bXml={bXml} />;
 }
 
 export default DefaultDiffView;

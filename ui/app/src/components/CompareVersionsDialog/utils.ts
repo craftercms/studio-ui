@@ -24,10 +24,19 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { DialogHeaderActionProps } from '../DialogHeaderAction';
 import ContentInstance from '../../models/ContentInstance';
-import { ReactNode } from 'react';
+import { ElementType, ReactNode } from 'react';
 import { LookupTable } from '../../models';
-import { ItemDiffState } from './FieldsTypesDiffViews/RepeatGroupItems';
+import RepeatGroupItems, { ItemDiffState } from './FieldsTypesDiffViews/RepeatGroupItems';
 import { fromString, serialize } from '../../utils/xml';
+import TextDiffView from './FieldsTypesDiffViews/TextDiffView';
+import ContentInstanceComponents from './FieldsTypesDiffViews/ContentInstanceComponents';
+import CheckboxGroupDiffView from './FieldsTypesDiffViews/CheckboxGroupDiffView';
+import ImageDiffView from './FieldsTypesDiffViews/ImageDiffView';
+import VideoDiffView from './FieldsTypesDiffViews/VideoDiffView';
+import TimeDiffView from './FieldsTypesDiffViews/TimeDiffView';
+import DateTimeDiffView from './FieldsTypesDiffViews/DateTimeDiffView';
+import BooleanDiffView from './FieldsTypesDiffViews/BooleanDiffView';
+import { NumberDiffView } from './FieldsTypesDiffViews/NumberDiffView';
 
 export interface CompareVersionsDialogBaseProps {
   error: ApiResponse;
@@ -77,6 +86,12 @@ export interface CompareVersionsDialogContainerProps
   compareXml: boolean;
 }
 
+export interface DiffViewComponentBaseProps {
+  aXml: string;
+  bXml: string;
+  field: ContentTypeField;
+}
+
 export type ContentInstanceComponentsDiffResult = {
   count: number;
   added: boolean;
@@ -113,4 +128,20 @@ export function removeTags(content: string): string {
 export const getContentInstanceXmlItemFromIndex = (xml: string, index: number): string => {
   const doc = fromString(xml).querySelectorAll('item')[index];
   return doc ? serialize(doc) : '';
+};
+
+export const typesDiffMap: Record<string, ElementType> = {
+  text: TextDiffView,
+  textarea: TextDiffView,
+  html: TextDiffView,
+  'node-selector': ContentInstanceComponents,
+  'checkbox-group': CheckboxGroupDiffView,
+  repeat: RepeatGroupItems,
+  image: ImageDiffView,
+  'video-picker': VideoDiffView,
+  time: TimeDiffView,
+  'date-time': DateTimeDiffView,
+  boolean: BooleanDiffView,
+  'numeric-input': NumberDiffView,
+  dropdown: TextDiffView
 };

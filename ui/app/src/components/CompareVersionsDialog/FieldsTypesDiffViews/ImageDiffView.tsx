@@ -17,18 +17,20 @@
 import ImageView from '../../ViewVersionDialog/FieldTypesViews/ImageView';
 import DiffViewLayout from './DiffViewLayout';
 import Box from '@mui/material/Box';
+import { DiffViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function ImageDiffView(props) {
-  const { contentA, contentB, field } = props;
+export interface ImageDiffViewProps extends DiffViewComponentBaseProps {}
+
+export function ImageDiffView(props: ImageDiffViewProps) {
+  const { aXml, bXml, field } = props;
   return (
     <DiffViewLayout
-      contentA={contentA}
-      contentB={contentB}
+      aXml={aXml}
+      bXml={bXml}
       field={field}
-      renderContent={(content) => (
+      renderContent={(xml) => (
         <Box sx={{ height: 'calc(50% - 9px)' }}>
-          <ImageView contentA={content} />{' '}
+          <ImageView xml={xml} field={field} />
         </Box>
       )}
     />

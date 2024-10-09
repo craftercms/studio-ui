@@ -14,18 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
 import DiffViewLayout from './DiffViewLayout';
 import DateTimeView from '../../ViewVersionDialog/FieldTypesViews/DateTimeView';
+import { DiffViewComponentBaseProps } from '../utils';
 
-export function DateTimeDiffView(props) {
-  const { contentA, contentB, field } = props;
+export interface DateTimeDiffViewProps extends DiffViewComponentBaseProps {}
+
+export function DateTimeDiffView(props: DateTimeDiffViewProps) {
+  const { aXml, bXml, field } = props;
   return (
     <DiffViewLayout
-      contentA={contentA}
-      contentB={contentB}
+      aXml={aXml}
+      bXml={bXml}
       field={field}
-      renderContent={(content) => <DateTimeView contentA={content} />}
+      renderContent={(xml) => <DateTimeView xml={xml} field={field} />}
     />
   );
 }

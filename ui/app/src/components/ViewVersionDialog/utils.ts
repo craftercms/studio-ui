@@ -57,5 +57,5 @@ export interface ViewVersionDialogContainerProps
 
 export interface ViewComponentBaseProps {
   xml: string;
-  field?: ContentTypeField;
+  field: ContentTypeField;
 }
