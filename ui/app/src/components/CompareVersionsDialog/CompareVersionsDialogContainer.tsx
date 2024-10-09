@@ -59,7 +59,8 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
     contentTypesBranch,
     compareXml
   } = props;
-  const [{ fieldsViewState }] = useVersionsDialogContext();
+  const [{ fieldsViewState, viewSlideOutState, compareSlideOutState }] = useVersionsDialogContext();
+  const disableKeyboardNavigation = viewSlideOutState.open || compareSlideOutState.open;
   const fieldsViewStateRef = useRef<VersionsDialogContextProps['fieldsViewState']>();
   fieldsViewStateRef.current = fieldsViewState;
   const compareVersionsBranch = versionsBranch?.compareVersionsBranch;
@@ -331,6 +332,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                             contentTypeFields={filteredContentTypeFields}
                             isDiff={fieldIdsWithChanges.includes(field.id)}
                             justContent={true}
+                            disableKeyboardNavigation={disableKeyboardNavigation}
                           />
                         }
                         details={
@@ -361,6 +363,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                       contentTypeFields={filteredContentTypeFields}
                       onSelectField={onSelectFieldFromContent}
                       isDiff={fieldIdsWithChanges.includes(selectedField.id)}
+                      disableKeyboardNavigation={disableKeyboardNavigation}
                     />
                     <CompareFieldPanel
                       a={{

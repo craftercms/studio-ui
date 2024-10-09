@@ -44,6 +44,7 @@ interface FieldVersionToolbarProps {
   actions?: ReactNode;
   showFieldsNavigation?: boolean;
   justContent?: boolean;
+  disableKeyboardNavigation?: boolean;
   onSelectField?(field: ContentTypeField): void;
 }
 
@@ -54,6 +55,7 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
     onSelectField,
     actions,
     showFieldsNavigation = true,
+    disableKeyboardNavigation = false,
     isDiff = true,
     justContent
   } = props;
@@ -86,15 +88,19 @@ export function FieldVersionToolbar(props: FieldVersionToolbarProps) {
 
   // Keyboard navigation - Left and Up to select previous field, Right and Down to select next field
   useHotkeys('ArrowLeft,ArrowRight,ArrowUp,ArrowDown', (event) => {
-    switch (event.key) {
-      case 'ArrowLeft':
-      case 'ArrowUp':
-        onSelectPreviousField(field.id);
-        break;
-      case 'ArrowRight':
-      case 'ArrowDown':
-        onSelectNextField(field.id);
-        break;
+    if (disableKeyboardNavigation) {
+      return;
+    } else {
+      switch (event.key) {
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          onSelectPreviousField(field.id);
+          break;
+        case 'ArrowRight':
+        case 'ArrowDown':
+          onSelectNextField(field.id);
+          break;
+      }
     }
   });
 
