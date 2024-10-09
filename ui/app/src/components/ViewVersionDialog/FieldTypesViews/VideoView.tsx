@@ -18,14 +18,23 @@ import AsyncVideoPlayer from '../../AsyncVideoPlayer';
 import React from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { fromString } from '../../../utils/xml';
+import { ViewComponentBaseProps } from '../utils';
+import useContentTypes from '../../../hooks/useContentTypes';
+import { parseElementByContentType } from '../../../utils/content';
 
-// TODO: props, need to inherit from some other prop
-export function VideoView(props) {
-  const { contentA: content } = props;
+export interface VideoViewProps extends ViewComponentBaseProps {}
+
+export function VideoView(props: VideoViewProps) {
+  const { xml, field } = props;
+  const contentTypes = useContentTypes();
+  const content = xml
+    ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+    : '';
   return (
     <Box sx={{ textAlign: 'center' }}>
-      <AsyncVideoPlayer playerOptions={{ src: content as string, controls: true, width: 400 }} />
-      <Typography variant="subtitle2">{content as string}</Typography>
+      <AsyncVideoPlayer playerOptions={{ src: content, controls: true, width: 400 }} />
+      <Typography variant="subtitle2">{content}</Typography>
     </Box>
   );
 }

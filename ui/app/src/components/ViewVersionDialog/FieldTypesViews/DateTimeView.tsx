@@ -14,27 +14,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { asLocalizedDateTime } from '../../../utils/datetime';
 import React from 'react';
 import useLocale from '../../../hooks/useLocale';
+import { fromString } from '../../../utils/xml';
+import useContentTypes from '../../../hooks/useContentTypes';
+import { parseElementByContentType } from '../../../utils/content';
+import { ViewComponentBaseProps } from '../utils';
 
-export function DateTimeView(props) {
-  const { contentA: content } = props;
+export interface DateTimeViewProps extends ViewComponentBaseProps {}
+
+export function DateTimeView(props: DateTimeViewProps) {
+  const { xml, field } = props;
+  const contentTypes = useContentTypes();
+  const content = xml
+    ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+    : '';
   const locale = useLocale();
   return (
     <Box sx={{ textAlign: 'center' }}>
-      <Tooltip title={content as string}>
+      <Tooltip title={content}>
         <Typography>
           {content
-            ? asLocalizedDateTime(
-                new Date(content as string).getTime(),
-                locale.localeCode,
-                locale.dateTimeFormatOptions
-              )
+            ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
             : ''}
         </Typography>
       </Tooltip>

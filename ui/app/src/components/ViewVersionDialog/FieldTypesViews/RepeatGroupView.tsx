@@ -14,19 +14,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
 import Box from '@mui/material/Box';
 import ContentInstance from '../../../models/ContentInstance';
 import DiffCollectionItem from '../../CompareVersionsDialog/FieldsTypesDiffViews/DiffCollectionItem';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
-import useSelection from '../../../hooks/useSelection';
 import { useVersionsDialogContext } from '../../CompareVersionsDialog/VersionsDialogContext';
+import useContentTypes from '../../../hooks/useContentTypes';
+import { parseElementByContentType } from '../../../utils/content';
+import { fromString } from '../../../utils/xml';
+import { ViewComponentBaseProps } from '../utils';
 
-export function RepeatGroupView(props) {
-  const { contentA: content, xml, field } = props;
-  const contentTypesBranch = useSelection((state) => state.contentTypes);
+export interface RepeatGroupViewProps extends ViewComponentBaseProps {}
+
+export function RepeatGroupView(props: RepeatGroupViewProps) {
+  const { xml, field } = props;
   const [, contextApiRef] = useVersionsDialogContext();
+  const contentTypes = useContentTypes();
+  const content = xml
+    ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+    : [];
 
   const isEmbedded = (item: ContentInstance): boolean => {
     return item?.craftercms && !item.craftercms.path;
@@ -34,7 +41,7 @@ export function RepeatGroupView(props) {
 
   const onSelectStateItem = (item: ContentInstance) => {
     const isEmbeddedComponent = isEmbedded(item);
-    const fields = isEmbeddedComponent ? contentTypesBranch.byId[item.craftercms.contentTypeId].fields : field.fields;
+    const fields = isEmbeddedComponent ? contentTypes[item.craftercms.contentTypeId].fields : field.fields;
 
     contextApiRef.current.setViewSlideOutState({
       open: true,

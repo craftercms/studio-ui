@@ -22,16 +22,21 @@ import { FormattedMessage } from 'react-intl';
 import React from 'react';
 import useItemsByPath from '../../../hooks/useItemsByPath';
 import { useVersionsDialogContext } from '../../CompareVersionsDialog/VersionsDialogContext';
-import useSelection from '../../../hooks/useSelection';
+import useContentTypes from '../../../hooks/useContentTypes';
+import { parseElementByContentType } from '../../../utils/content';
+import { fromString } from '../../../utils/xml';
+import { ViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function NodeSelector(props) {
-  const { contentA: content, xml, field } = props;
+export interface NodeSelectorViewProps extends ViewComponentBaseProps {}
+
+export function NodeSelector(props: NodeSelectorViewProps) {
+  const { xml, field } = props;
   const itemsByPath = useItemsByPath();
   const [, contextApiRef] = useVersionsDialogContext();
-  const contentTypesBranch = useSelection((state) => state.contentTypes);
-
-  console.log('content', content);
+  const contentTypes = useContentTypes();
+  const content = xml
+    ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+    : [];
 
   // TODO: move functions to utils
   const getItemLabel = (item: ContentInstance): string => {
@@ -45,7 +50,7 @@ export function NodeSelector(props) {
 
   const onSelectStateItem = (item: ContentInstance) => {
     const isEmbeddedComponent = isEmbedded(item);
-    const fields = isEmbeddedComponent ? contentTypesBranch.byId[item.craftercms.contentTypeId].fields : field.fields;
+    const fields = isEmbeddedComponent ? contentTypes[item.craftercms.contentTypeId].fields : field.fields;
 
     contextApiRef.current.setViewSlideOutState({
       open: true,

@@ -14,12 +14,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: props, need to inherit from some other prop
 import Box from '@mui/material/Box';
 import React from 'react';
+import { fromString } from '../../../utils/xml';
+import { ViewComponentBaseProps } from '../utils';
+import useContentTypes from '../../../hooks/useContentTypes';
+import { parseElementByContentType } from '../../../utils/content';
 
-export function NumberView(props) {
-  const { contentA: content } = props;
+export interface NumberViewProps extends ViewComponentBaseProps {}
+
+export function NumberView(props: NumberViewProps) {
+  const { xml, field } = props;
+  const contentTypes = useContentTypes();
+  const content = xml && parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {});
   return <Box sx={{ textAlign: 'center' }}>{`${content}`}</Box>;
 }
 

@@ -483,7 +483,7 @@ export function parseContentXML(
  * instanceLookup {LookupTable<ContentInstance>}
  * unflattenedPaths {LookupTable<ContentInstance>} A lookup table directly completed/mutated by this function indexed by path of those objects that are incomplete/unflattened
  */
-function parseElementByContentType(
+export function parseElementByContentType(
   element: Element,
   field: ContentTypeField,
   contentTypesLookup: LookupTable<ContentType>,

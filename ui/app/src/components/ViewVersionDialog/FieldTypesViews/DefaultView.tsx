@@ -16,11 +16,13 @@
 
 import React from 'react';
 import TextView from './TextView';
+import { ViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function DefaultView(props) {
-  const { xml, editorProps } = props;
-  return <TextView contentA={xml} editorProps={editorProps} />;
+export interface DefaultViewProps extends ViewComponentBaseProps {}
+
+export function DefaultView(props: DefaultViewProps) {
+  const { xml } = props;
+  return <TextView xml={xml} />;
 }
 
 export default DefaultView;

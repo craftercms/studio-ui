@@ -14,21 +14,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ContentTypeField } from '../../../models';
 import Editor, { EditorProps } from '@monaco-editor/react';
 import React from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useVersionsDialogContext } from '../../CompareVersionsDialog/VersionsDialogContext';
 import { removeTags } from '../../CompareVersionsDialog';
+import { ViewComponentBaseProps } from '../utils';
+import { fromString } from '../../../utils/xml';
 
-export interface TextViewProps {
-  contentA: string;
-  field?: ContentTypeField;
+export interface TextViewProps extends ViewComponentBaseProps {
   editorProps?: EditorProps;
 }
 
 export function TextView(props: TextViewProps) {
-  const { contentA: content, field, editorProps } = props;
+  const { xml, field, editorProps } = props;
+  const content = field ? fromString(xml).querySelector(field.id).textContent : xml;
   const [{ fieldsViewState }] = useVersionsDialogContext();
   const cleanText = field && fieldsViewState[field.id]?.cleanText;
   const value = cleanText ? removeTags(content ?? '') : content;
@@ -45,7 +45,7 @@ export function TextView(props: TextViewProps) {
     scrollBeyondLastLine: false,
     renderWhitespace: 'none',
     scrollbar: { alwaysConsumeMouseWheel: false },
-    ...editorProps.options
+    ...editorProps?.options
   };
 
   return (

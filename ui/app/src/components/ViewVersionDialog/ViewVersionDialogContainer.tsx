@@ -134,7 +134,7 @@ export function ViewVersionDialogContainer(props: ViewVersionDialogContainerProp
         ) : error ? (
           <ApiResponseErrorState error={error} />
         ) : showXml ? (
-          <TextView contentA={xml} editorProps={{ height: '100%' }} />
+          <TextView xml={xml} editorProps={{ height: '100%' }} />
         ) : (
           <>
             <ResizeableDrawer

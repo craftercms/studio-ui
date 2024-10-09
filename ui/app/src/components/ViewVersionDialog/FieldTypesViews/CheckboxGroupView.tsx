@@ -17,13 +17,23 @@
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import React from 'react';
+import { fromString } from '../../../utils/xml';
+import useContentTypes from '../../../hooks/useContentTypes';
+import { parseElementByContentType } from '../../../utils/content';
+import { ViewComponentBaseProps } from '../utils';
 
-// TODO: props, need to inherit from some other prop
-export function CheckboxGroupView(props) {
-  const { contentA: content } = props;
+export interface CheckboxGroupViewProps extends ViewComponentBaseProps {}
+
+export function CheckboxGroupView(props: CheckboxGroupViewProps) {
+  const { xml, field } = props;
+  const contentTypes = useContentTypes();
+  const content = xml
+    ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+    : [];
+
   return (
     <Box sx={{ textAlign: 'center' }}>
-      {content?.map((item) => <Typography key={item.key as string}>{`${item.value_smv} (${item.key})`}</Typography>)}
+      {content?.map((item) => <Typography key={item.key}>{`${item.value_smv} (${item.key})`}</Typography>)}
     </Box>
   );
 }

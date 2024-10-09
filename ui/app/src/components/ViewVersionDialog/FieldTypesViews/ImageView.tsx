@@ -17,14 +17,24 @@
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import React from 'react';
+import { fromString } from '../../../utils/xml';
+import { ViewComponentBaseProps } from '../utils';
+import { parseElementByContentType } from '../../../utils/content';
+import useContentTypes from '../../../hooks/useContentTypes';
 
-// TODO: props, need to inherit from some other prop
-export function ImageView(props) {
-  const { contentA: content } = props;
+export interface ImageViewProps extends ViewComponentBaseProps {}
+
+export function ImageView(props: ImageViewProps) {
+  const { xml, field } = props;
+  const contentTypes = useContentTypes();
+  const content = xml
+    ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+    : '';
+
   return (
     <Box sx={{ textAlign: 'center' }}>
-      <img src={content as string} alt="" />
-      <Typography variant="subtitle2">{content as string}</Typography>
+      <img src={content} alt="" />
+      <Typography variant="subtitle2">{content}</Typography>
     </Box>
   );
 }

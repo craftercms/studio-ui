@@ -54,3 +54,8 @@ export interface ViewVersionDialogContainerProps
     Pick<ViewVersionDialogProps, 'contentTypesBranch'> {
   showXml: boolean;
 }
+
+export interface ViewComponentBaseProps {
+  xml: string;
+  field?: ContentTypeField;
+}

@@ -89,7 +89,7 @@ export function ContentFieldView(props: ContentFieldViewProps) {
   return (
     <Box sx={{ flexGrow: 1, maxHeight: 'calc(100% - 60px)' }}>
       {viewXml ? (
-        <TextView contentA={fieldXml} editorProps={viewComponentProps.editorProps} />
+        <TextView xml={fieldXml} editorProps={viewComponentProps.editorProps} />
       ) : nnou(ViewComponent) ? (
         noContentSet ? (
           <Box sx={{ textAlign: 'center' }}>

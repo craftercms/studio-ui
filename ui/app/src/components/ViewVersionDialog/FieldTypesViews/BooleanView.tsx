@@ -18,10 +18,19 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
 import React from 'react';
+import { ViewComponentBaseProps } from '../utils';
+import { fromString } from '../../../utils/xml';
+import { parseElementByContentType } from '../../../utils/content';
+import useContentTypes from '../../../hooks/useContentTypes';
 
-// TODO: props, need to inherit from some other prop
-export function BooleanView(props) {
-  const { contentA: content } = props;
+export interface BooleanViewProps extends ViewComponentBaseProps {}
+
+export function BooleanView(props: BooleanViewProps) {
+  const { xml, field } = props;
+  const contentTypes = useContentTypes();
+  const content = xml
+    ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
+    : false;
   return (
     <Box sx={{ textAlign: 'center' }}>
       <Typography>
