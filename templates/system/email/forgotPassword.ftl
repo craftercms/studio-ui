@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -23,7 +23,7 @@
     		<a href="${authoringUrl}/${serviceUrl}?token=${token?url}">${authoringUrl}/${serviceUrl}?token=${token?url}</a>
     	</p>
     	<p>
-			Note: the above link expires, and can only be clicked once before being deactivated. If you did not successfully reset your password using the above link, you will need to request a new link.
+			The reset password link expires soon. If the link has expired please request a new link.
 		</p>
 
 		<p>
