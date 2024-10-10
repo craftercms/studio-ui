@@ -390,21 +390,23 @@ export function ZoneMenu(props: ZoneMenuProps) {
       switch (e.key) {
         case 'ArrowLeft':
         case 'ArrowUp': {
-          if (!refs.current.isFirstItem) {
+          if (isMovable && !refs.current.isFirstItem) {
             refs.current.onMoveUp(e);
           }
           break;
         }
         case 'ArrowRight':
         case 'ArrowDown': {
-          if (!refs.current.isLastItem) {
+          if (isMovable && !refs.current.isLastItem) {
             refs.current.onMoveDown(e);
           }
           break;
         }
         case 'Backspace': {
-          e.preventDefault();
-          setShowTrashConfirmation(true);
+          if (isTrashable) {
+            e.preventDefault();
+            setShowTrashConfirmation(true);
+          }
           break;
         }
       }
