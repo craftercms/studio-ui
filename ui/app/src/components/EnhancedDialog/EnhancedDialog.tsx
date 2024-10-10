@@ -41,7 +41,6 @@ export interface EnhancedDialogProps extends Omit<MuiDialogProps, 'title'>, Enha
 export function EnhancedDialog(props: EnhancedDialogProps) {
   // region const { ... } = props
   const {
-    id,
     open,
     isSubmitting = false,
     hasPendingChanges = false,

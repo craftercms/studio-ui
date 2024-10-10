@@ -75,8 +75,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);
   const isItemPreviewable = isPreviewable(item);
-  const [compareMode, setCompareMode] = useState(false);
-  const [selectedCompareVersions, setSelectedCompareVersions] = useState([]);
+  const [compareMode, setCompareMode] = useState<boolean>(false);
+  const [selectedCompareVersions, setSelectedCompareVersions] = useState<string[]>([]);
 
   const [menu, setMenu] = useSpreadState<Menu>(menuInitialState);
 
@@ -328,6 +328,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             control={<Switch color="primary" checked={compareMode} />}
             label={<FormattedMessage defaultMessage="Compare" />}
             labelPlacement="start"
+            disabled={versionsBranch.versions?.length <= 1}
             onChange={(e) => {
               setCompareMode((e.currentTarget as HTMLInputElement).checked);
             }}

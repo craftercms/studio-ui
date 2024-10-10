@@ -14,24 +14,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
+import Button, { ButtonProps } from '@mui/material/Button';
 
-export interface DialogHeaderActionProps extends IconButtonProps {
+export interface DialogHeaderActionProps extends ButtonProps {
   icon: SystemIconDescriptor;
+  text?: string;
   tooltip?: string;
 }
 
 export function DialogHeaderAction(props: DialogHeaderActionProps) {
-  const { icon, tooltip, disabled = false, ...rest } = props;
+  const { icon, text, tooltip, disabled = false, ...rest } = props;
   return tooltip ? (
     <Tooltip title={disabled ? '' : tooltip}>
-      <IconButton {...rest} disabled={disabled} size="large">
-        <SystemIcon icon={icon} />
-      </IconButton>
+      {text ? (
+        <Button {...rest} startIcon={<SystemIcon icon={icon} />} disabled={disabled} size="large">
+          {text}
+        </Button>
+      ) : (
+        <IconButton {...rest} disabled={disabled} size="large">
+          <SystemIcon icon={icon} />
+        </IconButton>
+      )}
     </Tooltip>
+  ) : text ? (
+    <Button {...rest} startIcon={<SystemIcon icon={icon} />} disabled={disabled} size="large">
+      {text}
+    </Button>
   ) : (
     <IconButton {...rest} disabled={disabled} size="large">
       <SystemIcon icon={icon} />
