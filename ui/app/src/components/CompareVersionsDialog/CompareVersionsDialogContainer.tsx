@@ -387,7 +387,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                     styles={{ root: { height: '100%', margin: 0 } }}
                     title={
                       isFilteredFieldsEmpty ? (
-                        <FormattedMessage defaultMessage="There are no differences in the content fields. Check the XML comparison for a full content diff" />
+                        <FormattedMessage defaultMessage="No differences in content detected. Check the XML diff to review changes." />
                       ) : (
                         <FormattedMessage
                           id="siteTools.selectTool"
