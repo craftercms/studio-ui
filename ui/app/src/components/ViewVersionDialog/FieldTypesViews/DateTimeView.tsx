@@ -24,6 +24,7 @@ import { fromString } from '../../../utils/xml';
 import useContentTypes from '../../../hooks/useContentTypes';
 import { parseElementByContentType } from '../../../utils/content';
 import { ViewComponentBaseProps } from '../utils';
+import { FormattedMessage } from 'react-intl';
 
 export interface DateTimeViewProps extends ViewComponentBaseProps {}
 
@@ -34,13 +35,17 @@ export function DateTimeView(props: DateTimeViewProps) {
     ? parseElementByContentType(fromString(xml).querySelector(field.id), field, contentTypes, {})
     : '';
   const locale = useLocale();
+  const isDateValid = !isNaN(Date.parse(content));
   return (
     <Box sx={{ textAlign: 'center' }}>
       <Tooltip title={content}>
         <Typography>
-          {content
-            ? asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
-            : ''}
+          {content &&
+            (isDateValid ? (
+              asLocalizedDateTime(new Date(content).getTime(), locale.localeCode, locale.dateTimeFormatOptions)
+            ) : (
+              <FormattedMessage defaultMessage="Invalid date format." />
+            ))}
         </Typography>
       </Tooltip>
     </Box>
