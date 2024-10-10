@@ -144,6 +144,7 @@ export const typesDiffMap: Record<string, ElementType> = {
   time: TimeDiffView,
   'date-time': DateTimeDiffView,
   boolean: BooleanDiffView,
+  'page-nav-order': BooleanDiffView,
   'numeric-input': NumberDiffView,
   dropdown: TextDiffView
 };
