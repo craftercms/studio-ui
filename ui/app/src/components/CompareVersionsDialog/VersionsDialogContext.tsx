@@ -30,8 +30,8 @@ export interface FieldViewState {
 }
 
 export interface VersionsDialogContextProps {
-  compareSlideOutState?: CompareVersionsDialogProps;
-  viewSlideOutState: ViewVersionDialogProps;
+  compareSlideOutState?: CompareVersionsDialogProps & { compareXml: boolean };
+  viewSlideOutState: ViewVersionDialogProps & { showXml: boolean };
   fieldsViewState: LookupTable<FieldViewState>;
   contentType: ContentType;
 }
@@ -50,8 +50,8 @@ export const initialFieldViewState = {
 };
 
 export const dialogInitialState: VersionsDialogContextProps = {
-  compareSlideOutState: { open: false, isFetching: false, error: null },
-  viewSlideOutState: { open: false, isFetching: false, error: null },
+  compareSlideOutState: { open: false, isFetching: false, error: null, compareXml: false },
+  viewSlideOutState: { open: false, isFetching: false, error: null, showXml: false },
   fieldsViewState: {},
   contentType: null
 };

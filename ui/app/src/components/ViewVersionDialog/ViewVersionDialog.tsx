@@ -36,6 +36,7 @@ import {
   VersionsDialogContextType
 } from '../CompareVersionsDialog/VersionsDialogContext';
 import { DiffEditorProps } from '@monaco-editor/react';
+import { getDialogHeaderActions } from '../CompareVersionsDialog';
 
 export function ViewVersionDialog(props: ViewVersionDialogProps) {
   const { rightActions, leftActions, contentTypesBranch, error, isFetching, version, onClose, ...rest } = props;
@@ -98,11 +99,13 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
       dialogHeaderProps={{
         leftActions,
         rightActions: [
-          {
-            icon: { id: '@mui/icons-material/CodeRounded' },
-            onClick: () => setShowXml(!showXml),
-            'aria-label': showXml ? formatMessage(translations.compareContent) : formatMessage(translations.compareXml)
-          },
+          ...getDialogHeaderActions({
+            xmlMode: showXml,
+            contentActionLabel: formatMessage(translations.compareContent),
+            xmlActionLabel: formatMessage(translations.compareXml),
+            onClickContent: () => setShowXml(false),
+            onClickXml: () => setShowXml(true)
+          }),
           ...(rightActions ?? [])
         ]
       }}
@@ -154,8 +157,15 @@ export function ViewVersionDialog(props: ViewVersionDialogProps) {
             title={state.viewSlideOutState.title}
             subtitle={state.viewSlideOutState.subtitle}
             onCloseButtonClick={(e) => state.viewSlideOutState.onClose(e, null)}
+            rightActions={getDialogHeaderActions({
+              xmlMode: state.viewSlideOutState.showXml,
+              contentActionLabel: formatMessage(translations.compareContent),
+              xmlActionLabel: formatMessage(translations.compareXml),
+              onClickContent: () => contextRef.current.setViewSlideOutState({ showXml: false }),
+              onClickXml: () => contextRef.current.setViewSlideOutState({ showXml: true })
+            })}
           />
-          <ViewVersionDialogContainer {...state.viewSlideOutState} showXml={false} />
+          <ViewVersionDialogContainer {...state.viewSlideOutState} />
         </Drawer>
       </VersionsDialogContext.Provider>
     </EnhancedDialog>

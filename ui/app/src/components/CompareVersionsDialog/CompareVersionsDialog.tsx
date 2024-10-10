@@ -15,7 +15,7 @@
  */
 
 import React, { useMemo, useRef, useState } from 'react';
-import { CompareVersionsDialogProps } from './utils';
+import { CompareVersionsDialogProps, getDialogHeaderActions } from './utils';
 import CompareVersionsDialogContainer from './CompareVersionsDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
 import { dialogClasses } from '@mui/material/Dialog';
@@ -134,26 +134,13 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
         leftActions,
         rightActions: [
           ...(!selectionContent
-            ? [
-                {
-                  icon: { id: '@mui/icons-material/TextSnippetOutlined' },
-                  text: formatMessage(translations.compareContent),
-                  onClick: () => setCompareXml(false),
-                  sx: {
-                    color: (theme) => (!compareXml ? theme.palette.primary.main : theme.palette.text.secondary),
-                    fontSize: 14
-                  }
-                },
-                {
-                  icon: { id: '@mui/icons-material/CodeRounded' },
-                  text: formatMessage(translations.compareXml),
-                  onClick: () => setCompareXml(true),
-                  sx: {
-                    color: (theme) => (compareXml ? theme.palette.primary.main : theme.palette.text.secondary),
-                    fontSize: 14
-                  }
-                }
-              ]
+            ? getDialogHeaderActions({
+                xmlMode: compareXml,
+                contentActionLabel: formatMessage(translations.compareContent),
+                xmlActionLabel: formatMessage(translations.compareXml),
+                onClickContent: () => setCompareXml(false),
+                onClickXml: () => setCompareXml(true)
+              })
             : []),
           ...(rightActions ?? [])
         ],
@@ -218,8 +205,15 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
                 title={state.compareSlideOutState.title}
                 subtitle={state.compareSlideOutState.subtitle}
                 onCloseButtonClick={state.compareSlideOutState.onClose}
+                rightActions={getDialogHeaderActions({
+                  xmlMode: state.compareSlideOutState.compareXml,
+                  contentActionLabel: formatMessage(translations.compareContent),
+                  xmlActionLabel: formatMessage(translations.compareXml),
+                  onClickContent: () => contextRef.current.setCompareSlideOutState({ compareXml: false }),
+                  onClickXml: () => contextRef.current.setCompareSlideOutState({ compareXml: true })
+                })}
               />
-              <CompareVersionsDialogContainer {...state.compareSlideOutState} compareXml={false} />
+              <CompareVersionsDialogContainer {...state.compareSlideOutState} />
             </Box>
           )}
           {/* endregion */}
@@ -230,8 +224,30 @@ export function CompareVersionsDialog(props: CompareVersionsDialogProps) {
                 title={state.viewSlideOutState.title}
                 subtitle={state.viewSlideOutState.subtitle}
                 onCloseButtonClick={state.viewSlideOutState.onClose}
+                rightActions={[
+                  {
+                    icon: { id: '@mui/icons-material/TextSnippetOutlined' },
+                    text: formatMessage(translations.compareContent),
+                    onClick: () => contextRef.current.setViewSlideOutState({ showXml: false }),
+                    sx: {
+                      color: (theme) =>
+                        !state.viewSlideOutState.showXml ? theme.palette.primary.main : theme.palette.text.secondary,
+                      fontSize: 14
+                    }
+                  },
+                  {
+                    icon: { id: '@mui/icons-material/CodeRounded' },
+                    text: formatMessage(translations.compareXml),
+                    onClick: () => contextRef.current.setViewSlideOutState({ showXml: true }),
+                    sx: {
+                      color: (theme) =>
+                        state.viewSlideOutState.showXml ? theme.palette.primary.main : theme.palette.text.secondary,
+                      fontSize: 14
+                    }
+                  }
+                ]}
               />
-              <ViewVersionDialogContainer {...state.viewSlideOutState} showXml={false} />
+              <ViewVersionDialogContainer {...state.viewSlideOutState} />
             </>
           )}
           {/* endregion */}

@@ -140,7 +140,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
   const filteredContentTypeFields = showOnlyChanges
     ? contentTypeFields.filter((field) => fieldIdsWithChanges.includes(field.id))
     : contentTypeFields;
-
+  const isFilteredFieldsEmpty = filteredContentTypeFields.length === 0;
   const sidebarRefs = useRef({});
   const fieldsRefs = useRef({});
 
@@ -230,7 +230,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
         ) : (
           <>
             <ResizeableDrawer
-              open={true}
+              open={!isFilteredFieldsEmpty}
               width={280}
               styles={{
                 drawerBody: {
@@ -314,7 +314,7 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                 </Button>
               </Box>
             </ResizeableDrawer>
-            <Box sx={{ marginLeft: '280px', height: '100%', overflowY: 'auto' }}>
+            <Box sx={{ marginLeft: isFilteredFieldsEmpty ? 0 : '280px', height: '100%', overflowY: 'auto' }}>
               <ErrorBoundary>
                 {accordionView ? (
                   contentTypeFields
@@ -386,12 +386,16 @@ export function CompareVersionsDialogContainer(props: CompareVersionsDialogConta
                   <EmptyState
                     styles={{ root: { height: '100%', margin: 0 } }}
                     title={
-                      <FormattedMessage
-                        id="siteTools.selectTool"
-                        defaultMessage="Please select a field from the left."
-                      />
+                      isFilteredFieldsEmpty ? (
+                        <FormattedMessage defaultMessage="There are no differences in the content fields. Check the XML comparison for a full content diff" />
+                      ) : (
+                        <FormattedMessage
+                          id="siteTools.selectTool"
+                          defaultMessage="Please select a field from the left."
+                        />
+                      )
                     }
-                    image={`${baseUrl}/static-assets/images/choose_option.svg`}
+                    image={isFilteredFieldsEmpty ? undefined : `${baseUrl}/static-assets/images/choose_option.svg`}
                   />
                 )}
               </ErrorBoundary>

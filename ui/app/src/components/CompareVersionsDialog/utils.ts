@@ -147,3 +147,38 @@ export const typesDiffMap: Record<string, ElementType> = {
   'numeric-input': NumberDiffView,
   dropdown: TextDiffView
 };
+
+export const getDialogHeaderActions = ({
+  xmlMode,
+  contentActionLabel,
+  xmlActionLabel,
+  onClickContent,
+  onClickXml
+}: {
+  xmlMode: boolean;
+  contentActionLabel: string;
+  xmlActionLabel: string;
+  onClickContent: () => void;
+  onClickXml: () => void;
+}) => {
+  return [
+    {
+      icon: { id: '@mui/icons-material/TextSnippetOutlined' },
+      text: contentActionLabel,
+      onClick: onClickContent,
+      sx: {
+        color: (theme) => (xmlMode ? theme.palette.text.secondary : theme.palette.primary.main),
+        fontSize: 14
+      }
+    },
+    {
+      icon: { id: '@mui/icons-material/CodeRounded' },
+      text: xmlActionLabel,
+      onClick: onClickXml,
+      sx: {
+        color: (theme) => (xmlMode ? theme.palette.primary.main : theme.palette.text.secondary),
+        fontSize: 14
+      }
+    }
+  ];
+};
