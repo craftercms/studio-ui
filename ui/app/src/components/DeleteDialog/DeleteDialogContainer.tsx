@@ -74,7 +74,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
       },
       error({ response }) {
         dispatch(updateDeleteDialog({ isSubmitting: false }));
-        setSubmitError(response);
+        setSubmitError(response.response);
       }
     });
   };
@@ -164,6 +164,7 @@ export function DeleteDialogContainer(props: DeleteDialogContainerProps) {
       selectedItems={selectedItems}
       error={error}
       submitError={submitError}
+      setSubmitError={setSubmitError}
       isFetching={isFetching}
       comment={comment}
       onCommentChange={onCommentChange}
