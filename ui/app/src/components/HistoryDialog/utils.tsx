@@ -22,6 +22,7 @@ import { ItemHistoryEntry, VersionsStateProps } from '../../models/Version';
 import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
+import { ApiResponse } from '../../models';
 
 export interface Menu {
   sections: ContextMenuOption[][];
@@ -29,7 +30,9 @@ export interface Menu {
   activeItem: ItemHistoryEntry;
 }
 
-export interface HistoryDialogBaseProps {}
+export interface HistoryDialogBaseProps {
+  error: ApiResponse;
+}
 
 export interface HistoryDialogProps extends HistoryDialogBaseProps, EnhancedDialogProps {
   versionsBranch: VersionsStateProps;

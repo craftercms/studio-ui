@@ -18,12 +18,14 @@ import { createReducer } from '@reduxjs/toolkit';
 import GlobalState from '../../../models/GlobalState';
 import { closeHistoryDialog, historyDialogClosed, historyDialogUpdate, showHistoryDialog } from '../../actions/dialogs';
 import { HistoryDialogStateProps } from '../../../components/HistoryDialog/utils';
+import { revertContentFailed } from '../../actions/versions';
 
 const initialState: HistoryDialogStateProps = {
   open: false,
   isSubmitting: null,
   isMinimized: null,
-  hasPendingChanges: null
+  hasPendingChanges: null,
+  error: null
 };
 
 export default createReducer<GlobalState['dialogs']['history']>(initialState, (builder) => {
@@ -40,5 +42,9 @@ export default createReducer<GlobalState['dialogs']['history']>(initialState, (b
     .addCase(historyDialogUpdate, (state, { payload }) => ({
       ...state,
       ...(payload as Partial<HistoryDialogStateProps>)
+    }))
+    .addCase(revertContentFailed, (state, { payload }) => ({
+      ...state,
+      error: payload.response
     }));
 });
