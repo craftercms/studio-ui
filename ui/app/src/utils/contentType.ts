@@ -22,6 +22,22 @@ import { generatePlaceholderImageDataUrl } from './content';
 import { toColor } from './string';
 import { darken } from '@mui/material/styles';
 import { Theme } from '@mui/material';
+import { defineMessages, IntlShape } from 'react-intl';
+
+const messages = defineMessages({
+  'display-template': {
+    defaultMessage: 'Display template'
+  },
+  'no-template-required': {
+    defaultMessage: 'No template required'
+  },
+  lastModifiedDate: {
+    defaultMessage: 'Last modified date'
+  },
+  createdDate: {
+    defaultMessage: 'Created date'
+  }
+});
 
 // TODO: Not used.
 export function getRelatedContentTypeIds(contentType: ContentType): string[] {
@@ -179,4 +195,36 @@ export function getAvatarWithIconColors(
   const backgroundColor = theme.palette.mode === 'dark' ? darkenFn(base, 0.2) : base;
   const textColor = theme.palette.getContrastText(base);
   return { backgroundColor, textColor };
+}
+
+/**
+ * Retrieves the internal content-type fields used by studio.
+ *
+ * @param formatMessage - i18n formatter.
+ * @returns An array of `ContentTypeField` objects representing the internal fields.
+ */
+export function getStudioContentInternalFields(formatMessage: IntlShape['formatMessage']): ContentTypeField[] {
+  return [
+    {
+      id: 'no-template-required',
+      name: formatMessage(messages['no-template-required']),
+      type: 'boolean',
+      validations: {},
+      defaultValue: ''
+    },
+    {
+      id: 'lastModifiedDate',
+      name: formatMessage(messages['lastModifiedDate']),
+      type: 'date-time',
+      validations: {},
+      defaultValue: ''
+    },
+    {
+      id: 'createdDate',
+      name: formatMessage(messages['createdDate']),
+      type: 'date-time',
+      validations: {},
+      defaultValue: ''
+    }
+  ];
 }

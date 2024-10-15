@@ -20,7 +20,7 @@ import { nnou, nou, reversePluckProps } from './object';
 import { ContentType, ContentTypeField } from '../models/ContentType';
 import LookupTable from '../models/LookupTable';
 import ContentInstance, { ContentInstanceBase } from '../models/ContentInstance';
-import { deserialize, getInnerHtml, getInnerHtmlNumber, wrapElementInAuxDocument } from './xml';
+import { deserialize, fromString, getInnerHtml, getInnerHtmlNumber, serialize, wrapElementInAuxDocument } from './xml';
 import { fileNameFromPath, replaceAccentedVowels, unescapeHTML } from './string';
 import { getRootPath, isRootPath, withIndex, withoutIndex } from './path';
 import { isFolder, isNavigable, isPreviewable } from '../components/PathNavigator/utils';
@@ -346,7 +346,7 @@ export function parseSandBoxItemToDetailedItem(
   };
 }
 
-const systemPropsList = [
+export const systemPropsList = [
   'orderDefault_f',
   'savedAsDraft',
   'content-type',
@@ -364,6 +364,19 @@ const systemPropsList = [
   'lastModifiedDate',
   'lastModifiedDate_dt'
 ];
+
+export const systemPropMap = {
+  fileName: 'fileName',
+  placeInNav: 'placeInNav',
+  internalName: 'label',
+  'content-type': 'contentTypeId',
+  createdDate: 'dateCreated',
+  createdDate_dt: 'dateCreated',
+  lastModifiedDate: 'dateModified',
+  lastModifiedDate_dt: 'dateModified',
+  disabled: 'disabled',
+  orderDefault_f: 'orderInNav'
+};
 
 /**
  * doc {XMLDocument}
@@ -408,6 +421,7 @@ export function parseContentXML(
     );
     current.craftercms.dateCreated = getInnerHtml(doc.querySelector(':scope > createdDate_dt'));
     current.craftercms.dateModified = getInnerHtml(doc.querySelector(':scope > lastModifiedDate_dt'));
+    current.craftercms.disabled = getInnerHtml(doc.querySelector(':scope > disabled'), { trim: true }) === 'true';
   }
   id && (instanceLookup[id] = current);
   if (nnou(doc)) {
@@ -462,7 +476,7 @@ export function parseContentXML(
  * instanceLookup {LookupTable<ContentInstance>}
  * unflattenedPaths {LookupTable<ContentInstance>} A lookup table directly completed/mutated by this function indexed by path of those objects that are incomplete/unflattened
  */
-function parseElementByContentType(
+export function parseElementByContentType(
   element: Element,
   field: ContentTypeField,
   contentTypesLookup: LookupTable<ContentType>,
@@ -1206,3 +1220,73 @@ export function generatePlaceholderImageDataUrl(attributes?: Partial<GeneratePla
 
   return canvas.toDataURL();
 }
+
+/**
+ * Retrieves the value of a property from a content instance model, considering system properties.
+ *
+ * @param model - The content instance model to retrieve the value from.
+ * @param prop - The property to retrieve the value from.
+ * @returns The value of the property from the model.
+ * */
+export function getContentInstanceValueFromProp(model: ContentInstance, prop: string) {
+  const systemProp = systemPropMap[prop];
+  if (systemProp) {
+    if (systemProp === 'fileName') {
+      return getContentInstanceFileName(model);
+    } else {
+      return model.craftercms[systemProp];
+    }
+  } else {
+    return model[prop];
+  }
+}
+
+export const systemPropToXmlMap = {
+  fileName: 'file-name',
+  internalName: 'internal-name'
+};
+
+export function getContentInstanceXmlValueFromProp(xml: string, prop: string): string {
+  const selectionProp = systemPropToXmlMap[prop] ?? prop;
+  const doc = fromString(xml).querySelector(selectionProp);
+  return doc ? serialize(doc) : '';
+}
+
+export function getContentFileNameFromPath(path: string): string {
+  let fileName = path.replace('/site/website', '');
+
+  if (path.endsWith('/index.xml')) {
+    fileName = fileName.replace('/index.xml', '');
+    return fileName.substring(fileName.lastIndexOf('/')) || '/';
+  }
+
+  if (path.includes('.xml')) {
+    return fileName.substring(fileName.lastIndexOf('/') + 1).replace('.xml', '');
+  }
+  return fileName;
+}
+
+/**
+ * Retrieves the file name from the given content instance model.
+ *
+ * @param model - The content instance model containing the path.
+ * @returns The file name extracted from the model's path, or null if the path is not defined.
+ */
+export function getContentInstanceFileName(model: ContentInstance) {
+  const path = model.craftercms.path;
+  if (!path) return null;
+
+  return getContentFileNameFromPath(path);
+}
+
+export const mockContentInstance = {
+  craftercms: {
+    id: null,
+    path: null,
+    label: null,
+    dateCreated: null,
+    dateModified: null,
+    contentTypeId: null,
+    disabled: false
+  }
+};

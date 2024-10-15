@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,8 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { default } from './ViewVersionDialog';
+import React from 'react';
+import TextView from './TextView';
+import { ViewComponentBaseProps } from '../utils';
 
-export * from './ViewVersionDialog';
+export interface DefaultViewProps extends Pick<ViewComponentBaseProps, 'xml'> {}
 
-export * from './ViewVersionDialogContainer';
+export function DefaultView(props: DefaultViewProps) {
+  const { xml } = props;
+  return <TextView xml={xml} />;
+}
+
+export default DefaultView;
