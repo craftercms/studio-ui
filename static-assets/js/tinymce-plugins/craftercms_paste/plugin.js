@@ -1540,7 +1540,7 @@
     );
   };
   var setHtml5Clipboard = function (clipboardData, html, text) {
-    if (hasWorkingClipboardApi(clipboardData)) {
+    if (clipboardData) {
       try {
         clipboardData.clearData();
         clipboardData.setData('text/html', html);
@@ -1584,11 +1584,15 @@
       var offscreenRange = editor.dom.createRng();
       offscreenRange.selectNodeContents(inner);
       editor.selection.setRng(offscreenRange);
-      global$9.setTimeout(function () {
-        editor.selection.setRng(range);
-        outer.parentNode.removeChild(outer);
-        done();
-      }, 0);
+      global$9.setEditorTimeout(
+        editor,
+        function () {
+          editor.selection.setRng(range);
+          outer.parentNode.removeChild(outer);
+          done();
+        },
+        0
+      );
     };
   };
   var getData = function (editor) {
@@ -1611,7 +1615,7 @@
     return function (evt) {
       if (hasSelectedContent(editor)) {
         setClipboardData(evt, getData(editor), fallback(editor), function () {
-          if (global$a.browser.isChrome() || global$a.browser.isFirefox()) {
+          if (global$a.browser.isChromium() || global$a.browser.isFirefox()) {
             var rng_1 = editor.selection.getRng();
             global$9.setEditorTimeout(
               editor,
