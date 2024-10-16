@@ -28,7 +28,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
@@ -78,19 +77,10 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             <List>
               {dependentItems.map((path) => {
                 return (
-                  <ListItem dense key={path}>
-                    <ListItemText
-                      primary={path}
-                      primaryTypographyProps={{
-                        title: path,
-                        sx: {
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis'
-                        }
-                      }}
-                    />
-                    <ListItemSecondaryAction>
+                  <ListItem
+                    dense
+                    key={path}
+                    secondaryAction={
                       <Button
                         color="primary"
                         onClick={(e) => onEditDependantClick(e, path)}
@@ -103,7 +93,19 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
                       >
                         <FormattedMessage id="words.edit" defaultMessage="Edit" />
                       </Button>
-                    </ListItemSecondaryAction>
+                    }
+                  >
+                    <ListItemText
+                      primary={path}
+                      primaryTypographyProps={{
+                        title: path,
+                        sx: {
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis'
+                        }
+                      }}
+                    />
                   </ListItem>
                 );
               })}

@@ -41,10 +41,9 @@ import EmptyState from '../EmptyState';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ListItemText, { listItemTextClasses } from '@mui/material/ListItemText';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
-import ListItem from '@mui/material/ListItem';
+import ListItem, { listItemClasses } from '@mui/material/ListItem';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -179,6 +178,7 @@ export function PreviewComponentsPanel() {
   };
   const onMenuButtonClickHandler = (e: React.MouseEvent<HTMLButtonElement>, contentType: ContentType) => {
     const { backgroundColor, textColor } = getAvatarWithIconColors(contentType.name, theme, darken);
+    e.stopPropagation();
     setMenuContext({ anchor: e.currentTarget, contentType, backgroundColor, textColor });
   };
   // endregion
@@ -307,7 +307,22 @@ export function PreviewComponentsPanel() {
                       darken
                     );
                     return (
-                      <ListItem key={type.id}>
+                      <ListItem
+                        key={type.id}
+                        sx={{
+                          [`& .${listItemClasses.secondaryAction}`]: { right: '10px' }
+                        }}
+                        secondaryAction={
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            size="small"
+                            onClick={(e) => onMenuButtonClickHandler(e, type)}
+                          >
+                            <MoreVertRounded />
+                          </IconButton>
+                        }
+                      >
                         <ListItemText
                           sx={{
                             [`.${listItemTextClasses.primary}`]: {
@@ -349,16 +364,6 @@ export function PreviewComponentsPanel() {
                             </>
                           }
                         />
-                        <ListItemSecondaryAction sx={{ right: '10px' }}>
-                          <IconButton
-                            edge="end"
-                            aria-label="delete"
-                            size="small"
-                            onClick={(e) => onMenuButtonClickHandler(e, type)}
-                          >
-                            <MoreVertRounded />
-                          </IconButton>
-                        </ListItemSecondaryAction>
                       </ListItem>
                     );
                   })}

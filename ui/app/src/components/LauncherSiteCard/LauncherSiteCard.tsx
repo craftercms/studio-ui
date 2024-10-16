@@ -23,7 +23,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Link from '@mui/material/Link';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import { Site } from '../../models/Site';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -85,24 +84,23 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         className={cx(classes.card, props.classes?.root)}
         sx={{ position: 'relative' }}
         title={title}
-      >
-        <ListItemText
-          primary={title}
-          primaryTypographyProps={{ className: classes.siteName, noWrap: true }}
-          sx={isSiteReady ? undefined : { paddingRight: '35px' }}
-        />
-
-        {(!isSiteReady || hasOptions) && (
-          <ListItemSecondaryAction>
-            {isSiteReady ? (
+        secondaryAction={
+          !isSiteReady || hasOptions ? (
+            isSiteReady ? (
               <IconButton aria-label="settings" onClick={handleOptions} size="large">
                 <MoreVertIcon />
               </IconButton>
             ) : (
               <SiteStatusIndicator state={state} />
-            )}
-          </ListItemSecondaryAction>
-        )}
+            )
+          ) : null
+        }
+      >
+        <ListItemText
+          primary={title + '?'}
+          primaryTypographyProps={{ className: classes.siteName, noWrap: true }}
+          sx={isSiteReady ? undefined : { paddingRight: '35px' }}
+        />
       </ListItemButton>
       <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
         {hasOptions &&

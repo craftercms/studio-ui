@@ -19,7 +19,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import SystemIcon, { SystemIconDescriptor } from '../SystemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import React, { useCallback, useEffect, useState } from 'react';
 import Switch from '@mui/material/Switch';
 import { fetchConfigurationJSON } from '../../services/configuration';
@@ -614,7 +613,10 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 
   return (
     <>
-      <ListItem component="div">
+      <ListItem
+        component="div"
+        secondaryAction={<Switch color="primary" checked={open} onClick={onOpenComponentsMenu} />}
+      >
         <ListItemIcon>
           <SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
         </ListItemIcon>
@@ -623,9 +625,6 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
           primaryTypographyProps={{ noWrap: true }}
           secondaryTypographyProps={{ noWrap: true }}
         />
-        <ListItemSecondaryAction style={{ right: '5px' }}>
-          <Switch color="primary" checked={open} onClick={onOpenComponentsMenu} />
-        </ListItemSecondaryAction>
       </ListItem>
       <BrowseFilesDialog
         open={browseFilesDialogState.open}
