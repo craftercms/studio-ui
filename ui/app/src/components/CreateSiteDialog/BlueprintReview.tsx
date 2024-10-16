@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
@@ -241,7 +241,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
   return (
     <div className={classes.review}>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
             {formatMessage(messages.creationStrategy)}
             <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(0)} size="large">
@@ -266,7 +266,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
             </div>
           )}
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Typography variant="h6" gutterBottom className={classes.section}>
             {formatMessage(messages.siteInfo)}
             <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)} size="large">
@@ -295,7 +295,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
           {blueprint.source !== 'GIT' && blueprint.id === 'GIT' && renderGitOptions()}
         </Grid>
         {blueprint.parameters && !!blueprint.parameters.length && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Typography variant="h6" gutterBottom className={classes.section}>
               {formatMessage(messages.blueprintParameters)}
               <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)} size="large">

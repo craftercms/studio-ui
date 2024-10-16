@@ -16,7 +16,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -32,7 +32,7 @@ export function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUI
     <>
       <DialogBody>
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <List className={classes.filesList}>
               {items.map((item) => (
                 <ListItem key={item.path}>

@@ -25,7 +25,7 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import Fab from '@mui/material/Fab';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Alert from '@mui/material/Alert';
 import { backgroundColor } from '../../styles/theme';
@@ -300,7 +300,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
       )}
       <div className={classes.detailsContainer}>
         <Grid container spacing={3}>
-          <Grid item xs={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             {isMarketplacePlugin && !compatible && (
               <Alert severity="error" className={classes.detailsNotCompatible}>
                 <FormattedMessage
@@ -312,7 +312,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
             <Typography variant="body1">{description}</Typography>
             <PluginDocumentation plugin={plugin} />
           </Grid>
-          <Grid item xs={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <div className={classes.section}>
               {developer && <Typography variant="subtitle2">{formatMessage(messages.developer)}</Typography>}
               {developer && developer.company && (

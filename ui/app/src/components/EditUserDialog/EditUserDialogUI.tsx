@@ -30,7 +30,7 @@ import Switch from '@mui/material/Switch';
 import Chip from '@mui/material/Chip';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import ResetPasswordDialog from '../ResetPasswordDialog';
@@ -153,7 +153,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
       <Divider />
       <DialogBody className={classes.body}>
         <Grid container>
-          <Grid item sm={6}>
+          <Grid size={{ sm: 6 }}>
             <section className={classes.section}>
               <Typography variant="subtitle1" className={classes.sectionTitle}>
                 <FormattedMessage id="userInfoDialog.userDetails" defaultMessage="User Details" />
@@ -284,7 +284,7 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
               </form>
             </section>
           </Grid>
-          <Grid item sm={6}>
+          <Grid size={{ sm: 6 }}>
             <section className={classes.section}>
               <UserGroupMembershipEditor username={user.username} />
             </section>
@@ -296,14 +296,14 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
             <FormattedMessage id="userInfoDialog.siteRoles" defaultMessage="Roles per project" />
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={4}>
+            <Grid size={4}>
               {sites.map((site) => (
                 <Typography key={site.id} variant="body2" className={classes.siteItem}>
                   {site.name}
                 </Typography>
               ))}
             </Grid>
-            <Grid item xs={8}>
+            <Grid size={8}>
               {sites.map((site, i) =>
                 rolesBySite[site.id] ? (
                   rolesBySite[site.id].length ? (

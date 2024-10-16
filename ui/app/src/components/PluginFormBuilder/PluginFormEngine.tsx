@@ -17,7 +17,7 @@
 import React from 'react';
 import { MarketplacePluginParameter } from '../../models/MarketplacePlugin';
 import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
@@ -74,7 +74,7 @@ export function PluginFormEngine(props: PluginFormEngineProps) {
   function renderParameters(parameters: [MarketplacePluginParameter]) {
     return parameters.map((parameter, index) => {
       return (
-        <Grid item xs={12} key={index} data-field-id={parameter.name}>
+        <Grid size={12} key={index} data-field-id={parameter.name}>
           {parameter.type === 'STRING' ? (
             <TextField
               id={parameter.name}

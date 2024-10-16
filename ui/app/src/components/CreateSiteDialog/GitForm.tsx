@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import { makeStyles } from 'tss-react/mui';
 import TextField from '@mui/material/TextField';
 import { SiteState } from '../../models/Site';
@@ -138,12 +138,12 @@ function GitForm(props: GitFormProps) {
 
   return (
     <>
-      <Grid item xs={12} data-field-id="repoUrl">
+      <Grid size={12} data-field-id="repoUrl">
         <TextField
           id="repoUrl"
           name="repoUrl"
           label={formatMessage(messages.repoUrl)}
-          InputLabelProps={{ shrink: true }}
+          slotProps={{ inputLabel: { shrink: true } }}
           required
           fullWidth
           placeholder={'e.g. https://github.com/craftercms/craftercms-react-blueprint.git'}
@@ -160,7 +160,7 @@ function GitForm(props: GitFormProps) {
           )}
         />
       </Grid>
-      <Grid item xs={12} data-field-id="repoRemoteName">
+      <Grid size={12} data-field-id="repoRemoteName">
         <TextField
           id="repoRemoteName"
           name="repoRemoteName"
@@ -174,7 +174,7 @@ function GitForm(props: GitFormProps) {
           helperText={formatMessage(cloneMessages.clone_remoteName_label)}
         />
       </Grid>
-      <Grid item xs={12}>
+      <Grid size={12}>
         <div className={classes.formControl}>
           <GitAuthForm
             inputs={inputs}
@@ -184,7 +184,7 @@ function GitForm(props: GitFormProps) {
           />
         </div>
       </Grid>
-      <Grid item xs={12} sx={{ mb: 2 }}>
+      <Grid size={12} sx={{ mb: 2 }}>
         <FormControlLabel
           control={
             <Switch

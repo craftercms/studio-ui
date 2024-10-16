@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 import { siteIdMaxLength, siteInputMaxLength, siteNameMaxLength } from './utils';
 import React from 'react';
@@ -85,7 +85,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
 
   return (
     <>
-      <Grid item xs={12} data-field-id="siteName">
+      <Grid size={12} data-field-id="siteName">
         <TextField
           id="siteName"
           name="siteName"
@@ -110,7 +110,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           }
         />
       </Grid>
-      <Grid item xs={12} data-field-id="siteId">
+      <Grid size={12} data-field-id="siteId">
         <TextField
           id="siteId"
           name="siteId"
@@ -135,7 +135,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           )}
         />
       </Grid>
-      <Grid item xs={12} data-field-id="description">
+      <Grid size={12} data-field-id="description">
         <TextField
           id="description"
           fullWidth
@@ -148,7 +148,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           helperText={formatMessage(messages.fieldMaxLength, { maxLength: siteInputMaxLength })}
         />
       </Grid>
-      <Grid item xs={12} data-field-id="gitBranch">
+      <Grid size={12} data-field-id="gitBranch">
         <TextField
           id="sandboxBranch"
           name="gitBranch"

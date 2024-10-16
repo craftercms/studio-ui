@@ -22,7 +22,7 @@ import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import { PublishFormData, PublishingTarget, PublishOnDemandMode } from '../../models/Publishing';
 import ApiResponse from '../../models/ApiResponse';
 import Typography from '@mui/material/Typography';
@@ -80,7 +80,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
     <form>
       <Grid container spacing={3}>
         {mode !== 'everything' && (
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <FormControl fullWidth>
               <TextField
                 disabled={disabled}
@@ -120,7 +120,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
             </FormControl>
           </Grid>
         )}
-        <Grid item xs={12} md={mode !== 'everything' ? 4 : 12}>
+        <Grid size={{ xs: 12, md: mode !== 'everything' ? 4 : 12 }}>
           {publishingTargets ? (
             <FormControl fullWidth variant="outlined" required disabled={disabled}>
               <InputLabel id="publishingTargetLabel">
@@ -162,7 +162,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
             </FormControl>
           )}
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <FormControl fullWidth>
             <TextFieldWithMax
               disabled={disabled}

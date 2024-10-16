@@ -34,7 +34,7 @@ import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogBody from '../DialogBody';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 import Card from '@mui/material/Card';
 import CardMedia from '@mui/material/CardMedia';
@@ -165,7 +165,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
       <>
         <DialogBody>
           <Grid container spacing={2}>
-            <Grid item sm={6}>
+            <Grid size={{ sm: 6 }}>
               <Card elevation={2}>
                 <CardMedia component="img" image={imageUrl} title={name} sx={{ height: '234px' }} />
                 <CardActions sx={{ placeContent: 'center' }} disableSpacing>
@@ -177,9 +177,9 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
                 </CardActions>
               </Card>
             </Grid>
-            <Grid item sm={6}>
+            <Grid size={{ sm: 6 }}>
               <Grid container spacing={1} component="form">
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField
                     autoFocus
                     fullWidth
@@ -206,7 +206,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
                     }
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField
                     id="siteId"
                     name="id"
@@ -222,7 +222,7 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
                     }
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField
                     id="description"
                     name="description"

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { useDeleteDialogUIStyles } from './styles';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import { FormattedMessage } from 'react-intl';
 import { SelectionList } from '../DependencySelection/SelectionList';
@@ -52,7 +52,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
   const { classes } = useDeleteDialogUIStyles();
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
+      <Grid size={{ xs: 12, sm: 7 }}>
         <div className={classes.depsContainer}>
           <SelectionList
             title={<FormattedMessage id="deleteDialog.deleteItems" defaultMessage="Delete Items" />}
@@ -134,7 +134,7 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
           />
         </div>
       </Grid>
-      <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
+      <Grid size={{ xs: 12, sm: 5 }}>
         <form className={classes.submissionCommentField} noValidate autoComplete="off">
           <TextFieldWithMax
             label={<FormattedMessage id="deleteDialog.submissionCommentLabel" defaultMessage="Submission Comment" />}

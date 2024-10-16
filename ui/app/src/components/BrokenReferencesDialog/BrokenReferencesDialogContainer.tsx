@@ -23,7 +23,7 @@ import { fetchBrokenReferences, showEditDialog } from '../../state/actions/dialo
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnv from '../../hooks/useEnv';
 import { DialogBody } from '../DialogBody';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -56,7 +56,7 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
       <DialogBody>
         <Grid container spacing={3}>
           {references.length > 0 ? (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <List
                 sx={{
                   border: (theme) => `1px solid ${theme.palette.divider}`,
