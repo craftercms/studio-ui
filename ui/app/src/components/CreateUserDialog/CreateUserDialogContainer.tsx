@@ -241,7 +241,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                     ) : null
                   }
                   onChange={(e) => setNewUser({ firstName: e.target.value })}
-                  inputProps={{ maxLength: USER_FIRST_NAME_MAX_LENGTH }}
+                  slotProps={{
+                    htmlInput: { maxLength: USER_FIRST_NAME_MAX_LENGTH }
+                  }}
                 />
               </Grid>
               <Grid size={{ sm: 6 }}>
@@ -266,7 +268,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                     ) : null
                   }
                   onChange={(e) => setNewUser({ lastName: e.target.value })}
-                  inputProps={{ maxLength: USER_LAST_NAME_MAX_LENGTH }}
+                  slotProps={{
+                    htmlInput: { maxLength: USER_LAST_NAME_MAX_LENGTH }
+                  }}
                 />
               </Grid>
             </Grid>
@@ -285,7 +289,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                 ) : null
               }
               onChange={(e) => setNewUser({ email: e.target.value })}
-              inputProps={{ maxLength: USER_EMAIL_MAX_LENGTH }}
+              slotProps={{
+                htmlInput: { maxLength: USER_EMAIL_MAX_LENGTH }
+              }}
             />
             <TextField
               className={classes.textField}
@@ -306,7 +312,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                 ) : null
               }
               onChange={(e) => setNewUser({ username: e.target.value })}
-              inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
+              slotProps={{
+                htmlInput: { maxLength: USER_USERNAME_MAX_LENGTH }
+              }}
             />
             <Grid container spacing={2}>
               <Grid size={{ sm: 6 }}>
@@ -327,9 +335,8 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                   onChange={(e) => onChangeValue('password', e.target.value)}
                   onFocus={(e) => setAnchorEl(e.target.parentElement)}
                   onBlur={() => setAnchorEl(null)}
-                  inputProps={{
-                    maxLength: USER_PASSWORD_MAX_LENGTH,
-                    autoComplete: 'new-password'
+                  slotProps={{
+                    htmlInput: { maxLength: USER_PASSWORD_MAX_LENGTH, autoComplete: 'new-password' }
                   }}
                 />
               </Grid>

@@ -195,7 +195,9 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                     <TextField
                       id="firstName"
                       onChange={(e) => onInputChange({ firstName: e.currentTarget.value })}
-                      inputProps={{ maxLength: USER_FIRST_NAME_MAX_LENGTH }}
+                      slotProps={{
+                        htmlInput: { maxLength: USER_FIRST_NAME_MAX_LENGTH }
+                      }}
                       value={user.firstName}
                       fullWidth
                       error={
@@ -226,7 +228,9 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                     <TextField
                       id="lastName"
                       onChange={(e) => onInputChange({ lastName: e.currentTarget.value })}
-                      inputProps={{ maxLength: USER_LAST_NAME_MAX_LENGTH }}
+                      slotProps={{
+                        htmlInput: { maxLength: USER_LAST_NAME_MAX_LENGTH }
+                      }}
                       value={user.lastName}
                       fullWidth
                       error={validateRequiredField(user.lastName) || validateFieldMinLength('lastName', user.lastName)}
@@ -265,7 +269,9 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                           <FormattedMessage id="editUserDialog.invalidEmail" defaultMessage="Email is invalid" />
                         ) : null
                       }
-                      inputProps={{ maxLength: USER_EMAIL_MAX_LENGTH }}
+                      slotProps={{
+                        htmlInput: { maxLength: USER_EMAIL_MAX_LENGTH }
+                      }}
                     />
                   ) : (
                     <Typography className={classes.userNameWrapper} children={user.email} />

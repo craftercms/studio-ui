@@ -78,6 +78,7 @@ import useActiveUser from '../../hooks/useActiveUser';
 import { createCustomDocumentEventListener } from '../../utils/dom';
 import { useNavigate } from 'react-router-dom';
 import { ProjectToolsRoutes } from '../../env/routes';
+import ListItemButton from '@mui/material/ListItemButton';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -619,7 +620,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                     getTranslation(file.description, translations, formatMessage).toLowerCase().includes(keyword)
                 )
                 .map((file, i) => (
-                  <ListItem
+                  <ListItemButton
                     selected={file.id === selectedConfigFile?.id}
                     onClick={() => {
                       if (!disabledSaveButton && file.id !== selectedConfigFile?.id) {
@@ -628,7 +629,6 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                         onListItemClick(file);
                       }
                     }}
-                    button
                     key={i}
                     dense
                     divider={i < files.length - 1}
@@ -642,12 +642,12 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                       primary={getTranslation(file.title, translations, formatMessage)}
                       secondary={getTranslation(file.description, translations, formatMessage)}
                     />
-                  </ListItem>
+                  </ListItemButton>
                 ))
             : Array(15)
                 .fill(null)
                 .map((x, i) => (
-                  <ListItem button key={i} dense divider={i < Array.length - 1}>
+                  <ListItemButton key={i} dense divider={i < Array.length - 1}>
                     <ListItemText
                       primary={<Skeleton height={15} width="80%" />}
                       secondary={<Skeleton height={15} width="60%" />}
@@ -658,7 +658,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                         className: classes.itemSkeletonText
                       }}
                     />
-                  </ListItem>
+                  </ListItemButton>
                 ))}
         </List>
       </ResizeableDrawer>

@@ -99,7 +99,9 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           onKeyUp={(event) => checkSiteNames(event)}
           onChange={(event) => handleInputChange(event)}
           value={inputs.siteName}
-          inputProps={{ maxLength: siteNameMaxLength }}
+          slotProps={{
+            htmlInput: { maxLength: siteNameMaxLength }
+          }}
           error={inputs.submitted && fieldsErrorsLookup['siteName']}
           helperText={
             inputs.submitted && !inputs.siteName
@@ -123,7 +125,9 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           onKeyUp={(event) => checkSites(event)}
           onChange={(event) => handleInputChange(event)}
           value={inputs.siteId}
-          inputProps={{ maxLength: siteIdMaxLength }}
+          slotProps={{
+            htmlInput: { maxLength: siteIdMaxLength }
+          }}
           error={inputs.submitted && fieldsErrorsLookup['siteId']}
           helperText={renderSiteFormHelperText(
             formatMessage(messages.siteId),
@@ -144,7 +148,9 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           multiline
           onChange={(event) => handleInputChange(event)}
           value={inputs.description}
-          inputProps={{ maxLength: siteInputMaxLength }}
+          slotProps={{
+            htmlInput: { maxLength: siteInputMaxLength }
+          }}
           helperText={formatMessage(messages.fieldMaxLength, { maxLength: siteInputMaxLength })}
         />
       </Grid>

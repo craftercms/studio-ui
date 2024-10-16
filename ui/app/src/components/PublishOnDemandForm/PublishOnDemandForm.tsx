@@ -107,7 +107,9 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
                     />
                   )
                 }
-                FormHelperTextProps={{ className: classes.formHelperText }}
+                slotProps={{
+                  formHelperText: { className: classes.formHelperText }
+                }}
                 onChange={handleFormChange(mode === 'studio' ? 'path' : 'commitIds')}
                 onBlur={
                   mode === 'studio'

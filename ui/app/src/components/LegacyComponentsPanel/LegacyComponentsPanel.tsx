@@ -614,7 +614,7 @@ export function LegacyComponentsPanel(props: LegacyComponentsPanelProps) {
 
   return (
     <>
-      <ListItem ContainerComponent="div">
+      <ListItem component="div">
         <ListItemIcon>
           <SystemIcon icon={icon} fontIconProps={{ fontSize: 'small' }} />
         </ListItemIcon>

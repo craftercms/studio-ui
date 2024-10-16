@@ -165,7 +165,9 @@ function GitForm(props: GitFormProps) {
           id="repoRemoteName"
           name="repoRemoteName"
           label={formatMessage(messages.remoteName)}
-          InputLabelProps={{ shrink: true }}
+          slotProps={{
+            inputLabel: { shrink: true }
+          }}
           placeholder="origin"
           fullWidth
           onKeyPress={onKeyPress}

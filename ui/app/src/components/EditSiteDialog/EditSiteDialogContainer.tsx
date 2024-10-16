@@ -189,7 +189,9 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
                     onChange={(event) => onSiteNameChange(event.target.value)}
                     onKeyDown={onKeyPress}
                     value={name}
-                    inputProps={{ maxLength: 255 }}
+                    slotProps={{
+                      htmlInput: { maxLength: 255 }
+                    }}
                     error={hasNameConflict}
                     helperText={
                       !name.trim()
@@ -240,7 +242,9 @@ export function EditSiteDialogContainer(props: EditSiteDialogContainerProps) {
                       }
                     }}
                     value={description ?? ''}
-                    inputProps={{ maxLength: 4000 }}
+                    slotProps={{
+                      htmlInput: { maxLength: 4000 }
+                    }}
                   />
                 </Grid>
               </Grid>
