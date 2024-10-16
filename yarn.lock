@@ -1468,6 +1468,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.25.7":
+  version: 7.25.7
+  resolution: "@babel/runtime@npm:7.25.7"
+  dependencies:
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: 10/73411fe0f1bff3a962586cef05b30f49e554b6563767e6d84f7d79d605b2c20e7fc3df291a3aebef69043181a8f893afdab9e6672557a5c2d08b9377d6f678cd
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.24.0, @babel/template@npm:^7.24.7":
   version: 7.24.7
   resolution: "@babel/template@npm:7.24.7"
@@ -1544,7 +1553,7 @@ __metadata:
     "@emotion/css": "npm:^11.13.0"
     "@emotion/react": "npm:^11.13.3"
     "@emotion/styled": "npm:^11.13.0"
-    "@mui/icons-material": "npm:^5.15.20"
+    "@mui/icons-material": "npm:^6.1.4"
     "@mui/material": "npm:^5.16.7"
     "@reduxjs/toolkit": "npm:^2.2.5"
     "@rollup/plugin-alias": "npm:^5.1.0"
@@ -1667,7 +1676,7 @@ __metadata:
     "@emotion/styled": "npm:^11.13.0"
     "@formatjs/cli": "npm:^6.2.12"
     "@graphiql/plugin-explorer": "npm:^3.0.1"
-    "@mui/icons-material": "npm:^5.15.20"
+    "@mui/icons-material": "npm:^6.1.4"
     "@mui/lab": "npm:^5.0.0-alpha.173"
     "@mui/material": "npm:^5.16.7"
     "@mui/x-data-grid": "npm:^7.13.0"
@@ -2648,19 +2657,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/icons-material@npm:^5.15.20":
-  version: 5.15.20
-  resolution: "@mui/icons-material@npm:5.15.20"
+"@mui/icons-material@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "@mui/icons-material@npm:6.1.4"
   dependencies:
-    "@babel/runtime": "npm:^7.23.9"
+    "@babel/runtime": "npm:^7.25.7"
   peerDependencies:
-    "@mui/material": ^5.0.0
-    "@types/react": ^17.0.0 || ^18.0.0
-    react: ^17.0.0 || ^18.0.0
+    "@mui/material": ^6.1.4
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/fe83713840b84f745005ef457cf3a3672099d1cc9db538214016a2679d964a0b93b82bb6c33c27e405a6d0204c1d1325fc68f0d546b20b4d2d0b5a6a4bec152f
+  checksum: 10/333693faac7b32b98fb5fbad76ab55a3d27ae72a2baac90a151bce24fb6779d67f7d9434b72a0e33834b10f5570319863da9b3f3932bdce3bb7531a198956530
   languageName: node
   linkType: hard
 
