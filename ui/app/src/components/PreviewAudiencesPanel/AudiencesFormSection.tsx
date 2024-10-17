@@ -16,7 +16,7 @@
 
 import React, { PropsWithChildren } from 'react';
 import { ContentTypeField } from '../../models/ContentType';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import FormHelperText from '@mui/material/FormHelperText';
 import Divider from '@mui/material/Divider';
 
@@ -29,7 +29,7 @@ export function AudiencesFormSection(props: AudiencesFormSectionProps) {
   const { field, showDivider, children } = props;
   return (
     <>
-      <Grid item xs={12}>
+      <Grid size={12}>
         {children}
         <FormHelperText>{field.helpText}</FormHelperText>
       </Grid>

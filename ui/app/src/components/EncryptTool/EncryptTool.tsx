@@ -191,7 +191,9 @@ export const EncryptTool = (props: EncryptToolProps) => {
               sx={{ mb: 2 }}
               ref={inputRef}
               label={<FormattedMessage id="words.result" defaultMessage="Result" />}
-              InputProps={{ readOnly: true }}
+              slotProps={{
+                input: { readOnly: true }
+              }}
               value={result}
               onClick={(e: any) => {
                 const input = e.target;

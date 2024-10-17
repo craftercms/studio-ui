@@ -327,7 +327,9 @@ function RecoverView(props: SubViewProps) {
           onChange={(e: any) => setUsername(e.target.value)}
           className={classes?.username}
           label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
-          inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
+          slotProps={{
+            htmlInput: { maxLength: USER_USERNAME_MAX_LENGTH }
+          }}
         />
         <Button
           type="submit"

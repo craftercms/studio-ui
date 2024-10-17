@@ -15,7 +15,7 @@
  */
 
 import { useSitesGridStyles } from '../styles';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import { SiteCardSkeleton } from '../../SiteCard/SiteCardSkeleton/SiteCardSkeleton';
 import React from 'react';
 
@@ -32,7 +32,7 @@ export function SitesGridSkeleton(props: SitesGridSkeletonProps) {
     <section className={classes.root}>
       <Grid container spacing={3}>
         {items.map((num, i) => (
-          <Grid item key={i}>
+          <Grid key={i}>
             <SiteCardSkeleton compact={currentView === 'list'} />
           </Grid>
         ))}

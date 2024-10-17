@@ -421,8 +421,8 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
               fullWidth
               variant="outlined"
               error={invalidPathRegex}
-              FormHelperTextProps={{
-                className: classes.helperText
+              slotProps={{
+                formHelperText: { className: classes.helperText }
               }}
               helperText={
                 invalidPathRegex ? (

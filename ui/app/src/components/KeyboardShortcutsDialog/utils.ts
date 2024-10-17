@@ -15,17 +15,18 @@
  */
 
 import { EnhancedDialogProps } from '../EnhancedDialog';
-import { PartialSxRecord } from '../../models/CustomRecord';
 import { MessageDescriptor } from 'react-intl';
+import { TypographyProps } from '@mui/material/Typography';
+import { ChipProps, ListProps } from '@mui/material';
 
 export interface KeyboardShortcutsDialogProps extends EnhancedDialogProps {
   shortcuts: KeyboardShortcutsCategory[];
-  sxs?: KeyboardShortcutsDialogPartialSx;
+  sxs?: Partial<{
+    categoryTitle: TypographyProps['sx'];
+    shortcutChip: ChipProps['sx'];
+    shortcutsList: ListProps['sx'];
+  }>;
 }
-
-export type KeyboardShortcutsDialogClassKey = 'categoryTitle' | 'shortcutChip' | 'shortcutsList';
-
-export type KeyboardShortcutsDialogPartialSx = PartialSxRecord<KeyboardShortcutsDialogClassKey>;
 
 export interface KeyboardShortcutDescriptor {
   label: MessageDescriptor | string;

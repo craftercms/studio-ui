@@ -20,7 +20,6 @@ import React from 'react';
 import List from '@mui/material/List';
 import ListItemText from '@mui/material/ListItemText';
 import Chip from '@mui/material/Chip';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import { ItemHistoryEntry } from '../../models/Version';
@@ -28,9 +27,9 @@ import palette from '../../styles/palette';
 import GlobalState from '../../models/GlobalState';
 import { useSelection } from '../../hooks/useSelection';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import { createPresenceTable } from '../../utils/array';
+import ListItem from '@mui/material/ListItem';
 
 const versionListStyles = makeStyles()((theme) => ({
   list: {
@@ -112,9 +111,34 @@ export function VersionList(props: VersionListProps) {
         return (
           <ListItemButton
             key={version.versionNumber}
+            component={ListItem}
             divider={versions.length - 1 !== i}
             onClick={() => onItemClick(version)}
             className={cx(classes.listItem, isSelected && 'selected')}
+            secondaryAction={
+              onOpenMenu || isSelectMode ? (
+                <>
+                  {isSelectMode && <Checkbox checked={isSelected} />}
+                  {!isSelectMode && onOpenMenu && (
+                    <IconButton
+                      edge="end"
+                      size="large"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOpenMenu(
+                          e.currentTarget,
+                          version,
+                          current === version.versionNumber,
+                          versions.length === i + 1
+                        );
+                      }}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
+                  )}
+                </>
+              ) : null
+            }
           >
             <ListItemText
               classes={{
@@ -135,28 +159,6 @@ export function VersionList(props: VersionListProps) {
               }
               secondary={version.comment}
             />
-            {(onOpenMenu || isSelectMode) && (
-              <ListItemSecondaryAction>
-                {isSelectMode && <Checkbox checked={isSelected} />}
-                {!isSelectMode && onOpenMenu && (
-                  <IconButton
-                    edge="end"
-                    size="large"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onOpenMenu(
-                        e.currentTarget,
-                        version,
-                        current === version.versionNumber,
-                        versions.length === i + 1
-                      );
-                    }}
-                  >
-                    <MoreVertIcon />
-                  </IconButton>
-                )}
-              </ListItemSecondaryAction>
-            )}
           </ListItemButton>
         );
       })}

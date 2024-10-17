@@ -98,8 +98,8 @@ export function RenameItemView(props: RenameItemViewProps) {
           helperText={helperText}
           disabled={isSubmitting}
           margin="normal"
-          InputLabelProps={{
-            shrink: true
+          slotProps={{
+            inputLabel: { shrink: true }
           }}
           onChange={onInputChanges}
           autoComplete="off"
