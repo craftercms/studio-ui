@@ -80,7 +80,6 @@ export function Dashboard(props: DashboardProps) {
       <Box
         sx={{
           position: 'relative',
-          p: 2,
           bgcolor: 'background.default',
           ...(desktopScreen
             ? {
@@ -99,6 +98,7 @@ export function Dashboard(props: DashboardProps) {
           sx={{
             alignItems: 'baseline',
             alignContent: 'baseline',
+            p: 2,
             ...(desktopScreen
               ? {
                   width: showActivityFeed ? '70%' : '100%',
