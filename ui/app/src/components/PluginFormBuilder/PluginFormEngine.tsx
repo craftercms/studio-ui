@@ -35,9 +35,7 @@ export interface PluginFormEngineProps {
 const useStyles = makeStyles()(() => ({
   container: {
     width: '100%',
-    paddingLeft: '24px',
     '& .MuiGrid-item': {
-      paddingTop: '24px',
       '&:last-child': {
         paddingBottom: '12px'
       }
@@ -74,7 +72,7 @@ export function PluginFormEngine(props: PluginFormEngineProps) {
   function renderParameters(parameters: [MarketplacePluginParameter]) {
     return parameters.map((parameter, index) => {
       return (
-        <Grid size={12} key={index} data-field-id={parameter.name}>
+        <Grid size={12} key={index} data-field-id={parameter.name} sx={{ pt: 3 }}>
           {parameter.type === 'STRING' ? (
             <TextField
               id={parameter.name}
@@ -121,7 +119,7 @@ export function PluginFormEngine(props: PluginFormEngineProps) {
   }
 
   return (
-    <Grid container spacing={0} className={classes.container}>
+    <Grid container spacing={0} className={classes.container} sx={{ px: 3 }}>
       {renderParameters(parameters)}
     </Grid>
   );
