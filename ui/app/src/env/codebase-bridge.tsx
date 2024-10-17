@@ -43,6 +43,7 @@ import { StandardAction } from '../models/StandardAction';
 import { createCustomDocumentEventListener } from '../utils/dom';
 import { components as studioUIComponents, services, utils } from './studioUI';
 import logoIcon from '../assets/crafter-icon.svg';
+import { MessageDescriptor } from 'react-intl';
 
 const ErrorState = studioUIComponents.ErrorState;
 
@@ -72,34 +73,44 @@ interface CodebaseBridge {
   components: { [key: string]: JSXElementConstructor<any> };
   assets: { [key: string]: string };
   util: object;
-  render: Function;
-  renderBackgroundUI: Function;
-  createLegacyCallbackListener: Function;
+  render: (
+    container: string | Element,
+    component: string | JSXElementConstructor<any>,
+    props: object,
+    isLegacy: boolean
+  ) => Promise<any>;
+  renderBackgroundUI: (options: Record<string, any>) => Promise<any>;
+  createLegacyCallbackListener: (id: string, listener: <Detail = any>(detail: Detail) => void) => () => void;
   rxjs: object;
   i18n: {
     intl: IntlShape;
-    messages: object;
+    messages: Record<string, Record<string, MessageDescriptor>>;
     translateElements: typeof translateElements;
     getStoredLanguage: typeof getStoredLanguage;
     setStoredLanguage: typeof setStoredLanguage;
     buildStoredLanguageKey: typeof buildStoredLanguageKey;
     dispatchLanguageChange: typeof dispatchLanguageChange;
   };
-  services: object;
+  services: Record<string, Record<string, (...args) => any>>;
   mui: object;
   system: {
     createDefaultThemeOptions: typeof createDefaultThemeOptions;
-    palette: any;
+    palette: typeof palette;
     store: CrafterCMSStore;
     getHostToHostBus(): Subject<StandardAction>;
     getStore(): Observable<CrafterCMSStore>;
   };
 }
 
+declare global {
+  interface Window {
+    /** @deprecated Please use `craftercms` instead */
+    CrafterCMSNext: CodebaseBridge;
+  }
+}
+
 export function updateIntl(nextIntl: IntlShape) {
-  // @ts-ignore
   if (window.CrafterCMSNext) {
-    // @ts-ignore
     window.CrafterCMSNext.i18n.intl = nextIntl;
   }
 }
@@ -145,6 +156,7 @@ export function createCodebaseBridge() {
 
     i18n: {
       intl: getCurrentIntl(),
+      // @ts-expect-error `messages` is a module but the module return follows the Type above
       messages,
       translateElements,
       getStoredLanguage,
@@ -261,8 +273,18 @@ export function createCodebaseBridge() {
     createLegacyCallbackListener: createCustomDocumentEventListener
   };
 
-  // @ts-ignore
-  window.CrafterCMSNext = Bridge;
+  const handler: ProxyHandler<CodebaseBridge> = {
+    get(target, prop, receiver) {
+      console.warn(
+        `CrafterCMSNext is deprecated and will be removed on an upcoming release. Please use the 'window.craftercms' global instead.`
+      );
+      return Reflect.get(target, prop, receiver);
+    }
+  };
+
+  const proxy = new Proxy(Bridge, handler);
+
+  window.CrafterCMSNext = proxy;
 
   // The login screen 1. doesn't need redux at all 2. there's no token yet (i.e. not loggeed in)
   // and the store creation is dependent on successfully retrieving the JWT.
