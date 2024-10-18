@@ -639,6 +639,10 @@ p#clear {
   top: 4.5em;
 }
 
+.yui-skin-cstudioTheme .yui-calcontainer.withtitle .yui-cal-nav * {
+  color: #000;
+}
+
 .yui-skin-cstudioTheme .yui-calcontainer.multi .yui-cal-nav {
   width: 16em;
   margin-left: -8em;
