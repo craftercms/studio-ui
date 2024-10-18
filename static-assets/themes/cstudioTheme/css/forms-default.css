@@ -516,7 +516,7 @@ button.node-selector-item-icon {
   border-bottom: 1px solid #ddd;
 }
 
-#help-dialog .dialog-body > * {
+#help-dialog .dialog-body * {
   color: #000;
 }
 
