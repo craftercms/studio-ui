@@ -161,6 +161,7 @@ YAHOO.extend(
       tinymce.init({
         target: inputEl,
         promotion: false,
+        branding: false,
         deprecation_warnings: false,
         height: 400,
         encoding: 'xml',
