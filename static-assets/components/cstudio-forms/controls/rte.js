@@ -542,6 +542,8 @@ CStudioAuthoring.Module.requireModule(
             _thisControl.save();
           };
           _thisControl.form.registerBeforeSaveCallback(callback);
+
+          this.renderHelp(config, containerEl);
         },
 
         createControl: function (cb, meta) {
@@ -549,7 +551,7 @@ CStudioAuthoring.Module.requireModule(
           // so we need to handle both cases and always return a comma-separated string for later handling. If datasources
           // is null or undefined, it will be an empty string.
           const getDatasourcesNames = function (datasources) {
-            return Array.isArray(datasources) ? datasources.join(',') : datasources ?? '';
+            return Array.isArray(datasources) ? datasources.join(',') : (datasources ?? '');
           };
 
           var datasourcesNames = '',
