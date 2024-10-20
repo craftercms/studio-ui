@@ -116,6 +116,7 @@ export function initTinyMCE(
     license_key: 'gpl',
     target: rteEl,
     promotion: false,
+    branding: false,
     // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
     // note that it will become premium on version 7.
     deprecation_warnings: false,
