@@ -15,7 +15,7 @@
  */
 
 import ContentInstance from '../../models/ContentInstance';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import { AudiencesFormSection } from './AudiencesFormSection';
 import SecondaryButton from '../SecondaryButton';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';

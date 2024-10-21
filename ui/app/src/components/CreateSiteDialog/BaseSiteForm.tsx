@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 import { siteIdMaxLength, siteInputMaxLength, siteNameMaxLength } from './utils';
 import React from 'react';
@@ -85,7 +85,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
 
   return (
     <>
-      <Grid item xs={12} data-field-id="siteName">
+      <Grid size={12} data-field-id="siteName">
         <TextField
           id="siteName"
           name="siteName"
@@ -99,7 +99,9 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           onKeyUp={(event) => checkSiteNames(event)}
           onChange={(event) => handleInputChange(event)}
           value={inputs.siteName}
-          inputProps={{ maxLength: siteNameMaxLength }}
+          slotProps={{
+            htmlInput: { maxLength: siteNameMaxLength }
+          }}
           error={inputs.submitted && fieldsErrorsLookup['siteName']}
           helperText={
             inputs.submitted && !inputs.siteName
@@ -110,7 +112,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           }
         />
       </Grid>
-      <Grid item xs={12} data-field-id="siteId">
+      <Grid size={12} data-field-id="siteId">
         <TextField
           id="siteId"
           name="siteId"
@@ -123,7 +125,9 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           onKeyUp={(event) => checkSites(event)}
           onChange={(event) => handleInputChange(event)}
           value={inputs.siteId}
-          inputProps={{ maxLength: siteIdMaxLength }}
+          slotProps={{
+            htmlInput: { maxLength: siteIdMaxLength }
+          }}
           error={inputs.submitted && fieldsErrorsLookup['siteId']}
           helperText={renderSiteFormHelperText(
             formatMessage(messages.siteId),
@@ -135,7 +139,7 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           )}
         />
       </Grid>
-      <Grid item xs={12} data-field-id="description">
+      <Grid size={12} data-field-id="description">
         <TextField
           id="description"
           fullWidth
@@ -144,11 +148,13 @@ export function BaseSiteForm(props: BaseSiteFormProps) {
           multiline
           onChange={(event) => handleInputChange(event)}
           value={inputs.description}
-          inputProps={{ maxLength: siteInputMaxLength }}
+          slotProps={{
+            htmlInput: { maxLength: siteInputMaxLength }
+          }}
           helperText={formatMessage(messages.fieldMaxLength, { maxLength: siteInputMaxLength })}
         />
       </Grid>
-      <Grid item xs={12} data-field-id="gitBranch">
+      <Grid size={12} data-field-id="gitBranch">
         <TextField
           id="sandboxBranch"
           name="gitBranch"

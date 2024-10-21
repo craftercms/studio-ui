@@ -26,7 +26,7 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { makeStyles } from 'tss-react/mui';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import UserGroupMembershipEditor from '../UserGroupMembershipEditor';
 import { map, switchMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
@@ -216,9 +216,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
     <form className={classes.form}>
       <DialogBody className={classes.dialogBody}>
         <Grid container spacing={2}>
-          <Grid item sm={6}>
+          <Grid size={{ sm: 6 }}>
             <Grid container spacing={2}>
-              <Grid item sm={6}>
+              <Grid size={{ sm: 6 }}>
                 <TextField
                   autoFocus
                   className={cx(classes.textField)}
@@ -241,10 +241,12 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                     ) : null
                   }
                   onChange={(e) => setNewUser({ firstName: e.target.value })}
-                  inputProps={{ maxLength: USER_FIRST_NAME_MAX_LENGTH }}
+                  slotProps={{
+                    htmlInput: { maxLength: USER_FIRST_NAME_MAX_LENGTH }
+                  }}
                 />
               </Grid>
-              <Grid item sm={6}>
+              <Grid size={{ sm: 6 }}>
                 <TextField
                   className={cx(classes.textField)}
                   label={<FormattedMessage id="createUserDialog.lastName" defaultMessage="Last Name" />}
@@ -266,7 +268,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                     ) : null
                   }
                   onChange={(e) => setNewUser({ lastName: e.target.value })}
-                  inputProps={{ maxLength: USER_LAST_NAME_MAX_LENGTH }}
+                  slotProps={{
+                    htmlInput: { maxLength: USER_LAST_NAME_MAX_LENGTH }
+                  }}
                 />
               </Grid>
             </Grid>
@@ -285,7 +289,9 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                 ) : null
               }
               onChange={(e) => setNewUser({ email: e.target.value })}
-              inputProps={{ maxLength: USER_EMAIL_MAX_LENGTH }}
+              slotProps={{
+                htmlInput: { maxLength: USER_EMAIL_MAX_LENGTH }
+              }}
             />
             <TextField
               className={classes.textField}
@@ -306,10 +312,12 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                 ) : null
               }
               onChange={(e) => setNewUser({ username: e.target.value })}
-              inputProps={{ maxLength: USER_USERNAME_MAX_LENGTH }}
+              slotProps={{
+                htmlInput: { maxLength: USER_USERNAME_MAX_LENGTH }
+              }}
             />
             <Grid container spacing={2}>
-              <Grid item sm={6}>
+              <Grid size={{ sm: 6 }}>
                 <PasswordTextField
                   className={classes.textField}
                   label={<FormattedMessage id="words.password" defaultMessage="Password" />}
@@ -327,13 +335,12 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
                   onChange={(e) => onChangeValue('password', e.target.value)}
                   onFocus={(e) => setAnchorEl(e.target.parentElement)}
                   onBlur={() => setAnchorEl(null)}
-                  inputProps={{
-                    maxLength: USER_PASSWORD_MAX_LENGTH,
-                    autoComplete: 'new-password'
+                  slotProps={{
+                    htmlInput: { maxLength: USER_PASSWORD_MAX_LENGTH, autoComplete: 'new-password' }
                   }}
                 />
               </Grid>
-              <Grid item sm={6}>
+              <Grid size={{ sm: 6 }}>
                 <PasswordTextField
                   className={classes.textField}
                   label={
@@ -359,7 +366,7 @@ export function CreateUserDialogContainer(props: CreateUserDialogContainerProps)
               </Grid>
             </Grid>
           </Grid>
-          <Grid item sm={6}>
+          <Grid size={{ sm: 6 }}>
             <UserGroupMembershipEditor onChange={onSelectedGroupsChanged} />
           </Grid>
         </Grid>

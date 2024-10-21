@@ -175,7 +175,9 @@ export function FilterDropdown(props: FilterDropdownProps) {
               id="path"
               name="path"
               className={classes.searchTextField}
-              InputLabelProps={{ shrink: true }}
+              slotProps={{
+                inputLabel: { shrink: true }
+              }}
               fullWidth
               placeholder="e.g. /SOME/PATH/*"
               onChange={(event) => setPath(event.target.value)}

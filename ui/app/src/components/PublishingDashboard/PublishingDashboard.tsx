@@ -16,7 +16,7 @@
 
 import * as React from 'react';
 import PublishingStatusWidget from '../PublishingStatusWidget';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import { PublishingQueueWidget } from '../PublishingQueue';
 import PublishOnDemandWidget from '../PublishOnDemandWidget';
 import GlobalAppToolbar from '../GlobalAppToolbar';
@@ -66,16 +66,16 @@ export function PublishingDashboard(props: PublishingDashboardProps) {
               })
         }}
       >
-        <Grid item xs={12}>
+        <Grid size={12}>
           <PublishingStatusWidget siteId={site} />
         </Grid>
         {userPermissions.includes('get_publishing_queue') && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <PublishingQueueWidget siteId={site} readOnly={!hasPublishPermission} />
           </Grid>
         )}
         {hasPublishPermission && (
-          <Grid item xs={12}>
+          <Grid size={12}>
             <PublishOnDemandWidget
               siteId={site}
               mode={allowedRole ? null : 'everything'}

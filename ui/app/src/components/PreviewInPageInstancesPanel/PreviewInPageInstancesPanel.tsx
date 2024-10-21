@@ -25,7 +25,6 @@ import ContentInstance from '../../models/ContentInstance';
 import LookupTable from '../../models/LookupTable';
 import SearchBar from '../SearchBar/SearchBar';
 import Select from '@mui/material/Select';
-import ListItem from '@mui/material/ListItem';
 import Avatar from '@mui/material/Avatar';
 import { getInitials } from '../../utils/string';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -38,6 +37,7 @@ import { useSelection } from '../../hooks/useSelection';
 import { usePreviewGuest } from '../../hooks/usePreviewGuest';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { useLogicResource } from '../../hooks/useLogicResource';
+import ListItemButton from '@mui/material/ListItemButton';
 
 const translations = defineMessages({
   previewInPageInstancesPanel: {
@@ -233,12 +233,7 @@ function InPageInstancesUI(props: InPageInstancesUIProps) {
     <>
       {selectedModels.length ? (
         selectedModels.map((instance: ContentInstance) => (
-          <ListItem
-            key={instance.craftercms.id}
-            className={classes.item}
-            button={true}
-            onClick={() => onItemClick(instance)}
-          >
+          <ListItemButton key={instance.craftercms.id} className={classes.item} onClick={() => onItemClick(instance)}>
             <ListItemAvatar>
               <Avatar>{getInitials(instance.craftercms.label)}</Avatar>
             </ListItemAvatar>
@@ -247,7 +242,7 @@ function InPageInstancesUI(props: InPageInstancesUIProps) {
               secondary={instance.craftercms.contentTypeId}
               classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
             />
-          </ListItem>
+          </ListItemButton>
         ))
       ) : (
         <EmptyState

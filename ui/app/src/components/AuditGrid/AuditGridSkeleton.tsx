@@ -179,7 +179,6 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         rows={rows}
         columns={columns}
         paginationModel={{ page: 0, pageSize: numOfItems }}
-        rowCount={numOfItems}
       />
     </Box>
   );
