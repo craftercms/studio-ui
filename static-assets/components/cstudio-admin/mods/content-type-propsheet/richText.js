@@ -169,11 +169,10 @@ YAHOO.extend(
         force_br_newlines: false,
         forced_root_block: false,
         resize: false,
-        plugins: ['paste noneditable'],
+        plugins: ['lists'],
         toolbar1:
           'formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat',
-        valid_elements:
-          'ul[class,style],li[class,style],img[src,style,class],p[class,style],br,strong/b,a[href|target=_blank]',
+        valid_elements: 'ul,ol,li,img[src,style,class],p,br,strong/b,a[href|target=_blank],em,s,h1,h2,h3,h4,h5,h6,pre',
         setup: function (editor) {
           editor.on('init', function (e) {
             _self.editor = editor;
