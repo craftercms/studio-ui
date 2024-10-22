@@ -308,24 +308,24 @@
   var global$7 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
   var firePastePreProcess = function (editor, html, internal, isWordHtml) {
-    return editor.fire('PastePreProcess', {
+    return editor.dispatch('PastePreProcess', {
       content: html,
       internal: internal,
       wordContent: isWordHtml
     });
   };
   var firePastePostProcess = function (editor, node, internal, isWordHtml) {
-    return editor.fire('PastePostProcess', {
+    return editor.dispatch('PastePostProcess', {
       node: node,
       internal: internal,
       wordContent: isWordHtml
     });
   };
   var firePastePlainTextToggle = function (editor, state) {
-    return editor.fire('PastePlainTextToggle', { state: state });
+    return editor.dispatch('PastePlainTextToggle', { state: state });
   };
   var firePaste = function (editor, ieFake) {
-    return editor.fire('paste', { ieFake: ieFake });
+    return editor.dispatch('paste', { ieFake: ieFake });
   };
 
   var global$6 = tinymce.util.Tools.resolve('tinymce.util.Tools');
@@ -491,7 +491,7 @@
     var schema = global$1();
     var domParser = global$4({}, schema);
     var text = '';
-    var shortEndedElements = schema.getShortEndedElements();
+    var shortEndedElements = schema.getVoidElements();
     var ignoreElements = global$6.makeMap('script noscript style textarea video audio iframe object', ' ');
     var blockElements = schema.getBlockElements();
     var walk = function (node) {
@@ -1227,18 +1227,33 @@
     editor.on('keyup', keyboardPastePressed.clear);
     editor.on('keydown', function (e) {
       var removePasteBinOnKeyUp = function (e) {
+        // Ctrl+V or Shift+Insert
         if (isKeyboardPasteEvent(e) && !e.isDefaultPrevented()) {
           pasteBin.remove();
         }
       };
+      // Ctrl+V or Shift+Insert
       if (isKeyboardPasteEvent(e) && !e.isDefaultPrevented()) {
         keyboardPastePlainTextState = e.shiftKey && e.keyCode === 86;
+
+        // Edge case on Safari on Mac where it doesn't handle Cmd+Shift+V correctly
+        // it fires the keydown but no paste or keyup so we are left with a paste bin
         if (keyboardPastePlainTextState && global$a.webkit && navigator.userAgent.indexOf('Version/') !== -1) {
           return;
         }
+
+        // Prevent undoManager keydown handler from making an undo level with the pastebin in it
         e.stopImmediatePropagation();
-        keyboardPasteEvent.set(e);
-        keyboardPastePressed.set(true);
+
+        // CrafterCMS: These two lines cause a double paste of the text with non-plain text.
+        // track that this is a keyboard paste event, this will be removed when the paste event fires.
+        // keyboardPasteEvent.set(e);
+        // IE doesn't always fire keydown if the keys are spammed fast enough, so register that paste is
+        // pressed, this will be removed on keyup
+        // keyboardPastePressed.set(true);
+
+        // IE doesn't support Ctrl+Shift+V and it doesn't even produce a paste event
+        // so lets fake a paste event and let IE use the execCommand/dataTransfer methods
         if (global$a.ie && keyboardPastePlainTextState) {
           e.preventDefault();
           firePaste(editor, true);
@@ -1246,6 +1261,9 @@
         }
         pasteBin.remove();
         pasteBin.create();
+
+        // Remove pastebin if we get a keyup and no paste event
+        // For example pasting a file in IE 11 will not produce a paste event
         editor.once('keyup', removePasteBinOnKeyUp);
         editor.once('paste', function () {
           editor.off('keyup', removePasteBinOnKeyUp);
@@ -1382,7 +1400,7 @@
     if (isExternalPasteBin(editor)) {
       editor.dom.bind(pasteBinElm, 'paste keyup', function (_e) {
         if (!isDefault(editor, pasteBinDefaultContent)) {
-          editor.fire('paste');
+          editor.dispatch('paste');
         }
       });
     }
@@ -1524,8 +1542,8 @@
       togglePlainTextPaste(editor, clipboard);
     });
     editor.addCommand('mceInsertClipboardContent', function (ui, value) {
-      if (value.content) {
-        clipboard.pasteHtml(value.content, value.internal);
+      if (value.html) {
+        clipboard.pasteHtml(value.html, value.internal);
       }
       if (value.text) {
         clipboard.pasteText(value.text);
