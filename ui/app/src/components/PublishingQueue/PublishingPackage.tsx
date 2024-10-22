@@ -28,8 +28,6 @@ import ListItem from '@mui/material/ListItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import '../../styles/animations.scss';
 import { READY_FOR_LIVE } from './constants';
-import { alpha } from '@mui/material/styles';
-import palette from '../../styles/palette';
 import PrimaryButton from '../PrimaryButton';
 
 const useStyles = makeStyles()((theme) => ({
@@ -90,12 +88,7 @@ const useStyles = makeStyles()((theme) => ({
     pointerEvents: 'none'
   },
   cancelButton: {
-    paddingRight: '10px',
-    color: palette.orange.main,
-    border: `1px solid ${alpha(palette.orange.main, 0.5)}`,
-    '&:hover': {
-      backgroundColor: alpha(palette.orange.main, 0.08)
-    }
+    paddingRight: '10px'
   },
   username: {
     maxWidth: '390px',
@@ -325,6 +318,9 @@ export function PublishingPackage(props: PublishingPackageProps) {
             confirmHelperText={formatMessage(translations.confirmHelperText)}
             onConfirm={() => handleCancel(id)}
             disabled={readOnly}
+            buttonProps={{
+              color: 'warning'
+            }}
           />
         )}
       </section>
