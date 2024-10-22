@@ -15,7 +15,7 @@
  */
 
 import ArrowDown from '@mui/icons-material/ArrowDropDownRounded';
-import Button, { ButtonTypeMap } from '@mui/material/Button';
+import Button, { ButtonProps, ButtonTypeMap } from '@mui/material/Button';
 import React, { ReactNode, useMemo } from 'react';
 import Menu, { menuClasses } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -47,6 +47,7 @@ interface ConfirmDropdownProps {
   icon?: OverridableComponent<SvgIconTypeMap>;
   iconColor?: IconButtonProps['color'];
   iconTooltip?: React.ReactNode;
+  buttonProps?: ButtonProps;
   onConfirm(): any;
   onCancel?(): any;
 }
@@ -90,7 +91,8 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
     icon: Icon,
     iconColor,
     iconTooltip,
-    size = 'medium'
+    size = 'medium',
+    buttonProps = {}
   } = props;
 
   const handleClose = () => {
@@ -134,6 +136,7 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
           onClick={(e) => setAnchorEl(e.currentTarget)}
           disabled={disabled}
           endIcon={<ArrowDown />}
+          {...buttonProps}
         >
           {text}
         </Button>
