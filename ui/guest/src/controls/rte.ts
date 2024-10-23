@@ -348,9 +348,12 @@ export function initTinyMCE(
           // Doing this immediately (without the timeout) causes the content to be duplicated.
           // TinyMCE seems to be doing something internally that causes this.
           setTimeout(() => {
-            replaceLineBreaksIfApplicable(text);
-            editor.selection.select(editor.getBody(), true);
-            editor.selection.collapse(false);
+            const newContent = getContent();
+            if (newContent.includes('\n')) {
+              replaceLineBreaksIfApplicable(newContent);
+              editor.selection.select(editor.getBody(), true);
+              editor.selection.collapse(false);
+            }
           }, 10);
         }
         // TODO: It'd be great to be able to select the piece of the pasted content that falls out of the max-length.
