@@ -348,7 +348,8 @@ export function initTinyMCE(
           // Doing this immediately (without the timeout) causes the content to be duplicated.
           // TinyMCE seems to be doing something internally that causes this.
           setTimeout(() => {
-            replaceLineBreaksIfApplicable(text);
+            const newContent = editor.getContent({ format: 'html' });
+            replaceLineBreaksIfApplicable(newContent);
             editor.selection.select(editor.getBody(), true);
             editor.selection.collapse(false);
           }, 10);
