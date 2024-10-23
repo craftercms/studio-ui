@@ -75,7 +75,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);
   const isItemPreviewable = isPreviewable(item);
-  const isDiffSupported = ['page', 'component', 'taxonomy'].includes(item.systemType);
+  const isDiffSupported = ['page', 'component', 'taxonomy'].includes(item?.systemType);
   const [compareMode, setCompareMode] = useState(false);
   const [selectedCompareVersions, setSelectedCompareVersions] = useState([]);
 
