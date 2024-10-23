@@ -349,9 +349,11 @@ export function initTinyMCE(
           // TinyMCE seems to be doing something internally that causes this.
           setTimeout(() => {
             const newContent = getContent();
-            replaceLineBreaksIfApplicable(newContent);
-            editor.selection.select(editor.getBody(), true);
-            editor.selection.collapse(false);
+            if (newContent.includes('\n')) {
+              replaceLineBreaksIfApplicable(newContent);
+              editor.selection.select(editor.getBody(), true);
+              editor.selection.collapse(false);
+            }
           }, 10);
         }
         // TODO: It'd be great to be able to select the piece of the pasted content that falls out of the max-length.
