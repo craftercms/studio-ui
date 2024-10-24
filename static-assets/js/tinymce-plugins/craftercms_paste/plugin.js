@@ -1739,18 +1739,16 @@
   };
 
   var setup$1 = function (editor) {
-    var plugin = editor.plugins.paste;
-    var preProcess = getPreProcess(editor);
-    if (preProcess) {
-      editor.on('PastePreProcess', function (e) {
-        preProcess.call(plugin, plugin, e);
-      });
+    const processEvent = (f) => (e) => {
+      f(editor, e);
+    };
+    const preProcess = getPreProcess(editor);
+    if (isFunction(preProcess)) {
+      editor.on('PastePreProcess', processEvent(preProcess));
     }
-    var postProcess = getPostProcess(editor);
-    if (postProcess) {
-      editor.on('PastePostProcess', function (e) {
-        postProcess.call(plugin, plugin, e);
-      });
+    const postProcess = getPostProcess(editor);
+    if (isFunction(postProcess)) {
+      editor.on('PastePostProcess', processEvent(postProcess));
     }
   };
 
