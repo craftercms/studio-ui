@@ -19,12 +19,12 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import DragIndicatorRounded from '@mui/icons-material/DragIndicatorRounded';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { darken, useTheme } from '@mui/material/styles';
 import ListItemButton from '@mui/material/ListItemButton';
 import { getAvatarWithIconColors } from '../../utils/contentType';
+import ListItem from '@mui/material/ListItem';
 
 interface PanelListItemProps {
   primaryText: string;
@@ -55,6 +55,7 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
   return (
     <ListItemButton
       role="option"
+      component={ListItem}
       disableRipple
       key={secondaryText}
       draggable
@@ -69,6 +70,13 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
         borderRadius: isBeingDragged ? 2 : 0,
         cursor: isBeingDragged ? 'grabbing' : 'grab'
       }}
+      secondaryAction={
+        hasMenu ? (
+          <IconButton edge="end" onClick={onMenu} size="small">
+            <MoreVertRounded />
+          </IconButton>
+        ) : null
+      }
     >
       <ListItemAvatar sx={{ minWidth: 0 }}>
         <Avatar
@@ -92,13 +100,6 @@ export function DraggablePanelListItem(props: PanelListItemProps) {
         </Avatar>
       </ListItemAvatar>
       <ListItemText primary={primaryText} secondary={secondaryText} />
-      {hasMenu && (
-        <ListItemSecondaryAction sx={{ right: '10px', display: isBeingDragged ? 'none' : undefined }}>
-          <IconButton edge="end" onClick={onMenu} size="small">
-            <MoreVertRounded />
-          </IconButton>
-        </ListItemSecondaryAction>
-      )}
     </ListItemButton>
   );
 }

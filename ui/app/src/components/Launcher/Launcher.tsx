@@ -18,12 +18,11 @@ import React, { Suspense, useEffect, useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { makeStyles } from 'tss-react/mui';
 import Popover from '@mui/material/Popover';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import LauncherSiteCard, { LauncherSiteCardOption } from '../LauncherSiteCard/LauncherSiteCard';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
-import Hidden from '@mui/material/Hidden';
 import { useDispatch } from 'react-redux';
 import { getInitials } from '../../utils/string';
 import { changeSite } from '../../state/actions/sites';
@@ -123,7 +122,7 @@ const useLauncherStyles = makeStyles()((theme) => ({
   },
   appsRail: {},
   railTop: {
-    padding: '30px',
+    padding: '30px 29px',
     overflow: 'auto',
     height: 'calc(100% - 65px)',
     maxHeight: 'calc(100vh - 95px)'
@@ -244,7 +243,7 @@ const AppsRail = ({
   clsx,
   lonely
 }: AppsRailProps) => (
-  <Grid item xs={12} md={lonely ? 12 : 8} className={classes.appsRail}>
+  <Grid size={{ xs: 12, md: lonely ? 12 : 8 }} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
       {globalNavigationPosition === 'before' && <LauncherGlobalNav />}
       {renderWidgets(widgets, { userRoles })}
@@ -256,7 +255,7 @@ const AppsRail = ({
 );
 
 const AppsRailSkeleton = ({ classes, closeButtonPosition, formatMessage, onLogout, user, clsx }) => (
-  <Grid item xs={12} md={8} className={classes.appsRail}>
+  <Grid size={{ xs: 12, md: 8 }} className={classes.appsRail}>
     <div className={clsx(classes.railTop, closeButtonPosition === 'left' && classes.railTopExtraPadded)}>
       <Skeleton variant="text" width="150px" style={{ marginBottom: 20 }} />
       {new Array(9).fill(null).map((_, i) => (
@@ -282,45 +281,43 @@ interface SitesRailProps {
 }
 
 const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, options, version }: SitesRailProps) => (
-  <Hidden only={['xs', 'sm']}>
-    <Grid item md={4} className={classes.sitesRail}>
-      <div className={classes.railTop}>
-        <Typography variant="subtitle1" component="h2" className={classes.mySitesTitle}>
-          {formatMessage(messages.mySites)}
-        </Typography>
-        {sites.length ? (
-          <List>
-            {sites.map((item, i) => (
-              <LauncherSiteCard
-                key={i}
-                selected={item.id === site}
-                title={item.name}
-                value={item.id}
-                classes={{ root: classes.titleCard }}
-                state={item.state}
-                onCardClick={() => onSiteCardClick(item.id)}
-                options={options}
-              />
-            ))}
-          </List>
-        ) : (
-          <EmptyState
-            title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No projects to display." />}
-          />
-        )}
-      </div>
-      <div className={classes.railBottom}>
-        <CrafterCMSLogo width={115} />
-        <Typography className={classes.versionText} color="textSecondary" variant="caption">
-          {version}
-        </Typography>
-      </div>
-    </Grid>
-  </Hidden>
+  <Grid size={{ md: 4 }} sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }} className={classes.sitesRail}>
+    <div className={classes.railTop}>
+      <Typography variant="subtitle1" component="h2" className={classes.mySitesTitle}>
+        {formatMessage(messages.mySites)}
+      </Typography>
+      {sites.length ? (
+        <List>
+          {sites.map((item, i) => (
+            <LauncherSiteCard
+              key={i}
+              selected={item.id === site}
+              title={item.name}
+              value={item.id}
+              classes={{ root: classes.titleCard }}
+              state={item.state}
+              onCardClick={() => onSiteCardClick(item.id)}
+              options={options}
+            />
+          ))}
+        </List>
+      ) : (
+        <EmptyState
+          title={<FormattedMessage id="globalMenu.noSitesMessage" defaultMessage="No projects to display." />}
+        />
+      )}
+    </div>
+    <div className={classes.railBottom}>
+      <CrafterCMSLogo width={115} />
+      <Typography className={classes.versionText} color="textSecondary" variant="caption">
+        {version}
+      </Typography>
+    </div>
+  </Grid>
 );
 
 const SiteRailSkeleton = ({ classes, formatMessage, version }) => (
-  <Grid item md={4} className={classes.sitesRail}>
+  <Grid size={{ md: 4 }} className={classes.sitesRail}>
     <div className={classes.railTop}>
       <Typography variant="subtitle1" component="h2" className={classes.mySitesTitle}>
         {formatMessage(messages.mySites)}

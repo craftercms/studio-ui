@@ -14,14 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid, { GridProps } from '@mui/material/Grid';
+import Grid, { Grid2Props } from '@mui/material/Grid2';
 import React from 'react';
 import { renderWidgets } from '../Widget';
 import { WidgetDescriptor } from '../../models';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useActiveUser from '../../hooks/useActiveUser';
 
-export interface WidgetsGridProps extends GridProps {
+export interface WidgetsGridProps extends Grid2Props {
   widgets: WidgetDescriptor[];
 }
 

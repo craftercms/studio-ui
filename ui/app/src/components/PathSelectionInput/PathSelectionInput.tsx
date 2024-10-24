@@ -103,30 +103,32 @@ export function PathSelectionInput(props: PathSelectionInputProps) {
         error={pathExists === false}
         aria-describedby="pathInputTextField"
         label={<FormattedMessage id="words.path" defaultMessage="Path" />}
-        InputProps={{
-          startAdornment: rootPath ? (
-            <InputAdornment position="start" sx={{ mr: 0 }}>
-              {startAdornment}
-              {rootPath}
-            </InputAdornment>
-          ) : (
-            UNDEFINED
-          ),
-          endAdornment: isChecking ? (
-            <InputAdornment position="end" sx={{ width: 20, height: 20 }}>
-              <CircularProgress variant="indeterminate" size={20} />
-            </InputAdornment>
-          ) : pathExists === true ? (
-            <InputAdornment position="end">
-              <CheckRounded color="success" />
-            </InputAdornment>
-          ) : pathExists === false ? (
-            <InputAdornment position="end">
-              <ErrorRounded color="error" />
-            </InputAdornment>
-          ) : (
-            UNDEFINED
-          )
+        slotProps={{
+          input: {
+            startAdornment: rootPath ? (
+              <InputAdornment position="start" sx={{ mr: 0 }}>
+                {startAdornment}
+                {rootPath}
+              </InputAdornment>
+            ) : (
+              UNDEFINED
+            ),
+            endAdornment: isChecking ? (
+              <InputAdornment position="end" sx={{ width: 20, height: 20 }}>
+                <CircularProgress variant="indeterminate" size={20} />
+              </InputAdornment>
+            ) : pathExists === true ? (
+              <InputAdornment position="end">
+                <CheckRounded color="success" />
+              </InputAdornment>
+            ) : pathExists === false ? (
+              <InputAdornment position="end">
+                <ErrorRounded color="error" />
+              </InputAdornment>
+            ) : (
+              UNDEFINED
+            )
+          }
         }}
       />
       <FormHelperText id="pathInputTextFieldHelper" error={pathExists === false}>
