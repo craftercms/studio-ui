@@ -31,9 +31,7 @@ import Typography from '@mui/material/Typography';
 import HighlightOffIcon from '@mui/icons-material/HighlightOffRounded';
 import RefreshIcon from '@mui/icons-material/RefreshRounded';
 import Button from '@mui/material/Button';
-import { alpha } from '@mui/material/styles';
 import { BLOCKED, CANCELLED, COMPLETED, PROCESSING, READY_FOR_LIVE } from './constants';
-import palette from '../../styles/palette';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import ConfirmDropdown from '../ConfirmDropdown';
@@ -147,12 +145,7 @@ const useStyles = makeStyles()((theme) => ({
     padding: '40px 0'
   },
   cancelButton: {
-    paddingRight: '10px',
-    color: palette.orange.main,
-    border: `1px solid ${alpha(palette.orange.main, 0.5)}`,
-    '&:hover': {
-      backgroundColor: alpha(palette.orange.main, 0.08)
-    }
+    paddingRight: '10px'
   }
 }));
 
@@ -210,6 +203,7 @@ function PublishingQueue(props: PublishingQueueProps) {
   const { formatMessage } = useIntl();
   const { siteId, readOnly } = props;
   const hasReadyForLivePackages = (packages || []).filter((item: Package) => item.state === READY_FOR_LIVE).length > 0;
+  const areThereItemsSelected = Object.values(selected).some((value) => value);
 
   const getPackages = useCallback(
     (siteId: string) => {
@@ -418,7 +412,10 @@ function PublishingQueue(props: PublishingQueueProps) {
             confirmText={formatMessage(messages.confirm)}
             confirmHelperText={formatMessage(messages.confirmAllHelper)}
             onConfirm={handleCancelAll}
-            disabled={!(hasReadyForLivePackages && Object.values(selected).length > 0) || readOnly}
+            disabled={!(hasReadyForLivePackages && areThereItemsSelected) || readOnly}
+            buttonProps={{
+              color: 'warning'
+            }}
           />
         )}
         <FilterDropdown
