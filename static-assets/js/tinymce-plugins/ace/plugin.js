@@ -201,7 +201,7 @@
           aceModes.inline.getSession().setValue(aceEditor.getValue());
         }
 
-        editor.fire('external_change');
+        editor.dispatch('external_change');
       });
     };
   });
