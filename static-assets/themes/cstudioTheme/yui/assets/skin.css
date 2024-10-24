@@ -1064,6 +1064,11 @@ p#clear {
   z-index: 2;
 }
 
+.form-engine-body .yui-overlay,
+.yui-panel-container {
+  z-index: 3 !important;
+}
+
 .yui-panel-container form {
   margin: 0;
 }
