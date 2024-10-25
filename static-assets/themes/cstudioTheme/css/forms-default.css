@@ -1388,6 +1388,10 @@ body.yui-skin-cstudioTheme.masked {
   overflow: hidden;
 }
 
+.masked .tox .tox-editor-header {
+  z-index: inherit;
+}
+
 /* Long File Name in Image Picker */
 .image-picker-control .cstudio-form-field-title {
   float: none;
