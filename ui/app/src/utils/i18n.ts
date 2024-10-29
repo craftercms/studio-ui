@@ -61,7 +61,7 @@ async function fetchLocale(locale: string): Promise<LookupTable<string>> {
       translations = Promise.resolve({});
       break;
   }
-  return translations;
+  return translations.default ?? translations;
 }
 
 async function createIntlInstance(localeCode: string): Promise<IntlShape> {
