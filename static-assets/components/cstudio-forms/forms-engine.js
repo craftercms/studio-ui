@@ -1749,7 +1749,7 @@ const initializeCStudioForms = () => {
               }
             };
 
-            var unlockBeforeCancel = function (path) {
+            var unlockBeforeCancel = function (path, onCancel) {
               CStudioAuthoring.Service.lookupContentItem(CStudioAuthoringContext.site, path, {
                 success: function (itemTO) {
                   //Unlock if the item is locked by the user
@@ -1762,6 +1762,7 @@ const initializeCStudioForms = () => {
                         eventNS.oldPath = null;
                         getTopLegacyWindow().document.dispatchEvent(eventNS);
                         var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                        onCancel?.();
                         CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                       },
                       failure: function () {}
@@ -1769,6 +1770,7 @@ const initializeCStudioForms = () => {
                   } else {
                     _notifyServer = false;
                     var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                    onCancel?.();
                     CStudioAuthoring.InContextEdit.unstackDialog(editorId);
                   }
                 },
@@ -1816,19 +1818,23 @@ const initializeCStudioForms = () => {
                   CStudioAuthoring.Utils.showConfirmDialog({
                     body: message,
                     onOk: () => {
-                      if (iceWindowCallback && iceWindowCallback.cancelled) {
-                        iceWindowCallback.cancelled();
-                      }
                       sendMessage({ type: FORM_CANCEL });
                       var entityId = buildEntityIdFn(null);
                       showWarnMsg = false;
 
                       var path = CStudioAuthoring.Utils.getQueryVariable(location.search, 'path');
                       if (path && path.indexOf('.xml') != -1) {
-                        unlockBeforeCancel(path);
+                        unlockBeforeCancel(path, () => {
+                          if (iceWindowCallback && iceWindowCallback.cancelled) {
+                            iceWindowCallback.cancelled();
+                          }
+                        });
                       } else {
                         _notifyServer = false;
                         var editorId = CStudioAuthoring.Utils.getQueryVariable(location.search, 'editorId');
+                        if (iceWindowCallback && iceWindowCallback.cancelled) {
+                          iceWindowCallback.cancelled();
+                        }
                         CStudioAuthoring.InContextEdit.unstackDialog(editorId);
 
                         if (path == '/site/components/page') {
