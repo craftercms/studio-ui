@@ -110,6 +110,7 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   const dispatch = useDispatch();
   const filterState = useDashletFilterState('pendingApprovalDashlet');
   const refs = useUpdateRefs({
+    items,
     currentPage,
     filterState,
     loadPagesUntil: null as (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => void
@@ -164,7 +165,10 @@ export function PendingApprovalDashlet(props: PendingApprovalDashletProps) {
   }, [loadPage, refs]);
 
   useEffect(() => {
-    refs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+    // To avoid re-fetching when it first loads
+    if (refs.current.items) {
+      refs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+    }
   }, [filterState?.selectedTypes, refs]);
 
   const onOptionClicked = (option) => {
