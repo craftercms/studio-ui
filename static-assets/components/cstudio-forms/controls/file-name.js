@@ -231,17 +231,7 @@ YAHOO.extend(CStudioForms.Controls.FileName, CStudioForms.CStudioFormField, {
       }
     }
 
-    el.value = window
-      .slugify(el.value, {
-        lower: true,
-        // Setting `strict: true` would disallow `_`, which we don't want.
-        strict: false,
-        // Because of the moment where the library trims, `trim: true` caused undesired replacement of `-`
-        // at the beginning or end of the slug.
-        trim: false
-      })
-      // Trim post-slugify to avoid undesired losses of hyphens at the beginning or end of slugs.
-      .trim();
+    el.value = craftercms.utils.content.applyContentNameRules(el.value);
 
     var data = el.value;
 

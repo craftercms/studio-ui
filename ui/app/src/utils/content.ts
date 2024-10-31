@@ -72,7 +72,6 @@ import { SystemType } from '../models/SystemType';
 import { getStateBitmap } from '../components/WorkflowStateManagement/utils';
 import { forEach } from './array';
 import { PublishingTargets } from '../models';
-import slugify from 'slugify';
 import { showCodeEditorDialog, showEditDialog } from '../state/actions/dialogs';
 import { Dispatch } from 'react';
 import { AnyAction } from 'redux';
@@ -1090,14 +1089,15 @@ export function applyAssetNameRules(name: string, options?: { allowBraces: boole
  * letter, number, dash or underscore.
  */
 export function applyContentNameRules(name: string): string {
-  return slugify(name, {
-    lower: true,
-    // Setting `strict: true` would disallow `_`, which we don't want.
-    strict: false,
-    // Because of the moment where the library trims, `trim: true` caused undesired replacement of `-`
-    // at the beginning or end of the slug.
-    trim: false
-  }).replace(/[^a-z0-9-_]/g, '');
+  return (
+    // Replace accented vowels with their non-accented counterpart
+    replaceAccentedVowels(name)
+      // replace spaces with dashes
+      .replace(/\s+/g, '-')
+      .toLowerCase()
+      // remove any character that is not a letter, number, dash or underscore, and allow braces if specified
+      .replace(/[^a-zA-Z0-9-_]/g, '')
+  );
 }
 
 export const openItemEditor = (
