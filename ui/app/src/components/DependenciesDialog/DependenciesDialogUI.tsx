@@ -86,14 +86,14 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                 className: classes.select
               }}
             >
+              <MenuItem value="depends-on-me">
+                <FormattedMessage id="dependenciesDialog.dependsOnMe" defaultMessage="Dependencies of selected item" />
+              </MenuItem>
               <MenuItem value="depends-on">
                 <FormattedMessage
                   id="dependenciesDialog.dependsOn"
                   defaultMessage="Items that depend on selected item"
                 />
-              </MenuItem>
-              <MenuItem value="depends-on-me">
-                <FormattedMessage id="dependenciesDialog.dependsOnMe" defaultMessage="Dependencies of selected item" />
               </MenuItem>
             </Select>
           </FormControl>
@@ -107,7 +107,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           <EmptyState
             sxs={{ root: { minHeight: 300 } }}
             title={
-              dependenciesShown === 'depends-on' ? (
+              dependenciesShown === 'depends-on-me' ? (
                 <FormattedMessage
                   id="dependenciesDialog.emptyDependantsMessage"
                   defaultMessage={'"{itemName}" has no dependencies'}

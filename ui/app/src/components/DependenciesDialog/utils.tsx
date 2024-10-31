@@ -27,7 +27,9 @@ export interface DependenciesDialogBaseProps {
   // TODO: This should be a mandatory prop. Dialog crashes without it.
   item?: DetailedItem;
   rootPath: string;
-  dependenciesShown?: string;
+  // TODO: Revisit/improve these keys. Seem not to be in use outside the
+  //  Dialog, but don't want to change at this stage (release is close).
+  dependenciesShown?: 'depends-on' | 'depends-on-me';
 }
 
 export interface DependenciesDialogProps extends DependenciesDialogBaseProps, EnhancedDialogProps {}

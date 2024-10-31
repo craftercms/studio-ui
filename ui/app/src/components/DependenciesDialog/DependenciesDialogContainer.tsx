@@ -15,7 +15,7 @@
  */
 
 import { useSpreadState } from '../../hooks/useSpreadState';
-import { DependenciesDialogContainerProps, dialogInitialState } from './utils';
+import { DependenciesDialogBaseProps, DependenciesDialogContainerProps, dialogInitialState } from './utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ApiResponse } from '../../models/ApiResponse';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -32,7 +32,7 @@ import DependenciesDialogUI from './DependenciesDialogUI';
 import useMount from '../../hooks/useMount';
 
 export function DependenciesDialogContainer(props: DependenciesDialogContainerProps) {
-  const { item, dependenciesShown = 'depends-on', rootPath } = props;
+  const { item, dependenciesShown = 'depends-on-me', rootPath } = props;
   const [dialog, setDialog] = useSpreadState({
     ...dialogInitialState,
     item,
@@ -130,7 +130,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
     getDepsItems(siteId, item.path, dialog.dependenciesShown, true);
   };
 
-  const setDependenciesShow = (dependenciesShown: string) => {
+  const setDependenciesShow = (dependenciesShown: DependenciesDialogBaseProps['dependenciesShown']) => {
     setDeps(null);
     setDialog({ dependenciesShown });
     getDepsItems(siteId, dialog.item.path, dependenciesShown);
