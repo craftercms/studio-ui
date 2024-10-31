@@ -131,6 +131,7 @@ export function DependenciesDialogContainer(props: DependenciesDialogContainerPr
   };
 
   const setDependenciesShow = (dependenciesShown: string) => {
+    setDeps(null);
     setDialog({ dependenciesShown });
     getDepsItems(siteId, dialog.item.path, dependenciesShown);
   };

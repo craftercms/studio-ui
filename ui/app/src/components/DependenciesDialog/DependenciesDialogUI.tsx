@@ -98,23 +98,25 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
             </Select>
           </FormControl>
         </div>
+
         {error ? (
           <ApiResponseErrorState error={error} />
         ) : !dependencies ? (
-          <LoadingState classes={{ root: classes.suspense }} />
+          <LoadingState classes={{ root: classes.suspense }} styles={{ root: { flexGrow: 1 } }} />
         ) : dependencies?.length === 0 ? (
           <EmptyState
+            sxs={{ root: { minHeight: 300 } }}
             title={
               dependenciesShown === 'depends-on' ? (
                 <FormattedMessage
                   id="dependenciesDialog.emptyDependantsMessage"
-                  defaultMessage={'{itemName} has no dependencies'}
+                  defaultMessage={'"{itemName}" has no dependencies'}
                   values={{ itemName: item?.label }}
                 />
               ) : (
                 <FormattedMessage
                   id="dependenciesDialog.emptyDependenciesMessage"
-                  defaultMessage={'Nothing depends on {itemName}'}
+                  defaultMessage={'Nothing depends on "{itemName}"'}
                   values={{ itemName: item?.label }}
                 />
               )
@@ -177,11 +179,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           </>
         )}
       </DialogBody>
-      <DialogFooter
-        classes={{
-          root: classes.dialogFooter
-        }}
-      >
+      <DialogFooter classes={{ root: classes.dialogFooter }}>
         <FormControlLabel
           className={classes.compactViewAction}
           control={

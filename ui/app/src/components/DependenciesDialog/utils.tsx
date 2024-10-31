@@ -24,6 +24,7 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import ApiResponse from '../../models/ApiResponse';
 
 export interface DependenciesDialogBaseProps {
+  // TODO: This should be a mandatory prop. Dialog crashes without it.
   item?: DetailedItem;
   rootPath: string;
   dependenciesShown?: string;
