@@ -116,6 +116,7 @@ export function initTinyMCE(
     license_key: 'gpl',
     target: rteEl,
     promotion: false,
+    branding: false,
     // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
     // note that it will become premium on version 7.
     deprecation_warnings: false,
@@ -347,9 +348,12 @@ export function initTinyMCE(
           // Doing this immediately (without the timeout) causes the content to be duplicated.
           // TinyMCE seems to be doing something internally that causes this.
           setTimeout(() => {
-            replaceLineBreaksIfApplicable(text);
-            editor.selection.select(editor.getBody(), true);
-            editor.selection.collapse(false);
+            const newContent = getContent();
+            if (newContent.includes('\n')) {
+              replaceLineBreaksIfApplicable(newContent);
+              editor.selection.select(editor.getBody(), true);
+              editor.selection.collapse(false);
+            }
           }, 10);
         }
         // TODO: It'd be great to be able to select the piece of the pasted content that falls out of the max-length.

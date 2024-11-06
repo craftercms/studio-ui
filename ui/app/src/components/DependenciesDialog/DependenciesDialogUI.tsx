@@ -86,35 +86,37 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
                 className: classes.select
               }}
             >
+              <MenuItem value="depends-on-me">
+                <FormattedMessage id="dependenciesDialog.dependsOnMe" defaultMessage="Dependencies of selected item" />
+              </MenuItem>
               <MenuItem value="depends-on">
                 <FormattedMessage
                   id="dependenciesDialog.dependsOn"
                   defaultMessage="Items that depend on selected item"
                 />
               </MenuItem>
-              <MenuItem value="depends-on-me">
-                <FormattedMessage id="dependenciesDialog.dependsOnMe" defaultMessage="Dependencies of selected item" />
-              </MenuItem>
             </Select>
           </FormControl>
         </div>
+
         {error ? (
           <ApiResponseErrorState error={error} />
         ) : !dependencies ? (
-          <LoadingState classes={{ root: classes.suspense }} />
+          <LoadingState classes={{ root: classes.suspense }} styles={{ root: { flexGrow: 1 } }} />
         ) : dependencies?.length === 0 ? (
           <EmptyState
+            sxs={{ root: { minHeight: 300 } }}
             title={
-              dependenciesShown === 'depends-on' ? (
+              dependenciesShown === 'depends-on-me' ? (
                 <FormattedMessage
                   id="dependenciesDialog.emptyDependantsMessage"
-                  defaultMessage={'{itemName} has no dependencies'}
+                  defaultMessage={'"{itemName}" has no dependencies'}
                   values={{ itemName: item?.label }}
                 />
               ) : (
                 <FormattedMessage
                   id="dependenciesDialog.emptyDependenciesMessage"
-                  defaultMessage={'Nothing depends on {itemName}'}
+                  defaultMessage={'Nothing depends on "{itemName}"'}
                   values={{ itemName: item?.label }}
                 />
               )
@@ -177,11 +179,7 @@ export function DependenciesDialogUI(props: DependenciesDialogUIProps) {
           </>
         )}
       </DialogBody>
-      <DialogFooter
-        classes={{
-          root: classes.dialogFooter
-        }}
-      >
+      <DialogFooter classes={{ root: classes.dialogFooter }}>
         <FormControlLabel
           className={classes.compactViewAction}
           control={

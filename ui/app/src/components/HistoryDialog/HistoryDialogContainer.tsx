@@ -75,6 +75,8 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);
   const isItemPreviewable = isPreviewable(item);
+  // Item may be null for config items in config management.
+  const isDiffSupported = ['page', 'component', 'taxonomy'].includes(item?.systemType);
   const [compareMode, setCompareMode] = useState(false);
   const [selectedCompareVersions, setSelectedCompareVersions] = useState([]);
 
@@ -140,10 +142,9 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
     });
   };
   const handleViewItem = (version: ItemHistoryEntry) => {
-    const supportsDiff = ['page', 'component', 'taxonomy'].includes(item.systemType);
     const versionPath = Boolean(version.path) && path !== version.path ? version.path : path;
 
-    if (supportsDiff) {
+    if (isDiffSupported) {
       dispatch(
         batchActions([
           fetchContentTypes(),
@@ -321,17 +322,20 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             onItemClicked={(item) => {
               setOpenSelector(false);
               dispatch(versionsChangeItem({ item }));
+              setSelectedCompareVersions([]);
+              setCompareMode(false);
             }}
           />
-          <FormControlLabel
-            value="start"
-            control={<Switch color="primary" checked={compareMode} />}
-            label={<FormattedMessage defaultMessage="Compare" />}
-            labelPlacement="start"
-            onChange={(e) => {
-              setCompareMode((e.currentTarget as HTMLInputElement).checked);
-            }}
-          />
+          {isDiffSupported && count > 1 && (
+            <FormControlLabel
+              control={<Switch color="primary" checked={compareMode} />}
+              label={<FormattedMessage defaultMessage="Compare" />}
+              labelPlacement="start"
+              onChange={(e) => {
+                setCompareMode((e.currentTarget as HTMLInputElement).checked);
+              }}
+            />
+          )}
         </Box>
         <ErrorBoundary>
           {versionsBranch.isFetching ? (

@@ -101,6 +101,7 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   const isIndeterminate = hasSelected && !isAllSelected;
   const filterState = useDashletFilterState('unpublishedDashlet');
   const refs = useUpdateRefs({
+    items,
     currentPage,
     filterState,
     loadPagesUntil: null as (pageNumber: number, itemTypes?: Array<SystemType>, backgroundRefresh?: boolean) => void
@@ -196,7 +197,10 @@ export function UnpublishedDashlet(props: UnpublishedDashletProps) {
   }, [loadPage, refs]);
 
   useEffect(() => {
-    refs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+    // To avoid re-fetching when it first loads
+    if (refs.current.items) {
+      refs.current.loadPagesUntil(refs.current.currentPage, filterState.selectedTypes);
+    }
   }, [filterState?.selectedTypes, refs]);
 
   // region Item Updates Propagation

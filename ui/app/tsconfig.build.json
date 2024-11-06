@@ -27,6 +27,7 @@
     "src/translations/whitelists",
     "src/**/*.ignore.*",
     "src/**/*.test.ts",
-    "main.*.tsx"
+    "src/main.*.tsx",
+    "src/main.tsx",
   ]
 }

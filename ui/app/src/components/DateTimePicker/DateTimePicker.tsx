@@ -211,6 +211,7 @@ function DateTimePicker(props: DateTimePickerProps) {
         <DatePicker
           open={datePickerOpen}
           views={['year', 'month', 'day']}
+          onOpen={() => setDatePickerOpen(true)}
           slotProps={{
             textField: {
               size: 'small',

@@ -25,13 +25,11 @@ export function WorkflowCancellationDialog(props: WorkflowCancellationDialogProp
 
   return (
     <EnhancedDialog
-      title={<FormattedMessage id="workflowCancellation.title" defaultMessage="Warning: Workflow Cancellation" />}
+      maxWidth="sm"
+      title={<FormattedMessage defaultMessage="Publish Cancellation Warning" />}
       dialogHeaderProps={{
         subtitle: (
-          <FormattedMessage
-            id="workflowCancellation.subtitle"
-            defaultMessage="Edit will cancel all items that are in the scheduled deployment batch. Please review the list of files below and chose “Continue” to cancel workflow and edit or “Cancel” to remain in your dashboard."
-          />
+          <FormattedMessage defaultMessage="The item is part of a publishing package. Editing it will cancel the entire package." />
         )
       }}
       {...rest}

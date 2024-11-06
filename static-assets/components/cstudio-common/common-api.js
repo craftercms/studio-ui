@@ -2227,60 +2227,48 @@ var nodeOpen = false,
             });
           }
         }
-
-        const eventIdSuccess = 'workflowCancellationDialogContinue';
-        const eventIdCancel = 'workflowCancellationDialogCancel';
-        CrafterCMSNext.system.store.dispatch({
-          type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-          payload: {
-            open: true,
-            items: null,
-            onContinue: {
-              type: 'BATCH_ACTIONS',
-              payload: [
-                {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdSuccess }
-                },
-                { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
-              ]
-            },
-            onClosed: {
-              type: 'BATCH_ACTIONS',
-              payload: [
-                {
-                  type: 'DISPATCH_DOM_EVENT',
-                  payload: { id: eventIdCancel }
-                },
-                { type: 'WORKFLOW_CANCELLATION_DIALOG_CLOSED' }
-              ]
-            }
-          }
-        });
-
-        let unsubscribe, cancelUnsubscribe;
-
-        unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
-          doEdit();
-          cancelUnsubscribe();
-        });
-
-        cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
-          unsubscribe();
-        });
-
+        craftercms.getStore().dispatch({ type: 'BLOCK_UI' });
         CrafterCMSNext.services.content.fetchWorkflowAffectedItems(params.site, params.path).subscribe({
           next: (items) => {
+            craftercms.getStore().dispatch({ type: 'UNBLOCK_UI' });
             if (items && items.length) {
               const eventIdSuccess = 'workflowCancellationDialogContinue';
+              const eventIdCancel = 'workflowCancellationDialogCancel';
+              let unsubscribe, cancelUnsubscribe;
+              unsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdSuccess, () => {
+                doEdit();
+                cancelUnsubscribe();
+              });
+              cancelUnsubscribe = CrafterCMSNext.createLegacyCallbackListener(eventIdCancel, () => {
+                unsubscribe();
+              });
               CrafterCMSNext.system.store.dispatch({
                 type: 'SHOW_WORKFLOW_CANCELLATION_DIALOG',
-                payload: { items }
+                payload: {
+                  items,
+                  onContinue: {
+                    type: 'BATCH_ACTIONS',
+                    payload: [
+                      {
+                        type: 'DISPATCH_DOM_EVENT',
+                        payload: { id: eventIdSuccess }
+                      },
+                      { type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG' }
+                    ]
+                  },
+                  onClosed: {
+                    type: 'BATCH_ACTIONS',
+                    payload: [
+                      {
+                        type: 'DISPATCH_DOM_EVENT',
+                        payload: { id: eventIdCancel }
+                      },
+                      { type: 'WORKFLOW_CANCELLATION_DIALOG_CLOSED' }
+                    ]
+                  }
+                }
               });
             } else {
-              CrafterCMSNext.system.store.dispatch({
-                type: 'CLOSE_WORKFLOW_CANCELLATION_DIALOG'
-              });
               doEdit();
             }
           },
