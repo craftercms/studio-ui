@@ -38,7 +38,7 @@ import { fetchSandboxItem } from '../../state/actions/content';
 import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
-  const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex } = props;
+  const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex, hideEdit } = props;
   const { classes, cx } = useStyles();
   const siteId = useActiveSiteId();
   const items = useItemsByPath();
@@ -136,7 +136,7 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
           <SecondaryButton onClick={(e) => onClose(e, null)}>
             <FormattedMessage id="words.close" defaultMessage="Close" />
           </SecondaryButton>
-          {item && hasEditAction(item.availableActions) && (
+          {!hideEdit && item && hasEditAction(item.availableActions) && (
             <PrimaryButton sx={{ marginLeft: '15px' }} onClick={onEdit}>
               <FormattedMessage id="words.edit" defaultMessage="Edit" />
             </PrimaryButton>
