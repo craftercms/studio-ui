@@ -16,7 +16,6 @@
 
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
-import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -25,23 +24,27 @@ import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';
 import { WorkflowCancellationDialogUIProps } from './utils';
+import Typography from '@mui/material/Typography';
 
 export function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) {
   const { items, onCloseButtonClick, onContinue, classes } = props;
   return (
     <>
       <DialogBody>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <List className={classes.filesList}>
-              {items.map((item) => (
-                <ListItem key={item.path}>
-                  <ListItemText primary={item.label} secondary={item.path} />
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
-        </Grid>
+        <Typography variant="overline">
+          <FormattedMessage defaultMessage="Items on this package" />
+        </Typography>
+        <List className={classes.filesList}>
+          {items.map((item) => (
+            <ListItem key={item.path}>
+              <ListItemText
+                primary={item.label}
+                secondary={item.path}
+                secondaryTypographyProps={{ noWrap: true, title: item.path }}
+              />
+            </ListItem>
+          ))}
+        </List>
       </DialogBody>
       <DialogFooter>
         {onCloseButtonClick && (
