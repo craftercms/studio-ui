@@ -62,9 +62,10 @@ import Paper from '@mui/material/Paper';
 import TableBody from '@mui/material/TableBody';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import UninstallPluginDialog from '../DeletePluginDialog';
-import SettingsRoundedIcon from '@mui/icons-material/SettingsOutlined';
 import { PluginConfigDialog } from '../PluginConfigDialog';
 import { fetchMyPermissions } from '../../services/users';
+import Tooltip from '@mui/material/Tooltip';
+import PencilIcon from '@mui/icons-material/EditOutlined';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -306,30 +307,36 @@ export const PluginManagement = (props: PluginManagementProps) => {
                     <StyledTableCell align="left">
                       {plugin.files.length}
                       <IconButton onClick={(e) => showPluginFiles(e, plugin)} size="small">
-                        <ExpandMoreRoundedIcon />
+                        <Tooltip title={<FormattedMessage defaultMessage="View files" />}>
+                          <ExpandMoreRoundedIcon />
+                        </Tooltip>
                       </IconButton>
                     </StyledTableCell>
                     <StyledTableCell align="left">
                       <AsDayMonthDateTime date={plugin.installationDate} locale={locale} />
                     </StyledTableCell>
                     <TableCell align="right" className={classes.actions}>
-                      <IconButton
-                        onClick={() => {
-                          onEditPluginConfig(plugin);
-                        }}
-                        color="primary"
-                      >
-                        <SettingsRoundedIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => {
-                          setPluginToDelete(plugin.id);
-                          deletePluginDialogState.onOpen();
-                        }}
-                        color="primary"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+                      <Tooltip title={<FormattedMessage defaultMessage="Edit configuration" />}>
+                        <IconButton
+                          onClick={() => {
+                            onEditPluginConfig(plugin);
+                          }}
+                          color="primary"
+                        >
+                          <PencilIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title={<FormattedMessage defaultMessage="Uninstall plugin" />}>
+                        <IconButton
+                          onClick={() => {
+                            setPluginToDelete(plugin.id);
+                            deletePluginDialogState.onOpen();
+                          }}
+                          color="primary"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}
