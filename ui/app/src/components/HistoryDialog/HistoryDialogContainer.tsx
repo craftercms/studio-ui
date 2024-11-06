@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
@@ -39,6 +39,7 @@ import { getEditorMode, isImage, isPdfDocument, isPreviewable, isVideo } from '.
 import {
   compareBothVersions,
   compareToPreviousVersion,
+  fetchItemVersions,
   revertContent,
   revertToPreviousVersion,
   versionsChangeItem,
@@ -60,6 +61,10 @@ import { LoadingState } from '../LoadingState';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import { contentEvent } from '../../state/actions/system';
+import { getHostToHostBus } from '../../utils/subjects';
+import { filter } from 'rxjs/operators';
+import { getRootPath } from '../../utils/path';
 
 export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const { versionsBranch } = props;
@@ -165,7 +170,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             mode: image || video || pdf ? UNDEFINED : getEditorMode(item),
             path: item.path,
             url: item.path,
-            hideEdit: false,
+            hideEdit: current !== version.versionNumber,
             subtitle: `v.${version.versionNumber}`,
             ...(video ? { mimeType: item.mimeType } : {})
           })
@@ -308,6 +313,26 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
       setSelectedCompareVersions(newSelectedVersions);
     }
   };
+
+  // region Item Updates Propagation
+  useEffect(() => {
+    const events = [contentEvent.type];
+    const hostToHost$ = getHostToHostBus();
+    const subscription = hostToHost$
+      .pipe(filter((e) => events.includes(e.type) && e.payload.targetPath === item.path))
+      .subscribe(() => {
+        dispatch(
+          fetchItemVersions({
+            item,
+            rootPath: getRootPath(item.path)
+          })
+        );
+      });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch, item]);
+  // endregion
 
   return (
     <>
