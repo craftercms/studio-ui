@@ -14,14 +14,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Dialog from '@mui/material/Dialog';
+import Dialog, { dialogClasses } from '@mui/material/Dialog';
 import React from 'react';
 import { InstallPluginDialogProps } from './utils';
 import { InstallPluginDialogContainer } from './InstallPluginDialogContainer';
 
 export function InstallPluginDialog(props: InstallPluginDialogProps) {
   return (
-    <Dialog open={props.open} onClose={props.onClose} fullWidth maxWidth="md">
+    <Dialog
+      open={props.open}
+      onClose={props.onClose}
+      fullWidth
+      maxWidth="lg"
+      sx={{ [`.${dialogClasses.paper}`]: { height: '90vh' } }}
+    >
       <InstallPluginDialogContainer {...props} />
     </Dialog>
   );
