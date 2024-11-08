@@ -58,18 +58,11 @@ function getStyles(sx: ConfirmDropdownPartialSx): ConfirmDropdownFullSx {
     },
     menuPaper: {
       maxWidth: '250px',
-      '& ul': {
-        padding: 0
-      },
-      '& li': {
-        borderTop: '1px solid #dedede',
-        paddingTop: '10px',
-        paddingBottom: '10px'
-      },
       ...sx?.menuPaper
     },
     helperText: {
-      padding: '10px 16px 10px 16px',
+      py: 1,
+      px: 2,
       ...sx?.helperText
     }
   } as Record<ConfirmDropdownClassKey, SxProps<Theme>>;

@@ -123,7 +123,7 @@ function DateTimePicker(props: DateTimePickerProps) {
   }
   const timeZone = offset
     ? timeZones.find((tz) => tz.offset === offset).name
-    : locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone();
+    : (locale.dateTimeFormatOptions.timeZone ?? getUserTimeZone());
   // Time picker control seems to always display in function of the time of the
   // browser's time zone but we display things in function of the selected time zone.
   // This causes some discrepancies between the time displayed on the field and the time
@@ -215,7 +215,7 @@ function DateTimePicker(props: DateTimePickerProps) {
           slotProps={{
             textField: {
               size: 'small',
-              margin: 'normal',
+              sx: { mb: 1, mt: 1 },
               placeholder: formatMessage(translations.datePlaceholder),
               error: !pickerState.dateValid,
               helperText: pickerState.dateValid ? '' : formatMessage(translations.dateInvalidMessage),
@@ -255,7 +255,7 @@ function DateTimePicker(props: DateTimePickerProps) {
             slotProps={{
               textField: {
                 size: 'small',
-                margin: 'normal',
+                sx: { mb: 1 },
                 helperText: pickerState.timeValid ? '' : formatMessage(translations.timeInvalidMessage),
                 placeholder: formatMessage(translations.timePlaceholder),
                 onClick: disabled
@@ -298,7 +298,7 @@ function DateTimePicker(props: DateTimePickerProps) {
           }}
           popupIcon={<PublicRoundedIcon />}
           disableClearable={true}
-          renderInput={(params) => <TextField size="small" margin="normal" {...params} variant="outlined" fullWidth />}
+          renderInput={(params) => <TextField size="small" sx={{ mb: 1 }} {...params} variant="outlined" fullWidth />}
           disabled={disabled}
         />
       )}

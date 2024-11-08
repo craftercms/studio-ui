@@ -17,8 +17,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { darken, lighten } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
-import { withStyles } from 'tss-react/mui';
+import { makeStyles, withStyles } from 'tss-react/mui';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { AsDayMonthDateTime } from '../VersionList';
@@ -50,6 +49,8 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
+import Tooltip from '@mui/material/Tooltip';
+import { CreatePreviewTokenDialog } from '../CreatePreviewTokenDialog';
 
 const styles = makeStyles()((theme) => ({
   table: {
@@ -167,7 +168,11 @@ export function TokenManagement() {
   }, []);
 
   const createTokenDialogState = useEnhancedDialogState();
+  const createPreviewTokenDialogState = useEnhancedDialogState();
   const createTokenDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(createTokenDialogState.onClose);
+  const createPreviewTokenDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(
+    createPreviewTokenDialogState.onClose
+  );
   const copyTokenDialogState = useEnhancedDialogState();
   const copyTokenDialogPendingChangesCloseRequest = useWithPendingChangesCloseRequest(copyTokenDialogState.onClose);
 
@@ -175,8 +180,15 @@ export function TokenManagement() {
     createTokenDialogState.onOpen();
   };
 
+  const handleCreatePreviewToken = () => {
+    createPreviewTokenDialogState.onOpen();
+  };
+
   const onCopyTokenDialogClosed = () => {
-    setCreatedToken(null);
+    copyTokenDialogState.onClose();
+    setTimeout(() => {
+      setCreatedToken(null);
+    });
   };
 
   const onTokenCreated = (token: Token) => {
@@ -312,132 +324,166 @@ export function TokenManagement() {
       <GlobalAppToolbar
         title={<FormattedMessage id="globalMenu.tokenManagement" defaultMessage="Token Management" />}
         leftContent={
-          <Button startIcon={<AddIcon />} variant="outlined" color="primary" onClick={onCreateToken}>
-            <FormattedMessage id="tokenManagement.createToken" defaultMessage="Create Token" />
-          </Button>
+          <>
+            <Button
+              startIcon={<AddIcon />}
+              variant="outlined"
+              color="primary"
+              onClick={onCreateToken}
+              sx={{ mr: 1 }}
+              title={formatMessage({ defaultMessage: 'Create API Token' })}
+            >
+              <FormattedMessage defaultMessage="API Token" />
+            </Button>
+            <Button
+              startIcon={<AddIcon />}
+              variant="outlined"
+              color="primary"
+              onClick={handleCreatePreviewToken}
+              title={formatMessage({ defaultMessage: 'Create Preview Token' })}
+            >
+              <FormattedMessage defaultMessage="Preview Token" />
+            </Button>
+          </>
         }
       />
       <ConditionalLoadingState isLoading={tokens === null}>
         {tokens?.length ? (
-          <TableContainer style={{ position: 'relative' }}>
-            {checkedCount > 0 && (
-              <ActionsBar
-                onOptionClicked={onOptionClicked}
-                options={options}
-                isIndeterminate={checkedCount > 0 && checkedCount < tokens.length}
-                isChecked={checkedCount === tokens.length}
-                onCheckboxChange={() => onToggleSelectAll(checkedCount !== tokens.length)}
-                classes={{
-                  root: classes.actionsBar
-                }}
-              />
-            )}
-            <Table className={classes.table}>
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      disabled={checkedCount > 0}
-                      checked={false}
-                      color="primary"
-                      onClick={() => {
-                        onToggleSelectAll(true);
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell align="left" padding="none">
-                    <Typography variant="subtitle2">
-                      <FormattedMessage id="words.status" defaultMessage="Status" />
-                    </Typography>
-                  </TableCell>
-                  <StyledTableCell align="left">
-                    <Typography variant="subtitle2">
-                      <FormattedMessage id="words.label" defaultMessage="Label" />
-                    </Typography>
-                  </StyledTableCell>
-                  <StyledTableCell align="left">
-                    <Typography variant="subtitle2">
-                      <FormattedMessage id="words.expiration" defaultMessage="Expiration" />
-                    </Typography>
-                  </StyledTableCell>
-                  <StyledTableCell align="left">
-                    <Typography variant="subtitle2">
-                      <FormattedMessage id="words.created" defaultMessage="Created" />
-                    </Typography>
-                  </StyledTableCell>
-                  <TableCell align="center" className={classes.actions} />
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tokens.map((token) => (
-                  <TableRow key={token.id}>
+          <>
+            <TableContainer style={{ position: 'relative' }}>
+              {checkedCount > 0 && (
+                <ActionsBar
+                  onOptionClicked={onOptionClicked}
+                  options={options}
+                  isIndeterminate={checkedCount > 0 && checkedCount < tokens.length}
+                  isChecked={checkedCount === tokens.length}
+                  onCheckboxChange={() => onToggleSelectAll(checkedCount !== tokens.length)}
+                  classes={{
+                    root: classes.actionsBar
+                  }}
+                />
+              )}
+              <Table className={classes.table}>
+                <TableHead>
+                  <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        checked={!!checkedLookup[token.id]}
+                        disabled={checkedCount > 0}
+                        checked={false}
                         color="primary"
-                        onChange={(event, checked) => {
-                          onItemChecked(token.id, checked);
+                        onClick={() => {
+                          onToggleSelectAll(true);
                         }}
                       />
                     </TableCell>
-                    <TableCell component="th" id={token.id.toString()} scope="row" padding="none">
-                      <Chip
-                        label={
-                          Date.parse(token.expiresAt) < Date.now() ? (
-                            <FormattedMessage id="words.expired" defaultMessage="Expired" />
-                          ) : token.enabled ? (
-                            <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
-                          ) : (
-                            <FormattedMessage id="words.disabled" defaultMessage="Disabled" />
-                          )
-                        }
-                        className={cx(
-                          classes.chip,
-                          !token.enabled && 'disabled',
-                          moment(token.expiresAt) < moment() && 'expired'
-                        )}
-                      />
+                    <TableCell align="left" padding="none">
+                      <Typography variant="subtitle2">
+                        <FormattedMessage id="words.status" defaultMessage="Status" />
+                      </Typography>
                     </TableCell>
-                    <StyledTableCell align="left">{token.label}</StyledTableCell>
                     <StyledTableCell align="left">
-                      {token.expiresAt ? (
-                        <AsDayMonthDateTime date={token.expiresAt} />
-                      ) : (
-                        <Typography color="textSecondary" variant="body2">
-                          ({formatMessage(translations.never).toLowerCase()})
-                        </Typography>
-                      )}
+                      <Typography variant="subtitle2">
+                        <FormattedMessage id="words.label" defaultMessage="Label" />
+                      </Typography>
                     </StyledTableCell>
                     <StyledTableCell align="left">
-                      <AsDayMonthDateTime date={token.createdOn} />
+                      <Typography variant="subtitle2">
+                        <FormattedMessage id="words.expiration" defaultMessage="Expiration" />
+                      </Typography>
                     </StyledTableCell>
-                    <TableCell align="right" className={classes.actions}>
-                      {(token.expiresAt === null || moment(token.expiresAt) > moment()) && (
-                        <Switch
-                          checked={token.enabled}
-                          onChange={(e, checked) => {
-                            onSetEnabled(token.id, checked);
-                          }}
-                          color="primary"
-                        />
-                      )}
-                      <ConfirmDropdown
-                        cancelText={formatMessage(translations.confirmCancel)}
-                        confirmText={formatMessage(translations.confirmOk)}
-                        confirmHelperText={formatMessage(translations.confirmHelperText, {
-                          label: token.label
-                        })}
-                        icon={DeleteIcon}
-                        onConfirm={() => {
-                          onDeleteToken(token.id);
-                        }}
-                      />
-                    </TableCell>
+                    <StyledTableCell align="left">
+                      <Typography variant="subtitle2">
+                        <FormattedMessage id="words.created" defaultMessage="Created" />
+                      </Typography>
+                    </StyledTableCell>
+                    <TableCell align="center" className={classes.actions} />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {tokens.map((token) => (
+                    <TableRow key={token.id}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={!!checkedLookup[token.id]}
+                          color="primary"
+                          onChange={(event, checked) => {
+                            onItemChecked(token.id, checked);
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell component="th" id={token.id.toString()} scope="row" padding="none">
+                        <Chip
+                          label={
+                            Date.parse(token.expiresAt) < Date.now() ? (
+                              <FormattedMessage id="words.expired" defaultMessage="Expired" />
+                            ) : token.enabled ? (
+                              <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
+                            ) : (
+                              <FormattedMessage id="words.disabled" defaultMessage="Disabled" />
+                            )
+                          }
+                          className={cx(
+                            classes.chip,
+                            !token.enabled && 'disabled',
+                            moment(token.expiresAt) < moment() && 'expired'
+                          )}
+                        />
+                      </TableCell>
+                      <StyledTableCell align="left">{token.label}</StyledTableCell>
+                      <StyledTableCell align="left">
+                        {token.expiresAt ? (
+                          <AsDayMonthDateTime date={token.expiresAt} />
+                        ) : (
+                          <Typography color="textSecondary" variant="body2">
+                            ({formatMessage(translations.never).toLowerCase()})
+                          </Typography>
+                        )}
+                      </StyledTableCell>
+                      <StyledTableCell align="left">
+                        <AsDayMonthDateTime date={token.createdOn} />
+                      </StyledTableCell>
+                      <TableCell align="right" className={classes.actions}>
+                        {(token.expiresAt === null || moment(token.expiresAt) > moment()) && (
+                          <Tooltip
+                            title={
+                              token.enabled ? (
+                                <FormattedMessage defaultMessage="Disable" />
+                              ) : (
+                                <FormattedMessage defaultMessage="Enable" />
+                              )
+                            }
+                          >
+                            <Switch
+                              checked={token.enabled}
+                              onChange={(e, checked) => {
+                                onSetEnabled(token.id, checked);
+                              }}
+                              color="primary"
+                            />
+                          </Tooltip>
+                        )}
+                        <ConfirmDropdown
+                          cancelText={formatMessage(translations.confirmCancel)}
+                          confirmText={formatMessage(translations.confirmOk)}
+                          confirmHelperText={formatMessage(translations.confirmHelperText, {
+                            label: token.label
+                          })}
+                          icon={DeleteIcon}
+                          iconTooltip={<FormattedMessage defaultMessage="Delete" />}
+                          onConfirm={() => {
+                            onDeleteToken(token.id);
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Typography variant="body2" color="textSecondary" sx={{ textAlign: 'center', my: 3 }}>
+              <FormattedMessage defaultMessage="Only API tokens are displayed. Preview tokens are not stored or displayed anywhere." />
+            </Typography>
+          </>
         ) : (
           <EmptyState
             title={<FormattedMessage defaultMessage="No Tokens Found" />}
@@ -455,6 +501,15 @@ export function TokenManagement() {
         onCreated={onTokenCreated}
         onClose={createTokenDialogState.onClose}
       />
+      <CreatePreviewTokenDialog
+        open={createPreviewTokenDialogState.open}
+        hasPendingChanges={createPreviewTokenDialogState.hasPendingChanges}
+        isSubmitting={createPreviewTokenDialogState.isSubmitting}
+        isMinimized={createPreviewTokenDialogState.isMinimized}
+        onSubmittingAndOrPendingChange={createPreviewTokenDialogState.onSubmittingAndOrPendingChange}
+        onWithPendingChangesCloseRequest={createPreviewTokenDialogPendingChangesCloseRequest}
+        onClose={createPreviewTokenDialogState.onClose}
+      />
       <CopyTokenDialog
         open={copyTokenDialogState.open}
         token={createdToken}
@@ -462,8 +517,7 @@ export function TokenManagement() {
         isSubmitting={copyTokenDialogState.isSubmitting}
         isMinimized={copyTokenDialogState.isMinimized}
         onWithPendingChangesCloseRequest={copyTokenDialogPendingChangesCloseRequest}
-        onClose={copyTokenDialogState.onClose}
-        onClosed={onCopyTokenDialogClosed}
+        onClose={onCopyTokenDialogClosed}
         onCopy={onTokenCopied}
       />
     </Paper>
