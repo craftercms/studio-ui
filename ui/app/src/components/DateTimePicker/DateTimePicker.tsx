@@ -266,7 +266,16 @@ function DateTimePicker(props: DateTimePickerProps) {
                       setTimePickerOpen(true);
                     },
                 inputProps: {
-                  onChange: handlePopupOnlyInputChange
+                  onChange: handlePopupOnlyInputChange,
+                  value: asLocalizedDateTime(internalDate, localeCode, {
+                    hour12,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    // If the timezone control isn't displayed, the time displayed may
+                    // be misleading/unexpected to the user, so if timezone isn't displayed,
+                    // display timezone here.
+                    timeZoneName: showTimeZoneSelector ? UNDEFINED : 'short'
+                  })
                 }
               }
             }}
