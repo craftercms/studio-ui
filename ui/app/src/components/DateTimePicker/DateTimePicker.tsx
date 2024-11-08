@@ -159,6 +159,8 @@ function DateTimePicker(props: DateTimePickerProps) {
       if (!newMoment.isValid()) {
         setPickerState({ dateValid: false });
         onError?.();
+      } else {
+        setPickerState({ dateValid: true });
       }
       let changes: DateChangeData;
       const internalDatePieces = get8601Pieces(internalDate ?? newDate);
@@ -264,16 +266,7 @@ function DateTimePicker(props: DateTimePickerProps) {
                       setTimePickerOpen(true);
                     },
                 inputProps: {
-                  onChange: handlePopupOnlyInputChange,
-                  value: asLocalizedDateTime(internalDate, localeCode, {
-                    hour12,
-                    hour: dateTimeFormatOptions?.hour || '2-digit',
-                    minute: dateTimeFormatOptions?.minute || '2-digit',
-                    // If the timezone control isn't displayed, the time displayed may
-                    // be misleading/unexpected to the user, so if timezone isn't displayed,
-                    // display timezone here.
-                    timeZoneName: showTimeZoneSelector ? UNDEFINED : 'short'
-                  })
+                  onChange: handlePopupOnlyInputChange
                 }
               }
             }}
