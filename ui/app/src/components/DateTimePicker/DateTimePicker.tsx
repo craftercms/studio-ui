@@ -265,24 +265,13 @@ function DateTimePicker(props: DateTimePickerProps) {
                   : () => {
                       setTimePickerOpen(true);
                     },
-                inputProps: {
-                  onChange: handlePopupOnlyInputChange,
-                  value: asLocalizedDateTime(internalDate, localeCode, {
-                    hour12,
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    // If the timezone control isn't displayed, the time displayed may
-                    // be misleading/unexpected to the user, so if timezone isn't displayed,
-                    // display timezone here.
-                    timeZoneName: showTimeZoneSelector ? UNDEFINED : 'short'
-                  })
-                }
+                inputProps: { onChange: handlePopupOnlyInputChange }
               }
             }}
           />
         )}
       </LocalizationProvider>
-      {showTimeZoneSelector && (
+      {showTimeZoneSelector ? (
         <Autocomplete
           options={timeZones}
           getOptionLabel={(timezone) => {
@@ -303,6 +292,16 @@ function DateTimePicker(props: DateTimePickerProps) {
           renderInput={(params) => <TextField size="small" sx={{ mb: 1 }} {...params} variant="outlined" fullWidth />}
           disabled={disabled}
         />
+      ) : (
+        // If the timezone control isn't displayed, the time displayed may
+        // be misleading/unexpected to the user, so if timezone isn't displayed,
+        // display timezone here.
+        asLocalizedDateTime(internalDate, localeCode, {
+          hour: '2-digit',
+          hour12: true,
+          minute: '2-digit',
+          timeZoneName: 'short'
+        }).substring(9)
       )}
     </FormControl>
   );
