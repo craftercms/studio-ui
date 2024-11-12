@@ -134,9 +134,14 @@ function DateTimePicker(props: DateTimePickerProps) {
       return null;
     }
     const date = new Date(value);
-    const localOffset = moment().format().slice(-6);
-    const dateWithoutOffset = moment(date).tz(timeZone).format().substring(0, 19);
-    return new Date(`${dateWithoutOffset}${localOffset}`);
+    const valueOffset = moment(value).format().slice(-6);
+    const timeZoneOffset = moment().tz(timeZone).utcOffset();
+    // Do the date conversion to the selected time zone using the current time zone offset, because if selected date is
+    // in a moment with a different offset (due to daylight savings), the time will be off.
+    const dateWithoutOffset = moment(date).utcOffset(timeZoneOffset).format().substring(0, 19);
+    // We need to use the `value` offset for the same reason as above. Selected value may be in a moment with a
+    // different offset (due to daylight savings).
+    return new Date(`${dateWithoutOffset}${valueOffset}`);
   }, [value, timeZone]);
   const { classes } = useStyles();
   const hour12 = dateTimeFormatOptions?.hour12 ?? true;
