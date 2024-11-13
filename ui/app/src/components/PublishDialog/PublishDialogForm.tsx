@@ -25,11 +25,9 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Collapse from '@mui/material/Collapse';
 import FormControl from '@mui/material/FormControl';
 import Link from '@mui/material/Link';
-import DateTimePicker from '../DateTimePicker/DateTimePicker';
+import DateTimeTimezonePicker, { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker/DateTimeTimezonePicker';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
-import GlobalState from '../../models/GlobalState';
 import FormLabel from '@mui/material/FormLabel';
-import { useSelection } from '../../hooks/useSelection';
 import Alert from '@mui/material/Alert';
 import { capitalize } from '../../utils/string';
 import { PublishDialogUIProps } from './utils';
@@ -128,8 +126,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   datePicker: {
     position: 'relative',
-    paddingLeft: '30px',
-    paddingBottom: '20px',
+    paddingLeft: 30,
     '&::before': {
       content: '""',
       position: 'absolute',
@@ -197,25 +194,15 @@ export function PublishDialogForm(props: PublishFormProps) {
     onChange
   } = props;
 
-  const setSubmitDisabled = (...args) => void 0;
-  const onDateTimeChange = setSubmitDisabled;
-
-  const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
-
-  const handleDateTimePickerChange = (dateChangeData) => {
+  const handleDateTimePickerChange: DateTimeTimezonePickerProps['onChange'] = (date) => {
     onChange({
-      // @ts-ignore
       target: {
         name: 'scheduledDateTime',
         type: 'dateTimePicker',
-        // @ts-ignore
-        value: dateChangeData
+        // @ts-expect-error: We're formating this as a change event so ignoring "Type 'Date' is not assignable to type 'string'".
+        value: date
       }
     });
-  };
-
-  const handleDatePickerError = () => {
-    onDateTimeChange(null);
   };
 
   return (
@@ -281,16 +268,14 @@ export function PublishDialogForm(props: PublishFormProps) {
           />
         </RadioGroup>
         <Collapse
+          mountOnEnter
           in={state.scheduling === 'custom'}
           timeout={300}
           className={state.scheduling === 'custom' ? classes.datePicker : ''}
         >
-          <DateTimePicker
+          <DateTimeTimezonePicker
             onChange={handleDateTimePickerChange}
-            onError={handleDatePickerError}
             value={state.scheduledDateTime}
-            localeCode={locale.localeCode}
-            dateTimeFormatOptions={locale.dateTimeFormatOptions}
             disablePast
             disabled={disabled}
           />

@@ -56,7 +56,7 @@ export * from './CreateTokenDialog';
 export * from './CreateUserDialog';
 export * from './DashletCard';
 export * from './DataSourcesActionsList';
-export * from './DateTimePicker';
+export * from './DateTimeTimezonePicker';
 export * from './DeleteContentTypeDialog';
 export * from './DeleteDialog';
 export * from './DeletePluginDialog';

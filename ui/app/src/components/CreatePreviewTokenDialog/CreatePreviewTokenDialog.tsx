@@ -21,7 +21,7 @@ import { useDispatch } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import DialogBody from '../DialogBody';
-import DateTimePicker, { DateTimePickerProps } from '../DateTimePicker';
+import DateTimeTimezonePicker, { DateTimeTimezonePickerProps } from '../DateTimeTimezonePicker/DateTimeTimezonePicker';
 import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
@@ -45,7 +45,6 @@ import { encrypt } from '../../services/security';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { copyToClipboard } from '../../utils/system';
 import { showSystemNotification } from '../../state/actions/system';
-import cookies from 'js-cookie';
 import useSitesBranch from '../../hooks/useSitesBranch';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -201,8 +200,8 @@ function Body(props: BodyProps) {
 
   const handleClose = (e) => onClose(e, null);
 
-  const handleDateChange: DateTimePickerProps['onChange'] = (changes) => {
-    setExpiresAt(changes.date);
+  const handleDateChange: DateTimeTimezonePickerProps['onChange'] = (date) => {
+    setExpiresAt(date);
   };
 
   const handleTabChanged = (event: SyntheticEvent, newValue: TabKeys) => {
@@ -390,7 +389,7 @@ function Body(props: BodyProps) {
           <FormLabel component="legend">
             <FormattedMessage defaultMessage="Expiration Date" />
           </FormLabel>
-          <DateTimePicker
+          <DateTimeTimezonePicker
             disabled={isSubmitting}
             onChange={handleDateChange}
             value={expiresAt}

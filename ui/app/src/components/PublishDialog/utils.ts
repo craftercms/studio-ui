@@ -61,7 +61,6 @@ export interface InternalDialogState {
   scheduling: 'now' | 'custom';
   scheduledDateTime: any;
   publishingChannel: string;
-  scheduledTimeZone: string;
   error: ApiResponse;
   fetchingDependencies: boolean;
 }
