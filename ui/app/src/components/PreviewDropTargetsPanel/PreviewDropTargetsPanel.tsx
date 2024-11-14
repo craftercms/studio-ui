@@ -105,13 +105,15 @@ export function PreviewDropTargetsPanel() {
     });
     return allowedTypes;
   }, [allowedTypesData, contentTypes]);
-  const filteredDropTargets = dropTargetsBranch
-    ? dropTargetsBranch.byId
-      ? Object.values(dropTargetsBranch.byId).filter(
-          (dropTarget) => dropTarget.contentTypeId === dropTargetsBranch.selectedContentType
-        )
-      : []
-    : null;
+  const filteredDropTargets = useMemo(() => {
+    return dropTargetsBranch
+      ? dropTargetsBranch.byId
+        ? Object.values(dropTargetsBranch.byId).filter(
+            (dropTarget) => dropTarget.contentTypeId === dropTargetsBranch.selectedContentType
+          )
+        : []
+      : null;
+  }, [dropTargetsBranch]);
 
   useMount(() => {
     return () => {
