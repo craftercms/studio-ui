@@ -24,6 +24,8 @@ export const useStyles = makeStyles()((theme) => ({
     }
   },
   cellRoot: {
+    display: 'flex',
+    alignItems: 'center',
     '&:focus-within': {
       outline: 'none !important'
     }

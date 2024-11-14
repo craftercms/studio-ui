@@ -92,7 +92,7 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
     if (type === 'date-time') {
       props = {
         ...model,
-        [fieldId]: value.dateString
+        [fieldId]: value.toISOString()
       };
     } else {
       props = {
@@ -127,10 +127,10 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
         })}
       </Grid>
       <Grid className={classes.actionButtons} sx={{ p: 2 }}>
-        <SecondaryButton variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
+        <SecondaryButton disabled={modelApplying} variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
           <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
         </SecondaryButton>
-        <PrimaryButton onClick={() => onSaveModel()}>
+        <PrimaryButton onClick={() => onSaveModel()} loading={modelApplying}>
           <FormattedMessage id="audiencesPanel.apply" defaultMessage="Apply" />
         </PrimaryButton>
       </Grid>
