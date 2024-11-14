@@ -55,6 +55,7 @@ export * from './PluginFileBuilder';
 export * from './ProjectLifecycleEvent';
 export * from './Publishing';
 export * from './Repository';
+export * from './Resource';
 export * from './Search';
 export * from './SimpleAjaxError';
 export * from './Site';
