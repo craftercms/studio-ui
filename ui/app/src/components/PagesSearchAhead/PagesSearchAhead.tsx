@@ -70,7 +70,8 @@ const useStyles = makeStyles()((theme: Theme) => ({
     width: 400,
     position: 'absolute',
     right: '-52px',
-    top: '50px'
+    top: '50px',
+    zIndex: theme.zIndex.drawer + 2
   },
   listBox: {
     overflow: 'auto',

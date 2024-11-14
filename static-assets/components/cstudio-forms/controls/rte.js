@@ -334,7 +334,9 @@ CStudioAuthoring.Module.requireModule(
           // https://www.tiny.cloud/docs/plugins/
           // paste plugin is hardcoded in order to enable drag and drop functionality (and avoid it being removed from
           // configuration file).
-          pluginList = [rteConfig.tinymceOptions?.plugins, this.autoGrow && 'autoresize'].filter(Boolean).join(' ');
+          pluginList = [rteConfig.tinymceOptions?.plugins, 'craftercms_paste', this.autoGrow && 'autoresize']
+            .filter(Boolean)
+            .join(' ');
 
           const $editorContainer = $(`#${rteId}`).parent(),
             editorContainerWidth = $editorContainer.width(),
@@ -358,13 +360,15 @@ CStudioAuthoring.Module.requireModule(
             ...rteConfig.tinymceOptions?.external_plugins,
             acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
             craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
-            template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js'
+            template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js',
+            craftercms_paste: '/studio/static-assets/js/tinymce-plugins/craftercms_paste/plugin.js'
           };
 
           tinymce.init({
             license_key: 'gpl',
             selector: `#${CSS.escape(rteId)}`,
             promotion: false,
+            branding: false,
             // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
             // note that it will become premium on version 7.
             deprecation_warnings: false,
@@ -523,7 +527,6 @@ CStudioAuthoring.Module.requireModule(
                 'code_editor_inline', // Code editor will always be inline in forms-engine.
                 'plugins', // Considered/used above, mixed with our options
                 'external_plugins', // Considered/used above, mixed with our options
-                'toolbar_sticky', // Toolbar is configured and styled to be sticky in forms-engine
                 'relative_urls', // To avoid allowing convertion of urls to be relative to the document_base_url
                 'readonly', // Comes from form control props, can't be overridden.
                 'force_br_newlines', // Comes from form control props, can't be overridden.
@@ -539,6 +542,8 @@ CStudioAuthoring.Module.requireModule(
             _thisControl.save();
           };
           _thisControl.form.registerBeforeSaveCallback(callback);
+
+          this.renderHelp(config, containerEl);
         },
 
         createControl: function (cb, meta) {
@@ -546,7 +551,7 @@ CStudioAuthoring.Module.requireModule(
           // so we need to handle both cases and always return a comma-separated string for later handling. If datasources
           // is null or undefined, it will be an empty string.
           const getDatasourcesNames = function (datasources) {
-            return Array.isArray(datasources) ? datasources.join(',') : datasources ?? '';
+            return Array.isArray(datasources) ? datasources.join(',') : (datasources ?? '');
           };
 
           var datasourcesNames = '',

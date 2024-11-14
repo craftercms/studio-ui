@@ -17,7 +17,6 @@
 import React, { useRef } from 'react';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
-import FormHelperText from '@mui/material/FormHelperText';
 import InputBase from '@mui/material/InputBase';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
@@ -26,6 +25,7 @@ import { CopyTokenContainerProps } from './utils';
 import { makeStyles } from 'tss-react/mui';
 import { copyToClipboard } from '../../utils/system';
 import useMount from '../../hooks/useMount';
+import Alert from '@mui/material/Alert';
 
 const useStyles = makeStyles()(() => ({
   footer: {
@@ -42,6 +42,7 @@ const useStyles = makeStyles()(() => ({
 export function CopyTokenContainer(props: CopyTokenContainerProps) {
   const { onClose, token, onCopy } = props;
   const { classes } = useStyles();
+  // TODO: Ref not in use. Remove?
   const inputRef = useRef<HTMLInputElement>();
 
   const copyToken = () => {
@@ -57,12 +58,12 @@ export function CopyTokenContainer(props: CopyTokenContainerProps) {
   return (
     <>
       <DialogBody>
-        <FormHelperText>
+        <Alert variant="outlined" severity="success">
           <FormattedMessage
             id="copyTokenDialog.helperText"
             defaultMessage="Token created successfully. Please copy the token and store it securely as you won’t be able to see it’s value again."
           />
-        </FormHelperText>
+        </Alert>
         <InputBase
           inputRef={inputRef}
           autoFocus

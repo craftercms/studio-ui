@@ -254,7 +254,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
             // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
             aceEditor = ace.edit(pre, refs.current.options);
             aceEditor.setOptions({
-              fontSize: '14px',
+              fontSize: '15px',
               fontFamily: "'Monaco', 'Menlo', 'Consolas', 'Source Code Pro', 'source-code-pro', monospace"
             });
             autoFocus && aceEditor.focus();

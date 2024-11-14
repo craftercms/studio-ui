@@ -429,7 +429,7 @@
       site = CStudioAuthoring.Utils.getQueryParameterByName('site'),
       filter = CStudioAuthoring.Utils.getQueryParameterByName('filter');
 
-    CrafterCMSNext.services.aws.list(site, profileId, { path, filter }).subscribe(
+    CrafterCMSNext.services.aws.list(site, profileId, { path, type: filter }).subscribe(
       function (response) {
         cb.success(response);
       },

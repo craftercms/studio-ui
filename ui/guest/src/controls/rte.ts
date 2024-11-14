@@ -106,7 +106,8 @@ export function initTinyMCE(
     acecode: '/studio/static-assets/js/tinymce-plugins/ace/plugin.min.js',
     editform: '/studio/static-assets/js/tinymce-plugins/editform/plugin.js',
     craftercms_paste_extension: '/studio/static-assets/js/tinymce-plugins/craftercms_paste_extension/plugin.js',
-    template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js'
+    template: '/studio/static-assets/js/tinymce-plugins/template/plugin.js',
+    craftercms_paste: '/studio/static-assets/js/tinymce-plugins/craftercms_paste/plugin.js'
   };
 
   record.element.classList.remove(emptyFieldClass);
@@ -115,12 +116,13 @@ export function initTinyMCE(
     license_key: 'gpl',
     target: rteEl,
     promotion: false,
+    branding: false,
     // Templates plugin is deprecated but still available on v6, since it may be used, we'll keep it. Please
     // note that it will become premium on version 7.
     deprecation_warnings: false,
     // For some reason this is not working.
     // body_class: 'craftercms-rich-text-editor',
-    plugins: ['editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
+    plugins: ['craftercms_paste editform', rteSetup?.tinymceOptions?.plugins].filter(Boolean).join(' '), // 'editform' plugin will always be loaded
     paste_as_text: type !== 'html',
     paste_data_images: type === 'html',
     paste_preprocess(plugin, args) {
@@ -244,7 +246,7 @@ export function initTinyMCE(
           record.element.classList.add(emptyFieldClass);
         }
 
-        window.removeEventListener('beforeunload', beforeUnloadFn);
+        window.removeEventListener('beforeunload', beforeUnloadFn, { capture: true });
 
         // The timeout prevents clicking the edit menu to be shown when clicking out of an RTE
         // with the intention to exit editing.
@@ -333,7 +335,6 @@ export function initTinyMCE(
           // @ts-ignore
           window.clipboardData
         ).getData('text');
-        console.log(`"${text}"`, text.length, maxLength);
         if (maxLength && text.length > maxLength) {
           post(
             snackGuestMessage({
@@ -347,9 +348,12 @@ export function initTinyMCE(
           // Doing this immediately (without the timeout) causes the content to be duplicated.
           // TinyMCE seems to be doing something internally that causes this.
           setTimeout(() => {
-            replaceLineBreaksIfApplicable(text);
-            editor.selection.select(editor.getBody(), true);
-            editor.selection.collapse(false);
+            const newContent = getContent();
+            if (newContent.includes('\n')) {
+              replaceLineBreaksIfApplicable(newContent);
+              editor.selection.select(editor.getBody(), true);
+              editor.selection.collapse(false);
+            }
           }, 10);
         }
         // TODO: It'd be great to be able to select the piece of the pasted content that falls out of the max-length.

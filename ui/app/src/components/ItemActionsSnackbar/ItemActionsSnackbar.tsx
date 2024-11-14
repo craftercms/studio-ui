@@ -24,6 +24,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import Button from '@mui/material/Button';
 import { ContextMenuOption } from '../ContextMenu';
+import { useTheme } from '@mui/material/styles';
 
 export interface ItemActionsSnackbarProps {
   open: boolean;
@@ -74,6 +75,8 @@ function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
   const { open, options, onActionClicked, append, prepend } = props;
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
   return (
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -106,7 +109,16 @@ function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
             ) : (
               new Array(5).fill(null).map((_, index) => (
                 <ListItem key={index} disableGutters className={classes.loadingItem}>
-                  <ListItemText primary={<Skeleton animation="pulse" height="10px" width={`${rand(60, 80)}px`} />} />
+                  <ListItemText
+                    primary={
+                      <Skeleton
+                        animation="pulse"
+                        height="10px"
+                        width={`${rand(60, 80)}px`}
+                        sx={{ backgroundColor: isDarkMode && palette.gray.light5 }}
+                      />
+                    }
+                  />
                 </ListItem>
               ))
             )}

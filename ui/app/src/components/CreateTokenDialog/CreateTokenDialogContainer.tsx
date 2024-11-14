@@ -25,7 +25,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import FormHelperText from '@mui/material/FormHelperText';
 import Collapse from '@mui/material/Collapse';
-import DateTimePicker from '../DateTimePicker/DateTimePicker';
+import DateTimeTimezonePicker from '../DateTimeTimezonePicker/DateTimeTimezonePicker';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
@@ -35,6 +35,7 @@ import { createToken } from '../../services/tokens';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
 
 const translations = defineMessages({
   placeholder: {
@@ -59,7 +60,7 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
   const { classes } = useStyles();
   const { isSubmitting, onCreated, onClose, onSubmittingAndOrPendingChange } = props;
   const [expires, setExpires] = useState(false);
-  const [expiresAt, setExpiresAt] = useState(new Date());
+  const [expiresAt, setExpiresAt] = useState(createAtLeastHalfHourInFutureDate());
   const [label, setLabel] = useState('');
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
@@ -137,10 +138,10 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
             )}
           </FormHelperText>
         </section>
-        <Collapse in={expires}>
-          <DateTimePicker
-            onChange={(changes) => {
-              setExpiresAt(changes.date);
+        <Collapse in={expires} mountOnEnter>
+          <DateTimeTimezonePicker
+            onChange={(date) => {
+              setExpiresAt(date);
             }}
             value={expiresAt}
             disablePast
