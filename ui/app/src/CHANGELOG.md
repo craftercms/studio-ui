@@ -12,6 +12,13 @@
   * Removed `useQuickCreateListResource` hook.
   * Removed `useSystemVersionResource` hook.
   * Removed `useResolveWhenNoNullResource` hook.
+* Upgrade to the latest version to date of the following libraries:
+  * @mui/icons-material
+  * @mui/lab
+  * @mui/material
+  * @mui/x-data-grid
+  * @mui/x-date-pickers
+  * @mui/x-tree-view
 
 ## 4.2.0
 

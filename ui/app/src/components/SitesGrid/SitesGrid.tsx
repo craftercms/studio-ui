@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import React from 'react';
 import { Site } from '../../models/Site';
 import SiteCard from '../SiteCard/SiteCard';
@@ -53,7 +53,7 @@ export function SitesGrid(props: SitesGridProps) {
     <section className={classes.root}>
       <Grid container spacing={3}>
         {sites.map((site) => (
-          <Grid item key={site.id}>
+          <Grid key={site.id}>
             <SiteCard
               site={site}
               onSiteClick={onSiteClick}

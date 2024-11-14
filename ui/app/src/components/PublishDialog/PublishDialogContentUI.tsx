@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import DependencySelection from '../DependencySelection/DependencySelection';
 import PublishDialogForm from './PublishDialogForm';
 import React from 'react';
@@ -71,7 +71,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
   return (
     <>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
+        <Grid size={{ xs: 12, sm: 7 }}>
           {published ? (
             <>
               {isRequestPublish && (
@@ -103,7 +103,7 @@ export function PublishDialogContentUI(props: PublishDialogContentUIProps) {
             </Alert>
           )}
         </Grid>
-        <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
+        <Grid size={{ xs: 12, sm: 5 }}>
           <PublishDialogForm
             state={state}
             published={published}

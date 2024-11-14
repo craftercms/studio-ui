@@ -22,7 +22,7 @@ import { Theme } from '@mui/material/styles';
 import { makeStyles } from 'tss-react/mui';
 import useAutocomplete from '@mui/material/useAutocomplete';
 import { SearchItem } from '../../models/Search';
-import { CircularProgress, IconButton, List, ListItem, ListItemIcon, ListItemText, Paper } from '@mui/material';
+import { CircularProgress, IconButton, List, ListItemIcon, ListItemText, Paper } from '@mui/material';
 import LoadingState from '../LoadingState/LoadingState';
 import EmptyState from '../EmptyState/EmptyState';
 import Page from '../../icons/Page';
@@ -37,6 +37,7 @@ import { useContentTypeList } from '../../hooks/useContentTypeList';
 import { useSubject } from '../../hooks/useSubject';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { of } from 'rxjs';
+import ListItemButton from '@mui/material/ListItemButton';
 
 export interface PagesSearchAheadProps {
   value: string;
@@ -234,7 +235,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
           {!isFetching && groupedOptions.length > 0 && (
             <List dense className={classes.listBox} {...getListboxProps()}>
               {(groupedOptions as SearchItem[]).map((option, index) => (
-                <ListItem button dense component="li" {...getOptionProps({ option, index })}>
+                <ListItemButton dense component="li" {...getOptionProps({ option, index })}>
                   <ListItemIcon className={classes.listItemIcon}>
                     <Page />
                   </ListItemIcon>
@@ -244,7 +245,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
                     keyword={keyword}
                     highlighted={classes.highlighted}
                   />
-                </ListItem>
+                </ListItemButton>
               ))}
             </List>
           )}

@@ -23,11 +23,10 @@ import { fetchBrokenReferences, showEditDialog } from '../../state/actions/dialo
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useEnv from '../../hooks/useEnv';
 import { DialogBody } from '../DialogBody';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Button from '@mui/material/Button';
 import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
@@ -56,7 +55,7 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
       <DialogBody>
         <Grid container spacing={3}>
           {references.length > 0 ? (
-            <Grid item xs={12}>
+            <Grid size={12}>
               <List
                 sx={{
                   border: (theme) => `1px solid ${theme.palette.divider}`,
@@ -64,21 +63,11 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
                 }}
               >
                 {references.map((reference, index) => (
-                  <ListItem key={reference.path} divider={references.length - 1 !== index}>
-                    <ListItemText
-                      primary={reference.label}
-                      secondary={reference.path}
-                      primaryTypographyProps={{
-                        title: reference.path,
-                        sx: {
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          textOverflow: 'ellipsis'
-                        }
-                      }}
-                    />
-                    {reference.availableActionsMap.edit && (
-                      <ListItemSecondaryAction>
+                  <ListItem
+                    key={reference.path}
+                    divider={references.length - 1 !== index}
+                    secondaryAction={
+                      reference.availableActionsMap.edit ? (
                         <Button
                           color="primary"
                           onClick={() => {
@@ -93,8 +82,21 @@ export function BrokenReferencesDialogContainer(props: BrokenReferencesDialogCon
                         >
                           <FormattedMessage defaultMessage="Edit" />
                         </Button>
-                      </ListItemSecondaryAction>
-                    )}
+                      ) : null
+                    }
+                  >
+                    <ListItemText
+                      primary={reference.label}
+                      secondary={reference.path}
+                      primaryTypographyProps={{
+                        title: reference.path,
+                        sx: {
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis'
+                        }
+                      }}
+                    />
                   </ListItem>
                 ))}
               </List>
