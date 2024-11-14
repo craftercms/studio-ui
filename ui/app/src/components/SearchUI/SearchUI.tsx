@@ -30,7 +30,7 @@ import Typography from '@mui/material/Typography';
 import { translations } from '../Search/translations';
 import TablePagination from '@mui/material/TablePagination';
 import ApiResponseErrorState from '../ApiResponseErrorState';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import MediaCard from '../MediaCard/MediaCard';
 import EmptyState from '../EmptyState/EmptyState';
 import ItemActionsSnackbar from '../ItemActionsSnackbar';
@@ -454,7 +454,10 @@ export function SearchUI(props: SearchUIProps) {
                 <>
                   {searchResults.items.length > 0 ? (
                     searchResults.items.map((item: MediaItem, i) => (
-                      <Grid key={i} item xs={12} {...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {})}>
+                      <Grid
+                        key={i}
+                        size={{ xs: 12, ...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {}) }}
+                      >
                         <MediaCard
                           classes={
                             currentView === 'list'

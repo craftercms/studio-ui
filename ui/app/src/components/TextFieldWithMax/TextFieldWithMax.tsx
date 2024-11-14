@@ -34,7 +34,7 @@ function TextFieldWithMax(props: TextFieldWithMaxProps) {
   const value = props.value ?? props.defaultValue ?? '';
   return (
     <>
-      <TextField {...props} inputProps={{ ...props.inputProps, maxLength }} />
+      <TextField {...props} slotProps={{ ...props.slotProps, htmlInput: { maxLength } }} />
       <CharCountStatus commentLength={(value as string).length} commentMaxLength={maxLength} />
     </>
   );

@@ -75,7 +75,7 @@ export function PreviewAudiencesPanel(props: PreviewAudiencesPanelProps) {
 
   return (
     <ConditionalLoadingState
-      isLoading={panelState.isApplying || panelState.isFetching === null || panelState.isFetching !== false}
+      isLoading={panelState.isFetching === null || panelState.isFetching !== false}
       title={formatMessage(translations.audiencesPanelLoading)}
     >
       <AudiencesPanelUI

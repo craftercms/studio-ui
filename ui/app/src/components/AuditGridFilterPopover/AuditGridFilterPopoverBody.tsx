@@ -246,7 +246,9 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
             select
             label={formatMessage(translations[filterId])}
             value={value?.split(',') ?? ['all']}
-            SelectProps={{ multiple: true }}
+            slotProps={{
+              select: { multiple: true }
+            }}
             onChange={onMultipleSelectChanges}
             sx={{ width: 200 }}
           >
@@ -271,14 +273,16 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
         <TextField
           value={keyword}
           label={formatMessage(translations[filterId])}
-          InputProps={{
-            endAdornment: keyword && (
-              <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
-                <IconButton size="small" className={classes.clearButton} onClick={() => onClearTextField()}>
-                  <ClearRoundedIcon />
-                </IconButton>
-              </Tooltip>
-            )
+          slotProps={{
+            input: {
+              endAdornment: keyword && (
+                <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
+                  <IconButton size="small" className={classes.clearButton} onClick={() => onClearTextField()}>
+                    <ClearRoundedIcon />
+                  </IconButton>
+                </Tooltip>
+              )
+            }
           }}
           fullWidth
           onChange={onTextFieldChanges}

@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.0.0
+* Upgrade to the latest version to date of the following libraries:
+  * @mui/icons-material
+  * @mui/lab
+  * @mui/material
+  * @mui/x-data-grid
+  * @mui/x-date-pickers
+  * @mui/x-tree-view
+
 ## 4.2.0
 
 * [utils/xml] Upgrade prettier to v3x which changed from sync apis to async
@@ -26,6 +35,8 @@
     * `listItemProps` are routed to the list `ListItem` component instead of the `ListItemButton`
     * Added `listItemButtonProps` property
   * `DraggablePanelListItem` prop `onMenu` send the pointer event as its first and only argument instead of the anchor element attached to the event. Can get element through `event.currentTarget`.
+  * `DateTimePicker` was moved & renamed to `DateTimeTimeZonePicker` to better reflect its functionality and to avoid collision with MUI's DateTimePicker.
+    *  Components that used the previous version now use the new DateTimeTimeZonePicker (i.e. CreatePreviewTokenDialog, CreateTokenDialogContainer, PublishDialogForm, PublishDialogContainer, FormEngineControls/DateTime, AudiencesPanelUI)
 * [services] Removed services associated with v1 APIs:
   * `fetchLegacyGetGoLiveItems`
   * `fetchLegacyUserActivities`

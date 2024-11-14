@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import DateTimePicker from '../DateTimePicker/DateTimePicker';
+import DateTimeTimezonePicker from '../DateTimeTimezonePicker/DateTimeTimezonePicker';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { DateTimeControl } from '../../models/FormsEngine';
@@ -33,7 +33,7 @@ export function DateTime(props: DateTimeControl) {
       <InputLabel className={classes.inputLabel} sx={{ position: 'relative', transform: 'none' }} htmlFor={field.id}>
         {field.name}
       </InputLabel>
-      <DateTimePicker
+      <DateTimeTimezonePicker
         id={field.id}
         value={value}
         onChange={onChange}

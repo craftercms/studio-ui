@@ -17,7 +17,7 @@
 import { RejectDialogUIProps } from './utils';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
@@ -59,7 +59,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
     <>
       <DialogBody id="confirmDialogBody">
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={7} md={7} lg={7} xl={7}>
+          <Grid size={{ xs: 12, sm: 7 }}>
             {error ? (
               <ApiResponseErrorState error={error} />
             ) : !Boolean(items && nnou(published) && cannedMessages) ? (
@@ -89,7 +89,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
             )}
           </Grid>
 
-          <Grid item xs={12} sm={5} md={5} lg={5} xl={5}>
+          <Grid size={{ xs: 12, sm: 5 }}>
             <form>
               <FormControl fullWidth variant="outlined">
                 <InputLabel shrink>

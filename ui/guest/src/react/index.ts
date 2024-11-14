@@ -31,6 +31,8 @@ export * from './RenderField';
 export * from './RenderRepeat';
 export * from './Spinner';
 export * from './UltraStyledIconButton';
+export * from './UltraStyledTooltip';
+export * from './UltraStyledTypography';
 export * from './ZoneMarker';
 export * from './ZoneMenu';
 export * from './hooks';
