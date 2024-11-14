@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.0.0
+* Upgrade to the latest version to date of the following libraries:
+  * @mui/icons-material
+  * @mui/lab
+  * @mui/material
+  * @mui/x-data-grid
+  * @mui/x-date-pickers
+  * @mui/x-tree-view
+
 ## 4.2.0
 
 * [utils/xml] Upgrade prettier to v3x which changed from sync apis to async
