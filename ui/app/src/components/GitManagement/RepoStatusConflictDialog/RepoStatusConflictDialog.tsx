@@ -39,7 +39,7 @@ export function RepoStatusConflictDialog(props: RepoStatusConflictDialogProps) {
     onFailedPullCancelled,
     ...dialogProps
   } = props;
-  const isRepoClean = status?.clean ?? false;
+  const isRepoClean = !status?.conflicting.length && !status?.uncommittedChanges.length;
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   useEffect(() => {

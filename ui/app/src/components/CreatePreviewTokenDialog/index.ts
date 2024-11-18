@@ -14,21 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../models/Resource';
-import { useEffect, useState } from 'react';
-import { nnou } from '../utils/object';
-import { createResourceBundle } from '../utils/resource';
+export { default } from './CreatePreviewTokenDialog';
 
-export function useResolveWhenNotNullResource<ResultType = unknown>(source: ResultType): Resource<ResultType> {
-  const [[resource, resolve], setBundle] = useState(() => createResourceBundle<ResultType>());
-  useEffect(() => {
-    if (resource.complete) {
-      setBundle(createResourceBundle);
-    } else if (nnou(source)) {
-      resolve(source);
-    }
-  }, [source, resource, resolve]);
-  return resource;
-}
-
-export default useResolveWhenNotNullResource;
+export * from './CreatePreviewTokenDialog';

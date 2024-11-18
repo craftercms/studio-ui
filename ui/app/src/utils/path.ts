@@ -197,7 +197,13 @@ export function isValidCopyPastePath(targetPath: string, sourcePath: string): bo
 }
 
 export function isValidCutPastePath(targetPath: string, sourcePath: string): boolean {
-  return isValidCopyPastePath(targetPath, sourcePath) && withoutIndex(targetPath) !== getParentPath(sourcePath);
+  return (
+    isValidCopyPastePath(targetPath, sourcePath) &&
+    // Check if target path is not an immediate parent of source path
+    withoutIndex(targetPath) !== getParentPath(sourcePath) &&
+    // Check if target path is not a child of source path
+    !targetPath.includes(withoutIndex(sourcePath))
+  );
 }
 
 export function getEditFormSrc({

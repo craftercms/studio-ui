@@ -232,8 +232,8 @@ export function CreateFolderContainer(props: CreateFolderContainerProps) {
             }
             disabled={isSubmitting}
             margin="normal"
-            InputLabelProps={{
-              shrink: true
+            slotProps={{
+              inputLabel: { shrink: true }
             }}
             onChange={(event) => onInputChanges(applyFolderNameRules(event.target.value, { allowBraces }))}
           />

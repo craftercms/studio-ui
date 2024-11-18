@@ -14,14 +14,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
 import { FileDiff } from '../../models/Repository';
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
 
 import AceEditor from '../AceEditor/AceEditor';
 import ConflictedPathDiffDialogSplitView from './ConflictedPathDiffDialogSplitView';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 
@@ -54,13 +53,12 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 export interface RemoteRepositoriesDiffDialogUIProps {
-  resource: Resource<FileDiff>;
+  fileDiff: FileDiff;
   tab: number;
 }
 
 export function ConflictedPathDiffDialogUI(props: RemoteRepositoriesDiffDialogUIProps) {
-  const { resource, tab } = props;
-  const fileDiff = resource.read();
+  const { fileDiff, tab } = props;
   const { classes } = useStyles();
 
   return (
@@ -74,12 +72,12 @@ export function ConflictedPathDiffDialogUI(props: RemoteRepositoriesDiffDialogUI
       {tab === 1 && (
         <div className={classes.diffTab}>
           <Grid container className={classes.labelsContainer}>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <Typography variant="body1">
                 <FormattedMessage id="words.local" defaultMessage="Local" />
               </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <Typography variant="body1">
                 <FormattedMessage id="words.remote" defaultMessage="Remote" />
               </Typography>

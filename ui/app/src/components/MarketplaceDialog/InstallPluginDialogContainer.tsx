@@ -214,7 +214,8 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
             styles={{
               root: {
                 flexGrow: 1,
-                justifyContent: 'center'
+                justifyContent: 'center',
+                minHeight: 'unset'
               }
             }}
           />

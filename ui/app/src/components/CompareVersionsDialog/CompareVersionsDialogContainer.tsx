@@ -15,15 +15,14 @@
  */
 
 import { CompareVersionsDialogContainerProps } from './utils';
-import React, { useMemo } from 'react';
-import { useLogicResource } from '../../hooks/useLogicResource';
-import { CompareVersionsBranch } from '../../models/Version';
-import { CompareVersions, CompareVersionsResource } from './CompareVersions';
-import { EntityState } from '../../models/EntityState';
-import ContentType from '../../models/ContentType';
+import React from 'react';
+import { CompareVersions } from './CompareVersions';
 import DialogBody from '../DialogBody/DialogBody';
-import { SuspenseWithEmptyState } from '../Suspencified/Suspencified';
 import { makeStyles } from 'tss-react/mui';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
+import { EmptyState } from '../EmptyState';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles()(() => ({
   dialogBody: {
@@ -42,47 +41,23 @@ const useStyles = makeStyles()(() => ({
 }));
 
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
-  const { versionsBranch, contentTypesBranch } = props;
+  const { versionsBranch } = props;
   const { compareVersionsBranch } = versionsBranch;
   const { classes, cx } = useStyles();
 
-  const compareVersionsData = useMemo(
-    () => ({
-      compareVersionsBranch,
-      contentTypesBranch
-    }),
-    [compareVersionsBranch, contentTypesBranch]
-  );
-
-  const compareVersionsResource = useLogicResource<
-    CompareVersionsResource,
-    { compareVersionsBranch: CompareVersionsBranch; contentTypesBranch: EntityState<ContentType> }
-  >(compareVersionsData, {
-    shouldResolve: ({ compareVersionsBranch, contentTypesBranch }) =>
-      compareVersionsBranch.compareVersions &&
-      contentTypesBranch.byId &&
-      !compareVersionsBranch.isFetching &&
-      !contentTypesBranch.isFetching,
-    shouldReject: ({ compareVersionsBranch, contentTypesBranch }) =>
-      Boolean(compareVersionsBranch.error || contentTypesBranch.error),
-    shouldRenew: ({ compareVersionsBranch, contentTypesBranch }, resource) => resource.complete,
-    resultSelector: ({ compareVersionsBranch, contentTypesBranch }) => ({
-      a: compareVersionsBranch.compareVersions?.[0],
-      b: compareVersionsBranch.compareVersions?.[1],
-      contentTypes: contentTypesBranch.byId
-    }),
-    errorSelector: ({ compareVersionsBranch, contentTypesBranch }) =>
-      compareVersionsBranch.error || contentTypesBranch.error
-  });
-
   return (
-    <>
-      <DialogBody className={cx(classes.dialogBody, classes.noPadding)}>
-        <SuspenseWithEmptyState resource={compareVersionsResource}>
-          <CompareVersions resource={compareVersionsResource} />
-        </SuspenseWithEmptyState>
-      </DialogBody>
-    </>
+    <DialogBody className={cx(classes.dialogBody, classes.noPadding)}>
+      {compareVersionsBranch &&
+        (compareVersionsBranch.error ? (
+          <ApiResponseErrorState error={compareVersionsBranch.error} />
+        ) : compareVersionsBranch.isFetching ? (
+          <LoadingState />
+        ) : compareVersionsBranch.compareVersions?.length > 0 ? (
+          <CompareVersions versions={compareVersionsBranch.compareVersions} />
+        ) : (
+          <EmptyState title={<FormattedMessage defaultMessage="No versions found" />} />
+        ))}
+    </DialogBody>
   );
 }
 

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogHeader from '../DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
@@ -23,7 +23,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { diffConflictedFile } from '../../services/repositories';
 import ApiResponse from '../../models/ApiResponse';
 import { FileDiff } from '../../models/Repository';
-import { SuspenseWithEmptyState } from '../Suspencified';
 import ConflictedPathDiffDialogUI from './ConflictedPathDiffDialogUI';
 import SecondaryButton from '../SecondaryButton';
 import ConfirmDropdown from '../ConfirmDropdown';
@@ -33,7 +32,8 @@ import { makeStyles } from 'tss-react/mui';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
-import { useLogicResource } from '../../hooks/useLogicResource';
+import { ApiResponseErrorState } from '../ApiResponseErrorState';
+import { LoadingState } from '../LoadingState';
 
 export interface RemoteRepositoriesDiffDialogProps {
   open: boolean;
@@ -101,17 +101,6 @@ export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProp
     setTab(newValue);
   };
 
-  const resource = useLogicResource<FileDiff, { fileDiff: FileDiff; error: ApiResponse; fetching: boolean }>(
-    useMemo(() => ({ fileDiff, error, fetching }), [fileDiff, error, fetching]),
-    {
-      shouldResolve: (source) => Boolean(source.fileDiff) && !fetching,
-      shouldReject: ({ error }) => Boolean(error),
-      shouldRenew: (source, resource) => fetching && resource.complete,
-      resultSelector: (source) => source.fileDiff,
-      errorSelector: () => error
-    }
-  );
-
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogHeader
@@ -143,9 +132,13 @@ export function ConflictedPathDiffDialog(props: RemoteRepositoriesDiffDialogProp
         </Tabs>
       </DialogHeader>
       <DialogBody className={classes.dialogContent}>
-        <SuspenseWithEmptyState resource={resource}>
-          <ConflictedPathDiffDialogUI resource={resource} tab={tab} />
-        </SuspenseWithEmptyState>
+        {error ? (
+          <ApiResponseErrorState error={error} />
+        ) : fetching ? (
+          <LoadingState />
+        ) : fileDiff ? (
+          <ConflictedPathDiffDialogUI fileDiff={fileDiff} tab={tab} />
+        ) : null}
       </DialogBody>
       <DialogFooter>
         <SecondaryButton onClick={onClose}>

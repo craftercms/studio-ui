@@ -464,8 +464,6 @@ div.ttTableGroup {
 }
 
 .ttHdr {
-  @include clearfix;
-
   background: #ececec;
   background: -moz-linear-gradient(top, #ececec 0%, #cccccc 100%);
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ececec), color-stop(100%, #cccccc));
@@ -482,6 +480,8 @@ div.ttTableGroup {
   margin: 0 0;
   padding-right: 15px;
   padding-left: 15px;
+
+  @include clearfix;
 }
 
 .formBottomSpace {

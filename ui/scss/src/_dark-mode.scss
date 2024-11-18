@@ -567,12 +567,12 @@ $dark-mode-input-border-focus: #007aff;
 
   // cstudio-admin-console-workarea-container
   .cstudio-admin-console-workarea-container {
-    h1 {
-      color: $dark-mode-font-color;
-    }
     height: calc(100vh - 53px);
     background-color: $dark-mode-background-paper;
     margin-top: -2px;
+    h1 {
+      color: $dark-mode-font-color;
+    }
   }
 
   // workflow states

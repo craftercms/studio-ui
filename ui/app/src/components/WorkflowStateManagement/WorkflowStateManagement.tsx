@@ -57,6 +57,7 @@ import useMount from '../../hooks/useMount';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 const workflowStateManagementMessages = defineMessages({
   statesUpdatedMessage: {
@@ -274,17 +275,31 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
     );
   };
 
+  const onError = (error: ApiResponse) => {
+    dispatch(
+      showErrorDialog({
+        error
+      })
+    );
+  };
+
   const onSetItemStateDialogConfirm = (update: StatesToUpdate) => {
     if (selectedItem) {
-      setItemStates(siteId, [selectedItem.path], update).subscribe(() => {
-        fetchStates();
-        showStatesUpdatedNotification();
+      setItemStates(siteId, [selectedItem.path], update).subscribe({
+        next: () => {
+          fetchStates();
+          showStatesUpdatedNotification();
+        },
+        error: ({ response }) => onError(response.response)
       });
     } else if (isSelectedItemsOnAllPages) {
       let stateBitmap = getStateBitmap(filtersLookup as ItemStateMap);
-      setItemStatesByQuery(siteId, stateBitmap ? stateBitmap : null, update, debouncePathRegex).subscribe(() => {
-        fetchStates();
-        showStatesUpdatedNotification();
+      setItemStatesByQuery(siteId, stateBitmap ? stateBitmap : null, update, debouncePathRegex).subscribe({
+        next: () => {
+          fetchStates();
+          showStatesUpdatedNotification();
+        },
+        error: ({ response }) => onError(response.response)
       });
     } else {
       setItemStates(
@@ -293,9 +308,12 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
           .filter(Boolean)
           .map((item) => item.path),
         update
-      ).subscribe(() => {
-        fetchStates();
-        showStatesUpdatedNotification();
+      ).subscribe({
+        next: () => {
+          fetchStates();
+          showStatesUpdatedNotification();
+        },
+        error: ({ response }) => onError(response.response)
       });
     }
 
@@ -421,8 +439,8 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
               fullWidth
               variant="outlined"
               error={invalidPathRegex}
-              FormHelperTextProps={{
-                className: classes.helperText
+              slotProps={{
+                formHelperText: { className: classes.helperText }
               }}
               helperText={
                 invalidPathRegex ? (

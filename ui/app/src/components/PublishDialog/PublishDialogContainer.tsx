@@ -30,35 +30,27 @@ import { PublishDialogUI } from './PublishDialogUI';
 import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
 import { isBlank } from '../../utils/string';
-import { useLocale } from '../../hooks/useLocale';
-import { getUserTimeZone } from '../../utils/datetime';
-import { DateChangeData } from '../DateTimePicker/DateTimePicker';
-import moment from 'moment-timezone';
 import { updatePublishDialog } from '../../state/actions/dialogs';
 import { approve, publish, requestPublish } from '../../services/workflow';
 import { fetchDetailedItems } from '../../services/content';
 import { DetailedItem } from '../../models';
 import { fetchDetailedItemComplete } from '../../state/actions/content';
+import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
+import { batchActions } from '../../state/actions/misc';
+import { showErrorDialog } from '../../state/reducers/dialogs/error';
 
 export function PublishDialogContainer(props: PublishDialogContainerProps) {
   const { items, scheduling = 'now', onSuccess, onClose, isSubmitting } = props;
   const [detailedItems, setDetailedItems] = useState<DetailedItem[]>();
   const [isFetchingItems, setIsFetchingItems] = useState(false);
-  const {
-    dateTimeFormatOptions: { timeZone = getUserTimeZone() }
-  } = useLocale();
   const [state, setState] = useSpreadState<InternalDialogState>({
     emailOnApprove: false,
     requestApproval: false,
     publishingTarget: '',
     submissionComment: '',
     scheduling,
-    scheduledDateTime: ((date) => {
-      date.setSeconds(0);
-      return moment(date).tz(timeZone).format();
-    })(new Date()),
+    scheduledDateTime: createAtLeastHalfHourInFutureDate(),
     publishingChannel: null,
-    scheduledTimeZone: timeZone,
     error: null,
     fetchingDependencies: false
   });
@@ -178,23 +170,18 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   }, [scheduling, setState]);
 
   useEffect(() => {
-    if (dateScheduled && scheduling !== 'now') {
-      setState({
-        scheduling: 'custom',
-        publishingTarget,
-        scheduledDateTime: dateScheduled
-      });
-    } else if (dateScheduled === null && scheduling === null) {
-      setState({
-        scheduling: 'now',
-        publishingTarget
-      });
-    } else {
-      setState({ publishingTarget });
+    const partialState: Partial<InternalDialogState> = {
+      publishingTarget,
+      scheduling: dateScheduled || scheduling !== 'now' ? 'custom' : 'now'
+    };
+    if (dateScheduled) {
+      partialState.scheduledDateTime = dateScheduled;
     }
+    setState(partialState);
   }, [dateScheduled, publishingTarget, setState, scheduling]);
 
   useEffect(() => {
+    // TODO: This could be optimised to run the least expensive checks first.
     // Submit button should be disabled:
     setSubmitDisabled(
       // While submitting
@@ -208,7 +195,9 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         // If submission comment is required (per config) and blank
         (submissionCommentRequired && isBlank(state.submissionComment)) ||
         // When there's an error
-        Boolean(state.error)
+        Boolean(state.error) ||
+        // The scheduled date is in the past
+        state.scheduledDateTime < new Date()
     );
   }, [
     isSubmitting,
@@ -216,6 +205,7 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
     publishingTargets,
     state.publishingTarget,
     state.submissionComment,
+    state.scheduledDateTime,
     submissionCommentRequired,
     state.error
   ]);
@@ -272,14 +262,16 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
         onSuccess?.({
           schedule: schedule,
           publishingTarget,
-          // @ts-ignore - TODO: Not quite sure if users of this dialog are making use of the `environment` prop name. Should use `publishingTarget` instead.
+          // @ts-expect-error: TODO: Not quite sure if users of this dialog are making use of the `environment` prop name. Should use `publishingTarget` instead.
           environment: publishingTarget,
           type: !hasPublishPermission || state.requestApproval ? 'submit' : 'publish',
           items: items.map((path) => props.items.find((item) => item.path === path))
         });
       },
-      (error) => {
-        dispatch(updatePublishDialog({ isSubmitting: false }));
+      ({ response }) => {
+        dispatch(
+          batchActions([updatePublishDialog({ isSubmitting: false }), showErrorDialog({ error: response.response })])
+        );
       }
     );
   };
@@ -331,31 +323,21 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
   }
 
   const onPublishingArgumentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value;
+    let value: unknown;
     switch (e.target.type) {
       case 'checkbox':
         value = e.target.checked;
         break;
       case 'textarea':
         value = e.target.value;
-        dispatch(
-          updatePublishDialog({
-            hasPendingChanges: true
-          })
-        );
+        dispatch(updatePublishDialog({ hasPendingChanges: true }));
         break;
       case 'radio':
         value = e.target.value;
         break;
       case 'dateTimePicker': {
-        // @ts-ignore
-        const changes: DateChangeData = e.target.value;
-        value = changes.dateString;
-        setState({
-          [e.target.name]: value,
-          scheduledTimeZone: changes.timeZoneName
-        });
-        return;
+        value = e.target.value;
+        break;
       }
       default:
         console.error('Publishing argument change event ignored.');

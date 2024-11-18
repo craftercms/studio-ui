@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Resource } from '../../models/Resource';
 import { LegacyContentType } from '../../models/ContentType';
 import { DetailedItem } from '../../models/Item';
 import StandardAction from '../../models/StandardAction';
@@ -22,7 +21,7 @@ import { EnhancedDialogProps } from '../EnhancedDialog';
 import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface ContentTypesGridProps {
-  resource: Resource<LegacyContentType[] | any>;
+  contentTypes: LegacyContentType[];
   isCompact: boolean;
   selectedContentType?: string;
   onTypeOpen(data: LegacyContentType): void;

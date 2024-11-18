@@ -26,6 +26,7 @@ export function CreateTokenDialog(props: CreateTokenDialogProps) {
   return (
     <EnhancedDialog
       title={<FormattedMessage id="createTokenDialog.title" defaultMessage="Create Access Token" />}
+      subtitle={<FormattedMessage defaultMessage="Authorize an external application to access CrafterCMS APIs" />}
       maxWidth="xs"
       isSubmitting={isSubmitting}
       {...rest}
