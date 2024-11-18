@@ -170,7 +170,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
             mode: image || video || pdf ? UNDEFINED : getEditorMode(item),
             path: item.path,
             url: item.path,
-            hideEdit: current !== version.versionNumber,
+            showEdit: current === version.versionNumber,
             subtitle: `v.${version.versionNumber}`,
             ...(video ? { mimeType: item.mimeType } : {})
           })
