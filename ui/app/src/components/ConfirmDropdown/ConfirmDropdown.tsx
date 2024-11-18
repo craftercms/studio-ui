@@ -130,13 +130,13 @@ export function ConfirmDropdown(props: ConfirmDropdownProps) {
         )
       ) : (
         <Button
+          variant={buttonVariant}
+          {...buttonProps}
           className={props.classes?.button}
           sx={sx.button}
-          variant={buttonVariant}
           onClick={(e) => setAnchorEl(e.currentTarget)}
           disabled={disabled}
           endIcon={<ArrowDown />}
-          {...buttonProps}
         >
           {text}
         </Button>
