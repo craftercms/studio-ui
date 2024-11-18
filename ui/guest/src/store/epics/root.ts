@@ -513,7 +513,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
       withLatestFrom(state$),
       filter(
         ([action, state]) =>
-          // @ts-ignore - Unsure why typescript doesn't correctly detect the action type. Complains about action not having a `type` as it perceives it to be never.
+          // @ts-expect-error: Unsure why typescript doesn't correctly detect the action type. Complains about action not having a `type` as it perceives it to be never.
           action.type === 'triggered_click' ||
           (state.highlightMode === HighlightMode.ALL && state.status === EditingStatus.LISTENING) ||
           (state.highlightMode === HighlightMode.MOVE_TARGETS && state.status === EditingStatus.LISTENING) ||
@@ -568,6 +568,7 @@ const epic = combineEpics<GuestStandardAction, GuestStandardAction, GuestState>(
             if (
               // If it is locked, want the flow to go through the `else` statement even for these types of field — so people can unlock if they are the owner.
               !isLocked &&
+              // FE2 TODO: types changed to be what they are on xml
               ['html', 'text', 'textarea'].includes(type)
             ) {
               if (!window.tinymce) {
