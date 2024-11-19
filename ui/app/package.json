@@ -118,7 +118,7 @@
     "@types/uuid": "^10",
     "@types/zxcvbn": "^4.4.4",
     "@typescript-eslint/eslint-plugin": "^7.10.0",
-    "@typescript-eslint/parser": "^7.10.0",
+    "@typescript-eslint/parser": "^8.15.0",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitejs/plugin-react-swc": "^3.6.0",
     "babel-plugin-formatjs": "^10.5.16",
