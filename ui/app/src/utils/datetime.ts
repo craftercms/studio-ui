@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import moment from 'moment-timezone';
+import moment, { Moment } from 'moment-timezone';
 import { defineMessages } from 'react-intl';
 import { getCurrentIntl } from './i18n';
 import GlobalState from '../models/GlobalState';
@@ -79,10 +79,12 @@ export const create8601String = (date: string, time: string, offset: string) => 
 /**
  * Returns an array as ['yyyy-mm-dd', 'hh:mm:ss', '+/-nn:nn'] out of a ISO 8601 date string
  **/
-export const get8601Pieces = (date: string | Date) => {
-  const pieces = moment(date)
-    .format()
-    .match(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(.{6})/);
+export const get8601Pieces = (date: string | Date | number | Moment) => {
+  const format = moment(date).format();
+  // Trying to match either:
+  //  - 2024-10-31T10:30:00+01:00
+  //  - 2024-10-31T09:30:00Z
+  const pieces = format.match(/(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})(.{6}|.)/);
   return [pieces[1], pieces[2], pieces[3]];
 };
 
@@ -92,4 +94,55 @@ export function isSameDay(date1: Date, date2: Date) {
     date1.getMonth() === date2.getMonth() &&
     date1.getDate() === date2.getDate()
   );
+}
+
+/**
+ * Returns the Z offset (e.g. +01:00) from the offset number that represents the difference,
+ * in minutes, between this date as evaluated in the UTC time zone, and the same date as evaluated
+ * in the local time zone
+ **/
+export function getFormattedGmtOffsetFromTimezoneOffset(timezoneOffset: number): string {
+  const offsetHours = Math.floor(Math.abs(timezoneOffset) / 60);
+  const offsetMinutes = Math.abs(timezoneOffset) % 60;
+  const sign = timezoneOffset <= 0 ? '+' : '-';
+  return `${sign}${String(offsetHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`; // e.g., "+02:00"
+}
+
+/**
+ * Returns true if the date object is a valid date, false otherwise
+ **/
+export function isValidDate(date: Date): boolean {
+  return date instanceof Date && !isNaN(date.getTime());
+}
+
+/**
+ * Returns the Z offset (e.g. +01:00) of a timezone name, considering daylight savings of the date.
+ **/
+export function getZDateOffset(date: Date | Moment, timezone: string): string {
+  return moment(date).clone().tz(timezone).format('Z');
+}
+
+/**
+ * Creates a Date object that's the same moment in time as the original date but expressed in the target timezone
+ **/
+export function createTransposedToTimezoneDate(date: Date | Moment, targetTimezone: string): Date {
+  const pieces = get8601Pieces(date);
+  const targetOffset = getZDateOffset(date, targetTimezone);
+  const dateString = create8601String(pieces[0], pieces[1], targetOffset);
+  return new Date(dateString);
+}
+
+/**
+ * Creates a date that's at least half hour from now.
+ **/
+export function createAtLeastHalfHourInFutureDate(): Date {
+  const reference = new Date();
+  const date = new Date();
+  date.setHours(date.getHours() + 1);
+  date.setMinutes(0, 0, 0);
+  const diffMs = date.getTime() - reference.getTime();
+  if (diffMs < 1800000) {
+    date.setMinutes(date.getMinutes() + 30);
+  }
+  return date;
 }
