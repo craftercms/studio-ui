@@ -2,6 +2,9 @@
 
 [//]: # (TODO: migrate 4.1.x branch changelog to develop)
 
+## 4.1.9
+* Deprecated DateTimePicker. Use DateTimeTimezonePicker instead.
+
 ## 4.1.6
 * `ICEConfig` TypeScript `interface` changed to be `type`. It now accepts either the (model) or (modelId & path).
 

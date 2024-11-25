@@ -103,6 +103,7 @@ export const components = {
   DashletCard: lazy(() => import('../components/DashletCard')),
   DataSourcesActionsList: lazy(() => import('../components/DataSourcesActionsList')),
   DateTimePicker: lazy(() => import('../components/DateTimePicker')),
+  DateTimeTimezonePicker: lazy(() => import('../components/DateTimeTimezonePicker')),
   DeleteContentTypeDialog: lazy(() => import('../components/DeleteContentTypeDialog')),
   DeleteDialog: lazy(() => import('../components/DeleteDialog')),
   DeletePluginDialog: lazy(() => import('../components/DeletePluginDialog')),
