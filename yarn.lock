@@ -12717,8 +12717,8 @@ __metadata:
   linkType: hard
 
 "tss-react@npm:^4.9.10":
-  version: 4.9.10
-  resolution: "tss-react@npm:4.9.10"
+  version: 4.9.13
+  resolution: "tss-react@npm:4.9.13"
   dependencies:
     "@emotion/cache": "npm:*"
     "@emotion/serialize": "npm:*"
@@ -12726,14 +12726,14 @@ __metadata:
   peerDependencies:
     "@emotion/react": ^11.4.1
     "@emotion/server": ^11.4.0
-    "@mui/material": ^5.0.0
+    "@mui/material": ^5.0.0 || ^6.0.0
     react: ^16.8.0 || ^17.0.2 || ^18.0.0
   peerDependenciesMeta:
     "@emotion/server":
       optional: true
     "@mui/material":
       optional: true
-  checksum: 10/5c316cc787acf2aeb4235ac1cb304b27684adb8546cb73d11dac5de5b3044956ef441790bf5bd79ee3c0063b7e7231d001e6d5e0f973625505fb93ff7009670d
+  checksum: 10/296bad9c01575c9cfecdbce4d1d5cc20c090b527d4830bd901b64b416ea48ccbd62f5a903a899220826c9602c2bb941eaa94089cbf92af4813b94b04f9b115dc
   languageName: node
   linkType: hard
 
