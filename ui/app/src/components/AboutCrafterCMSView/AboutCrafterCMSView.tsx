@@ -68,7 +68,7 @@ export function AboutCrafterCMSView() {
                   values={{
                     a: (msg) => (
                       <Link
-                        href={`https://docs.craftercms.org/en/${env.packageVersion?.substr(
+                        href={`https://craftercms.com/docs/${env.packageVersion?.substr(
                           0,
                           3
                         )}/acknowledgements/index.html`}

@@ -212,7 +212,7 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
             {version && (
               <Button
                 size="small"
-                href={`https://docs.craftercms.org/en/${version}/developers/content-modeling.html#setting-up-quick-create`}
+                href={`https://craftercms.com/docs/${version}/by-role/developer/common/content-modeling/content-modeling.html#quick-create`}
                 target="_blank"
                 rel="nofollow noreferrer"
               >

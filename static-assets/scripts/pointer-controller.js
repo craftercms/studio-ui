@@ -143,7 +143,7 @@ crafterDefine(
           valid = false;
           publish.call(me, Topics.START_DIALOG, {
             messageKey: 'contentTypeNotFound',
-            link: 'https://docs.craftercms.org/en/3.1/developers/in-context-editing.html',
+            link: 'https://craftercms.com/docs/3.1/developers/in-context-editing.html',
             height: 'auto'
           });
         }
