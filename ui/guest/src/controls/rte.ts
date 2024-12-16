@@ -90,8 +90,7 @@ export function initTinyMCE(
   };
 
   const controlPropsMap = {
-    enableSpellCheck: 'browser_spellcheck',
-    forceRootBlockPTag: 'forced_root_block'
+    enableSpellCheck: 'browser_spellcheck'
   };
   const controlProps = {};
   Object.keys(controlPropsMap).forEach((key) => {
@@ -132,7 +131,6 @@ export function initTinyMCE(
       window.tinymce.activeEditor.plugins.craftercms_paste_extension?.paste_postprocess(plugin, args);
     },
     toolbar: type === 'html',
-    forced_root_block: type === 'html',
     menubar: false,
     inline: true,
     base_url: '/studio/static-assets/libs/tinymce',

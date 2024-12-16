@@ -219,18 +219,6 @@ CStudioAuthoring.Module.requireModule(
               defaultValue: 'true'
             },
             {
-              label: this.formatMessage(this.contentTypesMessages.forceRootBlockP),
-              name: 'forceRootBlockPTag',
-              type: 'boolean',
-              defaultValue: 'true'
-            },
-            {
-              label: this.formatMessage(this.contentTypesMessages.forceBRNewLines),
-              name: 'forceBRTags',
-              type: 'boolean',
-              defaultValue: 'false'
-            },
-            {
               label: this.formatMessage(this.contentTypesMessages.supportedChannels),
               name: 'supportedChannels',
               type: 'supportedChannels'
@@ -319,12 +307,6 @@ CStudioAuthoring.Module.requireModule(
               case 'maxlength':
                 inputEl.maxlength = prop.value;
                 break;
-              case 'forceBRTags':
-                var forceBRTags = prop.value == 'true' ? true : false;
-                break;
-              case 'forceRootBlockPTag':
-                var forceRootBlockPTag = prop.value == 'false' ? false : 'p';
-                break;
               case 'enableSpellCheck':
                 this.enableSpellCheck = !prop.value || prop.value === 'true';
                 break;
@@ -385,11 +367,10 @@ CStudioAuthoring.Module.requireModule(
             remove_script_host: false,
             convert_urls: false,
             readonly: _thisControl.readonly, // comes from control props (not xml config)
-            force_br_newlines: forceBRTags, // comes from control props (not xml config)
-            forced_root_block: forceRootBlockPTag, // comes from control props (not xml config)
             remove_trailing_brs: false,
             media_live_embeds: true,
-            contextmenu: !this.enableSpellCheck, // comes from control props (not xml config)
+            contextmenu: !this.enableSpellCheck, // comes from control props (not xml config) TODO: Why is spell check tied to context menu? Access removal.
+            browser_spellcheck: this.enableSpellCheck, // comes from control props (not xml config)
             image_uploadtab: this.editorImageDatasources.length > 0, // comes from control props (not xml config)
             craftercms_paste_cleanup: rteConfig?.tinymceOptions?.craftercms_paste_cleanup ?? true, // If doesn't exist or if true => true
             automatic_uploads: true,
@@ -529,8 +510,6 @@ CStudioAuthoring.Module.requireModule(
                 'external_plugins', // Considered/used above, mixed with our options
                 'relative_urls', // To avoid allowing convertion of urls to be relative to the document_base_url
                 'readonly', // Comes from form control props, can't be overridden.
-                'force_br_newlines', // Comes from form control props, can't be overridden.
-                'forced_root_block', // Comes from form control props, can't be overridden.
                 'content_css' // Handled above, if no content_css is found it will use dark/default styles.
               )
             })
