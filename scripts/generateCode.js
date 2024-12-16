@@ -43,7 +43,7 @@ function muiIcons(iconSetName) {
     }
     let icons = input
       .replace(/\/\*(.|\n)+?\*\/\n?/, '')
-      .replace(/export \{.+?\} from '\.\/(.+)';/g, '$1')
+      .replace(/export \{.+?\} from ['"]\.\/(.+)(\.js)?['"];/g, '$1')
       .split('\n')
       .filter((iconName) => iconName.includes(iconSetName))
       .map((iconName) => `@mui/icons-material/${iconName}`)
