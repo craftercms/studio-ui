@@ -254,7 +254,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             </Paper>
             <Box
               className={classes.cardsContainer}
-              sx={viewMode === 'row' && { display: 'flex !important', flexFlow: 'wrap' }}
+              sx={[viewMode === 'row' && { display: 'flex !important', flexFlow: 'wrap' }]}
             >
               {items
                 ? items.map((item: SearchItem) => (
