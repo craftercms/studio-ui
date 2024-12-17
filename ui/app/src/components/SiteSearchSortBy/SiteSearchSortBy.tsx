@@ -15,12 +15,13 @@
  */
 
 import { Filter as FilterType } from '../../models/Search';
-import { defineMessages, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { camelize } from '../../utils/string';
 import React from 'react';
 import { makeStyles } from 'tss-react/mui';
+import { SORT_AUTO } from '../Search/utils';
 
 const useStyles = makeStyles()(() => ({
   select: {
@@ -75,7 +76,7 @@ interface SortByProps {
 export function SiteSearchSortBy(props: SortByProps) {
   const { classes } = useStyles();
   const { formatMessage } = useIntl();
-  const { handleFilterChange, filterKeys, sortBy = '_score' } = props;
+  const { handleFilterChange, filterKeys, sortBy = SORT_AUTO } = props;
 
   return (
     <Select
@@ -83,6 +84,9 @@ export function SiteSearchSortBy(props: SortByProps) {
       className={classes.select}
       onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >
+      <MenuItem value={SORT_AUTO}>
+        <FormattedMessage defaultMessage="Auto" />
+      </MenuItem>
       <MenuItem value="_score">{formatMessage(filtersMessages.relevance)}</MenuItem>
       <MenuItem value="internalName">{formatMessage(filtersMessages.internalName)}</MenuItem>
       {filterKeys.map((name: string, i: number) => {

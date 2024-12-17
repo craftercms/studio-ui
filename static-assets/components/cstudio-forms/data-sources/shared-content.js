@@ -140,8 +140,6 @@ YAHOO.extend(CStudioForms.Datasources.SharedContent, CStudioForms.CStudioFormDat
       itemsPerPage: 12,
       keywords: '',
       filters: {},
-      sortBy: 'internalName',
-      sortOrder: 'asc',
       numFilters: 1,
       filtersShowing: 10,
       currentPage: 1,

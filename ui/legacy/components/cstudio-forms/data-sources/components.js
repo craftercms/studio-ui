@@ -178,10 +178,6 @@
         contentTypes: [contentType],
         multiSelect,
         allowUpload: false,
-        initialParameters: {
-          sortBy: 'internalName',
-          sortOrder: 'asc'
-        },
         onSuccess: (result) => {
           (Array.isArray(result) ? result : [result]).forEach(({ name, path }) => {
             const value = name && name !== '' ? name : path;
@@ -201,8 +197,6 @@
         itemsPerPage: 12,
         keywords: '',
         filters: {},
-        sortBy: 'internalName',
-        sortOrder: 'asc',
         numFilters: 1,
         filtersShowing: 10,
         currentPage: 1,

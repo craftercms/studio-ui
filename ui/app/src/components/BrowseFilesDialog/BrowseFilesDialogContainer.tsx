@@ -36,6 +36,7 @@ import { getStoredBrowseDialogViewMode, setStoredBrowseDialogViewMode } from '..
 import useActiveUser from '../../hooks/useActiveUser';
 import { withIndex, withoutIndex } from '../../utils/path';
 import { MediaCardViewModes } from '../MediaCard';
+import { prepareSearchParams } from '../Search/utils';
 
 const viewModes: MediaCardViewModes[] = ['card', 'compact', 'row'];
 
@@ -84,7 +85,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
       // negative filter in a query. This scenario only happens with pages, hence the `withIndex` function wrapping the
       // current path.
       search(site, {
-        ...searchParameters,
+        ...prepareSearchParams(searchParameters),
         path: `${currentPath}/[^/]+(/index\\.xml)?`,
         query: `-localId:"${withIndex(currentPath)}"`
       }).subscribe((response) => {

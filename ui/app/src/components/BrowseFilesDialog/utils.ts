@@ -19,6 +19,7 @@ import StandardAction from '../../models/StandardAction';
 import { EnhancedDialogProps } from '../EnhancedDialog';
 import React from 'react';
 import { MediaCardViewModes } from '../MediaCard';
+import { SORT_AUTO } from '../Search/utils';
 
 export interface BrowseFilesDialogBaseProps {
   path: string;
@@ -81,7 +82,7 @@ export const initialParameters: ElasticParams = {
   keywords: '',
   offset: 0,
   limit: 25,
-  sortBy: '_score',
+  sortBy: SORT_AUTO,
   sortOrder: 'desc',
   filters: {}
 };

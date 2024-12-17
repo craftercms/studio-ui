@@ -37,6 +37,7 @@ import { styled } from '@mui/material/styles';
 import useContentTypes from '../../hooks/useContentTypes';
 import { getMimeTypeTranslation } from '../../utils/mimeTypes';
 import Box from '@mui/material/Box';
+import { SORT_AUTO } from '../Search/utils';
 
 interface SiteSearchFiltersProps {
   className: any;
@@ -307,7 +308,9 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
         <AccordionDetails>
           <>
             <SiteSearchSortBy sortBy={sortBy} filterKeys={filterKeys} handleFilterChange={handleFilterChange} />
-            <SiteSearchSortOrder sortOrder={sortOrder} sortBy={sortBy} handleFilterChange={handleFilterChange} />
+            {sortBy && sortBy !== SORT_AUTO && (
+              <SiteSearchSortOrder sortOrder={sortOrder} sortBy={sortBy} handleFilterChange={handleFilterChange} />
+            )}
           </>
         </AccordionDetails>
       </Accordion>
