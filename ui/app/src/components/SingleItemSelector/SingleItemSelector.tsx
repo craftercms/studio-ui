@@ -43,50 +43,12 @@ import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import ItemDisplay from '../ItemDisplay';
 import PathNavigatorSkeleton from '../PathNavigator/PathNavigatorSkeleton';
 import Tooltip from '@mui/material/Tooltip';
-
-const useStyles = makeStyles()((theme) => ({
-  popoverRoot: {
-    minWidth: '200px',
-    maxWidth: '400px',
-    marginTop: '5px',
-    padding: '0 5px 5px 5px'
-  },
-  root: {
-    backgroundColor: theme.palette.background.paper,
-    display: 'flex',
-    paddingLeft: '15px',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginRight: 'auto',
-    maxWidth: '100%',
-    minWidth: '200px',
-    '&.disable': {
-      minWidth: 'auto',
-      backgroundColor: 'inherit'
-    }
-  },
-  selectedItem: {
-    marginLeft: 'auto',
-    display: 'flex',
-    minWidth: 0
-  },
-  title: {
-    fontWeight: 600,
-    marginRight: '30px'
-  },
-  changeBtn: {},
-  itemName: {},
-  selectIcon: {}
-}));
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
 
 interface SingleItemSelectorProps {
   selectIcon?: React.ElementType;
-  classes?: {
-    root?: string;
-    title?: string;
-    selectIcon?: string;
-    popoverRoot?: string;
-  };
+  sxs?: PartialSxRecord<'root' | 'title' | 'selectIcon' | 'popoverRoot' | 'selectedItem' | 'changeBtn'>;
   selectedItem?: DetailedItem;
   rootPath: string;
   label?: ReactNode;
@@ -258,7 +220,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
   // region const { ... } = props;
   const {
     selectIcon: SelectIcon = ExpandMoreRoundedIcon,
-    classes: propClasses,
+    sxs,
     titleVariant = 'body1',
     hideUI = false,
     disabled = false,
@@ -275,7 +237,6 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     tooltip = ''
   } = props;
   // endregion
-  const { classes, cx } = useStyles();
   const buttonElRef = useRef();
   const [state, _dispatch] = useReducer(reducer, props, init);
   const site = useActiveSiteId();
@@ -401,7 +362,22 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     ? {}
     : {
         elevation: 0,
-        className: cx(classes.root, !onDropdownClick && 'disable', propClasses?.root)
+        className: onDropdownClick ? '' : 'disable',
+        sx: {
+          backgroundColor: (theme) => theme.palette.background.paper,
+          display: 'flex',
+          paddingLeft: '15px',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginRight: 'auto',
+          maxWidth: '100%',
+          minWidth: '200px',
+          '&.disable': {
+            minWidth: 'auto',
+            backgroundColor: 'inherit'
+          },
+          ...sxs?.root
+        }
       };
 
   return (
@@ -409,34 +385,58 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
       {!hideUI && (
         <>
           {label && (
-            <Typography variant={titleVariant} className={cx(classes.title, propClasses?.title)}>
+            <Typography
+              variant={titleVariant}
+              sx={{
+                fontWeight: 600,
+                marginRight: '30px',
+                ...sxs?.title
+              }}
+            >
               {label}
             </Typography>
           )}
           {selectedItem && (
-            <div className={classes.selectedItem}>
+            <Box
+              sx={{
+                marginLeft: 'auto',
+                display: 'flex',
+                minWidth: 0,
+                ...sxs?.selectedItem
+              }}
+            >
               <ItemDisplay item={selectedItem} showNavigableAsLinks={false} />
-            </div>
+            </Box>
           )}
         </>
       )}
       {onDropdownClick && (
         <Tooltip title={tooltip}>
           <IconButton
-            className={classes.changeBtn}
+            sx={sxs?.changeBtn}
             ref={buttonElRef}
             disabled={disabled}
             onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
             size={buttonSize}
           >
-            <SelectIcon className={cx(classes.selectIcon, propClasses?.selectIcon)} />
+            <SelectIcon sx={sxs?.selectIcon} />
           </IconButton>
         </Tooltip>
       )}
       <Popover
         anchorEl={buttonElRef.current}
         open={open}
-        classes={{ paper: cx(classes.popoverRoot, propClasses?.popoverRoot) }}
+        slotProps={{
+          paper: {
+            sx: {
+              minWidth: '200px',
+              maxWidth: '400px',
+              marginTop: '5px',
+              padding: '0 5px 5px 5px',
+              ...sxs?.popoverRoot
+            }
+          }
+        }}
         onClose={onClose}
         anchorOrigin={{
           vertical: 'bottom',

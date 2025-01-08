@@ -16,9 +16,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import { isBlank } from '../../utils/string';
-import React, { useEffect, useState, useRef, MouseEvent, useMemo } from 'react';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
+import React, { MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
 import RefreshRounded from '@mui/icons-material/RefreshRounded';
@@ -28,7 +26,7 @@ import PagesSearchAhead from '../PagesSearchAhead';
 import SingleItemSelector from '../SingleItemSelector';
 import { DetailedItem } from '../../models/Item';
 import MoreRounded from '@mui/icons-material/MoreVertRounded';
-import { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
+import Popover, { getOffsetLeft, getOffsetTop } from '@mui/material/Popover';
 import { withIndex, withoutIndex } from '../../utils/path';
 import { showItemMegaMenu } from '../../state/actions/dialogs';
 import { getNumOfMenuOptionsForItem } from '../../utils/content';
@@ -40,7 +38,6 @@ import PreviewForwardButton from '../PreviewForwardButton';
 import { usePreviewNavigation } from '../../hooks/usePreviewNavigation';
 import CircularProgress from '@mui/material/CircularProgress';
 import usePreviewState from '../../hooks/usePreviewState';
-import Popover from '@mui/material/Popover';
 import Box from '@mui/material/Box';
 import Alert, { alertClasses } from '@mui/material/Alert';
 import Button from '@mui/material/Button';
@@ -54,56 +51,7 @@ export interface AddressBarProps {
   item?: DetailedItem;
 }
 
-const useAddressBarStyles = makeStyles()((theme: Theme) => ({
-  toolbar: {
-    placeContent: 'center space-between'
-  },
-  inputContainer: {
-    marginLeft: theme.spacing(1)
-  },
-  input: {
-    border: 'none',
-    background: 'transparent',
-    '&:focus:invalid, &:focus': {
-      border: 'none',
-      boxShadow: 'none'
-    }
-  },
-  divider: {
-    height: 28,
-    margin: 4
-  },
-  selectorPopoverRoot: {
-    width: 400,
-    marginLeft: '4px'
-  },
-  hidden: {
-    visibility: 'hidden'
-  },
-  itemActionSkeleton: {
-    width: 40,
-    margin: '0 5px'
-  },
-  itemDisplayWrapper: {
-    width: '100%',
-    overflow: 'hidden',
-    cursor: 'pointer',
-    display: 'flex'
-  },
-  itemPreviewUrl: {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    marginLeft: '4px'
-  },
-  itemDisplaySkeleton: {
-    marginLeft: '5px',
-    width: '100%'
-  }
-}));
-
 export function PreviewAddressBar(props: AddressBarProps) {
-  const { classes } = useAddressBarStyles();
   const { site = '', item } = props;
   const noSiteSet = isBlank(site);
   const { error } = usePreviewState();
@@ -235,9 +183,12 @@ export function PreviewAddressBar(props: AddressBarProps) {
         })}
       >
         {!focus && item && (
-          <div className={classes.itemDisplayWrapper} onClick={() => setFocus(true)}>
+          <Box
+            sx={{ width: '100%', overflow: 'hidden', cursor: 'pointer', display: 'flex' }}
+            onClick={() => setFocus(true)}
+          >
             <ItemDisplay item={item} styles={{ root: { maxWidth: '100%' } }} showNavigableAsLinks={false} />
-          </div>
+          </Box>
         )}
         {(focus || !item) && (
           <PagesSearchAhead
@@ -245,7 +196,16 @@ export function PreviewAddressBar(props: AddressBarProps) {
             value={internalUrl}
             placeholder={noSiteSet ? '' : '/'}
             onEnter={onUrlChange}
-            classes={{ input: classes.input }}
+            sxs={{
+              input: {
+                border: 'none',
+                background: 'transparent',
+                '&:focus:invalid, &:focus': {
+                  border: 'none',
+                  boxShadow: 'none'
+                }
+              }
+            }}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
           />
@@ -300,11 +260,16 @@ export function PreviewAddressBar(props: AddressBarProps) {
           onUrlChange(item.previewUrl);
         }}
         hideUI
-        classes={{ popoverRoot: classes.selectorPopoverRoot }}
+        sxs={{
+          popoverRoot: {
+            width: '400px',
+            marginLeft: '4px'
+          }
+        }}
         tooltip="Navigation"
       />
       <Popover
-        // Avoid backdrop from blocking the interaction with other elements
+        // Avoid backdrop from blocking the interaction with other elements`
         sx={{ pointerEvents: 'none' }}
         open={openPopover}
         anchorEl={popoverAnchorEl}

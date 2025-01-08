@@ -16,13 +16,12 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import ChevronRightIcon from '@mui/icons-material/ChevronRightRounded';
 import MoreVertIcon from '@mui/icons-material/MoreVertRounded';
 import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
-import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
+import MuiBreadcrumbs, { breadcrumbsClasses } from '@mui/material/Breadcrumbs';
 import { ContentType, ContentTypeField } from '../../models/ContentType';
 import Page from '../../icons/Page';
 import ContentTypeFieldIcon from '../../icons/ContentTypeField';
@@ -58,6 +57,8 @@ import { useUnmount } from '../../hooks/useUnmount';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { LoadingState } from '../LoadingState';
+import { svgIconClasses, typographyClasses } from '@mui/material';
+import Box from '@mui/material/Box';
 
 const rootPrefix = '{root}_';
 
@@ -75,116 +76,6 @@ const translations = defineMessages({
     defaultMessage: 'Current Content Items'
   }
 });
-
-const useStyles = makeStyles()((theme) => ({
-  root: {
-    '& > li > ul': {
-      marginLeft: '0'
-    }
-  },
-  searchWrapper: {
-    padding: '10px'
-  },
-  divider: {
-    marginTop: '10px'
-  },
-  rootIcon: {
-    fontSize: '1.2em',
-    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7
-  },
-  breadcrumbs: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  breadcrumbsList: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '9px 10px 2px 8px'
-  },
-  breadcrumbsSeparator: {
-    margin: '0 2px'
-  },
-  breadcrumbsButton: {
-    display: 'flex'
-  },
-  breadcrumbsTypography: {
-    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4
-  },
-  currentContentItems: {
-    fontWeight: 600,
-    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7,
-    padding: '0 12px 2px 12px'
-  },
-  chevron: {
-    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3,
-    fontSize: '1.4rem'
-  }
-}));
-
-const treeItemStyles = makeStyles<void, 'treeItemLabelRoot'>()((theme, _params, classes) => ({
-  icon: {
-    color: palette.teal.main
-  },
-  displayNone: {
-    display: 'none'
-  },
-  treeItemIconContainer: {},
-  treeItemRoot: {
-    '&:focus > .MuiTreeItem-content': {
-      '& .MuiTreeItem-label': {
-        backgroundColor: 'inherit'
-      },
-      '& .MuiTreeItem-label:hover': {
-        backgroundColor: 'rgba(0, 0, 0, 0.04)'
-      }
-    }
-  },
-  treeItemContent: {
-    paddingLeft: '8px',
-    '&.padded': {
-      paddingLeft: '15px'
-    },
-    '&.root': {
-      paddingLeft: 0,
-      [`& .${classes.treeItemLabelRoot}`]: {
-        paddingLeft: '6px'
-      }
-    }
-  },
-  treeItemGroup: {},
-  treeItemExpanded: {},
-  treeItemSelected: {},
-  treeItemLabelRoot: {
-    paddingLeft: 0
-  },
-  treeItemLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '36px',
-    '& p': {
-      marginTop: 0,
-      marginLeft: '5px',
-      marginRight: '5px',
-      overflow: 'hidden',
-      display: '-webkit-box',
-      WebkitLineClamp: 1,
-      WebkitBoxOrient: 'vertical',
-      marginBottom: 0,
-      wordBreak: 'break-all'
-    }
-  },
-  options: {
-    marginLeft: 'auto',
-    padding: '6px'
-  },
-  chevron: {
-    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3,
-    fontSize: '1.4rem'
-  },
-  nameLabel: {
-    color: theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4
-  }
-}));
 
 export interface RenderTree {
   id: string;
@@ -348,7 +239,6 @@ interface TreeItemCustomInterface {
 
 function TreeItemCustom(props: TreeItemCustomInterface) {
   const { nodeLookup, node, handleScroll, handleClick, handleOptions, isRootChild, keyword } = props;
-  const { classes, cx } = treeItemStyles();
   const [over, setOver] = useState(false);
   let timeout = React.useRef<any>();
   const isMounted = useRef(null);
@@ -419,25 +309,46 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
       }}
       slotProps={{
         icon: isPageOrComponent(node.type) && {
-          onClick: () => handleClick(node),
-          className: classes.chevron
+          onClick: () => handleClick(node)
         }
       }}
       label={
-        <div className={classes.treeItemLabel} onClick={() => handleScroll(node)}>
-          <Icon className={classes.icon} />
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            height: '36px',
+            '& p': {
+              marginTop: 0,
+              marginLeft: '5px',
+              marginRight: '5px',
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: 'vertical',
+              marginBottom: 0,
+              wordBreak: 'break-all'
+            }
+          }}
+          onClick={() => handleScroll(node)}
+        >
+          <Icon sx={{ color: palette.teal.main }} />
           <p title={node.name}>
             {nodeName.length === 1 ? (
               nodeName[0]
             ) : (
               <>
-                {nodeName[1]} <span className={classes.nameLabel}>{`(${nodeName[0].trim()})`}</span>
+                {nodeName[1]}{' '}
+                <Box
+                  component="span"
+                  sx={{ color: (theme) => (theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4) }}
+                >{`(${nodeName[0].trim()})`}</Box>
               </>
             )}
           </p>
           {over && node.path && (
             <IconButton
-              className={classes.options}
+              sx={{ marginLeft: 'auto', padding: '6px' }}
               onMouseOver={(e) => setOverState(e, true)}
               onClick={(e) => handleOptions(e, node)}
               size="large"
@@ -445,25 +356,38 @@ function TreeItemCustom(props: TreeItemCustomInterface) {
               <MoreVertIcon />
             </IconButton>
           )}
-        </div>
+        </Box>
       }
       classes={{
-        root: classes.treeItemRoot,
-        label: classes.treeItemLabelRoot,
-        content: cx(
-          classes.treeItemContent,
-          isPageOrComponent(node.type) && !isRootChild && 'padded',
-          isRoot(node.id) && 'root'
-        ),
-        expanded: classes.treeItemExpanded,
-        selected: classes.treeItemSelected,
-        groupTransition: classes.treeItemGroup,
-        iconContainer: isRoot(node.id) ? classes.displayNone : classes.treeItemIconContainer
+        content: [isPageOrComponent(node.type) && !isRootChild && 'padded', isRoot(node.id) && 'root']
+          .filter(Boolean)
+          .join(' ')
       }}
       sx={{
         [`& .${treeItemClasses.content}`]: {
           pt: 0,
-          pb: 0
+          pb: 0,
+          paddingLeft: '8px',
+          '&.padded': {
+            paddingLeft: '15px'
+          },
+          '&.root': {
+            paddingLeft: 0
+          }
+        },
+        '&:focus > .MuiTreeItem-content': {
+          '& .MuiTreeItem-label': {
+            backgroundColor: 'inherit'
+          },
+          '& .MuiTreeItem-label:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+          }
+        },
+        [`& .${treeItemClasses.iconContainer}`]: {
+          [`& .${svgIconClasses.root}`]: {
+            color: (theme) => (theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3),
+            fontSize: '1.4rem'
+          }
         }
       }}
     >
@@ -483,7 +407,6 @@ export function PreviewPageExplorerPanel() {
   const dispatch = useDispatch();
   const guest = usePreviewGuest();
   const currentModelId = guest?.modelId;
-  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const contentTypesBranch = useSelection((state) => state.contentTypes);
   const hostToGuest$ = getHostToGuestBus();
@@ -719,27 +642,37 @@ export function PreviewPageExplorerPanel() {
   return (
     <>
       <SimpleTreeView
-        className={classes.root}
+        sx={{
+          '& > li > ul': {
+            marginLeft: '0'
+          },
+          [`& .${treeItemClasses.iconContainer}`]: {
+            [`& .${svgIconClasses.root}`]: {
+              color: (theme) => (theme.palette.mode === 'dark' ? palette.white : palette.gray.medium3),
+              fontSize: '1.4rem'
+            }
+          }
+        }}
         slots={{
           collapseIcon: ExpandMoreIcon,
           expandIcon: ChevronRightIcon
         }}
         slotProps={{
           collapseIcon: {
-            className: cx('toggle', classes.chevron)
+            className: 'toggle'
           },
           expandIcon: {
-            className: cx('toggle', classes.chevron)
+            className: 'toggle'
           }
         }}
         disableSelection
         expandedItems={state.expanded}
         onExpandedItemsChange={handleChange}
       >
-        <div className={classes.searchWrapper}>
+        <Box sx={{ padding: '10px' }}>
           <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
-          <Divider className={classes.divider} />
-        </div>
+          <Divider sx={{ marginTop: '10px' }} />
+        </Box>
         {models && ContentTypesById ? (
           <PageExplorerUI
             handleBreadCrumbClick={handleBreadCrumbClick}
@@ -797,7 +730,6 @@ function PageExplorerUI(props: PageExplorerUIProps) {
     breadcrumbs,
     rootChildren
   } = props;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   let node: any = null;
@@ -821,9 +753,15 @@ function PageExplorerUI(props: PageExplorerUIProps) {
           maxItems={2}
           aria-label="Breadcrumbs"
           separator={<NavigateNextIcon fontSize="small" />}
-          classes={{
-            ol: classes.breadcrumbsList,
-            separator: classes.breadcrumbsSeparator
+          sx={{
+            [`& .${breadcrumbsClasses.ol}`]: {
+              display: 'flex',
+              alignItems: 'center',
+              padding: '9px 10px 2px 8px'
+            },
+            [`& .${breadcrumbsClasses.separator}`]: {
+              margin: '0 2px'
+            }
           }}
         >
           {breadcrumbs.map((id, i: number) =>
@@ -831,7 +769,7 @@ function PageExplorerUI(props: PageExplorerUIProps) {
               <Typography
                 key={nodeLookup[id].id}
                 variant="subtitle2"
-                className={classes.breadcrumbsTypography}
+                sx={{ color: (theme) => (theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4) }}
                 children={nodeLookup[id].name.split(':').pop()}
               />
             ) : (
@@ -841,12 +779,25 @@ function PageExplorerUI(props: PageExplorerUIProps) {
                 component="button"
                 variant="subtitle2"
                 underline="always"
-                className={classes.breadcrumbsButton}
-                TypographyClasses={{
-                  root: classes.breadcrumbsTypography
+                sx={{
+                  display: 'flex',
+                  [`& .${typographyClasses.root}`]: {
+                    color: (theme) => (theme.palette.mode === 'dark' ? palette.white : palette.gray.medium4)
+                  }
                 }}
                 onClick={(e) => handleBreadCrumbClick(e, id === 'root' ? { id: 'root' } : nodeLookup[id])}
-                children={id === 'root' ? <Root className={classes.rootIcon} /> : nodeLookup[id].name.split(':').pop()}
+                children={
+                  id === 'root' ? (
+                    <Root
+                      sx={{
+                        fontSize: '1.2em',
+                        color: (theme) => (theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7)
+                      }}
+                    />
+                  ) : (
+                    nodeLookup[id].name.split(':').pop()
+                  )
+                }
               />
             )
           )}
@@ -854,7 +805,14 @@ function PageExplorerUI(props: PageExplorerUIProps) {
       )}
       {node.id === 'root' ? (
         <>
-          <Typography variant="subtitle1" className={classes.currentContentItems}>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontWeight: 600,
+              color: (theme) => (theme.palette.mode === 'dark' ? palette.white : palette.gray.medium7),
+              padding: '0 12px 2px 12px'
+            }}
+          >
             <FormattedMessage id="pageExplorerPanel.currentContentItems" defaultMessage="Current Content Items" />
           </Typography>
           {node.children

@@ -19,12 +19,13 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
 import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 import { rand } from '../PathNavigator/utils';
 import Skeleton from '@mui/material/Skeleton';
 
 import { SystemIcon, SystemIconDescriptor } from '../SystemIcon';
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
 
 export interface ContextMenuOption {
   id: string;
@@ -35,7 +36,7 @@ export interface ContextMenuOption {
 export interface ContextMenuProps extends MenuProps {
   isLoading?: boolean;
   numOfLoaderItems?: number;
-  classes?: MenuProps['classes'] & Partial<Record<'menuItem' | 'emptyRoot' | 'loadingRoot', string>>;
+  sxs?: PartialSxRecord<'menuItem' | 'emptyRoot' | 'loadingRoot'>;
   options: Array<Array<ContextMenuOption>>;
   emptyState?: {
     icon?: ElementType;
@@ -44,23 +45,11 @@ export interface ContextMenuProps extends MenuProps {
   onMenuItemClicked(optionId: string, event: React.MouseEvent<Element, MouseEvent>): void;
 }
 
-const useStyles = makeStyles()(() => ({
-  emptyRoot: {
-    display: 'block',
-    padding: '10px',
-    textAlign: 'center'
-  },
-  loadingRoot: {
-    width: '135px',
-    padding: '0 15px'
-  }
-}));
-
 export function ContextMenu(props: ContextMenuProps) {
-  const { classes, cx } = useStyles();
   const {
     options,
     classes: propClasses,
+    sxs,
     onMenuItemClicked,
     emptyState,
     isLoading = false,
@@ -70,15 +59,28 @@ export function ContextMenu(props: ContextMenuProps) {
   return (
     <Menu {...menuProps} classes={propClasses}>
       {isLoading ? (
-        <div className={cx(classes.loadingRoot, propClasses?.loadingRoot)}>
+        <Box
+          sx={{
+            width: '135px',
+            padding: '0 15px',
+            ...sxs?.loadingRoot
+          }}
+        >
           {new Array(numOfLoaderItems).fill(null).map((value, i) => (
             <Typography key={i} variant="body2" style={{ width: `${rand(85, 100)}%`, padding: '6px 0' }}>
               <Skeleton animation="wave" width="100%" />
             </Typography>
           ))}
-        </div>
+        </Box>
       ) : options.flatMap((i) => i).length === 0 ? (
-        <div className={cx(classes.emptyRoot, propClasses?.emptyRoot)}>
+        <Box
+          sx={{
+            display: 'block',
+            padding: '10px',
+            textAlign: 'center',
+            ...sxs?.emptyRoot
+          }}
+        >
           <ErrorOutlineOutlinedIcon fontSize="small" />
           <Typography variant="caption" display="block">
             {emptyState?.message || (
@@ -88,7 +90,7 @@ export function ContextMenu(props: ContextMenuProps) {
               />
             )}
           </Typography>
-        </div>
+        </Box>
       ) : (
         options.map((section: any, i: number) =>
           section.map((option: ContextMenuOption, y: number) => (
@@ -97,7 +99,7 @@ export function ContextMenu(props: ContextMenuProps) {
               key={option.id}
               divider={i !== options.length - 1 && y === section.length - 1}
               onClick={(e) => onMenuItemClicked(option.id, e)}
-              className={propClasses?.menuItem}
+              sx={sxs?.menuItem}
             >
               <Typography variant="body2">{option.label}</Typography>
               {option.icon && <SystemIcon icon={option.icon} sx={{ ml: 1 }} />}

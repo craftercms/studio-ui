@@ -18,8 +18,6 @@ import InputBase from '@mui/material/InputBase';
 import React, { useEffect, useState } from 'react';
 import { catchError, debounceTime, switchMap, tap } from 'rxjs/operators';
 import { search } from '../../services/search';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
 import useAutocomplete from '@mui/material/useAutocomplete';
 import { SearchItem } from '../../models/Search';
 import { CircularProgress, IconButton, List, ListItemIcon, ListItemText, Paper } from '@mui/material';
@@ -38,6 +36,8 @@ import { useSubject } from '../../hooks/useSubject';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { of } from 'rxjs';
 import ListItemButton from '@mui/material/ListItemButton';
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
 
 export interface PagesSearchAheadProps {
   value: string;
@@ -46,62 +46,14 @@ export interface PagesSearchAheadProps {
   onEnter(url: string): void;
   onFocus?(): void;
   onBlur?(): void;
-  classes: Partial<Record<'input', string>>;
+  sxs?: PartialSxRecord<
+    'container' | 'closeIcon' | 'progress' | 'inputRoot' | 'input' | 'paper' | 'listBox' | 'listItemIcon'
+  >;
   autoFocus?: boolean;
 }
 
-const useStyles = makeStyles()((theme: Theme) => ({
-  container: {
-    width: '100%',
-    position: 'relative'
-  },
-  closeIcon: {
-    padding: '3px'
-  },
-  progress: {
-    position: 'absolute',
-    right: 0
-  },
-  inputRoot: {
-    width: '100%',
-    background: 'none'
-  },
-  input: {},
-  paper: {
-    width: 400,
-    position: 'absolute',
-    right: '-52px',
-    top: '50px',
-    zIndex: theme.zIndex.drawer + 2
-  },
-  listBox: {
-    overflow: 'auto',
-    maxHeight: 600,
-    margin: 0,
-    padding: 0,
-    listStyle: 'none',
-    '& li[data-focus="true"]': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)'
-    },
-    '& li:active': {
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-      color: 'white'
-    }
-  },
-  listItemIcon: {
-    minWidth: 'auto',
-    paddingRight: '16px'
-  },
-  highlighted: {
-    display: 'inline-block',
-    background: 'yellow',
-    color: theme.palette.mode === 'dark' ? palette.gray.medium6 : theme.palette.text.secondary
-  }
-}));
-
 export function PagesSearchAhead(props: PagesSearchAheadProps) {
-  const { value, placeholder = '', disabled = false, onEnter, onFocus, onBlur, autoFocus = true } = props;
-  const { classes, cx } = useStyles();
+  const { value, placeholder = '', disabled = false, onEnter, onFocus, onBlur, autoFocus = true, sxs } = props;
   const onSearch$ = useSubject<string>();
   const site = useActiveSiteId();
   const contentTypes = useContentTypeList((contentType) => contentType.id?.startsWith('/page'));
@@ -184,7 +136,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
   const inputProps: { [key: string]: any } = getInputProps();
 
   return (
-    <div className={classes.container}>
+    <Box sx={{ width: '100%', position: 'relative', ...sxs.container }}>
       <div {...getRootProps()}>
         <InputBase
           onKeyUp={(e) => {
@@ -215,12 +167,22 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
           autoFocus={autoFocus}
           placeholder={placeholder}
           disabled={disabled}
-          classes={{ root: classes.inputRoot, input: cx(classes.input, props.classes?.input) }}
+          sx={{ width: '100%', background: 'none', ...sxs?.inputRoot }}
+          slotProps={{
+            input: { sx: sxs?.input }
+          }}
           endAdornment={
             isFetching ? (
-              <CircularProgress className={classes.progress} size={15} />
+              <CircularProgress
+                sx={{
+                  position: 'absolute',
+                  right: 0,
+                  ...sxs?.progress
+                }}
+                size={15}
+              />
             ) : keyword && keyword !== value ? (
-              <IconButton className={classes.closeIcon} onClick={onClean} size="large">
+              <IconButton sx={{ padding: '3px', ...sxs?.closeIcon }} onClick={onClean} size="large">
                 <CloseIcon fontSize="small" />
               </IconButton>
             ) : null
@@ -229,21 +191,55 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
         />
       </div>
       {popupOpen && dirty && (
-        <Paper className={classes.paper}>
+        <Paper
+          sx={{
+            width: 400,
+            position: 'absolute',
+            right: '-52px',
+            top: '50px',
+            zIndex: (theme) => theme.zIndex.drawer + 2,
+            ...sxs?.paper
+          }}
+        >
           {isFetching && <LoadingState />}
           {!isFetching && error && <ApiResponseErrorState error={error} imageUrl={null} />}
           {!isFetching && groupedOptions.length > 0 && (
-            <List dense className={classes.listBox} {...getListboxProps()}>
+            <List
+              dense
+              sx={{
+                overflow: 'auto',
+                maxHeight: 600,
+                margin: 0,
+                padding: 0,
+                listStyle: 'none',
+                '& li[data-focus="true"]': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                },
+                '& li:active': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                  color: 'white'
+                },
+                ...sxs?.listBox
+              }}
+              {...getListboxProps()}
+            >
               {(groupedOptions as SearchItem[]).map((option, index) => (
                 <ListItemButton dense component="li" {...getOptionProps({ option, index })}>
-                  <ListItemIcon className={classes.listItemIcon}>
+                  <ListItemIcon sx={{ minWidth: 'auto', paddingRight: '16px', ...sxs?.listItemIcon }}>
                     <Page />
                   </ListItemIcon>
                   <Option
                     name={option.name}
                     path={getPreviewURLFromPath(option.path)}
                     keyword={keyword}
-                    highlighted={classes.highlighted}
+                    sxs={{
+                      highlighted: {
+                        display: 'inline-block',
+                        background: 'yellow',
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? palette.gray.medium6 : theme.palette.text.secondary
+                      }
+                    }}
                   />
                 </ListItemButton>
               ))}
@@ -261,12 +257,13 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
           )}
         </Paper>
       )}
-    </div>
+    </Box>
   );
 }
 
+// TODO: types
 function Option(props) {
-  const { name, path, keyword, highlighted } = props;
+  const { name, path, keyword, sxs } = props;
   const nameMatches = match(name, keyword);
   const pathMatches = match(path, keyword);
   const nameParts = parse(name, nameMatches);
@@ -278,10 +275,10 @@ function Option(props) {
         <>
           {nameParts.map((part, i) =>
             part.highlight ? (
-              <span key={i} className={highlighted}>
+              <Box component="span" key={i} sx={sxs?.highlighted}>
                 {' '}
                 {part.text}{' '}
-              </span>
+              </Box>
             ) : (
               part.text
             )
@@ -292,10 +289,10 @@ function Option(props) {
         <>
           {pathParts.map((part, i) =>
             part.highlight ? (
-              <span key={i} className={highlighted}>
+              <Box component="span" key={i} sx={sxs?.highlighted}>
                 {' '}
                 {part.text}{' '}
-              </span>
+              </Box>
             ) : (
               part.text
             )

@@ -19,8 +19,7 @@ import React, { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import GlobalAppToolbar from '../GlobalAppToolbar';
 import { Typography } from '@mui/material';
-import Paper from '@mui/material/Paper';
-import useStyles from './styles';
+import Paper, { paperClasses } from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Container from '@mui/material/Container';
 import { dispatchLanguageChange, getCurrentLocale, setStoredLanguage } from '../../utils/i18n';
@@ -67,8 +66,6 @@ const translations = defineMessages({
 
 export function AccountManagement(props: AccountManagementProps) {
   const { passwordRequirementsMinComplexity = 4 } = props;
-
-  const { classes, cx: clsx } = useStyles();
   const user = useActiveUser();
   const [language, setLanguage] = useState(() => getCurrentLocale());
   const [languages, setLanguages] = useState<SystemLang[]>();
@@ -146,10 +143,24 @@ export function AccountManagement(props: AccountManagementProps) {
   return (
     <Paper elevation={0} sx={{ mb: 2 }}>
       <GlobalAppToolbar title={<FormattedMessage id="words.account" defaultMessage="Account" />} />
-      <Container maxWidth="md" sx={{ mb: 2, pb: 2 }}>
-        <Paper className={clsx(classes.paper, 'mt20')}>
+      <Container
+        maxWidth="md"
+        sx={{
+          mb: 2,
+          pb: 2,
+          [`& > .${paperClasses.root}`]: {
+            padding: '20px',
+            margin: '20px 0',
+            background: (theme) => theme.palette.background.default,
+            '& .mt20': {
+              marginTop: '20px'
+            }
+          }
+        }}
+      >
+        <Paper className="mt20">
           <Box display="flex" alignItems="center">
-            <Avatar className={classes.avatar}>
+            <Avatar sx={{ marginRight: '30px', width: '90px', height: '90px' }}>
               {user.firstName.charAt(0)}
               {user.lastName?.charAt(0) ?? ''}
             </Avatar>
@@ -161,7 +172,7 @@ export function AccountManagement(props: AccountManagementProps) {
             </section>
           </Box>
         </Paper>
-        <Paper className={classes.paper}>
+        <Paper>
           <Typography variant="h5">
             <FormattedMessage id="accountManagement.changeLanguage" defaultMessage="Change Language" />
           </Typography>
@@ -185,7 +196,7 @@ export function AccountManagement(props: AccountManagementProps) {
             )}
           </Box>
         </Paper>
-        <Paper className={classes.paper}>
+        <Paper>
           <Typography variant="h5">
             <FormattedMessage id="accountManagement.changePassword" defaultMessage="Change Password" />
           </Typography>
@@ -247,14 +258,14 @@ export function AccountManagement(props: AccountManagementProps) {
             />
             <PrimaryButton
               disabled={!validPassword || newPassword !== verifiedPassword || currentPassword === ''}
-              className={classes.save}
+              sx={{ marginLeft: 'auto' }}
               onClick={() => onSave()}
             >
               <FormattedMessage id="words.save" defaultMessage="Save" />
             </PrimaryButton>
           </Box>
         </Paper>
-        <Paper className={classes.paper}>
+        <Paper>
           <Typography variant="h5" mb={3}>
             <FormattedMessage defaultMessage="Stored Preferences" />
           </Typography>

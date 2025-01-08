@@ -32,7 +32,7 @@ import { useItemsByPath } from '../../hooks/useItemsByPath';
 export interface ItemMenuBaseProps {
   path: string;
   open: boolean;
-  classes?: ContextMenuProps['classes'];
+  sxs?: ContextMenuProps['sxs'];
   anchorOrigin?: PopoverOrigin;
   anchorReference?: PopoverReference;
   anchorPosition?: PopoverPosition;
@@ -56,7 +56,7 @@ export function ItemActionsMenu(props: ItemMenuProps) {
     path,
     onClose,
     numOfLoaderItems = 8,
-    classes,
+    sxs,
     anchorEl,
     anchorOrigin,
     anchorReference = 'anchorEl',
@@ -86,7 +86,7 @@ export function ItemActionsMenu(props: ItemMenuProps) {
     <ContextMenu
       open={open}
       onClose={onClose}
-      classes={classes}
+      sxs={sxs}
       options={options}
       onMenuItemClicked={onMenuItemClicked}
       isLoading={!item}
