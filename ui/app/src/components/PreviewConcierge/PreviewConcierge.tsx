@@ -330,7 +330,7 @@ export function PreviewConcierge(props: PropsWithChildren<{}>) {
   const item = useCurrentPreviewItem();
   const { currentUrlPath } = usePreviewNavigation();
   const contentTypes = useContentTypes();
-  const contentTypes$Ref = useRef<BehaviorSubject<Record<string, ContentType>>>();
+  const contentTypes$Ref = useRef<BehaviorSubject<Record<string, ContentType>>>(undefined);
   const { authoringBase, guestBase, xsrfArgument } = useSelection((state) => state.env);
   const priorState = useRef({ site: siteId });
   const { enqueueSnackbar } = useSnackbar();

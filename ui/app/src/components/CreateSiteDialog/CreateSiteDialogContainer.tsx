@@ -141,7 +141,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
   refts.setSite = setSite;
   const { formatMessage } = useIntl();
   const { authoringBase, useBaseDomain } = useEnv();
-  const siteCreateSubscription = useRef<Subscription>();
+  const siteCreateSubscription = useRef<Subscription>(undefined);
   const mounted = useRef(false);
 
   useMount(() => {

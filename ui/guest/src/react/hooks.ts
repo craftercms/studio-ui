@@ -94,8 +94,8 @@ export function useICE(props: UseICEProps): ICEMaterials {
   const context = useGuestContext();
   const inAuthoring = useIsAuthoring();
   const { onEvent, draggable } = context ?? {};
-  const elementRef = useRef<HTMLElement>();
-  const elementRegistryId = useRef<number>();
+  const elementRef = useRef<HTMLElement>(undefined);
+  const elementRegistryId = useRef<number>(undefined);
   const model = useHotReloadModel(props);
   const modelId = props.model?.craftercms.id;
 

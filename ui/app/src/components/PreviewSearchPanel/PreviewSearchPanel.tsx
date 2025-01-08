@@ -140,7 +140,7 @@ export function PreviewSearchPanel() {
     () => (contentTypes ? createLookupTable(contentTypes, 'id') : null),
     [contentTypes]
   );
-  const onSearchSubscription = useRef<Subscription>();
+  const onSearchSubscription = useRef<Subscription>(undefined);
   const unMount$ = useSubject<void>();
   const [pageNumber, setPageNumber] = useState(0);
 

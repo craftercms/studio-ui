@@ -89,7 +89,7 @@ export function ZoneMenu(props: ZoneMenuProps) {
     ? models[getModelIdFromInheritedField(modelId, fieldId)].craftercms.path
     : (models[modelId].craftercms.path ?? models[parentModelId].craftercms.path);
 
-  const trashButtonRef = React.useRef();
+  const trashButtonRef = React.useRef(undefined);
   const [showTrashConfirmation, setShowTrashConfirmation] = useState<boolean>(false);
 
   const iceRecord = getById(record.iceIds[0]);

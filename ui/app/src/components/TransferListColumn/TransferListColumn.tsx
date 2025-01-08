@@ -70,7 +70,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
     hasMoreItems
   } = props;
   const { classes } = useStyles();
-  const listRef = useRef();
+  const listRef = useRef(undefined);
 
   const onSearch = (value) => {
     onFilter?.(value);
@@ -107,6 +107,7 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
+            // @ts-expect-error InfiniteScroll cannot be used as a JSX component.
             <InfiniteScroll
               initialLoad={false}
               pageStart={0}

@@ -237,7 +237,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     tooltip = ''
   } = props;
   // endregion
-  const buttonElRef = useRef();
+  const buttonElRef = useRef(undefined);
   const [state, _dispatch] = useReducer(reducer, props, init);
   const site = useActiveSiteId();
 

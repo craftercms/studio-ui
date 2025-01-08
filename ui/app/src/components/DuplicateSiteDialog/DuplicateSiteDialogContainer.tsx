@@ -83,7 +83,7 @@ export function DuplicateSiteDialogContainer(props: DuplicateSiteDialogContainer
   );
   const [sourceSiteHasBlobStores, setSourceSiteHasBlobStores] = useState(null);
   const primaryButtonRef = useRef(null);
-  const siteDuplicateSubscription = useRef<Subscription>();
+  const siteDuplicateSubscription = useRef<Subscription>(undefined);
   const [sites, setSites] = useState(null);
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange, handleClose });
   const mountedRef = useRef(true);

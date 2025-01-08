@@ -240,7 +240,7 @@ interface TreeItemCustomInterface {
 function TreeItemCustom(props: TreeItemCustomInterface) {
   const { nodeLookup, node, handleScroll, handleClick, handleOptions, isRootChild, keyword } = props;
   const [over, setOver] = useState(false);
-  let timeout = React.useRef<any>();
+  let timeout = React.useRef<any>(undefined);
   const isMounted = useRef(null);
   let Icon;
   const nodeName = node.name.split(':');

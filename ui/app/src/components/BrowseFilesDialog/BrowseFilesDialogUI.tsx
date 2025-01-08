@@ -92,7 +92,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
   const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
-  const buttonRef = useRef();
+  const buttonRef = useRef(undefined);
 
   return (
     <>

@@ -497,7 +497,7 @@ function UnrecognizedView({ classes }: any) {
 
 function LanguageDropDown(props: LanguageDropDownProps) {
   const { formatMessage } = useIntl();
-  const buttonRef = useRef();
+  const buttonRef = useRef(undefined);
   const [openMenu, setOpenMenu] = useState(false);
   const { language, languages, onChange } = props;
   return (

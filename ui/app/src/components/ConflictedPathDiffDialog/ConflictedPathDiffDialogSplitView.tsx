@@ -26,7 +26,7 @@ export interface SplitViewProps {
 
 export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
   const { diff, className } = props;
-  const ref = useRef();
+  const ref = useRef(undefined);
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const diffEditorRef = useRef(null);
   useEffect(() => {
