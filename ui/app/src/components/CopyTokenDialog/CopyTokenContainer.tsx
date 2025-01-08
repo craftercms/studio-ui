@@ -22,26 +22,12 @@ import DialogFooter from '../DialogFooter/DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { CopyTokenContainerProps } from './utils';
-import { makeStyles } from 'tss-react/mui';
 import { copyToClipboard } from '../../utils/system';
 import useMount from '../../hooks/useMount';
 import Alert from '@mui/material/Alert';
 
-const useStyles = makeStyles()(() => ({
-  footer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  },
-  input: {
-    marginTop: '16px',
-    marginBottom: '8px'
-  }
-}));
-
 export function CopyTokenContainer(props: CopyTokenContainerProps) {
   const { onClose, token, onCopy } = props;
-  const { classes } = useStyles();
   // TODO: Ref not in use. Remove?
   const inputRef = useRef<HTMLInputElement>();
 
@@ -69,14 +55,17 @@ export function CopyTokenContainer(props: CopyTokenContainerProps) {
           autoFocus
           value={token?.token ?? ''}
           readOnly
-          className={classes.input}
+          sx={{
+            marginTop: '16px',
+            marginBottom: '8px'
+          }}
           onClick={(e) => {
             (e.target as HTMLInputElement).select();
             copyToken();
           }}
         />
       </DialogBody>
-      <DialogFooter className={classes.footer}>
+      <DialogFooter sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <SecondaryButton onClick={() => copyToken()}>
           <FormattedMessage id="words.copy" defaultMessage="Copy" />
         </SecondaryButton>

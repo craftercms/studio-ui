@@ -15,23 +15,12 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
-
-const useStyles = makeStyles()(() => ({
-  countContainer: {
-    padding: '5px'
-  },
-  submissionCommentCount: {
-    fontSize: '14px',
-    color: palette.gray.medium4
-  }
-}));
 
 interface CharCountStatusContainerProps {
   commentLength: number;
@@ -43,13 +32,12 @@ interface CharCountStatusProps {
 }
 
 function CharCountStatus(props: CharCountStatusProps) {
-  const { classes } = useStyles();
   const { commentLength, commentMaxLength } = props;
 
   return (
-    <Grid container direction="row" justifyContent="space-between" className={classes.countContainer}>
+    <Grid container direction="row" justifyContent="space-between" sx={{ padding: '5px' }}>
       <Grid>
-        <Typography className={classes.submissionCommentCount}>
+        <Typography sx={{ fontSize: '14px', color: palette.gray.medium4 }}>
           <FormattedMessage
             id="deleteDialog.maxCharacters"
             defaultMessage="Max {maxLength} characters"
@@ -59,7 +47,7 @@ function CharCountStatus(props: CharCountStatusProps) {
       </Grid>
 
       <Grid>
-        <Typography className={classes.submissionCommentCount}>
+        <Typography sx={{ fontSize: '14px', color: palette.gray.medium4 }}>
           {commentLength}/{commentMaxLength}
         </Typography>
       </Grid>

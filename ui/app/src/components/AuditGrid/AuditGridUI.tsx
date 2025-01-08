@@ -18,8 +18,7 @@ import { AuditLogEntry, AuditLogEntryParameter } from '../../models/Audit';
 import { PagedArray } from '../../models/PagedArray';
 import Box from '@mui/material/Box';
 import React, { useCallback, useMemo, useState } from 'react';
-import { useStyles } from './styles';
-import { DataGrid, GridCellParams, GridColDef, GridSortModel } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, gridClasses, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 import { Site } from '../../models/Site';
@@ -131,7 +130,6 @@ export function AuditGridUI(props: AuditGridUIProps) {
     hasActiveFilters,
     siteMode = false
   } = props;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const [anchorPosition, setAnchorPosition] = useState(null);
   const [openedFilter, setOpenedFilter] = useState<string>();
@@ -189,31 +187,29 @@ export function AuditGridUI(props: AuditGridUIProps) {
         field: 'operationTimestamp',
         headerName: formatMessage(translations.timestamp),
         width: 200,
-        cellClassName: classes.cellRoot,
         renderCell: (params: GridCellParams) => {
           const date = new Intl.DateTimeFormat(localeBranch.localeCode, {
             ...localeBranch.dateTimeFormatOptions,
             timeZone: timezone
           }).format(new Date(params.value as Date));
           return (
-            <Typography variant="body2" className={classes.ellipsis} title={date?.toString()}>
+            <Typography variant="body2" title={date?.toString()}>
               {date}
             </Typography>
           );
         },
-        headerClassName: (filters['dateFrom'] || filters['dateTo']) && classes.activeFilter
+        headerClassName: (filters['dateFrom'] || filters['dateTo']) && 'activeFilter'
       },
       {
         field: 'siteName',
         headerName: formatMessage(translations.siteName),
         width: 150,
         sortable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['siteName']] && classes.activeFilter,
+        headerClassName: filters[fieldIdMapping['siteName']] && 'activeFilter',
         hide: siteMode,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
+            <Typography variant="body2" title={params.value?.toString()}>
               {params.value as React.ReactNode}
             </Typography>
           );
@@ -224,11 +220,10 @@ export function AuditGridUI(props: AuditGridUIProps) {
         headerName: formatMessage(translations.username),
         width: 150,
         sortable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['actorId']] && classes.activeFilter,
+        headerClassName: filters[fieldIdMapping['actorId']] && 'activeFilter',
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
+            <Typography variant="body2" title={params.value?.toString()}>
               {params.value as React.ReactNode}
             </Typography>
           );
@@ -239,11 +234,10 @@ export function AuditGridUI(props: AuditGridUIProps) {
         headerName: formatMessage(translations.operation),
         width: 150,
         sortable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['operation']] && classes.activeFilter,
+        headerClassName: filters[fieldIdMapping['operation']] && 'activeFilter',
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
+            <Typography variant="body2" title={params.value?.toString()}>
               {params.value as React.ReactNode}
             </Typography>
           );
@@ -254,11 +248,10 @@ export function AuditGridUI(props: AuditGridUIProps) {
         headerName: formatMessage(translations.targetValue),
         width: 300,
         sortable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['primaryTargetValue']] && classes.activeFilter,
+        headerClassName: filters[fieldIdMapping['primaryTargetValue']] && 'activeFilter',
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
+            <Typography variant="body2" title={params.value?.toString()}>
               {params.value as React.ReactNode}
             </Typography>
           );
@@ -270,10 +263,9 @@ export function AuditGridUI(props: AuditGridUIProps) {
         width: 150,
         disableColumnMenu: true,
         sortable: false,
-        cellClassName: classes.cellRoot,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
+            <Typography variant="body2" title={params.value?.toString()}>
               {params.value as React.ReactNode}
             </Typography>
           );
@@ -285,10 +277,9 @@ export function AuditGridUI(props: AuditGridUIProps) {
         width: 100,
         disableColumnMenu: true,
         sortable: false,
-        cellClassName: classes.cellRoot,
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
+            <Typography variant="body2" title={params.value?.toString()}>
               {params.value as React.ReactNode}
             </Typography>
           );
@@ -299,11 +290,10 @@ export function AuditGridUI(props: AuditGridUIProps) {
         headerName: formatMessage(translations.origin),
         width: 100,
         sortable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['origin']] && classes.activeFilter,
+        headerClassName: filters[fieldIdMapping['origin']] && 'activeFilter',
         renderCell: (params: GridCellParams) => {
           return (
-            <Typography variant="body2" className={classes.ellipsis} title={params.value?.toString()}>
+            <Typography variant="body2" title={params.value?.toString()}>
               {params.value as React.ReactNode}
             </Typography>
           );
@@ -327,14 +317,10 @@ export function AuditGridUI(props: AuditGridUIProps) {
             </Typography>
           );
         },
-        sortable: false,
-        cellClassName: classes.cellRoot
+        sortable: false
       }
     ],
     [
-      classes.activeFilter,
-      classes.cellRoot,
-      classes.ellipsis,
       filters,
       formatMessage,
       localeBranch.dateTimeFormatOptions,
@@ -354,7 +340,36 @@ export function AuditGridUI(props: AuditGridUIProps) {
         sortingMode="server"
         autoHeight={Boolean(auditLogs.length)}
         disableColumnFilter
-        className={classes.gridRoot}
+        sx={{
+          border: '0 !important',
+          minHeight: '400px',
+          [`& .${gridClasses.menuIcon}`]: {
+            width: 'auto !important',
+            visibility: 'visible !important' as 'visible'
+          },
+          [`& .${gridClasses.columnHeader}`]: {
+            '&.activeFilter': {
+              color: (theme) => theme.palette.primary.main,
+              '& button': {
+                color: (theme) => theme.palette.primary.main
+              }
+            },
+            '&:focus': {
+              outline: 'none !important'
+            }
+          },
+          [`& .${gridClasses.columnHeaderTitle}`]: {
+            textOverflow: 'ellipsis',
+            overflow: 'hidden'
+          },
+          [`& .${gridClasses.cell}`]: {
+            display: 'flex',
+            alignItems: 'center',
+            '&:focus-within': {
+              outline: 'none !important'
+            }
+          }
+        }}
         slots={{
           columnMenu: onFilterSelected,
           noRowsOverlay: () => (

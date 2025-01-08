@@ -6,6 +6,7 @@
   * Removed `pages/QuickCreateMenu` component.
   * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
   * Removed `resource` prop from StoreProvider
+  * Removed `classes` prop from `DialogHeader`. Replaced by `sxs` prop.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.

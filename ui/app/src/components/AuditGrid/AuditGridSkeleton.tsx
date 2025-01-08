@@ -16,8 +16,7 @@
 
 import Box from '@mui/material/Box';
 import React, { useMemo } from 'react';
-import { useStyles } from './styles';
-import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridCellParams, gridClasses, GridColDef } from '@mui/x-data-grid';
 import { useIntl } from 'react-intl';
 import { AuditOptions } from '../../services/audit';
 // @ts-ignore
@@ -33,7 +32,6 @@ export interface AuditGridSkeletonProps {
 
 export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
   const { numOfItems = 5, filters, siteMode = false } = props;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   const rows = useMemo(() => {
@@ -59,11 +57,9 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 200,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;
-        },
-        headerClassName: (filters['dateFrom'] || filters['dateTo']) && classes.activeFilter
+        }
       },
       {
         field: 'siteName',
@@ -71,9 +67,7 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 150,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
         hide: siteMode,
-        headerClassName: filters[fieldIdMapping['siteName']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;
         }
@@ -84,8 +78,6 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 150,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['actorId']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;
         }
@@ -96,8 +88,6 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 150,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['operation']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;
         }
@@ -108,8 +98,6 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 300,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['primaryTargetValue']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;
         }
@@ -120,7 +108,6 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 150,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;
         }
@@ -131,7 +118,6 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 100,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;
         }
@@ -142,8 +128,6 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 100,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
-        headerClassName: filters[fieldIdMapping['origin']] && classes.activeFilter,
         renderCell: (params: GridCellParams) => {
           return <Skeleton height={20} variant="text" width={params.value.toString()} />;
         }
@@ -154,13 +138,12 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
         width: 105,
         sortable: false,
         filterable: false,
-        cellClassName: classes.cellRoot,
         renderCell: () => {
           return <Skeleton variant="circular" width={40} height={40} />;
         }
       }
     ],
-    [classes.activeFilter, classes.cellRoot, filters, formatMessage, siteMode]
+    [formatMessage, siteMode]
   );
 
   return (
@@ -172,7 +155,17 @@ export function AuditGridSkeleton(props: AuditGridSkeletonProps) {
           columnMenuIcon: () => <Skeleton variant="circular" width={20} height={20} />
         }}
         onCellClick={() => {}}
-        className={classes.gridRoot}
+        sx={{
+          border: '0 !important',
+          minHeight: '400px',
+          [`& .${gridClasses.cell}`]: {
+            display: 'flex',
+            alignItems: 'center',
+            '&:focus-within': {
+              outline: 'none !important'
+            }
+          }
+        }}
         disableRowSelectionOnClick
         disableColumnSelector
         hideFooterPagination={true}
