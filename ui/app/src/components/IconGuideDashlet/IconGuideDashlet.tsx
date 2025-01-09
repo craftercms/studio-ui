@@ -18,7 +18,6 @@ import React, { useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid2';
-import { makeStyles } from 'tss-react/mui';
 import ItemStateIcon from '../ItemStateIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemTypeIcon from '../ItemTypeIcon';
@@ -28,29 +27,12 @@ import Accordion from '@mui/material/Accordion';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMoreRounded';
 import { styled } from '@mui/material/styles';
 import AccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
+import Box from '@mui/material/Box';
+import { typographyClasses } from '@mui/material';
 
 export interface IconGuideDashletProps {
   contentHeight?: number | string;
 }
-
-const useStyles = makeStyles()((theme) => ({
-  iconGuideContainer: {
-    padding: theme.spacing(2)
-  },
-  guideSectionTitle: {
-    marginBottom: theme.spacing(1),
-    '&:not(:first-child)': {
-      marginTop: theme.spacing(3)
-    }
-  },
-  stateContainer: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  icon: {
-    marginRight: theme.spacing(1)
-  }
-}));
 
 const messages = defineMessages({
   page: { id: 'words.page', defaultMessage: 'Page' },
@@ -125,7 +107,6 @@ const Summary = styled(AccordionSummary)(() => {
 export function IconGuideDashlet(props: IconGuideDashletProps) {
   const { contentHeight } = props;
   const [expanded, setExpanded] = useState(true);
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   return (
     <>
@@ -136,14 +117,29 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
           </Typography>
         </Summary>
         <AccordionDetails sx={{ p: 0 }}>
-          <div className={classes.iconGuideContainer} style={{ overflow: 'auto', height: contentHeight }}>
-            <Typography variant="subtitle2" className={classes.guideSectionTitle}>
+          <Box
+            sx={(theme) => ({
+              padding: (theme) => theme.spacing(2),
+              overflow: 'auto',
+              height: contentHeight,
+              [`& > .${typographyClasses.subtitle2}`]: {
+                marginBottom: theme.spacing(1),
+                '&:not(:first-child)': {
+                  marginTop: theme.spacing(3)
+                }
+              }
+            })}
+          >
+            <Typography variant="subtitle2">
               <FormattedMessage id="iconGuide.publishingStatusTarget" defaultMessage="Publishing Status/Target" />
             </Typography>
             <Grid container spacing={2}>
               {Object.keys(status).map((key) => (
-                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} className={classes.stateContainer}>
-                  <ItemPublishingTargetIcon item={status[key]} className={classes.icon} />
+                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ItemPublishingTargetIcon
+                    item={status[key]}
+                    sxs={{ root: { display: 'flex', alignItems: 'center' } }}
+                  />
                   <Typography variant="body2" component="span">
                     {getItemPublishingTargetText(status[key].stateMap)}
                   </Typography>
@@ -151,13 +147,13 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
               ))}
             </Grid>
 
-            <Typography variant="subtitle2" className={classes.guideSectionTitle}>
+            <Typography variant="subtitle2">
               <FormattedMessage id="iconGuide.workflowStates" defaultMessage="Workflow States" />
             </Typography>
             <Grid container spacing={2}>
               {Object.keys(states).map((key) => (
-                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} className={classes.stateContainer}>
-                  <ItemStateIcon item={states[key]} className={classes.icon} />
+                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ItemStateIcon item={states[key]} sxs={{ root: { marginRight: (theme) => theme.spacing(1) } }} />
                   <Typography variant="body2" component="span">
                     {getItemStateText(states[key].stateMap)}
                   </Typography>
@@ -165,20 +161,20 @@ export function IconGuideDashlet(props: IconGuideDashletProps) {
               ))}
             </Grid>
 
-            <Typography variant="subtitle2" className={classes.guideSectionTitle}>
+            <Typography variant="subtitle2">
               <FormattedMessage id="iconGuide.itemTypes" defaultMessage="Item Types" />
             </Typography>
             <Grid container spacing={2}>
               {Object.keys(types).map((key) => (
-                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} className={classes.stateContainer}>
-                  <ItemTypeIcon item={types[key]} className={classes.icon} />
+                <Grid key={key} size={{ xs: 6, sm: 4, md: 3, lg: 2 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ItemTypeIcon item={types[key]} sx={{ marginRight: (theme) => theme.spacing(1) }} />
                   <Typography variant="body2" component="span">
                     {formatMessage(messages[key])}
                   </Typography>
                 </Grid>
               ))}
             </Grid>
-          </div>
+          </Box>
         </AccordionDetails>
       </Accordion>
     </>

@@ -17,4 +17,3 @@
 export { default } from './ItemPublishingTargetIcon';
 
 export * from './ItemPublishingTargetIcon';
-export { useStyles } from './styles';

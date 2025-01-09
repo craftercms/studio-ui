@@ -15,29 +15,20 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid2';
 import GitForm from './GitForm';
-import { LookupTable, MarketplacePlugin, SiteState } from '../../models';
+import { LookupTable, MarketplacePlugin, PartialSxRecord, SiteState } from '../../models';
 import { FormattedMessage } from 'react-intl';
 import PluginFormEngine from '../PluginFormBuilder';
 import { fetchAll } from '../../services/sites';
 import { cleanupGitBranch, cleanupSiteId, getSiteIdFromSiteName, siteIdExist, siteNameExist } from './utils';
 import BaseSiteForm from './BaseSiteForm';
-
-const useStyles = makeStyles()(() => ({
-  form: {
-    maxWidth: '600px',
-    margin: '0 auto'
-  }
-}));
+import Box from '@mui/material/Box';
 
 interface BlueprintFormProps {
   inputs: SiteState;
   blueprint: MarketplacePlugin;
-  classes?: {
-    root?: string;
-  };
+  sxs?: PartialSxRecord<'root'>;
   fieldsErrorsLookup: LookupTable<boolean>;
 
   setInputs(state: any): any;
@@ -73,8 +64,7 @@ export function renderSiteFormHelperText(
 }
 
 function BlueprintForm(props: BlueprintFormProps) {
-  const { classes, cx } = useStyles();
-  const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, classes: classesProp, fieldsErrorsLookup } = props;
+  const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, sxs, fieldsErrorsLookup } = props;
   const [sites, setSites] = useState(null);
 
   useEffect(() => {
@@ -140,7 +130,7 @@ function BlueprintForm(props: BlueprintFormProps) {
   }
 
   return (
-    <form className={cx(classes.form, classesProp?.root)}>
+    <Box component="form" sx={{ maxWidth: '600px', margin: '0 auto', ...sxs?.root }}>
       <Grid container spacing={3}>
         <BaseSiteForm
           inputs={inputs}
@@ -169,7 +159,7 @@ function BlueprintForm(props: BlueprintFormProps) {
           />
         )}
       </Grid>
-    </form>
+    </Box>
   );
 }
 

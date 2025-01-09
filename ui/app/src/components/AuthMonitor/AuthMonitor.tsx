@@ -22,7 +22,6 @@ import TextField from '@mui/material/TextField';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import React, { CSSProperties, PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { useDispatch } from 'react-redux';
 import { login, loginComplete, logout } from '../../state/actions/auth';
 import loginGraphicUrl from '../../assets/authenticate.svg';

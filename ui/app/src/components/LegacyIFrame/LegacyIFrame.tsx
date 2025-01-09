@@ -15,8 +15,8 @@
  */
 
 import React, { IframeHTMLAttributes } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { useEnv } from '../../hooks/useEnv';
+import Box from '@mui/material/Box';
 
 export interface LegacyIFrameProps {
   path: string;
@@ -24,23 +24,26 @@ export interface LegacyIFrameProps {
   iframeProps?: IframeHTMLAttributes<any>;
 }
 
-const useStyles = makeStyles()(() => ({
-  iframe: {
-    width: '100%',
-    height: '100%',
-    border: 'none',
-    display: 'block'
-  }
-}));
-
 function LegacyIFrame(props: LegacyIFrameProps) {
   const { path, title = '', iframeProps } = props;
   const authoringUrl = useEnv().authoringBase;
-  const { classes } = useStyles();
-
   const iframeSrc = `${authoringUrl}${path.startsWith('/') ? '' : '/'}${path}`;
 
-  return <iframe frameBorder={0} title={title} src={iframeSrc} className={classes.iframe} {...iframeProps} />;
+  return (
+    <Box
+      component="iframe"
+      frameBorder={0}
+      title={title}
+      src={iframeSrc}
+      sx={{
+        width: '100%',
+        height: '100%',
+        border: 'none',
+        display: 'block'
+      }}
+      {...iframeProps}
+    />
+  );
 }
 
 export default LegacyIFrame;

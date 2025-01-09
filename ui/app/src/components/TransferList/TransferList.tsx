@@ -19,7 +19,6 @@ import React, { ReactNode } from 'react';
 import IconButton from '@mui/material/IconButton';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import useStyles from './styles';
 import TransferListColumn, { TransferListColumnProps, TransferListItem } from '../TransferListColumn';
 import { FormattedMessage } from 'react-intl';
 import Tooltip from '@mui/material/Tooltip';
@@ -52,7 +51,6 @@ export function TransferList(props: TransferListProps) {
     removeFromTarget,
     disabled = false
   } = props;
-  const { classes } = useStyles();
 
   return (
     <Box display="flex">
@@ -73,7 +71,19 @@ export function TransferList(props: TransferListProps) {
         onFetchMore={source.onFetchMore}
         hasMoreItems={source.hasMoreItems}
       />
-      <section className={classes.buttonsWrapper}>
+      <Box
+        component="section"
+        sx={{
+          display: 'flex',
+          minWidth: 50,
+          flexDirection: 'column',
+          justifyContent: 'center',
+          margin: '40px 20px',
+          '& button:first-child': {
+            marginBottom: '20px'
+          }
+        }}
+      >
         {!disabled && (
           <>
             <Tooltip
@@ -114,7 +124,7 @@ export function TransferList(props: TransferListProps) {
             </Tooltip>
           </>
         )}
-      </section>
+      </Box>
       <TransferListColumn
         title={target.title}
         items={target.items}

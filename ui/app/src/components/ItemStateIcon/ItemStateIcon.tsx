@@ -28,11 +28,11 @@ import Tooltip from '@mui/material/Tooltip';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { getItemStateId, getItemStateText } from '../ItemDisplay/utils';
-import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import { CSSObject as CSSProperties } from 'tss-react';
 import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
+import { PartialSxRecord } from '../../models';
 
 export type ItemStateIconClassKey =
   | 'root'
@@ -53,116 +53,82 @@ export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSPrope
 
 export interface ItemStateIconProps {
   item: DetailedItem | SandboxItem;
-  classes?: Partial<Record<ItemStateIconClassKey, string>>;
+  sxs?: PartialSxRecord<ItemStateIconClassKey>;
   className?: string;
   styles?: ItemStateIconStyles;
   displayTooltip?: boolean;
   fontSize?: SvgIconProps['fontSize'];
 }
 
-// region makeStyles()
-const useStyles = makeStyles<ItemStateIconStyles, ItemStateIconClassKey>()(
-  (
-    _theme,
-    {
-      root,
-      stateNewIcon,
-      stateModifiedIcon,
-      stateDeletedIcon,
-      stateLockedIcon,
-      stateSystemProcessingIcon,
-      stateSubmittedIcon,
-      stateSubmittedToStagingIcon,
-      stateSubmittedToLiveIcon,
-      stateScheduledIcon,
-      statePublishingIcon,
-      stateDisabledIcon,
-      stateNotInWorkflow
-    } = {} as ItemStateIconStyles
-  ) => ({
-    root: {
-      ...root
-    },
-    stateNewIcon: {
-      color: palette.teal.main,
-      ...stateNewIcon
-    },
-    stateModifiedIcon: {
-      color: palette.yellow.main,
-      ...stateModifiedIcon
-    },
-    stateDeletedIcon: {
-      color: palette.red.main,
-      ...stateDeletedIcon
-    },
-    stateLockedIcon: {
-      color: palette.orange.main,
-      ...stateLockedIcon
-    },
-    stateSystemProcessingIcon: {
-      color: palette.indigo.main,
-      ...stateSystemProcessingIcon
-    },
-    stateSubmittedIcon: {
-      color: palette.purple.main,
-      ...stateSubmittedIcon
-    },
-    stateSubmittedToStagingIcon: {
-      color: palette.blue.main,
-      ...stateSubmittedToStagingIcon
-    },
-    stateSubmittedToLiveIcon: {
-      color: palette.green.main,
-      ...stateSubmittedToLiveIcon
-    },
-    stateScheduledIcon: {
-      color: palette.green.main,
-      ...stateScheduledIcon
-    },
-    statePublishingIcon: {
-      color: palette.indigo.main,
-      ...statePublishingIcon
-    },
-    stateDisabledIcon: {
-      color: palette.pink.main,
-      ...stateDisabledIcon
-    },
-    stateNotInWorkflow: {
-      color: palette.gray.medium4,
-      ...stateNotInWorkflow
-    }
-  })
-);
-// endregion
-
 export function ItemStateIcon(props: ItemStateIconProps) {
-  const { item, classes: propClasses, styles, className, displayTooltip = true, fontSize } = props;
-  const { classes, cx } = useStyles(styles);
-  const { Icon, stateSpecificClass } = useMemo(() => {
+  const { item, sxs, styles, className, displayTooltip = true, fontSize } = props;
+  const { Icon, stateSpecificSx } = useMemo(() => {
     if (item.systemType === 'folder') {
-      return { Icon: NotInWorkflowIcon, stateSpecificClass: classes.stateNotInWorkflow };
+      return {
+        Icon: NotInWorkflowIcon,
+        stateSpecificSx: { color: palette.gray.medium4, ...styles?.stateNotInWorkflow, ...sxs?.stateNotInWorkflow }
+      };
     }
     let map: { [key in ItemStates]: any };
     map = {
-      new: { Icon: NewStateIcon, stateSpecificClass: classes.stateNewIcon },
-      modified: { Icon: EditedStateIcon, stateSpecificClass: classes.stateModifiedIcon },
-      deleted: { Icon: DeletedStateIcon, stateSpecificClass: classes.stateDeletedIcon },
-      locked: { Icon: LockedStateIcon, stateSpecificClass: classes.stateLockedIcon },
-      systemProcessing: { Icon: SystemProcessingStateIcon, stateSpecificClass: classes.stateSystemProcessingIcon },
-      submitted: { Icon: SubmittedStateIcon, stateSpecificClass: classes.stateSubmittedIcon },
-      scheduled: { Icon: ScheduledStateIcon, stateSpecificClass: classes.stateScheduledIcon },
-      publishing: { Icon: CloudUploadOutlinedIcon, stateSpecificClass: classes.statePublishingIcon },
+      new: {
+        Icon: NewStateIcon,
+        stateSpecificSx: { color: palette.teal.main, ...styles?.stateNewIcon, ...sxs?.stateNewIcon }
+      },
+      modified: {
+        Icon: EditedStateIcon,
+        stateSpecificSx: { color: palette.yellow.main, ...styles?.stateModifiedIcon, ...sxs?.stateModifiedIcon }
+      },
+      deleted: {
+        Icon: DeletedStateIcon,
+        stateSpecificSx: { color: palette.red.main, ...styles?.stateDeletedIcon, ...sxs?.stateDeletedIcon }
+      },
+      locked: {
+        Icon: LockedStateIcon,
+        stateSpecificSx: { color: palette.orange.main, ...styles?.stateLockedIcon, ...sxs?.stateLockedIcon }
+      },
+      systemProcessing: {
+        Icon: SystemProcessingStateIcon,
+        stateSpecificSx: {
+          color: palette.indigo.main,
+          ...styles?.stateSystemProcessingIcon,
+          ...sxs?.stateSystemProcessingIcon
+        }
+      },
+      submitted: {
+        Icon: SubmittedStateIcon,
+        stateSpecificSx: { color: palette.purple.main, ...styles?.stateSubmittedIcon, ...sxs?.stateSubmittedIcon }
+      },
+      scheduled: {
+        Icon: ScheduledStateIcon,
+        stateSpecificSx: { color: palette.green.main, ...styles?.stateScheduledIcon, ...sxs?.stateScheduledIcon }
+      },
+      publishing: {
+        Icon: CloudUploadOutlinedIcon,
+        stateSpecificSx: { color: palette.indigo.main, ...styles?.statePublishingIcon, ...sxs?.statePublishingIcon }
+      },
       submittedToStaging: {
         Icon: item.stateMap.submitted ? SubmittedStateIcon : ScheduledStateIcon,
-        stateSpecificClass: classes.stateSubmittedToStagingIcon
+        stateSpecificSx: {
+          color: palette.blue.main,
+          ...styles?.stateSubmittedToStagingIcon,
+          ...sxs?.stateSubmittedToStagingIcon
+        }
       },
       submittedToLive: {
         Icon: item.stateMap.submitted ? SubmittedStateIcon : ScheduledStateIcon,
-        stateSpecificClass: classes.stateSubmittedToLiveIcon
+        stateSpecificSx: {
+          color: palette.green.main,
+          ...styles?.stateSubmittedToLiveIcon,
+          ...sxs?.stateSubmittedToLiveIcon
+        }
       },
       staged: null,
       live: null,
-      disabled: { Icon: BlockRoundedIcon, stateSpecificClass: classes.stateDisabledIcon },
+      disabled: {
+        Icon: BlockRoundedIcon,
+        stateSpecificSx: { color: palette.pink.main, ...styles?.stateDisabledIcon, ...sxs?.stateDisabledIcon }
+      },
       translationUpToDate: null,
       translationPending: null,
       translationInProgress: null
@@ -170,32 +136,34 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     return (
       map[getItemStateId(item.stateMap)] ?? {
         Icon: NotInWorkflowIcon,
-        stateSpecificClass: classes.stateNotInWorkflow
+        stateSpecificSx: { color: palette.gray.medium4, ...styles?.stateNotInWorkflow, ...sxs?.stateNotInWorkflow }
       }
     );
-  }, [
-    classes.stateDeletedIcon,
-    classes.stateLockedIcon,
-    classes.stateModifiedIcon,
-    classes.stateNewIcon,
-    classes.stateScheduledIcon,
-    classes.stateSubmittedIcon,
-    classes.stateSystemProcessingIcon,
-    classes.statePublishingIcon,
-    classes.stateSubmittedToStagingIcon,
-    classes.stateSubmittedToLiveIcon,
-    classes.stateDisabledIcon,
-    classes.stateNotInWorkflow,
-    item
-  ]);
+  }, [styles, sxs, item]);
   return Icon === null ? null : item.systemType === 'folder' ? (
-    <Icon className={cx(classes.root, propClasses?.root, className, stateSpecificClass)} fontSize={fontSize} />
+    <Icon
+      sx={{
+        ...styles?.root,
+        ...sxs?.root,
+        ...stateSpecificSx
+      }}
+      className={className}
+      fontSize={fontSize}
+    />
   ) : (
     <Tooltip
       title={displayTooltip ? getItemStateText(item.stateMap, { user: item.lockOwner?.username }) : ''}
       open={displayTooltip ? void 0 : false}
     >
-      <Icon className={cx(classes.root, propClasses?.root, className, stateSpecificClass)} fontSize={fontSize} />
+      <Icon
+        sx={{
+          ...styles?.root,
+          ...sxs?.root,
+          ...stateSpecificSx
+        }}
+        className={className}
+        fontSize={fontSize}
+      />
     </Tooltip>
   );
 }

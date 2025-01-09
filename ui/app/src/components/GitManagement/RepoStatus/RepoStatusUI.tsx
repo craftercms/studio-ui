@@ -23,7 +23,6 @@ import GlobalAppGridCell from '../../GlobalAppGridCell';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
 import Button from '@mui/material/Button';
 import ConfirmDropdown from '../../ConfirmDropdown';
 import GlobalAppToolbar from '../../GlobalAppToolbar';
@@ -42,42 +41,8 @@ export interface RepoStatusUIProps {
   onBulkAction(e, actionId: string): void;
 }
 
-const useStyles = makeStyles()((theme) => ({
-  sectionLabel: {
-    fontWeight: 400,
-    color: theme.palette.success.dark
-  },
-  conflictedFilesLabel: {
-    color: theme.palette.error.dark
-  },
-  fileName: {
-    fontWeight: 600
-  },
-  revertAllButton: {
-    color: theme.palette.error.dark,
-    borderColor: theme.palette.error.main,
-    marginRight: theme.spacing(2)
-  },
-  commitButton: {
-    color: theme.palette.success.dark,
-    borderColor: theme.palette.success.main
-  },
-  statusNote: {
-    color: theme.palette.text.secondary
-  },
-  conflictActions: {
-    textAlign: 'right'
-  },
-  conflictActionButton: {
-    marginRight: theme.spacing(2),
-    color: theme.palette.warning.dark,
-    borderColor: theme.palette.warning.main
-  }
-}));
-
 export function RepoStatusUI(props: RepoStatusUIProps) {
   const { status, onCommitClick, onResolveConflict, onDiffClick, onBulkAction } = props;
-  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const hasConflicts = status.conflicting.length > 0;
   const hasConflictsOrUncommitted = hasConflicts || status.uncommittedChanges.length > 0;
@@ -117,7 +82,15 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
             >
               <FormattedMessage defaultMessage="Bulk actions" />
             </DropDownMenu>
-            <Button variant="outlined" className={classes.commitButton} onClick={onCommitClick} disabled={hasConflicts}>
+            <Button
+              variant="outlined"
+              sx={(theme) => ({
+                color: theme.palette.success.dark,
+                borderColor: theme.palette.success.main
+              })}
+              onClick={onCommitClick}
+              disabled={hasConflicts}
+            >
               <FormattedMessage id="repositories.commitResolution" defaultMessage="Commit Resolution" />
             </Button>
           </>
@@ -139,7 +112,13 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
         <Grid container spacing={2}>
           {status.conflicting.length > 0 && (
             <Grid size={{ md: 12 }}>
-              <Typography variant="h6" className={cx(classes.sectionLabel, classes.conflictedFilesLabel)}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 400,
+                  color: (theme) => theme.palette.error.dark
+                }}
+              >
                 <FormattedMessage id="repository.conflictedFiles" defaultMessage="Conflicted Files" />
               </Typography>
               <TableContainer>
@@ -148,11 +127,20 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
                     {status.conflicting.map((file) => (
                       <GlobalAppGridRow key={file} className="hoverDisabled">
                         <GlobalAppGridCell className="width50">
-                          <span className={classes.fileName}>{file.substr(file.lastIndexOf('/') + 1)}</span> - {file}
+                          <Box component="span" sx={{ fontWeight: 600 }}>
+                            {file.substr(file.lastIndexOf('/') + 1)}
+                          </Box>{' '}
+                          - {file}
                         </GlobalAppGridCell>
-                        <GlobalAppGridCell className={classes.conflictActions}>
+                        <GlobalAppGridCell sx={{ textAlign: 'right' }}>
                           <ConfirmDropdown
-                            classes={{ button: classes.conflictActionButton }}
+                            sx={{
+                              button: {
+                                marginRight: (theme) => theme.spacing(2),
+                                color: (theme) => theme.palette.warning.dark,
+                                borderColor: (theme) => theme.palette.warning.main
+                              }
+                            }}
                             text={formatMessage(messages.acceptRemote)}
                             cancelText={formatMessage(messages.no)}
                             confirmText={formatMessage(messages.yes)}
@@ -160,7 +148,13 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
                             onConfirm={() => onResolveConflict('theirs', file)}
                           />
                           <ConfirmDropdown
-                            classes={{ button: classes.conflictActionButton }}
+                            sx={{
+                              button: {
+                                marginRight: (theme) => theme.spacing(2),
+                                color: (theme) => theme.palette.warning.dark,
+                                borderColor: (theme) => theme.palette.warning.main
+                              }
+                            }}
                             text={formatMessage(messages.keepLocal)}
                             cancelText={formatMessage(messages.no)}
                             confirmText={formatMessage(messages.yes)}
@@ -181,7 +175,7 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
           )}
           {status.uncommittedChanges.length > 0 && (
             <Grid size={{ md: 12 }}>
-              <Typography variant="h6" className={classes.sectionLabel}>
+              <Typography variant="h6" sx={{ fontWeight: 400, color: (theme) => theme.palette.success.dark }}>
                 <FormattedMessage id="repository.pendingCommit" defaultMessage="Pending Commit" />
               </Typography>
               <TableContainer>
@@ -190,7 +184,10 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
                     {status.uncommittedChanges.map((file) => (
                       <GlobalAppGridRow key={file} className="hoverDisabled">
                         <GlobalAppGridCell>
-                          <span className={classes.fileName}>{file.substr(file.lastIndexOf('/') + 1)}</span> - {file}
+                          <Box component="span" sx={{ fontWeight: 600 }}>
+                            {file.substr(file.lastIndexOf('/') + 1)}
+                          </Box>{' '}
+                          - {file}
                         </GlobalAppGridCell>
                       </GlobalAppGridRow>
                     ))}

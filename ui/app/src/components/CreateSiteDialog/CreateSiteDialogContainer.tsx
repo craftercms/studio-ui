@@ -720,7 +720,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                       onCheckNameExist={checkNameExist}
                       onSubmit={handleFinish}
                       blueprint={site.blueprint}
-                      classes={{ root: classes.blueprintFormRoot }}
+                      sxs={{ root: { marginTop: '10px' } }}
                       fieldsErrorsLookup={fieldsErrorsLookup}
                     />
                   )}

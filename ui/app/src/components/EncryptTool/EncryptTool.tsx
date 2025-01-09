@@ -21,8 +21,6 @@ import Snackbar from '@mui/material/Snackbar';
 import SnackbarContent from '@mui/material/SnackbarContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import { green, red } from '@mui/material/colors';
@@ -67,32 +65,6 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles()((theme: Theme) => ({
-  form: {
-    padding: '20px'
-  },
-  title: {
-    color: '#555555'
-  },
-  success: {
-    backgroundColor: green[600]
-  },
-  error: {
-    backgroundColor: red[600]
-  },
-  icon: {
-    fontSize: 20
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing(1)
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center'
-  }
-}));
-
 const notificationInitialState = {
   open: false,
   variant: 'success'
@@ -100,7 +72,6 @@ const notificationInitialState = {
 
 export const EncryptTool = (props: EncryptToolProps) => {
   const { site, embedded = false, showAppsButton, onSubmittingAndOrPendingChange } = props;
-  const { classes } = useStyles();
   const inputRef = useRef<HTMLInputElement>(undefined);
   const [text, setText] = useState('');
   const [result, setResult] = useState(null);
@@ -225,21 +196,42 @@ export const EncryptTool = (props: EncryptToolProps) => {
             }}
           >
             <SnackbarContent
-              className={`${notificationSettings.variant === 'success' ? classes.success : classes.error} ${
-                classes.iconVariant
-              }`}
+              sx={{
+                backgroundColor: notificationSettings.variant === 'success' ? green[600] : red[600],
+                opacity: 0.9,
+                marginRight: (theme) => theme.spacing(1)
+              }}
               aria-describedby="encryptToolSnackbar"
               message={
-                <span id="encryptToolSnackbar" className={classes.message}>
+                <Box
+                  component="span"
+                  id="encryptToolSnackbar"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}
+                >
                   {notificationSettings.variant === 'success' ? (
-                    <CheckCircleIcon className={`${classes.icon} ${classes.iconVariant}`} />
+                    <CheckCircleIcon
+                      sx={{
+                        fontSize: 20,
+                        opacity: 0.9,
+                        marginRight: (theme) => theme.spacing(1)
+                      }}
+                    />
                   ) : (
-                    <ErrorIcon className={`${classes.icon} ${classes.iconVariant}`} />
+                    <ErrorIcon
+                      sx={{
+                        fontSize: 20,
+                        opacity: 0.9,
+                        marginRight: (theme) => theme.spacing(1)
+                      }}
+                    />
                   )}
                   {formatMessage(
                     notificationSettings.variant === 'success' ? messages.successMessage : messages.errorMessage
                   )}
-                </span>
+                </Box>
               }
               action={[
                 <IconButton
@@ -249,7 +241,7 @@ export const EncryptTool = (props: EncryptToolProps) => {
                   onClick={() => setNotificationSettings({ open: false })}
                   size="large"
                 >
-                  <CloseIcon className={classes.icon} />
+                  <CloseIcon sx={{ fontSize: 20 }} />
                 </IconButton>
               ]}
             />
