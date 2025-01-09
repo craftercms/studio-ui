@@ -17,7 +17,6 @@
 import React, { ChangeEvent } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { DetailedItem } from '../../models/Item';
-import { useStyles } from './styles';
 import PathNavigatorHeader from './PathNavigatorHeader';
 import Breadcrumbs from './PathNavigatorBreadcrumbs';
 import PathNavigatorItem from './PathNavigatorItem';
@@ -36,6 +35,7 @@ import { ErrorState } from '../ErrorState';
 import { renderErrorState } from '../ErrorState/util';
 import { Pagination } from '../Pagination';
 import Box from '@mui/material/Box';
+import { PartialSxRecord } from '../../models';
 
 export type PathNavigatorUIClassKey =
   | 'root'
@@ -72,6 +72,7 @@ export interface PathNavigatorUIProps {
   /**
    *
    **/
+  sxs?: PartialSxRecord<PathNavigatorUIClassKey>;
   classes?: Partial<Record<PathNavigatorUIClassKey, string>>;
   /**
    *
@@ -131,7 +132,6 @@ export interface PathNavigatorUIProps {
 }
 
 export function PathNavigatorUI(props: PathNavigatorUIProps) {
-  const { classes, cx: clsx } = useStyles();
   // region consts {...} = props
   const {
     state,
@@ -152,7 +152,8 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
     onItemClicked,
     onPageChanged,
     computeActiveItems,
-    onRowsPerPageChange
+    onRowsPerPageChange,
+    sxs
   } = props;
   // endregion
   const items = state.itemsInPath?.flatMap((path) => lookupItemByPath(path, itemsByPath) ?? []) ?? [];
@@ -165,12 +166,16 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       TransitionProps={{ unmountOnExit: true }}
       expanded={!state.collapsed}
       onChange={() => onChangeCollapsed(!state.collapsed)}
-      className={clsx(
-        classes.accordion,
-        props.classes?.root,
+      sx={{
+        background: 'none',
+        ...sxs?.root
+      }}
+      className={[
         container?.baseClass,
         container ? (state.collapsed ? container.collapsedClass : container.expandedClass) : void 0
-      )}
+      ]
+        .filter(Boolean)
+        .join(' ')}
       style={{
         ...container?.baseStyle,
         ...(container ? (state.collapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
@@ -187,10 +192,16 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
         collapsed={state.collapsed}
       />
       {/* endregion */}
-      <AccordionDetails className={clsx(classes.accordionDetails, props.classes?.body)}>
+      <AccordionDetails
+        sx={{
+          padding: 0,
+          flexDirection: 'column',
+          ...sxs?.body
+        }}
+      >
         {state.isRootPathMissing ? (
           <ErrorState
-            styles={{ image: { display: 'none' } }}
+            sxs={{ image: { display: 'none' } }}
             title={
               <FormattedMessage
                 id="pathNavigatorTree.missingRootPath"
@@ -207,7 +218,10 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
               breadcrumb={state.breadcrumb.map((path) => lookupItemByPath(path, itemsByPath)).filter(Boolean)}
               onSearch={onSearch}
               onCrumbSelected={onBreadcrumbSelected}
-              classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
+              sxs={{
+                root: sxs?.breadcrumbsRoot,
+                searchRoot: sxs?.breadcrumbsSearch
+              }}
             />
             {/* endregion */}
             {/* region Current Item */}
@@ -245,7 +259,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
                   />
                 )}
                 <PathNavigatorList
-                  classes={{ root: classes.childrenList }}
+                  sxs={{ root: { marginBottom: (theme) => theme.spacing(1) } }}
                   isSelectMode={false}
                   locale={state.localeCode}
                   items={items}

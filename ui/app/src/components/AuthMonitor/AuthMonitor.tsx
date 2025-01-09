@@ -34,6 +34,8 @@ import { me } from '../../services/users';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import ErrorState from '../ErrorState/ErrorState';
 import { useSelection } from '../../hooks/useSelection';
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   sessionExpired: {
@@ -50,27 +52,6 @@ const translations = defineMessages({
       "Looks like you've logged in with a user different from the owner of this session. For security reasons, your screen will now be refreshed."
   }
 });
-
-const useStyles = makeStyles()((theme) => ({
-  actions: {
-    placeContent: 'center space-between'
-  },
-  dialog: {
-    width: 400
-  },
-  graphic: {
-    width: 150
-  },
-  title: {
-    textAlign: 'center'
-  },
-  ssoAction: {
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    marginTop: theme.spacing(1)
-  }
-}));
 
 export function AuthMonitor() {
   const dispatch = useDispatch();
@@ -127,7 +108,6 @@ interface AuthMonitorBodyProps {
 
 function AuthMonitorBody(props: AuthMonitorBodyProps) {
   const { authoringUrl, username, isSSO, dispatch, formatMessage } = props;
-  const { classes } = useStyles();
   const { error, isFetching } = useSelection((state) => state.auth);
   const [password, setPassword] = useState<string>('');
   const [ssoButtonClicked, setSSOButtonClicked] = useState(false);
@@ -145,23 +125,22 @@ function AuthMonitorBody(props: AuthMonitorBodyProps) {
   const onClose = () => dispatch(logout());
   return (
     <>
-      <DialogTitle id="craftercmsReLoginDialog" className={classes.title} style={styles}>
+      <DialogTitle id="craftercmsReLoginDialog" sx={{ textAlign: 'center' }} style={styles}>
         <FormattedMessage id="authMonitor.dialogTitleText" defaultMessage="Session Expired" />
       </DialogTitle>
-      <DialogContent className={classes.dialog}>
+      <DialogContent sx={{ width: '400px' }}>
         <>
           {error ? (
-            <ApiResponseErrorState error={error} classes={{ image: classes.graphic }} />
+            <ApiResponseErrorState error={error} sxs={{ image: { width: 150 } }} />
           ) : (
             <ErrorState
               imageUrl={loginGraphicUrl}
-              classes={{ image: classes.graphic }}
+              sxs={{ image: { width: 150 } }}
               message={formatMessage(translations.sessionExpired)}
             />
           )}
           {isSSO ? (
             <SSOForm
-              classes={classes}
               authoringUrl={authoringUrl}
               username={username}
               onSubmit={onSubmit}
@@ -179,7 +158,7 @@ function AuthMonitorBody(props: AuthMonitorBodyProps) {
           )}
         </>
       </DialogContent>
-      <DialogActions className={classes.actions} style={styles}>
+      <DialogActions sx={{ placeContent: 'center space-between' }} style={styles}>
         {isSSO && (
           <Button fullWidth type="button" color="primary" onClick={onSubmit} disabled={isFetching} variant="contained">
             <FormattedMessage id="authMonitor.validateSessionButtonLabel" defaultMessage="Resume" />
@@ -199,11 +178,11 @@ type SSOFormProps = PropsWithChildren<{
   onSubmit: (e) => any;
   ssoButtonClicked: boolean;
   onSetSSOButtonClicked: Function;
-  classes?: Record<string, string>;
+  sxs?: PartialSxRecord<'ssoAction' | 'input'>;
 }>;
 
 function SSOForm(props: SSOFormProps) {
-  const { username, onSubmit, authoringUrl, ssoButtonClicked, onSetSSOButtonClicked, classes } = props;
+  const { username, onSubmit, authoringUrl, ssoButtonClicked, onSetSSOButtonClicked, sxs } = props;
   const onOpenLogin = () => {
     window.open(`${authoringUrl}/login/resume`, '_blank', 'toolbar=0,location=0,menubar=0,dependent=true');
     onSetSSOButtonClicked(true);
@@ -215,10 +194,19 @@ function SSOForm(props: SSOFormProps) {
         disabled
         type="email"
         value={username}
-        className={classes?.input}
+        sx={sxs?.input}
         label={<FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username" />}
       />
-      <section className={classes?.ssoAction}>
+      <Box
+        component="section"
+        sx={{
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          marginTop: (theme) => theme.spacing(1),
+          ...sxs?.ssoAction
+        }}
+      >
         <Button
           type="button"
           color="primary"
@@ -237,7 +225,7 @@ function SSOForm(props: SSOFormProps) {
             }
           />
         </Typography>
-      </section>
+      </Box>
     </form>
   );
 }

@@ -17,6 +17,7 @@ import { ReactNode } from 'react';
 import { CSSObject as CSSProperties } from 'tss-react';
 import StandardAction from '../../models/StandardAction';
 import { DialogProps } from '@mui/material/Dialog';
+import { AlertDialogProps } from '../AlertDialog';
 
 export type ConfirmDialogStateClassKey = 'dialog' | 'dialogImage' | 'dialogBody' | 'dialogTitle' | 'dialogFooter';
 export type ConfirmDialogStateStyles = Partial<Record<ConfirmDialogStateClassKey, CSSProperties>>;
@@ -34,7 +35,7 @@ export interface ConfirmDialogBaseProps {
 }
 
 export interface ConfirmDialogProps extends ConfirmDialogBaseProps, Omit<DialogProps, 'title' | 'classes'> {
-  classes?: Partial<Record<ConfirmDialogStateClassKey, string>>;
+  sxs?: AlertDialogProps['sxs'];
   disableOkButton?: boolean;
   disableCancelButton?: boolean;
   okButtonText?: ReactNode;

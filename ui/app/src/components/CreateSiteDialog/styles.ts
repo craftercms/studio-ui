@@ -89,9 +89,6 @@ export const useStyles = makeStyles()((theme) => ({
   loadingStateGraphic: {
     width: 200
   },
-  errorPaperRoot: {
-    height: '100%'
-  },
   blueprintFormRoot: {
     marginTop: 10
   },

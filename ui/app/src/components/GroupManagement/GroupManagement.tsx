@@ -29,7 +29,6 @@ import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
 import SearchBar from '../SearchBar';
-import useStyles from '../UserManagement/styles';
 import useDebouncedInput from '../../hooks/useDebouncedInput';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
@@ -43,7 +42,6 @@ export function GroupManagement() {
   const [selectedGroup, setSelectedGroup] = useState<Group>(null);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const { classes, cx: clsx } = useStyles();
 
   const fetchGroups = useCallback(
     (keyword = '', _offset = offset) => {
@@ -130,7 +128,22 @@ export function GroupManagement() {
         }
         rightContent={
           <SearchBar
-            classes={{ root: clsx(classes.searchBarRoot, !showSearchBox && 'hidden') }}
+            sxs={{
+              root: {
+                transition: 'width 500ms',
+                width: '210px',
+                ...(showSearchBox
+                  ? {}
+                  : {
+                      width: '50px',
+                      border: '0',
+                      background: 'none',
+                      '& input': {
+                        visibility: 'hidden'
+                      }
+                    })
+              }
+            }}
             keyword={keyword}
             onChange={handleSearchKeyword}
             onDecoratorButtonClick={onShowSearchBox}

@@ -19,6 +19,7 @@ import { DetailedItem } from '../../models/Item';
 import NavItem from './PathNavigatorItem';
 import React, { useMemo } from 'react';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
+import { PartialSxRecord } from '../../models';
 
 export interface NavProps {
   locale?: string;
@@ -26,7 +27,7 @@ export interface NavProps {
   isSelectMode?: boolean;
   computeActiveItems?: (items: DetailedItem[]) => string[];
   showItemNavigateToButton?: boolean;
-  classes?: Partial<Record<'root', string>>;
+  sxs?: PartialSxRecord<'root'>;
   onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   onSelectItem?(item: DetailedItem, unselect: boolean): void;
   onPathSelected?(item: DetailedItem): void;
@@ -45,12 +46,13 @@ function PathNavigatorList(props: NavProps) {
     onSelectItem,
     onOpenItemMenu,
     onItemClicked,
-    showItemNavigateToButton
+    showItemNavigateToButton,
+    sxs
   } = props;
   const fnRefs = useUpdateRefs({ computeActiveItems });
   const active = useMemo(() => fnRefs.current.computeActiveItems?.(items) ?? [], [items, fnRefs]);
   return (
-    <List component="nav" disablePadding classes={{ root: props.classes?.root }}>
+    <List component="nav" disablePadding sx={sxs?.root}>
       {items?.map((item: DetailedItem) => (
         <NavItem
           item={item}

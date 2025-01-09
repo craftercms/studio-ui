@@ -611,7 +611,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
         (apiState.creatingSite && <CreateSiteDialogLoader handleClose={handleClose} />) ||
         (apiState.errorResponse && (
           <ApiResponseErrorState
-            classes={{ root: classes.errorPaperRoot }}
+            sxs={{ root: { height: '100%' } }}
             error={apiState.errorResponse}
             onButtonClick={handleErrorBack}
           />
@@ -733,7 +733,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
               )}
             </DialogBody>
           ) : apiState.error ? (
-            <ApiResponseErrorState classes={{ root: classes.errorPaperRoot }} error={apiState.errorResponse} />
+            <ApiResponseErrorState sxs={{ root: { height: '100%' } }} error={apiState.errorResponse} />
           ) : (
             <div className={classes.loading}>
               <LoadingState />

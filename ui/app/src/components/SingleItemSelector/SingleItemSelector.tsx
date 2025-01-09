@@ -18,7 +18,6 @@ import React, { ReactNode, useCallback, useReducer, useRef } from 'react';
 import Typography from '@mui/material/Typography';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import { TypographyVariant as Variant } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded';
 import Popover from '@mui/material/Popover';

@@ -28,7 +28,6 @@ import GlobalAppToolbar from '../GlobalAppToolbar';
 import Button from '@mui/material/Button';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
-import useStyles from './styles';
 import Paper from '@mui/material/Paper';
 import { useEnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingChangesCloseRequest';
@@ -49,7 +48,6 @@ export function UserManagement(props: UserManagementProps) {
   const [viewUser, setViewUser] = useState(null);
   const [showSearchBox, setShowSearchBox] = useState(false);
   const [keyword, setKeyword] = useState('');
-  const { classes, cx: clsx } = useStyles();
 
   const fetchUsers = useCallback(
     (keyword = '', _offset = offset) => {
@@ -137,7 +135,22 @@ export function UserManagement(props: UserManagementProps) {
         }
         rightContent={
           <SearchBar
-            classes={{ root: clsx(classes.searchBarRoot, !showSearchBox && 'hidden') }}
+            sxs={{
+              root: {
+                transition: 'width 500ms',
+                width: '210px',
+                ...(showSearchBox
+                  ? {}
+                  : {
+                      width: '50px',
+                      border: '0',
+                      background: 'none',
+                      '& input': {
+                        visibility: 'hidden'
+                      }
+                    })
+              }
+            }}
             keyword={keyword}
             onChange={handleSearchKeyword}
             onDecoratorButtonClick={onShowSearchBox}

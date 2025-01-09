@@ -22,7 +22,6 @@ import PrimaryButton from '../PrimaryButton';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SearchItem } from '../../models';
 import MediaCard from '../MediaCard/MediaCard';
-import { useStyles } from './styles';
 import SearchBar from '../SearchBar/SearchBar';
 import MediaSkeletonCard from './MediaSkeletonCard';
 import EmptyState from '../EmptyState/EmptyState';
@@ -89,20 +88,36 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
     disableSubmission
   } = props;
   // endregion
-  const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const buttonRef = useRef(undefined);
 
   return (
     <>
-      <DialogBody className={classes.dialogBody}>
-        <Box display="flex" className={classes.dialogContent}>
-          <Box className={classes.leftWrapper} display="flex" flexDirection="column" rowGap="20px">
+      <DialogBody sx={{ minHeight: '60vh', padding: 0 }}>
+        <Box display="flex" sx={{ overflow: 'hidden' }}>
+          <Box
+            sx={{
+              width: '270px',
+              minWidth: '270px',
+              padding: '16px',
+              overflow: 'auto',
+              rowGap: (theme) => theme.spacing(1)
+            }}
+            display="flex"
+            flexDirection="column"
+            rowGap="20px"
+          >
             <FolderBrowserTreeView rootPath={path} onPathSelected={onPathSelected} selectedPath={currentPath} />
           </Box>
-          <section className={classes.rightWrapper}>
-            <Paper className={classes.actionsBar}>
+          <Box component="section" sx={{ flexGrow: 1, padding: '16px', overflow: 'auto' }}>
+            <Paper
+              sx={{
+                paddingLeft: (theme) => theme.spacing(1),
+                marginBottom: (theme) => theme.spacing(3),
+                borderRadius: 4
+              }}
+            >
               <Toolbar disableGutters variant="dense">
                 <Box sx={{ flexGrow: 1, display: 'flex' }}>
                   <Tooltip title={<FormattedMessage id="word.refresh" defaultMessage="Refresh" />}>
@@ -117,15 +132,24 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                       </IconButton>
                     </Tooltip>
                   )}
-                  <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
+                  <Divider orientation="vertical" flexItem sx={{ marginTop: '-3px', marginBottom: '-3px' }} />
                   <SearchBar
                     keyword={keyword}
                     onChange={handleSearchKeyword}
                     showDecoratorIcon
                     showActionButton={Boolean(keyword)}
-                    classes={{ root: classes.searchRoot, inputInput: classes.searchInput }}
+                    sxs={{
+                      root: {
+                        maxWidth: '200px',
+                        background: 'none !important',
+                        border: 'none !important',
+                        borderRadius: 0,
+                        boxShadow: 'none'
+                      },
+                      inputInput: { padding: '8px 5px' }
+                    }}
                   />
-                  <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
+                  <Divider orientation="vertical" flexItem sx={{ marginTop: '-3px', marginBottom: '-3px' }} />
                   <Button
                     id="sort-button"
                     aria-haspopup="true"
@@ -161,7 +185,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                             });
                           }}
                           size="small"
-                          className={classes.sortingSelect}
+                          sx={{ minWidth: '180px' }}
                           label={<FormattedMessage id="BrowseFilesDialog.sortBy" defaultMessage="Sort By" />}
                         >
                           <MenuItem value={SORT_AUTO}>
@@ -196,7 +220,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                               });
                             }}
                             size="small"
-                            className={classes.sortingSelect}
+                            sx={{ minWidth: '180px' }}
                             label={<FormattedMessage id="words.order" defaultMessage="Order" />}
                           >
                             <MenuItem value={'asc'}>
@@ -224,7 +248,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                       </MenuItem>
                     )}
                   </Menu>
-                  <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
+                  <Divider orientation="vertical" flexItem sx={{ marginTop: '-3px', marginBottom: '-3px' }} />
                 </Box>
                 <Box sx={{ display: 'flex', flexGrow: 0 }}>
                   <Tooltip title={<FormattedMessage defaultMessage="Switch view mode" />}>
@@ -238,7 +262,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                       )}
                     </IconButton>
                   </Tooltip>
-                  <Divider orientation="vertical" flexItem className={classes.actionsBarDivider} />
+                  <Divider orientation="vertical" flexItem sx={{ marginTop: '-3px', marginBottom: '-3px' }} />
                   {items && (
                     <Pagination
                       sxs={{
@@ -262,8 +286,15 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
               </Toolbar>
             </Paper>
             <Box
-              className={classes.cardsContainer}
-              sx={[viewMode === 'row' && { display: 'flex !important', flexFlow: 'wrap' }]}
+              sx={[
+                {
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, max-content))',
+                  gridGap: '16px',
+                  padding: 'initial'
+                },
+                viewMode === 'row' && { display: 'flex !important', flexFlow: 'wrap' }
+              ]}
             >
               {items
                 ? items.map((item: SearchItem) => {
@@ -273,11 +304,14 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                     return (
                       <MediaCard
                         viewMode={viewMode}
-                        classes={{
-                          root: item.path === selectedCard?.path && classes.selectedCard
-                        }}
                         sxs={{
-                          root: { cursor: disableChangePreselected && isPreselected ? 'not-allowed' : 'pointer' }
+                          root: {
+                            cursor: disableChangePreselected && isPreselected ? 'not-allowed' : 'pointer',
+                            boxShadow: (theme) =>
+                              item.path === selectedCard?.path
+                                ? `0px 0px 4px 4px ${theme.palette.primary.main}`
+                                : 'none'
+                          }
                         }}
                         key={item.path}
                         item={item}
@@ -299,7 +333,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
                 title={<FormattedMessage id="browseFilesDialog.noResults" defaultMessage="No items found." />}
               />
             )}
-          </section>
+          </Box>
         </Box>
       </DialogBody>
       <DialogFooter>

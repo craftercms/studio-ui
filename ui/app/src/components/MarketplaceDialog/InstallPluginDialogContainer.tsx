@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles } from 'tss-react/mui';
 import { InstallPluginDialogProps } from './utils';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import useSpreadState from '../../hooks/useSpreadState';
@@ -46,12 +45,6 @@ import { AjaxError } from 'rxjs/ajax';
 import ApiResponseErrorState from '../ApiResponseErrorState/ApiResponseErrorState';
 import ApiResponse from '../../models/ApiResponse';
 
-const useStyles = makeStyles()(() => ({
-  searchWrapper: {
-    marginBottom: '16px'
-  }
-}));
-
 export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
   const siteId = useActiveSiteId();
   const { installPermission = false, onInstall, installedPlugins = {} } = props;
@@ -75,7 +68,6 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
     submitted: false,
     error: {}
   });
-  const { classes } = useStyles();
   const onSearch$ = useSubject<string>();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -251,7 +243,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
                 keyword={keyword}
                 onChange={onSearch}
                 autoFocus
-                classes={{ root: classes.searchWrapper }}
+                sxs={{ root: { marginBottom: '16px' } }}
               />
             )}
             {error ? (

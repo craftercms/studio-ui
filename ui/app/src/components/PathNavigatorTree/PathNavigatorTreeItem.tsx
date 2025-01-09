@@ -21,7 +21,6 @@ import LookupTable from '../../models/LookupTable';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Typography } from '@mui/material';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
 import ItemDisplay from '../ItemDisplay';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
@@ -36,13 +35,15 @@ import { isBlank } from '../../utils/string';
 import ErrorOutlineRounded from '@mui/icons-material/ErrorOutlineRounded';
 import { lookupItemByPath } from '../../utils/content';
 import { PathNavigatorTreeStateProps } from './PathNavigatorTree';
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
 
 export interface PathNavigatorTreeItemProps
   extends Pick<PathNavigatorTreeStateProps, 'keywordByPath' | 'totalByPath' | 'childrenByParentPath' | 'errorByPath'> {
   path: string;
   itemsByPath: LookupTable<DetailedItem>;
   active?: Record<string, boolean>;
-  classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
+  sxs?: PartialSxRecord<PathNavigatorTreeBreadcrumbsClassKey>;
   showNavigableAsLinks?: boolean;
   showPublishingTarget?: boolean;
   showWorkflowState?: boolean;
@@ -75,106 +76,6 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles<void, 'content' | 'labelContainer'>()((theme, _params, classes) => ({
-  root: {
-    [`&:focus > .${classes.content} .${classes.labelContainer}`]: {
-      background: 'none'
-    }
-  },
-  content: {
-    alignItems: 'flex-start',
-    paddingRight: 0,
-    '&:hover': {
-      background: 'none'
-    }
-  },
-  labelContainer: {
-    display: 'flex',
-    paddingLeft: 0,
-    flexWrap: 'wrap',
-    overflow: 'hidden',
-    '&:hover': {
-      background: 'none'
-    },
-    '& .MuiSvgIcon-root': {
-      fontSize: '1.1rem'
-    }
-  },
-  itemDisplaySection: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    minHeight: '23.5px',
-    '&:hover': {
-      backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
-    }
-  },
-  filterSection: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  empty: {
-    color: theme.palette.text.secondary,
-    display: 'flex',
-    alignItems: 'center',
-    minHeight: '23.5px',
-    marginLeft: '10px',
-    '& svg': {
-      marginRight: '5px',
-      fontSize: '1.1rem'
-    }
-  },
-  more: {
-    color: theme.palette.text.primary,
-    display: 'flex',
-    alignItems: 'center',
-    minHeight: '23.5px',
-    marginLeft: '10px'
-  },
-  iconContainer: {
-    width: '26px',
-    marginRight: 0,
-    '& svg': {
-      fontSize: '23.5px !important',
-      color: theme.palette.text.secondary
-    }
-  },
-  focused: {
-    background: 'none !important'
-  },
-  loading: {
-    display: 'flex',
-    alignItems: 'center',
-    minHeight: '23.5px',
-    marginLeft: '10px',
-    '& span': {
-      marginLeft: '10px'
-    }
-  },
-  searchRoot: {
-    margin: '5px 10px 5px 0',
-    height: '25px',
-    width: '100%'
-  },
-  searchInput: {
-    fontSize: '12px',
-    padding: '5px !important'
-  },
-  searchCloseButton: {
-    marginRight: '10px'
-  },
-  searchCloseIcon: {
-    fontSize: '12px !important'
-  },
-  iconButton: {
-    padding: '2px 3px'
-  },
-  active: {
-    backgroundColor: theme.palette.action.selected
-  }
-}));
-
 export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
   const {
     path,
@@ -192,9 +93,9 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     onIconClick,
     onOpenItemMenu,
     onFilterChange,
-    onMoreClick
+    onMoreClick,
+    sxs
   } = props;
-  const { classes, cx } = useStyles();
   const [over, setOver] = useState(false);
   const [showFilter, setShowFilter] = useState(Boolean(keywordByPath[path]));
   const [keyword, setKeyword] = useState(keywordByPath[path] ?? '');
@@ -257,7 +158,17 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
     ));
     children.length < totalByPath[path] &&
       propsForTreeItem.children.push(
-        <section key="more" className={classes.more}>
+        <Box
+          component="section"
+          key="more"
+          sx={{
+            color: (theme) => theme.palette.text.primary,
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '23.5px',
+            marginLeft: '10px'
+          }}
+        >
           <Button
             color="primary"
             size="small"
@@ -271,36 +182,72 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
               values={{ count: totalByPath[path] - children.length }}
             />
           </Button>
-        </section>
+        </Box>
       );
   } else if (totalByPath[path] > 0 && !childrenByParentPath.length) {
     propsForTreeItem.children.push(
       errorByPath[path] ? (
-        <div key="loading" className={classes.loading}>
+        <Box
+          key="loading"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '23.5px',
+            marginLeft: '100px',
+            '& span': {
+              marginLeft: '10px'
+            }
+          }}
+        >
           <Typography variant="caption" color="error.main">
             <FormattedMessage
               defaultMessage="Error: {message}"
               values={{ message: errorByPath[path]?.response?.message ?? errorByPath[path].message }}
             />
           </Typography>
-        </div>
+        </Box>
       ) : (
-        <div key="loading" className={classes.loading}>
+        <Box
+          key="loading"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            minHeight: '23.5px',
+            marginLeft: '10px',
+            '& span': {
+              marginLeft: '10px'
+            }
+          }}
+        >
           <CircularProgress size={14} />
           <Typography variant="caption" color="textSecondary">
             <FormattedMessage id="words.loading" defaultMessage="Loading" />
           </Typography>
-        </div>
+        </Box>
       )
     );
   } else if (!isBlank(keywordByPath[path]) && totalByPath[path] === 0) {
     propsForTreeItem.children.push(
-      <section key="noResults" className={classes.empty}>
+      <Box
+        component="section"
+        key="noResults"
+        sx={{
+          color: (theme) => theme.palette.text.secondary,
+          display: 'flex',
+          alignItems: 'center',
+          minHeight: '23.5px',
+          marginLeft: '10px',
+          '& svg': {
+            marginRight: '5px',
+            fontSize: '1.1rem'
+          }
+        }}
+      >
         <ErrorOutlineRounded />
         <Typography variant="caption">
           <FormattedMessage id="filter.noResults" defaultMessage="No results match your query" />
         </Typography>
-      </section>
+      </Box>
     );
   }
   return (
@@ -328,10 +275,20 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
       }}
       label={
         <>
-          <section
+          <Box
+            component="section"
             role="button"
             onClick={(event) => onLabelClick(event, path)}
-            className={classes.itemDisplaySection}
+            sx={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              minHeight: '23.5px',
+              '&:hover': {
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
+              }
+            }}
             onMouseOver={onMouseOver}
             onMouseLeave={onMouseLeave}
             onContextMenu={onContextMenu}
@@ -354,7 +311,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
               <Tooltip title={<FormattedMessage id="words.options" defaultMessage="Options" />}>
                 <IconButton
                   size="small"
-                  className={classes.iconButton}
+                  sx={{ padding: '2px 3px' }}
                   data-item-menu
                   onClick={(e) => {
                     e.preventDefault();
@@ -371,7 +328,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
               <Tooltip title={<FormattedMessage id="words.filter" defaultMessage="Filter" />}>
                 <IconButton
                   size="small"
-                  className={classes.iconButton}
+                  sx={{ padding: '2px 3px' }}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -383,9 +340,9 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                 </IconButton>
               </Tooltip>
             )}
-          </section>
+          </Box>
           {showFilter && (
-            <section className={classes.filterSection}>
+            <Box component="section" sx={{ width: '100%', display: 'flex', alignItems: 'center' }}>
               <SearchBar
                 autoFocus
                 onClick={(e) => e.stopPropagation()}
@@ -402,10 +359,22 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                   input.focus();
                 }}
                 showActionButton={keyword && true}
-                classes={{
-                  root: cx(classes.searchRoot, props.classes?.searchRoot),
-                  inputInput: cx(classes.searchInput, props.classes?.searchInput),
-                  actionIcon: cx(classes.searchCloseIcon, props.classes?.searchCleanButton)
+                sxs={{
+                  root: {
+                    margin: '5px 10px 5px 0',
+                    height: '25px',
+                    width: '100%',
+                    ...sxs?.searchRoot
+                  },
+                  inputInput: {
+                    fontSize: '12px',
+                    padding: '5px !important',
+                    ...sxs?.searchInput
+                  },
+                  actionIcon: {
+                    fontSize: '12px !important',
+                    ...sxs?.searchCleanButton
+                  }
                 }}
               />
               <IconButton
@@ -415,25 +384,50 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                   onClearKeywords();
                   setShowFilter(false);
                 }}
-                className={cx(classes.searchCloseButton, props.classes?.searchCloseButton)}
+                sx={{
+                  marginRight: '10px',
+                  ...sxs?.searchCloseButton
+                }}
               >
                 <CloseIconRounded />
               </IconButton>
-            </section>
+            </Box>
           )}
         </>
       }
-      classes={{
-        root: classes.root,
-        content: classes.content,
-        label: cx(classes.labelContainer, active[path] && classes.active),
-        iconContainer: classes.iconContainer,
-        focused: classes.focused
-      }}
       sx={{
         [`& .${treeItemClasses.content}`]: {
           pt: 0,
-          pb: 0
+          pb: 0,
+          pr: 0,
+          alignItems: 'flex-start',
+          '&:hover': {
+            background: 'none'
+          }
+        },
+        [`& .${treeItemClasses.label}`]: {
+          display: 'flex',
+          paddingLeft: 0,
+          flexWrap: 'wrap',
+          overflow: 'hidden',
+          '&:hover': {
+            background: 'none'
+          },
+          '& .MuiSvgIcon-root': {
+            fontSize: '1.1rem'
+          },
+          ...(active[path] ? { backgroundColor: (theme) => theme.palette.action.selected } : {})
+        },
+        [`& .${treeItemClasses.iconContainer}`]: {
+          width: '26px',
+          marginRight: 0,
+          '& svg': {
+            fontSize: '23.5px !important',
+            color: (theme) => theme.palette.text.secondary
+          }
+        },
+        [`& .${treeItemClasses.focused}`]: {
+          background: 'none !important'
         }
       }}
       {...propsForTreeItem}

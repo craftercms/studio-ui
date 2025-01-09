@@ -1,3 +1,5 @@
+// noinspection LanguageDetectionInspection
+
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
@@ -463,23 +465,39 @@ export function SearchUI(props: SearchUIProps) {
                         size={{ xs: 12, ...(currentView === 'grid' ? { sm: 6, md: 4, lg: 4, xl: 3 } : {}) }}
                       >
                         <MediaCard
-                          classes={
-                            currentView === 'list'
-                              ? {
-                                  root: classes.mediaCardListRoot,
-                                  checkbox: classes.mediaCardListCheckbox,
-                                  media: classes.mediaCardListMedia,
-                                  mediaIcon: classes.mediaCardListMediaIcon,
-                                  cardActionArea: classes.cardActionArea,
-                                  cardHeader: classes.cardHeader
-                                }
-                              : {}
-                          }
                           sxs={{
                             root: {
                               cursor:
-                                disableChangePreselected && preselectedLookup[item.path] ? 'not-allowed' : 'pointer'
-                            }
+                                disableChangePreselected && preselectedLookup[item.path] ? 'not-allowed' : 'pointer',
+                              display: currentView === 'list' ? 'flex' : 'block'
+                            },
+                            ...(currentView === 'list'
+                              ? {
+                                  checkbox: {
+                                    justifyContent: 'center',
+                                    order: -2,
+                                    marginRight: '5px',
+                                    marginLeft: '16px'
+                                  },
+                                  media: {
+                                    paddingTop: 0,
+                                    height: '80px',
+                                    width: '80px',
+                                    order: -1
+                                  },
+                                  mediaIcon: {
+                                    height: '80px',
+                                    width: '80px',
+                                    paddingTop: 0,
+                                    order: -1
+                                  },
+                                  cardActionArea: {
+                                    width: 'auto',
+                                    display: 'flex'
+                                  },
+                                  cardHeader: { flexGrow: 1 }
+                                }
+                              : {})
                           }}
                           item={item}
                           onPreview={mode === 'default' ? () => onPreview(item) : UNDEFINED}

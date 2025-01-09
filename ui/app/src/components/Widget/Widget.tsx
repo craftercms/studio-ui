@@ -106,7 +106,7 @@ const Widget = memo<WidgetProps>(function (props) {
               default: function ({ id, plugin }) {
                 return (
                   <ErrorState
-                    styles={{ image: { width: 100 } }}
+                    sxs={{ image: { width: 100 } }}
                     title={formatMessage(messages.pluginLoadFailedMessageTitle)}
                     message={formatMessage(messages.pluginLoadFailedMessageBody, {
                       id,

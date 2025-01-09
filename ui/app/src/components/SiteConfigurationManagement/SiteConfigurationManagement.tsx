@@ -595,7 +595,16 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                     </Alert>
                   </Tooltip>
                   <SearchBar
-                    classes={{ root: classes.searchBarRoot }}
+                    sxs={{
+                      root: {
+                        borderRadius: '0 !important',
+                        border: 0,
+                        '&.focus': {
+                          border: '0 !important',
+                          boxShadow: 'none'
+                        }
+                      }
+                    }}
                     keyword={keyword}
                     onChange={setKeyword}
                     showActionButton={Boolean(keyword)}
@@ -670,7 +679,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
           paddingLeft={openDrawer ? `${width}px` : 0}
         >
           {configError ? (
-            <ApiResponseErrorState error={configError} classes={{ root: classes.errorState }} />
+            <ApiResponseErrorState error={configError} sxs={{ root: { height: 'calc(100% - 65px)' } }} />
           ) : loadingXml ? (
             <LoadingState />
           ) : nnou(selectedConfigFileXml) ? (
@@ -739,7 +748,18 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                   <>
                     <ResizeBar onWidthChange={onEditorResize} element={editorRef.current.container} />
                     {sampleError ? (
-                      <ApiResponseErrorState error={sampleError} classes={{ root: classes.sampleErrorState }} />
+                      <ApiResponseErrorState
+                        error={sampleError}
+                        sxs={{
+                          root: {
+                            maxWidth: '50%',
+                            margin: '0 auto',
+                            '& p': {
+                              wordBreak: 'break-word'
+                            }
+                          }
+                        }}
+                      />
                     ) : loadingSampleXml ? (
                       <LoadingState />
                     ) : nnou(selectedSampleConfigFileXml) ? (

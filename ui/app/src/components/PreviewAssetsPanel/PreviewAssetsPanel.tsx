@@ -269,7 +269,9 @@ export function PreviewAssetsPanel() {
                       item={item}
                       previewAppBaseUri={guestBase}
                       avatar={<DragIndicatorRounded />}
-                      classes={{ root: classes.card }}
+                      sxs={{
+                        root: { cursor: 'move', marginBottom: '16px' }
+                      }}
                       onDragStart={() => onDragStart(item)}
                       onDragEnd={() => onDragEnd()}
                       onPreview={() =>

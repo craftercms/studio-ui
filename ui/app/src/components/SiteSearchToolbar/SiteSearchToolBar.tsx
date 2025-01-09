@@ -15,8 +15,6 @@
  */
 
 import React from 'react';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
 import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
@@ -27,6 +25,7 @@ import GridViewIcon from '@mui/icons-material/GridOnRounded';
 import ViewToolbar from '../ViewToolbar';
 import Tooltip from '@mui/material/Tooltip';
 import LogoAndMenuBundleButton from '../LogoAndMenuBundleButton';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   showHideFilters: {
@@ -47,18 +46,6 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles()((theme: Theme) => ({
-  searchBarContainer: {
-    width: '30%',
-    [theme.breakpoints.up('md')]: {
-      minWidth: '500px'
-    }
-  },
-  searchPaper: {
-    flex: 1
-  }
-}));
-
 export interface SiteSearchToolBarProps {
   keyword: string[] | string;
   showActionButton?: boolean;
@@ -74,7 +61,6 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
   const { onChange, keyword, showActionButton, showTitle, handleChangeView, currentView, onMenuIconClick, embedded } =
     props;
   const { formatMessage } = useIntl();
-  const { classes } = useStyles();
   return (
     <ViewToolbar>
       <section>
@@ -91,16 +77,24 @@ export function SiteSearchToolBar(props: SiteSearchToolBarProps) {
           </Typography>
         )}
       </section>
-      <section className={classes.searchBarContainer}>
+      <Box
+        component="section"
+        sx={(theme) => ({
+          width: '30%',
+          [theme.breakpoints.up('md')]: {
+            minWidth: '500px'
+          }
+        })}
+      >
         <SearchBar
           onChange={onChange}
           keyword={keyword}
           showActionButton={showActionButton}
           showDecoratorIcon
-          classes={{ root: classes.searchPaper }}
+          sxs={{ root: { flex: 1 } }}
           autoFocus
         />
-      </section>
+      </Box>
       <section>
         <Tooltip title={formatMessage(translations.changeViewButtonTip)}>
           <IconButton onClick={handleChangeView} size="large">

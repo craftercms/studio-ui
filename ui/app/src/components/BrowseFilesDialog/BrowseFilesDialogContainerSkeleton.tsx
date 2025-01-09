@@ -16,29 +16,42 @@
 
 import React from 'react';
 import DialogBody from '../DialogBody';
-import { useStyles } from './styles';
 import { Box } from '@mui/material';
 import MediaSkeletonCard from './MediaSkeletonCard';
 
 export interface BrowseFilesDialogContainerSkeletonProps {}
 
 export function BrowseFilesDialogContainerSkeleton(props: BrowseFilesDialogContainerSkeletonProps) {
-  const { classes } = useStyles();
-
   return (
     <>
-      <DialogBody className={classes.dialogBody}>
+      <DialogBody sx={{ minHeight: '60vh', padding: 0 }}>
         <Box display="flex">
-          <section className={classes.leftWrapper} />
-          <section className={classes.rightWrapper}>
-            <div className={classes.cardsContainer}>
+          <Box
+            component="section"
+            sx={{
+              width: '270px',
+              minWidth: '270px',
+              padding: '16px',
+              overflow: 'auto',
+              rowGap: (theme) => theme.spacing(1)
+            }}
+          />
+          <Box component="section" sx={{ flexGrow: 1, padding: '16px', overflow: 'auto' }}>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, max-content))',
+                gridGap: '16px',
+                padding: 'initial'
+              }}
+            >
               {Array(5)
                 .fill(null)
                 .map((x, i) => (
                   <MediaSkeletonCard key={i} />
                 ))}
-            </div>
-          </section>
+            </Box>
+          </Box>
         </Box>
       </DialogBody>
     </>

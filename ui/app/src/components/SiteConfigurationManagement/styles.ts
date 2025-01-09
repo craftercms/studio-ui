@@ -66,14 +66,6 @@ const useStyles = makeStyles()((theme) => ({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap'
   },
-  searchBarRoot: {
-    borderRadius: '0 !important',
-    border: 0,
-    '&.focus': {
-      border: '0 !important',
-      boxShadow: 'none'
-    }
-  },
   alert: {
     borderRadius: 0
   },
@@ -90,16 +82,6 @@ const useStyles = makeStyles()((theme) => ({
   },
   itemSkeletonText: {
     height: '20px'
-  },
-  errorState: {
-    height: 'calc(100% - 65px)'
-  },
-  sampleErrorState: {
-    maxWidth: '50%',
-    margin: '0 auto',
-    '& p': {
-      wordBreak: 'break-word'
-    }
   }
 }));
 
