@@ -3148,13 +3148,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-tree-view@npm:^7.22.1":
-  version: 7.22.1
-  resolution: "@mui/x-tree-view@npm:7.22.1"
+"@mui/x-internals@npm:7.23.6":
+  version: 7.23.6
+  resolution: "@mui/x-internals@npm:7.23.6"
   dependencies:
     "@babel/runtime": "npm:^7.25.7"
     "@mui/utils": "npm:^5.16.6 || ^6.0.0"
-    "@mui/x-internals": "npm:7.21.0"
+  peerDependencies:
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10/9492411ba80d7191a4486094076bb87c973d9f37789897465d13866788d7c007ff0b6e4fb181f1c2b4a9a393c77a9899d147ced113b8463c5f2e9f69df3b7ee4
+  languageName: node
+  linkType: hard
+
+"@mui/x-tree-view@npm:^7.22.1":
+  version: 7.23.6
+  resolution: "@mui/x-tree-view@npm:7.23.6"
+  dependencies:
+    "@babel/runtime": "npm:^7.25.7"
+    "@mui/utils": "npm:^5.16.6 || ^6.0.0"
+    "@mui/x-internals": "npm:7.23.6"
     "@types/react-transition-group": "npm:^4.4.11"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -3164,14 +3176,14 @@ __metadata:
     "@emotion/styled": ^11.8.1
     "@mui/material": ^5.15.14 || ^6.0.0
     "@mui/system": ^5.15.14 || ^6.0.0
-    react: ^17.0.0 || ^18.0.0
-    react-dom: ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
   peerDependenciesMeta:
     "@emotion/react":
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10/b673f9e40788398e8573824b748fd2419e86db0ee4e415fed289a98db512050f147c8567c1309d8d957e4b57673a99768db4867cc91aa7275dc1249b5f59d140
+  checksum: 10/1d607b2d491b706d98e9c49719ff9f8d0f05a67216357c622513d3a9d02eb0f7fb9bab8420a97b1ac442bc42fa8f76dbce27a379b68d43ed850a91ef1a4e0537
   languageName: node
   linkType: hard
 
