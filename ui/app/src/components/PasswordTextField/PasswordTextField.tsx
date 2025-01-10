@@ -21,10 +21,12 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { defineMessages, useIntl } from 'react-intl';
+import { PartialSxRecord } from '../../models';
 
 type PasswordTextFieldProps = TextFieldProps & {
   visibilitySwitch?: boolean;
   initialVisible?: boolean;
+  sxs?: PartialSxRecord<'root'>;
 };
 
 const translations = defineMessages({
@@ -35,7 +37,7 @@ const translations = defineMessages({
 });
 
 const PasswordTextField = React.forwardRef<HTMLDivElement, PasswordTextFieldProps>((props, ref) => {
-  const { visibilitySwitch = true, initialVisible = false } = props;
+  const { visibilitySwitch = true, initialVisible = false, sxs } = props;
   const { formatMessage } = useIntl();
   const [showPassword, setShowPassword] = useState(initialVisible);
   const inputRef = useRef<HTMLInputElement>(undefined);
@@ -51,6 +53,7 @@ const PasswordTextField = React.forwardRef<HTMLDivElement, PasswordTextFieldProp
   return (
     <TextField
       {...props}
+      sx={sxs?.root}
       ref={ref}
       type={showPassword ? 'text' : 'password'}
       slotProps={{

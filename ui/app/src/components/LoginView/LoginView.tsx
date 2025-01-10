@@ -81,7 +81,6 @@ type SubViewProps = React.PropsWithChildren<{
   children: React.ReactNode;
   isFetching: boolean;
   onSubmit: React.Dispatch<React.SetStateAction<boolean>>;
-  classes: { [props: string]: string };
   formatMessage: Function;
   onSnack: React.Dispatch<React.SetStateAction<{ open: boolean; message: string }>>;
   setLanguage: React.Dispatch<React.SetStateAction<string>>;
@@ -193,7 +192,6 @@ function LoginView(props: SubViewProps) {
     children,
     isFetching,
     onSubmit,
-    classes,
     setLanguage,
     onRecover,
     formatMessage,
@@ -257,10 +255,9 @@ function LoginView(props: SubViewProps) {
   return (
     <>
       <DialogContent>
-        <HeaderView error={error} introMessage="" classes={classes} />
+        <HeaderView error={error} introMessage="" />
         <LogInForm
           children={children}
-          classes={classes}
           onSubmit={handleSubmit}
           username={username}
           password={password}
@@ -281,7 +278,7 @@ function LoginView(props: SubViewProps) {
 }
 
 function RecoverView(props: SubViewProps) {
-  const { children, isFetching, onSubmit, classes, formatMessage, onSnack, setMode } = props;
+  const { children, isFetching, onSubmit, formatMessage, onSnack, setMode } = props;
   const [username, setUsername] = useState(() => localStorage.getItem('username') ?? '');
   const [error, setError] = useState('');
   const onSubmitRecover = (e: any) => {
@@ -311,11 +308,7 @@ function RecoverView(props: SubViewProps) {
   return (
     <form onSubmit={onSubmitRecover}>
       <DialogContent>
-        <HeaderView
-          error={error}
-          classes={classes}
-          introMessage={formatMessage(translations.recoverYourPasswordViewTitle)}
-        />
+        <HeaderView error={error} introMessage={formatMessage(translations.recoverYourPasswordViewTitle)} />
         {children}
         <TextField
           id="recoverFormUsernameField"
@@ -325,7 +318,6 @@ function RecoverView(props: SubViewProps) {
           type="text"
           value={username}
           onChange={(e: any) => setUsername(e.target.value)}
-          className={classes?.username}
           label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
           slotProps={{
             htmlInput: { maxLength: USER_USERNAME_MAX_LENGTH }
@@ -360,17 +352,8 @@ function RecoverView(props: SubViewProps) {
 }
 
 function ResetView(props: SubViewProps) {
-  const {
-    children,
-    isFetching,
-    onSubmit,
-    classes,
-    formatMessage,
-    onSnack,
-    setMode,
-    token,
-    passwordRequirementsMinComplexity
-  } = props;
+  const { children, isFetching, onSubmit, formatMessage, onSnack, setMode, token, passwordRequirementsMinComplexity } =
+    props;
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [isValid, setValid] = useState<boolean>(null);
@@ -420,7 +403,6 @@ function ResetView(props: SubViewProps) {
       <DialogContent>
         <HeaderView
           error={error}
-          classes={classes}
           introMessage={
             <FormattedMessage
               id="loginView.resetYourPasswordIntroText"
@@ -442,7 +424,7 @@ function ResetView(props: SubViewProps) {
           error={isValid !== null && !isValid}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          className={classes.resetPassword}
+          sxs={{ root: { mb: 0 } }}
           placeholder={formatMessage(translations.resetPasswordFieldPlaceholderLabel)}
           onFocus={(e) => setAnchorEl(e.target)}
           onBlur={() => setAnchorEl(null)}
@@ -457,7 +439,7 @@ function ResetView(props: SubViewProps) {
           error={passwordsMismatch}
           value={newPasswordConfirm}
           onChange={(e) => setNewPasswordConfirm(e.target.value)}
-          className={classes.resetPassword}
+          sxs={{ root: { mb: 0 } }}
           placeholder={formatMessage(translations.resetPasswordConfirmFieldPlaceholderLabel)}
         />
         {children}
@@ -471,9 +453,34 @@ function ResetView(props: SubViewProps) {
   );
 }
 
-function HeaderView({ error, introMessage, classes }: any) {
+function HeaderView({ error, introMessage }: any) {
   return (
-    <Typography variant="body2" className={classes[error ? 'errorMessage' : 'recoverInfoMessage']}>
+    <Typography
+      variant="body2"
+      sx={
+        error
+          ? (theme) => ({
+              backgroundColor: palette.red.tint,
+              color: palette.white,
+              marginBottom: theme.spacing(1),
+              padding: theme.spacing(1),
+              borderRadius: theme.spacing(1),
+              border: `1px solid ${palette.red.main}`,
+              display: 'flex',
+              placeContent: 'center',
+              lineHeight: 1.7,
+              '& .MuiSvgIcon-root': {
+                marginRight: theme.spacing(0.5),
+                color: palette.white
+              }
+            })
+          : {
+              maxWidth: 300,
+              textAlign: 'center',
+              margin: (theme) => `0 auto ${theme.spacing(1.5)}`
+            }
+      }
+    >
       {error ? (
         <>
           <WarningRounded /> {error}
@@ -485,11 +492,18 @@ function HeaderView({ error, introMessage, classes }: any) {
   );
 }
 
-function UnrecognizedView({ classes }: any) {
+function UnrecognizedView() {
   return (
     <DialogContent>
-      <Typography variant="body2" className={classes.recoverInfoMessage}>
-        Unrecognized mode.
+      <Typography
+        variant="body2"
+        sx={{
+          maxWidth: 300,
+          textAlign: 'center',
+          margin: (theme) => `0 auto ${theme.spacing(1.5)}`
+        }}
+      >
+        <FormattedMessage defaultMessage="Unrecognized mode." />
       </Typography>
     </DialogContent>
   );
@@ -555,7 +569,6 @@ export function LoginViewContainer(props: LoginViewProps) {
     language,
     formatMessage,
     isFetching,
-    classes,
     onSubmit,
     onSnack,
     passwordRequirementsMinComplexity,
@@ -614,8 +627,23 @@ export function LoginViewContainer(props: LoginViewProps) {
         fullWidth
         open={true}
         maxWidth="xs"
-        className={cx(classes.dialogRoot, isFetching && classes.dialogRootFetching)}
-        PaperProps={{ className: classes.dialogPaper }}
+        sx={(theme) => ({
+          transition: 'all 600ms ease',
+          '& .MuiInput-input': { backgroundColor: theme.palette.background.paper },
+          '& .MuiFormControl-root, & .MuiButton-root': {
+            marginBottom: theme.spacing(1),
+            '&.last-before-button': { marginBottom: theme.spacing(2) }
+          },
+          opacity: isFetching ? 0.2 : 1
+        })}
+        PaperProps={{
+          sx: {
+            minWidth: 300,
+            overflow: 'visible',
+            backgroundColor: (theme) =>
+              theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 255, 255, .8)'
+          }
+        }}
         aria-labelledby="loginDialog"
       >
         <DialogTitle id="loginDialog">

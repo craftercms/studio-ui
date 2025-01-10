@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -26,39 +25,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import palette from '../../styles/palette';
-
-const useStyles = makeStyles()((theme) => ({
-  review: {
-    maxWidth: '600px',
-    margin: 'auto'
-  },
-  section: {
-    marginBottom: '0'
-  },
-  bold: {
-    fontWeight: 'bold'
-  },
-  inline: {
-    display: 'inline'
-  },
-  edit: {
-    color: theme.palette.primary.main,
-    '& svg': {
-      fontSize: '1.2rem'
-    }
-  },
-  noDescription: {
-    color: palette.gray.medium2
-  },
-  showPassword: {
-    color: theme.palette.primary.main,
-    padding: '1px',
-    marginLeft: '5px',
-    '& svg': {
-      fontSize: '1rem'
-    }
-  }
-}));
+import Box from '@mui/material/Box';
 
 interface BlueprintReviewProps {
   inputs: SiteState;
@@ -147,7 +114,6 @@ const messages = defineMessages({
 });
 
 function BlueprintReview(props: BlueprintReviewProps) {
-  const { classes } = useStyles();
   const { onGoTo, inputs, blueprint } = props;
   const [passwordFields, setPasswordFields] = useState(null);
   const { formatMessage } = useIntl();
@@ -189,7 +155,14 @@ function BlueprintReview(props: BlueprintReviewProps) {
           {passwordFields && passwordFields[parameter.name] ? inputs.blueprintFields[parameter.name] : '********'}
           <IconButton
             edge="end"
-            className={classes.showPassword}
+            sx={{
+              color: (theme) => theme.palette.primary.main,
+              padding: '1px',
+              marginLeft: '5px',
+              '& svg': {
+                fontSize: '1rem'
+              }
+            }}
             aria-label="toggle password visibility"
             onClick={() => {
               showPassword(parameter);
@@ -209,7 +182,9 @@ function BlueprintReview(props: BlueprintReviewProps) {
     return blueprint.parameters.map((parameter, index) => {
       return (
         <Typography variant="body2" gutterBottom key={index}>
-          <span className={classes.bold}>{parameter.label}: </span>
+          <Box component="span" sx={{ fontWeight: 'bold' }}>
+            {parameter.label}:{' '}
+          </Box>
           {renderSingleParameter(parameter)}
         </Typography>
       );
@@ -221,16 +196,23 @@ function BlueprintReview(props: BlueprintReviewProps) {
       <div>
         {inputs.repoUrl && (
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.remoteURL)}: </span> {inputs.repoUrl}
+            <Box component="span" sx={{ fontWeight: 'bold' }}>
+              {formatMessage(messages.remoteURL)}:{' '}
+            </Box>{' '}
+            {inputs.repoUrl}
           </Typography>
         )}
         <Typography variant="body2" gutterBottom>
-          <span className={classes.bold}>{formatMessage(messages.remoteName)}:</span>
+          <Box component="span" sx={{ fontWeight: 'bold' }}>
+            {formatMessage(messages.remoteName)}:
+          </Box>
           {` ${inputs.repoRemoteName ? inputs.repoRemoteName : 'origin'}`}
         </Typography>
         {inputs.repoAuthentication !== 'none' && (
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.authentication)}:</span>{' '}
+            <Box component="span" sx={{ fontWeight: 'bold' }}>
+              {formatMessage(messages.authentication)}:
+            </Box>{' '}
             {renderAuth(inputs.repoAuthentication)}
           </Typography>
         )}
@@ -239,12 +221,22 @@ function BlueprintReview(props: BlueprintReviewProps) {
   }
 
   return (
-    <div className={classes.review}>
+    <Box sx={{ maxWidth: '600px', margin: 'auto' }}>
       <Grid container spacing={3}>
         <Grid size={12}>
-          <Typography variant="h6" gutterBottom className={classes.section}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
             {formatMessage(messages.creationStrategy)}
-            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(0)} size="large">
+            <IconButton
+              aria-label="goto"
+              sx={{
+                color: (theme) => theme.palette.primary.main,
+                '& svg': {
+                  fontSize: '1.2rem'
+                }
+              }}
+              onClick={() => onGoTo(0)}
+              size="large"
+            >
               <EditIcon />
             </IconButton>
           </Typography>
@@ -254,7 +246,9 @@ function BlueprintReview(props: BlueprintReviewProps) {
                 {formatMessage(messages.blueprintStrategy)}
               </Typography>
               <Typography variant="body2" gutterBottom>
-                <span className={classes.bold}>{formatMessage(messages.blueprint)}: </span>{' '}
+                <Box component="span" sx={{ fontWeight: 'bold' }}>
+                  {formatMessage(messages.blueprint)}:{' '}
+                </Box>{' '}
                 {blueprint && blueprint.name}
               </Typography>
             </div>
@@ -267,38 +261,70 @@ function BlueprintReview(props: BlueprintReviewProps) {
           )}
         </Grid>
         <Grid size={12}>
-          <Typography variant="h6" gutterBottom className={classes.section}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
             {formatMessage(messages.siteInfo)}
-            <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)} size="large">
+            <IconButton
+              aria-label="goto"
+              sx={{
+                color: (theme) => theme.palette.primary.main,
+                '& svg': {
+                  fontSize: '1.2rem'
+                }
+              }}
+              onClick={() => onGoTo(1)}
+              size="large"
+            >
               <EditIcon />
             </IconButton>
           </Typography>
           <Typography variant="body2" gutterBottom noWrap>
-            <span className={classes.bold}>{formatMessage(messages.siteName)}: </span> {inputs.siteName}
+            <Box component="span" sx={{ fontWeight: 'bold' }}>
+              {formatMessage(messages.siteName)}:{' '}
+            </Box>{' '}
+            {inputs.siteName}
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.siteId)}: </span> {inputs.siteId}
+            <Box component="span" sx={{ fontWeight: 'bold' }}>
+              {formatMessage(messages.siteId)}:{' '}
+            </Box>{' '}
+            {inputs.siteId}
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.description)}:</span>
+            <Box component="span" sx={{ fontWeight: 'bold' }}>
+              {formatMessage(messages.description)}:
+            </Box>
             {` `}
             {inputs.description ? (
               inputs.description
             ) : (
-              <span className={classes.noDescription}>({formatMessage(messages.noDescription)})</span>
+              <Box component="span" sx={{ color: palette.gray.medium2 }}>
+                ({formatMessage(messages.noDescription)})
+              </Box>
             )}
           </Typography>
           <Typography variant="body2" gutterBottom>
-            <span className={classes.bold}>{formatMessage(messages.gitBranch)}:</span>
+            <Box component="span" sx={{ fontWeight: 'bold' }}>
+              {formatMessage(messages.gitBranch)}:
+            </Box>
             {` ${inputs.gitBranch ? inputs.gitBranch : 'master'}`}
           </Typography>
           {blueprint.source !== 'GIT' && blueprint.id === 'GIT' && renderGitOptions()}
         </Grid>
         {blueprint.parameters && !!blueprint.parameters.length && (
           <Grid size={12}>
-            <Typography variant="h6" gutterBottom className={classes.section}>
+            <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
               {formatMessage(messages.blueprintParameters)}
-              <IconButton aria-label="goto" className={classes.edit} onClick={() => onGoTo(1)} size="large">
+              <IconButton
+                aria-label="goto"
+                sx={{
+                  color: (theme) => theme.palette.primary.main,
+                  '& svg': {
+                    fontSize: '1.2rem'
+                  }
+                }}
+                onClick={() => onGoTo(1)}
+                size="large"
+              >
                 <EditIcon />
               </IconButton>
             </Typography>
@@ -306,7 +332,7 @@ function BlueprintReview(props: BlueprintReviewProps) {
           </Grid>
         )}
       </Grid>
-    </div>
+    </Box>
   );
 }
 

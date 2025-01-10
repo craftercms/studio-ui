@@ -16,7 +16,6 @@
 
 import React, { Suspense, useEffect, useMemo } from 'react';
 import { defineMessages, FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
 import Popover from '@mui/material/Popover';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
@@ -41,7 +40,6 @@ import { logout } from '../../state/actions/auth';
 import { ListItem, Tooltip } from '@mui/material';
 import { closeLauncher } from '../../state/actions/dialogs';
 import { EnhancedUser } from '../../models/User';
-import LookupTable from '../../models/LookupTable';
 import { batchActions } from '../../state/actions/misc';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import Skeleton from '@mui/material/Skeleton';
@@ -105,64 +103,6 @@ const messages = defineMessages({
     defaultMessage: 'Logout'
   }
 });
-
-const useLauncherStyles = makeStyles()((theme) => ({
-  appsSkeletonTile: {
-    margin: 5,
-    width: 120,
-    height: 100,
-    display: 'inline-flex'
-  },
-  sitesRail: {
-    backgroundColor: theme.palette.background.default
-  },
-  appsRail: {},
-  railTop: {
-    padding: '30px 29px',
-    overflow: 'auto',
-    height: 'calc(100% - 65px)',
-    maxHeight: 'calc(100vh - 95px)'
-  },
-  railTopExtraPadded: {
-    paddingTop: 70
-  },
-  railBottom: {
-    height: 65,
-    display: 'flex',
-    alignItems: 'center',
-    padding: '0 20px',
-    placeContent: 'center space-between'
-  },
-  versionText: {},
-  titleCard: {
-    marginBottom: '20px'
-  },
-  simpleGear: {
-    margin: 'auto'
-  },
-  userCardRoot: {
-    width: '100%',
-    boxShadow: 'none'
-  },
-  userCardHeader: {
-    padding: 0
-  },
-  userCardActions: {
-    marginTop: 0,
-    marginRight: 0
-  },
-  userCardAvatar: {
-    color: palette.white,
-    textTransform: 'uppercase',
-    backgroundColor: palette.red.main
-  },
-  username: {
-    maxWidth: '300px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  },
-  mySitesTitle: { marginBottom: '24px', textTransform: 'uppercase', fontWeight: 600 }
-}));
 
 // region AppsRail
 
@@ -284,7 +224,6 @@ const AppsRailSkeleton = ({ closeButtonPosition, formatMessage, onLogout, user }
 // region SiteRail
 
 interface SitesRailProps {
-  classes: LookupTable<string>;
   formatMessage: IntlShape['formatMessage'];
   sites: Site[];
   site: string;
@@ -404,7 +343,6 @@ const SiteRailSkeleton = ({ formatMessage, version }) => (
 // endregion
 
 export function Launcher(props: LauncherStateProps) {
-  const { classes } = useLauncherStyles();
   const siteId = useActiveSiteId();
   const sites = useSiteList();
   const user = useActiveUser();
@@ -478,7 +416,6 @@ export function Launcher(props: LauncherStateProps) {
 
   const sitesRail = () => (
     <SitesRail
-      classes={classes}
       formatMessage={formatMessage}
       sites={sites}
       site={siteId}
