@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import Radio from '@mui/material/Radio';
@@ -23,26 +22,6 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import palette from '../../styles/palette';
-
-const useStyles = makeStyles()(() => ({
-  menu: {
-    padding: '5px 10px'
-  },
-  openMenuBtn: {
-    fontSize: '16px'
-  },
-  openMenuBtnIcon: {
-    fontSize: '24px',
-    marginLeft: '5px',
-    paddingTop: '2px',
-    fill: palette.gray.medium4
-  },
-  radioGroup: {
-    '&:focus': {
-      outline: 0
-    }
-  }
-}));
 
 interface Filter {
   type: string;
@@ -58,7 +37,6 @@ interface ContentTypesFilterProps {
 
 export function ContentTypesFilter(props: ContentTypesFilterProps) {
   const { onFilterChange, selected, disabled, filters } = props;
-  const { classes } = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const filter = filters.find((filter) => filter.type === selected);
@@ -74,16 +52,27 @@ export function ContentTypesFilter(props: ContentTypesFilterProps) {
 
   return (
     <>
-      <Button disabled={disabled} onClick={onMenuOpen} className={classes.openMenuBtn}>
+      <Button disabled={disabled} onClick={onMenuOpen} sx={{ fontSize: '16px' }}>
         {filter.label}
-        <ArrowDropDownIcon className={classes.openMenuBtnIcon} />
+        <ArrowDropDownIcon
+          sx={{
+            fontSize: '24px',
+            marginLeft: '5px',
+            paddingTop: '2px',
+            fill: palette.gray.medium4
+          }}
+        />
       </Button>
       <Menu
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={onMenuClose}
-        classes={{ paper: classes.menu }}
+        slotProps={{
+          paper: {
+            sx: { padding: '5px 10px' }
+          }
+        }}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'right'
@@ -93,7 +82,7 @@ export function ContentTypesFilter(props: ContentTypesFilterProps) {
           horizontal: 'right'
         }}
       >
-        <RadioGroup value={selected} onChange={onChange} className={classes.radioGroup}>
+        <RadioGroup value={selected} onChange={onChange} sx={{ '&:focus': { outline: 0 } }}>
           {filters.map((filter) => (
             <FormControlLabel
               key={filter.type}

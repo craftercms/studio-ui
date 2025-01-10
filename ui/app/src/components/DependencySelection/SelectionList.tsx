@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ElementType, ReactNode, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { DetailedItem } from '../../models/Item';
 import { useLocale } from '../../hooks/useLocale';
 import ListItem from '@mui/material/ListItem';
@@ -33,7 +33,6 @@ import { getItemStateText } from '../ItemDisplay/utils';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Button from '@mui/material/Button';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
-import { makeStyles } from 'tss-react/mui';
 
 import LookupTable from '../../models/LookupTable';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -54,47 +53,6 @@ export interface SelectionListProps {
   onEditClick?(event: React.MouseEvent, path: string): void;
 }
 
-const useStyles = makeStyles()(() => ({
-  listTitle: {
-    display: 'flex !important',
-    alignItems: 'center',
-    whiteSpace: 'break-spaces'
-  },
-  selectionList: {
-    paddingTop: 0
-  },
-  publishingTargetIcon: {
-    fontSize: '1rem',
-    margin: '0 5px'
-  },
-  stateScheduledIcon: {
-    fontSize: '1em',
-    marginRight: '5px'
-  },
-  emptyDependencies: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '8px',
-    '& svg': {
-      marginRight: '8px'
-    }
-  },
-  selectAllBtn: {
-    marginLeft: 'auto',
-    fontWeight: 'bold',
-    verticalAlign: 'baseline'
-  },
-  overflowText: {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis'
-  },
-  itemText: {
-    textOverflow: 'ellipsis',
-    overflow: 'hidden'
-  }
-}));
-
 export function SelectionList(props: SelectionListProps) {
   // region const { ... } = props
   const {
@@ -112,7 +70,6 @@ export function SelectionList(props: SelectionListProps) {
   } = props;
   // endregion
 
-  const { classes } = useStyles();
   const locale = useLocale();
   const isAllChecked = useMemo(
     () => (selectedItems ? !paths?.some((path) => !selectedItems[path]) : null),
@@ -151,12 +108,16 @@ export function SelectionList(props: SelectionListProps) {
             </>
           }
           primaryTypographyProps={{
-            classes: { root: classes.listTitle }
+            sx: {
+              display: 'flex !important',
+              alignItems: 'center',
+              whiteSpace: 'break-spaces'
+            }
           }}
         />
       </ListItem>
       {items ? (
-        <List className={classes.selectionList}>
+        <List sx={{ paddingTop: 0 }}>
           {items.map((item) => {
             const labelId = `checkbox-list-label-${item.path}`;
             const listItemComponentChildren = (
@@ -175,12 +136,25 @@ export function SelectionList(props: SelectionListProps) {
                   </ListItemIcon>
                 )}
                 <ListItemText id={labelId}>
-                  <Typography variant="subtitle1" className={classes.itemText} title={item.label}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                    title={item.label}
+                  >
                     {item.label}
                   </Typography>
                   {(item.stateMap.submitted || item.stateMap.scheduled) && (
                     <Box display="flex" alignItems="center">
-                      <ItemStateIcon displayTooltip={false} className={classes.stateScheduledIcon} item={item} />
+                      <ItemStateIcon
+                        displayTooltip={false}
+                        sxs={{
+                          root: {
+                            fontSize: '1em',
+                            marginRight: '5px'
+                          }
+                        }}
+                        item={item}
+                      />
                       <Typography variant="body2" color="textSecondary">
                         {getDateScheduled(item) ? (
                           item.stateMap.submitted ? (
@@ -222,7 +196,12 @@ export function SelectionList(props: SelectionListProps) {
                       </Typography>
                       <ItemPublishingTargetIcon
                         displayTooltip={false}
-                        className={classes.publishingTargetIcon}
+                        sxs={{
+                          root: {
+                            fontSize: '1rem',
+                            margin: '0 5px'
+                          }
+                        }}
                         item={
                           {
                             stateMap: {
@@ -237,7 +216,12 @@ export function SelectionList(props: SelectionListProps) {
                       </Typography>
                     </Box>
                   )}
-                  <Typography variant="body2" color="textSecondary" className={classes.itemText} title={item.path}>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                    title={item.path}
+                  >
                     {item.path}
                   </Typography>
                 </ListItemText>
@@ -284,7 +268,7 @@ export function SelectionList(props: SelectionListProps) {
                     primary={path}
                     primaryTypographyProps={{
                       title: path,
-                      classes: { root: classes.overflowText }
+                      sx: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }
                     }}
                   />
                   {onEditClick && isEditableAsset(path) && (
@@ -293,7 +277,11 @@ export function SelectionList(props: SelectionListProps) {
                         color="primary"
                         onClick={(e) => onEditClick(e, path)}
                         size="small"
-                        className={classes.selectAllBtn}
+                        sx={{
+                          marginLeft: 'auto',
+                          fontWeight: 'bold',
+                          verticalAlign: 'baseline'
+                        }}
                       >
                         <FormattedMessage id="words.edit" defaultMessage="Edit" />
                       </Button>
@@ -317,7 +305,16 @@ export function SelectionList(props: SelectionListProps) {
               }
             })
           ) : (
-            <Box className={classes.emptyDependencies}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '8px',
+                '& svg': {
+                  marginRight: '8px'
+                }
+              }}
+            >
               <InfoIcon color="action" fontSize="small" />
               <Typography variant="caption">{emptyMessage}</Typography>
             </Box>

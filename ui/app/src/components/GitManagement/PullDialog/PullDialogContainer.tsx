@@ -22,7 +22,6 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { makeStyles } from 'tss-react/mui';
 import { pull } from '../../../services/repositories';
 import SecondaryButton from '../../SecondaryButton';
 import PrimaryButton from '../../PrimaryButton';
@@ -44,35 +43,6 @@ import useSpreadState from '../../../hooks/useSpreadState';
 import Skeleton from '@mui/material/Skeleton';
 import useSelection from '../../../hooks/useSelection';
 
-const useStyles = makeStyles()((theme) => ({
-  formControl: {
-    marginBottom: '15px'
-  },
-  pullBranchLabel: {
-    padding: `${theme.spacing(1.5)} ${theme.spacing(2)}`,
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: 4,
-    color: theme.palette.text.primary,
-    display: 'flex',
-    alignItems: 'center'
-  },
-  pullBranchLabelWithError: {
-    justifyContent: 'space-between'
-  },
-  pullBranchLabelHeading: {
-    display: 'inline-block',
-    fontWeight: theme.typography.fontWeightMedium,
-    marginRight: theme.spacing(1)
-  },
-  pullBranchLabelError: {
-    color: theme.palette.error.main
-  },
-  pullInfo: {
-    alignItems: 'center',
-    marginTop: theme.spacing(2)
-  }
-}));
-
 export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   // region const { ... } = props
   const {
@@ -87,7 +57,6 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
   } = props;
   // endregion
   const [selectedMergeStrategy, setSelectedMergeStrategy] = useState('');
-  const { classes, cx } = useStyles();
   const { uuid, id: siteId } = useActiveSite();
   const { username } = useActiveUser();
   const remoteGitBranch = useSelection((state) => state.uiConfig.remoteGitBranch);
@@ -173,15 +142,22 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
     <form onSubmit={onSubmit}>
       <DialogBody>
         <Box
-          className={cx(
-            classes.pullBranchLabel,
-            classes.formControl,
-            sandboxState.error && classes.pullBranchLabelWithError
-          )}
+          sx={[
+            (theme) => ({
+              padding: `${theme.spacing(1.5)} ${theme.spacing(2)}`,
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: '4px',
+              color: theme.palette.text.primary,
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '15px'
+            }),
+            sandboxState.error && { justifyContent: 'space-between' }
+          ]}
         >
           {sandboxState.error ? (
             <>
-              <Typography className={classes.pullBranchLabelError}>
+              <Typography sx={{ color: (theme) => theme.palette.error.main }}>
                 <FormattedMessage
                   id="repositories.sandboxBranchRetrievalError"
                   defaultMessage="Unable to retrieve project’s branch"
@@ -193,7 +169,14 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
             </>
           ) : (
             <>
-              <Typography color="textSecondary" className={classes.pullBranchLabelHeading}>
+              <Typography
+                color="textSecondary"
+                sx={(theme) => ({
+                  display: 'inline-block',
+                  fontWeight: theme.typography.fontWeightMedium,
+                  marginRight: theme.spacing(1)
+                })}
+              >
                 <FormattedMessage id="words.branch" defaultMessage="Branch" />
               </Typography>
               {sandboxState.loading ? (
@@ -223,7 +206,7 @@ export function PullDialogContainer(props: PullFromRemoteDialogContainerProps) {
             ))}
           </Select>
         </FormControl>
-        <Alert severity="info" variant="outlined" className={classes.pullInfo}>
+        <Alert severity="info" variant="outlined" sx={{ alignItems: 'center', marginTop: (theme) => theme.spacing(2) }}>
           <Typography>
             <FormattedMessage
               id="repositories.pullFromCreatedBranchOnlyHint"

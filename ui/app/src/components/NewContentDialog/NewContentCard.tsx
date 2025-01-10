@@ -15,44 +15,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
+import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import Divider from '@mui/material/Divider';
 import Skeleton from '@mui/material/Skeleton';
 import palette from '../../styles/palette';
 import { fetchPreviewImage } from '../../services/contentTypes';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-
-const useStyles = makeStyles()(() => ({
-  defaultCard: {
-    maxWidth: 345,
-    cursor: 'pointer'
-  },
-  compactCard: {
-    display: 'flex',
-    cursor: 'pointer'
-  },
-  cardHeader: {
-    overflow: 'hidden'
-  },
-  cardHeaderContentTypography: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
-  },
-  media: {
-    paddingTop: '75%'
-  },
-  compactMedia: {
-    width: 151,
-    minWidth: 151
-  },
-  selected: {
-    border: `1px solid ${palette.blue.tint}`
-  }
-}));
 
 interface NewContentCardProps {
   headerTitle: string;
@@ -76,55 +46,59 @@ function useContentTypePreviewImage(contentTypeName: string) {
 }
 
 const DefaultCardContent = (props) => {
-  const { headerTitle, subheader, classes, imgTitle, contentTypeName } = props;
+  const { headerTitle, subheader, imgTitle, contentTypeName } = props;
   const src = useContentTypePreviewImage(contentTypeName);
   return (
     <>
       <CardHeader
         title={headerTitle}
         subheader={subheader}
-        classes={{
-          content: classes.cardHeader
+        sx={{
+          [`& .${cardHeaderClasses.content}`]: {
+            overflow: 'hidden'
+          }
         }}
         titleTypographyProps={{
           variant: 'body1',
           title: headerTitle,
-          classes: { root: classes.cardHeaderContentTypography }
+          sx: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
         }}
         subheaderTypographyProps={{
           noWrap: true,
           title: subheader,
-          classes: { root: classes.cardHeaderContentTypography }
+          sx: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
         }}
       />
       <Divider />
-      {src && <CardMedia className={classes.media} image={src} title={imgTitle} />}
+      {src && <CardMedia sx={{ paddingTop: '75%' }} image={src} title={imgTitle} />}
     </>
   );
 };
 
 const CompactCardContent = (props) => {
-  const { headerTitle, subheader, classes, imgTitle, contentTypeName } = props;
+  const { headerTitle, subheader, imgTitle, contentTypeName } = props;
   const src = useContentTypePreviewImage(contentTypeName);
   return (
     <>
-      {src && <CardMedia className={classes.compactMedia} image={src} title={imgTitle} />}
+      {src && <CardMedia sx={{ width: 151, minWidth: 151 }} image={src} title={imgTitle} />}
       <CardHeader
         title={headerTitle}
         subheader={subheader}
-        classes={{
-          root: classes.cardHeader,
-          content: classes.cardHeader
+        sx={{
+          overflow: 'hidden',
+          [`& .${cardHeaderClasses.content}`]: {
+            overflow: 'hidden'
+          }
         }}
         titleTypographyProps={{
           variant: 'body1',
           title: headerTitle,
-          classes: { root: classes.cardHeaderContentTypography }
+          sx: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
         }}
         subheaderTypographyProps={{
           noWrap: true,
           title: subheader,
-          classes: { root: classes.cardHeaderContentTypography }
+          sx: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
         }}
       />
     </>
@@ -133,43 +107,38 @@ const CompactCardContent = (props) => {
 
 export function NewContentCard(props: NewContentCardProps) {
   const { onClick, isCompact, isSelected } = props;
-  const { classes, cx } = useStyles();
-  const rootClass = !isCompact ? classes.defaultCard : classes.compactCard;
   const [hover, setHover] = useState(false);
 
   return (
     <Card
-      className={cx(rootClass, isSelected && classes.selected)}
+      sx={[
+        props.isCompact ? { display: 'flex', cursor: 'pointer' } : { maxWidth: 345, cursor: 'pointer' },
+        isSelected && { border: `1px solid ${palette.blue.tint}` }
+      ]}
       onClick={onClick}
       elevation={hover ? 3 : 1}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      {!isCompact ? (
-        <DefaultCardContent {...props} classes={classes} />
-      ) : (
-        <CompactCardContent {...props} classes={classes} />
-      )}
+      {!isCompact ? <DefaultCardContent {...props} /> : <CompactCardContent {...props} />}
     </Card>
   );
 }
 
 export function ContentSkeletonCard(props: { isCompact: boolean }) {
-  const { classes } = useStyles();
-  const rootClass = !props.isCompact ? classes.defaultCard : classes.compactCard;
   return (
-    <Card className={rootClass}>
+    <Card sx={props.isCompact ? { display: 'flex', cursor: 'pointer' } : { maxWidth: 345, cursor: 'pointer' }}>
       {!props.isCompact ? (
         <>
           <CardHeader
             title={<Skeleton animation="wave" height={10} width="40%" />}
             subheader={<Skeleton animation="wave" height={10} width="80%" />}
           />
-          <Skeleton animation="wave" variant="rectangular" className={classes.media} />
+          <Skeleton animation="wave" variant="rectangular" sx={{ paddingTop: '75%' }} />
         </>
       ) : (
         <>
-          <Skeleton animation="wave" variant="rectangular" className={classes.compactMedia} />
+          <Skeleton animation="wave" variant="rectangular" sx={{ width: 151, minWidth: 151 }} />
           <CardHeader
             title={<Skeleton animation="wave" height={10} width="40%" />}
             subheader={<Skeleton animation="wave" height={10} width="80%" />}

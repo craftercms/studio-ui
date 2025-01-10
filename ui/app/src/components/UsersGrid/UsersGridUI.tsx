@@ -25,7 +25,6 @@ import Avatar from '@mui/material/Avatar';
 import User from '../../models/User';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
-import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 import Box from '@mui/material/Box';
@@ -39,11 +38,10 @@ export interface UsersGridUIProps {
 
 export function UsersGridUI(props: UsersGridUIProps) {
   const { users, onRowClicked, onPageChange, onRowsPerPageChange } = props;
-  const { classes } = useStyles();
   return (
     <Box display="flex" flexDirection="column">
       <TableContainer>
-        <Table className={classes.tableRoot}>
+        <Table sx={{ tableLayout: 'fixed' }}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
               <GlobalAppGridCell align="center" className="avatar">
@@ -70,7 +68,7 @@ export function UsersGridUI(props: UsersGridUIProps) {
             {users?.map((user, i) => (
               <GlobalAppGridRow key={user.id} onClick={() => onRowClicked(user)}>
                 <GlobalAppGridCell align="center" className="avatar">
-                  <Avatar className={classes.avatar}>
+                  <Avatar sx={{ margin: '0 auto' }}>
                     {user.firstName.charAt(0)}
                     {user.lastName?.charAt(0) ?? ''}
                   </Avatar>

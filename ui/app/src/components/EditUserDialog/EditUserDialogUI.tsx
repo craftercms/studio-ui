@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
@@ -49,6 +48,7 @@ import {
   validateFieldMinLength,
   validateRequiredField
 } from '../UserManagement/utils';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   externallyManaged: {
@@ -82,7 +82,6 @@ const translations = defineMessages({
 });
 
 export function EditUserDialogUI(props: EditUserDialogUIProps) {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const managedInStudio = !props.user.externallyManaged;
   const {
@@ -106,20 +105,20 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
 
   return (
     <>
-      <header className={classes.header}>
-        <Avatar className={classes.avatar}>
+      <Box component="header" sx={{ padding: '30px 40px', display: 'flex', alignItems: 'center' }}>
+        <Avatar sx={{ marginRight: '30px', width: '90px', height: '90px' }}>
           {user.firstName.charAt(0)}
           {user.lastName?.charAt(0) ?? ''}
         </Avatar>
-        <section className={classes.userInfo}>
+        <Box component="section" sx={{ maxWidth: '70%' }}>
           <Typography variant="h6" component="h2">
             {user.firstName} {user.lastName}
           </Typography>
           <Typography variant="subtitle1" noWrap title={user.username}>
             {user.username}
           </Typography>
-        </section>
-        <section className={classes.actions}>
+        </Box>
+        <Box component="section" sx={{ marginLeft: 'auto' }}>
           {managedInStudio ? (
             <>
               <Tooltip title={<FormattedMessage id="userInfoDialog.resetPassword" defaultMessage="Reset password" />}>
@@ -141,29 +140,58 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
               />
             </>
           ) : (
-            <Chip label={formatMessage(translations.externallyManaged)} size="small" className={classes.chip} />
+            <Chip
+              label={formatMessage(translations.externallyManaged)}
+              size="small"
+              sx={(theme) => ({
+                background: theme.palette.info.main,
+                color: theme.palette.text.primary,
+                marginLeft: 'auto'
+              })}
+            />
           )}
           <Tooltip title={<FormattedMessage id="userInfoDialog.close" defaultMessage="Close" />}>
             <IconButton edge="end" onClick={onCloseButtonClick} size="large">
               <CloseRoundedIcon />
             </IconButton>
           </Tooltip>
-        </section>
-      </header>
+        </Box>
+      </Box>
       <Divider />
-      <DialogBody className={classes.body}>
+      <DialogBody sx={{ padding: 0 }}>
         <Grid container>
           <Grid size={{ sm: 6 }}>
-            <section className={classes.section}>
-              <Typography variant="subtitle1" className={classes.sectionTitle}>
+            <Box component="section" sx={{ padding: '30px 40px' }}>
+              <Typography variant="subtitle1" sx={{ textTransform: 'uppercase', marginBottom: '10px' }}>
                 <FormattedMessage id="userInfoDialog.userDetails" defaultMessage="User Details" />
               </Typography>
-              <form>
-                <div className={classes.row}>
-                  <Typography color="textSecondary" className={classes.label}>
+              <Box
+                component="form"
+                sx={{
+                  '& > .row': {
+                    display: 'flex',
+                    padding: '10px 0',
+                    alignItems: 'center',
+                    '& .section-label': {
+                      flexBasis: '180px',
+                      '& + .MuiInputBase-root': {
+                        marginTop: '0 !important'
+                      }
+                    },
+                    '& .username': {
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      overflow: 'hidden'
+                    }
+                  }
+                }}
+              >
+                <div className="row">
+                  <Typography color="textSecondary" className="section-label">
                     <FormattedMessage id="words.enabled" defaultMessage="Enabled" />
                   </Typography>
-                  <div className={classes.switchWrapper}>
+                  <Box sx={{ width: '100%', marginLeft: '-12px' }}>
                     <Switch
                       disabled={!managedInStudio}
                       checked={user.enabled}
@@ -172,21 +200,21 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                       name="enabled"
                       inputProps={{ 'aria-label': 'enabled checkbox' }}
                     />
-                  </div>
+                  </Box>
                 </div>
                 <Divider />
-                <div className={classes.row}>
-                  <Typography color="textSecondary" className={classes.label}>
+                <div className="row">
+                  <Typography color="textSecondary" className="section-label">
                     <FormattedMessage id="words.username" defaultMessage="Username" />
                   </Typography>
-                  <section className={classes.userNameWrapper}>
+                  <Box component="section" className="username">
                     <Typography noWrap title={user.username}>
                       {user.username}
                     </Typography>
-                  </section>
+                  </Box>
                 </div>
-                <div className={classes.row}>
-                  <InputLabel htmlFor="firstName" className={classes.label}>
+                <div className="row">
+                  <InputLabel htmlFor="firstName" className="section-label">
                     <Typography color="textSecondary">
                       <FormattedMessage id="words.firstName" defaultMessage="First name" />
                     </Typography>
@@ -215,11 +243,11 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                       }
                     />
                   ) : (
-                    <Typography className={classes.userNameWrapper} children={user.firstName} />
+                    <Typography className="username" children={user.firstName} />
                   )}
                 </div>
-                <div className={classes.row}>
-                  <InputLabel htmlFor="lastName" className={classes.label}>
+                <div className="row">
+                  <InputLabel htmlFor="lastName" className="section-label">
                     <Typography color="textSecondary">
                       <FormattedMessage id="words.lastName" defaultMessage="Last name" />
                     </Typography>
@@ -246,11 +274,11 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                       }
                     />
                   ) : (
-                    <Typography className={classes.userNameWrapper} children={user.lastName} />
+                    <Typography className="username" children={user.lastName} />
                   )}
                 </div>
-                <div className={classes.row}>
-                  <InputLabel htmlFor="email" className={classes.label}>
+                <div className="row">
+                  <InputLabel htmlFor="email" className="section-label">
                     <Typography color="textSecondary">
                       <FormattedMessage id="words.email" defaultMessage="E-mail" />
                     </Typography>
@@ -274,37 +302,46 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
                       }}
                     />
                   ) : (
-                    <Typography className={classes.userNameWrapper} children={user.email} />
+                    <Typography className="username" children={user.email} />
                   )}
                 </div>
                 {managedInStudio && (
-                  <div className={classes.formActions}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      paddingBottom: '20px',
+                      '& button:first-child': {
+                        marginLeft: 'auto',
+                        marginRight: '10px'
+                      }
+                    }}
+                  >
                     <SecondaryButton disabled={!dirty || inProgress} onClick={onCancelForm}>
                       <FormattedMessage id="words.cancel" defaultMessage="Cancel" />
                     </SecondaryButton>
                     <PrimaryButton disabled={!dirty || !submitOk || inProgress} onClick={onSave} loading={inProgress}>
                       <FormattedMessage id="words.save" defaultMessage="Save" />
                     </PrimaryButton>
-                  </div>
+                  </Box>
                 )}
-              </form>
-            </section>
+              </Box>
+            </Box>
           </Grid>
           <Grid size={{ sm: 6 }}>
-            <section className={classes.section}>
+            <Box component="section" sx={{ padding: '30px 40px' }}>
               <UserGroupMembershipEditor username={user.username} />
-            </section>
+            </Box>
           </Grid>
         </Grid>
         <Divider />
-        <section className={classes.section}>
-          <Typography variant="subtitle1" className={classes.sectionTitle}>
+        <Box component="section" sx={{ padding: '30px 40px' }}>
+          <Typography variant="subtitle1" sx={{ textTransform: 'uppercase', marginBottom: '10px' }}>
             <FormattedMessage id="userInfoDialog.siteRoles" defaultMessage="Roles per project" />
           </Typography>
           <Grid container spacing={2}>
             <Grid size={4}>
               {sites.map((site) => (
-                <Typography key={site.id} variant="body2" className={classes.siteItem}>
+                <Typography key={site.id} variant="body2" sx={{ margin: '10px 0' }}>
                   {site.name}
                 </Typography>
               ))}
@@ -313,21 +350,21 @@ export function EditUserDialogUI(props: EditUserDialogUIProps) {
               {sites.map((site, i) =>
                 rolesBySite[site.id] ? (
                   rolesBySite[site.id].length ? (
-                    <Typography key={site.id} variant="body2" className={classes.siteItem}>
+                    <Typography key={site.id} variant="body2" sx={{ margin: '10px 0' }}>
                       {rolesBySite[site.id].join(', ')}
                     </Typography>
                   ) : (
-                    <Typography key={site.id} variant="body2" color="textSecondary" className={classes.siteItem}>
+                    <Typography key={site.id} variant="body2" color="textSecondary" sx={{ margin: '10px 0' }}>
                       (<FormattedMessage id="userInfoDialog.noRoles" defaultMessage="No roles" />)
                     </Typography>
                   )
                 ) : (
-                  <Skeleton key={i} variant="text" className={classes.siteItem} style={{ width: `${rand(50, 90)}%` }} />
+                  <Skeleton key={i} variant="text" sx={{ margin: '10px 0' }} style={{ width: `${rand(50, 90)}%` }} />
                 )
               )}
             </Grid>
           </Grid>
-        </section>
+        </Box>
       </DialogBody>
       {managedInStudio && (
         <ResetPasswordDialog

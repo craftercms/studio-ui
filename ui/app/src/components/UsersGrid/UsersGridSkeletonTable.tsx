@@ -23,7 +23,6 @@ import TableBody from '@mui/material/TableBody';
 import Skeleton from '@mui/material/Skeleton';
 import { rand } from '../PathNavigator/utils';
 import React from 'react';
-import useStyles from './styles';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
 
@@ -34,10 +33,9 @@ export interface UsersGridSkeletonTableProps {
 export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableProps) => {
   const { numOfItems = 5 } = props;
   const items = new Array(numOfItems).fill(null);
-  const { classes } = useStyles();
   return (
     <TableContainer>
-      <Table className={classes.tableRoot}>
+      <Table sx={{ tableLayout: 'fixed' }}>
         <TableHead>
           <GlobalAppGridRow>
             <GlobalAppGridCell align="center" className="avatar">
@@ -64,7 +62,7 @@ export const UsersGridSkeletonTable = React.memo((props: UsersGridSkeletonTableP
           {items?.map((width, index) => (
             <GlobalAppGridRow key={index}>
               <GlobalAppGridCell align="center" className="avatar">
-                <Skeleton className={classes.avatar} variant="circular" width={40} height={40} />
+                <Skeleton sx={{ margin: '0 auto' }} variant="circular" width={40} height={40} />
               </GlobalAppGridCell>
               <GlobalAppGridCell component="th" scope="row" className="width20">
                 <Skeleton variant="text" width={`${rand(70, 90)}%`} />

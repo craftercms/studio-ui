@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { useStyles } from './styles';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import Typography from '@mui/material/Typography';
@@ -57,7 +56,6 @@ const translations = defineMessages({
 });
 
 export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
-  const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const {
     title,
@@ -103,12 +101,19 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
 
   return (
     <>
-      <header className={classes.header}>
+      <Box
+        component="header"
+        sx={{
+          padding: '30px 40px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
         <section>
           {title}
           {subtitle}
         </section>
-        <section className={classes.actions}>
+        <Box component="section" sx={{ marginLeft: 'auto' }}>
           {onDeleteGroup && isEdit && (
             <ConfirmDropdown
               cancelText={formatMessage(translations.confirmCancel)}
@@ -128,12 +133,12 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               <CloseRoundedIcon />
             </IconButton>
           </Tooltip>
-        </section>
-      </header>
+        </Box>
+      </Box>
       <Divider />
-      <DialogBody className={classes.body}>
-        <section className={clsx(classes.section, 'noPaddingBottom')}>
-          <Typography variant="subtitle1" className={classes.sectionTitle}>
+      <DialogBody sx={{ p: 0 }}>
+        <Box component="section" sx={{ padding: '30px 40px', paddingBottom: 0 }}>
+          <Typography variant="subtitle1" sx={{ textTransform: 'uppercase', marginBottom: '10px' }}>
             <FormattedMessage id="editGroupDialog.groupDetails" defaultMessage="Group Details" />
           </Typography>
           <form
@@ -143,13 +148,13 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
             }}
           >
             <Box display="flex" alignItems="center" p="15px 0 0 0">
-              <InputLabel htmlFor="groupName" className={classes.label}>
+              <InputLabel htmlFor="groupName" sx={{ flexBasis: '180px', marginTop: '0 !important' }}>
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.name" defaultMessage="Name" />
                 </Typography>
               </InputLabel>
               {isEdit ? (
-                <Typography className={classes.fullWidth} color="textSecondary" noWrap title={group.name}>
+                <Typography sx={{ width: '100%' }} color="textSecondary" noWrap title={group.name}>
                   {group.name}
                 </Typography>
               ) : (
@@ -165,7 +170,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               )}
             </Box>
             <Box display="flex" p="0 0 15px">
-              <div className={classes.label} />
+              <Box sx={{ flexBasis: '180px' }} />
               <FormHelperText
                 error={groupNameError}
                 children={
@@ -192,7 +197,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               />
             </Box>
             <Box display="flex" alignItems="center" p="15px  0">
-              <InputLabel htmlFor="groupDescription" className={classes.label}>
+              <InputLabel htmlFor="groupDescription" sx={{ flexBasis: '180px', marginTop: '0 !important' }}>
                 <Typography variant="subtitle2">
                   <FormattedMessage id="words.description" defaultMessage="Description" />
                 </Typography>
@@ -208,21 +213,30 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               />
             </Box>
             {!group.externallyManaged && (
-              <div className={classes.formActions}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  paddingBottom: '20px',
+                  '& button:first-child': {
+                    marginLeft: 'auto',
+                    marginRight: '10px'
+                  }
+                }}
+              >
                 <PrimaryButton disabled={!submitOk} loading={isSubmitting} type="submit">
                   <FormattedMessage id="words.save" defaultMessage="Save" />
                 </PrimaryButton>
-              </div>
+              </Box>
             )}
           </form>
-        </section>
+        </Box>
         <Divider />
-        <section className={classes.section}>
+        <Box component="section" sx={{ padding: '30px 40px' }}>
           {isEdit ? (
             users &&
             members && (
               <>
-                <Typography variant="subtitle1" className={classes.sectionTitleEdit}>
+                <Typography variant="subtitle1" sx={{ textTransform: 'uppercase', marginBottom: '30px' }}>
                   <FormattedMessage id="editGroupDialog.groupMembers" defaultMessage="Group Members" />
                 </Typography>
                 <TransferList
@@ -285,7 +299,7 @@ export function EditGroupDialogUI(props: GroupEditDialogUIProps) {
               </Typography>
             </Box>
           )}
-        </section>
+        </Box>
       </DialogBody>
     </>
   );

@@ -23,7 +23,6 @@ import TableBody from '@mui/material/TableBody';
 import React from 'react';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
-import { useStyles } from './styles';
 import Group from '../../models/Group';
 import GlobalAppGridRow from '../GlobalAppGridRow';
 import GlobalAppGridCell from '../GlobalAppGridCell';
@@ -38,12 +37,11 @@ export interface GroupsGridUIProps {
 
 export function GroupsGridUI(props: GroupsGridUIProps) {
   const { groups, onRowClicked, onPageChange, onRowsPerPageChange } = props;
-  const { classes } = useStyles();
 
   return (
     <Box display="flex" flexDirection="column">
       <TableContainer>
-        <Table className={classes.tableRoot}>
+        <Table sx={{ tableLayout: 'fixed' }}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
               <GlobalAppGridCell align="left" className="width25">
@@ -67,7 +65,7 @@ export function GroupsGridUI(props: GroupsGridUIProps) {
                   </Typography>
                 </GlobalAppGridCell>
                 <GlobalAppGridCell align="left">
-                  <Typography variant="body2" className={classes.groupDescription}>
+                  <Typography variant="body2" sx={{ wordWrap: 'break-word' }}>
                     {group.desc}
                   </Typography>
                 </GlobalAppGridCell>

@@ -15,7 +15,6 @@
  */
 
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
 import React, { useEffect, useState } from 'react';
 import GlobalState from '../../models/GlobalState';
 import DialogBody from '../DialogBody/DialogBody';
@@ -36,6 +35,7 @@ import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import { useDispatch } from 'react-redux';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { createAtLeastHalfHourInFutureDate } from '../../utils/datetime';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   placeholder: {
@@ -48,16 +48,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles()(() => ({
-  expiresWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-}));
-
 export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
-  const { classes } = useStyles();
   const { isSubmitting, onCreated, onClose, onSubmittingAndOrPendingChange } = props;
   const [expires, setExpires] = useState(false);
   const [expiresAt, setExpiresAt] = useState(createAtLeastHalfHourInFutureDate());
@@ -119,7 +110,7 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
             setLabel(e.target.value);
           }}
         />
-        <section className={classes.expiresWrapper}>
+        <Box component="section" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <FormControlLabel
             control={<Switch checked={expires} color="primary" onChange={(e, checked) => setExpires(checked)} />}
             label={formatMessage(translations.expiresLabel)}
@@ -137,7 +128,7 @@ export function CreateTokenDialogContainer(props: CreateTokenContainerProps) {
               />
             )}
           </FormHelperText>
-        </section>
+        </Box>
         <Collapse in={expires} mountOnEnter>
           <DateTimeTimezonePicker
             onChange={(date) => {

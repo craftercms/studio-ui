@@ -26,7 +26,6 @@ import StandardAction from '../../models/StandardAction';
 import Action, { DialogHeaderActionProps } from '../DialogHeaderAction/DialogHeaderAction';
 import OpenInFullIcon from '@mui/icons-material/OpenInFullRounded';
 import { SystemIconDescriptor } from '../SystemIcon';
-import { CSSObject } from 'tss-react';
 import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models';
 
@@ -125,7 +124,7 @@ export function DialogHeader(props: DialogHeaderProps) {
         borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
         padding: (theme) => theme.spacing(1),
         background: (theme) => theme.palette.background.paper,
-        ...(theme) => theme.mixins.toolbar as CSSObject,
+        ...(theme) => theme.mixins.toolbar,
         ...sxs?.root
       }}
     >

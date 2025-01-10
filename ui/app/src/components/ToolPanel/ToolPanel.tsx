@@ -16,8 +16,6 @@
 
 import { useIntl } from 'react-intl';
 import React, { ElementType, FunctionComponent, PropsWithChildren, ReactElement, Suspense } from 'react';
-import { Theme } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded';
 import Divider from '@mui/material/Divider';
@@ -25,16 +23,15 @@ import IconButton from '@mui/material/IconButton';
 import { popToolsPanelPage } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import TranslationOrText from '../../models/TranslationOrText';
-import { CSSObject } from 'tss-react';
 import { ErrorBoundary } from '../ErrorBoundary';
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
 
 type ToolPanelProps = PropsWithChildren<{
   title: TranslationOrText;
   BackIcon?: ElementType;
   onBack?: () => void;
-  classes?: {
-    body?: any;
-  };
+  sxs?: PartialSxRecord<'body' | 'panelHeader'>;
 }>;
 
 interface PanelHeaderProps {
@@ -43,29 +40,27 @@ interface PanelHeaderProps {
   onBack: () => void;
 }
 
-const useStyles = makeStyles()((theme: Theme) => ({
-  panelHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    ...(theme.mixins.toolbar as CSSObject),
-    justifyContent: 'flex-start'
-  }
-}));
-
 export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
-  const { classes } = useStyles();
   const { title, BackIcon = ChevronLeftRounded, onBack } = props;
   return (
     <>
-      <header className={classes.panelHeader}>
+      <Box
+        component="header"
+        sx={(theme) => ({
+          display: 'flex',
+          alignItems: 'center',
+          padding: theme.spacing(0, 1),
+          ...theme.mixins.toolbar,
+          justifyContent: 'flex-start'
+        })}
+      >
         <IconButton onClick={onBack} size="large">
           <BackIcon />
         </IconButton>
         <Typography component="h2" noWrap title={title}>
           {title}
         </Typography>
-      </header>
+      </Box>
       <Divider />
     </>
   );
@@ -74,7 +69,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), classes } = props;
+  const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), sxs } = props;
   return (
     <>
       <PanelHeader
@@ -84,7 +79,9 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
       />
       <Suspense>
         <ErrorBoundary>
-          <section className={classes?.body}>{props.children}</section>
+          <Box component="section" sx={sxs?.body}>
+            {props.children}
+          </Box>
         </ErrorBoundary>
       </Suspense>
     </>
