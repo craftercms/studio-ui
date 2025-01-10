@@ -15,7 +15,6 @@
  */
 
 import React, { createContext, useContext, useMemo } from 'react';
-import useStyles from './styles';
 import { WidgetDialogProps } from './utils';
 import EnhancedDialog from '../EnhancedDialog';
 import Suspencified from '../Suspencified/Suspencified';
@@ -37,7 +36,6 @@ export function useWidgetDialogContext(): WidgetDialogContextType {
 
 export function WidgetDialog(props: WidgetDialogProps) {
   const { title, fullHeight = true, widget, onSubmittingAndOrPendingChange, isSubmitting, extraProps, ...rest } = props;
-  const { classes } = useStyles();
   const fnRefs = useRef({ onClose: rest.onClose });
   const context = useMemo<WidgetDialogContextType>(
     () => ({
@@ -51,9 +49,8 @@ export function WidgetDialog(props: WidgetDialogProps) {
     <EnhancedDialog
       title={title}
       maxWidth="xl"
-      classes={{ ...(fullHeight && { paper: classes.widgetDialogPaper }) }}
       PaperProps={{
-        sx: { minHeight: '90vh' }
+        sx: fullHeight && { minHeight: '90vh' }
       }}
       isSubmitting={isSubmitting}
       {...rest}
