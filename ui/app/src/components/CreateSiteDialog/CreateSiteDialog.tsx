@@ -15,12 +15,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import Dialog from '@mui/material/Dialog';
+import Dialog, { dialogClasses } from '@mui/material/Dialog';
 import { SiteState } from '../../models/Site';
 import { nnou } from '../../utils/object';
 import { useSpreadState } from '../../hooks/useSpreadState';
 import CreateSiteDialogContainer from './CreateSiteDialogContainer';
-import { useStyles } from './styles';
 
 const siteInitialState: SiteState = {
   blueprint: null,
@@ -74,7 +73,6 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
   });
   const [site, setSite] = useSpreadState(siteInitialState);
   const [search, setSearch] = useState(searchInitialState);
-  const { classes } = useStyles();
 
   function cleanDialogState() {
     setDialog({ open: false, inProgress: false });
@@ -155,7 +153,12 @@ function CreateSiteDialog(props: CreateSiteDialogProps) {
       aria-labelledby="create-site-dialog"
       fullWidth
       maxWidth="lg"
-      classes={{ paperScrollPaper: classes.paperScrollPaper }}
+      sx={{
+        [`& .${dialogClasses.paperScrollPaper}`]: {
+          height: 'calc(100% - 100px)',
+          maxHeight: '1200px'
+        }
+      }}
       disableEnforceFocus={disableEnforceFocus}
       data-dialog-id="create-site-dialog"
     >

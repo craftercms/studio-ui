@@ -107,7 +107,7 @@ export function DeleteContentTypeDialogContainer(props: DeleteContentTypeDialogC
   return error ? (
     <ApiResponseErrorState error={error} />
   ) : isFetching ? (
-    <LoadingState styles={{ root: { width: 300, height: 250 } }} />
+    <LoadingState sxs={{ root: { width: 300, height: 250 } }} />
   ) : data ? (
     <DeleteContentTypeDialogBody
       submitting={isSubmitting}

@@ -203,7 +203,7 @@ export function InstallPluginDialogContainer(props: InstallPluginDialogProps) {
       >
         {isFetching ? (
           <LoadingState
-            styles={{
+            sxs={{
               root: {
                 flexGrow: 1,
                 justifyContent: 'center',

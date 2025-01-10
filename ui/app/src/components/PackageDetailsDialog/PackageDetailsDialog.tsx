@@ -126,7 +126,7 @@ export function PackageDetailsDialog(props: PackageDetailsDialogProps) {
       }
     >
       <DialogContent>
-        {state.loading && <LoadingState styles={{ root: { width: 100, height: dialogContentHeight } }} />}
+        {state.loading && <LoadingState sxs={{ root: { width: 100, height: dialogContentHeight } }} />}
         {state.error && <ApiResponseErrorState error={state.error} />}
         {!Boolean(packageId) && (
           <Typography color="error.main">

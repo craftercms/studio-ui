@@ -76,7 +76,7 @@ export function RenameItemView(props: RenameItemViewProps) {
   return fetchingDependantItems ? (
     <LoadingState
       title={<FormattedMessage defaultMessage="Fetching dependent items" />}
-      styles={{ title: { marginTop: 0 } }}
+      sxs={{ title: { marginTop: 0 } }}
     />
   ) : dependantItems ? (
     <>

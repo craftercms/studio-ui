@@ -21,7 +21,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import { makeStyles } from 'tss-react/mui';
 import {
   sendPasswordRecovery,
   setPassword as setPasswordService,
@@ -136,53 +135,6 @@ const translations = defineMessages({
     defaultMessage: 'Try again {fullTime, select, true {{time}} other {in {time} seconds}}'
   }
 });
-
-const useStyles = makeStyles()((theme) => ({
-  dialogRoot: {
-    transition: 'all 600ms ease',
-    '& .MuiInput-input': { backgroundColor: theme.palette.background.paper },
-    '& .MuiFormControl-root, & .MuiButton-root': {
-      marginBottom: theme.spacing(1),
-      '&.last-before-button': { marginBottom: theme.spacing(2) }
-    }
-  },
-  dialogRootFetching: {
-    opacity: 0.2
-  },
-  dialogPaper: {
-    minWidth: 300,
-    overflow: 'visible',
-    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0, 0, 0, .8)' : 'rgba(255, 255, 255, .8)'
-  },
-  logo: {
-    maxWidth: 250,
-    display: 'block',
-    margin: `${theme.spacing(2)} auto ${theme.spacing(1)}`
-  },
-  recoverInfoMessage: {
-    maxWidth: 300,
-    textAlign: 'center',
-    margin: `0 auto ${theme.spacing(1.5)}`
-  },
-  errorMessage: {
-    backgroundColor: palette.red.tint,
-    color: palette.white,
-    marginBottom: theme.spacing(1),
-    padding: theme.spacing(1),
-    borderRadius: theme.spacing(1),
-    border: `1px solid ${palette.red.main}`,
-    display: 'flex',
-    placeContent: 'center',
-    lineHeight: 1.7,
-    '& .MuiSvgIcon-root': {
-      marginRight: theme.spacing(0.5),
-      color: palette.white
-    }
-  },
-  resetPassword: {
-    marginBottom: 10
-  }
-}));
 
 const retrieveStoredLangPreferences = () =>
   Object.keys(window.localStorage).filter((key) => key.includes('_crafterStudioLanguage'));
@@ -549,7 +501,6 @@ function LanguageDropDown(props: LanguageDropDownProps) {
 
 export function LoginViewContainer(props: LoginViewProps) {
   const { formatMessage } = useIntl();
-  const { classes, cx } = useStyles();
   const token = queryString.parse(window.location.search).token as string;
   const { xsrfToken, xsrfParamName, passwordRequirementsMinComplexity, lockedErrorMessage, lockedTimeSeconds } = props;
 
@@ -647,7 +598,17 @@ export function LoginViewContainer(props: LoginViewProps) {
         aria-labelledby="loginDialog"
       >
         <DialogTitle id="loginDialog">
-          <CrafterCMSLogo className={classes.logo} width="auto" alt={formatMessage(translations.loginDialogTitle)} />
+          <CrafterCMSLogo
+            sxs={{
+              root: {
+                maxWidth: 250,
+                display: 'block',
+                margin: (theme) => `${theme.spacing(2)} auto ${theme.spacing(1)}`
+              }
+            }}
+            width="auto"
+            alt={formatMessage(translations.loginDialogTitle)}
+          />
         </DialogTitle>
         <CurrentView {...currentViewProps} />
         <LanguageDropDown language={language} languages={languages} onChange={setLanguage} />

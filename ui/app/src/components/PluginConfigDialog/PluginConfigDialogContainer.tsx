@@ -128,7 +128,7 @@ export function PluginConfigDialogContainer(props: PluginConfigDialogContainerPr
   return (
     <>
       <DialogBody sx={{ height: '60vh', padding: 0 }}>
-        <ConditionalLoadingState isLoading={loading} styles={{ root: { flexGrow: 1 } }}>
+        <ConditionalLoadingState isLoading={loading} sxs={{ root: { flexGrow: 1 } }}>
           <AceEditor
             ref={editorRef}
             mode="ace/mode/xml"

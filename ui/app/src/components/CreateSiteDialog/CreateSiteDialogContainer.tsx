@@ -50,7 +50,6 @@ import BlueprintForm from './BlueprintForm';
 import BlueprintReview from './BlueprintReview';
 import DialogFooter from '../DialogFooter';
 import PrimaryButton from '../PrimaryButton';
-import { useStyles } from './styles';
 import messages from './translations';
 import { hasGlobalPermissions } from '../../services/users';
 import SecondaryButton from '../SecondaryButton';
@@ -58,6 +57,8 @@ import useMount from '../../hooks/useMount';
 import ContentCopyIcon from '@mui/icons-material/ContentCopyRounded';
 import GitFilled from '../../icons/GitFilled';
 import { previewSwitch } from '../../services/security';
+import { keyframes } from '@emotion/react';
+import { fadeIn } from 'react-animations';
 
 interface SearchState {
   searchKey: string;
@@ -92,18 +93,26 @@ export interface CreateSiteDialogLoaderProps {
 
 export function CreateSiteDialogLoader(props: CreateSiteDialogLoaderProps) {
   const { title, subtitle, handleClose } = props;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   return (
-    <div className={classes.statePaper}>
+    <Box sx={{ height: '100%' }}>
       <LoadingState
         title={title ?? formatMessage(messages.creatingSite)}
         subtitle={subtitle ?? formatMessage(messages.pleaseWait)}
-        classes={{
-          root: classes.loadingStateRoot,
-          graphicRoot: classes.loadingStateGraphicRoot,
-          graphic: classes.loadingStateGraphic
+        sxs={{
+          root: {
+            minHeight: 'calc(100% - 85px)',
+            height: 'calc(100% - 85px)',
+            margin: 0
+          },
+          graphicRoot: {
+            flexGrow: 1,
+            paddingBottom: '100px'
+          },
+          graphic: {
+            width: 200
+          }
         }}
       />
       <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
@@ -114,14 +123,13 @@ export function CreateSiteDialogLoader(props: CreateSiteDialogLoaderProps) {
           <FormattedMessage defaultMessage="Project creation will continue in the background" />
         </Typography>
       </Box>
-    </div>
+    </Box>
   );
 }
 
 export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps) {
   const { site, setSite, search, setSearch, handleClose, dialog, setDialog, disableEnforceFocus, onShowDuplicate } =
     props;
-  const { classes, cx } = useStyles();
   const [permissionsLookup, setPermissionsLookup] = useState<LookupTable<boolean>>({});
   const hasListPluginPermission = permissionsLookup['list_plugins'];
 
@@ -627,7 +635,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
           />
         ))
       ) : (
-        <div className={classes.dialogContainer}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <DialogHeader
             title={views[site.selectedView].title}
             subtitle={views[site.selectedView].subtitle}
@@ -636,17 +644,26 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
           />
 
           {blueprints ? (
-            <DialogBody classes={{ root: classes.dialogContent }}>
+            <DialogBody sx={{ padding: 0 }}>
               {site.selectedView === 0 && (
-                <div className={cx(classes.slide, classes.fadeIn)}>
-                  <Grid container spacing={3} className={classes.containerGrid}>
+                <Box
+                  sx={{
+                    flexWrap: 'wrap',
+                    height: '100%',
+                    overflow: 'auto',
+                    display: 'flex',
+                    padding: '25px',
+                    animation: `${keyframes`${fadeIn}`} 1s`
+                  }}
+                >
+                  <Grid container spacing={3} sx={{ alignContent: 'baseline' }}>
                     {renderBlueprints(blueprints)}
                     {hasListPluginPermission && (
                       <>
                         <Grid size={12}>
                           <Divider sx={{ ml: -3, mr: -3 }} />
                         </Grid>
-                        <Grid size={12} className={classes.marketplaceActions}>
+                        <Grid size={12} sx={{ display: 'flex', alignItems: 'center' }}>
                           <Typography color="text.secondary" variant="overline" sx={{ mr: 2 }}>
                             {formatMessage(messages.publicMarketplaceBlueprints)}
                           </Typography>
@@ -654,17 +671,17 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                             <SearchIcon />
                           </IconButton>
                           <FormControlLabel
-                            className={classes.showIncompatible}
+                            sx={{ marginLeft: 'auto' }}
                             control={
                               <Checkbox
                                 checked={site.showIncompatible}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleShowIncompatibleChange(e)}
                                 color="primary"
-                                className={classes.showIncompatibleCheckbox}
+                                sx={{ pt: 0, pb: 0 }}
                               />
                             }
                             label={
-                              <Typography className={classes.showIncompatibleInput}>
+                              <Typography sx={{ fontSize: '0.8125rem' }}>
                                 {formatMessage(messages.showIncompatible)}
                               </Typography>
                             }
@@ -673,19 +690,28 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                         </Grid>
                         {search.searchSelected && site.selectedView === 0 && (
                           <Grid size={12}>
-                            <div className={classes.searchContainer}>
+                            <Box sx={{ width: '100%', zIndex: 1 }}>
                               <SearchBar
                                 showActionButton={Boolean(search.searchKey)}
                                 onChange={handleOnSearchChange}
                                 keyword={search.searchKey}
                                 autoFocus={true}
                               />
-                            </div>
+                            </Box>
                           </Grid>
                         )}
                         {apiState.marketplaceError ? (
-                          <Box className={classes.marketplaceUnavailable}>
-                            <SignalWifiBadRounded className={classes.marketplaceUnavailableIcon} />
+                          <Box
+                            sx={(theme) => ({
+                              width: '100%',
+                              display: 'flex',
+                              alignItems: 'center',
+                              flexDirection: 'column',
+                              rowGap: theme.spacing(2),
+                              padding: theme.spacing(5)
+                            })}
+                          >
+                            <SignalWifiBadRounded sx={{ color: (theme) => theme.palette.text.secondary }} />
                             <Typography variant="body1" color="text.secondary">
                               {formatMessage(messages.marketplaceUnavailable)}
                             </Typography>
@@ -701,7 +727,7 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                           <EmptyState
                             title={formatMessage(messages.noMarketplaceBlueprints)}
                             subtitle={formatMessage(messages.changeQuery)}
-                            classes={{ root: classes.emptyStateRoot }}
+                            sxs={{ root: { width: '100%' } }}
                           />
                         ) : (
                           renderBlueprints(filteredMarketplace, true)
@@ -709,10 +735,19 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                       </>
                     )}
                   </Grid>
-                </div>
+                </Box>
               )}
               {site.selectedView === 1 && (
-                <div className={cx(classes.slide, classes.fadeIn)}>
+                <Box
+                  sx={{
+                    flexWrap: 'wrap',
+                    height: '100%',
+                    overflow: 'auto',
+                    display: 'flex',
+                    padding: '25px',
+                    animation: `${keyframes`${fadeIn}`} 1s`
+                  }}
+                >
                   {site.blueprint && (
                     <BlueprintForm
                       inputs={site}
@@ -724,28 +759,37 @@ export function CreateSiteDialogContainer(props: CreateSiteDialogContainerProps)
                       fieldsErrorsLookup={fieldsErrorsLookup}
                     />
                   )}
-                </div>
+                </Box>
               )}
               {site.selectedView === 2 && (
-                <div className={cx(classes.slide, classes.fadeIn)}>
+                <Box
+                  sx={{
+                    flexWrap: 'wrap',
+                    height: '100%',
+                    overflow: 'auto',
+                    display: 'flex',
+                    padding: '25px',
+                    animation: `${keyframes`${fadeIn}`} 1s`
+                  }}
+                >
                   {site.blueprint && <BlueprintReview onGoTo={handleGoTo} inputs={site} blueprint={site.blueprint} />}
-                </div>
+                </Box>
               )}
             </DialogBody>
           ) : apiState.error ? (
             <ApiResponseErrorState sxs={{ root: { height: '100%' } }} error={apiState.errorResponse} />
           ) : (
-            <div className={classes.loading}>
+            <Box sx={{ position: 'relative', padding: 16, flexGrow: 1 }}>
               <LoadingState />
-            </div>
+            </Box>
           )}
           {site.selectedView !== 0 && (
-            <DialogFooter classes={{ root: classes.fadeIn }}>
+            <DialogFooter sx={{ animation: `${keyframes`${fadeIn}`} 1s` }}>
               <Button color="primary" variant="outlined" onClick={handleBack} children={formatMessage(messages.back)} />
               <PrimaryButton ref={finishRef} onClick={handleFinish} children={views[site.selectedView].btnText} />
             </DialogFooter>
           )}
-        </div>
+        </Box>
       )}
     </>
   );

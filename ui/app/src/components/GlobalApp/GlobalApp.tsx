@@ -96,7 +96,7 @@ export function GlobalApp(props: GlobalAppProps) {
               <Navigate to={`${urlMapping[globalNavigation.items[0].id].replace('#', '')}`} />
             ) : (
               <LoadingState
-                styles={{
+                sxs={{
                   root: {
                     height: '100%',
                     margin: 0
@@ -168,7 +168,7 @@ export function GlobalAppInternal(props: GlobalAppProps) {
     )}`;
   }, [formatMessage, idByPathLookup, location.pathname]);
   return (
-    <Paper className={classes.root} elevation={0}>
+    <Paper sx={{ height: '100vh', width: '100%' }} elevation={0}>
       <ResizeableDrawer
         classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
         open={openSidebar}

@@ -18,11 +18,11 @@ import React, { PropsWithChildren } from 'react';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/CloseRounded';
 import Dialog from '@mui/material/Dialog';
-import { makeStyles } from 'tss-react/mui';
 import StandardAction from '../../models/StandardAction';
 import { ApiResponse } from '../../models/ApiResponse';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import { useUnmount } from '../../hooks/useUnmount';
+import Box from '@mui/material/Box';
 
 interface ErrorDialogBaseProps {
   open: boolean;
@@ -43,28 +43,25 @@ export interface ErrorDialogStateProps extends ErrorDialogBaseProps {
   onDismiss?: StandardAction;
 }
 
-const useStyles = makeStyles()((theme) => ({
-  closeButton: {
-    position: 'absolute',
-    right: theme.spacing(1),
-    top: theme.spacing(1)
-  },
-  body: {
-    padding: theme.spacing(2)
-  }
-}));
-
 function ErrorDialogBody(props: ErrorDialogProps) {
   const { onDismiss, error } = props;
-  const { classes } = useStyles();
   useUnmount(props.onClosed);
   return (
-    <div className={classes.body}>
-      <IconButton aria-label="close" className={classes.closeButton} onClick={() => onDismiss()} size="large">
+    <Box sx={{ padding: (theme) => theme.spacing(2) }}>
+      <IconButton
+        aria-label="close"
+        sx={(theme) => ({
+          position: 'absolute',
+          right: theme.spacing(1),
+          top: theme.spacing(1)
+        })}
+        onClick={() => onDismiss()}
+        size="large"
+      >
         <CloseIcon />
       </IconButton>
       {error && <ApiResponseErrorState error={error} />}
-    </div>
+    </Box>
   );
 }
 

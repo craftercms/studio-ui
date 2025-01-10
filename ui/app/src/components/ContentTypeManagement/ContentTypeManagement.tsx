@@ -24,12 +24,7 @@ import { fromEvent } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import { useDispatch } from 'react-redux';
-import {
-  contentTypeCreated,
-  contentTypeDeleted,
-  contentTypeUpdated,
-  emitSystemEvent
-} from '../../state/actions/system';
+import { contentTypeCreated, contentTypeDeleted, emitSystemEvent } from '../../state/actions/system';
 import { ProjectToolsRoutes } from '../../env/routes';
 
 export interface ContentTypeManagementProps {
@@ -97,7 +92,7 @@ export function ContentTypeManagement(props: ContentTypeManagementProps) {
           showAppsButton={showAppsButton}
         />
       )}
-      {loading && <LoadingState styles={{ root: { flexGrow: 1 } }} />}
+      {loading && <LoadingState sxs={{ root: { flexGrow: 1 } }} />}
       <LegacyIFrame
         path={`/legacy-site-config?mode=embedded${mountMode ? `&mountMode=${mountMode}` : ''}#tool${ProjectToolsRoutes.ContentTypes}`}
         iframeProps={{

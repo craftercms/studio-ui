@@ -18,10 +18,9 @@ import React, { forwardRef, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddRounded';
-import Menu from '@mui/material/Menu';
+import Menu, { menuClasses } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from 'tss-react/mui';
 import { useDispatch } from 'react-redux';
 import { newContentCreationComplete, showEditDialog, showNewContentDialog } from '../../state/actions/dialogs';
 import Card from '@mui/material/Card';
@@ -56,51 +55,6 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles()((theme) => ({
-  menu: {
-    paddingTop: 0,
-    minWidth: '140px'
-  },
-  menuItem: {
-    fontSize: 14
-  },
-  menuTitle: {
-    fontSize: 14
-  },
-  menuSectionTitle: {
-    fontSize: 12,
-    backgroundColor: theme.palette.background.default,
-    color: theme.palette.text.secondary,
-    padding: '5px 16px'
-  },
-  quickCreateEmptyRoot: {
-    width: '149px',
-    justifyContent: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    textAlign: 'center',
-    alignItems: 'center',
-    boxShadow: 'none'
-  },
-  quickCreateEmptyCardContent: {
-    padding: '5px 10px'
-  },
-  quickCreateEmptyDescription: {
-    fontSize: '12px'
-  },
-  quickCreateEmptyCardActions: {
-    padding: 0,
-    '& .MuiButton-root': {
-      fontSize: '14px',
-      textDecoration: 'underline',
-      color: palette.blue.main
-    }
-  },
-  quickCreateLoadingState: {
-    width: 80
-  }
-}));
-
 interface QuickCreateMenuProps {
   open: boolean;
   item?: DetailedItem;
@@ -121,7 +75,6 @@ interface QuickCreateMenuButtonProps {
 }
 
 interface QuickCreateSectionProps {
-  classes: { [className: string]: string };
   onItemSelected: (item: QuickCreateItem) => any;
   version: string;
   quickCreateItems: QuickCreateItem[];
@@ -129,7 +82,6 @@ interface QuickCreateSectionProps {
 
 export function QuickCreateMenu(props: QuickCreateMenuProps) {
   const { open, onClose, anchorEl, onNewContentSelected, onQuickCreateItemSelected, item } = props;
-  const { classes } = useStyles();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
   const itemNewContentButton = item?.availableActionsMap.createContent;
   const { error, isFetching, items: quickCreateItems } = useQuickCreateState();
@@ -155,26 +107,39 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 
   return (
     <>
-      <Menu classes={{ paper: classes.menu }} anchorEl={anchorEl} open={open} onClose={onClose}>
+      <Menu
+        sx={{
+          [`& .${menuClasses.paper}`]: {
+            paddingTop: 0,
+            minWidth: '140px'
+          }
+        }}
+        anchorEl={anchorEl}
+        open={open}
+        onClose={onClose}
+      >
         {itemNewContentButton && (
-          <MenuItem
-            className={classes.menuTitle}
-            onClick={onNewContentSelected}
-            sx={{ borderBottom: 1, borderBottomColor: 'divider' }}
-          >
+          <MenuItem onClick={onNewContentSelected} sx={{ fontSize: 14, borderBottom: 1, borderBottomColor: 'divider' }}>
             <FormattedMessage id="quickCreateMenu.title" defaultMessage="New Content" />
           </MenuItem>
         )}
-        <Typography component="h4" className={classes.menuSectionTitle}>
+        <Typography
+          component="h4"
+          sx={(theme) => ({
+            fontSize: 12,
+            backgroundColor: theme.palette.background.default,
+            color: theme.palette.text.secondary,
+            padding: '5px 16px'
+          })}
+        >
           <FormattedMessage id="quickCreateMenu.sectionTitle" defaultMessage="Quick Create" />
         </Typography>
         {error ? (
           <ApiResponseErrorState error={error} />
         ) : isFetching ? (
-          <LoadingState classes={{ graphic: classes.quickCreateLoadingState }} />
+          <LoadingState sxs={{ graphic: { width: '80px' } }} />
         ) : quickCreateItems && systemVersion ? (
           <QuickCreateSection
-            classes={classes}
             version={systemVersion}
             quickCreateItems={quickCreateItems}
             onItemSelected={onFormDisplay}
@@ -186,29 +151,48 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 }
 
 function QuickCreateSection(props: QuickCreateSectionProps) {
-  const { version, quickCreateItems, classes, onItemSelected } = props;
+  const { version, quickCreateItems, onItemSelected } = props;
 
   return (
     <>
       {quickCreateItems.map((item) => (
-        <MenuItem key={item.path} onClick={() => onItemSelected(item)} className={classes.menuItem}>
+        <MenuItem key={item.path} onClick={() => onItemSelected(item)} sx={{ fontSize: 14 }}>
           {item.label}
         </MenuItem>
       ))}
       {quickCreateItems.length === 0 && (
-        <Card className={classes.quickCreateEmptyRoot}>
-          <CardContent className={classes.quickCreateEmptyCardContent}>
+        <Card
+          sx={{
+            width: '149px',
+            justifyContent: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            textAlign: 'center',
+            alignItems: 'center',
+            boxShadow: 'none'
+          }}
+        >
+          <CardContent sx={{ padding: '5px 10px' }}>
             <Typography color="textSecondary" gutterBottom>
               <ErrorOutlineOutlinedIcon fontSize={'small'} />
             </Typography>
-            <Typography className={classes.quickCreateEmptyDescription}>
+            <Typography sx={{ fontSize: '12px' }}>
               <FormattedMessage
                 id="quickCreateMenu.learnMoreError"
                 defaultMessage="Quick create has not been configured. Please contact your system administrator."
               />
             </Typography>
           </CardContent>
-          <CardActions className={classes.quickCreateEmptyCardActions}>
+          <CardActions
+            sx={{
+              padding: 0,
+              '& .MuiButton-root': {
+                fontSize: '14px',
+                textDecoration: 'underline',
+                color: palette.blue.main
+              }
+            }}
+          >
             {version && (
               <Button
                 size="small"

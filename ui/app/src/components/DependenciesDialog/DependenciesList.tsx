@@ -20,32 +20,37 @@ import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import ListItemText from '@mui/material/ListItemText';
 import React from 'react';
-import { dependenciesDialogStyles } from './DependenciesDialog';
 import { assetsTypes, DependenciesListProps } from './utils';
 
 export function DependenciesList(props: DependenciesListProps) {
   const { dependencies, compactView, showTypes, renderAction } = props;
-  const { classes, cx } = dependenciesDialogStyles();
 
   return (
-    <List className={classes.dependenciesList}>
+    <List
+      sx={{
+        backgroundColor: (theme) => theme.palette.background.paper,
+        padding: 0,
+        borderRadius: '5px 5px 0 0'
+      }}
+    >
       {dependencies
         ?.filter((dependency) => assetsTypes[showTypes].filter(dependency))
         .map((dependency, i) => (
           <ListItem
             key={dependency.path}
             divider={dependencies.length - 1 !== i}
-            className={cx(classes.dependenciesListItem, {
-              [classes.dependenciesCompactListItem]: compactView
-            })}
+            sx={{
+              padding: 0,
+              height: compactView ? '43px' : '70px'
+            }}
           >
             {isImage(dependency.path) && !compactView && (
               <ListItemAvatar>
-                <Avatar className={classes.listItemPreview} src={dependency.path} />
+                <Avatar sx={{ width: '100px', height: '70px', borderRadius: 0 }} src={dependency.path} />
               </ListItemAvatar>
             )}
             <ListItemText
-              className={classes.listItemContent}
+              sx={{ paddingLeft: '15px' }}
               primary={dependency.label}
               secondary={!compactView ? dependency.path : null}
             />

@@ -20,7 +20,6 @@ import DialogBody from '../DialogBody/DialogBody';
 import { fetchContentXML, lock, writeContent } from '../../services/content';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import AceEditor from '../AceEditor/AceEditor';
-import useStyles from './styles';
 import { useDispatch } from 'react-redux';
 import { updateCodeEditorDialog } from '../../state/actions/dialogs';
 import Skeleton from '@mui/material/Skeleton';
@@ -63,7 +62,6 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
   const isLocked = isLockedState(item?.state);
   const isLockedForMe = isItemLockedForMe(item, user.username);
   const shouldPerformLock = open && itemLoaded && !readonly && !isLockedForMe && !isLocked;
-  const { classes } = useStyles();
   const editorRef = useRef<any>(undefined);
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -219,14 +217,15 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
         disabled={isSubmitting}
       />
       <DialogBody
-        className={classes.dialogBody}
         sx={{
+          height: '60vh',
+          padding: 0,
           '.MuiDialogTitle-root + &': {
             pt: 0
           }
         }}
       >
-        <ConditionalLoadingState isLoading={loading} classes={{ root: classes.loadingState }}>
+        <ConditionalLoadingState isLoading={loading} sxs={{ root: { flexGrow: 1 } }}>
           <AceEditor
             ref={editorRef}
             autoFocus={!readonly}
@@ -234,7 +233,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             value={content ?? ''}
             onChange={onEditorChanges}
             readOnly={isLockedForMe || readonly}
-            classes={{ editorRoot: classes.aceRoot }}
+            styles={{ editorRoot: { position: 'absolute' } }}
             enableBasicAutocompletion
             enableSnippets
             enableLiveAutocompletion
@@ -247,7 +246,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
           <Button
             onClick={onAddSnippet}
             endIcon={<ExpandMoreRoundedIcon />}
-            className={classes.addSnippet}
+            sx={{ marginRight: 'auto' }}
             disabled={isSubmitting || isLockedForMe}
           >
             <FormattedMessage id="codeEditor.insertCode" defaultMessage="Insert Code" />

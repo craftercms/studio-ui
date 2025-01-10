@@ -71,7 +71,7 @@ export function ToolsPanel() {
   const isLoading = uiConfig.isFetching;
   const isEmpty = toolsPanel?.widgets == null || toolsPanel.widgets.length === 0;
   const onWidthChange = (width: number) => dispatch(updateToolsPanelWidth({ width }));
-  const loadingStateProps: LoadingStateProps = { styles: { graphic: { width: '90px' } } };
+  const loadingStateProps: LoadingStateProps = { sxs: { graphic: { width: '90px' } } };
 
   useEffect(() => {
     if (nnou(uiConfig.xml) && !toolsPanel) {

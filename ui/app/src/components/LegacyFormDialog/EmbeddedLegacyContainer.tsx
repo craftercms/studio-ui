@@ -47,10 +47,10 @@ import { useUnmount } from '../../hooks/useUnmount';
 import LoadingState from '../LoadingState/LoadingState';
 import ErrorDialog from '../ErrorDialog/ErrorDialog';
 import { translations } from './translations';
-import { useStyles } from './styles';
 import { hasEditAction } from '../../utils/content';
 import { nnou } from '../../utils/object';
 import { useFetchItem } from '../../hooks/useFetchItem';
+import Box from '@mui/material/Box';
 
 export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyEditor(
   props: LegacyFormDialogContainerProps,
@@ -79,7 +79,6 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   } = props;
 
   const { formatMessage } = useIntl();
-  const { classes, cx: clsx } = useStyles();
   const iframeRef = useRef(null);
   const dispatch = useDispatch();
   const [error, setError] = useState<ApiResponse>(null);
@@ -266,10 +265,14 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
   return (
     <>
       {(inProgress || !item) && !isNewContent && (
-        <LoadingState title={formatMessage(translations.loadingForm)} classes={{ root: classes.loadingRoot }} />
+        <LoadingState
+          title={formatMessage(translations.loadingForm)}
+          sxs={{ root: { flexGrow: 1, justifyContent: 'center' } }}
+        />
       )}
       {(item || isNewContent) && (
-        <iframe
+        <Box
+          component="iframe"
           ref={(e) => {
             iframeRef.current = e;
             if (ref) {
@@ -278,7 +281,15 @@ export const EmbeddedLegacyContainer = React.forwardRef(function EmbeddedLegacyE
           }}
           src={src}
           title="Embedded Legacy Form"
-          className={clsx(classes.iframe, !inProgress && 'complete')}
+          className={!inProgress && 'complete'}
+          sx={{
+            height: 0,
+            border: 0,
+            '&.complete': {
+              height: '100%',
+              flexGrow: 1
+            }
+          }}
         />
       )}
       <ErrorDialog open={Boolean(error)} error={error} onDismiss={onErrorClose} />
