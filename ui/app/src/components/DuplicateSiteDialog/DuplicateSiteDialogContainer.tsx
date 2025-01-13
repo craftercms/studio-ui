@@ -26,7 +26,7 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
-import { keyframes } from 'tss-react';
+import { keyframes } from '@emotion/react';
 import { fadeIn } from 'react-animations';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { CreateSiteDialogLoader } from '../CreateSiteDialog';

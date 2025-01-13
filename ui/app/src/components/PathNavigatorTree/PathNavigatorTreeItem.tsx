@@ -294,7 +294,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
             onContextMenu={onContextMenu}
           >
             <ItemDisplay
-              styles={{
+              sxs={{
                 root: {
                   flex: 1,
                   minWidth: 0,

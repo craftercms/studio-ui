@@ -111,7 +111,7 @@ function PathNavigatorItem(props: NavItemProps) {
         />
       )}
       <ItemDisplay
-        styles={{
+        sxs={{
           root: {
             flex: 1,
             minWidth: 0

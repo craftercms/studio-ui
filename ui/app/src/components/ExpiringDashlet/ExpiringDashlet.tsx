@@ -72,7 +72,7 @@ const renderExpiredItems = (
               item={item.sandboxItem}
               onClick={(e) => (isItemPreviewable ? onItemClick(e, item.sandboxItem) : null)}
               showNavigableAsLinks={isItemPreviewable}
-              styles={{ ...(isItemPreviewable && { root: { cursor: 'pointer' } }) }}
+              sxs={{ ...(isItemPreviewable && { root: { cursor: 'pointer' } }) }}
             />
           }
           secondary={

@@ -187,7 +187,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
             sx={{ width: '100%', overflow: 'hidden', cursor: 'pointer', display: 'flex' }}
             onClick={() => setFocus(true)}
           >
-            <ItemDisplay item={item} styles={{ root: { maxWidth: '100%' } }} showNavigableAsLinks={false} />
+            <ItemDisplay item={item} sxs={{ root: { maxWidth: '100%' } }} showNavigableAsLinks={false} />
           </Box>
         )}
         {(focus || !item) && (
