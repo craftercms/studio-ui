@@ -21,7 +21,6 @@ import IFrame from '../IFrame/IFrame';
 import { nou } from '../../utils/object';
 import AceEditor from '../AceEditor/AceEditor';
 import { backgroundModes, PreviewDialogContainerProps } from './utils';
-import { useStyles } from './styles';
 import DialogFooter from '../DialogFooter';
 import SecondaryButton from '../SecondaryButton';
 import { FormattedMessage } from 'react-intl';
@@ -36,10 +35,10 @@ import useItemsByPath from '../../hooks/useItemsByPath';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
 import { fetchSandboxItem } from '../../state/actions/content';
 import useItemsBeingFetchedByPath from '../../hooks/useItemsBeingFetchedByPath';
+import palette from '../../styles/palette';
 
 export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   const { title, content, mode, url, path, onClose, type, mimeType, backgroundModeIndex, showEdit = true } = props;
-  const { classes, cx } = useStyles();
   const siteId = useActiveSiteId();
   const items = useItemsByPath();
   const itemsBeingFetchedByPath = useItemsBeingFetchedByPath();
@@ -80,7 +79,16 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
           <ConditionalLoadingState isLoading={nou(content)}>
             <AceEditor
               value={content}
-              classes={{ editorRoot: classes.editor }}
+              sxs={{
+                editorRoot: {
+                  position: 'absolute',
+                  backgroundColor: (theme) =>
+                    theme.palette.mode === 'dark' ? theme.palette.background.paper : theme.palette.grey['300'],
+                  '& .ace_gutter': {
+                    backgroundColor: (theme) => (theme.palette.mode === 'dark' ? theme.palette.background.paper : null)
+                  }
+                }
+              }}
               mode={`ace/mode/${mode}`}
               readOnly
               highlightActiveLine={false}
@@ -120,13 +128,50 @@ export function PreviewDialogContainer(props: PreviewDialogContainerProps) {
   return (
     <>
       <DialogBody
-        className={cx(
-          classes.container,
-          backgroundModes[backgroundModeIndex]?.mode !== 'default' &&
-            classes[backgroundModes[backgroundModeIndex].classKey]
-        )}
-        sx={{
-          padding: 0
+        sx={(theme) => {
+          let backgroundStyles;
+          switch (backgroundModes[backgroundModeIndex]?.mode) {
+            case 'squaredLight':
+              backgroundStyles = {
+                backgroundSize: '30px 30px',
+                backgroundColor: theme.palette.common.white,
+                backgroundPosition: '0px 0px, 0px 15px, 15px -15px, -15px 0px',
+                backgroundImage: `linear-gradient(45deg, ${theme.palette.grey[200]} 25%, transparent 25%), linear-gradient(-45deg, ${theme.palette.grey[200]} 25%, transparent 25%), linear-gradient(45deg, transparent 75%, ${theme.palette.grey[200]} 75%), linear-gradient(-45deg, transparent 75%, ${theme.palette.grey[200]} 75%)`
+              };
+              break;
+            case 'squaredDark':
+              backgroundStyles = {
+                backgroundSize: '30px 30px',
+                backgroundColor: theme.palette.common.black,
+                backgroundPosition: '0px 0px, 0px 15px, 15px -15px, -15px 0px',
+                backgroundImage: `linear-gradient(45deg, ${palette.gray.dark4} 25%, transparent 25%), linear-gradient(-45deg, ${palette.gray.dark4} 25%, transparent 25%), linear-gradient(45deg, transparent 75%, ${palette.gray.dark4} 75%), linear-gradient(-45deg, transparent 75%, ${palette.gray.dark4} 75%)`
+              };
+              break;
+            case 'inverse':
+              backgroundStyles = {
+                backgroundColor: theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.common.black
+              };
+              break;
+            default:
+              backgroundStyles = {};
+              break;
+          }
+
+          return {
+            padding: 0,
+            height: '100%',
+            display: 'flex',
+            maxWidth: '100%',
+            minWidth: '500px',
+            minHeight: '60vh',
+            position: 'relative',
+            justifyContent: 'center',
+            alignItems: 'center',
+            '& img': {
+              maxWidth: '100%'
+            },
+            ...backgroundStyles
+          };
         }}
       >
         {renderPreview()}

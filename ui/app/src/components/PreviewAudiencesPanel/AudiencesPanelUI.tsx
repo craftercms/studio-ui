@@ -21,8 +21,6 @@ import SecondaryButton from '../SecondaryButton';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import PrimaryButton from '../PrimaryButton';
 import React from 'react';
-import { Theme } from '@mui/material/styles';
-import { makeStyles } from 'tss-react/mui';
 import { ContentTypeField } from '../../models/ContentType';
 import Input from '../FormEngineControls/Input';
 import Dropdown from '../FormEngineControls/Dropdown';
@@ -39,18 +37,6 @@ interface AudiencesPanelUIProps {
   onChange: Function;
   onSaveModel: Function;
 }
-
-const useStyles = makeStyles()((theme: Theme) => ({
-  panelMargin: {
-    margin: theme.spacing(1)
-  },
-  actionButtons: {
-    textAlign: 'right',
-    '& .MuiButton-root': {
-      marginRight: theme.spacing(1)
-    }
-  }
-}));
 
 const controlsMap = {
   dropdown: Dropdown,
@@ -83,7 +69,6 @@ const UndefinedControlType = () => {
 };
 
 export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
-  const { classes } = useStyles();
   const { model, modelApplying, onChange, onSaveModel, fields } = props;
 
   const onFieldChange = (fieldId: string, type: string) => (value: any) => {
@@ -126,7 +111,15 @@ export function AudiencesPanelUI(props: AudiencesPanelUIProps) {
           );
         })}
       </Grid>
-      <Grid className={classes.actionButtons} sx={{ p: 2 }}>
+      <Grid
+        sx={{
+          p: 2,
+          textAlign: 'right',
+          '& .MuiButton-root': {
+            marginRight: (theme) => theme.spacing(1)
+          }
+        }}
+      >
         <SecondaryButton disabled={modelApplying} variant="contained" onClick={() => onChange(getDefaultModel(fields))}>
           <FormattedMessage id="audiencesPanel.defaults" defaultMessage="Defaults" />
         </SecondaryButton>

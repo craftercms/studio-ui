@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { useDeleteDialogUIStyles } from './styles';
 import Grid from '@mui/material/Grid2';
 import TextFieldWithMax from '../TextFieldWithMax/TextFieldWithMax';
 import { FormattedMessage } from 'react-intl';
@@ -48,11 +47,15 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
     onConfirmDeleteChange,
     onEditDependantClick
   } = props;
-  const { classes } = useDeleteDialogUIStyles();
   return (
     <Grid container spacing={3}>
       <Grid size={{ xs: 12, sm: 7 }}>
-        <div className={classes.depsContainer}>
+        <Box
+          sx={(theme) => ({
+            background: theme.palette.background.paper,
+            border: `1px solid ${theme.palette.divider}`
+          })}
+        >
           <SelectionList
             title={<FormattedMessage id="deleteDialog.deleteItems" defaultMessage="Delete Items" />}
             items={items}
@@ -134,10 +137,10 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             paths={childItems}
             displayItemTitle={false}
           />
-        </div>
+        </Box>
       </Grid>
       <Grid size={{ xs: 12, sm: 5 }}>
-        <form className={classes.submissionCommentField} noValidate autoComplete="off">
+        <form noValidate autoComplete="off">
           <TextFieldWithMax
             label={<FormattedMessage id="deleteDialog.submissionCommentLabel" defaultMessage="Submission Comment" />}
             multiline
@@ -145,10 +148,11 @@ export function DeleteDialogUIBody(props: DeleteDialogContentUIProps) {
             onChange={onCommentChange}
             required={isCommentRequired}
             disabled={isDisabled}
+            sx={{ width: '100%' }}
           />
           <Alert severity="warning" icon={false}>
             <FormControlLabel
-              className={classes.confirmCheck}
+              sx={{ margin: (theme) => `${theme.spacing()} 0` }}
               control={
                 <Checkbox
                   color="primary"

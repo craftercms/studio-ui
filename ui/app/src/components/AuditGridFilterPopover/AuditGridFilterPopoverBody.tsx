@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useStyles from './styles';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import ClearRoundedIcon from '@mui/icons-material/ClearRounded';
@@ -24,7 +23,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+import TextField, { textFieldClasses } from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
@@ -61,7 +60,6 @@ const translations = defineMessages({
 
 export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
   const { filterId, value, onFilterChange, timezone, onTimezoneSelected, onResetFilter, onClose } = props;
-  const { classes } = useStyles();
   const { sites, users, operations, origins, timezones } = props.options;
   const { formatMessage } = useIntl();
   const [keyword, setKeyword] = useState(props.value ?? '');
@@ -171,7 +169,16 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
       {filterId === 'operationTimestamp' && (
         <LocalizationProvider dateAdapter={DateAdapter}>
           <form noValidate autoComplete="off">
-            <Box className={classes.timestampFiltersContainer}>
+            <Box
+              sx={(theme) => ({
+                display: 'flex',
+                alignItems: 'center',
+                marginBottom: theme.spacing(2),
+                [`& .${textFieldClasses.root}:first-child`]: {
+                  marginRight: theme.spacing(1)
+                }
+              })}
+            >
               <DateTimePicker
                 label={<FormattedMessage id="words.from" defaultMessage="From" />}
                 value={fromDate}
@@ -183,7 +190,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
                 onChange={onToDateSelected}
               />
               <Button
-                className={classes.clearButton}
+                sx={{ ml: '20px' }}
                 disabled={!toDate && !fromDate}
                 variant="text"
                 color="primary"
@@ -229,7 +236,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
             ))}
           </TextField>
           <Button
-            className={classes.clearButton}
+            sx={{ ml: '20px' }}
             disabled={!value}
             variant="text"
             color="primary"
@@ -259,7 +266,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
             ))}
           </TextField>
           <Button
-            className={classes.clearButton}
+            sx={{ ml: '20px' }}
             disabled={!value}
             variant="text"
             color="primary"
@@ -277,7 +284,7 @@ export function AuditGridFilterPopoverBody(props: AuditGridFilterPopoverProps) {
             input: {
               endAdornment: keyword && (
                 <Tooltip title={<FormattedMessage id="words.clear" defaultMessage="Clear" />}>
-                  <IconButton size="small" className={classes.clearButton} onClick={() => onClearTextField()}>
+                  <IconButton size="small" sx={{ ml: '20px' }} onClick={() => onClearTextField()}>
                     <ClearRoundedIcon />
                   </IconButton>
                 </Tooltip>

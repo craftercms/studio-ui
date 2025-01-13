@@ -16,7 +16,6 @@
 
 import React from 'react';
 import Popover from '@mui/material/Popover';
-import useStyles from './styles';
 import { Site } from '../../models/Site';
 import { PagedArray } from '../../models/PagedArray';
 import User from '../../models/User';
@@ -48,14 +47,21 @@ export interface AuditGridFilterPopoverProps {
 
 export function AuditGridFilterPopover(props: AuditGridFilterPopoverProps) {
   const { open, anchorPosition, onClose } = props;
-  const { classes } = useStyles();
   return (
     <Popover
       open={open}
       anchorPosition={anchorPosition}
       anchorReference="anchorPosition"
       onClose={onClose}
-      classes={{ paper: classes.popover }}
+      slotProps={{
+        paper: {
+          sx: {
+            padding: (theme) => theme.spacing(1),
+            minWidth: '300px',
+            overflow: 'initial'
+          }
+        }
+      }}
       transformOrigin={{
         vertical: 'top',
         horizontal: 'center'

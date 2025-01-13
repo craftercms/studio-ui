@@ -18,14 +18,18 @@ import React, { useEffect, useRef } from 'react';
 import { FileDiff } from '../../models/Repository';
 import { withMonaco } from '../../utils/system';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
 
 export interface SplitViewProps {
   diff: FileDiff;
   className?: string;
+  sx?: SxProps<Theme>;
 }
 
 export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
-  const { diff, className } = props;
+  const { diff, sx } = props;
   const ref = useRef(undefined);
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const diffEditorRef = useRef(null);
@@ -55,7 +59,7 @@ export function ConflictedPathDiffDialogSplitView(props: SplitViewProps) {
     }
   }, [diff, prefersDarkMode]);
 
-  return <div ref={ref} className={className} />;
+  return <Box ref={ref} sx={sx} />;
 }
 
 export default ConflictedPathDiffDialogSplitView;

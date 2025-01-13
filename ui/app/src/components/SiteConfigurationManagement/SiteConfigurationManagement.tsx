@@ -20,9 +20,7 @@ import { fetchConfigurationXML, fetchSiteConfigurationFiles, writeConfiguration 
 import { SiteConfigurationFileWithId } from '../../models/SiteConfigurationFile';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import useStyles from './styles';
+import ListItemText, { listItemTextClasses } from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Skeleton from '@mui/material/Skeleton';
@@ -50,7 +48,7 @@ import { useDispatch } from 'react-redux';
 import { fetchItemVersions } from '../../state/actions/versions';
 import { fetchItemByPath } from '../../services/content';
 import SearchBar from '../SearchBar/SearchBar';
-import Alert from '@mui/material/Alert';
+import Alert, { alertClasses } from '@mui/material/Alert';
 import { closeConfirmDialog, showConfirmDialog, showHistoryDialog } from '../../state/actions/dialogs';
 import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import { capitalize, stripCData } from '../../utils/string';
@@ -94,7 +92,6 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const { username } = useActiveUser();
   const sessionStorageKey = `craftercms.${username}.projectToolsConfigurationData.${site}`;
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
-  const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const [environment, setEnvironment] = useState<string>();
   const [files, setFiles] = useState<SiteConfigurationFileWithId[]>();
@@ -296,22 +293,30 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
       onClosed: onConfirmDialogClosed,
       imageUrl: informationGraphicUrl,
       children: (
-        <section className={classes.confirmDialogBody}>
-          <Typography className={classes.textMargin} variant="subtitle1">
-            {formatMessage(translations.encryptMarked)}
+        <Box
+          component="section"
+          sx={{
+            textAlign: 'left',
+            '& .text-margin': {
+              marginBottom: '1em'
+            }
+          }}
+        >
+          <Typography className="text-margin" variant="subtitle1">
+            {formatMessage(translations.encryptMarked)} asd
           </Typography>
-          <Typography className={classes.textMargin} variant="body2">
+          <Typography className="text-margin" variant="body2">
             {formatMessage(translations.encryptHintPt1)}
           </Typography>
           <Typography variant="body2">{formatMessage(translations.encryptHintPt2, bold)}</Typography>
-          <Typography className={classes.textMargin} variant="body2">
+          <Typography className="text-margin" variant="body2">
             {formatMessage(translations.encryptHintPt3, tags)}
           </Typography>
           <Typography variant="body2">{formatMessage(translations.encryptHintPt4, bold)}</Typography>
-          <Typography className={classes.textMargin} variant="body2">
+          <Typography className="text-margin" variant="body2">
             {formatMessage(translations.encryptHintPt5, tagsAndCurls)}
           </Typography>
-          <Typography className={classes.textMargin} variant="body2">
+          <Typography className="text-margin" variant="body2">
             {formatMessage(translations.encryptHintPt6)}
           </Typography>
           <ul>
@@ -325,7 +330,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
               <Typography variant="body2">{formatMessage(translations.encryptHintPt9)}</Typography>
             </li>
           </ul>
-        </section>
+        </Box>
       )
     });
   };
@@ -554,7 +559,15 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   };
 
   return (
-    <section className={classes.root}>
+    <Box
+      component="section"
+      sx={{
+        display: 'flex',
+        height: '100%',
+        position: 'relative',
+        flexDirection: 'column'
+      }}
+    >
       {!embedded && (
         <GlobalAppToolbar
           title={<FormattedMessage id="siteConfigurationManagement.title" defaultMessage="Configuration" />}
@@ -565,15 +578,30 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         belowToolbar
         open={openDrawer}
         width={width}
-        classes={{ drawerPaper: clsx(classes.drawerPaper, embedded && 'embedded') }}
+        styles={{
+          drawerPaper: {
+            position: 'absolute',
+            ...(embedded ? { top: 0 } : {})
+          }
+        }}
         onWidthChange={setWidth}
       >
         <List
-          className={classes.list}
+          sx={{
+            width: '100%',
+            overflow: 'auto',
+            height: '100%'
+          }}
           component="nav"
           dense
           subheader={
-            <ListSubheader className={classes.listSubheader} component="div">
+            <ListSubheader
+              sx={(theme) => ({
+                background: theme.palette.background.paper,
+                padding: 0,
+                borderBottom: `1px solid ${theme.palette.divider}`
+              })}
+            >
               {environment ? (
                 <>
                   <Tooltip
@@ -586,7 +614,17 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                       />
                     }
                   >
-                    <Alert severity="info" className={classes.alert} classes={{ message: classes.ellipsis }}>
+                    <Alert
+                      severity="info"
+                      sx={{
+                        borderRadius: 0,
+                        [`& .${alertClasses.message}`]: {
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }
+                      }}
+                    >
                       <FormattedMessage
                         id="siteConfigurationManagement.activeEnvironment"
                         defaultMessage="{environment} Environment"
@@ -612,10 +650,18 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                   />
                 </>
               ) : (
-                <section className={classes.listSubheaderSkeleton}>
+                <Box
+                  component="section"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    padding: '10px'
+                  }}
+                >
                   <Skeleton height={34} width="100%" />
                   <Skeleton height={34} width="100%" />
-                </section>
+                </Box>
               )}
             </ListSubheader>
           }
@@ -643,7 +689,13 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                     divider={i < files.length - 1}
                   >
                     <ListItemText
-                      classes={{ primary: classes.ellipsis, secondary: classes.ellipsis }}
+                      sx={{
+                        [`& .${listItemTextClasses.primary}, & .${listItemTextClasses.secondary}`]: {
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        }
+                      }}
                       primaryTypographyProps={{ title: getTranslation(file.title, translations, formatMessage) }}
                       secondaryTypographyProps={{
                         title: getTranslation(file.description, translations, formatMessage)
@@ -660,11 +712,10 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                     <ListItemText
                       primary={<Skeleton height={15} width="80%" />}
                       secondary={<Skeleton height={15} width="60%" />}
-                      primaryTypographyProps={{
-                        className: classes.itemSkeletonText
-                      }}
-                      secondaryTypographyProps={{
-                        className: classes.itemSkeletonText
+                      sx={{
+                        [`& .${listItemTextClasses.primary}, & .${listItemTextClasses.secondary}`]: {
+                          height: '20px'
+                        }
                       }}
                     />
                   </ListItemButton>
@@ -685,10 +736,8 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
           ) : nnou(selectedConfigFileXml) ? (
             <>
               <GlobalAppToolbar
-                classes={{
-                  appBar: classes.appBar
-                }}
                 styles={{
+                  appBar: { paddingRight: '14.4px' },
                   toolbar: { '& > section': {} }
                 }}
                 showHamburgerMenuButton={false}
@@ -702,7 +751,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                 subtitle={getTranslation(selectedConfigFile.description, translations, formatMessage)}
                 rightContent={
                   <>
-                    <ButtonGroup variant="outlined" className={classes.buttonGroup}>
+                    <ButtonGroup variant="outlined" sx={{ marginRight: '15px' }}>
                       <SecondaryButton disabled={encrypting} onClick={onEncryptClick} loading={encrypting}>
                         {formatMessage(translations.encryptMarked)}
                       </SecondaryButton>
@@ -723,7 +772,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
               <Box display="flex" flexGrow={1}>
                 <AceEditor
                   ref={editorRef}
-                  styles={{
+                  sxs={{
                     root: {
                       display: 'flex',
                       width: leftEditorWidth ? `${leftEditorWidth}px` : 'auto',
@@ -732,8 +781,8 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                     editorRoot: {
                       margin: 0,
                       opacity: encrypting ? 0.5 : 1,
-                      border: '0',
-                      borderRadius: '0'
+                      border: 0,
+                      borderRadius: 0
                     }
                   }}
                   mode="ace/mode/xml"
@@ -764,7 +813,17 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                       <LoadingState />
                     ) : nnou(selectedSampleConfigFileXml) ? (
                       <AceEditor
-                        classes={{ root: classes.rootEditor, editorRoot: classes.editorRoot }}
+                        sxs={{
+                          root: {
+                            display: 'flex',
+                            flex: '1 1 auto'
+                          },
+                          editorRoot: {
+                            border: 0,
+                            borderRadius: 0,
+                            margin: 0
+                          }
+                        }}
                         mode="ace/mode/xml"
                         theme="ace/theme/textmate"
                         autoFocus={false}
@@ -778,7 +837,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
                 )}
               </Box>
               <DialogFooter>
-                <SecondaryButton disabled={encrypting} className={classes.historyButton} onClick={onShowHistory}>
+                <SecondaryButton disabled={encrypting} sx={{ marginRight: 'auto' }} onClick={onShowHistory}>
                   <FormattedMessage id="siteConfigurationManagement.history" defaultMessage="History" />
                 </SecondaryButton>
                 <SecondaryButton disabled={encrypting} onClick={onCancel}>
@@ -822,7 +881,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         </Box>
       )}
       <ConfirmDialog open={false} {...confirmDialogProps} />
-    </section>
+    </Box>
   );
 }
 

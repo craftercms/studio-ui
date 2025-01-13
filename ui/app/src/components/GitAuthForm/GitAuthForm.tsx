@@ -20,14 +20,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import Collapse from '@mui/material/Collapse';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import TextField from '@mui/material/TextField';
+import TextField, { textFieldClasses } from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { makeStyles } from 'tss-react/mui';
 import { SiteState } from '../../models/Site';
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 export interface GitAuthFormProps {
   inputs: Partial<SiteState>;
@@ -41,23 +41,6 @@ interface AuthFieldsProps {
   handleInputChange(event: React.ChangeEvent): any;
   onKeyPress?(event: any): any;
 }
-
-const useStyles = makeStyles()((theme) => ({
-  authBox: {
-    padding: '10px',
-    background: theme.palette.background.paper,
-    borderRadius: '5px',
-    marginLeft: '30px',
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  margin: {
-    margin: theme.spacing(1)
-  },
-  textField: {
-    width: '100%'
-  }
-}));
 
 const messages = defineMessages({
   userName: {
@@ -91,20 +74,31 @@ function AuthFields(props: AuthFieldsProps) {
   const type = inputs.repoAuthentication;
   const [showPassword, setShowPassword] = useState(false);
   const { formatMessage } = useIntl();
-  const { classes, cx } = useStyles();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   return (
-    <div className={classes.authBox}>
+    <Box
+      sx={(theme) => ({
+        padding: '10px',
+        background: theme.palette.background.paper,
+        borderRadius: '5px',
+        marginLeft: '30px',
+        display: 'flex',
+        justifyContent: 'center',
+        [`& .${textFieldClasses.root}`]: {
+          margin: theme.spacing(1)
+        }
+      })}
+    >
       {(type === 'basic' || type === 'token') && (
         <TextField
           id="repoUsername"
           name="repoUsername"
           data-field-id="repoUsername"
-          className={cx(classes.margin, classes.textField)}
+          fullWidth
           label={formatMessage(messages.userName)}
           required
           autoFocus
@@ -126,7 +120,7 @@ function AuthFields(props: AuthFieldsProps) {
           id="repoPassword"
           name="repoPassword"
           data-field-id="repoPassword"
-          className={cx(classes.margin, classes.textField)}
+          fullWidth
           type={showPassword ? 'text' : 'password'}
           label={formatMessage(messages.password)}
           required
@@ -164,7 +158,7 @@ function AuthFields(props: AuthFieldsProps) {
           id="repoToken"
           name="repoToken"
           data-field-id="repoToken"
-          className={cx(classes.margin, classes.textField)}
+          fullWidth
           type={showPassword ? 'text' : 'password'}
           label={formatMessage(messages.token)}
           required
@@ -200,7 +194,6 @@ function AuthFields(props: AuthFieldsProps) {
           required
           fullWidth
           multiline
-          className={classes.margin}
           error={inputs.submitted && !inputs.repoKey}
           helperText={renderHelperText(formatMessage(messages.privateKey), inputs.repoKey, '', true, inputs.submitted)}
           onKeyPress={onKeyPress}
@@ -208,7 +201,7 @@ function AuthFields(props: AuthFieldsProps) {
           value={inputs.repoKey}
         />
       )}
-    </div>
+    </Box>
   );
 }
 

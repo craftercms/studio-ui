@@ -30,31 +30,12 @@ import { FormattedMessage } from 'react-intl';
 import SearchBar from '../SearchBar/SearchBar';
 import { ContentTypesGrid, ContentTypesLoader } from '../NewContentDialog';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import { makeStyles } from 'tss-react/mui';
 import EmptyState from '../EmptyState';
-
-const useStyles = makeStyles()(() => ({
-  compact: {
-    marginRight: 'auto',
-    paddingLeft: '20px'
-  },
-  dialogContent: {
-    minHeight: 455
-  },
-  searchBox: {
-    minWidth: '33%'
-  },
-  emptyStateImg: {
-    width: 250,
-    marginBottom: 17
-  }
-}));
 
 export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogContainerProps) {
   const { item, onContentTypeSelected, compact = false, rootPath, selectedContentType } = props;
   const site = useActiveSiteId();
   const dispatch = useDispatch();
-  const { classes } = useStyles();
 
   const [isCompact, setIsCompact] = useState(compact);
   const [openSelector, setOpenSelector] = useState(false);
@@ -113,7 +94,7 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
 
   return (
     <>
-      <DialogBody classes={{ root: classes.dialogContent }}>
+      <DialogBody sx={{ minHeight: '455px' }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <SingleItemSelector
@@ -129,7 +110,7 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
               }}
             />
           </Box>
-          <Box className={classes.searchBox}>
+          <Box sx={{ minWidth: '33%' }}>
             <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
           </Box>
         </Box>
@@ -151,8 +132,11 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
                   defaultMessage="No Content Types Found"
                 />
               }
-              classes={{
-                image: classes.emptyStateImg
+              sxs={{
+                image: {
+                  width: '250px',
+                  marginBottom: '17px'
+                }
               }}
             />
           )
@@ -162,7 +146,10 @@ export function ChangeContentTypeDialogContainer(props: ChangeContentTypeDialogC
       </DialogBody>
       <DialogFooter>
         <FormControlLabel
-          className={classes.compact}
+          sx={{
+            marginRight: 'auto',
+            paddingLeft: '20px'
+          }}
           control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
           label={<FormattedMessage id="words.compact" defaultMessage="Compact" />}
         />

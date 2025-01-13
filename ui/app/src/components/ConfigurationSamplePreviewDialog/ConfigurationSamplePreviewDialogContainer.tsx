@@ -22,12 +22,10 @@ import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import ConfirmDropdown from '../ConfirmDropdown';
-import useStyles from './styles';
 import { useUnmount } from '../../hooks/useUnmount';
 
 export function ConfigurationSamplePreviewDialogContainer(props: ConfigurationSamplePreviewDialogProps) {
   const { content, onClose, onClosed, onUseSampleClick } = props;
-  const { classes } = useStyles();
   useUnmount(onClosed);
   return (
     <>
@@ -37,7 +35,14 @@ export function ConfigurationSamplePreviewDialogContainer(props: ConfigurationSa
       />
       <DialogBody style={{ height: '60vh', padding: 0 }}>
         <AceEditor
-          classes={{ editorRoot: classes.editor }}
+          sxs={{
+            editorRoot: {
+              margin: '0',
+              border: 0,
+              width: '100%',
+              height: '100%'
+            }
+          }}
           value={content}
           mode="ace/mode/yaml"
           theme="ace/theme/textmate"

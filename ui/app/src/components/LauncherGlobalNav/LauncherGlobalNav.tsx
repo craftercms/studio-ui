@@ -19,7 +19,7 @@ import { getSimplifiedVersion } from '../../utils/string';
 import React, { useEffect, useState } from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
 import { useIntl } from 'react-intl';
-import { LauncherSectionUI, LauncherSectionUIStyles } from '../LauncherSection';
+import { LauncherSectionUI, LauncherSectionUIProps, LauncherSectionUIStyles } from '../LauncherSection';
 import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
 import { messages } from '../LauncherSection/utils';
 import { closeLauncher } from '../../state/actions/dialogs';
@@ -34,8 +34,8 @@ import { useGlobalNavigation } from '../../hooks/useGlobalNavigation';
 export interface LauncherGlobalNavProps {
   title?: TranslationOrText;
   onTileClicked?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>, id: string, label: string): any;
-  tileStyles?: LauncherTileProps['styles'];
-  sectionStyles?: LauncherSectionUIStyles;
+  tileSxs?: LauncherTileProps['sxs'];
+  sectionSxs?: LauncherSectionUIProps['sxs'];
 }
 
 function LauncherGlobalNav(props: LauncherGlobalNavProps) {
@@ -70,7 +70,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
     return <ApiResponseErrorState error={error.response ?? error} />;
   }
   return (
-    <LauncherSectionUI styles={props.sectionStyles} title={props.title ?? formatMessage(messages.global)}>
+    <LauncherSectionUI sxs={props?.sectionSxs} title={props.title ?? formatMessage(messages.global)}>
       {items.map((item) => (
         <LauncherTile
           key={item.id}
@@ -79,7 +79,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
           icon={item.icon}
           link={getLauncherSectionLink(item.id, authoringBase)}
           onClick={(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>) => onTileClicked(e, item.id, item.label)}
-          styles={props.tileStyles}
+          sxs={props.tileSxs}
         />
       ))}
       <LauncherTile
@@ -87,7 +87,7 @@ function LauncherGlobalNav(props: LauncherGlobalNavProps) {
         icon={{ id: 'craftercms.icons.Docs' }}
         link={`https://docs.craftercms.org/en/${getSimplifiedVersion(version)}/index.html`}
         target="_blank"
-        styles={props.tileStyles}
+        sxs={props.tileSxs}
       />
     </LauncherSectionUI>
   );

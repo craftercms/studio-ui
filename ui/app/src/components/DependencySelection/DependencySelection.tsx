@@ -16,12 +16,12 @@
 
 import React from 'react';
 import { DetailedItem } from '../../models/Item';
-import { makeStyles } from 'tss-react/mui';
 import { FormattedMessage } from 'react-intl';
 import LookupTable from '../../models/LookupTable';
 import { SelectionList, SelectionListProps } from './SelectionList';
 import { nnou } from '../../utils/object';
 import { FetchDependenciesResponse } from '../../services/dependencies';
+import Box from '@mui/material/Box';
 
 export interface DependencySelectionProps extends Pick<SelectionListProps, 'onItemClicked' | 'onSelectAllClicked'> {
   items?: DetailedItem[];
@@ -30,39 +30,6 @@ export interface DependencySelectionProps extends Pick<SelectionListProps, 'onIt
   disabled?: boolean;
   onSelectAllSoftClicked: SelectionListProps['onSelectAllClicked'];
 }
-
-export interface DeleteDependencies {
-  childItems: string[];
-  dependentItems: string[];
-}
-
-// region useStyles
-const useStyles = makeStyles()((theme) => ({
-  dependencySelection: {
-    background: theme.palette.background.paper,
-    border: `1px solid ${theme.palette.divider}`,
-    minHeight: '374px'
-  },
-  dependencySelectionDisabled: {
-    opacity: 0.7
-  },
-  showAllBtn: {
-    marginLeft: 0,
-    verticalAlign: 'baseline'
-  },
-  listItemTitle: {
-    '& h4': {
-      fontSize: '1rem',
-      margin: 0,
-      padding: 0,
-      fontWeight: 400
-    }
-  },
-  listItemPath: {
-    padding: 0
-  }
-}));
-// endregion
 
 export function DependencySelection(props: DependencySelectionProps) {
   const {
@@ -74,10 +41,16 @@ export function DependencySelection(props: DependencySelectionProps) {
     onSelectAllSoftClicked,
     disabled = false
   } = props;
-  const { classes, cx } = useStyles();
   return (
     <>
-      <div className={cx(classes.dependencySelection, disabled && classes.dependencySelectionDisabled)}>
+      <Box
+        sx={(theme) => ({
+          background: theme.palette.background.paper,
+          border: `1px solid ${theme.palette.divider}`,
+          minHeight: '374px',
+          opacity: disabled ? 0.7 : 1
+        })}
+      >
         <SelectionList
           title={<FormattedMessage id="publishDialog.itemsToPublish" defaultMessage="Items To Publish" />}
           items={items}
@@ -116,7 +89,7 @@ export function DependencySelection(props: DependencySelectionProps) {
             />
           </>
         )}
-      </div>
+      </Box>
     </>
   );
 }

@@ -15,13 +15,14 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
-import { CSSObject as CSSProperties } from 'tss-react';
 import { useMount } from '../../hooks/useMount';
 import { useTheme } from '@mui/material/styles';
-import clsx from 'clsx';
 import { useEnhancedDialogContext } from '../EnhancedDialog/useEnhancedDialogContext';
 import MutableRef from '../../models/MutableRef';
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { Theme } from '@mui/material';
 
 // @see https://github.com/ajaxorg/ace/wiki/Configuring-Ace
 export interface AceOptions {
@@ -107,15 +108,10 @@ export interface AceOptions {
   // endregion
 }
 
-export type AceEditorClassKey = 'root' | 'editorRoot';
-
-export type AceEditorStyles = Partial<Record<AceEditorClassKey, CSSProperties>>;
-
 export interface AceEditorProps extends Partial<AceOptions> {
   value?: any;
-  classes?: Partial<Record<AceEditorClassKey, string>>;
   autoFocus?: boolean;
-  styles?: AceEditorStyles;
+  sxs?: PartialSxRecord<'root' | 'editorRoot'>;
   extensions?: string[];
   onChange?(e: any): void;
   onInit?(editor: AceAjax.Editor): void;
@@ -184,39 +180,8 @@ const aceOptions: Array<keyof AceOptions> = [
 // const aceModes = [];
 // const aceThemes = [];
 
-const useStyles = makeStyles<AceEditorStyles, AceEditorClassKey>()(
-  (_theme, { root, editorRoot } = {} as AceEditorStyles) => ({
-    root: {
-      position: 'relative',
-      display: 'contents',
-      ...root
-    },
-    editorRoot: {
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      margin: 0,
-      width: '100%',
-      height: '100%',
-      ...editorRoot
-    }
-  })
-);
-
 function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
-  const {
-    value = '',
-    classes: propClasses,
-    autoFocus = false,
-    styles,
-    extensions = [],
-    onChange,
-    onInit,
-    ...options
-  } = props;
-  const { classes, cx } = useStyles(styles);
-  const editorRootClasses = propClasses?.editorRoot;
+  const { value = '', autoFocus = false, extensions = [], onChange, onInit, sxs, ...options } = props;
   const refs = useRef({
     ace: null,
     elem: null,
@@ -248,7 +213,6 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
         window.ace.require(['ace/ace', 'ace/ext/language_tools', 'ace/ext/emmet', ...extensions], (ace) => {
           if (!unmounted) {
             const pre = document.createElement('pre');
-            pre.className = cx(classes.editorRoot, editorRootClasses);
             refs.current.pre = pre;
             refs.current.elem.appendChild(pre);
             // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
@@ -358,18 +322,32 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     if (refs.current.pre) {
       refs.current.pre.className = `${[...refs.current.pre.classList]
         .filter((value) => !/craftercms-|makeStyles-/.test(value))
-        .join(' ')} ${clsx(classes?.editorRoot, editorRootClasses)}`;
+        .join(' ')}`;
     }
-  }, [classes.editorRoot, editorRootClasses]);
+  }, []);
 
   return (
-    <div
+    <Box
       ref={(e) => {
         if (e) {
           refs.current.elem = e;
         }
       }}
-      className={cx(classes.root, props.classes?.root)}
+      sx={{
+        position: 'relative',
+        display: 'contents',
+        ...sxs?.root,
+        '& pre': {
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          margin: 0,
+          width: '100%',
+          height: '100%',
+          ...(sxs?.editorRoot as SystemStyleObject<Theme>)
+        }
+      }}
     />
   );
 }

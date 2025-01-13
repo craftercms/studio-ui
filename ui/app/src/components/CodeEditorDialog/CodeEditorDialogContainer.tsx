@@ -233,7 +233,7 @@ export function CodeEditorDialogContainer(props: CodeEditorDialogContainerProps)
             value={content ?? ''}
             onChange={onEditorChanges}
             readOnly={isLockedForMe || readonly}
-            styles={{ editorRoot: { position: 'absolute' } }}
+            sxs={{ editorRoot: { position: 'absolute' } }}
             enableBasicAutocompletion
             enableSnippets
             enableLiveAutocompletion

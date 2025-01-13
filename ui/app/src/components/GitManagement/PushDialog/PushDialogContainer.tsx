@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import DialogBody from '../../DialogBody/DialogBody';
 import DialogFooter from '../../DialogFooter/DialogFooter';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
@@ -36,16 +35,9 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { useTheme } from '@mui/material/styles';
 import { getStoredPushBranch, removeStoredPushBranch, setStoredPushBranch } from '../../../utils/state';
 
-const useStyles = makeStyles()(() => ({
-  formControl: {
-    marginBottom: '15px'
-  }
-}));
-
 export function PushDialogContainer(props: PushDialogContainerProps) {
   const { branches, remoteName, onClose, onPushSuccess, onPushError, onSubmittingChange, isSubmitting } = props;
   const [selectedBranch, setSelectedBranch] = useState('');
-  const { classes } = useStyles();
   const { id: siteId, uuid } = useActiveSite();
   const { username } = useActiveUser();
   const [forcePush, setForcePush] = useState(false);
@@ -97,7 +89,7 @@ export function PushDialogContainer(props: PushDialogContainerProps) {
   return (
     <form onSubmit={onSubmit}>
       <DialogBody>
-        <FormControl variant="outlined" fullWidth className={classes.formControl} disabled={isSubmitting}>
+        <FormControl variant="outlined" fullWidth sx={{ marginBottom: '15px' }} disabled={isSubmitting}>
           <InputLabel id="remoteBranchToPushLabel">
             <FormattedMessage id="repositories.remoteBranchToPush" defaultMessage="Remote Branch to Push" />
           </InputLabel>

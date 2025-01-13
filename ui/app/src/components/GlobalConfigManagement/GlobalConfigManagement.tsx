@@ -20,7 +20,6 @@ import React, { useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import { fetchConfigurationXML, writeConfiguration } from '../../services/configuration';
 import AceEditor from '../AceEditor/AceEditor';
-import useStyles from './styles';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
 import { forkJoin } from 'rxjs';
@@ -61,7 +60,6 @@ export function GlobalConfigManagement() {
   const [hasChanges, setHasChanges] = useState(false);
   const hasChangesRef = useRef(hasChanges);
   hasChangesRef.current = hasChanges;
-  const { classes } = useStyles();
   const [contentSize, setContentSize] = useState(0);
   const aceEditorRef = useRef<any>(undefined);
   const dispatch = useDispatch();
@@ -204,11 +202,27 @@ export function GlobalConfigManagement() {
         title={<FormattedMessage id="globalMenu.globalConfigEntryLabel" defaultMessage="Global Config" />}
       />
       <ConditionalLoadingState isLoading={enable}>
-        <section className={classes.paper}>
+        <Box
+          component="section"
+          sx={{
+            borderRadius: 0,
+            minHeight: '400px',
+            height: 'calc(100vh - 121px)',
+            borderBottom: (theme) => `1px solid ${theme.palette.divider}`
+          }}
+        >
           <AceEditor
             ref={aceEditorRef}
             onChange={onChange}
-            classes={{ editorRoot: classes.root }}
+            sxs={{
+              editorRoot: {
+                margin: '0',
+                width: '100%',
+                height: '100%',
+                borderRadius: 0,
+                border: 0
+              }
+            }}
             value={content}
             mode="ace/mode/yaml"
             theme="ace/theme/textmate"
@@ -222,7 +236,7 @@ export function GlobalConfigManagement() {
             </SecondaryButton>
             <ConfirmDropdown
               disabled={!hasChanges}
-              classes={{ button: classes.marginLeftAuto }}
+              sx={{ button: { marginLeft: 'auto', marginRight: '15px' } }}
               text={<FormattedMessage id="words.reset" defaultMessage="Reset" />}
               cancelText={<FormattedMessage id="words.cancel" defaultMessage="Cancel" />}
               confirmText={<FormattedMessage id="words.ok" defaultMessage="Ok" />}
@@ -241,7 +255,7 @@ export function GlobalConfigManagement() {
               renderThresholdPercentage={90}
             />
           </Box>
-        </section>
+        </Box>
       </ConditionalLoadingState>
       <ConfigurationSamplePreviewDialog
         onUseSampleClick={onUseSampleClick}

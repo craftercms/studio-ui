@@ -177,16 +177,16 @@ export function GlobalAppInternal(props: GlobalAppProps) {
       >
         <LauncherGlobalNav
           title=""
-          sectionStyles={{
+          sectionSxs={{
             nav: {
               maxHeight: '100%',
               overflow: 'auto'
             }
           }}
-          tileStyles={{
+          tileSxs={{
             tile: {
               width: '100%',
-              height: 'auto',
+              height: '35px',
               flexDirection: 'row',
               justifyContent: 'left',
               margin: '0 0 5px'
