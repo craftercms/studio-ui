@@ -45,7 +45,6 @@ import { useSpreadState } from '../../hooks/useSpreadState';
 import { useSubject } from '../../hooks/useSubject';
 import Pagination from '../Pagination';
 import { getFileNameFromPath } from '../../utils/path';
-import { makeStyles } from 'tss-react/mui';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
@@ -54,6 +53,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import LookupTable from '../../models/LookupTable';
 import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   previewSearchPanelTitle: {
@@ -73,12 +73,6 @@ const translations = defineMessages({
     defaultMessage: 'No results found'
   }
 });
-
-const useStyles = makeStyles()((theme) => ({
-  searchContainer: {
-    padding: `${theme.spacing(1)} ${theme.spacing(1)} 0`
-  }
-}));
 
 interface SearchResultsProps {
   items: SearchItem[];
@@ -115,7 +109,6 @@ const initialSearchParameters: Partial<ElasticParams> = {
 const mimeTypes = ['image/png', 'image/jpeg', 'image/gif', 'video/mp4', 'image/svg+xml'];
 
 export function PreviewSearchPanel() {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const [keyword, setKeyword] = useState('');
   const [error, setError] = useState<ApiResponse>(null);
@@ -268,7 +261,7 @@ export function PreviewSearchPanel() {
 
   return (
     <>
-      <div className={classes.searchContainer}>
+      <Box sx={{ padding: (theme) => `${theme.spacing(1)} ${theme.spacing(1)} 0` }}>
         {contentTypesUpdated && (
           <Alert severity="warning" variant="outlined" sx={{ border: 0 }}>
             <FormattedMessage defaultMessage="Content type definitions have changed. Please refresh the preview application." />
@@ -281,7 +274,7 @@ export function PreviewSearchPanel() {
           showDecoratorIcon={true}
           showActionButton={Boolean(keyword)}
         />
-      </div>
+      </Box>
       {state.items && !error && (
         <Pagination
           count={state.count}

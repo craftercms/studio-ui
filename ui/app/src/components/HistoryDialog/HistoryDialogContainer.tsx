@@ -52,7 +52,6 @@ import SingleItemSelector from '../SingleItemSelector';
 import VersionList from '../VersionList';
 import DialogFooter from '../DialogFooter/DialogFooter';
 import { HistoryDialogPagination } from './HistoryDialogPagination';
-import { historyStyles } from './HistoryDialog';
 import useSelection from '../../hooks/useSelection';
 import useFetchSandboxItems from '../../hooks/useFetchSandboxItems';
 import { UNDEFINED } from '../../utils/constants';
@@ -76,7 +75,6 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
   const path = item?.path ?? '';
   const [openSelector, setOpenSelector] = useState(false);
   const { formatMessage } = useIntl();
-  const { classes } = historyStyles();
   const dispatch = useDispatch();
   const site = useActiveSiteId();
   const timeoutRef = useRef(null);
@@ -343,7 +341,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
 
   return (
     <>
-      <DialogBody className={classes.dialogBody} minHeight>
+      <DialogBody sx={{ overflow: 'auto', minHeight: '50vh' }} minHeight>
         <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
           <SingleItemSelector
             label={<FormattedMessage id="words.item" defaultMessage="Item" />}
@@ -388,7 +386,7 @@ export function HistoryDialogContainer(props: HistoryDialogContainerProps) {
           )}
         </ErrorBoundary>
       </DialogBody>
-      <DialogFooter classes={{ root: classes.dialogFooter }}>
+      <DialogFooter sx={{ p: 0 }}>
         {count > 0 && (
           <HistoryDialogPagination
             count={count}

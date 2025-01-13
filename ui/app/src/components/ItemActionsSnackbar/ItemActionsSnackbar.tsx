@@ -15,7 +15,6 @@
  */
 
 import React, { ReactNode } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { ListItem, ListItemText, Snackbar } from '@mui/material';
 import palette from '../../styles/palette';
 import { defineMessages, useIntl } from 'react-intl';
@@ -34,32 +33,6 @@ export interface ItemActionsSnackbarProps {
   prepend?: ReactNode;
 }
 
-const useStyles = makeStyles()((theme) => ({
-  actionsBar: {
-    zIndex: theme.zIndex.modal,
-    '& .MuiSnackbarContent-root': {
-      backgroundColor: palette.blue.highlightHex,
-      color: palette.black,
-      borderRadius: '6px',
-      padding: '0 10px',
-      minWidth: 'unset'
-    },
-    '& .MuiSnackbarContent-message': {
-      display: 'flex',
-      padding: 0
-    }
-  },
-  actionsList: {
-    display: 'flex',
-    flexDirection: 'row',
-    padding: 0
-  },
-  loadingItem: {
-    width: 'fit-content',
-    padding: '0 10px'
-  }
-}));
-
 const messages = defineMessages({
   acceptSelection: {
     id: 'search.acceptSelection',
@@ -73,7 +46,6 @@ const messages = defineMessages({
 
 function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
   const { open, options, onActionClicked, append, prepend } = props;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
@@ -81,13 +53,30 @@ function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
     <Snackbar
       anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       open={open}
-      classes={{
-        root: classes.actionsBar
+      sx={{
+        zIndex: theme.zIndex.modal,
+        '& .MuiSnackbarContent-root': {
+          backgroundColor: palette.blue.highlightHex,
+          color: palette.black,
+          borderRadius: '6px',
+          padding: '0 10px',
+          minWidth: 'unset'
+        },
+        '& .MuiSnackbarContent-message': {
+          display: 'flex',
+          padding: 0
+        }
       }}
       message={
         <>
           {prepend}
-          <List className={classes.actionsList}>
+          <List
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              padding: 0
+            }}
+          >
             {options ? (
               options.length ? (
                 options.map((option) => (
@@ -108,7 +97,14 @@ function ItemActionsSnackbar(props: ItemActionsSnackbarProps) {
               )
             ) : (
               new Array(5).fill(null).map((_, index) => (
-                <ListItem key={index} disableGutters className={classes.loadingItem}>
+                <ListItem
+                  key={index}
+                  disableGutters
+                  sx={{
+                    width: 'fit-content',
+                    padding: '0 10px'
+                  }}
+                >
                   <ListItemText
                     primary={
                       <Skeleton

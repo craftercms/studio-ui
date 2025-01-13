@@ -36,15 +36,14 @@ import ContentType from '../../models/ContentType';
 import { useSelection } from '../../hooks/useSelection';
 import { useDebouncedInput } from '../../hooks/useDebouncedInput';
 import translations from './translations';
-import useStyles from './styles';
 import PreviewBrowseComponentsPanelUI from './PreviewBrowseComponentsPanelUI';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import ListSubheader from '@mui/material/ListSubheader';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 
 export function PreviewBrowseComponentsPanel() {
-  const { classes } = useStyles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const allowedTypesData = useSelection((state) => state.preview.guest?.allowedContentTypes);
@@ -145,7 +144,7 @@ export function PreviewBrowseComponentsPanel() {
             <FormattedMessage defaultMessage="Content type definitions have changed. Please refresh the preview application." />
           </Alert>
         )}
-        <div className={classes.search}>
+        <Box sx={{ padding: (theme) => `${theme.spacing(1)} ${theme.spacing(1)} 0` }}>
           <SearchBar
             placeholder={formatMessage(translations.filter)}
             showActionButton={Boolean(keyword)}
@@ -158,7 +157,10 @@ export function PreviewBrowseComponentsPanel() {
               size="small"
               value={componentsState.contentTypeFilter}
               displayEmpty
-              className={classes.select}
+              sx={{
+                width: '100%',
+                marginTop: (theme) => theme.spacing(1)
+              }}
               onChange={(event: any) => handleSelectChange(event.target.value)}
             >
               <MenuItem value="compatible">
@@ -188,7 +190,7 @@ export function PreviewBrowseComponentsPanel() {
               ))}
             </Select>
           )}
-        </div>
+        </Box>
         {componentsState.error ? (
           <ApiResponseErrorState error={componentsState.error} />
         ) : componentsState.isFetching ? (

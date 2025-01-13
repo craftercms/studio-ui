@@ -16,7 +16,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { Logger, LoggerLevel } from '../../../models/Logger';
-import useStyles from './styles';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -59,7 +58,6 @@ export function LogLevelGrid(props: LoggingLevelsGridUIProps) {
     loggerFilter = '',
     levelFilter = ''
   } = props;
-  const { classes } = useStyles();
   const [displayAll, setDisplayAll] = useState(false);
   const onShowAllClick = () => setDisplayAll(true);
   useEffect(() => {
@@ -70,7 +68,8 @@ export function LogLevelGrid(props: LoggingLevelsGridUIProps) {
   return (
     <section>
       <TableContainer>
-        <Table className={classes.tableRoot}>
+        asd
+        <Table sx={{ tableLayout: 'fixed' }}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
               <GlobalAppGridCell className="width50">

@@ -15,7 +15,6 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { ViewVersionDialogProps } from './utils';
 import ViewVersionDialogContainer from './ViewVersionDialogContainer';
 import EnhancedDialog from '../EnhancedDialog/EnhancedDialog';
@@ -46,13 +45,6 @@ import Slide from '@mui/material/Slide';
     marginBottom: '10px'
   }
 })); */
-
-export const getLegacyDialogStyles = makeStyles()(() => ({
-  iframe: {
-    border: 'none',
-    height: '80vh'
-  }
-}));
 
 /*function VersionView(props: VersionViewProps) {
   const { version, contentTypes } = props.resource.read();

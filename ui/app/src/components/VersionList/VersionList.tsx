@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles } from 'tss-react/mui';
 import { FormattedDateParts, FormattedMessage, FormattedTime } from 'react-intl';
 import React from 'react';
 import List from '@mui/material/List';
@@ -30,39 +29,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Checkbox from '@mui/material/Checkbox';
 import { createPresenceTable } from '../../utils/array';
 import ListItem from '@mui/material/ListItem';
-
-const versionListStyles = makeStyles()((theme) => ({
-  list: {
-    backgroundColor: theme.palette.background.paper,
-    padding: 0,
-    borderRadius: '5px 5px 0 0'
-  },
-  listItem: {
-    padding: '15px 48px 15px 20px',
-    '&.selected': {
-      backgroundColor: palette.blue.highlight
-    }
-  },
-  listItemTextMultiline: {
-    margin: 0
-  },
-  listItemTextPrimary: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  listItemTextSecondary: {
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    overflow: 'hidden'
-  },
-  chip: {
-    padding: '1px',
-    backgroundColor: palette.green.main,
-    height: 'auto',
-    color: palette.white,
-    marginLeft: '10px'
-  }
-}));
 
 interface FancyFormattedDateProps {
   date: string;
@@ -100,12 +66,19 @@ interface VersionListProps {
 }
 
 export function VersionList(props: VersionListProps) {
-  const { classes, cx } = versionListStyles();
   const { versions, onOpenMenu, onItemClick, current, selected, isSelectMode = false } = props;
   const locale = useSelection<GlobalState['uiConfig']['locale']>((state) => state.uiConfig.locale);
   const selectedLookup = createPresenceTable(selected);
   return (
-    <List component="div" className={classes.list} disablePadding>
+    <List
+      component="div"
+      sx={{
+        backgroundColor: (theme) => theme.palette.background.paper,
+        padding: 0,
+        borderRadius: '5px 5px 0 0'
+      }}
+      disablePadding
+    >
       {versions.map((version: ItemHistoryEntry, i: number) => {
         const isSelected = Boolean(selectedLookup[version.versionNumber]);
         return (
@@ -114,7 +87,8 @@ export function VersionList(props: VersionListProps) {
             component={ListItem}
             divider={versions.length - 1 !== i}
             onClick={() => onItemClick(version)}
-            className={cx(classes.listItem, isSelected && 'selected')}
+            sx={{ padding: '15px 48px 15px 20px' }}
+            className={isSelected && 'selected'}
             secondaryAction={
               onOpenMenu || isSelectMode ? (
                 <>
@@ -141,18 +115,22 @@ export function VersionList(props: VersionListProps) {
             }
           >
             <ListItemText
-              classes={{
-                multiline: classes.listItemTextMultiline,
-                primary: classes.listItemTextPrimary,
-                secondary: classes.listItemTextSecondary
-              }}
+              sx={{ margin: 0 }}
+              primaryTypographyProps={{ sx: { display: 'flex', alignItems: 'center' } }}
+              secondaryTypographyProps={{ sx: { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' } }}
               primary={
                 <>
                   <AsDayMonthDateTime date={version.modifiedDate} locale={locale} />
                   {current === version.versionNumber && (
                     <Chip
                       label={<FormattedMessage id="historyDialog.current" defaultMessage="current" />}
-                      className={classes.chip}
+                      sx={{
+                        padding: '1px',
+                        backgroundColor: palette.green.main,
+                        height: 'auto',
+                        color: palette.white,
+                        marginLeft: '10px'
+                      }}
                     />
                   )}
                 </>

@@ -16,10 +16,10 @@
 
 // Next UI code disabled temporarily
 
-import { makeStyles } from 'tss-react/mui';
 import ContentInstance from '../../models/ContentInstance';
 import React from 'react';
 import { useSelection } from '../../hooks/useSelection';
+import Box from '@mui/material/Box';
 
 // declare const monaco: any;
 
@@ -152,21 +152,17 @@ interface CompareVersionsProps {
   versions: ContentInstance[];
 }
 
-const getLegacyDialogStyles = makeStyles()(() => ({
-  iframe: {
-    border: 'none',
-    height: '80vh'
-  }
-}));
-
 export function CompareVersions(props: CompareVersionsProps) {
   const [a, b] = props.versions;
-  const { classes } = getLegacyDialogStyles();
   const authoringUrl = useSelection<string>((state) => state.env.authoringBase);
   return (
-    <iframe
+    <Box
+      component="iframe"
       title="Comparing versions"
-      className={classes.iframe}
+      sx={{
+        border: 'none',
+        height: '80vh'
+      }}
       src={`${authoringUrl}/diff?site=${a.site}&path=${a.path}&oldPath=${b.path}&version=${a.versionNumber}&versionTO=${b.versionNumber}&mode=iframe&ui=next`}
     />
   );

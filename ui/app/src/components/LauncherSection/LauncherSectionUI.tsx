@@ -21,13 +21,8 @@ import React, { PropsWithChildren } from 'react';
 import TranslationOrText from '../../models/TranslationOrText';
 import { EnhancedUser } from '../../models/User';
 import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
-import { CSSObject as CSSProperties } from 'tss-react';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import Box from '@mui/material/Box';
-
-export type LauncherSectionUIClassKey = 'title' | 'nav';
-
-export type LauncherSectionUIStyles = Partial<Record<LauncherSectionUIClassKey, CSSProperties>>;
 
 export type LauncherSectionUIProps = PropsWithChildren<{
   title: TranslationOrText;
@@ -36,7 +31,7 @@ export type LauncherSectionUIProps = PropsWithChildren<{
   widgets?: WidgetDescriptor[];
   // TODO: Fix FormatXMLElementFn generics
   translationValues?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>;
-  sxs?: PartialSxRecord<LauncherSectionUIClassKey>;
+  sxs?: PartialSxRecord<'title' | 'nav'>;
 }>;
 
 export function LauncherSectionUI(props: LauncherSectionUIProps) {

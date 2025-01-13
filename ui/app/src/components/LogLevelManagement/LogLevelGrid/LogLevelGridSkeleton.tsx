@@ -22,7 +22,6 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import Skeleton from '@mui/material/Skeleton';
-import useStyles from './styles';
 import GlobalAppGridRow from '../../GlobalAppGridRow';
 import GlobalAppGridCell from '../../GlobalAppGridCell';
 import { rand } from '../../PathNavigator/utils';
@@ -34,11 +33,10 @@ export interface LoggingLevelsGridSkeletonTableProps {
 export const LogLevelGridSkeleton = React.memo((props: LoggingLevelsGridSkeletonTableProps) => {
   const { numOfItems = 10 } = props;
   const items = new Array(numOfItems).fill(null);
-  const { classes } = useStyles();
 
   return (
     <TableContainer>
-      <Table className={classes.tableRoot}>
+      <Table sx={{ tableLayout: 'fixed' }}>
         <TableHead>
           <GlobalAppGridRow className="hoverDisabled">
             <GlobalAppGridCell>

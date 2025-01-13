@@ -18,7 +18,6 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { FetchContentTypeUsageResponse } from '../../services/contentTypes';
-import { makeStyles } from 'tss-react/mui';
 import DialogBody from '../DialogBody/DialogBody';
 import EmptyState from '../EmptyState/EmptyState';
 import Alert from '@mui/material/Alert';
@@ -30,6 +29,7 @@ import LoadingState from '../LoadingState/LoadingState';
 import ContentTypeUsageReport from './ContentTypeUsageReport';
 import { SandboxItem } from '../../models/Item';
 import { DeleteContentTypeDialogBodyProps } from './utils';
+import Box from '@mui/material/Box';
 
 const messages = defineMessages({
   content: {
@@ -46,41 +46,7 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles()((theme) => ({
-  content: {
-    background: theme.palette.background.paper
-  },
-  preListMessageWrapper: {
-    padding: '8px 15px'
-  },
-  semiBold: {
-    fontWeight: 600
-  },
-  confirmationInput: {
-    marginTop: '1em',
-    '& legend': {
-      width: 0
-    }
-  },
-  topAlert: {
-    marginBottom: '1em'
-  },
-  bottomAlert: {
-    marginBottom: '.5em'
-  },
-  loadingStateWrapper: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    display: 'flex',
-    background: 'rgba(255,255,255,0.7)'
-  }
-}));
-
 export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyProps) {
-  const { classes } = useStyles();
   const { onCloseButtonClick, data, contentType, onSubmit: onSubmitProp, password = 'delete', submitting } = props;
   const { formatMessage } = useIntl();
   const dataEntries = Object.entries(data) as Array<[keyof FetchContentTypeUsageResponse, SandboxItem[]]>;
@@ -102,7 +68,7 @@ export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyPr
     <>
       <DialogBody>
         {noUsages ? (
-          <div className={classes.content}>
+          <Box sx={{ background: (theme) => theme.palette.background.paper }}>
             <EmptyState
               title={<FormattedMessage id="deleteContentTypeDialog.noUsagesFound" defaultMessage="No usages found" />}
               subtitle={
@@ -112,17 +78,16 @@ export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyPr
                 />
               }
             />
-          </div>
+          </Box>
         ) : (
           <>
-            <Alert variant="outlined" severity="warning" className={classes.topAlert} icon={false}>
+            <Alert variant="outlined" severity="warning" sx={{ marginBottom: '1em' }} icon={false}>
               <FormattedMessage
                 id="deleteContentTypeDialog.reviewDependenciesMessage"
                 defaultMessage="Please review and confirm all of content type dependencies that will be deleted."
               />
             </Alert>
             <ContentTypeUsageReport
-              classes={{ listHeader: classes.content, listItem: classes.content }}
               entries={entriesWithItems}
               messages={{
                 content: formatMessage(messages.content),
@@ -130,7 +95,7 @@ export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyPr
                 scripts: formatMessage(messages.scripts)
               }}
             />
-            <Alert severity="warning" className={classes.bottomAlert}>
+            <Alert severity="warning" sx={{ marginBottom: '.5em' }}>
               <FormattedMessage
                 id="deleteContentTypeDialog.typeConfirmPassword"
                 defaultMessage={`Type the word "<b>{password}</b>" to confirm the deletion of "{name}" and all it's dependencies.`}
@@ -138,14 +103,23 @@ export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyPr
                   password,
                   name: contentType.name,
                   b: (message) => {
-                    return <strong className={classes.semiBold}>{message}</strong>;
+                    return (
+                      <Box component="strong" sx={{ fontWeight: 600 }}>
+                        {message}
+                      </Box>
+                    );
                   }
                 }}
               />
               <TextField
                 fullWidth
                 disabled={submitting}
-                className={classes.confirmationInput}
+                sx={{
+                  marginTop: '1em',
+                  '& legend': {
+                    width: 0
+                  }
+                }}
                 value={passwordFieldValue}
                 onChange={(e) => setPasswordFieldValue(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && onSubmit(e)}
@@ -163,9 +137,19 @@ export function DeleteContentTypeDialogBody(props: DeleteContentTypeDialogBodyPr
         </PrimaryButton>
       </DialogFooter>
       {submitting && (
-        <div className={classes.loadingStateWrapper}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            background: 'rgba(255,255,255,0.7)'
+          }}
+        >
           <LoadingState />
-        </div>
+        </Box>
       )}
     </>
   );

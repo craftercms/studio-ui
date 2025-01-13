@@ -14,20 +14,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Theme } from '@mui/material/styles';
-import { withStyles } from 'tss-react/mui';
+import { styled } from '@mui/material/styles';
 import TableRow from '@mui/material/TableRow';
 
-const GlobalAppGridRow = withStyles(TableRow, (theme: Theme) => ({
-  root: {
-    cursor: 'pointer',
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover
-    },
-    '&.hoverDisabled': {
-      cursor: 'inherit',
-      background: 'none'
-    }
+const GlobalAppGridRow = styled(TableRow)(({ theme }) => ({
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover
+  },
+  '&.hoverDisabled': {
+    cursor: 'inherit',
+    background: 'none'
   }
 }));
 

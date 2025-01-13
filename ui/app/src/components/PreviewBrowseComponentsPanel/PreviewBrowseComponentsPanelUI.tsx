@@ -21,11 +21,11 @@ import List from '@mui/material/List';
 import ContentInstance from '../../models/ContentInstance';
 import { DraggablePanelListItem } from '../DraggablePanelListItem/DraggablePanelListItem';
 import EmptyState from '../EmptyState/EmptyState';
-import { useComponentsPanelUI } from './styles';
 import FormHelperText from '@mui/material/FormHelperText';
 import Pagination from '../Pagination';
 import HourglassEmptyRounded from '@mui/icons-material/HourglassEmptyRounded';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 
 export interface PreviewBrowseComponentsPanelUIProps {
   awaitingGuestCheckIn: boolean;
@@ -55,7 +55,6 @@ export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPan
     limit
   } = props;
   const { formatMessage } = useIntl();
-  const { classes } = useComponentsPanelUI();
   return awaitingGuestCheckIn ? (
     <Alert severity="info" variant="outlined" icon={<HourglassEmptyRounded />} sx={{ border: 0 }}>
       <FormattedMessage defaultMessage="Waiting for the preview application to load." />
@@ -69,7 +68,7 @@ export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPan
         onPageChange={(e, page: number) => onPageChanged(page * limit)}
         onRowsPerPageChange={onRowsPerPageChange}
       />
-      <div className={classes.browsePanelWrapper}>
+      <Box sx={{ padding: (theme) => `0 0 ${theme.spacing(4)} 0` }}>
         <List>
           {items.map((item: ContentInstance) => (
             <DraggablePanelListItem
@@ -84,16 +83,27 @@ export function PreviewBrowseComponentsPanelUI(props: PreviewBrowseComponentsPan
         {count === 0 && (
           <EmptyState
             title={formatMessage(translations.noResults)}
-            classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+            sxs={{
+              image: { width: '150px' },
+              title: { fontSize: 'inherit', marginTop: '10px' }
+            }}
           />
         )}
-        <FormHelperText className={classes.helperTextWrapper}>
+        <FormHelperText
+          sx={{
+            margin: '10px 16px',
+            paddingTop: '10px',
+            textAlign: 'center',
+            lineHeight: 1.2,
+            borderTop: (theme) => `1px solid ${theme.palette.divider}`
+          }}
+        >
           <FormattedMessage
             id="previewBrowseComponentsPanel.sharedComponentsHelperText"
             defaultMessage="Only shared components are shown here"
           />
         </FormHelperText>
-      </div>
+      </Box>
     </>
   );
 }

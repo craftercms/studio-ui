@@ -15,22 +15,44 @@
  */
 
 import { useIntl } from 'react-intl';
-import TablePagination from '@mui/material/TablePagination';
+import TablePagination, { tablePaginationClasses } from '@mui/material/TablePagination';
 import translations from './translations';
 import React from 'react';
-import { paginationStyles } from './HistoryDialog';
 import { PaginationProps } from './utils';
 
 // TODO: Check if we can use the components/Pagination component
 
 export function HistoryDialogPagination(props: PaginationProps) {
-  const { classes } = paginationStyles();
   const { formatMessage } = useIntl();
   const { count, page, rowsPerPage, onRowsPerPageChange } = props;
   return (
     <TablePagination
-      className={classes.pagination}
-      classes={{ root: classes.pagination, selectRoot: 'hidden', toolbar: classes.toolbar }}
+      sx={(theme) => ({
+        marginLeft: 'auto',
+        background: theme.palette.background.paper,
+        color: theme.palette.text.primary,
+        '& p': {
+          padding: 0
+        },
+        '& svg': {
+          top: 'inherit'
+        },
+        '& .hidden': {
+          display: 'none'
+        },
+        [`& .${tablePaginationClasses.toolbar}`]: {
+          padding: 0,
+          display: 'flex',
+          justifyContent: 'space-between',
+          paddingLeft: '20px',
+          [`& .${tablePaginationClasses.spacer}`]: {
+            display: 'none'
+          },
+          [`& .${tablePaginationClasses.spacer} + p`]: {
+            display: 'none'
+          }
+        }
+      })}
       component="div"
       labelRowsPerPage=""
       rowsPerPageOptions={[10, 20, 30]}

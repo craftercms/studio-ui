@@ -28,28 +28,9 @@ import { Button, IconButton } from '@mui/material';
 import CloseIconRounded from '@mui/icons-material/CloseRounded';
 import DialogBody from '../DialogBody/DialogBody';
 import UppyDashboard from '../UppyDashboard';
-import { makeStyles } from 'tss-react/mui';
 import useSiteUIConfig from '../../hooks/useSiteUIConfig';
 import { XHRUploadOptions } from '@uppy/xhr-upload';
 import useUpdateRefs from '../../hooks/useUpdateRefs';
-
-const useStyles = makeStyles()(() => ({
-  rootTitle: {
-    paddingBottom: 0,
-    display: 'none'
-  },
-  subtitleWrapper: {
-    paddingBottom: 0,
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%',
-    justifyContent: 'space-between'
-  },
-  dialogBody: {
-    minHeight: '60vh',
-    padding: 0
-  }
-}));
 
 const mixHeaders = (headers: Record<string, any>) => Object.assign({}, getGlobalHeaders(), headers);
 
@@ -57,7 +38,6 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
   const { formatMessage } = useIntl();
   const expiresAt = useSelection((state) => state.auth.expiresAt);
   const { upload } = useSiteUIConfig();
-  const { classes } = useStyles();
   // region const { ... } = props
   const {
     site,
@@ -183,7 +163,7 @@ export function UploadDialogContainer(props: UploadDialogContainerProps) {
       <IconButton style={{ display: 'none' }} size="large">
         <CloseIconRounded />
       </IconButton>
-      <DialogBody className={classes.dialogBody}>
+      <DialogBody sx={{ minHeight: '60vh', padding: 0 }}>
         <UppyDashboard
           uppy={uppy}
           site={site}

@@ -30,7 +30,6 @@ import { showSystemNotification } from '../../state/actions/system';
 import { useDispatch } from 'react-redux';
 import Alert from '@mui/material/Alert';
 import Typography from '@mui/material/Typography';
-import useStyles from './styles';
 import translations from './translations';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import Paper from '@mui/material/Paper';
@@ -64,7 +63,6 @@ function a11yProps(index: number) {
 //  - Use/discard `loading` props
 export function GitManagement(props: GitManagementProps) {
   const { embedded, showAppsButton = !embedded } = props;
-  const { classes } = useStyles();
   const siteId = useActiveSiteId();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
@@ -263,7 +261,7 @@ export function GitManagement(props: GitManagementProps) {
         {activeTab === 0 && (
           <Box padding={2}>
             <Alert severity={loadingStatus ? 'info' : clean ? 'success' : 'warning'}>
-              {formatMessage(translations[loadingStatus ? 'fetchingStatus' : statusMessageKey ?? 'fetchingStatus'])}
+              {formatMessage(translations[loadingStatus ? 'fetchingStatus' : (statusMessageKey ?? 'fetchingStatus')])}
             </Alert>
             <RepoGrid
               repositories={repositories}
@@ -272,7 +270,15 @@ export function GitManagement(props: GitManagementProps) {
               fetchRepositories={fetchRepositories}
               disableActions={!repoStatus || repoStatus.conflicting.length > 0}
             />
-            <Typography variant="caption" className={classes.statusNote}>
+            <Typography
+              variant="caption"
+              sx={(theme) => ({
+                display: 'flex',
+                justifyContent: 'center',
+                color: theme.palette.text.secondary,
+                marginTop: theme.spacing(2)
+              })}
+            >
               <FormattedMessage
                 id="repository.statusNote"
                 defaultMessage="Do not use Studio as a git merge and conflict resolution platform. All merge conflicts should be resolved upstream before getting pulled into Studio."

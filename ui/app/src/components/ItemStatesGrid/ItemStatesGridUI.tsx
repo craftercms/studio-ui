@@ -25,7 +25,6 @@ import TableContainer from '@mui/material/TableContainer';
 import React from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import ItemDisplay from '../ItemDisplay';
-import useStyles from './styles';
 import { SandboxItem } from '../../models/Item';
 import { PagedArray } from '../../models/PagedArray';
 import Pagination from '../Pagination';
@@ -57,11 +56,9 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
     hasThisPageItemsChecked,
     isThisPageIndeterminate
   } = props;
-  const { classes, cx: clsx } = useStyles();
-
   return (
     <>
-      <TableContainer className={classes.tableContainer}>
+      <TableContainer>
         <Table size="small">
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">
@@ -104,7 +101,9 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
               <GlobalAppGridRow
                 key={item.id}
                 onClick={() => onRowSelected(item)}
-                className={clsx((Boolean(selectedItems[item.path]) || allItemsSelected) && classes.rowSelected)}
+                sx={{
+                  backgroundColor: Boolean(selectedItems[item.path]) || allItemsSelected ? 'action.selected' : 'inherit'
+                }}
               >
                 <GlobalAppGridCell align="center">
                   <Checkbox
@@ -123,7 +122,12 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                     title={item.path}
                     variant="caption"
                     component="p"
-                    className={clsx(classes.itemPath, classes.ellipsis)}
+                    sx={{
+                      color: (theme) => theme.palette.text.secondary,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
                   >
                     {item.path}
                   </Typography>
@@ -138,7 +142,15 @@ export function ItemStatesGridUI(props: WorkflowStatesGridUIProps) {
                   </Typography>
                 </GlobalAppGridCell>
                 <GlobalAppGridCell>
-                  <Typography variant="body2" className={classes.ellipsis} title={item.lockOwner?.username}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                    title={item.lockOwner?.username}
+                  >
                     {item.stateMap.locked ? (
                       <FormattedMessage
                         id="itemStates.lockedBy"
