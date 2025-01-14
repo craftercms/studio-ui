@@ -22,16 +22,7 @@ import SiteSearchFilterCheckboxes from '../SiteSearchFilterCheckboxes';
 import SiteSearchFilterRadios from '../SiteSearchFilterRadios';
 import SiteSearchRangeSelector from '../SiteSearchRangeSelector';
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
-
-const useStyles = makeStyles()((theme) => ({
-  filterActions: {
-    textAlign: 'right'
-  },
-  button: {
-    margin: theme.spacing(1)
-  }
-}));
+import Box from '@mui/material/Box';
 
 const messages = defineMessages({
   apply: {
@@ -55,7 +46,6 @@ interface FilterProps {
 }
 
 export function SiteSearchFilter(props: FilterProps) {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const {
     facet,
@@ -92,21 +82,16 @@ export function SiteSearchFilter(props: FilterProps) {
 
   return (
     <div>
-      <div className={classes.filterActions}>
-        <Button variant="outlined" className={classes.button} onClick={() => handleClearClick(facet)}>
+      <Box sx={{ textAlign: 'right' }}>
+        <Button variant="outlined" sx={{ m: 1 }} onClick={() => handleClearClick(facet)}>
           {formatMessage(messages.clear)}
         </Button>
         {facetsLookupTable[facet].multiple && (
-          <Button
-            variant="contained"
-            color="primary"
-            className={classes.button}
-            onClick={() => handleApplyClick(facet)}
-          >
+          <Button variant="contained" color="primary" sx={{ m: 1 }} onClick={() => handleApplyClick(facet)}>
             {formatMessage(messages.apply)}
           </Button>
         )}
-      </div>
+      </Box>
       <div className={'filterBody'}>
         {facetsLookupTable[facet].multiple ? (
           <SiteSearchFilterCheckboxes

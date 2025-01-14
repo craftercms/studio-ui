@@ -16,8 +16,8 @@
 
 import * as React from 'react';
 import Skeleton from '@mui/material/Skeleton';
-import { makeStyles } from 'tss-react/mui';
 import PathNavigatorTreeSkeletonItem from './PathNavigatorTreeSkeletonItem';
+import Box from '@mui/material/Box';
 
 // type PathNavigatorSkeletonClassKey = 'skeletonRoot' | 'skeletonHeader' | 'skeletonBody' | 'skeletonBodyItem' | 'childrenRail';
 
@@ -25,36 +25,20 @@ interface PathNavigatorSkeletonProps {
   numOfItems?: number;
 }
 
-const useStyles = makeStyles()(() => ({
-  skeletonRoot: {
-    margin: '10px 0'
-  },
-  skeletonHeader: {
-    display: 'flex',
-    marginBottom: '5px',
-    padding: '0 10px'
-  },
-  skeletonBody: {
-    paddingLeft: '5px'
-  },
-  skeletonBodyItem: { display: 'flex', padding: '5px 5px' }
-}));
-
 function PathNavigatorSkeletonTree({ numOfItems = 5 }: PathNavigatorSkeletonProps) {
-  const { classes } = useStyles();
   return (
-    <section className={classes.skeletonRoot}>
-      <header className={classes.skeletonHeader}>
+    <Box component="section" sx={{ margin: '10px 0' }}>
+      <Box component="header" sx={{ display: 'flex', marginBottom: '5px', padding: '0 10px' }}>
         <Skeleton variant="rectangular" width="20px" />
         <Skeleton variant="text" style={{ margin: '0 10px', width: '100%' }} />
         <Skeleton variant="circular" width="20px" />
-      </header>
-      <section className={classes.skeletonBody}>
+      </Box>
+      <Box component="section" sx={{ paddingLeft: '5px' }}>
         {new Array(numOfItems).fill(null).map((_, index) => (
-          <PathNavigatorTreeSkeletonItem classes={{ root: classes.skeletonBodyItem }} key={index} />
+          <PathNavigatorTreeSkeletonItem key={index} />
         ))}
-      </section>
-    </section>
+      </Box>
+    </Box>
   );
 }
 

@@ -15,10 +15,10 @@
  */
 
 export interface StateStylingProps {
-  baseClass: string;
-  expandedClass: string;
-  collapsedClass: string;
   baseStyle: object;
   expandedStyle: object;
   collapsedStyle: object;
+  baseSxs: object;
+  expandedSxs: object;
+  collapsedSxs: object;
 }

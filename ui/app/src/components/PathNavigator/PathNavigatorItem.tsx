@@ -16,7 +16,6 @@
 
 import { DetailedItem } from '../../models/Item';
 import React, { useState } from 'react';
-import { useStyles } from './styles';
 import ListItemButton from '@mui/material/ListItemButton';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
@@ -59,7 +58,6 @@ const translations = defineMessages({
 
 // PathNavigatorListItem
 function PathNavigatorItem(props: NavItemProps) {
-  const { classes, cx: clsx } = useStyles();
   const {
     item,
     isActive = false,
@@ -93,7 +91,23 @@ function PathNavigatorItem(props: NavItemProps) {
       selected={isActive}
       // TODO: must update this to support select mode
       // button={!isSelectMode as true}
-      className={clsx(classes.navItem, isSelectMode && classes.noLeftPadding, isCurrentPath && classes.currentPathItem)}
+      sx={[
+        (theme) => ({
+          minHeight: '23.5px',
+          padding: '0 0 0 5px',
+          marginLeft: '15px',
+          width: 'calc(100% - 15px)',
+          '&:hover': {
+            backgroundColor: theme.palette.mode === 'dark' ? theme.palette.action.hover : theme.palette.grey['A200']
+          }
+        }),
+        isSelectMode && { paddingLeft: 0 },
+        isCurrentPath && {
+          paddingLeft: 0,
+          marginLeft: '10px',
+          width: 'auto'
+        }
+      ]}
       onMouseOver={onMouseOver}
       onMouseLeave={onMouseLeave}
       onClick={onClick}
@@ -126,7 +140,13 @@ function PathNavigatorItem(props: NavItemProps) {
         <Tooltip title={formatMessage(translations.itemMenu)}>
           <IconButton
             aria-label={formatMessage(translations.itemMenu)}
-            className={classes.itemIconButton}
+            sx={{
+              padding: '2px 3px',
+              '&.Mui-disabled': {
+                // Want the hover to trigger so the tooltip shows up.
+                pointerEvents: 'all'
+              }
+            }}
             data-item-menu
             onClick={(event) => {
               event.stopPropagation();
@@ -134,7 +154,7 @@ function PathNavigatorItem(props: NavItemProps) {
             }}
             size="large"
           >
-            <MoreVertIcon className={classes.icon} />
+            <MoreVertIcon sx={{ fontSize: '1.2rem' }} />
           </IconButton>
         </Tooltip>
       )}
@@ -142,7 +162,13 @@ function PathNavigatorItem(props: NavItemProps) {
         <Tooltip title={formatMessage(translations.viewChildren)}>
           <IconButton
             aria-label={formatMessage(translations.viewChildren)}
-            className={classes.itemIconButton}
+            sx={{
+              padding: '2px 3px',
+              '&.Mui-disabled': {
+                // Want the hover to trigger so the tooltip shows up.
+                pointerEvents: 'all'
+              }
+            }}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
@@ -156,7 +182,7 @@ function PathNavigatorItem(props: NavItemProps) {
             }}
             size="large"
           >
-            <ChevronRightRoundedIcon className={classes.icon} />
+            <ChevronRightRoundedIcon sx={{ fontSize: '1.2rem' }} />
           </IconButton>
         </Tooltip>
       )}

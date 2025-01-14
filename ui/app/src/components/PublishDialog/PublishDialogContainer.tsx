@@ -27,7 +27,6 @@ import { FormattedMessage } from 'react-intl';
 import { createPresenceTable } from '../../utils/array';
 import { fetchDependencies, FetchDependenciesResponse } from '../../services/dependencies';
 import { PublishDialogUI } from './PublishDialogUI';
-import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
 import { isBlank } from '../../utils/string';
 import { updatePublishDialog } from '../../state/actions/dialogs';
@@ -367,7 +366,6 @@ export function PublishDialogContainer(props: PublishDialogContainerProps) {
       onSelectAll={onSelectAll}
       onSelectAllSoftDependencies={onSelectAllSoft}
       onClickShowAllDeps={onFetchDependenciesClick}
-      classes={useStyles().classes}
       isRequestPublish={!hasPublishPermission || state.requestApproval}
       showRequestApproval={hasPublishPermission && items.every((item) => !item.stateMap.submitted)}
       submitLabel={

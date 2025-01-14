@@ -16,8 +16,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import { darken, lighten } from '@mui/material/styles';
-import { makeStyles, withStyles } from 'tss-react/mui';
+import { darken, lighten, styled } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import { AsDayMonthDateTime } from '../VersionList';
@@ -52,44 +51,8 @@ import { useWithPendingChangesCloseRequest } from '../../hooks/useWithPendingCha
 import Tooltip from '@mui/material/Tooltip';
 import { CreatePreviewTokenDialog } from '../CreatePreviewTokenDialog';
 
-const styles = makeStyles()((theme) => ({
-  table: {
-    minWidth: 650
-  },
-  actions: {
-    width: '150px',
-    padding: '5px 20px'
-  },
-  actionsBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    zIndex: 1
-  },
-  chip: {
-    backgroundColor:
-      theme.palette.mode === 'light'
-        ? lighten(theme.palette.success.main, 0.9)
-        : darken(theme.palette.success.main, 0.9),
-    height: 'auto',
-    padding: '4px 6.5px',
-    '&.disabled': {
-      backgroundColor:
-        theme.palette.mode === 'light'
-          ? lighten(theme.palette.warning.main, 0.9)
-          : darken(theme.palette.warning.main, 0.9)
-    },
-    '&.expired': {
-      backgroundColor:
-        theme.palette.mode === 'light' ? lighten(theme.palette.error.main, 0.9) : darken(theme.palette.error.main, 0.9)
-    }
-  }
-}));
-
-const StyledTableCell = withStyles(TableCell, () => ({
-  root: {
-    padding: '5px'
-  }
+const StyledTableCell = styled(TableCell)(() => ({
+  padding: '5px'
 }));
 
 const translations = defineMessages({
@@ -136,7 +99,6 @@ const translations = defineMessages({
 });
 
 export function TokenManagement() {
-  const { classes, cx } = styles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [tokens, setTokens] = useState<Token[]>(null);
@@ -358,12 +320,17 @@ export function TokenManagement() {
                   isIndeterminate={checkedCount > 0 && checkedCount < tokens.length}
                   isChecked={checkedCount === tokens.length}
                   onCheckboxChange={() => onToggleSelectAll(checkedCount !== tokens.length)}
-                  classes={{
-                    root: classes.actionsBar
+                  sxs={{
+                    root: {
+                      position: 'absolute',
+                      left: 0,
+                      right: 0,
+                      zIndex: 1
+                    }
                   }}
                 />
               )}
-              <Table className={classes.table}>
+              <Table sx={{ minWidth: 650 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell padding="checkbox">
@@ -396,7 +363,7 @@ export function TokenManagement() {
                         <FormattedMessage id="words.created" defaultMessage="Created" />
                       </Typography>
                     </StyledTableCell>
-                    <TableCell align="center" className={classes.actions} />
+                    <TableCell align="center" sx={{ width: '150px', padding: '5px 20px' }} />
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -422,11 +389,28 @@ export function TokenManagement() {
                               <FormattedMessage id="words.disabled" defaultMessage="Disabled" />
                             )
                           }
-                          className={cx(
-                            classes.chip,
-                            !token.enabled && 'disabled',
-                            moment(token.expiresAt) < moment() && 'expired'
-                          )}
+                          sx={[
+                            (theme) => ({
+                              backgroundColor:
+                                theme.palette.mode === 'light'
+                                  ? lighten(theme.palette.success.main, 0.9)
+                                  : darken(theme.palette.success.main, 0.9),
+                              height: 'auto',
+                              padding: '4px 6.5px'
+                            }),
+                            !token.enabled && {
+                              backgroundColor: (theme) =>
+                                theme.palette.mode === 'light'
+                                  ? lighten(theme.palette.warning.main, 0.9)
+                                  : darken(theme.palette.warning.main, 0.9)
+                            },
+                            moment(token.expiresAt) < moment() && {
+                              backgroundColor: (theme) =>
+                                theme.palette.mode === 'light'
+                                  ? lighten(theme.palette.error.main, 0.9)
+                                  : darken(theme.palette.error.main, 0.9)
+                            }
+                          ]}
                         />
                       </TableCell>
                       <StyledTableCell align="left">{token.label}</StyledTableCell>
@@ -442,7 +426,7 @@ export function TokenManagement() {
                       <StyledTableCell align="left">
                         <AsDayMonthDateTime date={token.createdOn} />
                       </StyledTableCell>
-                      <TableCell align="right" className={classes.actions}>
+                      <TableCell align="right" sx={{ width: '150px', padding: '5px 20px' }}>
                         {(token.expiresAt === null || moment(token.expiresAt) > moment()) && (
                           <Tooltip
                             title={

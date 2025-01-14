@@ -20,17 +20,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { camelize } from '../../utils/string';
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { SORT_AUTO } from '../Search/utils';
-
-const useStyles = makeStyles()(() => ({
-  select: {
-    width: '100%',
-    '&.last': {
-      marginTop: '10px'
-    }
-  }
-}));
 
 export const filtersMessages = defineMessages({
   relevance: {
@@ -74,14 +64,18 @@ interface SortByProps {
 }
 
 export function SiteSearchSortBy(props: SortByProps) {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const { handleFilterChange, filterKeys, sortBy = SORT_AUTO } = props;
 
   return (
     <Select
       value={sortBy}
-      className={classes.select}
+      sx={{
+        width: '100%',
+        '&.last': {
+          marginTop: '10px'
+        }
+      }}
       onChange={(event) => handleFilterChange({ name: 'sortBy', value: event.target.value })}
     >
       <MenuItem value={SORT_AUTO}>

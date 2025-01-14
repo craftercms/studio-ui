@@ -17,26 +17,17 @@
 import * as React from 'react';
 import PublishingQueue, { PublishingQueueProps } from './PublishingQueue';
 import Paper from '@mui/material/Paper';
-import { makeStyles } from 'tss-react/mui';
 import DialogHeader from '../DialogHeader';
 import { FormattedMessage } from 'react-intl';
-
-const useStyles = makeStyles()((theme) => ({
-  paperContent: {
-    backgroundColor: theme.palette.background.default,
-    padding: '16px'
-  }
-}));
+import Box from '@mui/material/Box';
 
 export function PublishingQueueWidget(props: PublishingQueueProps) {
-  const { classes } = useStyles();
-
   return (
     <Paper elevation={2}>
       <DialogHeader title={<FormattedMessage id="publishingQueue.title" defaultMessage="Publishing Queue" />} />
-      <div className={classes.paperContent}>
+      <Box sx={{ backgroundColor: (theme) => theme.palette.background.default, padding: '16px' }}>
         <PublishingQueue {...props} />
-      </div>
+      </Box>
     </Paper>
   );
 }

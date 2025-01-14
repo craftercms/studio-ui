@@ -18,7 +18,6 @@
 import React, { useEffect, useId } from 'react';
 import useActiveSite from '../../hooks/useActiveSite';
 import { PathNavigatorTree } from '../PathNavigatorTree';
-import { makeStyles } from 'tss-react/mui';
 import { removeStoredPathNavigatorTree } from '../../utils/state';
 import useActiveUser from '../../hooks/useActiveUser';
 import { useDispatch } from 'react-redux';
@@ -36,13 +35,8 @@ export interface FolderBrowserTreeViewProps {
   onPathSelected(path: string): void;
 }
 
-const useStyles = makeStyles()((theme) => ({
-  pathNavTreeHeader: { '.MuiTypography-root': { fontWeight: theme.typography.fontWeightMedium } }
-}));
-
 export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
   const { rootPath, selectedPath, onPathSelected } = props;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const id = useId();
   const tree = useSelection((state) => state.pathNavigatorTree[id]);
@@ -101,7 +95,9 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
       initialSystemTypes={['folder', 'page']}
       active={{ [selectedPathWithIndex in (tree?.totalByPath ?? {}) ? selectedPathWithIndex : selectedPath]: true }}
       onNodeClick={(e, path) => onPathSelected?.(path)}
-      classes={{ header: classes.pathNavTreeHeader }}
+      sxs={{
+        header: { '.MuiTypography-root': { fontWeight: 'bold', fontSize: '35px' } }
+      }}
       showNavigableAsLinks={false}
       showPublishingTarget={false}
       showWorkflowState={false}

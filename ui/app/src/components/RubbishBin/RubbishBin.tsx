@@ -21,41 +21,10 @@ import DeleteRounded from '@mui/icons-material/DeleteRounded';
 import DeleteRoundedTilted from '../../icons/OpenRubbishBinTiltedLeftFilled';
 import { Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import { useSelection } from '../../hooks/useSelection';
 
-const useStyles = makeStyles()((theme) => ({
-  rubbishBin: {
-    height: 250,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: palette.orange.main,
-    margin: theme.spacing(1),
-    position: 'absolute',
-    right: theme.spacing(1),
-    bottom: theme.spacing(1),
-    color: palette.white,
-    zIndex: theme.zIndex.drawer
-  },
-  rubbishBinHover: {
-    background: palette.red.main
-  },
-  rubbishIcon: {
-    width: '100%',
-    height: '50%',
-    color: palette.white,
-    pointerEvents: 'none'
-  },
-  rubbishLabel: {
-    pointerEvents: 'none'
-  }
-}));
-
 export function RubbishBin(props: any) {
-  const { classes, cx } = useStyles();
   const [over, setOver] = useState(false);
   const [trashed, setTrashed] = useState(false);
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
@@ -70,7 +39,20 @@ export function RubbishBin(props: any) {
       <Paper
         elevation={2}
         style={{ width: toolsPanelWidth - 30 }}
-        className={cx(classes.rubbishBin, over && classes.rubbishBinHover)}
+        sx={(theme) => ({
+          height: 250,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: over ? palette.red.main : palette.orange.main,
+          margin: theme.spacing(1),
+          position: 'absolute',
+          right: theme.spacing(1),
+          bottom: theme.spacing(1),
+          color: palette.white,
+          zIndex: theme.zIndex.drawer
+        })}
         onDragOver={(e) => {
           e.preventDefault();
         }}
@@ -94,11 +76,11 @@ export function RubbishBin(props: any) {
             : <LinkRounded className={classes.rubbishIcon} />
           */}
         {over ? (
-          <DeleteRoundedTilted className={classes.rubbishIcon} />
+          <DeleteRoundedTilted sx={{ width: '100%', height: '50%', color: palette.white, pointerEvents: 'none' }} />
         ) : (
-          <DeleteRounded className={classes.rubbishIcon} />
+          <DeleteRounded sx={{ width: '100%', height: '50%', color: palette.white, pointerEvents: 'none' }} />
         )}
-        <Typography variant="caption" className={classes.rubbishLabel}>
+        <Typography variant="caption" sx={{ pointerEvents: 'none' }}>
           {trashed ? (
             <FormattedMessage id="previewRubbishBin.itemTrashed" defaultMessage="Trashed!" />
           ) : (

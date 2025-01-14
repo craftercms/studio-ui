@@ -18,7 +18,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import PathNavigatorTreeUI, { PathNavigatorTreeUIProps } from './PathNavigatorTreeUI';
 import { useDispatch } from 'react-redux';
 import {
-  pathNavigatorTreeBackgroundRefresh,
   pathNavigatorTreeCollapsePath,
   pathNavigatorTreeExpandPath,
   pathNavigatorTreeFetchPathChildren,
@@ -58,8 +57,7 @@ import { useItemsByPath } from '../../hooks/useItemsByPath';
 import { useSubject } from '../../hooks/useSubject';
 import { debounceTime } from 'rxjs/operators';
 import { useActiveSite } from '../../hooks/useActiveSite';
-import { ApiResponse, GetChildrenOptions } from '../../models';
-import { batchActions } from '../../state/actions/misc';
+import { ApiResponse, GetChildrenOptions, PartialSxRecord } from '../../models';
 import SystemType from '../../models/SystemType';
 import { PathNavigatorTreeItemProps } from './PathNavigatorTreeItem';
 import { UNDEFINED } from '../../utils/constants';
@@ -87,7 +85,7 @@ export interface PathNavigatorTreeProps
   initialExpanded?: string[];
   onNodeClick?: PathNavigatorTreeUIProps['onLabelClick'];
   active?: PathNavigatorTreeItemProps['active'];
-  classes?: Partial<Record<'header', string>>;
+  sxs?: PartialSxRecord<'header'>;
 }
 
 export interface PathNavigatorTreeStateProps {
@@ -149,13 +147,13 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     initialSystemTypes,
     onNodeClick,
     active,
-    classes,
     showNavigableAsLinks,
     showPublishingTarget,
     showWorkflowState,
     showItemMenu,
     sortStrategy,
-    order
+    order,
+    sxs
   } = props;
   // endregion
   const state = useSelection((state) => state.pathNavigatorTree[id]);
@@ -336,7 +334,9 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   return (
     <>
       <PathNavigatorTreeUI
-        classes={{ header: classes?.header }}
+        sxs={{
+          header: sxs?.header
+        }}
         title={label}
         active={active}
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}

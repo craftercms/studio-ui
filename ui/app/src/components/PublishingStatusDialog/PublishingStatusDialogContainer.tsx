@@ -14,26 +14,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles } from 'tss-react/mui';
 import { useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader';
 import DialogBody from '../DialogBody/DialogBody';
 import * as React from 'react';
+import { useState } from 'react';
 import PublishingStatusDisplay, { publishingStatusMessages } from '../PublishingStatusDisplay';
 import { PublishingStatusDialogContainerProps } from './utils';
-import { useState } from 'react';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import useActiveUser from '../../hooks/useActiveUser';
 import useActiveSiteId from '../../hooks/useActiveSiteId';
-
-const useStyles = makeStyles()(() => ({
-  body: {
-    minHeight: 145,
-    placeContent: 'center'
-  }
-}));
 
 const permittedRoles = ['developer', 'admin'];
 
@@ -54,7 +46,6 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
     onStartStop,
     isFetching
   } = props;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const [unlockAnchorEl, setUnlockAnchorEl] = useState(null);
   const user = useActiveUser();
@@ -100,7 +91,12 @@ export function PublishingStatusDialogContainer(props: PublishingStatusDialogCon
           }
         ].filter(Boolean)}
       />
-      <DialogBody className={classes.body}>
+      <DialogBody
+        sx={{
+          minHeight: 145,
+          placeContent: 'center'
+        }}
+      >
         <PublishingStatusDisplay
           enabled={enabled}
           isFetching={isFetching}

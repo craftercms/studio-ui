@@ -20,23 +20,9 @@ import { defineMessages, useIntl } from 'react-intl';
 import { capitalize, formatBytes } from '../../utils/string';
 import RadioGroup from '@mui/material/RadioGroup';
 import { nnou } from '../../utils/object';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControlLabel, { formControlLabelClasses } from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
-
-const useStyles = makeStyles()(() => ({
-  checkboxLabel: {
-    width: '100%',
-    overflow: 'hidden',
-    display: '-webkit-box',
-    WebkitLineClamp: 1,
-    WebkitBoxOrient: 'vertical'
-  },
-  checkboxRoot: {
-    marginRight: '5px'
-  }
-}));
 
 const messages = defineMessages({
   under: {
@@ -60,7 +46,6 @@ interface FilterRadiosProps {
 export function SiteSearchFilterRadios(props: FilterRadiosProps) {
   const { facetData, facet, handleRadioClick, checkedFilters } = props;
   const items = facetData.values;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   const formatValue = (facet: string, key: string, value: any) => {
@@ -112,7 +97,16 @@ export function SiteSearchFilterRadios(props: FilterRadiosProps) {
             }
             label={`${label} (${count})`}
             labelPlacement="start"
-            classes={{ root: classes.checkboxRoot, label: classes.checkboxLabel }}
+            sx={{
+              marginRight: '5px',
+              [`& .${formControlLabelClasses.label}`]: {
+                width: '100%',
+                overflow: 'hidden',
+                display: '-webkit-box',
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: 'vertical'
+              }
+            }}
           />
         );
       })}

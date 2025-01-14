@@ -73,7 +73,6 @@ export interface PathNavigatorUIProps {
    *
    **/
   sxs?: PartialSxRecord<PathNavigatorUIClassKey>;
-  classes?: Partial<Record<PathNavigatorUIClassKey, string>>;
   /**
    *
    **/
@@ -168,14 +167,10 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       onChange={() => onChangeCollapsed(!state.collapsed)}
       sx={{
         background: 'none',
-        ...sxs?.root
+        ...sxs?.root,
+        ...container?.baseSxs,
+        ...(state.collapsed ? container?.collapsedSxs : container?.expandedSxs)
       }}
-      className={[
-        container?.baseClass,
-        container ? (state.collapsed ? container.collapsedClass : container.expandedClass) : void 0
-      ]
-        .filter(Boolean)
-        .join(' ')}
       style={{
         ...container?.baseStyle,
         ...(container ? (state.collapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
@@ -276,7 +271,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             {state.total !== null && state.total > 0 && !(state.total === 1 && state.levelDescriptor) && (
               <Pagination
                 showBottomBorder
-                classes={{ root: props.classes?.paginationRoot }}
+                sxs={{ root: sxs?.paginationRoot }}
                 // Do not consider levelDescriptor in pagination, as it will always be rendered at the beginning of the
                 // PathNav view, indistinctly of the current page.
                 count={state.levelDescriptor ? state.total - 1 : state.total}

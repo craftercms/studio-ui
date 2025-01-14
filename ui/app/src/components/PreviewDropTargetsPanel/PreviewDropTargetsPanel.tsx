@@ -17,7 +17,6 @@
 import React, { useMemo, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import { getHostToGuestBus } from '../../utils/subjects';
-import { makeStyles } from 'tss-react/mui';
 import { ContentTypeDropTarget } from '../../models/ContentTypeDropTarget';
 import ListItemText from '@mui/material/ListItemText';
 import List from '@mui/material/List';
@@ -72,18 +71,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles()(() => ({
-  select: {
-    width: '100%',
-    padding: '15px 15px 0',
-    '& > div': {
-      width: '100%'
-    }
-  }
-}));
-
 export function PreviewDropTargetsPanel() {
-  const { classes } = useStyles();
   const hostToGuest$ = getHostToGuestBus();
   const dropTargetsBranch = useSelection((state) => state.preview.dropTargets);
   const contentTypesBranch = useSelection((state) => state.contentTypes);
@@ -178,7 +166,17 @@ export function PreviewDropTargetsPanel() {
           </>
         ) : (
           <>
-            <Box className={classes.select} display="flex" alignItems="center">
+            <Box
+              sx={{
+                width: '100%',
+                padding: '15px 15px 0',
+                '& > div': {
+                  width: '100%'
+                }
+              }}
+              display="flex"
+              alignItems="center"
+            >
               <FormControl>
                 <InputLabel>{formatMessage(translations.selectedContentType)}</InputLabel>
                 <Select

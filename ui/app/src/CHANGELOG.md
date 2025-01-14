@@ -6,7 +6,16 @@
   * Removed `pages/QuickCreateMenu` component.
   * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
   * Removed `resource` prop from StoreProvider
-  * Removed `classes` prop from `DialogHeader`. Replaced by `sxs` prop.
+  * Removed `classes` prop from `DialogHeader`, `SingleItemSelector`, `PagesSearchAhead`, `ItemActionsMenu`, `LauncherSiteCard` , 
+  `ErrorState`, `ApiResponseErrorState`, `PathNavigatorTreeItem`, `PathNavigatorBreadcrumbs`, `PathNavigatorList`, `MediaCard`, 
+  `ConfirmDialog`, `GroupManagement`, `SearchBar`, `LogoAndMenuBundleButton`, `CrafterCMSIcon`, `ItemPublishingTargetIcon`,
+    `ItemStateIcon`, `LoginForm`, `LoadingState`, `LauncherSection`, `AceEditor`, `ItemDisplay`, `PasswordRequirementsDisplay`
+  `PathNavigatorTree`, `PathNavigatorHeader`, `PathNavigator`. Replaced by `sxs` prop.
+  * Removed `styles` prop from `ErrorState`, `ApiResponseErrorState`, `BlueprintForm`, `LoadingState`, `ConfirmDialog`, `AlertDialog`
+  `LauncherSection`, `AceEditor`, `ItemDisplay`, `PasswordRequirementsDisplay`, `PublishDialogForm`.  Replaced by `sxs` prop.
+  * Removed `sectionStyles` and `tileStyles` props from `LauncherGlobalNav`. Replaced with `sectionSxs` and `tileSxs`.
+  * Added `sxs` prop to `CrafterCMSLogo`.
+  * Added `sx` prop to `FilterDropdown`, `PathNavigatorHeader`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.

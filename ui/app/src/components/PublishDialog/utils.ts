@@ -86,7 +86,6 @@ export interface PublishDialogUIProps {
   onClickShowAllDeps?: any;
   isRequestPublish?: boolean;
   showRequestApproval: boolean;
-  classes?: any;
   submitLabel: ReactNode;
   mixedPublishingDates?: boolean;
   mixedPublishingTargets?: boolean;

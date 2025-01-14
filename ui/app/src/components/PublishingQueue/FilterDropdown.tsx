@@ -71,7 +71,7 @@ const messages: any = defineMessages({
 
 interface FilterDropdownProps {
   text: string;
-  className: any;
+  className?: any;
   sx?: SxProps<Theme>;
   currentFilters: CurrentFilters;
   filters: any;

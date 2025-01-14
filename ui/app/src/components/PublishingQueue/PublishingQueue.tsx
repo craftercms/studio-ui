@@ -15,7 +15,6 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
@@ -39,6 +38,7 @@ import { publishEvent, workflowEvent } from '../../state/actions/system';
 import { getHostToHostBus } from '../../utils/subjects';
 import { filter } from 'rxjs/operators';
 import { LoadingState } from '../LoadingState';
+import Box from '@mui/material/Box';
 
 const messages = defineMessages({
   selectAll: {
@@ -92,63 +92,6 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles()((theme) => ({
-  publishingQueue: {},
-  topBar: {
-    display: 'flex',
-    padding: '0 0 0 0',
-    alignItems: 'center',
-    borderBottom: '1px solid #dedede',
-    justifyContent: 'flex-end'
-  },
-  secondBar: {
-    background: theme.palette.divider,
-    padding: '10px',
-    borderBottom: '1px solid #dedede'
-  },
-  queueList: {},
-  package: {
-    padding: '20px',
-    '& .name': {
-      display: 'flex',
-      justifyContent: 'space-between'
-    },
-    '& .status': {
-      display: 'flex',
-      justifyContent: 'space-between'
-    },
-    '& .comment': {
-      display: 'flex',
-      justifyContent: 'space-between',
-      '& div:first-child': {
-        marginRight: '20px'
-      }
-    },
-    '& .files': {}
-  },
-  packagesSelected: {
-    marginRight: '10px',
-    display: 'flex',
-    alignItems: 'center'
-  },
-  clearSelected: {
-    marginLeft: '5px',
-    cursor: 'pointer'
-  },
-  selectAll: {
-    marginRight: 'auto'
-  },
-  button: {
-    margin: theme.spacing(1)
-  },
-  empty: {
-    padding: '40px 0'
-  },
-  cancelButton: {
-    paddingRight: '10px'
-  }
-}));
-
 const currentFiltersInitialState: CurrentFilters = {
   environment: '',
   path: '',
@@ -183,7 +126,6 @@ function renderCount(selected: Selected) {
 }
 
 function PublishingQueue(props: PublishingQueueProps) {
-  const { classes } = useStyles();
   const [packages, setPackages] = useState(null);
   const [isFetchingPackages, setIsFetchingPackages] = useState(false);
   const [filesPerPackage, setFilesPerPackage] = useState(null);
@@ -378,10 +320,18 @@ function PublishingQueue(props: PublishingQueueProps) {
   }
 
   return (
-    <div className={classes.publishingQueue}>
-      <div className={classes.topBar}>
+    <div>
+      <Box
+        sx={{
+          display: 'flex',
+          padding: '0 0 0 0',
+          alignItems: 'center',
+          borderBottom: '1px solid #dedede',
+          justifyContent: 'flex-end'
+        }}
+      >
         {currentFilters.state.includes(READY_FOR_LIVE) && (
-          <FormGroup className={classes.selectAll}>
+          <FormGroup sx={{ marginRight: 'auto' }}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -396,17 +346,21 @@ function PublishingQueue(props: PublishingQueueProps) {
           </FormGroup>
         )}
         {count > 0 && currentFilters.state.includes(READY_FOR_LIVE) && (
-          <Typography variant="body2" className={classes.packagesSelected} color="textSecondary">
+          <Typography
+            variant="body2"
+            sx={{ marginRight: '10px', display: 'flex', alignItems: 'center' }}
+            color="textSecondary"
+          >
             {formatMessage(messages.packagesSelected, { count: count })}
-            <HighlightOffIcon className={classes.clearSelected} onClick={clearSelected} />
+            <HighlightOffIcon sx={{ marginLeft: '5px', cursor: 'pointer' }} onClick={clearSelected} />
           </Typography>
         )}
-        <Button variant="outlined" className={classes.button} onClick={() => getPackages(siteId)}>
+        <Button variant="outlined" sx={{ m: 1 }} onClick={() => getPackages(siteId)}>
           <RefreshIcon />
         </Button>
         {currentFilters.state.includes(READY_FOR_LIVE) && (
           <ConfirmDropdown
-            classes={{ button: classes.cancelButton }}
+            sx={{ button: { paddingRight: '10px' } }}
             text={formatMessage(messages.cancelSelected)}
             cancelText={formatMessage(messages.cancel)}
             confirmText={formatMessage(messages.confirm)}
@@ -419,16 +373,22 @@ function PublishingQueue(props: PublishingQueueProps) {
           />
         )}
         <FilterDropdown
-          className={classes.button}
+          sx={{ m: 1 }}
           text={formatMessage(messages.filters)}
           handleFilterChange={handleFilterChange}
           currentFilters={currentFilters}
           handleEnterKey={handleEnterKey}
           filters={filters}
         />
-      </div>
+      </Box>
       {(currentFilters.state.length || currentFilters.path || currentFilters.environment) && (
-        <div className={classes.secondBar}>
+        <Box
+          sx={{
+            background: (theme) => theme.palette.divider,
+            padding: '10px',
+            borderBottom: '1px solid #dedede'
+          }}
+        >
           <Typography variant="body2">
             {formatMessage(messages.filteredBy, {
               state: currentFilters.state ? <strong key="state">{currentFilters.state.join(', ')}</strong> : 'all',
@@ -440,21 +400,21 @@ function PublishingQueue(props: PublishingQueueProps) {
               )
             })}
           </Typography>
-        </div>
+        </Box>
       )}
       {apiState.error && apiState.errorResponse ? (
         <ApiResponseErrorState error={apiState.errorResponse} />
       ) : (
-        <div className={classes.queueList}>
+        <div>
           {packages === null && isFetchingPackages && <LoadingState />}
           {packages && renderPackages()}
           {packages !== null && packages.length === 0 && (
-            <div className={classes.empty}>
+            <Box sx={{ padding: '40px 0' }}>
               <EmptyState
                 title={formatMessage(messages.noPackagesTitle)}
                 subtitle={formatMessage(messages.noPackagesSubtitle)}
               />
-            </div>
+            </Box>
           )}
         </div>
       )}

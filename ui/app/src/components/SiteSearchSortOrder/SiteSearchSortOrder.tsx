@@ -19,16 +19,6 @@ import { defineMessages, useIntl } from 'react-intl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
-
-const useStyles = makeStyles()(() => ({
-  select: {
-    width: '100%',
-    '&.last': {
-      marginTop: '10px'
-    }
-  }
-}));
 
 const messages = defineMessages({
   asc: {
@@ -56,7 +46,6 @@ interface SortOrderProps {
 }
 
 export function SiteSearchSortOrder(props: SortOrderProps) {
-  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const { handleFilterChange, sortBy, sortOrder = 'desc' } = props;
   // sortBy === undefined: this means the current filter is the default === _score
@@ -85,7 +74,10 @@ export function SiteSearchSortOrder(props: SortOrderProps) {
   return (
     <Select
       value={sortOrder}
-      className={cx(classes.select, 'last')}
+      sx={{
+        width: '100%',
+        marginTop: '10px'
+      }}
       onChange={(event) => handleFilterChange({ name: 'sortOrder', value: event.target.value })}
     >
       <MenuItem value={options[0].value}>{options[0].name}</MenuItem>
