@@ -15,21 +15,11 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import GitAuthForm from '../GitAuthForm';
 import Grid from '@mui/material/Grid2';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
 import { SiteState } from '../../models/Site';
-
-const useStyles = makeStyles()(() => ({
-  gitInfo: {
-    width: '100%',
-    '& .MuiGrid-item': {
-      padding: '12px'
-    }
-  }
-}));
 
 export interface NewRemoteRepositoryFormProps {
   inputs: Partial<SiteState>;
@@ -37,7 +27,6 @@ export interface NewRemoteRepositoryFormProps {
 }
 
 export function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormProps) {
-  const { classes } = useStyles();
   const { inputs, setInputs } = props;
 
   const handleInputChange = (e: any) => {
@@ -45,7 +34,16 @@ export function NewRemoteRepositoryForm(props: NewRemoteRepositoryFormProps) {
   };
 
   return (
-    <Grid container spacing={3} className={classes.gitInfo}>
+    <Grid
+      container
+      spacing={3}
+      sx={{
+        width: '100%',
+        '& .MuiGrid-item': {
+          padding: '12px'
+        }
+      }}
+    >
       <Grid size={12}>
         <TextField
           id="remoteName"

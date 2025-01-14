@@ -34,7 +34,6 @@ import { nnou } from '../../utils/object';
 import { LoadingState } from '../LoadingState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { EmptyState } from '../EmptyState';
-import { useStyles } from './styles';
 
 export function RejectDialogUI(props: RejectDialogUIProps) {
   const {
@@ -53,7 +52,6 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
     isSubmitting,
     isSubmitDisabled
   } = props;
-  const { classes } = useStyles();
 
   return (
     <>
@@ -66,12 +64,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
               <LoadingState />
             ) : items.length > 0 ? (
               published ? (
-                <RejectDialogContentUI
-                  items={items}
-                  checkedItems={checkedItems}
-                  onUpdateChecked={onUpdateChecked}
-                  classes={classes}
-                />
+                <RejectDialogContentUI items={items} checkedItems={checkedItems} onUpdateChecked={onUpdateChecked} />
               ) : (
                 <Alert severity="warning">
                   <FormattedMessage
@@ -123,7 +116,7 @@ export function RejectDialogUI(props: RejectDialogUIProps) {
 
               <TextFieldWithMax
                 required
-                className={classes.submissionTextField}
+                sx={{ marginTop: '10px' }}
                 label={<FormattedMessage id="rejectDialog.rejectCommentLabel" defaultMessage="Rejection Comment" />}
                 fullWidth
                 multiline

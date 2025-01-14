@@ -18,7 +18,6 @@ import { NewContentDialogContainerProps } from './utils';
 import { useActiveSiteId } from '../../hooks/useActiveSiteId';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import useStyles from './styles';
 import { useSelection } from '../../hooks/useSelection';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { LegacyContentType } from '../../models/ContentType';
@@ -44,7 +43,6 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
   const site = useActiveSiteId();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const { classes } = useStyles();
   const authoringBase = useSelection<string>((state) => state.env.authoringBase);
 
   const [isCompact, setIsCompact] = useState(compact);
@@ -138,7 +136,7 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
 
   return (
     <>
-      <DialogBody classes={{ root: classes.dialogContent }}>
+      <DialogBody sx={{ minHeight: 455 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box>
             <SingleItemSelector
@@ -155,7 +153,7 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
               }}
             />
           </Box>
-          <Box className={classes.searchBox}>
+          <Box sx={{ minWidth: '33%' }}>
             <SearchBar onChange={onSearch} keyword={keyword} autoFocus showActionButton={Boolean(keyword)} />
           </Box>
         </Box>
@@ -173,8 +171,11 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
               title={
                 <FormattedMessage id="newContentDialog.emptyStateMessage" defaultMessage="No Content Types Found" />
               }
-              classes={{
-                image: classes.emptyStateImg
+              sxs={{
+                image: {
+                  width: 250,
+                  marginBottom: '17px'
+                }
               }}
             />
           )
@@ -184,7 +185,7 @@ export function NewContentDialogContainer(props: NewContentDialogContainerProps)
       </DialogBody>
       <DialogFooter>
         <FormControlLabel
-          className={classes.compact}
+          sx={{ marginRight: 'auto' }}
           control={<Checkbox checked={isCompact} onChange={() => setIsCompact(!isCompact)} color="primary" />}
           label={formatMessage(translations.compactInput)}
         />

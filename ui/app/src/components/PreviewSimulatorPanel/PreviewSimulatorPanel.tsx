@@ -17,7 +17,6 @@
 import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useMemo, useReducer } from 'react';
 import { getTranslation } from '../../utils/i18n';
-import { makeStyles } from 'tss-react/mui';
 import IconButton from '@mui/material/IconButton';
 import { ScreenRotationRounded } from '@mui/icons-material';
 import Divider from '@mui/material/Divider';
@@ -31,6 +30,7 @@ import { setHostSize } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import { WidthAndHeight } from '../../models/WidthAndHeight';
 import { useSelection } from '../../hooks/useSelection';
+import Box from '@mui/material/Box';
 
 const SIMULATOR_PANEL_RESPONSIVE_MODE = 'previewSimulatorPanel.previewWindowSize';
 const SIMULATOR_PANEL_CUSTOM_MODE = 'previewSimulatorPanel.custom';
@@ -74,24 +74,6 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles()(() => ({
-  topPanel: {
-    display: 'flex',
-    padding: '15px',
-    alignItems: 'flex-end',
-    '& > div:first-child': {
-      marginRight: '10px'
-    }
-  },
-  presetFieldset: {
-    padding: '15px',
-    width: '100%'
-  },
-  margin: {
-    marginBottom: '10px'
-  }
-}));
-
 const INITIAL_STATE = {
   width: '',
   height: '',
@@ -101,7 +83,6 @@ const INITIAL_STATE = {
 const reducer = (a: any, b: any) => ({ ...a, ...b });
 
 export function PreviewSimulatorPanel(props: any) {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const toolsPanelWidth = useSelection<number>((state) => state.preview.toolsPanelWidth);
   const maxWidth = window.innerWidth - toolsPanelWidth;
@@ -219,7 +200,17 @@ export function PreviewSimulatorPanel(props: any) {
 
   return (
     <section>
-      <section className={classes.topPanel}>
+      <Box
+        component="section"
+        sx={{
+          display: 'flex',
+          padding: '15px',
+          alignItems: 'flex-end',
+          '& > div:first-child': {
+            marginRight: '10px'
+          }
+        }}
+      >
         <TextField
           label={formatMessage(translations.width)}
           name="width"
@@ -239,10 +230,15 @@ export function PreviewSimulatorPanel(props: any) {
         <IconButton onClick={onFlipDimensions} edge="end" size="large">
           <ScreenRotationRounded />
         </IconButton>
-      </section>
+      </Box>
       <Divider />
-      <FormControl className={classes.presetFieldset}>
-        <FormLabel focused={false} className={classes.margin}>
+      <FormControl
+        sx={{
+          padding: '15px',
+          width: '100%'
+        }}
+      >
+        <FormLabel focused={false} sx={{ marginBottom: '10px' }}>
           {PRESETS}
         </FormLabel>
         <RadioGroup value={preset} onChange={handlePresetChange} aria-label={PRESETS} name="words.device">

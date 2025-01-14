@@ -30,7 +30,6 @@ import { DetailedItem } from '../../models/Item';
 import { ContextMenuOption } from '../ContextMenu/ContextMenu';
 import GlobalState from '../../models/GlobalState';
 import Skeleton from '@mui/material/Skeleton';
-import { CSSObject as CSSProperties } from 'tss-react';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon/ItemPublishingTargetIcon';
 import useUnmount from '../../hooks/useUnmount';
 import { PartialSxRecord } from '../../models';
@@ -55,8 +54,6 @@ export type ItemMegaMenuUIClassKey =
   | 'itemTypeIcon'
   | 'itemTypography'
   | 'icon';
-
-export type ItemMegaMenuUIStyles = Partial<Record<ItemMegaMenuUIClassKey, CSSProperties>>;
 
 export interface MenuOption {
   id: string;

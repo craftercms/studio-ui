@@ -17,12 +17,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';
-import { makeStyles } from 'tss-react/mui';
 import { contentTreeFieldSelected, setContentTypeFilter, setPreviewEditMode } from '../../state/actions/preview';
 import { useDispatch } from 'react-redux';
 import Suspencified from '../Suspencified/Suspencified';
 import ContentInstance from '../../models/ContentInstance';
-import LookupTable from '../../models/LookupTable';
 import SearchBar from '../SearchBar/SearchBar';
 import Select from '@mui/material/Select';
 import Avatar from '@mui/material/Avatar';
@@ -37,6 +35,7 @@ import { usePreviewGuest } from '../../hooks/usePreviewGuest';
 import { useContentTypes } from '../../hooks/useContentTypes';
 import { LoadingState } from '../LoadingState';
 import ListItemButton from '@mui/material/ListItemButton';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   previewInPageInstancesPanel: {
@@ -57,32 +56,7 @@ const translations = defineMessages({
   }
 });
 
-const useStyles = makeStyles()(() => ({
-  search: {
-    padding: '15px 15px 0 15px'
-  },
-  Select: {
-    width: '100%',
-    marginTop: '15px'
-  },
-  noWrapping: {
-    overflow: 'hidden',
-    whiteSpace: 'nowrap',
-    textOverflow: 'ellipsis',
-    display: 'block'
-  },
-  selectProgress: {
-    position: 'absolute',
-    right: '28px'
-  },
-  emptyStateTitle: {
-    fontSize: '1em'
-  },
-  item: {}
-}));
-
 export function PreviewInPageInstancesPanel() {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
   const contentTypeLookup = useContentTypes();
@@ -158,7 +132,7 @@ export function PreviewInPageInstancesPanel() {
 
   return (
     <>
-      <div className={classes.search}>
+      <Box sx={{ padding: '15px 15px 0 15px' }}>
         <SearchBar
           showActionButton={Boolean(keyword)}
           onChange={handleSearchKeyword}
@@ -168,11 +142,11 @@ export function PreviewInPageInstancesPanel() {
         <Select
           value={contentTypes.length ? contentTypeFilter : ''}
           displayEmpty
-          className={classes.Select}
+          sx={{ width: '100%', marginTop: '15px' }}
           onChange={(event: any) => handleSelectChange(event.target.value)}
           endAdornment={
             contentTypes.length && contentTypeLookup ? null : (
-              <CircularProgress size={20} className={classes.selectProgress} />
+              <CircularProgress size={20} sx={{ position: 'absolute', right: '28px' }} />
             )
           }
         >
@@ -186,7 +160,7 @@ export function PreviewInPageInstancesPanel() {
               </MenuItem>
             ))}
         </Select>
-      </div>
+      </Box>
       <Suspencified>
         {filteredContentTypes ? (
           <InPageInstancesUI
@@ -210,21 +184,25 @@ interface InPageInstancesUIProps {
 
 function InPageInstancesUI(props: InPageInstancesUIProps) {
   const { selectedModels, onItemClick, contentTypeFilter } = props;
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
 
   return (
     <>
       {selectedModels.length ? (
         selectedModels.map((instance: ContentInstance) => (
-          <ListItemButton key={instance.craftercms.id} className={classes.item} onClick={() => onItemClick(instance)}>
+          <ListItemButton key={instance.craftercms.id} onClick={() => onItemClick(instance)}>
             <ListItemAvatar>
               <Avatar>{getInitials(instance.craftercms.label)}</Avatar>
             </ListItemAvatar>
             <ListItemText
               primary={instance.craftercms.label}
               secondary={instance.craftercms.contentTypeId}
-              classes={{ primary: classes.noWrapping, secondary: classes.noWrapping }}
+              primaryTypographyProps={{
+                sx: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block' }
+              }}
+              secondaryTypographyProps={{
+                sx: { overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', display: 'block' }
+              }}
             />
           </ListItemButton>
         ))
@@ -233,7 +211,7 @@ function InPageInstancesUI(props: InPageInstancesUIProps) {
           title={
             contentTypeFilter ? formatMessage(translations.noResults) : formatMessage(translations.chooseContentType)
           }
-          classes={{ title: classes.emptyStateTitle }}
+          sxs={{ title: { fontSize: '1em' } }}
         />
       )}
     </>

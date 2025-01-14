@@ -18,7 +18,6 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import React, { ChangeEvent, ReactNode, useRef, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import SelectButton from '../ConfirmDropdown';
 import Typography from '@mui/material/Typography';
@@ -29,75 +28,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import '../../styles/animations.scss';
 import { READY_FOR_LIVE } from './constants';
 import PrimaryButton from '../PrimaryButton';
-
-const useStyles = makeStyles()((theme) => ({
-  package: {
-    padding: '20px 8px 20px 0',
-    '& .loading-header': {
-      display: 'flex',
-      alignItems: 'center',
-      height: '42px'
-    },
-    '& .name': {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '10px'
-    },
-    '& .status': {
-      display: 'flex',
-      justifyContent: 'space-between',
-      marginBottom: '10px'
-    },
-    '& .comment': {
-      display: 'flex',
-      '& p:first-child': {
-        marginRight: '20px',
-        marginBottom: '10px'
-      },
-      '& span': {
-        color: theme.palette.text.secondary
-      }
-    },
-    '& .files': {
-      marginTop: '10px'
-    }
-  },
-  checkbox: {
-    marginRight: 'auto'
-  },
-  thRow: {
-    background: theme.palette.background.default
-  },
-  th: {
-    fontWeight: 600
-  },
-  list: {
-    '& li': {
-      display: 'flex',
-      justifyContent: 'space-between'
-    }
-  },
-  spinner: {
-    marginRight: '10px',
-    color: theme.palette.text.secondary
-  },
-  packageLoading: {
-    WebkitAnimation: 'pulse 3s infinite ease-in-out',
-    animation: 'pulse 3s infinite ease-in-out',
-    pointerEvents: 'none'
-  },
-  cancelButton: {
-    paddingRight: '10px'
-  },
-  username: {
-    maxWidth: '390px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    display: 'inline-block',
-    marginBottom: '-5px'
-  }
-}));
+import Box from '@mui/material/Box';
+import { typographyClasses } from '@mui/material';
 
 const translations = defineMessages({
   cancelText: {
@@ -201,7 +133,6 @@ interface PublishingPackageProps {
 }
 
 export function PublishingPackage(props: PublishingPackageProps) {
-  const { classes, cx } = useStyles();
   const { formatMessage } = useIntl();
   const {
     id,
@@ -281,17 +212,64 @@ export function PublishingPackage(props: PublishingPackageProps) {
 
   const checked = selected[id] ? selected[id] : false;
   return (
-    <div className={cx(classes.package, pending[id] && classes.packageLoading)}>
+    <Box
+      sx={[
+        {
+          padding: '20px 8px 20px 0',
+          '& .loading-header': {
+            display: 'flex',
+            alignItems: 'center',
+            height: '42px'
+          },
+          '& .name': {
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '10px'
+          },
+          '& .status': {
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginBottom: '10px'
+          },
+          '& .comment': {
+            display: 'flex',
+            '& p:first-child': {
+              marginRight: '20px',
+              marginBottom: '10px'
+            },
+            '& span': {
+              color: (theme) => theme.palette.text.secondary
+            }
+          },
+          '& .files': {
+            marginTop: '10px'
+          }
+        },
+        pending[id] && {
+          WebkitAnimation: 'pulse 3s infinite ease-in-out',
+          animation: 'pulse 3s infinite ease-in-out',
+          pointerEvents: 'none'
+        }
+      ]}
+    >
       <section className="name">
         {pending[id] ? (
           <header className={'loading-header'}>
-            <CircularProgress size={15} className={classes.spinner} color={'inherit'} />
+            <CircularProgress
+              size={15}
+              sx={{
+                marginRight: '10px',
+                color: (theme) => theme.palette.text.secondary
+              }}
+              color={'inherit'}
+            />
             <Typography variant="body1">
               <strong>{id}</strong>
             </Typography>
           </header>
         ) : state === READY_FOR_LIVE ? (
-          <FormGroup className={classes.checkbox}>
+          <FormGroup sx={{ marginRight: 'auto' }}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -311,7 +289,11 @@ export function PublishingPackage(props: PublishingPackageProps) {
         )}
         {state === READY_FOR_LIVE && (
           <SelectButton
-            classes={{ button: classes.cancelButton }}
+            sx={{
+              button: {
+                paddingRight: '10px'
+              }
+            }}
             text={formatMessage(translations.cancelText)}
             cancelText={formatMessage(translations.cancel)}
             confirmText={formatMessage(translations.confirm)}
@@ -333,9 +315,19 @@ export function PublishingPackage(props: PublishingPackageProps) {
               schedule: new Date(schedule),
               approver: approver,
               b: (content: ReactNode[]) => (
-                <strong key={content[0] as string} className={classes.username}>
+                <Box
+                  component="strong"
+                  key={content[0] as string}
+                  sx={{
+                    maxWidth: '390px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: 'inline-block',
+                    marginBottom: '-5px'
+                  }}
+                >
                   {content[0]}
-                </strong>
+                </Box>
               )
             }}
           />
@@ -355,14 +347,28 @@ export function PublishingPackage(props: PublishingPackageProps) {
       </div>
       <div className="files">
         {filesPerPackage && filesPerPackage[id] && (
-          <List aria-label={formatMessage(translations.filesList)} className={classes.list}>
-            <ListItem className={classes.thRow} divider>
-              <Typography variant="caption" className={classes.th}>
+          <List
+            aria-label={formatMessage(translations.filesList)}
+            sx={{
+              '& li': {
+                display: 'flex',
+                justifyContent: 'space-between'
+              }
+            }}
+          >
+            <ListItem
+              sx={{
+                background: (theme) => theme.palette.background.default,
+                [`& .${typographyClasses.root}`]: {
+                  fontWeight: 600
+                }
+              }}
+              divider
+            >
+              <Typography variant="caption">
                 {formatMessage(translations.item)} ({formatMessage(translations.path).toLowerCase()})
               </Typography>
-              <Typography variant="caption" className={classes.th}>
-                {formatMessage(translations.type)}
-              </Typography>
+              <Typography variant="caption">{formatMessage(translations.type)}</Typography>
             </ListItem>
             {renderFiles(filesPerPackage[id])}
           </List>
@@ -373,7 +379,7 @@ export function PublishingPackage(props: PublishingPackageProps) {
           </PrimaryButton>
         )}
       </div>
-    </div>
+    </Box>
   );
 }
 

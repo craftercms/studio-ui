@@ -30,7 +30,6 @@ export interface RejectDialogContentUIProps {
   items: SandboxItem[];
   checkedItems: string[];
   onUpdateChecked?(value?: string): void;
-  classes?: any;
 }
 
 export interface RejectDialogUIProps {

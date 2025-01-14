@@ -17,7 +17,6 @@
 import React from 'react';
 import NewContentCard, { ContentSkeletonCard } from './NewContentCard';
 import Grid from '@mui/material/Grid2';
-import useStyles from './styles';
 import { ContentTypesGridProps, NewContentDialogProps } from './utils';
 import { NewContentDialogContainer } from './NewContentDialogContainer';
 import EnhancedDialog from '../EnhancedDialog';
@@ -64,9 +63,8 @@ export function ContentTypesLoader(props: { numOfItems?: number; isCompact: bool
 
 export function ContentTypesGrid(props: ContentTypesGridProps) {
   const { contentTypes, isCompact, onTypeOpen, selectedContentType } = props;
-  const { classes } = useStyles();
   return (
-    <Grid container spacing={3} className={classes.cardsContainer}>
+    <Grid container spacing={3} sx={{ marginTop: '14px' }}>
       {contentTypes.map((content) => (
         <Grid key={content.label} size={{ xs: 12, sm: !isCompact ? 4 : 6 }}>
           <NewContentCard

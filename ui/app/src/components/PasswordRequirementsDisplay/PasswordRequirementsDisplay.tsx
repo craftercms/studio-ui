@@ -21,67 +21,21 @@ import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlin
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import { passwordRequirementMessages } from '../../env/i18n-legacy';
 import palette from '../../styles/palette';
-import { makeStyles } from 'tss-react/mui';
-import { CSSObject as CSSProperties } from 'tss-react';
-
-type PasswordRequirementsDisplayClassKey =
-  | 'listOfConditions'
-  | 'conditionItem'
-  | 'conditionItemIcon'
-  | 'conditionItemNotMet'
-  | 'conditionItemMet';
-
-type PasswordRequirementsDisplayStyles = Partial<Record<PasswordRequirementsDisplayClassKey, CSSProperties>>;
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
 
 export interface PasswordRequirementsDisplayProps {
   value: string;
   formatMessage: Function;
   onValidStateChanged: (isValid: boolean) => void;
   passwordRequirementsRegex: string;
-  classes?: Partial<Record<PasswordRequirementsDisplayClassKey, string>>;
-  styles?: PasswordRequirementsDisplayStyles;
+  sxs?: PartialSxRecord<
+    'listOfConditions' | 'conditionItem' | 'conditionItemIcon' | 'conditionItemNotMet' | 'conditionItemMet'
+  >;
 }
 
-const useStyles = makeStyles<PasswordRequirementsDisplayStyles, PasswordRequirementsDisplayClassKey>()(
-  (
-    theme,
-    {
-      listOfConditions,
-      conditionItem,
-      conditionItemIcon,
-      conditionItemNotMet,
-      conditionItemMet
-    } = {} as PasswordRequirementsDisplayStyles
-  ) => ({
-    listOfConditions: {
-      listStyle: 'none',
-      padding: 0,
-      margin: '16px 0 16px 0',
-      ...listOfConditions
-    },
-    conditionItem: {
-      display: 'flex',
-      alignItems: 'center',
-      ...conditionItem
-    },
-    conditionItemIcon: {
-      marginRight: theme.spacing(1),
-      ...conditionItemIcon
-    },
-    conditionItemNotMet: {
-      color: palette.yellow.shade,
-      ...conditionItemNotMet
-    },
-    conditionItemMet: {
-      color: palette.green.shade,
-      ...conditionItemMet
-    }
-  })
-);
-
 export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
-  const { classes, cx } = useStyles(props.styles);
-  const { passwordRequirementsRegex, formatMessage, value, onValidStateChanged } = props;
+  const { passwordRequirementsRegex, formatMessage, value, onValidStateChanged, sxs } = props;
   const { regEx, conditions } = useMemo(
     () => getPrimeMatter({ passwordRequirementsRegex, formatMessage }),
     [passwordRequirementsRegex, formatMessage]
@@ -90,7 +44,15 @@ export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayPr
     onValidStateChanged(isBlank(value) ? null : regEx.test(value));
   }, [onValidStateChanged, regEx, value]);
   return (
-    <ul className={classes.listOfConditions}>
+    <Box
+      component="ul"
+      sx={{
+        listStyle: 'none',
+        padding: 0,
+        margin: '16px 0 16px 0',
+        ...sxs?.listOfConditions
+      }}
+    >
       {conditions.map(({ description, regEx: condition }, key) => {
         const blank = isBlank(value);
         const valid = condition.test(value);
@@ -98,24 +60,33 @@ export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayPr
           <Typography
             key={key}
             component="li"
-            className={cx(
-              classes.conditionItem,
-              !blank && {
-                [classes.conditionItemNotMet]: !valid,
-                [classes.conditionItemMet]: valid
-              }
-            )}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              color: valid ? palette.green.shade : palette.yellow.shade,
+              ...sxs?.conditionItem
+            }}
           >
             {valid && !blank ? (
-              <CheckCircleOutlineRoundedIcon className={classes.conditionItemIcon} />
+              <CheckCircleOutlineRoundedIcon
+                sx={{
+                  marginRight: (theme) => theme.spacing(1),
+                  ...sxs?.conditionItemIcon
+                }}
+              />
             ) : (
-              <ErrorOutlineRoundedIcon className={classes.conditionItemIcon} />
+              <ErrorOutlineRoundedIcon
+                sx={{
+                  marginRight: (theme) => theme.spacing(1),
+                  ...sxs?.conditionItemIcon
+                }}
+              />
             )}
             {description}
           </Typography>
         );
       })}
-    </ul>
+    </Box>
   );
 }
 

@@ -23,7 +23,6 @@ import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import '@uppy/core/src/style.scss';
 import '@uppy/progress-bar/src/style.scss';
 import '@uppy/file-input/src/style.scss';
-import { makeStyles } from 'tss-react/mui';
 import { getGlobalHeaders } from '../../utils/ajax';
 import { validateActionPolicy } from '../../services/sites';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
@@ -66,20 +65,6 @@ const messages = defineMessages({
     defaultMessage: 'File "{fileName}" doesn\'t comply with project policies: {detail}'
   }
 });
-
-const singleFileUploadStyles = makeStyles()(() => ({
-  fileNameTrimmed: {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap'
-  },
-  input: {
-    display: 'none !important'
-  },
-  inputContainer: {
-    marginBottom: '10px'
-  }
-}));
 
 export interface FileUpload {
   data: File;
@@ -147,7 +132,6 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
   fileRef.current = file;
   suggestedNameRef.current = suggestedName;
 
-  const { classes, cx } = singleFileUploadStyles();
   const uppy = useMemo(
     () =>
       new Core({
@@ -377,18 +361,25 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
         )}
         <Typography variant="subtitle1" component="h2" sx={{ mb: 2 }}>
           {file && (
-            <em
-              className={cx('single-file-upload--filename', fileNameErrorClass, classes.fileNameTrimmed)}
+            <Box
+              component="em"
+              className={`single-file-upload--filename ${fileNameErrorClass}`}
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
               title={file.name}
             >
               {file.name}
-            </em>
+            </Box>
           )}
         </Typography>
-        <div className={classes.inputContainer}>
-          <input
+        <Box sx={{ marginBottom: '10px' }}>
+          <Box
+            component="input"
             accept={fileTypes?.join(',')}
-            className={classes.input}
+            sx={{ display: 'none !important' }}
             id="contained-button-file"
             type="file"
             onChange={onChange}
@@ -400,7 +391,7 @@ export function SingleFileUpload(props: SingleFileUploadProps) {
               {formatMessage(messages.chooseFile)}
             </Button>
           </label>
-        </div>
+        </Box>
       </div>
       <ConfirmDialog
         open={Boolean(confirm)}

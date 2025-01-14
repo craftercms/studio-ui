@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useStyles } from './styles';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import { FormattedMessage } from 'react-intl';
 import DialogBody from '../DialogBody/DialogBody';
@@ -28,7 +27,6 @@ import { useUnmount } from '../../hooks/useUnmount';
 export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
   const { logEvent, onClose, onClosed } = props;
   const localeBranch = useSelection((state) => state.uiConfig.locale);
-  const { classes } = useStyles();
 
   useUnmount(onClosed);
 
@@ -40,7 +38,7 @@ export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
       />
       <DialogBody>
         <Box display="flex" p="10px 0" alignItems="center">
-          <Typography color="textSecondary" className={classes.label}>
+          <Typography color="textSecondary" sx={{ flexBasis: '150px' }}>
             <FormattedMessage id="words.level" defaultMessage="Level" />
           </Typography>
           <Box display="flex" width="100%" alignItems="center">
@@ -48,7 +46,7 @@ export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
           </Box>
         </Box>
         <Box display="flex" p="10px 0" alignItems="center">
-          <Typography color="textSecondary" className={classes.label}>
+          <Typography color="textSecondary" sx={{ flexBasis: '150px' }}>
             <FormattedMessage id="words.timestamp" defaultMessage="Timestamp" />
           </Typography>
           <Box display="flex" width="100%" alignItems="center">
@@ -60,7 +58,7 @@ export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
           </Box>
         </Box>
         <Box display="flex" p="10px 0" alignItems="center">
-          <Typography color="textSecondary" className={classes.label}>
+          <Typography color="textSecondary" sx={{ flexBasis: '150px' }}>
             <FormattedMessage id="words.thread" defaultMessage="Thread" />
           </Typography>
           <Box display="flex" width="100%" alignItems="center">
@@ -68,7 +66,7 @@ export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
           </Box>
         </Box>
         <Box display="flex" p="10px 0" alignItems="center">
-          <Typography color="textSecondary" className={classes.label}>
+          <Typography color="textSecondary" sx={{ flexBasis: '150px' }}>
             <FormattedMessage id="words.project" defaultMessage="Project" />
           </Typography>
           <Box display="flex" width="100%" alignItems="center">
@@ -76,7 +74,7 @@ export function LogConsoleDetailsDialogUI(props: LogConsoleDetailsDialogProps) {
           </Box>
         </Box>
         <Box display="flex" p="10px 0" alignItems="center">
-          <Typography color="textSecondary" className={classes.label}>
+          <Typography color="textSecondary" sx={{ flexBasis: '150px' }}>
             <FormattedMessage id="words.message" defaultMessage="Message" />
           </Typography>
           <Box display="flex" width="100%" alignItems="center">

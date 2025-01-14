@@ -18,35 +18,23 @@ import { CompareVersionsDialogContainerProps } from './utils';
 import React from 'react';
 import { CompareVersions } from './CompareVersions';
 import DialogBody from '../DialogBody/DialogBody';
-import { makeStyles } from 'tss-react/mui';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { LoadingState } from '../LoadingState';
 import { EmptyState } from '../EmptyState';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles()(() => ({
-  dialogBody: {
-    overflow: 'auto',
-    minHeight: '50vh'
-  },
-  noPadding: {
-    padding: 0
-  },
-  singleItemSelector: {
-    marginBottom: '10px'
-  },
-  typography: {
-    lineHeight: '1.5'
-  }
-}));
-
 export function CompareVersionsDialogContainer(props: CompareVersionsDialogContainerProps) {
   const { versionsBranch } = props;
   const { compareVersionsBranch } = versionsBranch;
-  const { classes, cx } = useStyles();
 
   return (
-    <DialogBody className={cx(classes.dialogBody, classes.noPadding)}>
+    <DialogBody
+      sx={{
+        overflow: 'auto',
+        minHeight: '50vh',
+        padding: 0
+      }}
+    >
       {compareVersionsBranch &&
         (compareVersionsBranch.error ? (
           <ApiResponseErrorState error={compareVersionsBranch.error} />

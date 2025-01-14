@@ -18,7 +18,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { defineMessages, useIntl } from 'react-intl';
 import { MediaItem } from '../../models/Search';
 import { alpha } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import SearchBar from '../SearchBar/SearchBar';
 import { useDispatch, useSelector } from 'react-redux';
 import GlobalState from '../../models/GlobalState';
@@ -46,6 +45,7 @@ import { LoadingState } from '../LoadingState';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
 import { showPreviewDialog } from '../../state/actions/dialogs';
 import { ErrorBoundary } from '../ErrorBoundary';
+import Box from '@mui/material/Box';
 
 const translations = defineMessages({
   previewAssetsPanelTitle: {
@@ -74,48 +74,7 @@ const translations = defineMessages({
   }
 });
 
-const assetsPanelStyles = makeStyles()((theme) => ({
-  assetsPanelWrapper: {
-    padding: theme.spacing(2)
-  },
-  search: {
-    padding: '15px 15px 0 15px'
-  },
-  card: {
-    cursor: 'move',
-    marginBottom: '16px'
-  },
-  noResultsImage: {
-    width: '150px'
-  },
-  noResultsTitle: {
-    fontSize: 'inherit',
-    marginTop: '10px'
-  },
-  uploadOverlay: {
-    position: 'absolute',
-    background: alpha(palette.black, 0.9),
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    display: 'flex',
-    justifyContent: 'center',
-    alignContent: 'center',
-    zIndex: 2
-  },
-  uploadIcon: {
-    fontSize: '8em',
-    color: palette.gray.light5,
-    margin: 'auto'
-  },
-  noScroll: {
-    overflow: 'hidden'
-  }
-}));
-
 export function PreviewAssetsPanel() {
-  const { classes } = assetsPanelStyles();
   const initialKeyword = useSelection((state) => state.preview.assets.query.keywords);
   const [keyword, setKeyword] = useState(initialKeyword);
   const [dragInProgress, setDragInProgress] = useState(false);
@@ -236,11 +195,11 @@ export function PreviewAssetsPanel() {
   }
 
   return (
-    <div className={dragInProgress ? classes.noScroll : null}>
+    <Box sx={dragInProgress ? { overflow: 'hidden' } : null}>
       <div ref={elementRef}>
-        <div className={classes.search}>
+        <Box sx={{ padding: '15px 15px 0 15px' }}>
           <SearchBar showActionButton={Boolean(keyword)} onChange={handleSearchKeyword} keyword={keyword} />
-        </div>
+        </Box>
         <ErrorBoundary>
           {assets.error ? (
             <ApiResponseErrorState error={assets.error} />
@@ -249,9 +208,25 @@ export function PreviewAssetsPanel() {
           ) : assets.page[assets.pageNumber] ? (
             <>
               {dragInProgress && (
-                <div className={classes.uploadOverlay}>
-                  <UploadIcon style={{ pointerEvents: 'none' }} className={classes.uploadIcon} />
-                </div>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    background: alpha(palette.black, 0.9),
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    zIndex: 2
+                  }}
+                >
+                  <UploadIcon
+                    style={{ pointerEvents: 'none' }}
+                    sx={{ fontSize: '8em', color: palette.gray.light5, margin: 'auto' }}
+                  />
+                </Box>
               )}
               <Pagination
                 count={assets.count}
@@ -260,7 +235,7 @@ export function PreviewAssetsPanel() {
                 onPageChange={(e, page: number) => onPageChanged(page * assets.query.limit)}
                 onRowsPerPageChange={onRowsPerPageChange}
               />
-              <div className={classes.assetsPanelWrapper}>
+              <Box sx={{ p: 2 }}>
                 {assets.page[assets.pageNumber]?.map((id) => {
                   const item = assets.byId[id];
                   return (
@@ -290,17 +265,20 @@ export function PreviewAssetsPanel() {
                 {assets.count === 0 && (
                   <EmptyState
                     title={formatMessage(translations.noResults)}
-                    classes={{ image: classes.noResultsImage, title: classes.noResultsTitle }}
+                    sxs={{
+                      image: { width: '150px' },
+                      title: { fontSize: 'inherit', marginTop: '10px' }
+                    }}
                   />
                 )}
-              </div>
+              </Box>
             </>
           ) : (
             <></>
           )}
         </ErrorBoundary>
       </div>
-    </div>
+    </Box>
   );
 }
 

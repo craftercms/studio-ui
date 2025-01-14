@@ -15,48 +15,38 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
+import Box from '@mui/material/Box';
 
 export interface ProgressBarProps {
   status: 'failed' | 'complete';
   progress: number;
 }
 
-const progressBarStyles = makeStyles()(() => ({
-  progressBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: '100%',
-    height: '3px',
-    transition: 'height .2s'
-  },
-  progressBarInner: {
-    backgroundColor: palette.blue.tint,
-    height: '100%',
-    width: 0,
-    transition: 'width 0.4s ease',
-    '&.complete': {
-      transition: 'background-color 0.5s ease',
-      backgroundColor: palette.green.main
-    },
-    '&.failed': {
-      backgroundColor: palette.red.main
-    }
-  }
-}));
-
 export function ProgressBar(props: ProgressBarProps) {
   const { status, progress } = props;
-  const { classes, cx } = progressBarStyles();
   return (
-    <div className={classes.progressBar}>
-      <div
-        className={cx(classes.progressBarInner, status === 'failed' && 'failed', progress === 100 && 'complete')}
+    <Box
+      sx={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        height: '3px',
+        transition: 'height .2s'
+      }}
+    >
+      <Box
+        sx={{
+          backgroundColor:
+            status === 'failed' ? palette.red.main : progress === 100 ? palette.green.main : palette.blue.tint,
+          height: '100%',
+          width: 0,
+          transition: status === 'failed' ? 'width 0.4s ease' : 'background-color 0.5s ease'
+        }}
         style={{ width: `${progress}%` }}
       />
-    </div>
+    </Box>
   );
 }
 

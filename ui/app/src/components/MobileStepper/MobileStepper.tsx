@@ -17,10 +17,11 @@
 import React, { ReactNode } from 'react';
 import clsx from 'clsx';
 import Paper from '@mui/material/Paper';
-import { LinearProgress } from '@mui/material';
+import { LinearProgress, Theme } from '@mui/material';
 import { withStyles } from 'tss-react/mui';
 import { RedColor } from '../../styles/theme';
 import { capitalize } from '../../utils/string';
+import { SxProps } from '@mui/system';
 
 export interface MobileStepperProps {
   activeStep?: number;
@@ -28,6 +29,7 @@ export interface MobileStepperProps {
   onDotClick?: Function;
   classes?: any;
   className?: string;
+  sx?: SxProps<Theme>;
   LinearProgressProps?: any;
   nextButton?: ReactNode;
   position?: 'bottom' | 'top' | 'static';
@@ -42,6 +44,7 @@ export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStep
       backButton,
       onDotClick,
       classes = {},
+      sx,
       className,
       LinearProgressProps,
       nextButton,
@@ -56,6 +59,7 @@ export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStep
         square
         elevation={0}
         className={clsx(classes.root, classes[`position${capitalize(position)}`], className)}
+        sx={sx}
         onClick={(e) => e.stopPropagation()}
         ref={ref}
         {...other}

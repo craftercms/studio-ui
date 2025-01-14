@@ -27,47 +27,8 @@ import Radio from '@mui/material/Radio';
 import { CurrentFilters } from '../../models/Publishing';
 import SearchIcon from '@mui/icons-material/SearchRounded';
 import { Checkbox, FormGroup, Theme } from '@mui/material';
-import { makeStyles } from 'tss-react/mui';
 import Box from '@mui/material/Box';
-
-const useStyles = makeStyles()((theme: Theme) => ({
-  paper: {
-    width: '300px'
-  },
-  header: {
-    background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
-    padding: '10px'
-  },
-  body: {
-    padding: '10px',
-    position: 'relative'
-  },
-  formControl: {
-    width: '100%',
-    padding: '5px 15px 20px 15px'
-  },
-  search: {
-    width: '100%',
-    margin: 'auto',
-    position: 'relative'
-  },
-  searchIcon: {
-    width: theme.spacing(7),
-    color: '#828282',
-    height: '41px;',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 1
-  },
-  searchTextField: {
-    '& input': {
-      paddingLeft: '50px'
-    }
-  }
-}));
+import { SxProps } from '@mui/system';
 
 const messages: any = defineMessages({
   pathExpression: {
@@ -111,6 +72,7 @@ const messages: any = defineMessages({
 interface FilterDropdownProps {
   text: string;
   className: any;
+  sx?: SxProps<Theme>;
   currentFilters: CurrentFilters;
   filters: any;
 
@@ -121,8 +83,7 @@ interface FilterDropdownProps {
 
 export function FilterDropdown(props: FilterDropdownProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { classes } = useStyles();
-  const { text, className, handleFilterChange, handleEnterKey, currentFilters, filters } = props;
+  const { text, className, handleFilterChange, handleEnterKey, currentFilters, filters, sx } = props;
   const [path, setPath] = useState('');
   const { formatMessage } = useIntl();
 
@@ -142,13 +103,13 @@ export function FilterDropdown(props: FilterDropdownProps) {
 
   return (
     <div>
-      <Button variant="outlined" onClick={handleClick} className={className}>
+      <Button variant="outlined" onClick={handleClick} sx={sx} className={className}>
         {text} <ArrowDropDownIcon />
       </Button>
       <Popover
         id="publishingFilterDropdown"
         anchorEl={anchorEl}
-        classes={{ paper: classes.paper }}
+        slotProps={{ paper: { sx: { width: '300px' } } }}
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
@@ -162,19 +123,48 @@ export function FilterDropdown(props: FilterDropdownProps) {
         }}
       >
         <section>
-          <header className={classes.header}>
+          <Box
+            component="header"
+            sx={(theme) => ({
+              background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
+              padding: '10px'
+            })}
+          >
             <Typography variant="body1">
               <strong>{formatMessage(messages.pathExpression)}</strong>
             </Typography>
-          </header>
-          <Box className={classes.body} display="flex" alignItems="center">
-            <div className={classes.searchIcon}>
+          </Box>
+          <Box
+            sx={{
+              padding: '10px',
+              position: 'relative'
+            }}
+            display="flex"
+            alignItems="center"
+          >
+            <Box
+              sx={{
+                width: (theme) => theme.spacing(7),
+                color: '#828282',
+                height: '41px;',
+                position: 'absolute',
+                pointerEvents: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 1
+              }}
+            >
               <SearchIcon />
-            </div>
+            </Box>
             <TextField
               id="path"
               name="path"
-              className={classes.searchTextField}
+              sx={{
+                '& input': {
+                  paddingLeft: '50px'
+                }
+              }}
               slotProps={{
                 inputLabel: { shrink: true }
               }}
@@ -187,12 +177,18 @@ export function FilterDropdown(props: FilterDropdownProps) {
           </Box>
         </section>
         <section>
-          <header className={classes.header}>
+          <Box
+            component="header"
+            sx={(theme) => ({
+              background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
+              padding: '10px'
+            })}
+          >
             <Typography variant="body1">
               <strong>{formatMessage(messages.environment)}</strong>
             </Typography>
-          </header>
-          <div className={classes.formControl}>
+          </Box>
+          <Box sx={{ width: '100%', padding: '5px 15px 20px 15px' }}>
             <RadioGroup
               aria-label={formatMessage(messages.environment)}
               name="environment"
@@ -205,10 +201,16 @@ export function FilterDropdown(props: FilterDropdownProps) {
                   <FormControlLabel key={index} value={filter} control={<Radio color="primary" />} label={filter} />
                 ))}
             </RadioGroup>
-          </div>
+          </Box>
         </section>
         <section>
-          <header className={classes.header}>
+          <Box
+            component="header"
+            sx={(theme) => ({
+              background: theme.palette.mode === 'dark' ? theme.palette.background.default : theme.palette.grey['100'],
+              padding: '10px'
+            })}
+          >
             <Typography variant="body1" sx={{ ml: '5px' }}>
               <FormControlLabel
                 value=""
@@ -226,8 +228,8 @@ export function FilterDropdown(props: FilterDropdownProps) {
                 }
               />
             </Typography>
-          </header>
-          <div className={classes.formControl}>
+          </Box>
+          <Box sx={{ width: '100%', padding: '5px 15px 20px 15px' }}>
             <FormGroup>
               {filters.states.map((filter: string, index: number) => (
                 <FormControlLabel
@@ -245,7 +247,7 @@ export function FilterDropdown(props: FilterDropdownProps) {
                 />
               ))}
             </FormGroup>
-          </div>
+          </Box>
         </section>
       </Popover>
     </div>

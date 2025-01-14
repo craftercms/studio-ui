@@ -18,7 +18,6 @@ import Typography from '@mui/material/Typography';
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import AddIcon from '@mui/icons-material/Add';
-import { makeStyles, withStyles } from 'tss-react/mui';
 import { PluginRecord } from '../../models/Plugin';
 import { ConditionalLoadingState } from '../LoadingState/LoadingState';
 import TableContainer from '@mui/material/TableContainer';
@@ -66,6 +65,7 @@ import { PluginConfigDialog } from '../PluginConfigDialog';
 import { fetchMyPermissions } from '../../services/users';
 import Tooltip from '@mui/material/Tooltip';
 import PencilIcon from '@mui/icons-material/EditOutlined';
+import { styled } from '@mui/material/styles';
 
 const messages = defineMessages({
   pluginInstalled: {
@@ -82,20 +82,8 @@ const messages = defineMessages({
   }
 });
 
-const styles = makeStyles()(() => ({
-  table: {
-    minWidth: 650
-  },
-  actions: {
-    width: '150px',
-    padding: '5px 20px'
-  }
-}));
-
-const StyledTableCell = withStyles(TableCell, () => ({
-  root: {
-    padding: '5px'
-  }
+const StyledTableCell = styled(TableCell)(() => ({
+  padding: '5px'
 }));
 
 export interface PluginManagementProps {
@@ -105,7 +93,6 @@ export interface PluginManagementProps {
 
 export const PluginManagement = (props: PluginManagementProps) => {
   const { embedded = false, showAppsButton = !embedded } = props;
-  const { classes } = styles();
   const dispatch = useDispatch();
   const siteId = useActiveSiteId();
   const { formatMessage } = useIntl();
@@ -259,7 +246,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
       ) : (
         <ConditionalLoadingState isLoading={plugins === null}>
           <TableContainer>
-            <Table className={classes.table}>
+            <Table sx={{ minWidth: 650 }}>
               <TableHead>
                 <TableRow>
                   <TableCell align="left">
@@ -287,7 +274,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
                       <FormattedMessage id="pluginManagement.installationDate" defaultMessage="Installation Date" />
                     </Typography>
                   </StyledTableCell>
-                  <TableCell align="center" className={classes.actions} />
+                  <TableCell align="center" sx={{ width: '150px', padding: '5px 20px' }} />
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -315,7 +302,7 @@ export const PluginManagement = (props: PluginManagementProps) => {
                     <StyledTableCell align="left">
                       <AsDayMonthDateTime date={plugin.installationDate} locale={locale} />
                     </StyledTableCell>
-                    <TableCell align="right" className={classes.actions}>
+                    <TableCell align="right" sx={{ width: '150px', padding: '5px 20px' }}>
                       <Tooltip title={<FormattedMessage defaultMessage="Edit configuration" />}>
                         <IconButton
                           onClick={() => {

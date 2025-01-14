@@ -24,7 +24,6 @@ import CardActions from '@mui/material/CardActions';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
 import { autoPlay } from 'react-swipeable-views-utils';
-import { makeStyles } from 'tss-react/mui';
 import { MarketplacePlugin } from '../../models/MarketplacePlugin';
 import { defineMessages, useIntl } from 'react-intl';
 import MobileStepper from '../MobileStepper/MobileStepper';
@@ -49,124 +48,6 @@ interface PluginCardProps {
 }
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
-
-const useStyles = makeStyles()((theme) => ({
-  root: {
-    flexGrow: 1
-  },
-  card: {
-    maxWidth: '100%',
-    minHeight: '339px',
-    '& .cardTitle': {
-      ...cardTitleStyles
-    },
-    '& .cardContent': {
-      height: '13.26em',
-      padding: '12px 14px 5px 14px',
-      position: 'relative'
-    },
-    '& .cardActions': {
-      justifyContent: 'space-around'
-    },
-    '& .developer': {
-      ...cardSubtitleStyles,
-      WebkitLineClamp: 1,
-      marginBottom: 0
-    }
-  },
-  gitCard: {
-    minHeight: 'unset'
-  },
-  gitCardActionArea: {
-    display: 'flex',
-    justifyContent: 'start'
-  },
-  gitCardContent: {
-    height: 'unset !important'
-  },
-  carouselImg: {
-    width: '100%',
-    height: '180px',
-    objectFit: 'cover',
-    '&.git': {
-      objectFit: 'fill',
-      height: 'unset',
-      width: '120px'
-    }
-  },
-  video: {
-    width: '100%',
-    height: '180px',
-    outline: 'none',
-    background: backgroundColor,
-    '&.git': {
-      height: 'unset'
-    }
-  },
-  chip: {
-    fontSize: '11px',
-    color: 'gray',
-    backgroundColor: '#f5f5f5',
-    padding: '2px 5px',
-    borderRadius: '5px',
-    display: 'inline-block',
-    whiteSpace: 'nowrap',
-    '& label': {
-      marginRight: '5px',
-      marginBottom: 0,
-      fontWeight: 400
-    },
-    '& span': {
-      color: '#2F2707'
-    }
-  },
-  options: {
-    marginLeft: 'auto'
-  },
-  dialogContent: {
-    display: 'flex'
-  },
-  imgWrapper: {
-    position: 'relative'
-  },
-  dots: {
-    background: 'none',
-    borderTop: '1px solid #e4e3e3',
-    height: '30px',
-    padding: '0',
-    cursor: 'pointer',
-    '& .MuiMobileStepper-dot': {
-      padding: '6px',
-      margin: '4px',
-      '&:hover': {
-        background: 'gray'
-      }
-    }
-  },
-  use: {
-    width: '50%'
-  },
-  more: {
-    width: '50%',
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    flex: 1
-  },
-  background: {
-    background: backgroundColor,
-    height: '180px',
-    overflow: 'hidden',
-    '&.git': {
-      background: 'none',
-      height: 'unset'
-    }
-  },
-  subtitleContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-}));
 
 const messages = defineMessages({
   version: {
@@ -204,7 +85,6 @@ const messages = defineMessages({
 });
 
 function PluginCard(props: PluginCardProps) {
-  const { classes, cx } = useStyles();
   const [index, setIndex] = useState(0);
   const [play, setPlay] = useState(false);
   const {
@@ -252,9 +132,27 @@ function PluginCard(props: PluginCardProps) {
   function renderLicense() {
     return (
       <Tooltip title={formatMessage(messages.licenseTooltip, { license: license.name })}>
-        <div className={classes.chip}>
+        <Box
+          sx={{
+            fontSize: '11px',
+            color: 'gray',
+            backgroundColor: '#f5f5f5',
+            padding: '2px 5px',
+            borderRadius: '5px',
+            display: 'inline-block',
+            whiteSpace: 'nowrap',
+            '& label': {
+              marginRight: '5px',
+              marginBottom: 0,
+              fontWeight: 400
+            },
+            '& span': {
+              color: '#2F2707'
+            }
+          }}
+        >
           <span>{license.name}</span>
-        </div>
+        </Box>
       </Tooltip>
     );
   }
@@ -263,24 +161,24 @@ function PluginCard(props: PluginCardProps) {
     if (developer) {
       if (developer.company) {
         return (
-          <div className={classes.subtitleContainer}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography gutterBottom variant="subtitle2" className="developer" color="textSecondary">
               {formatMessage(messages.by)} {developer.company.name}
             </Typography>
             {renderLicense()}
-          </div>
+          </Box>
         );
       } else {
         return developer.people.map((item: any) => item.name).join(',');
       }
     } else {
       return (
-        <div className={classes.subtitleContainer}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography gutterBottom variant="subtitle1" className="developer" color="textSecondary">
             {formatMessage(messages.noDev)}
           </Typography>
           {renderLicense()}
-        </div>
+        </Box>
       );
     }
   }
@@ -293,36 +191,51 @@ function PluginCard(props: PluginCardProps) {
     return merged.map((item, index) => {
       if (item.type !== 'video') {
         return (
-          <div
+          <Box
             key={index}
-            className={cx(classes.background, isGitOrDuplicateCard && 'git')}
+            sx={{
+              background: isGitOrDuplicateCard ? 'none' : backgroundColor,
+              height: isGitOrDuplicateCard ? 'unset' : '180px',
+              overflow: 'hidden'
+            }}
             onClick={(event) => onImageClick(event, index)}
           >
             {item.icon ? (
               <Box sx={{ pl: '20px', pr: '5px', color: (theme) => theme.palette.text.secondary }}>{item.icon}</Box>
             ) : (
-              <img
-                className={cx(classes.carouselImg, isGitOrDuplicateCard && 'git')}
+              <Box
+                component="img"
+                sx={{
+                  width: isGitOrDuplicateCard ? '120px' : '100%',
+                  height: isGitOrDuplicateCard ? 'unset' : '180px',
+                  objectFit: isGitOrDuplicateCard ? 'fill' : 'cover'
+                }}
                 src={item.url}
                 alt={item.description}
               />
             )}
-          </div>
+          </Box>
         );
       } else {
         return (
-          <video
+          <Box
+            component="video"
             muted
             controls
             key={index}
             autoPlay={play}
             onEnded={handleEnded}
-            className={classes.video}
+            sx={{
+              width: '100%',
+              height: '180px',
+              outline: 'none',
+              background: backgroundColor
+            }}
             onPlaying={handlePlay}
           >
             <source src={item.url} type="video/mp4" />
             Your browser does not support the video tag.
-          </video>
+          </Box>
         );
       }
     });
@@ -333,7 +246,28 @@ function PluginCard(props: PluginCardProps) {
   plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
   return (
-    <Card className={cx(classes.card, isGitOrDuplicateCard ? classes.gitCard : null)}>
+    <Card
+      sx={{
+        maxWidth: '100%',
+        minHeight: isGitOrDuplicateCard ? 'unset' : '339px',
+        '& .cardTitle': {
+          ...cardTitleStyles
+        },
+        '& .cardContent': {
+          height: '13.26em',
+          padding: '12px 14px 5px 14px',
+          position: 'relative'
+        },
+        '& .cardActions': {
+          justifyContent: 'space-around'
+        },
+        '& .developer': {
+          ...cardSubtitleStyles,
+          WebkitLineClamp: 1,
+          marginBottom: 0
+        }
+      }}
+    >
       {!isGitOrDuplicateCard && (
         <CardActionArea
           disabled={disableCardActionClick}
@@ -366,7 +300,7 @@ function PluginCard(props: PluginCardProps) {
         onClick={() => {
           onPluginSelected(plugin, 1);
         }}
-        className={isGitOrDuplicateCard ? classes.gitCardActionArea : null}
+        sx={isGitOrDuplicateCard && { display: 'flex', justifyContent: 'start' }}
       >
         <AutoPlaySwipeableViews
           index={index}
@@ -378,7 +312,7 @@ function PluginCard(props: PluginCardProps) {
           {renderMedias(id)}
         </AutoPlaySwipeableViews>
         {isGitOrDuplicateCard && (
-          <CardContent className={cx('cardContent', isGitOrDuplicateCard ? classes.gitCardContent : null)}>
+          <CardContent sx={isGitOrDuplicateCard && { height: 'unset !important' }} className="cardContent">
             <Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">
               {name}
             </Typography>
@@ -393,7 +327,20 @@ function PluginCard(props: PluginCardProps) {
           variant="dots"
           steps={steps}
           onDotClick={onDotClick}
-          className={classes.dots}
+          sx={{
+            background: 'none',
+            borderTop: '1px solid #e4e3e3',
+            height: '30px',
+            padding: '0',
+            cursor: 'pointer',
+            '& .MuiMobileStepper-dot': {
+              padding: '6px',
+              margin: '4px',
+              '&:hover': {
+                background: 'gray'
+              }
+            }
+          }}
           position={'static'}
           activeStep={index}
         />
@@ -406,12 +353,20 @@ function PluginCard(props: PluginCardProps) {
               disabled={!usePermission || inUse || beingInstalled}
               loading={beingInstalled}
               onClick={() => onPluginSelected(plugin, 1)}
-              className={classes.use}
+              sx={{ width: '50%' }}
             >
               {useLabel ? useLabel : formatMessage(messages.use)}
             </SecondaryButton>
           )}
-          <Button className={classes.more} onClick={() => onDetails(plugin)}>
+          <Button
+            sx={{
+              width: '50%',
+              textAlign: 'center',
+              color: (theme) => theme.palette.text.secondary,
+              flex: 1
+            }}
+            onClick={() => onDetails(plugin)}
+          >
             {formatMessage(messages.more)}
           </Button>
         </CardActions>

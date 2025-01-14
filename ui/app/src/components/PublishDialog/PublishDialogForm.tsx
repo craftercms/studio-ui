@@ -15,9 +15,8 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControlLabel, { formControlLabelClasses } from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import Radio from '@mui/material/Radio';
@@ -31,6 +30,10 @@ import FormLabel from '@mui/material/FormLabel';
 import Alert from '@mui/material/Alert';
 import { capitalize } from '../../utils/string';
 import { PublishDialogUIProps } from './utils';
+import { PartialSxRecord } from '../../models';
+import Box from '@mui/material/Box';
+import { Theme } from '@mui/material';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
 
 const messages = defineMessages({
   emailLabel: {
@@ -87,76 +90,22 @@ const messages = defineMessages({
   }
 });
 
-const useStyles = makeStyles()((theme) => ({
-  root: {
-    width: 'auto'
-  },
-  title: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  checkboxes: {
-    marginBottom: '10px'
-  },
-  formSection: {
-    width: '100%',
-    marginBottom: '20px'
-  },
-  formInputs: {
-    fontSize: '14px'
-  },
-  selectInput: {
-    padding: '10px 12px'
-  },
-  publishingTargetLoaderContainer: {
-    paddingTop: '24px',
-    display: 'inline-flex'
-  },
-  publishingTargetLoader: {
-    border: '1px solid #ced4da',
-    padding: '10px 12px',
-    borderRadius: '4px',
-    width: '100%'
-  },
-  publishingTargetEmpty: {
-    padding: '10px 12px',
-    borderRadius: '4px',
-    width: '100%'
-  },
-  datePicker: {
-    position: 'relative',
-    paddingLeft: 30,
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      width: '5px',
-      height: '100%',
-      top: '0',
-      left: '7px',
-      backgroundColor: theme.palette.background.paper,
-      borderRadius: '5px'
-    }
-  },
-  radioGroup: {
-    paddingTop: '10px',
-    fontSize: '14px'
-  },
-  radioInput: {
-    padding: '4px',
-    marginLeft: '5px',
-    marginRight: '5px'
-  },
-  selectIcon: {
-    right: '12px'
-  },
-  mixedDatesWarningMessage: {
-    marginBottom: '10px'
-  },
-  mixedTargetsWarningMessage: {
-    marginTop: '10px'
-  }
-}));
+type PublishDialogFormSxKeys =
+  | 'root'
+  | 'title'
+  | 'checkboxes'
+  | 'formSection'
+  | 'formInputs'
+  | 'selectInput'
+  | 'publishingTargetLoaderContainer'
+  | 'publishingTargetLoader'
+  | 'publishingTargetEmpty'
+  | 'datePicker'
+  | 'radioGroup'
+  | 'radioInput'
+  | 'selectIcon'
+  | 'mixedDatesWarningMessage'
+  | 'mixedTargetsWarningMessage';
 
 export type PublishFormProps = Pick<
   PublishDialogUIProps,
@@ -172,12 +121,11 @@ export type PublishFormProps = Pick<
 > & {
   publishingChannels: any[];
   disabled: boolean;
-  classes?: any;
+  sxs?: PartialSxRecord<PublishDialogFormSxKeys>;
   onChange(event: React.ChangeEvent<HTMLInputElement>): void;
 };
 
 export function PublishDialogForm(props: PublishFormProps) {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const {
     state,
@@ -191,7 +139,8 @@ export function PublishDialogForm(props: PublishFormProps) {
     mixedPublishingDates,
     mixedPublishingTargets,
     submissionCommentRequired,
-    onChange
+    onChange,
+    sxs
   } = props;
 
   const handleDateTimePickerChange: DateTimeTimezonePickerProps['onChange'] = (date) => {
@@ -206,8 +155,8 @@ export function PublishDialogForm(props: PublishFormProps) {
   };
 
   return (
-    <form className={classes.root}>
-      <section className={classes.checkboxes}>
+    <Box component="form" sx={{ width: 'auto', ...sxs?.root }}>
+      <Box component="section" sx={{ marginBottom: '10px', ...sxs?.checkboxes }}>
         {showRequestApproval && (
           <FormControlLabel
             control={
@@ -238,12 +187,17 @@ export function PublishDialogForm(props: PublishFormProps) {
             }
           />
         )}
-      </section>
-      <FormControl fullWidth className={classes.formSection}>
+      </Box>
+      <FormControl fullWidth sx={{ width: '100%', marginBottom: '20px', ...sxs?.formSection }}>
         <FormLabel component="legend">{formatMessage(messages.scheduling)}</FormLabel>
-        <RadioGroup className={classes.radioGroup} value={state.scheduling} onChange={onChange} name="scheduling">
+        <RadioGroup
+          sx={{ paddingTop: '10px', fontSize: '14px', ...sxs?.radioGroup }}
+          value={state.scheduling}
+          onChange={onChange}
+          name="scheduling"
+        >
           {mixedPublishingDates && (
-            <Alert severity="warning" className={classes.mixedDatesWarningMessage}>
+            <Alert severity="warning" sx={{ marginBottom: '10px', ...sxs?.mixedDatesWarningMessage }}>
               <FormattedMessage
                 id="publishForm.mixedPublishingDates"
                 defaultMessage="Items have mixed publishing date/time schedules."
@@ -252,18 +206,28 @@ export function PublishDialogForm(props: PublishFormProps) {
           )}
           <FormControlLabel
             value="now"
-            control={<Radio color="primary" className={classes.radioInput} />}
+            control={
+              <Radio
+                color="primary"
+                sx={{ padding: '4px', marginLeft: '5px', marginRight: '5px', ...sxs?.radioInput }}
+              />
+            }
             label={formatMessage(messages.schedulingNow)}
-            classes={{ label: classes.formInputs }}
+            sx={{ [`& .${formControlLabelClasses.label}`]: { fontSize: '14px', ...sxs?.formInputs } }}
             disabled={disabled}
           />
           <FormControlLabel
             value="custom"
-            control={<Radio color="primary" className={classes.radioInput} />}
+            control={
+              <Radio
+                color="primary"
+                sx={{ padding: '4px', marginLeft: '5px', marginRight: '5px', ...sxs?.radioInput }}
+              />
+            }
             label={
               published ? formatMessage(messages.schedulingLater) : formatMessage(messages.schedulingLaterDisabled)
             }
-            classes={{ label: classes.formInputs }}
+            sx={{ [`& .${formControlLabelClasses.label}`]: { fontSize: '14px', ...sxs?.formInputs } }}
             disabled={!published || disabled}
           />
         </RadioGroup>
@@ -271,7 +235,23 @@ export function PublishDialogForm(props: PublishFormProps) {
           mountOnEnter
           in={state.scheduling === 'custom'}
           timeout={300}
-          className={state.scheduling === 'custom' ? classes.datePicker : ''}
+          sx={[
+            state.scheduling === 'custom' && {
+              position: 'relative',
+              paddingLeft: 30,
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                width: '5px',
+                height: '100%',
+                top: '0',
+                left: '7px',
+                backgroundColor: (theme) => theme.palette.background.paper,
+                borderRadius: '5px'
+              },
+              ...(sxs?.datePicker as SystemStyleObject<Theme>)
+            }
+          ]}
         >
           <DateTimeTimezonePicker
             onChange={handleDateTimePickerChange}
@@ -281,12 +261,12 @@ export function PublishDialogForm(props: PublishFormProps) {
           />
         </Collapse>
       </FormControl>
-      <FormControl fullWidth className={classes.formSection}>
+      <FormControl fullWidth sx={{ width: '100%', marginBottom: '20px', ...sxs?.formSection }}>
         <FormLabel component="legend">{formatMessage(messages.publishingTarget)}</FormLabel>
         {publishingChannels ? (
           publishingChannels.length ? (
             <RadioGroup
-              className={classes.radioGroup}
+              sx={{ paddingTop: '10px', fontSize: '14px', ...sxs?.radioGroup }}
               value={state.publishingTarget}
               onChange={onChange}
               name="publishingTarget"
@@ -296,29 +276,44 @@ export function PublishDialogForm(props: PublishFormProps) {
                   key={publishingChannel.name}
                   disabled={disabled}
                   value={publishingChannel.name}
-                  control={<Radio color="primary" className={classes.radioInput} />}
+                  control={
+                    <Radio
+                      color="primary"
+                      sx={{ padding: '4px', marginLeft: '5px', marginRight: '5px', ...sxs?.radioInput }}
+                    />
+                  }
                   label={
                     messages[publishingChannel.name]
                       ? formatMessage(messages[publishingChannel.name])
                       : capitalize(publishingChannel.name)
                   }
-                  classes={{ label: classes.formInputs }}
+                  sx={{ [`& .${formControlLabelClasses.label}`]: { fontSize: '14px', ...sxs?.formInputs } }}
                 />
               ))}
             </RadioGroup>
           ) : (
-            <div className={classes.publishingTargetLoaderContainer}>
-              <Typography variant="body1" className={classes.publishingTargetEmpty}>
+            <Box sx={{ paddingTop: '24px', display: 'inline-flex', ...sxs?.publishingTargetLoaderContainer }}>
+              <Typography
+                variant="body1"
+                sx={{ padding: '10px 12px', borderRadius: '4px', width: '100%', ...sxs?.publishingTargetEmpty }}
+              >
                 No publishing channels are available.
               </Typography>
-            </div>
+            </Box>
           )
         ) : (
-          <div className={classes.publishingTargetLoaderContainer}>
+          <Box sx={{ paddingTop: '24px', display: 'inline-flex', ...sxs?.publishingTargetLoaderContainer }}>
             <Typography
               variant="body1"
               component="span"
-              className={`${classes.publishingTargetLoader} ${classes.formInputs}`}
+              sx={{
+                border: '1px solid #ced4da',
+                padding: '10px 12px',
+                borderRadius: '4px',
+                width: '100%',
+                fontSize: '14px',
+                ...sxs?.formInputs
+              }}
               color={publishingTargetsStatus === 'Error' ? 'error' : 'initial'}
             >
               {formatMessage(messages[`publishingTarget${publishingTargetsStatus}`])}
@@ -328,10 +323,10 @@ export function PublishDialogForm(props: PublishFormProps) {
                 </Link>
               )}
             </Typography>
-          </div>
+          </Box>
         )}
         {mixedPublishingTargets && (
-          <Alert severity="warning" className={classes.mixedTargetsWarningMessage}>
+          <Alert severity="warning" sx={{ marginTop: '10px', ...sxs?.mixedTargetsWarningMessage }}>
             <FormattedMessage
               id="publishForm.mixedPublishingTargets"
               defaultMessage="Items have mixed publishing targets."
@@ -350,7 +345,7 @@ export function PublishDialogForm(props: PublishFormProps) {
         disabled={disabled}
         required={submissionCommentRequired}
       />
-    </form>
+    </Box>
   );
 }
 

@@ -18,7 +18,6 @@ import React from 'react';
 import { MarketplacePluginParameter } from '../../models/MarketplacePlugin';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid2';
-import { makeStyles } from 'tss-react/mui';
 import { defineMessages, useIntl } from 'react-intl';
 import PasswordTextField from '../PasswordTextField/PasswordTextField';
 
@@ -32,17 +31,6 @@ export interface PluginFormEngineProps {
   onKeyPress?(event: React.KeyboardEvent): any;
 }
 
-const useStyles = makeStyles()(() => ({
-  container: {
-    width: '100%',
-    '& .MuiGrid-item': {
-      '&:last-child': {
-        paddingBottom: '12px'
-      }
-    }
-  }
-}));
-
 const messages = defineMessages({
   required: {
     id: 'createSiteDialog.required',
@@ -51,7 +39,6 @@ const messages = defineMessages({
 });
 
 export function PluginFormEngine(props: PluginFormEngineProps) {
-  const { classes } = useStyles();
   const { parameters, handleInputChange, submitted, fields, onKeyPress } = props;
   const { formatMessage } = useIntl();
 
@@ -119,7 +106,19 @@ export function PluginFormEngine(props: PluginFormEngineProps) {
   }
 
   return (
-    <Grid container spacing={0} className={classes.container} sx={{ px: 3 }}>
+    <Grid
+      container
+      spacing={0}
+      sx={{
+        px: 3,
+        width: '100%',
+        '& .MuiGrid-item': {
+          '&:last-child': {
+            paddingBottom: '12px'
+          }
+        }
+      }}
+    >
       {renderParameters(parameters)}
     </Grid>
   );

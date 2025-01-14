@@ -15,7 +15,6 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
 import Typography from '@mui/material/Typography';
 import SwipeableViews from 'react-swipeable-views';
 // @ts-ignore
@@ -27,117 +26,13 @@ import Fab from '@mui/material/Fab';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Grid from '@mui/material/Grid2';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import Alert from '@mui/material/Alert';
+import Alert, { alertClasses } from '@mui/material/Alert';
 import { backgroundColor } from '../../styles/theme';
 // @ts-ignore
 import { fadeIn } from 'react-animations';
 import PrimaryButton from '../PrimaryButton';
 import PluginDocumentation from '../PluginDocumentation';
-
-const useStyles = makeStyles()((theme) => ({
-  fadeIn: {
-    animation: `${fadeIn} 1s`
-  },
-  detailsView: {
-    height: '100%',
-    overflow: 'auto'
-  },
-  topBar: {
-    display: 'flex',
-    padding: '20px',
-    alignItems: 'center'
-  },
-  carouselImg: {
-    width: '100%',
-    height: '340px',
-    objectFit: 'contain'
-  },
-  detailsContainer: {
-    position: 'relative',
-    padding: '20px'
-  },
-  dots: {
-    background: 'none',
-    borderTop: '1px solid #e4e3e3',
-    height: '30px',
-    padding: '0',
-    cursor: 'pointer',
-    '& .MuiMobileStepper-dot': {
-      padding: '7px',
-      margin: '4px',
-      '&:hover': {
-        background: 'gray'
-      }
-    }
-  },
-  useBtn: {
-    marginLeft: 'auto',
-    maxHeight: '36px'
-  },
-  circleBtn: {
-    color: '#4F4F4F',
-    backgroundColor: '#FFFFFF',
-    marginRight: '30px',
-    '&:hover': {
-      backgroundColor: '#FFFFFF'
-    }
-  },
-  section: {
-    marginBottom: '5px'
-  },
-  sectionChips: {
-    display: 'flex',
-    padding: 0,
-    alignitems: 'center',
-    marginTop: '10px'
-  },
-  bold: {
-    fontWeight: 'bold'
-  },
-  video: {
-    width: '100%',
-    height: '300px',
-    outline: 'none',
-    background: backgroundColor
-  },
-  chip: {
-    fontSize: '12px',
-    color: 'gray',
-    marginRight: theme.spacing(1),
-    backgroundColor: theme.palette.background.default,
-    padding: '5px',
-    borderRadius: '5px',
-    '& label': {
-      display: 'block',
-      marginBottom: 0,
-      fontWeight: 400
-    },
-    '& span': {
-      color: theme.palette.text.primary
-    }
-  },
-  link: {
-    color: theme.palette.text.secondary,
-    '& svg': {
-      verticalAlign: 'sub',
-      fontSize: '1.1rem'
-    }
-  },
-  background: {
-    background: theme.palette.background.default,
-    height: '340px'
-  },
-  detailsNotCompatible: {
-    marginBottom: '15px',
-    backgroundColor: theme.palette.error.light,
-    '& .MuiAlert-icon': {
-      color: theme.palette.error.main
-    },
-    '& .MuiAlert-message': {
-      color: theme.palette.error.contrastText
-    }
-  }
-}));
+import Box from '@mui/material/Box';
 
 const messages = defineMessages({
   use: {
@@ -184,7 +79,6 @@ interface PluginDetailsViewProps {
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 export function PluginDetailsView(props: PluginDetailsViewProps) {
-  const { classes, cx } = useStyles();
   const [play, setPlay] = useState(false);
   const {
     plugin,
@@ -230,23 +124,38 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
     return merged.map((item, index) => {
       if (item.type !== 'video') {
         return (
-          <div key={index} className={classes.background}>
-            <img className={classes.carouselImg} src={item.url} alt={item.description} />
-          </div>
+          <Box key={index} sx={{ background: (theme) => theme.palette.background.default, height: '340px' }}>
+            <Box
+              component="img"
+              sx={{
+                width: '100%',
+                height: '340px',
+                objectFit: 'contain'
+              }}
+              src={item.url}
+              alt={item.description}
+            />
+          </Box>
         );
       } else {
         return (
-          <video
+          <Box
+            component="video"
             key={index}
             controls
-            className={classes.video}
+            sx={{
+              width: '100%',
+              height: '300px',
+              outline: 'none',
+              background: backgroundColor
+            }}
             autoPlay={play}
             onPlaying={handlePlay}
             onEnded={handleEnded}
           >
             <source src={item.url} type="video/mp4" />
             Your browser does not support the video tag.
-          </video>
+          </Box>
         );
       }
     });
@@ -257,9 +166,20 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
   plugin.media && plugin.media.videos ? (steps += plugin.media.videos.length) : (steps += 0);
 
   return (
-    <div className={cx(classes.detailsView, classes.fadeIn)}>
-      <div className={classes.topBar}>
-        <Fab aria-label="back" className={classes.circleBtn} onClick={onCloseDetails}>
+    <Box sx={{ height: '100%', overflow: 'auto', animation: `${fadeIn} 1s` }}>
+      <Box sx={{ display: 'flex', padding: '20px', alignItems: 'center' }}>
+        <Fab
+          aria-label="back"
+          sx={{
+            color: '#4F4F4F',
+            backgroundColor: '#FFFFFF',
+            marginRight: '30px',
+            '&:hover': {
+              backgroundColor: '#FFFFFF'
+            }
+          }}
+          onClick={onCloseDetails}
+        >
           <ArrowBackIcon />
         </Fab>
         <Typography variant="h5" component="h1">
@@ -269,7 +189,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
           <PrimaryButton
             variant="contained"
             color="primary"
-            className={classes.useBtn}
+            sx={{ marginLeft: 'auto', maxHeight: '36px' }}
             disabled={!usePermission || inUse || beingInstalled}
             loading={beingInstalled}
             onClick={() => onBlueprintSelected(plugin, 1)}
@@ -277,7 +197,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
             {useLabel ? useLabel : formatMessage(messages.use)}
           </PrimaryButton>
         )}
-      </div>
+      </Box>
       <AutoPlaySwipeableViews
         index={index}
         autoplay={!play}
@@ -293,16 +213,41 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
           variant="dots"
           steps={steps}
           onDotClick={onDotClick}
-          className={classes.dots}
+          sx={{
+            background: 'none',
+            borderTop: '1px solid #e4e3e3',
+            height: '30px',
+            padding: '0',
+            cursor: 'pointer',
+            '& .MuiMobileStepper-dot': {
+              padding: '7px',
+              margin: '4px',
+              '&:hover': {
+                background: 'gray'
+              }
+            }
+          }}
           position="static"
           activeStep={index}
         />
       )}
-      <div className={classes.detailsContainer}>
+      <Box sx={{ position: 'relative', padding: '20px' }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 8 }}>
             {isMarketplacePlugin && !compatible && (
-              <Alert severity="error" className={classes.detailsNotCompatible}>
+              <Alert
+                severity="error"
+                sx={(theme) => ({
+                  marginBottom: '15px',
+                  backgroundColor: theme.palette.error.light,
+                  [`& .${alertClasses.icon}`]: {
+                    color: theme.palette.error.main
+                  },
+                  [`& .${alertClasses.message}`]: {
+                    color: theme.palette.error.contrastText
+                  }
+                })}
+              >
                 <FormattedMessage
                   id="pluginDetails.notCompatible"
                   defaultMessage="This blueprint is not compatible with your current version of CrafterCMS."
@@ -313,7 +258,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
             <PluginDocumentation plugin={plugin} />
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
-            <div className={classes.section}>
+            <Box sx={{ marginBottom: '5px' }}>
               {developer && <Typography variant="subtitle2">{formatMessage(messages.developer)}</Typography>}
               {developer && developer.company && (
                 <Typography variant="subtitle2" color={'textSecondary'}>
@@ -325,31 +270,65 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
                   {developer.people.name}
                 </Typography>
               )}
-            </div>
-            <div className={classes.section}>
+            </Box>
+            <Box sx={{ marginBottom: '5px' }}>
               {website && <Typography variant="subtitle2">{formatMessage(messages.website)}</Typography>}
               {website && website.name && (
                 <Typography variant="subtitle2" component="p">
-                  <a className={classes.link} href={website.url} target={'blank'}>
+                  <Box
+                    component="a"
+                    sx={{
+                      color: (theme) => theme.palette.text.secondary,
+                      '& svg': {
+                        verticalAlign: 'sub',
+                        fontSize: '1.1rem'
+                      }
+                    }}
+                    href={website.url}
+                    target={'blank'}
+                  >
                     {website.name} <OpenInNewIcon />
-                  </a>
+                  </Box>
                 </Typography>
               )}
-            </div>
-            <div className={classes.sectionChips}>
-              <div className={classes.chip}>
+            </Box>
+            <Box
+              sx={(theme) => ({
+                display: 'flex',
+                padding: 0,
+                alignitems: 'center',
+                marginTop: '10px',
+                '& .chip': {
+                  fontSize: '12px',
+                  color: 'gray',
+                  marginRight: theme.spacing(1),
+                  backgroundColor: theme.palette.background.default,
+                  padding: '5px',
+                  borderRadius: '5px',
+                  '& label': {
+                    display: 'block',
+                    marginBottom: 0,
+                    fontWeight: 400
+                  },
+                  '& span': {
+                    color: theme.palette.text.primary
+                  }
+                }
+              })}
+            >
+              <div className="chip">
                 <label>{formatMessage(messages.version)}</label>
                 <span>{fullVersion}</span>
               </div>
-              <div className={classes.chip}>
+              <div className="chip">
                 <label>{formatMessage(messages.license)}</label>
                 <span>{license.name}</span>
               </div>
-            </div>
+            </Box>
           </Grid>
         </Grid>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 
