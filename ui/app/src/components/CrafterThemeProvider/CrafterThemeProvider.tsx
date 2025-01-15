@@ -22,7 +22,6 @@ import palette from '../../styles/palette';
 import { deepmerge } from '@mui/utils';
 import createCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
-import { TssCacheProvider } from 'tss-react';
 
 export type CrafterThemeProviderProps = PropsWithChildren<{ themeOptions?: ThemeOptions }>;
 
@@ -96,9 +95,7 @@ export function CrafterThemeProvider(props: CrafterThemeProviderProps) {
   }, [prefersDarkMode, props.themeOptions]);
   return (
     <CacheProvider value={muiCache}>
-      <TssCacheProvider value={tssCache}>
-        <ThemeProvider theme={theme} children={props.children} />
-      </TssCacheProvider>
+      <ThemeProvider theme={theme} children={props.children} />
     </CacheProvider>
   );
 }
