@@ -14,9 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { CSSObject } from 'tss-react';
-
-const cardTitleStyles: CSSObject = {
+const cardTitleStyles = {
   fontWeight: 600,
   lineHeight: '1.5rem',
   overflow: 'hidden',
@@ -27,7 +25,7 @@ const cardTitleStyles: CSSObject = {
   wordBreak: 'break-all'
 };
 
-export const cardSubtitleStyles: CSSObject = {
+export const cardSubtitleStyles = {
   overflow: 'hidden',
   display: '-webkit-box',
   WebkitLineClamp: 2,

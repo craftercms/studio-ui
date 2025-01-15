@@ -59,7 +59,7 @@ export const PublishingStatusButtonUI = forwardRef<HTMLButtonElement, Publishing
             enabled={enabled}
             status={isFetching ? null : status}
             variant={variant}
-            styles={rest.size === 'small' ? { root: { width: 30, height: 30 } } : null}
+            sxs={rest.size === 'small' ? { root: { width: 30, height: 30 } } : null}
           />
         </IconButton>
         {/* TODO:

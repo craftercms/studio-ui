@@ -15,27 +15,8 @@
  */
 
 import React from 'react';
-import { makeStyles } from 'tss-react/mui';
-
-const useStyles = makeStyles()(() => ({
-  iframe: {
-    width: '100%',
-    maxWidth: '100%',
-    border: 'none',
-    height: '100%',
-    transition: 'width .25s ease, height .25s ease'
-  },
-  iframeWithBorder: {
-    borderRadius: 20,
-    borderColor: '#555'
-  },
-  iframeWithBorderLandscape: {
-    borderWidth: '10px 50px'
-  },
-  iframeWithBorderPortrait: {
-    borderWidth: '50px 10px'
-  }
-}));
+import Box from '@mui/material/Box';
+import { nnou } from '../../utils/object';
 
 interface IFrameProps {
   url: string;
@@ -48,23 +29,30 @@ interface IFrameProps {
 }
 
 export function IFrame(props: IFrameProps) {
-  const { classes, cx } = useStyles();
   const { url, title, width, height, border, className, onLoadComplete } = props;
-
-  const cls = cx(classes.iframe, {
-    [className || '']: !!className,
-    [classes.iframeWithBorder]: border != null,
-    [classes.iframeWithBorderPortrait]: border === 'landscape',
-    [classes.iframeWithBorderLandscape]: border === 'portrait'
-  });
-
   return (
-    <iframe
+    <Box
+      component="iframe"
       style={{ width, height }}
+      className={className}
+      sx={[
+        {
+          width: '100%',
+          maxWidth: '100%',
+          border: 'none',
+          height: '100%',
+          transition: 'width .25s ease, height .25s ease'
+        },
+        nnou(border) && {
+          borderRadius: '20px',
+          borderColor: '#000',
+          borderStyle: 'solid',
+          borderWidth: border === 'landscape' ? '50px 10px' : '10px 50px'
+        }
+      ]}
       title={title}
       onLoad={onLoadComplete}
       src={url || 'about:blank'}
-      className={cls}
     />
   );
 }

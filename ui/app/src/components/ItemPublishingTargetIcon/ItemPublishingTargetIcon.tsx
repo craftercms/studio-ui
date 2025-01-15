@@ -18,7 +18,6 @@ import Tooltip from '@mui/material/Tooltip';
 import PublishingTargetIcon from '@mui/icons-material/FiberManualRecordRounded';
 import * as React from 'react';
 import { getItemPublishingTargetText } from '../ItemDisplay/utils';
-import { CSSObject as CSSProperties } from 'tss-react';
 import { DetailedItem, SandboxItem } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../../models';
@@ -30,19 +29,16 @@ export type ItemPublishingTargetIconClassKey =
   | 'publishingTargetLive'
   | 'publishingTargetStaged'
   | 'publishingIcon';
-export type ItemPublishingTargetIconStyles = Partial<Record<ItemPublishingTargetIconClassKey, CSSProperties>>;
-
 export interface ItemPublishingTargetIconProps {
   item: DetailedItem | SandboxItem;
   sxs?: PartialSxRecord<ItemPublishingTargetIconClassKey>;
   className?: string;
-  styles?: ItemPublishingTargetIconStyles;
   displayTooltip?: boolean;
   fontSize?: SvgIconProps['fontSize'];
 }
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
-  const { item, sxs, styles, className, displayTooltip = true, fontSize } = props;
+  const { item, sxs, className, displayTooltip = true, fontSize } = props;
   return (
     <Tooltip
       title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
@@ -52,8 +48,6 @@ export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
         fontSize={fontSize}
         sx={{
           color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
-          ...styles?.root,
-          ...styles?.publishingIcon,
           ...sxs?.root
         }}
         className={className}
