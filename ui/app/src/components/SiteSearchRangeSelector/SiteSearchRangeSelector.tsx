@@ -20,26 +20,7 @@ import { defineMessages, useIntl } from 'react-intl';
 import React, { useEffect, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { makeStyles } from 'tss-react/mui';
-
-const useStyles = makeStyles()(() => ({
-  rangePicker: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '10px 16px'
-  },
-  space: {
-    margin: '0 5px'
-  },
-  rangeTextField: {
-    width: '60px',
-    margin: '0',
-    flexGrow: 1
-  },
-  rangeButton: {
-    marginLeft: '10px'
-  }
-}));
+import Box from '@mui/material/Box';
 
 const messages = defineMessages({
   go: {
@@ -64,7 +45,6 @@ export interface RangeSelectorProps {
 }
 
 export function SiteSearchRangeSelector(props: RangeSelectorProps) {
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const { facet, handleFilterChange, checkedFilters } = props;
   const [range, setRange] = useState({ min: '', max: '' });
@@ -97,33 +77,43 @@ export function SiteSearchRangeSelector(props: RangeSelectorProps) {
   };
 
   return (
-    <div className={classes.rangePicker}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '10px 16px'
+      }}
+    >
       <TextField
         name={`${facet}min`}
         value={range.min}
         onChange={(e) => handleOnChange(e.target.value, 'min')}
         placeholder={formatMessage(messages.min)}
         margin="normal"
-        className={classes.rangeTextField}
+        sx={{ width: '60px', margin: '0', flexGrow: 1 }}
+        slotProps={{ htmlInput: { sx: { py: 1 } } }}
       />
-      <span className={classes.space}>-</span>
+      <Box component="span" sx={{ margin: '0 5px' }}>
+        -
+      </Box>
       <TextField
         name={`${facet}max`}
         value={range.max}
         onChange={(e) => handleOnChange(e.target.value, 'max')}
         placeholder={formatMessage(messages.max)}
         margin="normal"
-        className={classes.rangeTextField}
+        sx={{ width: '60px', margin: '0', flexGrow: 1 }}
+        slotProps={{ htmlInput: { sx: { py: 1 } } }}
       />
       <Button
         variant="contained"
         color="primary"
-        className={classes.rangeButton}
+        sx={{ marginLeft: '10px' }}
         onClick={() => handleRangeSelector(facet)}
       >
         {formatMessage(messages.go)}
       </Button>
-    </div>
+    </Box>
   );
 }
 

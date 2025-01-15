@@ -18,12 +18,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ApiResponse from '../../models/ApiResponse';
 import { fetchItemStates, setItemStates, setItemStatesByQuery, StatesToUpdate } from '../../services/workflow';
 import GlobalAppToolbar from '../GlobalAppToolbar';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import ItemStatesGridUI, { ItemStatesGridSkeletonTable } from '../ItemStatesGrid';
 import SetItemStateDialog from '../SetWorkflowStateDialog';
 import Button from '@mui/material/Button';
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
-import { useStyles } from './styles';
 import LookupTable from '../../models/LookupTable';
 import { createPresenceTable } from '../../utils/array';
 import { getStateBitmap } from './utils';
@@ -37,7 +36,7 @@ import FormLabel from '@mui/material/FormLabel';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import { Divider } from '@mui/material';
+import { Divider, drawerClasses } from '@mui/material';
 import ItemPublishingTargetIcon from '../ItemPublishingTargetIcon';
 import { getItemPublishingTargetText, getItemStateText } from '../ItemDisplay/utils';
 import ItemStateIcon from '../ItemStateIcon';
@@ -52,7 +51,6 @@ import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDial
 import useUpdateRefs from '../../hooks/useUpdateRefs';
 import { useDispatch } from 'react-redux';
 import { showSystemNotification } from '../../state/actions/system';
-import { defineMessages } from 'react-intl';
 import useMount from '../../hooks/useMount';
 import { fetchPublishingTargets } from '../../services/publishing';
 import { ApiResponseErrorState } from '../ApiResponseErrorState';
@@ -110,7 +108,6 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
     () => (hasStaging ? initialStates : initialStates.filter((state) => state !== 'staged')),
     [hasStaging]
   );
-  const { classes } = useStyles();
   const { formatMessage } = useIntl();
   const fnRefs = useUpdateRefs({ onSubmittingAndOrPendingChange });
   const dispatch = useDispatch();
@@ -326,12 +323,22 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
   };
 
   return (
-    <section ref={rootRef} className={classes.root}>
+    <Box
+      component="section"
+      ref={rootRef}
+      sx={{
+        height: '100%',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
       <GlobalAppToolbar
         title={!embedded && <FormattedMessage id="workflowStates.title" defaultMessage="Workflow States" />}
         rightContent={
           <SecondaryButton
-            className={embedded ? '' : classes.filterButton}
+            sx={[!embedded && { marginRight: '12px' }]}
             endIcon={<FilterListRoundedIcon />}
             onClick={() => setOpenFiltersDrawer(!openFiltersDrawer)}
           >
@@ -347,7 +354,12 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
         flexDirection="column"
         flexGrow={1}
         paddingRight={openFiltersDrawer ? `${drawerWidth}px` : 0}
-        className={classes.wrapper}
+        sx={(theme) => ({
+          transition: theme.transitions.create('padding-right', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen
+          })
+        })}
         position="relative"
       >
         {(hasSelectedItems || isSelectedItemsOnAllPages) && (
@@ -402,7 +414,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
           open={openFiltersDrawer}
           width={drawerWidth}
           anchor="right"
-          styles={{
+          sxs={{
             drawerBody: {
               overflowY: 'inherit'
             },
@@ -411,8 +423,8 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
               position: 'absolute'
             }
           }}
-          classes={{
-            drawerPaper: classes.drawerPaper
+          sx={{
+            [`& .${drawerClasses.paper}`]: { p: 2 }
           }}
         >
           <form
@@ -433,14 +445,14 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
             </Button>
             <TextField
               value={pathRegex}
-              className={classes.inputPath}
+              sx={{ marginTop: '20px' }}
               onChange={(e) => onPathRegexInputChanges(e.target.value)}
               label={<FormattedMessage id="itemStates.pathRegex" defaultMessage="Path (regex)" />}
               fullWidth
               variant="outlined"
               error={invalidPathRegex}
               slotProps={{
-                formHelperText: { className: classes.helperText }
+                formHelperText: { sx: { ml: 0 } }
               }}
               helperText={
                 invalidPathRegex ? (
@@ -453,13 +465,19 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
                 )
               }
             />
-            <FormControl component="fieldset" className={classes.formControl}>
-              <FormLabel component="legend" className={classes.formLabel}>
+            <FormControl component="fieldset" sx={{ marginTop: '20px' }}>
+              <FormLabel
+                component="legend"
+                sx={(theme) => ({
+                  color: theme.palette.text.primary,
+                  textTransform: 'uppercase',
+                  marginBottom: '10px'
+                })}
+              >
                 <FormattedMessage id="itemStates.showItemsIn" defaultMessage="Show Items In" />
               </FormLabel>
-              <FormGroup className={classes.formGroup}>
+              <FormGroup>
                 <FormControlLabel
-                  classes={{ label: classes.iconLabel }}
                   control={
                     <Checkbox
                       checked={!Object.values(filtersLookup).some(Boolean)}
@@ -475,7 +493,13 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
                 {states.map((id) => (
                   <FormControlLabel
                     key={id}
-                    classes={{ label: classes.iconLabel }}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      '& svg': {
+                        marginRight: '5px'
+                      }
+                    }}
                     control={
                       <Checkbox
                         checked={filtersLookup[id]}
@@ -520,7 +544,7 @@ export function WorkflowStateManagement(props: WorkflowStateManagementProps) {
         onClose={onSetItemStateDialogClose}
         onConfirm={onSetItemStateDialogConfirm}
       />
-    </section>
+    </Box>
   );
 }
 

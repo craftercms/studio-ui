@@ -18,9 +18,9 @@ import Grid from '@mui/material/Grid2';
 import React from 'react';
 import { Site } from '../../models/Site';
 import SiteCard from '../SiteCard/SiteCard';
-import { useSitesGridStyles } from './styles';
 import LookupTable from '../../models/LookupTable';
 import { PublishingStatus } from '../../models/Publishing';
+import Box from '@mui/material/Box';
 
 interface SitesGridProps {
   sites: Site[];
@@ -48,9 +48,8 @@ export function SitesGrid(props: SitesGridProps) {
     onPublishButtonClick,
     disabledSitesLookup
   } = props;
-  const { classes } = useSitesGridStyles();
   return (
-    <section className={classes.root}>
+    <Box component="section" sx={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
       <Grid container spacing={3}>
         {sites.map((site) => (
           <Grid key={site.id}>
@@ -67,7 +66,7 @@ export function SitesGrid(props: SitesGridProps) {
           </Grid>
         ))}
       </Grid>
-    </section>
+    </Box>
   );
 }
 

@@ -578,7 +578,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         belowToolbar
         open={openDrawer}
         width={width}
-        styles={{
+        sxs={{
           drawerPaper: {
             position: 'absolute',
             ...(embedded ? { top: 0 } : {})
@@ -736,7 +736,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
           ) : nnou(selectedConfigFileXml) ? (
             <>
               <GlobalAppToolbar
-                styles={{
+                sxs={{
                   appBar: { paddingRight: '14.4px' },
                   toolbar: { '& > section': {} }
                 }}

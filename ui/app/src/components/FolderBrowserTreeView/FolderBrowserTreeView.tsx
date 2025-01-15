@@ -96,7 +96,7 @@ export function FolderBrowserTreeView(props: FolderBrowserTreeViewProps) {
       active={{ [selectedPathWithIndex in (tree?.totalByPath ?? {}) ? selectedPathWithIndex : selectedPath]: true }}
       onNodeClick={(e, path) => onPathSelected?.(path)}
       sxs={{
-        header: { '.MuiTypography-root': { fontWeight: 'bold', fontSize: '35px' } }
+        header: { '.MuiTypography-root': { fontWeight: 'bold' } }
       }}
       showNavigableAsLinks={false}
       showPublishingTarget={false}

@@ -64,9 +64,9 @@ export function ToolBar() {
 
   return (
     <ViewToolbar
-      styles={{
+      sxs={{
         appBar: {
-          borderBottom: 'none',
+          borderBottom: '5px',
           background: theme.palette.background.default
         }
       }}

@@ -20,8 +20,6 @@ import SiteSearchToolBar from '../SiteSearchToolbar';
 import React, { ReactNode, useRef } from 'react';
 import Drawer from '@mui/material/Drawer';
 import SiteSearchFilters from '../SiteSearchFilters';
-import { makeStyles } from 'tss-react/mui';
-import palette from '../../styles/palette';
 import { ElasticParams, Filter, MediaItem, SearchResult } from '../../models/Search';
 import { CheckedFilter, drawerWidth, SearchProps } from '../Search/utils';
 import LookupTable from '../../models/LookupTable';
@@ -30,7 +28,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import { translations } from '../Search/translations';
-import TablePagination from '@mui/material/TablePagination';
+import TablePagination, { tablePaginationClasses } from '@mui/material/TablePagination';
 import ApiResponseErrorState from '../ApiResponseErrorState';
 import Grid from '@mui/material/Grid2';
 import MediaCard from '../MediaCard/MediaCard';
@@ -46,6 +44,8 @@ import IconButton from '@mui/material/IconButton';
 import MoreVertRounded from '@mui/icons-material/MoreVertRounded';
 import { UNDEFINED } from '../../utils/constants';
 import { LoadingState } from '../LoadingState';
+import Box from '@mui/material/Box';
+import { drawerClasses } from '@mui/material';
 
 export interface SearchUIProps {
   selectedPath: string;
@@ -88,192 +88,7 @@ export interface SearchUIProps {
   onAcceptSelection?(items: string[]): void;
 }
 
-const useStyles = makeStyles()((theme) => ({
-  wrapper: {
-    height: 'calc(100% - 65px)', // 100% - toolbar height
-    margin: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    background: theme.palette.background.default,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    }),
-    '&.hasContent': {
-      height: 'inherit'
-    },
-    '&.select': {}
-  },
-  wrapperSelectMode: {
-    height: 'calc(100% - 136px)'
-  },
-  shift: {
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen
-    })
-  },
-  searchHeader: {
-    padding: '15px 20px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    background: theme.palette.background.default,
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  searchDropdown: {
-    marginRight: '7px'
-  },
-  search: {
-    width: '500px'
-  },
-  searchHelperBar: {
-    display: 'flex',
-    padding: '0 6px 0 20px',
-    alignItems: 'center',
-    background: theme.palette.background.paper,
-    borderBottom: `1px solid ${theme.palette.divider}`
-  },
-  clearSelected: {
-    marginLeft: '5px',
-    cursor: 'pointer'
-  },
-  helperContainer: {
-    display: 'flex',
-    marginLeft: 'auto',
-    alignItems: 'center'
-  },
-  content: {
-    flexGrow: 1,
-    padding: '25px 30px',
-    overflowY: 'scroll',
-    position: 'relative'
-  },
-  empty: {
-    height: '100%',
-    justifyContent: 'center'
-  },
-  pagination: {
-    marginLeft: 'auto',
-    '& p': {
-      padding: 0
-    },
-    '& svg': {
-      top: 'inherit'
-    }
-  },
-  dialogTitle: {
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: '10px',
-    padding: '10px 0'
-  },
-  dialogCloseButton: {
-    marginLeft: 'auto'
-  },
-  mediaPreview: {
-    maxWidth: '700px',
-    minWidth: '400px',
-    minHeight: '200px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    '& img': {
-      maxWidth: '100%'
-    }
-  },
-  videoPreview: {},
-  mediaCardListRoot: {
-    display: 'flex'
-  },
-  mediaCardListCheckbox: {
-    justifyContent: 'center',
-    order: -2,
-    marginRight: '5px',
-    marginLeft: '16px'
-  },
-  mediaCardListHeader: {
-    marginLeft: '15px'
-  },
-  mediaCardListMedia: {
-    paddingTop: 0,
-    height: '80px',
-    width: '80px',
-    order: -1
-  },
-  mediaCardListMediaIcon: {
-    height: '80px',
-    width: '80px',
-    paddingTop: '0',
-    order: -1
-  },
-  drawer: {
-    flexShrink: 0
-  },
-  drawerPaper: {
-    top: 65,
-    bottom: 0,
-    width: drawerWidth,
-    zIndex: theme.zIndex.appBar - 1,
-    height: 'auto',
-    position: 'absolute'
-  },
-  drawerPaperSelect: {
-    bottom: '71px'
-  },
-  paginationSelectRoot: {
-    marginRight: 0
-  },
-  paginationSelect: {
-    border: 'none'
-  },
-  filtersActive: {
-    color: '#FFB400',
-    marginLeft: '2px'
-  },
-  selectAppbar: {
-    boxShadow: 'none',
-    borderBottom: `1px solid ${palette.gray.light3}`
-  },
-  selectToolbar: {
-    placeContent: 'center space-between',
-    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.background.default : palette.white
-  },
-  selectToolbarTitle: {
-    flexGrow: 1
-  },
-  drawerModal: {
-    position: 'absolute',
-    '& .MuiBackdrop-root': {
-      background: 'transparent'
-    }
-  },
-  actionsMenu: {
-    flex: '0 0 auto',
-    display: 'flex',
-    padding: '14px 20px',
-    justifyContent: 'flex-end',
-    borderTop: `1px solid ${theme.palette.divider}`,
-    '& > :not(:first-child)': {
-      marginLeft: '12px'
-    }
-  },
-  container: {
-    height: '100%',
-    position: 'relative',
-    background: theme.palette.background.default
-  },
-  cardActionArea: {
-    width: 'auto',
-    display: 'flex'
-  },
-  cardHeader: {
-    flexGrow: 1
-  }
-}));
-
 export function SearchUI(props: SearchUIProps) {
-  const { classes, cx } = useStyles();
   // region const { ... } = props
   const {
     areAllSelected,
@@ -322,7 +137,11 @@ export function SearchUI(props: SearchUIProps) {
   const container = useRef(undefined);
 
   return (
-    <section ref={container} className={classes.container}>
+    <Box
+      component="section"
+      ref={container}
+      sx={{ height: '100%', position: 'relative', background: (theme) => theme.palette.background.default }}
+    >
       <SiteSearchToolBar
         onChange={handleSearchKeyword}
         onMenuIconClick={toggleDrawer}
@@ -338,10 +157,22 @@ export function SearchUI(props: SearchUIProps) {
         container={container.current}
         anchor="left"
         open={drawerOpen}
-        className={classes.drawer}
-        classes={{
-          paper: cx(classes.drawerPaper, mode === 'select' && classes.drawerPaperSelect),
-          modal: classes.drawerModal
+        sx={{
+          flexShrink: 0,
+          [`& .${drawerClasses.paper}`]: {
+            top: 65,
+            bottom: mode === 'select' ? '71px' : 0,
+            width: drawerWidth,
+            zIndex: (theme) => theme.zIndex.appBar - 1,
+            height: 'auto',
+            position: 'absolute'
+          },
+          [`& .${drawerClasses.modal}`]: {
+            position: 'absolute',
+            '& .MuiBackdrop-root': {
+              background: 'transparent'
+            }
+          }
         }}
         ModalProps={{
           ...(!desktopScreen && {
@@ -352,7 +183,7 @@ export function SearchUI(props: SearchUIProps) {
         {searchResults && searchResults.facets && (
           <SiteSearchFilters
             mode={mode}
-            className={classes.searchDropdown}
+            sx={{ marginRight: '7px' }}
             facets={searchResults.facets}
             handleFilterChange={handleFilterChange}
             sortBy={sortBy}
@@ -366,18 +197,46 @@ export function SearchUI(props: SearchUIProps) {
           />
         )}
       </Drawer>
-      <section
-        className={cx(classes.wrapper, {
-          [classes.shift]: drawerOpen,
-          [classes.wrapperSelectMode]: mode === 'select'
-        })}
+      <Box
+        component="section"
+        sx={[
+          (theme) => ({
+            height: 'calc(100% - 65px)', // 100% - toolbar height
+            margin: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            background: theme.palette.background.default,
+            transition: drawerOpen
+              ? theme.transitions.create('margin', {
+                  easing: theme.transitions.easing.easeOut,
+                  duration: theme.transitions.duration.enteringScreen
+                })
+              : theme.transitions.create('margin', {
+                  easing: theme.transitions.easing.sharp,
+                  duration: theme.transitions.duration.leavingScreen
+                }),
+            '&.hasContent': {
+              height: 'inherit'
+            },
+            '&.select': {}
+          }),
+          mode === 'select' && { height: 'calc(100% - 136px)' }
+        ]}
         style={
           drawerOpen && desktopScreen
             ? { width: `calc(100% - ${drawerWidth}px`, marginLeft: drawerWidth }
             : { marginLeft: 0 }
         }
       >
-        <div className={classes.searchHelperBar}>
+        <Box
+          sx={(theme) => ({
+            display: 'flex',
+            padding: '0 6px 0 20px',
+            alignItems: 'center',
+            background: theme.palette.background.paper,
+            borderBottom: `1px solid ${theme.palette.divider}`
+          })}
+        >
           <FormGroup>
             <FormControlLabel
               control={
@@ -392,7 +251,17 @@ export function SearchUI(props: SearchUIProps) {
           </FormGroup>
           <TablePagination
             rowsPerPageOptions={[9, 15, 21]}
-            className={classes.pagination}
+            sx={{
+              marginLeft: 'auto',
+              '& p': {
+                padding: 0
+              },
+              '& svg': {
+                top: 'inherit'
+              },
+              [`& .${tablePaginationClasses.selectRoot}`]: { mr: 0 },
+              [`& .${tablePaginationClasses.select}`]: { border: 'none' }
+            }}
             component="div"
             labelRowsPerPage={null}
             labelDisplayedRows={({ from, to, count }) => (
@@ -416,9 +285,16 @@ export function SearchUI(props: SearchUIProps) {
                       defaultMessage=" • <span>Filters Active</span>"
                       values={{
                         span: (content: ReactNode[]) => (
-                          <span key={content[0] as string} className={classes.filtersActive}>
+                          <Box
+                            component="span"
+                            key={content[0] as string}
+                            sx={{
+                              color: '#FFB400',
+                              marginLeft: '2px'
+                            }}
+                          >
                             {content[0]}
-                          </span>
+                          </Box>
                         )
                       }}
                     />
@@ -437,13 +313,9 @@ export function SearchUI(props: SearchUIProps) {
             }}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            classes={{
-              selectRoot: classes.paginationSelectRoot,
-              select: classes.paginationSelect
-            }}
           />
-        </div>
-        <section className={classes.content}>
+        </Box>
+        <Box component="section" sx={{ flexGrow: 1, padding: '25px 30px', overflowY: 'scroll', position: 'relative' }}>
           {error ? (
             <ApiResponseErrorState error={error} />
           ) : (
@@ -452,7 +324,7 @@ export function SearchUI(props: SearchUIProps) {
               spacing={3}
               minHeight="100%"
               alignContent={isFetching || searchResults === null ? 'center' : 'start'}
-              className={searchResults?.items.length === 0 ? classes.empty : ''}
+              sx={[searchResults?.items.length === 0 && { height: '100%', justifyContent: 'center' }]}
             >
               {isFetching || searchResults === null ? (
                 <LoadingState />
@@ -530,8 +402,8 @@ export function SearchUI(props: SearchUIProps) {
               )}
             </Grid>
           )}
-        </section>
-      </section>
+        </Box>
+      </Box>
       {mode === 'default' && (
         <ItemActionsSnackbar
           open={selected.length > 0}
@@ -549,7 +421,19 @@ export function SearchUI(props: SearchUIProps) {
         />
       )}
       {mode === 'select' && (
-        <section className={classes.actionsMenu}>
+        <Box
+          component="section"
+          sx={{
+            flex: '0 0 auto',
+            display: 'flex',
+            padding: '14px 20px',
+            justifyContent: 'flex-end',
+            borderTop: (theme) => `1px solid ${theme.palette.divider}`,
+            '& > :not(:first-child)': {
+              marginLeft: '12px'
+            }
+          }}
+        >
           <Button variant="outlined" onClick={onClose}>
             {formatMessage(translations.cancel)}
           </Button>
@@ -561,9 +445,9 @@ export function SearchUI(props: SearchUIProps) {
           >
             {formatMessage(translations.acceptSelection)}
           </Button>
-        </section>
+        </Box>
       )}
-    </section>
+    </Box>
   );
 }
 

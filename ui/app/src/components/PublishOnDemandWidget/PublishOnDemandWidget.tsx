@@ -14,13 +14,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode } from 'react';
-import { useEffect, useId, useState } from 'react';
+import React, { ReactNode, useEffect, useId, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 import DialogHeader from '../DialogHeader/DialogHeader';
 import DialogFooter from '../DialogFooter/DialogFooter';
-import { makeStyles } from 'tss-react/mui';
 import palette from '../../styles/palette';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Radio from '@mui/material/Radio';
@@ -57,52 +55,6 @@ import useDetailedItem from '../../hooks/useDetailedItem';
 import { showErrorDialog } from '../../state/reducers/dialogs/error';
 import usePermissionsBySite from '../../hooks/usePermissionsBySite';
 import { StandardAction } from '../../models';
-
-const useStyles = makeStyles()((theme) => ({
-  content: {
-    backgroundColor: theme.palette.background.default,
-    padding: '16px'
-  },
-  modeSelector: {
-    padding: '10px 25px',
-    border: `1px solid ${palette.gray.light7}`,
-    borderRadius: '10px'
-  },
-  byPathModeSelector: {
-    marginBottom: '10px'
-  },
-  formContainer: {
-    marginTop: '20px'
-  },
-  noteContainer: {
-    textAlign: 'center',
-    marginTop: '20px'
-  },
-  note: {
-    color: theme.palette.action.active,
-    display: 'inline-block',
-    maxWidth: '700px'
-  },
-  noteLink: {
-    color: 'inherit',
-    textDecoration: 'underline'
-  },
-  initialPublishContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    flexDirection: 'column',
-    rowGap: theme.spacing(2),
-    padding: theme.spacing(5)
-  },
-  initialPublishDescription: {
-    maxWidth: '470px',
-    textAlign: 'center'
-  },
-  initialPublishIcon: {
-    color: theme.palette.text.secondary,
-    fontSize: '1.75rem'
-  }
-}));
 
 const messages = defineMessages({
   publishStudioWarning: {
@@ -168,7 +120,6 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
     onCancel: onCancelProp,
     onSuccess: onSuccessProp
   } = props;
-  const { classes } = useStyles();
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
   const [selectedMode, setSelectedMode] = useState<PublishOnDemandMode>(mode ?? null);
@@ -453,10 +404,13 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
       {showHeader && (
         <DialogHeader title={<FormattedMessage id="publishOnDemand.title" defaultMessage="Publish on Demand" />} />
       )}
-      <div className={classes.content}>
+      <Box sx={{ backgroundColor: (theme) => theme.palette.background.default, padding: '16px' }}>
         {hasInitialPublish ? (
           <>
-            <Paper elevation={0} className={classes.modeSelector}>
+            <Paper
+              elevation={0}
+              sx={{ padding: '10px 25px', border: `1px solid ${palette.gray.light7}`, borderRadius: '10px' }}
+            >
               <form>
                 <RadioGroup value={selectedMode ?? ''} onChange={handleChange}>
                   {(nou(mode) || mode === 'studio') && (
@@ -475,7 +429,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                           secondary="By path"
                         />
                       }
-                      className={classes.byPathModeSelector}
+                      sx={{ marginBottom: '10px' }}
                     />
                   )}
                   {(nou(mode) || mode === 'git') && (
@@ -521,7 +475,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
               in={nnou(selectedMode)}
               timeout={300}
               unmountOnExit
-              className={classes.formContainer}
+              sx={{ marginTop: '20px' }}
               onEntered={scrollToBottom}
             >
               <PublishOnDemandForm
@@ -535,15 +489,23 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                 publishByCommitCommentRequired={publishByCommitCommentRequired}
               />
               {selectedMode !== 'everything' && (
-                <div className={classes.noteContainer}>
-                  <Typography variant="caption" className={classes.note}>
+                <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: (theme) => theme.palette.action.active, display: 'inline-block', maxWidth: '700px' }}
+                  >
                     {selectedMode === 'studio' ? (
                       <FormattedMessage
                         id="publishingDashboard.studioNote"
                         defaultMessage="Publishing by path should be used to publish changes made in Studio via the UI. For changes made via direct git actions, please <a>publish by commit or tag</a>."
                         values={{
                           a: (msg: ReactNode[]) => (
-                            <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                            <Link
+                              key="Link"
+                              href="#"
+                              onClick={toggleMode}
+                              sx={{ color: 'inherit', textDecoration: 'underline' }}
+                            >
                               {msg[0]}
                             </Link>
                           )
@@ -555,7 +517,12 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                         defaultMessage="Publishing by commit or tag must be used for changes made via direct git actions against the repository or pulled from a remote repository. For changes made via Studio on the UI, use please <a>publish by path</a>."
                         values={{
                           a: (msg: ReactNode[]) => (
-                            <Link key="Link" href="#" onClick={toggleMode} className={classes.noteLink}>
+                            <Link
+                              key="Link"
+                              href="#"
+                              onClick={toggleMode}
+                              sx={{ color: 'inherit', textDecoration: 'underline' }}
+                            >
                               {msg[0]}
                             </Link>
                           )
@@ -563,14 +530,22 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
                       />
                     )}
                   </Typography>
-                </div>
+                </Box>
               )}
             </Collapse>
           </>
         ) : (
-          <Box className={classes.initialPublishContainer}>
-            <InfoOutlinedIcon className={classes.initialPublishIcon} />
-            <Typography variant="body1" className={classes.initialPublishDescription}>
+          <Box
+            sx={(theme) => ({
+              display: 'flex',
+              alignItems: 'center',
+              flexDirection: 'column',
+              rowGap: theme.spacing(2),
+              padding: theme.spacing(5)
+            })}
+          >
+            <InfoOutlinedIcon sx={{ color: (theme) => theme.palette.text.secondary, fontSize: '1.75rem' }} />
+            <Typography variant="body1" sx={{ maxWidth: '470px', textAlign: 'center' }}>
               <FormattedMessage
                 id="publishOnDemand.noInitialPublish"
                 defaultMessage="The project needs to undergo its initial publish before other publishing options become available"
@@ -583,7 +558,7 @@ export function PublishOnDemandWidget(props: PublishOnDemandWidgetProps) {
             )}
           </Box>
         )}
-      </div>
+      </Box>
       {selectedMode && (
         <DialogFooter>
           <SecondaryButton onClick={onCancel} disabled={isSubmitting}>

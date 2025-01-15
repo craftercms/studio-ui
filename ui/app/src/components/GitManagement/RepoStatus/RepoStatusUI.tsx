@@ -97,7 +97,7 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
         }
         showHamburgerMenuButton={false}
         showAppsButton={false}
-        styles={{
+        sxs={{
           toolbar: {
             '& > section': {
               alignItems: 'start'

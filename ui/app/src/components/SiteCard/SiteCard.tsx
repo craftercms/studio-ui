@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Card from '@mui/material/Card';
 import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import IconButton from '@mui/material/IconButton';
@@ -28,17 +28,16 @@ import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage } from 'react-intl';
 import CardActionArea from '@mui/material/CardActionArea';
 import { alpha, Typography } from '@mui/material';
-import { useSiteCardStyles } from '../SitesGrid/styles';
 import { PublishingStatus } from '../../models/Publishing';
 import { PublishingStatusButtonUI } from '../PublishingStatusButton';
 import SiteStatusIndicator from '../SiteStatusIndicator/SiteStatusIndicator';
 import { toColor } from '../../utils/string';
 import useProjectPreviewImage from '../../hooks/useProjectPreviewImage';
 import { PROJECT_PREVIEW_IMAGE_UPDATED } from '../../utils/constants';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { fetchStatus } from '../../services/publishing';
 import { catchError, delay, switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import cardTitleStyles, { cardSubtitleStyles } from '../../styles/card';
 
 interface SiteCardProps {
   site: Site;
@@ -68,7 +67,6 @@ export function SiteCard(props: SiteCardProps) {
     disabled,
     onPublishButtonClick
   } = props;
-  const { classes, cx: clsx } = useSiteCardStyles();
   const [publishingStatus, setPublishingStatus] = useState<PublishingStatus>();
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const isSiteReady = site.state === 'READY';
@@ -119,11 +117,27 @@ export function SiteCard(props: SiteCardProps) {
   }, [fetch]);
 
   return (
-    <Card className={clsx(classes.card, compact && 'compact')} sx={{ position: 'relative' }}>
+    <Card sx={{ width: '340px', position: 'relative', display: compact ? 'flex' : 'block' }}>
       <CardActionArea onClick={() => onSiteClick(site)} component="div" disabled={disabled || !isSiteReady}>
         <CardHeader
           title={site.name}
-          className={classes.cardHeader}
+          sx={{
+            height: '77px',
+            width: '100%',
+            '& .cardTitle': {
+              ...cardTitleStyles
+            },
+            '& .cardSubtitle': {
+              ...cardSubtitleStyles,
+              WebkitLineClamp: 1
+            },
+            [`.${cardHeaderClasses.action}`]: {
+              alignSelf: 'center'
+            },
+            ...(!isSiteReady && {
+              paddingRight: '55px'
+            })
+          }}
           subheader={
             site.description && (
               <Tooltip title={site.description}>
@@ -142,22 +156,14 @@ export function SiteCard(props: SiteCardProps) {
             component: 'h2',
             className: 'cardTitle'
           }}
-          sx={{
-            [`.${cardHeaderClasses.action}`]: {
-              alignSelf: 'center'
-            },
-            ...(!isSiteReady && {
-              paddingRight: '55px'
-            })
-          }}
         />
         {!compact && (
           <CardMedia
             component={dataUrl ? 'img' : 'div'}
-            className={classes.media}
             image={dataUrl}
             title={site.name}
             sx={(theme) => ({
+              height: '226px',
               display: 'flex',
               alignItems: 'center',
               placeContent: 'center',
@@ -177,7 +183,7 @@ export function SiteCard(props: SiteCardProps) {
           />
         )}
       </CardActionArea>
-      <CardActions className={classes.cardActions} sx={compact ? undefined : { minHeight: '64px' }} disableSpacing>
+      <CardActions sx={[{ placeContent: 'center space-between' }, !compact && { minHeight: '64px' }]} disableSpacing>
         {isSiteReady && (
           <PublishingStatusButtonUI
             isFetching={isFetching}

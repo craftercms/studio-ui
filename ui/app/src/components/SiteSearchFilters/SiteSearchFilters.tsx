@@ -18,7 +18,6 @@ import { defineMessages, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/KeyboardArrowDown';
 import { camelize } from '../../utils/string';
-import { makeStyles } from 'tss-react/mui';
 import { Filter as FilterType, SearchFacet } from '../../models/Search';
 import CheckIcon from '@mui/icons-material/Check';
 import { LookupTable } from '../../models/LookupTable';
@@ -27,7 +26,6 @@ import SiteSearchSortOrder from '../SiteSearchSortOrder';
 import SiteSearchFilter from '../SiteSearchFilter';
 import PathSelector from '../SiteSearchPathSelector';
 import Button from '@mui/material/Button';
-import palette from '../../styles/palette';
 import MuiAccordion, { accordionClasses } from '@mui/material/Accordion';
 import MuiAccordionSummary, { accordionSummaryClasses } from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -38,10 +36,13 @@ import useContentTypes from '../../hooks/useContentTypes';
 import { getMimeTypeTranslation } from '../../utils/mimeTypes';
 import Box from '@mui/material/Box';
 import { SORT_AUTO } from '../Search/utils';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material';
 
 interface SiteSearchFiltersProps {
-  className: any;
+  className?: string;
   facets: SearchFacet[];
+  sx?: SxProps<Theme>;
   sortBy?: string;
   sortOrder?: string;
   mode: string;
@@ -65,27 +66,6 @@ const AccordionSummary = styled(MuiAccordionSummary)(() => ({
 
 const Accordion = styled(MuiAccordion)(() => ({
   [`&.${accordionClasses.expanded}`]: { margin: 'auto' }
-}));
-
-const useStyles = makeStyles()((theme) => ({
-  header: {
-    width: '100%',
-    padding: '10px 15px 10px 20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    border: 'none',
-    color: theme.palette.mode === 'dark' ? palette.white : ''
-  },
-  accordionTitle: {
-    display: 'flex',
-    fontWeight: 600,
-    alignItems: 'center'
-  },
-  divider: {
-    width: 'auto',
-    margin: '0 10px'
-  }
 }));
 
 const messages: any = defineMessages({
@@ -188,7 +168,6 @@ const filterToFacet = (filterKey, filterValue) => {
 };
 
 export function SiteSearchFilters(props: SiteSearchFiltersProps) {
-  const { classes } = useStyles();
   // region const { ... } = props
   const {
     sortBy,
@@ -201,7 +180,8 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
     clearFilters,
     handleClearClick,
     selectedPath,
-    setSelectedPath
+    setSelectedPath,
+    sx
   } = props;
   // endregion
   const { formatMessage } = useIntl();
@@ -282,7 +262,7 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
 
   return (
     <Box>
-      <Box sx={{ p: 1, display: 'flex', justifyContent: 'space-evenly' }}>
+      <Box sx={{ p: 1, display: 'flex', justifyContent: 'space-evenly', ...sx }}>
         <Button size="small" onClick={() => expandCollapseAll(true)}>
           {formatMessage(messages.expandAll)}
         </Button>
@@ -297,10 +277,10 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
           {formatMessage(messages.clearFilters)}
         </Button>
       </Box>
-      <Divider className={classes.divider} />
+      <Divider sx={{ width: 'auto', margin: '0 10px' }} />
       <Accordion expanded={expanded.sortBy} elevation={0} onChange={() => handleExpandClick('sortBy')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.accordionTitle}>
+          <Typography sx={{ display: 'flex', fontWeight: 600, alignItems: 'center' }}>
             {formatMessage(messages.sortBy)}
             {sortBy && <CheckIcon />}
           </Typography>
@@ -316,7 +296,7 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
       </Accordion>
       <Accordion expanded={expanded.path} elevation={0} onChange={() => handleExpandClick('path')}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={classes.accordionTitle}>
+          <Typography sx={{ display: 'flex', fontWeight: 600, alignItems: 'center' }}>
             {formatMessage(messages.path)}
             {selectedPath && <CheckIcon />}
           </Typography>
@@ -328,7 +308,7 @@ export function SiteSearchFilters(props: SiteSearchFiltersProps) {
       {filterKeys.map((key: string) => (
         <Accordion key={key} expanded={expanded[key] ?? false} elevation={0} onChange={() => handleExpandClick(key)}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.accordionTitle}>
+            <Typography sx={{ display: 'flex', fontWeight: 600, alignItems: 'center' }}>
               {formatMessage(messages[camelize(key)])}
               {checkedFilters[key] && <CheckIcon />}
             </Typography>

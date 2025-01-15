@@ -26,44 +26,9 @@ import { batchActions, dispatchDOMEvent } from '../../state/actions/misc';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { makeStyles } from 'tss-react/mui';
 import Paper from '@mui/material/Paper';
 import SiteExplorer from '../../icons/SiteExplorer';
 import { createCustomDocumentEventListener } from '../../utils/dom';
-
-const useStyles = makeStyles()((theme) => ({
-  pathSelectorInputRoot: {
-    flexGrow: 1
-  },
-  pathSelectorWrapper: {
-    flex: 1,
-    minHeight: 40,
-    display: 'flex',
-    cursor: 'pointer',
-    padding: '0 0 0 10px',
-    '&:hover:not(.disabled)': {
-      borderColor: theme.palette.action.active
-    },
-    '&.disabled': {
-      opacity: 0.7,
-      cursor: 'default'
-    }
-  },
-  invisibleInput: {
-    border: 0,
-    padding: '0 0 0 5px',
-    height: '100%',
-    cursor: 'pointer',
-    background: 'none',
-    '&:focus': {
-      borderColor: 'none',
-      boxShadow: 'inherit'
-    },
-    '&:disabled': {
-      cursor: 'default'
-    }
-  }
-}));
 
 const messages = defineMessages({
   searchIn: {
@@ -85,7 +50,6 @@ export function PathSelector(props: PathSelectorProps) {
   const { onPathSelected, value, disabled = false, stripXmlIndex = true, rootPath } = props;
   const { formatMessage } = useIntl();
   const dispatch = useDispatch();
-  const { classes, cx } = useStyles();
   const [path, setPath] = useState<string>(value ?? '');
 
   useEffect(() => {
@@ -127,10 +91,36 @@ export function PathSelector(props: PathSelectorProps) {
     <Paper
       variant="outlined"
       onClick={disabled ? null : onOpenPathSelectionDialog}
-      className={cx(classes.pathSelectorWrapper, disabled && 'disabled')}
+      sx={{
+        flex: 1,
+        minHeight: 40,
+        display: 'flex',
+        cursor: disabled ? 'default' : 'pointer',
+        padding: '0 0 0 10px',
+        opacity: disabled ? 0.7 : 1,
+        '&:hover:not(.disabled)': {
+          borderColor: (theme) => theme.palette.action.active
+        }
+      }}
     >
       <InputBase
-        classes={{ root: classes.pathSelectorInputRoot, input: classes.invisibleInput }}
+        sx={{ flexGrow: 1 }}
+        inputProps={{
+          sx: {
+            border: 0,
+            padding: '0 0 0 5px',
+            height: '100%',
+            cursor: 'pointer',
+            background: 'none',
+            '&:focus': {
+              borderColor: 'none',
+              boxShadow: 'inherit'
+            },
+            '&:disabled': {
+              cursor: 'default'
+            }
+          }
+        }}
         disabled={disabled}
         readOnly
         value={path}

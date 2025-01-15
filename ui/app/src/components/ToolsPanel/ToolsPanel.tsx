@@ -22,7 +22,6 @@ import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import { renderWidgets } from '../Widget';
 import { WidgetDescriptor } from '../../models';
 import { Suspencified } from '../Suspencified/Suspencified';
-import { makeStyles } from 'tss-react/mui';
 import { useSelection } from '../../hooks/useSelection';
 import { usePreviewState } from '../../hooks/usePreviewState';
 import { useActiveUser } from '../../hooks/useActiveUser';
@@ -42,27 +41,9 @@ defineMessages({
   }
 });
 
-const useStyles = makeStyles()((theme) => ({
-  emptyState: {
-    margin: `${theme.spacing(4)} ${theme.spacing(1)}`
-  },
-  emptyStateImage: {
-    width: '50%',
-    marginBottom: theme.spacing(1)
-  },
-  loadingViewRoot: {
-    flex: 1,
-    flexDirection: 'row'
-  },
-  drawerBody: {
-    paddingBottom: 50
-  }
-}));
-
 export function ToolsPanel() {
   const dispatch = useDispatch();
   const { id: siteId, uuid } = useActiveSite();
-  const { classes } = useStyles();
   const { showToolsPanel, toolsPanel, toolsPanelWidth, windowSize } = usePreviewState();
   const toolsPanelPageStack = useSelection<WidgetDescriptor[]>((state) => state.preview.toolsPanelPageStack);
   const uiConfig = useSiteUIConfig();
@@ -87,14 +68,16 @@ export function ToolsPanel() {
       open={showToolsPanel}
       width={toolsPanelWidth}
       maxWidth={windowSize}
-      classes={{ drawerBody: classes.drawerBody }}
-      onWidthChange={onWidthChange}
-      onResizeStart={() => blockPreviewIframePointerEvents(true)}
-      onResizeStop={() => blockPreviewIframePointerEvents(false)}
-      styles={{
+      sxs={{
+        drawerBody: {
+          paddingBottom: '50px'
+        },
         resizeHandle: { backgroundColor: 'transparent' },
         drawerPaperBelowToolbar: { top: '64px' }
       }}
+      onWidthChange={onWidthChange}
+      onResizeStart={() => blockPreviewIframePointerEvents(true)}
+      onResizeStop={() => blockPreviewIframePointerEvents(false)}
     >
       {uiConfig.error ? (
         <ApiResponseErrorState error={uiConfig.error} />

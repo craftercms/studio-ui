@@ -70,7 +70,7 @@ export function ICEToolsPanel() {
       onWidthChange={onWidthChange}
       onResizeStart={() => blockPreviewIframePointerEvents(true)}
       onResizeStop={() => blockPreviewIframePointerEvents(false)}
-      styles={{
+      sxs={{
         resizeHandle: { backgroundColor: 'transparent' },
         drawerPaperBelowToolbar: { top: '64px' }
       }}

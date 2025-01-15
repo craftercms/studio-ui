@@ -14,10 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useSitesGridStyles } from '../styles';
 import Grid from '@mui/material/Grid2';
 import { SiteCardSkeleton } from '../../SiteCard/SiteCardSkeleton/SiteCardSkeleton';
 import React from 'react';
+import Box from '@mui/material/Box';
 
 interface SitesGridSkeletonProps {
   numOfItems?: number;
@@ -25,11 +25,10 @@ interface SitesGridSkeletonProps {
 }
 
 export function SitesGridSkeleton(props: SitesGridSkeletonProps) {
-  const { classes } = useSitesGridStyles();
   const { numOfItems = 5, currentView } = props;
   const items = new Array(numOfItems).fill(null);
   return (
-    <section className={classes.root}>
+    <Box component="section" sx={{ display: 'flex', flexDirection: 'column', padding: '20px' }}>
       <Grid container spacing={3}>
         {items.map((num, i) => (
           <Grid key={i}>
@@ -37,7 +36,7 @@ export function SitesGridSkeleton(props: SitesGridSkeletonProps) {
           </Grid>
         ))}
       </Grid>
-    </section>
+    </Box>
   );
 }
 

@@ -29,7 +29,6 @@ import * as React from 'react';
 import { useMemo } from 'react';
 import { getItemStateId, getItemStateText } from '../ItemDisplay/utils';
 import palette from '../../styles/palette';
-import { CSSObject as CSSProperties } from 'tss-react';
 import { DetailedItem, ItemStates, SandboxItem } from '../../models/Item';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../../models';
@@ -49,69 +48,64 @@ export type ItemStateIconClassKey =
   | 'stateDisabledIcon'
   | 'stateNotInWorkflow';
 
-export type ItemStateIconStyles = Partial<Record<ItemStateIconClassKey, CSSProperties>>;
-
 export interface ItemStateIconProps {
   item: DetailedItem | SandboxItem;
   sxs?: PartialSxRecord<ItemStateIconClassKey>;
   className?: string;
-  styles?: ItemStateIconStyles;
   displayTooltip?: boolean;
   fontSize?: SvgIconProps['fontSize'];
 }
 
 export function ItemStateIcon(props: ItemStateIconProps) {
-  const { item, sxs, styles, className, displayTooltip = true, fontSize } = props;
+  const { item, sxs, className, displayTooltip = true, fontSize } = props;
   const { Icon, stateSpecificSx } = useMemo(() => {
     if (item.systemType === 'folder') {
       return {
         Icon: NotInWorkflowIcon,
-        stateSpecificSx: { color: palette.gray.medium4, ...styles?.stateNotInWorkflow, ...sxs?.stateNotInWorkflow }
+        stateSpecificSx: { color: palette.gray.medium4, ...sxs?.stateNotInWorkflow }
       };
     }
     let map: { [key in ItemStates]: any };
     map = {
       new: {
         Icon: NewStateIcon,
-        stateSpecificSx: { color: palette.teal.main, ...styles?.stateNewIcon, ...sxs?.stateNewIcon }
+        stateSpecificSx: { color: palette.teal.main, ...sxs?.stateNewIcon }
       },
       modified: {
         Icon: EditedStateIcon,
-        stateSpecificSx: { color: palette.yellow.main, ...styles?.stateModifiedIcon, ...sxs?.stateModifiedIcon }
+        stateSpecificSx: { color: palette.yellow.main, ...sxs?.stateModifiedIcon }
       },
       deleted: {
         Icon: DeletedStateIcon,
-        stateSpecificSx: { color: palette.red.main, ...styles?.stateDeletedIcon, ...sxs?.stateDeletedIcon }
+        stateSpecificSx: { color: palette.red.main, ...sxs?.stateDeletedIcon }
       },
       locked: {
         Icon: LockedStateIcon,
-        stateSpecificSx: { color: palette.orange.main, ...styles?.stateLockedIcon, ...sxs?.stateLockedIcon }
+        stateSpecificSx: { color: palette.orange.main, ...sxs?.stateLockedIcon }
       },
       systemProcessing: {
         Icon: SystemProcessingStateIcon,
         stateSpecificSx: {
           color: palette.indigo.main,
-          ...styles?.stateSystemProcessingIcon,
           ...sxs?.stateSystemProcessingIcon
         }
       },
       submitted: {
         Icon: SubmittedStateIcon,
-        stateSpecificSx: { color: palette.purple.main, ...styles?.stateSubmittedIcon, ...sxs?.stateSubmittedIcon }
+        stateSpecificSx: { color: palette.purple.main, ...sxs?.stateSubmittedIcon }
       },
       scheduled: {
         Icon: ScheduledStateIcon,
-        stateSpecificSx: { color: palette.green.main, ...styles?.stateScheduledIcon, ...sxs?.stateScheduledIcon }
+        stateSpecificSx: { color: palette.green.main, ...sxs?.stateScheduledIcon }
       },
       publishing: {
         Icon: CloudUploadOutlinedIcon,
-        stateSpecificSx: { color: palette.indigo.main, ...styles?.statePublishingIcon, ...sxs?.statePublishingIcon }
+        stateSpecificSx: { color: palette.indigo.main, ...sxs?.statePublishingIcon }
       },
       submittedToStaging: {
         Icon: item.stateMap.submitted ? SubmittedStateIcon : ScheduledStateIcon,
         stateSpecificSx: {
           color: palette.blue.main,
-          ...styles?.stateSubmittedToStagingIcon,
           ...sxs?.stateSubmittedToStagingIcon
         }
       },
@@ -119,7 +113,6 @@ export function ItemStateIcon(props: ItemStateIconProps) {
         Icon: item.stateMap.submitted ? SubmittedStateIcon : ScheduledStateIcon,
         stateSpecificSx: {
           color: palette.green.main,
-          ...styles?.stateSubmittedToLiveIcon,
           ...sxs?.stateSubmittedToLiveIcon
         }
       },
@@ -127,7 +120,7 @@ export function ItemStateIcon(props: ItemStateIconProps) {
       live: null,
       disabled: {
         Icon: BlockRoundedIcon,
-        stateSpecificSx: { color: palette.pink.main, ...styles?.stateDisabledIcon, ...sxs?.stateDisabledIcon }
+        stateSpecificSx: { color: palette.pink.main, ...sxs?.stateDisabledIcon }
       },
       translationUpToDate: null,
       translationPending: null,
@@ -136,14 +129,13 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     return (
       map[getItemStateId(item.stateMap)] ?? {
         Icon: NotInWorkflowIcon,
-        stateSpecificSx: { color: palette.gray.medium4, ...styles?.stateNotInWorkflow, ...sxs?.stateNotInWorkflow }
+        stateSpecificSx: { color: palette.gray.medium4, ...sxs?.stateNotInWorkflow }
       }
     );
-  }, [styles, sxs, item]);
+  }, [sxs, item]);
   return Icon === null ? null : item.systemType === 'folder' ? (
     <Icon
       sx={{
-        ...styles?.root,
         ...sxs?.root,
         ...stateSpecificSx
       }}
@@ -157,7 +149,6 @@ export function ItemStateIcon(props: ItemStateIconProps) {
     >
       <Icon
         sx={{
-          ...styles?.root,
           ...sxs?.root,
           ...stateSpecificSx
         }}

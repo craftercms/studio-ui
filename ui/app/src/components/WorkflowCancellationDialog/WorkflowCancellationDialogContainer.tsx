@@ -14,30 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { makeStyles } from 'tss-react/mui';
 import { FormattedMessage } from 'react-intl';
 import { WorkflowCancellationDialogUI } from './WorkflowCancellationDialogUI';
 import React from 'react';
 import { WorkflowCancellationDialogContainerProps } from './utils';
 import { EmptyState } from '../EmptyState';
 
-const useStyles = makeStyles()((theme) => ({
-  suspense: {
-    minHeight: '442px',
-    margin: 0,
-    justifyContent: 'center'
-  },
-  filesList: {
-    height: '100%',
-    border: `1px solid ${theme.palette.divider}`,
-    background: theme.palette.background.paper,
-    padding: 0
-  }
-}));
-
 export function WorkflowCancellationDialogContainer(props: WorkflowCancellationDialogContainerProps) {
   const { items, onClose, onContinue } = props;
-  const { classes } = useStyles();
 
   const onContinueClick = (e) => {
     onClose(e, null);
@@ -50,7 +34,6 @@ export function WorkflowCancellationDialogContainer(props: WorkflowCancellationD
         items={items}
         onCloseButtonClick={(e) => onClose(e, null)}
         onContinue={onContinueClick}
-        classes={classes}
       />
     ) : (
       <EmptyState

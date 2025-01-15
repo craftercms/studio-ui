@@ -16,18 +16,17 @@
 
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import React, { useState, lazy, Suspense, useEffect, useMemo } from 'react';
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import LauncherGlobalNav from '../LauncherGlobalNav';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
-import { useStyles } from './styles';
 import {
   createHashRouter,
   createRoutesFromElements,
   Navigate,
+  Outlet,
   Route,
   RouterProvider,
-  useLocation,
-  Outlet
+  useLocation
 } from 'react-router';
 import SiteManagement from '../SiteManagement';
 import { getLauncherSectionLink, urlMapping } from '../LauncherSection/utils';
@@ -142,7 +141,6 @@ function RouteNotFound() {
 }
 
 export function GlobalAppInternal(props: GlobalAppProps) {
-  const { classes } = useStyles();
   const { footerHtml } = props;
   const [width, setWidth] = useState(240);
   const [{ openSidebar }] = useGlobalAppState();
@@ -170,7 +168,18 @@ export function GlobalAppInternal(props: GlobalAppProps) {
   return (
     <Paper sx={{ height: '100vh', width: '100%' }} elevation={0}>
       <ResizeableDrawer
-        classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
+        sxs={{
+          drawerPaper: {
+            top: '0',
+            padding: 2
+          },
+          drawerBody: {
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between'
+          }
+        }}
         open={openSidebar}
         width={width}
         onWidthChange={setWidth}
@@ -201,17 +210,33 @@ export function GlobalAppInternal(props: GlobalAppProps) {
             }
           }}
         />
-        <footer className={classes.footer}>
-          <CrafterCMSLogo width={100} className={classes.logo} />
+        <Box component="footer" sx={{ padding: '20px 0', textAlign: 'center' }}>
+          <CrafterCMSLogo width={100} sxs={{ root: { margin: '0 auto 10px auto' } }} />
           <Typography
             component="p"
             variant="caption"
-            className={classes.footerDescription}
+            sx={(theme) => ({
+              color: theme.palette.text.secondary,
+              '& > a': {
+                textDecoration: 'none',
+                color: theme.palette.primary.main
+              }
+            })}
             dangerouslySetInnerHTML={{ __html: footerHtml }}
           />
-        </footer>
+        </Box>
       </ResizeableDrawer>
-      <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${width}px` : 0}>
+      <Box
+        sx={(theme) => ({
+          transition: theme.transitions.create('padding-left', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen
+          })
+        })}
+        height="100%"
+        width="100%"
+        paddingLeft={openSidebar ? `${width}px` : 0}
+      >
         <Suspense
           fallback={
             <>

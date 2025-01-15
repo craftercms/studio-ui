@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import useStyles from './styles';
 import ResizeableDrawer from '../ResizeableDrawer/ResizeableDrawer';
 import React from 'react';
 import MenuList from '@mui/material/MenuList';
@@ -27,7 +26,7 @@ import EmptyState from '../EmptyState/EmptyState';
 import CrafterCMSLogo from '../../icons/CrafterCMSLogo';
 import { getPossibleTranslation } from '../../utils/i18n';
 import Widget from '../Widget';
-import { WidgetDescriptor } from '../../models';
+import { PartialSxRecord, WidgetDescriptor } from '../../models';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 import SiteSwitcherSelect from '../SiteSwitcherSelect';
@@ -38,6 +37,8 @@ import Suspencified from '../Suspencified/Suspencified';
 import LauncherOpenerButton from '../LauncherOpenerButton';
 import { onSubmittingAndOrPendingChangeProps } from '../../hooks/useEnhancedDialogState';
 import useSelection from '../../hooks/useSelection';
+import { SxProps } from '@mui/system';
+import { Theme } from '@mui/material';
 
 export interface Tool {
   title: TranslationOrText;
@@ -57,7 +58,8 @@ export interface SiteToolsProps {
   hideSidebarLogo?: boolean;
   hideSidebarSiteSwitcher?: boolean;
   showAppsButton?: boolean;
-  classes?: Partial<Record<'root', string>>;
+  sx?: SxProps<Theme>;
+  sxs?: PartialSxRecord<'root'>;
   // Whether the component is mounted on a dialog or it's the main app on a page (i.e. `/studio/site-tools`)
   mountMode?: 'dialog' | 'page';
   onBackClick?(): void;
@@ -84,16 +86,33 @@ export function SiteTools(props: SiteToolsProps) {
     onNavItemClick,
     showAppsButton,
     onSubmittingAndOrPendingChange,
-    onMinimize
+    onMinimize,
+    sx
   } = props;
-  const { classes, cx: clsx } = useStyles();
   const { formatMessage } = useIntl();
   const baseUrl = useSelection<string>((state) => state.env.authoringBase);
   const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
   return (
-    <Paper className={clsx(classes.root, props.classes?.root)} elevation={0}>
+    <Paper
+      sx={{
+        height: '100vh',
+        width: '100%',
+        ...sx
+      }}
+      elevation={0}
+    >
       <ResizeableDrawer
-        classes={{ drawerPaper: classes.drawerPaper, drawerBody: classes.drawerBody }}
+        sxs={{
+          drawerPaper: {
+            position: 'absolute'
+          },
+          drawerBody: {
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            padding: (theme) => theme.spacing(2)
+          }
+        }}
         open={openSidebar}
         width={sidebarWidth}
         belowToolbar={sidebarBelowToolbar}
@@ -110,7 +129,7 @@ export function SiteTools(props: SiteToolsProps) {
             )}
             {!hideSidebarSiteSwitcher && <SiteSwitcherSelect site={site} fullWidth />}
           </Box>
-          <MenuList disablePadding className={classes.nav}>
+          <MenuList disablePadding sx={{ overflow: 'auto' }}>
             {tools ? (
               tools.map((tool) => (
                 <MenuItem
@@ -119,7 +138,7 @@ export function SiteTools(props: SiteToolsProps) {
                   selected={`/${tool.url}` === activeToolId}
                 >
                   <SystemIcon
-                    className={classes.icon}
+                    sx={{ marginRight: '10px' }}
                     icon={tool.icon}
                     svgIconProps={{ fontSize: 'small', color: 'action' }}
                   />
@@ -144,19 +163,35 @@ export function SiteTools(props: SiteToolsProps) {
             )}
           </MenuList>
         </section>
-        <footer className={classes.footer}>
-          {!hideSidebarLogo && <CrafterCMSLogo width={100} className={classes.logo} />}
+        <Box component="footer" sx={{ padding: '20px 0', textAlign: 'center' }}>
+          {!hideSidebarLogo && <CrafterCMSLogo width={100} sxs={{ root: { margin: '0 auto 10px auto' } }} />}
           {footerHtml && (
             <Typography
               component="p"
               variant="caption"
-              className={classes.footerDescription}
+              sx={(theme) => ({
+                color: theme.palette.text.secondary,
+                '& > a': {
+                  textDecoration: 'none',
+                  color: theme.palette.primary.main
+                }
+              })}
               dangerouslySetInnerHTML={{ __html: footerHtml }}
             />
           )}
-        </footer>
+        </Box>
       </ResizeableDrawer>
-      <Box className={classes.wrapper} height="100%" width="100%" paddingLeft={openSidebar ? `${sidebarWidth}px` : 0}>
+      <Box
+        sx={(theme) => ({
+          transition: theme.transitions.create('padding-left', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen
+          })
+        })}
+        height="100%"
+        width="100%"
+        paddingLeft={openSidebar ? `${sidebarWidth}px` : 0}
+      >
         {activeToolId ? (
           tool ? (
             <Suspencified>
@@ -173,9 +208,9 @@ export function SiteTools(props: SiteToolsProps) {
             </Suspencified>
           ) : (
             <Box display="flex" flexDirection="column" height="100%">
-              <section className={classes.launcher}>
+              <Box component="section" sx={{ margin: '10px 12px 0 auto' }}>
                 <LauncherOpenerButton />
-              </section>
+              </Box>
               <EmptyState
                 styles={{ root: { height: '100%', margin: 0 } }}
                 title="404"

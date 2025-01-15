@@ -107,7 +107,7 @@ export function PublishOnDemandForm(props: PublishOnDemandFormProps) {
           </Grid>
         )}
         <Grid size={{ xs: 12, md: mode !== 'everything' ? 4 : 12 }}>
-          {publishingTargets && false ? (
+          {publishingTargets ? (
             <FormControl fullWidth variant="outlined" required disabled={disabled}>
               <InputLabel id="publishingTargetLabel">
                 <FormattedMessage id="publishOnDemand.publishingTarget" defaultMessage="Publishing Target" />

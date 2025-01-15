@@ -19,7 +19,6 @@ import { GlobalAppContextProvider, useGlobalAppState } from '../../GlobalApp';
 import useReference from '../../../hooks/useReference';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
 import SiteTools, { Tool } from '../SiteTools';
-import { embeddedStyles } from '../styles';
 import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
 import { useDispatch } from 'react-redux';
 import { updateWidgetDialog } from '../../../state/actions/dialogs';
@@ -36,7 +35,6 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   const siteTools = useReference('craftercms.siteTools');
   const tools: Tool[] = siteTools?.tools;
   const site = useActiveSiteId();
-  const { classes } = embeddedStyles();
   const dispatch = useDispatch();
 
   const onNavItemClick = (id: string) => {
@@ -62,9 +60,7 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
       activeToolId={activeToolId}
       openSidebar={openSidebar || !activeToolId}
       tools={tools}
-      classes={{
-        root: classes.root
-      }}
+      sx={{ height: '100%' }}
       onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
       onMinimize={() => {
         if (props.onMinimize) {
