@@ -230,9 +230,9 @@ export function SiteManagement() {
           ) : (
             <EmptyState
               title={<FormattedMessage id="sitesGrid.emptyStateMessage" defaultMessage="No Projects Found" />}
-              styles={{ root: { margin: undefined } }}
               sxs={{
                 root: {
+                  margin: undefined,
                   p: 5,
                   bgcolor: 'background.default',
                   borderRadius: 1,

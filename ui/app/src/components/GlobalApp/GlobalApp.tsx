@@ -121,7 +121,7 @@ function RouteNotFound() {
         <LauncherOpenerButton />
       </Box>
       <EmptyState
-        styles={{
+        sxs={{
           root: {
             height: '100%',
             margin: 0

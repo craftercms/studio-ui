@@ -38,7 +38,7 @@ function LauncherTile(props: LauncherTileProps) {
   const { title, icon, link, target, onClick, disabled = false, active, sxs } = props;
   return (
     <Link
-      className={disabled && 'disabled'}
+      className={disabled ? 'disabled' : ''}
       sx={{
         width: '120px',
         height: '100px',

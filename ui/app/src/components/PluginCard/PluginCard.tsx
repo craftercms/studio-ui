@@ -300,7 +300,7 @@ function PluginCard(props: PluginCardProps) {
         onClick={() => {
           onPluginSelected(plugin, 1);
         }}
-        sx={isGitOrDuplicateCard && { display: 'flex', justifyContent: 'start' }}
+        sx={isGitOrDuplicateCard ? { display: 'flex', justifyContent: 'start' } : null}
       >
         <AutoPlaySwipeableViews
           index={index}
@@ -312,7 +312,7 @@ function PluginCard(props: PluginCardProps) {
           {renderMedias(id)}
         </AutoPlaySwipeableViews>
         {isGitOrDuplicateCard && (
-          <CardContent sx={isGitOrDuplicateCard && { height: 'unset !important' }} className="cardContent">
+          <CardContent sx={isGitOrDuplicateCard ? { height: 'unset !important' } : null} className="cardContent">
             <Typography gutterBottom variant="subtitle2" component="h2" className="cardTitle">
               {name}
             </Typography>
@@ -332,14 +332,7 @@ function PluginCard(props: PluginCardProps) {
             borderTop: '1px solid #e4e3e3',
             height: '30px',
             padding: '0',
-            cursor: 'pointer',
-            '& .MuiMobileStepper-dot': {
-              padding: '6px',
-              margin: '4px',
-              '&:hover': {
-                background: 'gray'
-              }
-            }
+            cursor: 'pointer'
           }}
           position={'static'}
           activeStep={index}

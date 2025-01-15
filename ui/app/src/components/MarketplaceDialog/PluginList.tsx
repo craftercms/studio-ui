@@ -35,7 +35,7 @@ export function PluginList(props: PluginListProps) {
     <Grid container spacing={3} sx={{ height: '100%' }}>
       {plugins.length === 0 ? (
         <EmptyState
-          styles={{
+          sxs={{
             root: {
               flexGrow: 1,
               justifyContent: 'center'

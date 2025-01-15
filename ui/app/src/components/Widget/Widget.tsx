@@ -74,7 +74,7 @@ const Widget = memo<WidgetProps>(function (props) {
       <EmptyState
         title={formatMessage(messages.componentNotFoundTitle, { id })}
         subtitle={formatMessage(messages.componentNotFoundSubtitle)}
-        styles={{ image: { width: 100 } }}
+        sxs={{ image: { width: 100 } }}
       />
     );
   } else {
@@ -94,7 +94,7 @@ const Widget = memo<WidgetProps>(function (props) {
                   <EmptyState
                     title={formatMessage(messages.componentNotFoundTitle, { id })}
                     subtitle={formatMessage(messages.componentNotFoundSubtitle)}
-                    styles={{ image: { width: 100 } }}
+                    sxs={{ image: { width: 100 } }}
                   />
                 );
               }

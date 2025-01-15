@@ -329,7 +329,7 @@ export function BrowseFilesDialogUI(props: BrowseFilesDialogUIProps) {
             </Box>
             {items && items.length === 0 && (
               <EmptyState
-                styles={{ root: { flexGrow: 1 } }}
+                sxs={{ root: { flexGrow: 1 } }}
                 title={<FormattedMessage id="browseFilesDialog.noResults" defaultMessage="No items found." />}
               />
             )}

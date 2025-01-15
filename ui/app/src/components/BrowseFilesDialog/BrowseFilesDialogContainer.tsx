@@ -257,7 +257,7 @@ export function BrowseFilesDialogContainer(props: BrowseFilesDialogContainerProp
     />
   ) : (
     <EmptyState
-      styles={{ root: { height: '60vh' } }}
+      sxs={{ root: { height: '60vh' } }}
       title={
         <FormattedMessage
           id="browseFilesDialog.emptyStateMessage"

@@ -19,23 +19,22 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import { Control } from '../../models/FormsEngine';
-import useStyles from './styles';
+import commonStyles from './styles';
 import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
 
 export function CheckboxGroup(props: Control) {
   const { field, value = [], onChange, disabled } = props;
-  const { classes } = useStyles();
 
   const handleChange = (e) =>
     onChange(e.target.checked ? value.concat(e.target.value) : value.filter((val) => val !== e.target.value));
 
   return (
     <>
-      <FormLabel className={classes.inputLabel} htmlFor={field.id}>
+      <FormLabel sx={commonStyles.inputLabel} htmlFor={field.id}>
         {field.name}
       </FormLabel>
-      <FormControl variant="outlined" className={classes.formControl} fullWidth>
+      <FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
         <FormGroup>
           {field.values?.map((possibleValue: any) => (
             <FormControlLabel

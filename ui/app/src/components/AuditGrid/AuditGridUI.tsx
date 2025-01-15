@@ -375,7 +375,7 @@ export function AuditGridUI(props: AuditGridUIProps) {
           noRowsOverlay: () => (
             <Box height="100%">
               <EmptyState
-                styles={{
+                sxs={{
                   root: {
                     position: 'relative',
                     zIndex: 1,

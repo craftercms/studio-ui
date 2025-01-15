@@ -10,12 +10,14 @@
   `ErrorState`, `ApiResponseErrorState`, `PathNavigatorTreeItem`, `PathNavigatorBreadcrumbs`, `PathNavigatorList`, `MediaCard`, 
   `ConfirmDialog`, `GroupManagement`, `SearchBar`, `LogoAndMenuBundleButton`, `CrafterCMSIcon`, `ItemPublishingTargetIcon`,
     `ItemStateIcon`, `LoginForm`, `LoadingState`, `LauncherSection`, `AceEditor`, `ItemDisplay`, `PasswordRequirementsDisplay`
-  `PathNavigatorTree`, `PathNavigatorHeader`, `PathNavigator`. Replaced by `sxs` prop.
+  `PathNavigatorTree`, `PathNavigatorHeader`, `PathNavigator`, `ResizeableDrawer`, `GlobalAppToolbar`, `PublishingStatusAvatar`
+  `EmptyState`. Replaced by `sxs` prop.
   * Removed `styles` prop from `ErrorState`, `ApiResponseErrorState`, `BlueprintForm`, `LoadingState`, `ConfirmDialog`, `AlertDialog`
-  `LauncherSection`, `AceEditor`, `ItemDisplay`, `PasswordRequirementsDisplay`, `PublishDialogForm`.  Replaced by `sxs` prop.
+  `LauncherSection`, `AceEditor`, `ItemDisplay`, `PasswordRequirementsDisplay`, `PublishDialogForm`, `ItemStateIcon`, `ResizeableDrawer`,
+  `GlobalAppToolbar`, `ViewToolbar`, `PublishingStatusAvatar`, `ItemPublishingTargetIcon`, `EmptyState`. Replaced by`sxs` prop.
   * Removed `sectionStyles` and `tileStyles` props from `LauncherGlobalNav`. Replaced with `sectionSxs` and `tileSxs`.
-  * Added `sxs` prop to `CrafterCMSLogo`.
-  * Added `sx` prop to `FilterDropdown`, `PathNavigatorHeader`.
+  * Added `sxs` prop to `CrafterCMSLogo`, `SiteSwitcherSelect`.
+  * Added `sx` prop to `FilterDropdown`, `PathNavigatorHeader`, `SiteTools`, `SiteSearchFilters`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.

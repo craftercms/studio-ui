@@ -20,18 +20,17 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import { Control } from '../../models/FormsEngine';
-import useStyles from './styles';
+import commonStyles from './styles';
 
 export function Dropdown(props: Control) {
   const { field, value = '', onChange, disabled } = props;
-  const { classes } = useStyles();
 
   const handleSelectChange = (event: SelectChangeEvent<{ value: unknown }>) => {
     onChange(event.target.value);
   };
 
   return (
-    <FormControl variant="outlined" className={classes.formControl} fullWidth>
+    <FormControl variant="outlined" sx={commonStyles.formControl} fullWidth>
       <InputLabel id={`labelFor_${field.id}`}>{field.name}</InputLabel>
       <Select
         labelId={`labelFor_${field.id}`}

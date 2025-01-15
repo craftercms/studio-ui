@@ -212,7 +212,7 @@ export function SiteTools(props: SiteToolsProps) {
                 <LauncherOpenerButton />
               </Box>
               <EmptyState
-                styles={{ root: { height: '100%', margin: 0 } }}
+                sxs={{ root: { height: '100%', margin: 0 } }}
                 title="404"
                 subtitle={<FormattedMessage id="siteTools.toolNotFound" defaultMessage="Tool not found" />}
               />
@@ -220,7 +220,7 @@ export function SiteTools(props: SiteToolsProps) {
           )
         ) : (
           <EmptyState
-            styles={{ root: { height: '100%', margin: 0 } }}
+            sxs={{ root: { height: '100%', margin: 0 } }}
             title={<FormattedMessage id="siteTools.selectTool" defaultMessage="Please choose a tool from the left." />}
             image={`${baseUrl}/static-assets/images/choose_option.svg`}
           />

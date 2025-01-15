@@ -248,7 +248,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
           {!isFetching && !error && groupedOptions.length === 0 && (
             <EmptyState
               title={<FormattedMessage id="searchAhead.noResults" defaultMessage="No Results." />}
-              styles={{
+              sxs={{
                 image: {
                   width: 100
                 }
