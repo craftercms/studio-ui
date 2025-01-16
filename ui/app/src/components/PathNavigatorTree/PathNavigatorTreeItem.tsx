@@ -396,7 +396,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
         </>
       }
       sx={{
-        [`& .${treeItemClasses.content}`]: {
+        [`& > .${treeItemClasses.content}`]: {
           pt: 0,
           pb: 0,
           pr: 0,
@@ -415,7 +415,9 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
           },
           '& .MuiSvgIcon-root': {
             fontSize: '1.1rem'
-          },
+          }
+        },
+        [`& > .${treeItemClasses.content} > .${treeItemClasses.label}`]: {
           ...(active[path] ? { backgroundColor: (theme) => theme.palette.action.selected } : {})
         },
         [`& .${treeItemClasses.iconContainer}`]: {

@@ -218,14 +218,7 @@ export function PluginDetailsView(props: PluginDetailsViewProps) {
             borderTop: '1px solid #e4e3e3',
             height: '30px',
             padding: '0',
-            cursor: 'pointer',
-            '& .MuiMobileStepper-dot': {
-              padding: '7px',
-              margin: '4px',
-              '&:hover': {
-                background: 'gray'
-              }
-            }
+            cursor: 'pointer'
           }}
           position="static"
           activeStep={index}
