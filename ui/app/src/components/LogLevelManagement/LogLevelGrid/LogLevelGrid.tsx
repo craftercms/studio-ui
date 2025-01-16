@@ -68,7 +68,6 @@ export function LogLevelGrid(props: LoggingLevelsGridUIProps) {
   return (
     <section>
       <TableContainer>
-        asd
         <Table sx={{ tableLayout: 'fixed' }}>
           <TableHead>
             <GlobalAppGridRow className="hoverDisabled">

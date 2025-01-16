@@ -29,7 +29,7 @@ import palette from '../../styles/palette';
 import Avatar from '@mui/material/Avatar';
 import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
+import CardHeader, { cardHeaderClasses } from '@mui/material/CardHeader';
 import { Site } from '../../models/Site';
 import EmptyState from '../EmptyState/EmptyState';
 import { setSiteCookie } from '../../utils/auth';
@@ -129,9 +129,11 @@ const UserDisplaySection = ({ formatMessage, user, onLogout }) => (
   >
     <Card sx={{ width: '100%', boxShadow: 'none' }}>
       <CardHeader
-        sx={{ padding: 0 }}
-        slotProps={{
-          action: { marginTop: 0, marginRight: 0 }
+        sx={{
+          padding: 0,
+          [`& .${cardHeaderClasses.action}`]: {
+            action: { marginTop: '10px', marginRight: '10px' }
+          }
         }}
         avatar={
           <Avatar

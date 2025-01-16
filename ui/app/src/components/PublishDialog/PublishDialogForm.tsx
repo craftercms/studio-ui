@@ -238,7 +238,7 @@ export function PublishDialogForm(props: PublishFormProps) {
           sx={[
             state.scheduling === 'custom' && {
               position: 'relative',
-              paddingLeft: 30,
+              paddingLeft: '30px',
               '&::before': {
                 content: '""',
                 position: 'absolute',
