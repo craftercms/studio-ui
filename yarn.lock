@@ -1893,7 +1893,6 @@ __metadata:
     rollup: "npm:^4.21.0"
     rxjs: "npm:^7.8.1"
     slugify: "npm:^1.6.6"
-    tss-react: "npm:^4.9.10"
     typescript: "npm:^5.4.5"
     uppy: "npm:^3.27.3"
     uuid: "npm:^10.0.0"
@@ -1985,7 +1984,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/cache@npm:*, @emotion/cache@npm:^11.13.0, @emotion/cache@npm:^11.13.1":
+"@emotion/cache@npm:^11.13.0, @emotion/cache@npm:^11.13.1":
   version: 11.13.1
   resolution: "@emotion/cache@npm:11.13.1"
   dependencies:
@@ -2071,7 +2070,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/serialize@npm:*, @emotion/serialize@npm:^1.2.0, @emotion/serialize@npm:^1.3.0, @emotion/serialize@npm:^1.3.1":
+"@emotion/serialize@npm:^1.2.0, @emotion/serialize@npm:^1.3.0, @emotion/serialize@npm:^1.3.1":
   version: 1.3.1
   resolution: "@emotion/serialize@npm:1.3.1"
   dependencies:
@@ -2140,7 +2139,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/utils@npm:*, @emotion/utils@npm:^1.4.0":
+"@emotion/utils@npm:^1.4.0":
   version: 1.4.0
   resolution: "@emotion/utils@npm:1.4.0"
   checksum: 10/e4cdb51819db01fec21c3e35a1391900c9e7f3ac1e7ecb419c8e408464830cd7ef6e1a116381cbfe3fb1039406fb7ed35f16a1575d502c92bc9f81bc13a3ee5a
@@ -12718,27 +12717,6 @@ __metadata:
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: 10/7dbf34e6f55c6492637adb81b555af5e3b4f9cc6b998fb440dac82d3b42bdc91560a35a5fb75e20e24a076c651438234da6743d139e4feabf0783f3cdfe1dddb
-  languageName: node
-  linkType: hard
-
-"tss-react@npm:^4.9.10":
-  version: 4.9.13
-  resolution: "tss-react@npm:4.9.13"
-  dependencies:
-    "@emotion/cache": "npm:*"
-    "@emotion/serialize": "npm:*"
-    "@emotion/utils": "npm:*"
-  peerDependencies:
-    "@emotion/react": ^11.4.1
-    "@emotion/server": ^11.4.0
-    "@mui/material": ^5.0.0 || ^6.0.0
-    react: ^16.8.0 || ^17.0.2 || ^18.0.0
-  peerDependenciesMeta:
-    "@emotion/server":
-      optional: true
-    "@mui/material":
-      optional: true
-  checksum: 10/296bad9c01575c9cfecdbce4d1d5cc20c090b527d4830bd901b64b416ea48ccbd62f5a903a899220826c9602c2bb941eaa94089cbf92af4813b94b04f9b115dc
   languageName: node
   linkType: hard
 
