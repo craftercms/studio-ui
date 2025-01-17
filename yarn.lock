@@ -1867,7 +1867,7 @@ __metadata:
     globals: "npm:^15.14.0"
     graphiql: "npm:^3.2.2"
     graphql: "npm:^16.8.1"
-    graphql-ws: "npm:^5.16.0"
+    graphql-ws: "npm:^6.0.1"
     highlight.js: "npm:^11.9.0"
     jabber: "npm:^1.5.3"
     js-cookie: "npm:^3.0.5"
@@ -8589,12 +8589,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-ws@npm:^5.16.0":
-  version: 5.16.0
-  resolution: "graphql-ws@npm:5.16.0"
+"graphql-ws@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "graphql-ws@npm:6.0.1"
   peerDependencies:
-    graphql: ">=0.11 <=16"
-  checksum: 10/e56d903920c78fa88966e31940d281f8b35ef8c9f4543255bfe349e47a0e972c6ca746bcb52040b1c6938d22e42560228994399972abc473cfa6bcd183aca709
+    "@fastify/websocket": ^10 || ^11
+    graphql: ^15.10.1 || ^16
+    uWebSockets.js: ^20
+    ws: ^8
+  peerDependenciesMeta:
+    "@fastify/websocket":
+      optional: true
+    uWebSockets.js:
+      optional: true
+    ws:
+      optional: true
+  checksum: 10/705a410a1802c0c45dad5d58d3a6ec1d54d32e2963774844e7dbf58482812e98e958907b2a6d443320d130967afe964ea2746c2f16dfa5da0c1e482892694f38
   languageName: node
   linkType: hard
 
