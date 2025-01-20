@@ -30,6 +30,7 @@ export interface LauncherTileProps {
   target?: string;
   disabled?: any;
   active?: boolean;
+  classes?: Partial<Record<LauncherTileClassKey, string>>;
   sxs?: PartialSxRecord<LauncherTileClassKey>;
   onClick?(e: React.MouseEvent<HTMLAnchorElement | HTMLSpanElement>): any;
 }
@@ -38,7 +39,7 @@ function LauncherTile(props: LauncherTileProps) {
   const { title, icon, link, target, onClick, disabled = false, active, sxs } = props;
   return (
     <Link
-      className={disabled ? 'disabled' : ''}
+      className={[disabled ? 'disabled' : '', props.classes?.tile].filter(Boolean).join(' ')}
       sx={{
         width: '120px',
         height: '100px',
@@ -79,6 +80,7 @@ function LauncherTile(props: LauncherTileProps) {
     >
       <Avatar
         variant="rounded"
+        className={props.classes?.iconAvatar}
         sx={{
           backgroundColor: 'transparent',
           color: (theme) => theme.palette.text.secondary,
@@ -90,6 +92,7 @@ function LauncherTile(props: LauncherTileProps) {
       </Avatar>
       <Typography
         color="textPrimary"
+        className={props.classes?.title}
         sx={{
           lineHeight: 1,
           ...sxs?.title

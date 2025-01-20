@@ -24,6 +24,8 @@ import { FormatXMLElementFn, PrimitiveType } from 'intl-messageformat';
 import { usePossibleTranslation } from '../../hooks/usePossibleTranslation';
 import Box from '@mui/material/Box';
 
+export type LauncherSectionUIClassKey = 'title' | 'nav';
+
 export type LauncherSectionUIProps = PropsWithChildren<{
   title: TranslationOrText;
   user?: EnhancedUser;
@@ -31,7 +33,8 @@ export type LauncherSectionUIProps = PropsWithChildren<{
   widgets?: WidgetDescriptor[];
   // TODO: Fix FormatXMLElementFn generics
   translationValues?: Record<string, PrimitiveType | FormatXMLElementFn<any, any>>;
-  sxs?: PartialSxRecord<'title' | 'nav'>;
+  classes?: Partial<Record<LauncherSectionUIClassKey, string>>;
+  sxs?: PartialSxRecord<LauncherSectionUIClassKey>;
 }>;
 
 export function LauncherSectionUI(props: LauncherSectionUIProps) {
@@ -43,6 +46,7 @@ export function LauncherSectionUI(props: LauncherSectionUIProps) {
         <Typography
           variant="subtitle1"
           component="h2"
+          className={props.classes?.title}
           sx={{
             textTransform: 'uppercase',
             fontWeight: 600,
@@ -60,6 +64,7 @@ export function LauncherSectionUI(props: LauncherSectionUIProps) {
       )}
       <Box
         component="nav"
+        className={props.classes?.nav}
         sx={{
           display: 'flex',
           flexWrap: 'wrap',

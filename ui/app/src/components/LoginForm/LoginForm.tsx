@@ -22,6 +22,8 @@ import Button from '@mui/material/Button';
 import { USER_PASSWORD_MAX_LENGTH, USER_USERNAME_MAX_LENGTH } from '../UserManagement/utils';
 import { PartialSxRecord } from '../../models';
 
+export type LogInFormClassKey = 'username' | 'password' | 'submit' | 'recover';
+
 export type LogInFormProps = PropsWithChildren<{
   username: string;
   password: string;
@@ -30,7 +32,8 @@ export type LogInFormProps = PropsWithChildren<{
   onSetPassword: Function;
   enableUsernameInput?: boolean;
   onSetUsername?: Function;
-  sxs?: PartialSxRecord<'username' | 'password' | 'submit' | 'recover'>;
+  classes?: Partial<Record<LogInFormClassKey, string>>;
+  sxs?: PartialSxRecord<LogInFormClassKey>;
   action?: string;
   method?: 'get' | 'post';
   onRecover?: Function;
@@ -48,6 +51,7 @@ export function LogInForm(props: LogInFormProps) {
     onSetPassword,
     password,
     enableUsernameInput = false,
+    classes,
     sxs,
     action = '/studio/login',
     method = 'post',
@@ -67,6 +71,7 @@ export function LogInForm(props: LogInFormProps) {
         type="text"
         value={username}
         onChange={(e: any) => onSetUsername?.(e.target.value)}
+        className={classes?.username}
         sx={{
           marginBottom: (theme) => theme.spacing(1.5),
           ...sxs?.username
@@ -91,7 +96,7 @@ export function LogInForm(props: LogInFormProps) {
         autoFocus={!enableUsernameInput || Boolean(username)}
         value={password}
         onChange={(e: any) => onSetPassword?.(e.target.value)}
-        className="last-before-button"
+        className={['last-before-button', classes?.password].join(' ')}
         sxs={{
           root: {
             marginBottom: (theme) => theme.spacing(1.5),
@@ -118,6 +123,7 @@ export function LogInForm(props: LogInFormProps) {
         fullWidth
         type="submit"
         disabled={isFetching}
+        className={classes?.submit}
         sx={[onRecover && { marginBottom: (theme) => theme.spacing(1.5) }]}
       >
         <FormattedMessage id="loginView.loginButtonLabel" defaultMessage="Log In" />
@@ -129,6 +135,8 @@ export function LogInForm(props: LogInFormProps) {
           disabled={isFetching}
           variant="text"
           fullWidth
+          className={classes?.recover}
+          sx={sxs?.recover}
           onClick={() => onRecover()}
         >
           <FormattedMessage id="loginView.forgotPasswordButtonLabel" defaultMessage="Forgot your password?" />

@@ -33,9 +33,12 @@ export interface LauncherSiteCardOption {
   onClick?(site: string): void;
 }
 
+export type LauncherSiteCardClassKey = 'root' | 'siteName';
+
 export interface LauncherSiteCardProps {
   title: string;
   value?: string;
+  classes?: Partial<Record<LauncherSiteCardClassKey, string>>;
   sxs?: PartialSxRecord<'root' | 'siteName'>;
   options?: Array<LauncherSiteCardOption>;
   disabled?: boolean;
@@ -68,6 +71,7 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         selected={selected}
         component={ListItem}
         onClick={isSiteReady ? () => onCardClick(value) : undefined}
+        className={props.classes?.root}
         sx={{
           position: 'relative',
           paddingTop: (theme) => theme.spacing(2.5),
@@ -92,6 +96,7 @@ function LauncherSiteCard(props: LauncherSiteCardProps) {
         <ListItemText
           primary={title}
           primaryTypographyProps={{
+            className: props.classes?.siteName,
             sx: {
               fontWeight: 600,
               ...sxs?.siteName

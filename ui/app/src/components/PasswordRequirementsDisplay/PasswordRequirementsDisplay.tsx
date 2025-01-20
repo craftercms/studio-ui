@@ -24,14 +24,20 @@ import palette from '../../styles/palette';
 import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
+type PasswordRequirementsDisplayClassKey =
+  | 'listOfConditions'
+  | 'conditionItem'
+  | 'conditionItemIcon'
+  | 'conditionItemNotMet'
+  | 'conditionItemMet';
+
 export interface PasswordRequirementsDisplayProps {
   value: string;
   formatMessage: Function;
   onValidStateChanged: (isValid: boolean) => void;
   passwordRequirementsRegex: string;
-  sxs?: PartialSxRecord<
-    'listOfConditions' | 'conditionItem' | 'conditionItemIcon' | 'conditionItemNotMet' | 'conditionItemMet'
-  >;
+  classes?: Partial<Record<PasswordRequirementsDisplayClassKey, string>>;
+  sxs?: PartialSxRecord<PasswordRequirementsDisplayClassKey>;
 }
 
 export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayProps) {
@@ -46,6 +52,7 @@ export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayPr
   return (
     <Box
       component="ul"
+      className={props.classes?.listOfConditions}
       sx={{
         listStyle: 'none',
         padding: 0,
@@ -60,6 +67,7 @@ export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayPr
           <Typography
             key={key}
             component="li"
+            className={props.classes?.conditionItem}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -69,6 +77,7 @@ export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayPr
           >
             {valid && !blank ? (
               <CheckCircleOutlineRoundedIcon
+                className={props.classes?.conditionItemIcon}
                 sx={{
                   marginRight: (theme) => theme.spacing(1),
                   ...sxs?.conditionItemIcon
@@ -76,6 +85,7 @@ export function PasswordRequirementsDisplay(props: PasswordRequirementsDisplayPr
               />
             ) : (
               <ErrorOutlineRoundedIcon
+                className={props.classes?.conditionItemIcon}
                 sx={{
                   marginRight: (theme) => theme.spacing(1),
                   ...sxs?.conditionItemIcon

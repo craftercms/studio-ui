@@ -46,6 +46,7 @@ export interface PagesSearchAheadProps {
   onEnter(url: string): void;
   onFocus?(): void;
   onBlur?(): void;
+  classes: Partial<Record<'input', string>>;
   sxs?: PartialSxRecord<
     'container' | 'closeIcon' | 'progress' | 'inputRoot' | 'input' | 'paper' | 'listBox' | 'listItemIcon'
   >;
@@ -167,6 +168,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
           autoFocus={autoFocus}
           placeholder={placeholder}
           disabled={disabled}
+          classes={{ input: props.classes?.input }}
           sx={{ width: '100%', background: 'none', ...sxs?.inputRoot }}
           slotProps={{
             input: { sx: sxs?.input }
@@ -261,8 +263,7 @@ export function PagesSearchAhead(props: PagesSearchAheadProps) {
   );
 }
 
-// TODO: types
-function Option(props) {
+function Option(props: { name: string; path: string; keyword: string; sxs?: PartialSxRecord<'highlighted'> }) {
   const { name, path, keyword, sxs } = props;
   const nameMatches = match(name, keyword);
   const pathMatches = match(path, keyword);

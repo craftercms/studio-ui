@@ -22,6 +22,7 @@ import { ButtonProps } from '@mui/material/Button';
 import { PartialSxRecord } from '../../models';
 
 export type LogoAndMenuBundleButtonProps = ButtonProps & {
+  classes?: ButtonProps['classes'] & Partial<Record<'crafterIcon' | 'menuIcon', string>>;
   sxs?: PartialSxRecord<'button' | 'crafterIcon' | 'menuIcon'>;
   showCrafterIcon?: boolean;
   showMenuIcon?: boolean;
@@ -32,8 +33,13 @@ const LogoAndMenuBundleButton = React.forwardRef<HTMLButtonElement, LogoAndMenuB
     const { showCrafterIcon = true, showMenuIcon = true, sxs, ...buttonProps } = props;
     return (
       <Button ref={ref} {...buttonProps}>
-        {showCrafterIcon && <CrafterCMSIcon sx={{ mr: 0.5, fontSize: '33px !important', ...sxs?.crafterIcon }} />}
-        {showMenuIcon && <MenuRounded sx={sxs?.menuIcon} />}
+        {showCrafterIcon && (
+          <CrafterCMSIcon
+            className={props.classes?.crafterIcon}
+            sx={{ mr: 0.5, fontSize: '33px !important', ...sxs?.crafterIcon }}
+          />
+        )}
+        {showMenuIcon && <MenuRounded className={props.classes?.menuIcon} sx={sxs?.menuIcon} />}
       </Button>
     );
   }

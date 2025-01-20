@@ -27,15 +27,17 @@ export interface LoadingStateProps {
   subtitle?: ReactNode;
   graphic?: ElementType;
   graphicProps?: any;
+  classes?: Partial<Record<LoadingStateClassKey, string>>;
   sxs?: PartialSxRecord<LoadingStateClassKey>;
 }
 
 export type ConditionalLoadingStateProps = LoadingStateProps & PropsWithChildren<{ isLoading: boolean }>;
 
 export function LoadingState(props: LoadingStateProps) {
-  const { graphic: Graphic = Gears, sxs } = props;
+  const { graphic: Graphic = Gears, classes, sxs } = props;
   return (
     <Box
+      className={classes?.root}
       sx={{
         display: 'flex',
         textAlign: 'center',
@@ -51,6 +53,7 @@ export function LoadingState(props: LoadingStateProps) {
         <Typography
           variant="h6"
           component="h3"
+          className={classes?.title}
           sx={{
             marginTop: '40px',
             marginBottom: '15px',
@@ -64,6 +67,7 @@ export function LoadingState(props: LoadingStateProps) {
         <Typography
           variant="subtitle1"
           component="p"
+          className={classes?.subtitle}
           sx={{
             marginBottom: '10px',
             ...sxs?.subtitle
@@ -73,13 +77,14 @@ export function LoadingState(props: LoadingStateProps) {
         </Typography>
       )}
       <Box
+        className={classes?.graphicRoot}
         sx={{
           display: 'flex',
           justifyContent: 'center',
           ...sxs?.graphicRoot
         }}
       >
-        <Graphic sxs={{ root: { width: 120, ...sxs?.graphic } }} {...props.graphicProps} />
+        <Graphic className={classes?.graphic} sxs={{ root: { width: 120, ...sxs?.graphic } }} {...props.graphicProps} />
       </Box>
     </Box>
   );

@@ -75,6 +75,8 @@ interface Menu {
   };
 }
 
+export type PathNavigatorClassKey = 'root' | 'body' | 'searchRoot';
+
 export interface PathNavigatorProps {
   id: string;
   label: string;
@@ -89,7 +91,8 @@ export interface PathNavigatorProps {
   expandedIcon?: SystemIconDescriptor;
   collapsedIcon?: SystemIconDescriptor;
   container?: Partial<StateStylingProps>;
-  sxs?: PartialSxRecord<'root' | 'body' | 'searchRoot'>;
+  classes?: Partial<Record<PathNavigatorClassKey, string>>;
+  sxs?: PartialSxRecord<PathNavigatorClassKey>;
   onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   computeActiveItems?: (items: DetailedItem[]) => string[];
   createItemClickedHandler?: (
@@ -400,6 +403,7 @@ export function PathNavigator(props: PathNavigatorProps) {
     <>
       <PathNavigatorUI
         state={state}
+        classes={props.classes}
         sxs={sxs}
         itemsByPath={itemsByPath}
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}

@@ -72,6 +72,10 @@ export interface PathNavigatorUIProps {
   /**
    *
    **/
+  classes?: Partial<Record<PathNavigatorUIClassKey, string>>;
+  /**
+   *
+   **/
   sxs?: PartialSxRecord<PathNavigatorUIClassKey>;
   /**
    *
@@ -165,6 +169,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       TransitionProps={{ unmountOnExit: true }}
       expanded={!state.collapsed}
       onChange={() => onChangeCollapsed(!state.collapsed)}
+      className={props.classes?.root}
       sx={{
         background: 'none',
         ...sxs?.root,
@@ -188,6 +193,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
       />
       {/* endregion */}
       <AccordionDetails
+        className={props.classes?.body}
         sx={{
           padding: 0,
           flexDirection: 'column',
@@ -213,6 +219,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
               breadcrumb={state.breadcrumb.map((path) => lookupItemByPath(path, itemsByPath)).filter(Boolean)}
               onSearch={onSearch}
               onCrumbSelected={onBreadcrumbSelected}
+              classes={{ root: props.classes?.breadcrumbsRoot, searchRoot: props.classes?.breadcrumbsSearch }}
               sxs={{
                 root: sxs?.breadcrumbsRoot,
                 searchRoot: sxs?.breadcrumbsSearch
@@ -271,6 +278,7 @@ export function PathNavigatorUI(props: PathNavigatorUIProps) {
             {state.total !== null && state.total > 0 && !(state.total === 1 && state.levelDescriptor) && (
               <Pagination
                 showBottomBorder
+                classes={{ root: props.classes?.paginationRoot }}
                 sxs={{ root: sxs?.paginationRoot }}
                 // Do not consider levelDescriptor in pagination, as it will always be rendered at the beginning of the
                 // PathNav view, indistinctly of the current page.

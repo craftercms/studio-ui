@@ -42,6 +42,7 @@ export interface MediaCardProps {
   action?: CardHeaderProps['action'];
   avatar?: CardHeaderProps['avatar'];
   disableSelection?: boolean;
+  classes?: Partial<Record<MediaCardClassKey, string>>;
   sxs?: PartialSxRecord<MediaCardClassKey>;
   onClick?(e): void;
   onPreview?(e): any;
@@ -90,6 +91,7 @@ function MediaCard(props: MediaCardProps) {
   const CardActionAreaOrFragment = onPreview ? CardActionArea : React.Fragment;
   const cardActionAreaOrFragmentProps: CardActionAreaProps = onPreview
     ? {
+        className: props.classes?.cardActionArea,
         sx: sxs?.cardActionArea,
         disableRipple: Boolean(onDragStart || onDragEnd),
         onClick(e) {
@@ -102,6 +104,7 @@ function MediaCard(props: MediaCardProps) {
 
   return (
     <Card
+      className={props.classes?.root}
       draggable={Boolean(onDragStart || onDragEnd)}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
@@ -118,10 +121,11 @@ function MediaCard(props: MediaCardProps) {
       ]}
     >
       <CardHeader
+        classes={{ root: props.classes?.cardHeader }}
         sx={{ alignSelf: 'center', ...sxs?.cardHeader }}
         avatar={
           onSelect ? (
-            <FormGroup sx={sxs?.checkbox}>
+            <FormGroup className={props.classes?.checkbox} sx={sxs?.checkbox}>
               <Checkbox
                 checked={selected.includes(path)}
                 disabled={disableSelection}
@@ -160,12 +164,14 @@ function MediaCard(props: MediaCardProps) {
         <CardActionAreaOrFragment {...cardActionAreaOrFragmentProps}>
           {type === 'Image' ? (
             <CardMedia
+              className={props.classes?.media}
               image={`${previewAppBaseUri}${path}`}
               title={name}
               sx={{ height: 0, paddingTop: '56.25%', ...sxs?.media }}
             />
           ) : (
             <Box
+              className={props.classes?.mediaIcon}
               sx={[
                 {
                   paddingTop: '56.25%',

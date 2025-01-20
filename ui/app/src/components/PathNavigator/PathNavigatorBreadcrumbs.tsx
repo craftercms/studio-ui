@@ -38,6 +38,7 @@ export type PathNavigatorBreadcrumbsClassKey =
 export interface BreadcrumbsProps {
   breadcrumb: DetailedItem[];
   keyword?: string;
+  classes?: Partial<Record<PathNavigatorBreadcrumbsClassKey, string>>;
   sxs?: PartialSxRecord<PathNavigatorBreadcrumbsClassKey>;
   onSearch?(keyword: string): void;
   onCrumbSelected(breadcrumb: DetailedItem, event: React.SyntheticEvent): void;
@@ -63,6 +64,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
       {breadcrumb && breadcrumb.length > 1 && (
         <Box
           component="section"
+          className={props.classes?.root}
           sx={{
             display: 'flex',
             alignItems: 'center',
@@ -142,6 +144,11 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
             keyword={keyword}
             placeholder={formatMessage(messages.filter, { name: breadcrumb[breadcrumb.length - 1]?.label })}
             showActionButton={Boolean(keyword)}
+            classes={{
+              root: props.classes?.searchRoot,
+              inputInput: props.classes?.searchInput,
+              actionIcon: props.classes?.searchCleanButton
+            }}
             sxs={{
               root: {
                 margin: '7px 10px 7px 0',
@@ -167,6 +174,7 @@ function PathNavigatorBreadcrumbs(props: BreadcrumbsProps) {
                 onSearch('');
                 setShowSearch(false);
               }}
+              className={props.classes?.searchCloseButton}
               sx={{ marginTop: '5px', marginBottom: '5px', marginRight: '10px', ...sxs?.searchCloseButton }}
             >
               <CloseIconRounded />

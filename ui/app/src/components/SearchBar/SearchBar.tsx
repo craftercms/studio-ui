@@ -30,6 +30,8 @@ const messages = defineMessages({
   }
 });
 
+export type SearchBarClassKey = 'root' | 'inputRoot' | 'inputInput' | 'actionIcon';
+
 interface SearchBarProps {
   keyword: string[] | string;
   showActionButton?: boolean;
@@ -40,7 +42,8 @@ interface SearchBarProps {
   backgroundColor?: string;
   placeholder?: string;
   disabled?: boolean;
-  sxs?: PartialSxRecord<'root' | 'inputRoot' | 'inputInput' | 'actionIcon'>;
+  classes?: Partial<Record<SearchBarClassKey, string>>;
+  sxs?: PartialSxRecord<SearchBarClassKey>;
   onBlur?(): void;
   onClick?(e: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
   onChange(value: string, event: React.SyntheticEvent): void;
@@ -78,7 +81,7 @@ export function SearchBar(props: SearchBarProps) {
       onClick={onClick}
       variant={focus ? 'elevation' : 'outlined'}
       elevation={focus ? 4 : 0}
-      className={[focus && 'focus', showActionButton && 'noPadded'].filter(Boolean).join(' ')}
+      className={[focus && 'focus', showActionButton && 'noPadded', props.classes?.root].filter(Boolean).join(' ')}
       sx={{
         position: 'relative',
         background: (theme) => props.backgroundColor ?? theme.palette.background.default,
@@ -116,6 +119,10 @@ export function SearchBar(props: SearchBarProps) {
         autoFocus={autoFocus}
         disabled={disabled}
         value={keyword}
+        classes={{
+          root: props.classes?.inputRoot,
+          input: props.classes?.inputInput
+        }}
         sx={{
           flexGrow: 1,
           background: 'transparent',
@@ -154,6 +161,7 @@ export function SearchBar(props: SearchBarProps) {
           size="large"
         >
           <ActionButtonIcon
+            className={props.classes?.actionIcon}
             sx={{
               fontSize: '25px',
               color: (theme) => theme.palette.text.secondary,
