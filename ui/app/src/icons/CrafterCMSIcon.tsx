@@ -18,6 +18,8 @@ import React from 'react';
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon';
 import { PartialSxRecord } from '../models';
 import Box from '@mui/material/Box';
+import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { Theme } from '@mui/material';
 
 export interface CrafterCMSIconProps extends Omit<SvgIconProps, 'classes'> {
   chevron?: boolean;
@@ -27,8 +29,7 @@ export interface CrafterCMSIconProps extends Omit<SvgIconProps, 'classes'> {
 export function CrafterCMSIcon(props: CrafterCMSIconProps) {
   const { sxs, ...rest } = props;
   return (
-    // @ts-expect-error Types not matching // TODO: fix
-    <SvgIcon {...rest} sx={{ ...props.sx, ...sxs?.root }}>
+    <SvgIcon {...rest} sx={{ ...(props.sx as SystemStyleObject<Theme>), ...(sxs?.root as SystemStyleObject<Theme>) }}>
       <Box
         component="path"
         sx={{ fill: (theme) => (theme.palette.mode === 'dark' ? '#fff' : '#000'), ...sxs?.letter }}
