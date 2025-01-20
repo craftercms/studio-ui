@@ -1,5 +1,3 @@
-// noinspection LanguageDetectionInspection
-
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *

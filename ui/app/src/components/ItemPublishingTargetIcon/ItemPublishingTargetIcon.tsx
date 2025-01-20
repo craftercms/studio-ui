@@ -31,6 +31,7 @@ export type ItemPublishingTargetIconClassKey =
   | 'publishingIcon';
 export interface ItemPublishingTargetIconProps {
   item: DetailedItem | SandboxItem;
+  classes?: Partial<Record<ItemPublishingTargetIconClassKey, string>>;
   sxs?: PartialSxRecord<ItemPublishingTargetIconClassKey>;
   className?: string;
   displayTooltip?: boolean;
@@ -38,7 +39,7 @@ export interface ItemPublishingTargetIconProps {
 }
 
 export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
-  const { item, sxs, className, displayTooltip = true, fontSize } = props;
+  const { item, classes, sxs, className, displayTooltip = true, fontSize } = props;
   return (
     <Tooltip
       title={displayTooltip ? getItemPublishingTargetText(item.stateMap) : ''}
@@ -46,11 +47,11 @@ export function ItemPublishingTargetIcon(props: ItemPublishingTargetIconProps) {
     >
       <PublishingTargetIcon
         fontSize={fontSize}
+        className={[className, classes?.root].join(' ')}
         sx={{
           color: item.stateMap.live ? LIVE_COLOUR : item.stateMap.staged ? STAGING_COLOUR : palette.gray.medium2,
           ...sxs?.root
         }}
-        className={className}
       />
     </Tooltip>
   );

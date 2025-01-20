@@ -63,6 +63,7 @@ export interface MenuOption {
 
 export interface ItemMegaMenuUIProps {
   open: boolean;
+  classes?: Partial<Record<ItemMegaMenuUIClassKey, string>>;
   sxs?: PartialSxRecord<ItemMegaMenuUIClassKey>;
   isLoading?: boolean;
   numOfLoaderItems?: number;
@@ -96,6 +97,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
     anchorPosition,
     contentType,
     locale,
+    classes,
     sxs,
     onClose,
     onClosed,
@@ -113,6 +115,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
       anchorPosition={anchorPosition}
       slotProps={{
         paper: {
+          className: classes?.root,
           sx: {
             maxWidth: 400,
             borderRadius: '12px',
@@ -150,7 +153,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
     >
       <Box
         component="section"
-        className="menu-section"
+        className={['menu-section', classes?.itemInfo].join(' ')}
         sx={{
           display: 'block',
           borderBottom: `1px solid ${palette.gray.light4}`,
@@ -175,11 +178,13 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
             labelComponent="h2"
             showPublishingTarget={false}
             showWorkflowState={false}
+            classes={{ root: classes?.itemDisplayRoot, icon: classes?.itemTypeIcon }}
             sxs={{
               root: { marginBottom: '5px', ...sxs?.itemDisplayRoot },
               icon: { fontSize: '0.8rem', verticalAlign: 'middle', ...sxs?.itemTypeIcon }
             }}
             labelTypographyProps={{
+              className: classes?.itemTypography,
               sx: {
                 color: (theme) => theme.palette.text.primary,
                 ...sxs?.itemTypography
@@ -190,13 +195,14 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         {isLoading ? (
           <Skeleton animation="wave" />
         ) : (
-          <Box sx={{ '&> *': { marginRight: '5px' }, ...sxs?.itemState }}>
+          <Box className={classes?.itemState} sx={{ '&> *': { marginRight: '5px' }, ...sxs?.itemState }}>
             {/* @see https://github.com/craftercms/craftercms/issues/5442 */}
             {!isFolder &&
               (inWorkflow ? (
                 <>
                   <ItemStateIcon
                     item={item}
+                    className={classes?.icon}
                     sxs={{ root: { fontSize: '0.8rem', verticalAlign: 'middle', ...sxs?.icon } }}
                   />
                   <Typography variant="body2" component="span">
@@ -207,6 +213,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
                 <>
                   <ItemPublishingTargetIcon
                     item={item}
+                    className={classes?.icon}
                     sxs={{ root: { fontSize: '0.8rem', verticalAlign: 'middle', ...sxs?.icon } }}
                   />
                   <Typography variant="body2" component="span">
@@ -218,11 +225,15 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
         )}
       </Box>
       {isLoading ? (
-        <Box className="actions-container">
+        <Box className={['actions-container', classes?.actionsContainer].join(' ')}>
           {new Array(2).fill(null).map((value, i) => (
-            <MenuList key={i} className="actions-column" sx={{ padding: 0, ...sxs?.itemsList }}>
+            <MenuList
+              key={i}
+              className={['actions-column', classes?.itemsList].join(' ')}
+              sx={{ padding: 0, ...sxs?.itemsList }}
+            >
               {new Array(Math.ceil(numOfLoaderItems / 2)).fill(null).map((value, j) => (
-                <MenuItem key={j} sx={{ minWidth: '100px', ...sxs?.menuItem }}>
+                <MenuItem key={j} className={classes?.menuItem} sx={{ minWidth: '100px', ...sxs?.menuItem }}>
                   <Skeleton animation="wave" width="100%" />
                 </MenuItem>
               ))}
@@ -236,28 +247,30 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
           }
         />
       ) : (
-        <Box className="actions-container">
-          <MenuList className="actions-column" sx={{ padding: 0, ...sxs?.itemsList }}>
+        <Box className={['actions-container', classes?.itemsList].join(' ')}>
+          <MenuList className={['actions-column', classes?.itemsList].join(' ')} sx={{ padding: 0, ...sxs?.itemsList }}>
             {editorialOptions.map((option: MenuOption, y: number) => (
               <MenuItem
                 dense
                 autoFocus={y === 0}
                 key={option.id}
                 onClick={(e) => onMenuItemClicked(option.id, e)}
+                className={classes?.menuItem}
                 sx={{ minWidth: '100px', ...sxs?.menuItem }}
                 children={option.label}
               />
             ))}
           </MenuList>
-          <div className="actions-column">
+          <div className={['actions-column', classes?.actionsColumn].join(' ')}>
             {nonEditorialOptions.map((section: any, i: number) => (
-              <MenuList key={i} sx={{ padding: 0, ...sxs?.itemsList }}>
+              <MenuList key={i} className={classes?.itemsList} sx={{ padding: 0, ...sxs?.itemsList }}>
                 {section.map((option: MenuOption, y: number) => (
                   <MenuItem
                     dense
                     key={option.id}
                     divider={i !== nonEditorialOptions.length - 1 && y === section.length - 1}
                     onClick={(e) => onMenuItemClicked(option.id, e)}
+                    className={classes?.menuItem}
                     sx={{
                       minWidth: '100px',
                       ...sxs?.menuItem
@@ -272,12 +285,12 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
       )}
       <Box
         component="section"
+        className={['menu-section', classes?.itemEdited].join(' ')}
         sx={{
           paddingTop: '12px',
           borderTop: `1px solid ${palette.gray.light4}`,
           ...sxs?.itemEdited
         }}
-        className="menu-section"
       >
         {isLoading ? (
           <Skeleton animation="wave" width="100%" />
@@ -298,6 +311,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
                   edited: (
                     <Box
                       component="span"
+                      className={classes?.itemEditedText}
                       sx={{ color: (theme) => theme.palette.text.secondary, fontWeight: 600, ...sxs?.itemEditedText }}
                     >
                       <FormattedMessage id="words.edited" defaultMessage="Edited" />
@@ -306,6 +320,7 @@ export function ItemMegaMenuUI(props: ItemMegaMenuUIProps) {
                   byLabel: item?.sandbox.modifier?.username ? (
                     <Box
                       component="span"
+                      className={classes?.itemEditedText}
                       sx={{ color: (theme) => theme.palette.text.secondary, fontWeight: 600, ...sxs?.itemEditedText }}
                     >
                       <FormattedMessage id="words.by" defaultMessage="By" />

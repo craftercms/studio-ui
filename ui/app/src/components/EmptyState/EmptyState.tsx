@@ -22,11 +22,14 @@ import { nou } from '../../utils/object';
 import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models';
 
+type EmptyStateClassKey = 'root' | 'title' | 'subtitle' | 'image';
+
 export type EmptyStateProps = React.PropsWithChildren<{
   image?: string;
   title: ReactNode | MessageDescriptor;
   subtitle?: ReactNode | MessageDescriptor;
-  sxs?: PartialSxRecord<'root' | 'title' | 'subtitle' | 'image'>;
+  classes?: Partial<Record<EmptyStateClassKey, string>>;
+  sxs?: PartialSxRecord<EmptyStateClassKey>;
 }>;
 
 function isValidElement(target: any): boolean {
@@ -36,13 +39,14 @@ function isValidElement(target: any): boolean {
 export function EmptyState(props: EmptyStateProps) {
   const { sxs } = props;
   const { formatMessage } = useIntl();
-  const { image = emptyImage, children } = props;
+  const { image = emptyImage, classes: propClasses, children } = props;
   const title = isValidElement(props.title) ? (props.title as string) : formatMessage(props.title as MessageDescriptor);
   const subtitle = isValidElement(props.subtitle)
     ? (props.subtitle as string)
     : formatMessage(props.subtitle as MessageDescriptor);
   return (
     <Box
+      className={propClasses?.root}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -52,11 +56,20 @@ export function EmptyState(props: EmptyStateProps) {
         ...sxs?.root
       }}
     >
-      {image && <Box component="img" sx={{ width: 100, maxWidth: '80%', ...sxs?.image }} src={image} alt="" />}
+      {image && (
+        <Box
+          component="img"
+          className={propClasses?.image}
+          sx={{ width: 100, maxWidth: '80%', ...sxs?.image }}
+          src={image}
+          alt=""
+        />
+      )}
       {title && (
         <Typography
           variant="body1"
           component="h3"
+          className={propClasses?.title}
           sx={{ margin: (theme) => `${theme.spacing(1)} 0`, ...sxs?.title }}
           color="textSecondary"
         >
@@ -64,7 +77,13 @@ export function EmptyState(props: EmptyStateProps) {
         </Typography>
       )}
       {subtitle && (
-        <Typography variant="body2" component="p" sx={{ textAlign: 'center', ...sxs?.subtitle }} color="textSecondary">
+        <Typography
+          variant="body2"
+          component="p"
+          className={propClasses?.subtitle}
+          sx={{ textAlign: 'center', ...sxs?.subtitle }}
+          color="textSecondary"
+        >
           {subtitle}
         </Typography>
       )}

@@ -28,6 +28,7 @@ import Box from '@mui/material/Box';
 interface BlueprintFormProps {
   inputs: SiteState;
   blueprint: MarketplacePlugin;
+  classes?: Partial<Record<'root', string>>;
   sxs?: PartialSxRecord<'root'>;
   fieldsErrorsLookup: LookupTable<boolean>;
 
@@ -64,7 +65,16 @@ export function renderSiteFormHelperText(
 }
 
 function BlueprintForm(props: BlueprintFormProps) {
-  const { inputs, setInputs, onSubmit, blueprint, onCheckNameExist, sxs, fieldsErrorsLookup } = props;
+  const {
+    inputs,
+    setInputs,
+    onSubmit,
+    blueprint,
+    onCheckNameExist,
+    classes: classesProp,
+    sxs,
+    fieldsErrorsLookup
+  } = props;
   const [sites, setSites] = useState(null);
 
   useEffect(() => {
@@ -130,7 +140,7 @@ function BlueprintForm(props: BlueprintFormProps) {
   }
 
   return (
-    <Box component="form" sx={{ maxWidth: '600px', margin: '0 auto', ...sxs?.root }}>
+    <Box component="form" className={classesProp?.root} sx={{ maxWidth: '600px', margin: '0 auto', ...sxs?.root }}>
       <Grid container spacing={3}>
         <BaseSiteForm
           inputs={inputs}

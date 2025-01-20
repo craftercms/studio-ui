@@ -39,6 +39,7 @@ export interface GlobalAppToolbarProps {
   subtitle?: React.ReactNode;
   leftContent?: React.ReactNode;
   rightContent?: React.ReactNode;
+  classes?: Partial<Record<GlobalAppToolbarClassKey, string>>;
   sxs?: PartialSxRecord<GlobalAppToolbarClassKey>;
   startContent?: React.ReactNode;
   showHamburgerMenuButton?: boolean;
@@ -69,6 +70,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
   return (
     <ViewToolbar
       elevation={props.elevation}
+      classes={props.classes}
       sxs={{
         appBar: sxs?.appBar,
         toolbar: sxs?.toolbar
@@ -85,6 +87,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
       {Boolean(title || subtitle) && (
         <Box
           component="section"
+          className={props.classes?.headings}
           sx={{
             marginLeft: '10px',
             display: 'flex',
@@ -103,6 +106,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
             <Typography
               variant="h5"
               component="h1"
+              className={props.classes?.ellipsis}
               sx={{
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -114,7 +118,13 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
             </Typography>
           )}
           {subtitle && (
-            <Typography variant="body2" component="h2" color="textSecondary" sx={sxs?.subtitle}>
+            <Typography
+              variant="body2"
+              component="h2"
+              color="textSecondary"
+              className={props.classes?.subtitle}
+              sx={sxs?.subtitle}
+            >
               {subtitle}
             </Typography>
           )}
@@ -122,6 +132,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
       )}
       <Box
         component="section"
+        className={props.classes?.leftContent}
         sx={{
           marginLeft: '25px',
           display: 'flex',
@@ -134,6 +145,7 @@ export const GlobalAppToolbar = React.memo<GlobalAppToolbarProps>(function (prop
       </Box>
       <Box
         component="section"
+        className={props.classes?.rightContent}
         sx={{
           marginLeft: 'auto',
           display: 'flex',

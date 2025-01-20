@@ -27,13 +27,16 @@ import { isInWorkflow } from './utils';
 import Box from '@mui/material/Box';
 import { PartialSxRecord } from '../../models';
 
+export type ItemDisplayClassKey = 'root' | 'label' | 'labelPreviewable' | 'icon' | 'typeIcon';
+
 export interface ItemDisplayProps<LabelTypographyComponent extends React.ElementType = 'span'>
   extends React.HTMLAttributes<HTMLSpanElement> {
   showPublishingTarget?: boolean;
   showWorkflowState?: boolean;
   showItemType?: boolean;
   showNavigableAsLinks?: boolean;
-  sxs?: PartialSxRecord<'root' | 'label' | 'labelPreviewable' | 'icon' | 'typeIcon'>;
+  classes?: Partial<Record<ItemDisplayClassKey, string>>;
+  sxs?: PartialSxRecord<ItemDisplayClassKey>;
   item: DetailedItem | SandboxItem;
   labelTypographyProps?: TypographyProps<LabelTypographyComponent, { component?: LabelTypographyComponent }>;
   isNavigableFn?: (item: DetailedItem | SandboxItem) => boolean;
@@ -63,6 +66,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
     stateIconProps,
     publishingTargetIconProps,
     itemTypeIconProps,
+    classes,
     sxs,
     ...rest
   } = props;
@@ -77,7 +81,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
       component="span"
       ref={ref}
       {...rest}
-      className={rest?.className}
+      className={[classes?.root, rest?.className].filter(Boolean).join(' ')}
       sx={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -92,7 +96,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
             <ItemStateIcon
               {...stateIconProps}
               item={item}
-              className={stateIconProps?.className}
+              className={[classes?.icon, stateIconProps?.className].filter(Boolean).join(' ')}
               sxs={{
                 root: {
                   fontSize: '1.1rem',
@@ -105,7 +109,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
             <ItemPublishingTargetIcon
               {...publishingTargetIconProps}
               item={item}
-              className={publishingTargetIconProps?.className}
+              className={[classes?.icon, publishingTargetIconProps?.className].filter(Boolean).join(' ')}
               sxs={{
                 root: {
                   fontSize: '1.1rem',
@@ -118,7 +122,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
         <ItemTypeIcon
           {...itemTypeIconProps}
           item={item}
-          className={itemTypeIconProps?.className}
+          className={[classes?.icon, itemTypeIconProps?.className].filter(Boolean).join(' ')}
           sx={{ fontSize: '1.1rem', ...sxs?.icon }}
         />
       )}
@@ -126,7 +130,7 @@ const ItemDisplay = forwardRef<HTMLSpanElement, ItemDisplayProps>((props, ref) =
         noWrap
         component={labelComponent}
         {...labelTypographyProps}
-        className={labelTypographyProps?.className}
+        className={[classes?.label, labelTypographyProps?.className].filter(Boolean).join(' ')}
         sx={{
           marginLeft: '2px',
           display: 'inline-block',

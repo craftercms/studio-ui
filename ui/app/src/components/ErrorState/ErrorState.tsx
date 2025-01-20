@@ -23,6 +23,8 @@ import { nnou } from '../../utils/object';
 import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
+type ErrorStateClassKey = 'root' | 'image' | 'title' | 'message' | 'button';
+
 export type ErrorStateProps = React.PropsWithChildren<{
   title?: ReactNode;
   message?: string;
@@ -30,7 +32,8 @@ export type ErrorStateProps = React.PropsWithChildren<{
   buttonIcon?: ReactNode;
   buttonText?: string;
   onButtonClick?(event: React.MouseEvent): any;
-  sxs?: PartialSxRecord<'root' | 'image' | 'title' | 'message' | 'button'>;
+  classes?: Partial<Record<ErrorStateClassKey, string>>;
+  sxs?: PartialSxRecord<ErrorStateClassKey>;
 }>;
 
 export function ErrorState(props: ErrorStateProps) {
@@ -47,6 +50,7 @@ export function ErrorState(props: ErrorStateProps) {
   return (
     <Box
       component="section"
+      className={props.classes?.root}
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -59,6 +63,7 @@ export function ErrorState(props: ErrorStateProps) {
     >
       <Box
         component="img"
+        className={props.classes?.image}
         sx={{
           maxWidth: '100%',
           marginBottom: (theme) => theme.spacing(1),
@@ -71,6 +76,7 @@ export function ErrorState(props: ErrorStateProps) {
         <Typography
           variant="body1"
           component="h3"
+          className={props.classes?.title}
           sx={{ marginBottom: (theme) => theme.spacing(1), ...sxs?.title }}
           children={title}
         />
@@ -79,6 +85,7 @@ export function ErrorState(props: ErrorStateProps) {
         <Typography
           variant="body2"
           component="p"
+          className={props.classes?.message}
           sx={{
             textAlign: 'center',
             marginBottom: (theme) => theme.spacing(1),
@@ -93,6 +100,7 @@ export function ErrorState(props: ErrorStateProps) {
         <Fab
           onClick={onButtonClick}
           aria-label={buttonText}
+          className={props.classes?.message}
           sx={{
             color: (theme) => theme.palette.text.secondary,
             background: (theme) => theme.palette.background.default,

@@ -108,10 +108,13 @@ export interface AceOptions {
   // endregion
 }
 
+export type AceEditorClassKey = 'root' | 'editorRoot';
+
 export interface AceEditorProps extends Partial<AceOptions> {
   value?: any;
   autoFocus?: boolean;
-  sxs?: PartialSxRecord<'root' | 'editorRoot'>;
+  classes?: Partial<Record<AceEditorClassKey, string>>;
+  sxs?: PartialSxRecord<AceEditorClassKey>;
   extensions?: string[];
   onChange?(e: any): void;
   onInit?(editor: AceAjax.Editor): void;
@@ -181,7 +184,17 @@ const aceOptions: Array<keyof AceOptions> = [
 // const aceThemes = [];
 
 function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
-  const { value = '', autoFocus = false, extensions = [], onChange, onInit, sxs, ...options } = props;
+  const {
+    value = '',
+    classes: propClasses,
+    autoFocus = false,
+    extensions = [],
+    onChange,
+    onInit,
+    sxs,
+    ...options
+  } = props;
+  const editorRootClasses = propClasses?.editorRoot;
   const refs = useRef({
     ace: null,
     elem: null,
@@ -213,6 +226,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
         window.ace.require(['ace/ace', 'ace/ext/language_tools', 'ace/ext/emmet', ...extensions], (ace) => {
           if (!unmounted) {
             const pre = document.createElement('pre');
+            pre.className = editorRootClasses;
             refs.current.pre = pre;
             refs.current.elem.appendChild(pre);
             // @ts-ignore - Ace types are incorrect; they don't implement the constructor that receives options.
@@ -322,9 +336,9 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
     if (refs.current.pre) {
       refs.current.pre.className = `${[...refs.current.pre.classList]
         .filter((value) => !/craftercms-|makeStyles-/.test(value))
-        .join(' ')}`;
+        .join(' ')} ${editorRootClasses}`;
     }
-  }, []);
+  }, [editorRootClasses]);
 
   return (
     <Box
@@ -333,6 +347,7 @@ function AceEditorComp(props: AceEditorProps, ref: MutableRef<AceAjax.Editor>) {
           refs.current.elem = e;
         }
       }}
+      className={props.classes?.root}
       sx={{
         position: 'relative',
         display: 'contents',

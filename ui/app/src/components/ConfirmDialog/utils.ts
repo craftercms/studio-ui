@@ -16,7 +16,7 @@
 import { ReactNode } from 'react';
 import StandardAction from '../../models/StandardAction';
 import { DialogProps } from '@mui/material/Dialog';
-import { AlertDialogProps } from '../AlertDialog';
+import { AlertDialogClassKey, AlertDialogProps } from '../AlertDialog';
 
 export interface ConfirmDialogBaseProps {
   title?: ReactNode;
@@ -30,6 +30,7 @@ export interface ConfirmDialogBaseProps {
 }
 
 export interface ConfirmDialogProps extends ConfirmDialogBaseProps, Omit<DialogProps, 'title' | 'classes'> {
+  classes?: Partial<Record<AlertDialogClassKey, string>>;
   sxs?: AlertDialogProps['sxs'];
   disableOkButton?: boolean;
   disableCancelButton?: boolean;

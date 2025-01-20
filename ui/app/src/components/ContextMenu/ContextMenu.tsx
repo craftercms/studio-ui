@@ -33,10 +33,13 @@ export interface ContextMenuOption {
   label: ReactNode;
 }
 
+export type ContextMenuClassKey = 'menuItem' | 'emptyRoot' | 'loadingRoot';
+
 export interface ContextMenuProps extends MenuProps {
   isLoading?: boolean;
   numOfLoaderItems?: number;
-  sxs?: PartialSxRecord<'menuItem' | 'emptyRoot' | 'loadingRoot'>;
+  classes?: MenuProps['classes'] & Partial<Record<ContextMenuClassKey, string>>;
+  sxs?: PartialSxRecord<ContextMenuClassKey>;
   options: Array<Array<ContextMenuOption>>;
   emptyState?: {
     icon?: ElementType;
@@ -60,6 +63,7 @@ export function ContextMenu(props: ContextMenuProps) {
     <Menu {...menuProps} classes={propClasses}>
       {isLoading ? (
         <Box
+          className={propClasses?.loadingRoot}
           sx={{
             width: '135px',
             padding: '0 15px',
@@ -74,6 +78,7 @@ export function ContextMenu(props: ContextMenuProps) {
         </Box>
       ) : options.flatMap((i) => i).length === 0 ? (
         <Box
+          className={propClasses?.emptyRoot}
           sx={{
             display: 'block',
             padding: '10px',
@@ -99,6 +104,7 @@ export function ContextMenu(props: ContextMenuProps) {
               key={option.id}
               divider={i !== options.length - 1 && y === section.length - 1}
               onClick={(e) => onMenuItemClicked(option.id, e)}
+              className={propClasses?.menuItem}
               sx={sxs?.menuItem}
             >
               <Typography variant="body2">{option.label}</Typography>

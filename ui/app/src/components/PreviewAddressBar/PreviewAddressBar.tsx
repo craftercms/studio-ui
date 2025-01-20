@@ -269,7 +269,7 @@ export function PreviewAddressBar(props: AddressBarProps) {
         tooltip="Navigation"
       />
       <Popover
-        // Avoid backdrop from blocking the interaction with other elements`
+        // Avoid backdrop from blocking the interaction with other elements
         sx={{ pointerEvents: 'none' }}
         open={openPopover}
         anchorEl={popoverAnchorEl}

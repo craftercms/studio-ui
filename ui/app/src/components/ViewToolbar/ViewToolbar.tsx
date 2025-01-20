@@ -25,6 +25,7 @@ export type ViewToolbarClassKey = 'appBar' | 'toolbar';
 
 type ViewToolbarProps = PropsWithChildren<{
   elevation?: number;
+  classes?: Partial<Record<ViewToolbarClassKey, string>>;
   sxs?: PartialSxRecord<ViewToolbarClassKey>;
 }>;
 
@@ -35,6 +36,7 @@ export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
       color="inherit"
       position="relative"
       elevation={elevation}
+      className={props.classes?.appBar}
       sx={(theme) => ({
         borderBottom: `1px solid ${theme.palette.divider}`,
         background: theme.palette.background.paper,
@@ -43,6 +45,7 @@ export const ViewToolbar = React.memo<ViewToolbarProps>(function (props) {
       })}
     >
       <Toolbar
+        className={props.classes?.toolbar}
         sx={(theme) => ({
           paddingLeft: `${theme.spacing(1.5)} !important`,
           paddingRight: `${theme.spacing(1.5)} !important`,
