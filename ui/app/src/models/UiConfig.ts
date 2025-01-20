@@ -14,11 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Theme } from '@mui/material';
+import { CSSSelectorObjectOrCssVariables } from '@mui/system/styleFunctionSx/styleFunctionSx';
+import { CSSProperties } from 'react';
+
 export interface StateStylingProps {
-  baseStyle: object;
-  expandedStyle: object;
-  collapsedStyle: object;
-  baseSxs: object;
-  expandedSxs: object;
-  collapsedSxs: object;
+  baseStyle: CSSProperties;
+  expandedStyle: CSSProperties;
+  collapsedStyle: CSSProperties;
+  baseSxs: CSSSelectorObjectOrCssVariables<Theme>;
+  expandedSxs: CSSSelectorObjectOrCssVariables<Theme>;
+  collapsedSxs: CSSSelectorObjectOrCssVariables<Theme>;
 }

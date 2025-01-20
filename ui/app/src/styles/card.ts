@@ -14,7 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const cardTitleStyles = {
+import { CSSProperties } from 'react';
+
+const cardTitleStyles: CSSProperties = {
   fontWeight: 600,
   lineHeight: '1.5rem',
   overflow: 'hidden',
@@ -25,7 +27,7 @@ const cardTitleStyles = {
   wordBreak: 'break-all'
 };
 
-export const cardSubtitleStyles = {
+export const cardSubtitleStyles: CSSProperties = {
   overflow: 'hidden',
   display: '-webkit-box',
   WebkitLineClamp: 2,
