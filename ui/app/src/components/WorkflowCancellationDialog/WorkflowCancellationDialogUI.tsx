@@ -27,7 +27,7 @@ import { WorkflowCancellationDialogUIProps } from './utils';
 import Typography from '@mui/material/Typography';
 
 export function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUIProps) {
-  const { items, onCloseButtonClick, onContinue } = props;
+  const { items, onCloseButtonClick, onContinue, classes } = props;
   return (
     <>
       <DialogBody>
@@ -35,6 +35,7 @@ export function WorkflowCancellationDialogUI(props: WorkflowCancellationDialogUI
           <FormattedMessage defaultMessage="Items on this package" />
         </Typography>
         <List
+          className={classes?.filesList}
           sx={(theme) => ({
             height: '100%',
             border: `1px solid ${theme.palette.divider}`,

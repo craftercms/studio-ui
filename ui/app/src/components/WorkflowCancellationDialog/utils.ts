@@ -22,6 +22,7 @@ import { EnhancedDialogState } from '../../hooks/useEnhancedDialogState';
 
 export interface WorkflowCancellationDialogUIProps {
   items: SandboxItem[];
+  classes?: Partial<Record<'filesList', string>>;
   onCloseButtonClick?(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   onContinue?(response): void;
 }
