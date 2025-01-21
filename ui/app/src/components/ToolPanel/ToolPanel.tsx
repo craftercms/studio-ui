@@ -27,11 +27,14 @@ import { ErrorBoundary } from '../ErrorBoundary';
 import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
+export type ToolPanelClassKey = 'body';
+
 type ToolPanelProps = PropsWithChildren<{
   title: TranslationOrText;
   BackIcon?: ElementType;
   onBack?: () => void;
-  sxs?: PartialSxRecord<'body' | 'panelHeader'>;
+  classes?: Partial<Record<ToolPanelClassKey, string>>;
+  sxs?: PartialSxRecord<ToolPanelClassKey>;
 }>;
 
 interface PanelHeaderProps {
@@ -69,7 +72,7 @@ export const PanelHeader: FunctionComponent<PanelHeaderProps> = (props) => {
 export function ToolPanel(props: ToolPanelProps): ReactElement | null {
   const dispatch = useDispatch();
   const { formatMessage } = useIntl();
-  const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), sxs } = props;
+  const { title, BackIcon, onBack = () => dispatch(popToolsPanelPage()), classes, sxs } = props;
   return (
     <>
       <PanelHeader
@@ -79,7 +82,7 @@ export function ToolPanel(props: ToolPanelProps): ReactElement | null {
       />
       <Suspense>
         <ErrorBoundary>
-          <Box component="section" sx={sxs?.body}>
+          <Box component="section" className={classes?.body} sx={sxs?.body}>
             {props.children}
           </Box>
         </ErrorBoundary>

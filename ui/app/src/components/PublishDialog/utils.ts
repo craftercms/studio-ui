@@ -86,6 +86,7 @@ export interface PublishDialogUIProps {
   onClickShowAllDeps?: any;
   isRequestPublish?: boolean;
   showRequestApproval: boolean;
+  classes?: Partial<Record<'leftAlignedAction', string>>;
   submitLabel: ReactNode;
   mixedPublishingDates?: boolean;
   mixedPublishingTargets?: boolean;

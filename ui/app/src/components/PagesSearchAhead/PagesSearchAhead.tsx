@@ -46,7 +46,7 @@ export interface PagesSearchAheadProps {
   onEnter(url: string): void;
   onFocus?(): void;
   onBlur?(): void;
-  classes: Partial<Record<'input', string>>;
+  classes?: Partial<Record<'input', string>>;
   sxs?: PartialSxRecord<
     'container' | 'closeIcon' | 'progress' | 'inputRoot' | 'input' | 'paper' | 'listBox' | 'listItemIcon'
   >;

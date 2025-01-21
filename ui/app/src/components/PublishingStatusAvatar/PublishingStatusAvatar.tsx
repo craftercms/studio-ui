@@ -24,10 +24,13 @@ import { SxProps } from '@mui/system';
 import { Theme } from '@mui/material';
 import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
 
+export type PublishingStatusAvatarClassKey = 'root' | 'icon';
+
 export interface PublishingStatusAvatarProps extends Pick<PublishingStatus, 'enabled' | 'status'> {
   className?: string;
+  classes?: Partial<Record<PublishingStatusAvatarClassKey, string>>;
   sx?: SxProps<Theme>;
-  sxs?: PartialSxRecord<'root' | 'icon'>;
+  sxs?: PartialSxRecord<PublishingStatusAvatarClassKey>;
   variant?: 'background' | 'icon';
 }
 
@@ -43,7 +46,7 @@ export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, Publishin
     <Avatar
       ref={ref}
       variant="circular"
-      className={`${props.className} ${enabled ? status : enabled === false ? 'error' : ''}`}
+      className={[props.className, enabled ? status : enabled === false ? 'error' : '', props.classes?.root].join(' ')}
       sx={(theme) => ({
         ...(stylingTarget === 'color' && {
           background: 'none',
@@ -74,7 +77,7 @@ export const PublishingStatusAvatar = React.forwardRef<HTMLDivElement, Publishin
         ...(sxs?.root as SystemStyleObject<Theme>)
       })}
     >
-      <CloudUploadOutlined sx={sxs?.icon} />
+      <CloudUploadOutlined className={props.classes?.icon} sx={sxs?.icon} />
     </Avatar>
   );
 });

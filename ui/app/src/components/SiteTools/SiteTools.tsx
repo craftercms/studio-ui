@@ -58,6 +58,7 @@ export interface SiteToolsProps {
   hideSidebarLogo?: boolean;
   hideSidebarSiteSwitcher?: boolean;
   showAppsButton?: boolean;
+  classes?: Partial<Record<'root', string>>;
   sx?: SxProps<Theme>;
   sxs?: PartialSxRecord<'root'>;
   // Whether the component is mounted on a dialog or it's the main app on a page (i.e. `/studio/site-tools`)
@@ -94,6 +95,7 @@ export function SiteTools(props: SiteToolsProps) {
   const tool = tools?.find((tool) => tool.url === activeToolId)?.widget;
   return (
     <Paper
+      className={props.classes?.root}
       sx={{
         height: '100vh',
         width: '100%',

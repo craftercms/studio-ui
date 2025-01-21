@@ -85,6 +85,7 @@ export interface PathNavigatorTreeProps
   initialExpanded?: string[];
   onNodeClick?: PathNavigatorTreeUIProps['onLabelClick'];
   active?: PathNavigatorTreeItemProps['active'];
+  classes?: Partial<Record<'header', string>>;
   sxs?: PartialSxRecord<'header'>;
 }
 
@@ -147,6 +148,7 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
     initialSystemTypes,
     onNodeClick,
     active,
+    classes,
     showNavigableAsLinks,
     showPublishingTarget,
     showWorkflowState,
@@ -334,9 +336,8 @@ export function PathNavigatorTree(props: PathNavigatorTreeProps) {
   return (
     <>
       <PathNavigatorTreeUI
-        sxs={{
-          header: sxs?.header
-        }}
+        classes={{ header: classes?.header }}
+        sxs={{ header: sxs?.header }}
         title={label}
         active={active}
         icon={expandedIcon && collapsedIcon ? (state.collapsed ? collapsedIcon : expandedIcon) : icon}

@@ -29,6 +29,8 @@ import { ErrorState } from '../ErrorState';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { PartialSxRecord } from '../../models';
 
+export type PathNavigatorTreeUIClassKey = 'root' | 'body' | 'header';
+
 export interface PathNavigatorTreeUIProps
   extends Pick<
     PathNavigatorTreeItemProps,
@@ -56,7 +58,8 @@ export interface PathNavigatorTreeUIProps
   onMoreClick(path: string): void;
   isCollapsed: boolean;
   expandedNodes: string[];
-  sxs?: PartialSxRecord<'root' | 'body' | 'header'>;
+  classes?: Partial<Record<PathNavigatorTreeUIClassKey, string>>;
+  sxs?: PartialSxRecord<PathNavigatorTreeUIClassKey>;
   active?: PathNavigatorTreeItemProps['active'];
 }
 
@@ -98,6 +101,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
       TransitionProps={{ unmountOnExit: true }}
       expanded={!isCollapsed}
       onChange={() => onChangeCollapsed(!isCollapsed)}
+      className={props.classes?.root}
       style={{
         ...container?.baseStyle,
         ...(container ? (isCollapsed ? container.collapsedStyle : container.expandedStyle) : void 0)
@@ -121,6 +125,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
         menuButtonIcon={<RefreshRounded />}
         collapsed={isCollapsed}
         onMenuButtonClick={onHeaderButtonClick}
+        className={props.classes?.header}
         sx={sxs?.header}
       />
       {isRootPathMissing ? (
@@ -135,7 +140,7 @@ export function PathNavigatorTreeUI(props: PathNavigatorTreeUIProps) {
           }
         />
       ) : (
-        <AccordionDetails sx={{ padding: 0, flexDirection: 'column', ...sxs?.body }}>
+        <AccordionDetails className={props.classes?.body} sx={{ padding: 0, flexDirection: 'column', ...sxs?.body }}>
           <SimpleTreeView expandedItems={expandedNodes} disableSelection>
             <PathNavigatorTreeItem
               path={rootPath}

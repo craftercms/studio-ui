@@ -43,6 +43,7 @@ export interface PathNavigatorTreeItemProps
   path: string;
   itemsByPath: LookupTable<DetailedItem>;
   active?: Record<string, boolean>;
+  classes?: Partial<Record<PathNavigatorTreeBreadcrumbsClassKey, string>>;
   sxs?: PartialSxRecord<PathNavigatorTreeBreadcrumbsClassKey>;
   showNavigableAsLinks?: boolean;
   showPublishingTarget?: boolean;
@@ -359,6 +360,11 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                   input.focus();
                 }}
                 showActionButton={keyword && true}
+                classes={{
+                  root: props.classes?.searchRoot,
+                  inputInput: props.classes?.searchInput,
+                  actionIcon: props.classes?.searchCleanButton
+                }}
                 sxs={{
                   root: {
                     margin: '5px 10px 5px 0',
@@ -384,6 +390,7 @@ export function PathNavigatorTreeItem(props: PathNavigatorTreeItemProps) {
                   onClearKeywords();
                   setShowFilter(false);
                 }}
+                className={props.classes?.searchCloseButton}
                 sx={{
                   marginRight: '10px',
                   ...sxs?.searchCloseButton

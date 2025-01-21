@@ -43,6 +43,7 @@ interface ResizeableDrawerProps extends DrawerProps {
   maxWidth?: number;
   minWidth?: number;
   belowToolbar?: boolean;
+  classes?: DrawerProps['classes'] & Partial<Record<ResizeableDrawerClassKey, string>>;
   sxs?: PartialSxRecord<ResizeableDrawerClassKey> & PartialSxRecord<keyof DrawerClasses>;
   onWidthChange?(width: number): void;
   onResizeStart?(): void;
@@ -64,12 +65,15 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
     onResizeStart,
     onResizeStop,
     className,
+    classes = {},
     PaperProps,
     anchor = 'left',
     belowToolbar = false,
     sxs = {},
     ...rest
   } = props;
+
+  const { ...drawerClasses } = classes;
 
   const handleMouseMove = useCallback(
     (e) => {
@@ -145,7 +149,7 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
       ref={drawerRef}
       anchor={anchor}
       variant="persistent"
-      className={className}
+      className={[className, classes?.root].filter(Boolean).join(' ')}
       sx={{
         flexShrink: 0,
         ...sxs?.root
@@ -153,6 +157,7 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
       PaperProps={{
         ...PaperProps,
         style: { width },
+        className: [classes?.drawerPaper, belowToolbar && classes?.drawerPaperBelowToolbar].filter(Boolean).join(' '),
         sx: drawerPaperSxProp as SxProps<Theme>
       }}
       {...rest}
@@ -160,6 +165,13 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
       {onWidthChange && (
         <Box
           onMouseDown={handleMouseDown}
+          className={[
+            classes?.resizeHandle,
+            resizeActive && classes?.resizeHandleActive,
+            anchor === 'left' ? classes?.resizeHandleRight : classes?.resizeHandleLeft
+          ]
+            .filter(Boolean)
+            .join(' ')}
           sx={{
             width: resizeActive ? '4px' : '2px',
             cursor: 'ew-resize',
@@ -186,6 +198,7 @@ export function ResizeableDrawer(props: ResizeableDrawerProps) {
       )}
       <Box
         component="section"
+        className={classes?.drawerBody}
         sx={{
           width: '100%',
           height: '100%',

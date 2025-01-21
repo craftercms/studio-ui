@@ -27,6 +27,7 @@ export interface NavProps {
   isSelectMode?: boolean;
   computeActiveItems?: (items: DetailedItem[]) => string[];
   showItemNavigateToButton?: boolean;
+  classes?: Partial<Record<'root', string>>;
   sxs?: PartialSxRecord<'root'>;
   onItemClicked?(item: DetailedItem, event?: React.MouseEvent): void;
   onSelectItem?(item: DetailedItem, unselect: boolean): void;
@@ -52,7 +53,7 @@ function PathNavigatorList(props: NavProps) {
   const fnRefs = useUpdateRefs({ computeActiveItems });
   const active = useMemo(() => fnRefs.current.computeActiveItems?.(items) ?? [], [items, fnRefs]);
   return (
-    <List component="nav" disablePadding sx={sxs?.root}>
+    <List component="nav" disablePadding classes={{ root: props.classes?.root }} sx={sxs?.root}>
       {items?.map((item: DetailedItem) => (
         <NavItem
           item={item}

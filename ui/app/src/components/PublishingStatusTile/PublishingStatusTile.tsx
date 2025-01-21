@@ -26,11 +26,14 @@ import { PartialSxRecord } from '../../models';
 import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
 import { Theme } from '@mui/material';
 
+export type PublishingStatusTileClassKey = 'root' | 'avatar' | 'text';
+
 export interface PublishingStatusTileProps
   extends React.HTMLAttributes<HTMLDivElement | HTMLButtonElement>,
     Pick<PublishingStatus, 'status' | 'enabled'> {
   isFetching?: boolean;
-  sxs?: PartialSxRecord<'root' | 'avatar' | 'text'>;
+  classes?: Partial<Record<PublishingStatusTileClassKey, string>>;
+  sxs?: PartialSxRecord<PublishingStatusTileClassKey>;
 }
 
 const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement, PublishingStatusTileProps>(
@@ -44,7 +47,7 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
         ref={ref}
         {...rest}
         onClick={onClick}
-        className={!isFetching ? status : null}
+        className={[!isFetching && status, props.classes?.root].filter(Boolean).join(' ')}
         sx={(theme) => ({
           width: '120px',
           height: '100px',
@@ -71,12 +74,14 @@ const PublishingStatusTile = React.forwardRef<HTMLDivElement | HTMLButtonElement
         <PublishingStatusAvatar
           enabled={enabled}
           status={isFetching ? null : status}
+          className={props.classes?.avatar}
           sx={{
             margin: '5px',
             ...sxs?.avatar
           }}
         />
         <Typography
+          className={props.classes?.text}
           sx={{
             width: '100%',
             ...sxs?.text

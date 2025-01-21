@@ -49,6 +49,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
     onClickShowAllDeps,
     isRequestPublish,
     showRequestApproval,
+    classes,
     submitLabel,
     mixedPublishingDates,
     mixedPublishingTargets,
@@ -101,6 +102,7 @@ export function PublishDialogUI(props: PublishDialogUIProps) {
           <SecondaryButton
             color="primary"
             onClick={onClickShowAllDeps}
+            className={classes?.leftAlignedAction}
             sx={{ marginRight: 'auto' }}
             disabled={isSubmitting || state.fetchingDependencies}
             loading={state.fetchingDependencies}

@@ -27,6 +27,8 @@ import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 import { SystemStyleObject } from '@mui/system/styleFunctionSx/styleFunctionSx';
 
+export type PathNavigatorHeaderClassKey = 'root' | 'content';
+
 export interface PathNavigatorHeaderProps {
   locale: string;
   title: string;
@@ -36,8 +38,9 @@ export interface PathNavigatorHeaderProps {
   onMenuButtonClick?(anchor: Element): void;
   menuButtonIcon?: ReactNode;
   className?: string;
+  classes?: Partial<Record<PathNavigatorHeaderClassKey, string>>;
   sx?: SxProps<Theme>;
-  sxs?: PartialSxRecord<'root' | 'content'>;
+  sxs?: PartialSxRecord<PathNavigatorHeaderClassKey>;
 }
 
 // PathNavigatorHeader
@@ -58,6 +61,10 @@ export function PathNavigatorHeader(props: PathNavigatorHeaderProps) {
   return (
     <AccordionSummary
       className={className}
+      classes={{
+        root: props.classes?.root,
+        content: props.classes?.content
+      }}
       sx={{
         ...(sx as SystemStyleObject<Theme>),
         ...sxs?.root,

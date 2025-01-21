@@ -45,9 +45,12 @@ import Tooltip from '@mui/material/Tooltip';
 import { PartialSxRecord } from '../../models';
 import Box from '@mui/material/Box';
 
+export type SingleItemSelectorClassKey = 'root' | 'title' | 'selectIcon' | 'popoverRoot' | 'selectedItem' | 'changeBtn';
+
 interface SingleItemSelectorProps {
   selectIcon?: React.ElementType;
-  sxs?: PartialSxRecord<'root' | 'title' | 'selectIcon' | 'popoverRoot' | 'selectedItem' | 'changeBtn'>;
+  classes?: Partial<Record<SingleItemSelectorClassKey, string>>;
+  sxs?: PartialSxRecord<SingleItemSelectorClassKey>;
   selectedItem?: DetailedItem;
   rootPath: string;
   label?: ReactNode;
@@ -219,6 +222,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
   // region const { ... } = props;
   const {
     selectIcon: SelectIcon = ExpandMoreRoundedIcon,
+    classes,
     sxs,
     titleVariant = 'body1',
     hideUI = false,
@@ -361,7 +365,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
     ? {}
     : {
         elevation: 0,
-        className: onDropdownClick ? '' : 'disable',
+        className: [onDropdownClick ? '' : 'disable', classes?.root].filter(Boolean).join(' '),
         sx: {
           backgroundColor: (theme) => theme.palette.background.paper,
           display: 'flex',
@@ -386,6 +390,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
           {label && (
             <Typography
               variant={titleVariant}
+              className={classes?.title}
               sx={{
                 fontWeight: 600,
                 marginRight: '30px',
@@ -397,6 +402,7 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
           )}
           {selectedItem && (
             <Box
+              className={classes?.selectedItem}
               sx={{
                 marginLeft: 'auto',
                 display: 'flex',
@@ -412,19 +418,21 @@ export function SingleItemSelector(props: SingleItemSelectorProps) {
       {onDropdownClick && (
         <Tooltip title={tooltip}>
           <IconButton
+            className={classes?.changeBtn}
             sx={sxs?.changeBtn}
             ref={buttonElRef}
             disabled={disabled}
             onClick={disabled ? null : () => handleDropdownClick(selectedItem)}
             size={buttonSize}
           >
-            <SelectIcon sx={sxs?.selectIcon} />
+            <SelectIcon className={classes?.selectIcon} sx={sxs?.selectIcon} />
           </IconButton>
         </Tooltip>
       )}
       <Popover
         anchorEl={buttonElRef.current}
         open={open}
+        classes={{ paper: classes?.popoverRoot }}
         slotProps={{
           paper: {
             sx: {
