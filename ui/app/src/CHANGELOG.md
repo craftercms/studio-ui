@@ -6,18 +6,17 @@
   * Removed `pages/QuickCreateMenu` component.
   * Removed `SuspenseWithEmptyState` and `WithEmptyState` components.
   * Removed `resource` prop from StoreProvider
-  * Removed `classes` prop from `DialogHeader`, `SingleItemSelector`, `PagesSearchAhead`, `ItemActionsMenu`, `LauncherSiteCard` , 
-  `ErrorState`, `ApiResponseErrorState`, `PathNavigatorTreeItem`, `PathNavigatorBreadcrumbs`, `PathNavigatorList`, `MediaCard`, 
-  `ConfirmDialog`, `GroupManagement`, `SearchBar`, `LogoAndMenuBundleButton`, `CrafterCMSIcon`, `ItemPublishingTargetIcon`,
-    `ItemStateIcon`, `LoginForm`, `LoadingState`, `LauncherSection`, `AceEditor`, `ItemDisplay`, `PasswordRequirementsDisplay`
-  `PathNavigatorTree`, `PathNavigatorHeader`, `PathNavigator`, `ResizeableDrawer`, `GlobalAppToolbar`, `PublishingStatusAvatar`
-  `EmptyState`. Replaced by `sxs` prop.
   * Removed `styles` prop from `ErrorState`, `ApiResponseErrorState`, `BlueprintForm`, `LoadingState`, `ConfirmDialog`, `AlertDialog`
   `LauncherSection`, `AceEditor`, `ItemDisplay`, `PasswordRequirementsDisplay`, `PublishDialogForm`, `ItemStateIcon`, `ResizeableDrawer`,
-  `GlobalAppToolbar`, `ViewToolbar`, `PublishingStatusAvatar`, `ItemPublishingTargetIcon`, `EmptyState`. Replaced by`sxs` prop.
+  `GlobalAppToolbar`, `ViewToolbar`, `PublishingStatusAvatar`, `ItemPublishingTargetIcon` and `EmptyState`. Replaced by`sxs` prop.
   * Removed `sectionStyles` and `tileStyles` props from `LauncherGlobalNav`. Replaced with `sectionSxs` and `tileSxs`.
-  * Added `sxs` prop to `CrafterCMSLogo`, `SiteSwitcherSelect`.
-  * Added `sx` prop to `FilterDropdown`, `PathNavigatorHeader`, `SiteTools`, `SiteSearchFilters`.
+  * Added `sxs` prop to `CrafterCMSLogo`, `SiteSwitcherSelect`, `ConfirmDialog`, `ContextMenu`, `BlueprintForm`, `ErrorState`, 
+  `GlobalAppToolbar`, `ItemActionsMenu`, `ItemDisplay`, `ItemMegaMenuUI`, `ItemPublishingTargetIcon`, `ItemStateIcon`, `LauncherSectionUI`,
+  `LauncherSiteCard`, `LauncherTile`, `LoadingState`, `LoginForm`, `LogoAndMenuBundleButton`, `PagesSearchAhead`, `PasswordRequirementsDisplay`,
+  `PathNavigator`, `PathNavigatorBreadcrumbs`, `PathNavigatorHeader`, `PathNavigatorList`, `PathNavigatorUI`, `PathNavigatorTree`,
+  `PathNavigatorTreeItem`, `PathNavigatorTreeUI`, `PublishDialogForm`, `PublishingStatusAvatar`, `PublishingStatusTile`, `ResizeableDrawer`,
+  `SearchBar`, `SingleItemSelector`, `SiteTools`, `ToolPanel`, `ViewToolbar` and `CrafterCMSIcon`.
+  * Added `sx` prop to `FilterDropdown`, `PathNavigatorHeader`, `SiteTools`, `SiteSearchFilters` and `PublishingStatusAvatar`.
 * [hooks]
   * Removed `useLogicResource` hook.
   * Removed `useSelectorResource` hook.
