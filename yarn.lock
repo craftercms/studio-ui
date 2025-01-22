@@ -1681,6 +1681,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@craftercms/classes@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@craftercms/classes@npm:4.2.2"
+  dependencies:
+    "@craftercms/models": "npm:4.2.2"
+    "@craftercms/utils": "npm:4.2.2"
+    query-string: "npm:^9.1.0"
+  checksum: 10/28118bac1c2977da6d0fc48d4a85ca9c795576c7a82ff56d08d938a067ac6529e654ea5b140ebf862328c01d67453b6b78f28b5a9cb24b585dc884a5b22c7c05
+  languageName: node
+  linkType: hard
+
 "@craftercms/content@npm:4.2.0":
   version: 4.2.0
   resolution: "@craftercms/content@npm:4.2.0"
@@ -1697,7 +1708,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@craftercms/experience-builder@workspace:ui/guest"
   dependencies:
-    "@craftercms/classes": "npm:4.2.0"
+    "@craftercms/classes": "npm:4.2.2"
     "@craftercms/content": "npm:4.2.0"
     "@craftercms/ice": "npm:4.2.0"
     "@craftercms/npm-content": "workspace:^"
@@ -1753,6 +1764,13 @@ __metadata:
   version: 4.2.0
   resolution: "@craftercms/models@npm:4.2.0"
   checksum: 10/2d570e7322925bfda00d5b5d576008a075911aa5d409350797d95e18ff0d8ad4eac74cad6e39cbcc865738b41fac3cd7393bd27fe58c5cc224b9ab8441bcf6c9
+  languageName: node
+  linkType: hard
+
+"@craftercms/models@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@craftercms/models@npm:4.2.2"
+  checksum: 10/778f0b937837861477984d9e36bd3929e8d78c2d44ceae9eeeda92d72c5adc6e07e1286cf567c83a5d143547c288e7024e92352cb9babcd4aef017018956e49d
   languageName: node
   linkType: hard
 
@@ -1956,6 +1974,13 @@ __metadata:
   version: 4.2.0
   resolution: "@craftercms/utils@npm:4.2.0"
   checksum: 10/e1228a8fa927934a9fd56c9645526e5aa0cefa4489581e73a244b408d1e3ab6435ca90fc48a0df2a463a45038e34b149ebca452d156c0fc4323da710849314d3
+  languageName: node
+  linkType: hard
+
+"@craftercms/utils@npm:4.2.2":
+  version: 4.2.2
+  resolution: "@craftercms/utils@npm:4.2.2"
+  checksum: 10/05da3b3f39cfae09cdfe869501d352b5a0960b4cf9801a32e5fde6504b01c0cba001949e9014899697f1c84ca9d0349e41336e97a6f2b1ba93b7e45ad8183bdb
   languageName: node
   linkType: hard
 
