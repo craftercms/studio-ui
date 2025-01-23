@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { GlobalAppContextProvider, useGlobalAppState } from '../../GlobalApp';
 import useReference from '../../../hooks/useReference';
 import { useActiveSiteId } from '../../../hooks/useActiveSiteId';
@@ -23,6 +23,7 @@ import { embeddedStyles } from '../styles';
 import { onSubmittingAndOrPendingChangeProps } from '../../../hooks/useEnhancedDialogState';
 import { useDispatch } from 'react-redux';
 import { updateWidgetDialog } from '../../../state/actions/dialogs';
+import { SiteToolsContext, SiteToolsContextProps } from '../siteToolsContext';
 
 interface EmbeddedSiteToolsProps {
   onMinimize?: () => void;
@@ -38,6 +39,10 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
   const site = useActiveSiteId();
   const { classes } = embeddedStyles();
   const dispatch = useDispatch();
+  const contextValue = useMemo<SiteToolsContextProps>(
+    () => ({ setTool: (id) => setActiveToolId(id.replace(/^\//, '')), activeToolId }),
+    [activeToolId]
+  );
 
   const onNavItemClick = (id: string) => {
     setActiveToolId(id);
@@ -50,31 +55,33 @@ export const EmbeddedSiteToolsContainer = (props: EmbeddedSiteToolsProps) => {
     });
 
   return (
-    <SiteTools
-      site={site}
-      sidebarWidth={width}
-      onWidthChange={setWidth}
-      onNavItemClick={onNavItemClick}
-      sidebarBelowToolbar
-      hideSidebarLogo
-      showAppsButton={false}
-      hideSidebarSiteSwitcher
-      activeToolId={activeToolId}
-      openSidebar={openSidebar || !activeToolId}
-      tools={tools}
-      classes={{
-        root: classes.root
-      }}
-      onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
-      onMinimize={() => {
-        if (props.onMinimize) {
-          props.onMinimize();
-        } else {
-          dispatch(updateWidgetDialog({ isMinimized: true }));
-        }
-      }}
-      mountMode="dialog"
-    />
+    <SiteToolsContext.Provider value={contextValue}>
+      <SiteTools
+        site={site}
+        sidebarWidth={width}
+        onWidthChange={setWidth}
+        onNavItemClick={onNavItemClick}
+        sidebarBelowToolbar
+        hideSidebarLogo
+        showAppsButton={false}
+        hideSidebarSiteSwitcher
+        activeToolId={activeToolId}
+        openSidebar={openSidebar || !activeToolId}
+        tools={tools}
+        classes={{
+          root: classes.root
+        }}
+        onSubmittingAndOrPendingChange={onSubmittingAndOrPendingChange}
+        onMinimize={() => {
+          if (props.onMinimize) {
+            props.onMinimize();
+          } else {
+            dispatch(updateWidgetDialog({ isMinimized: true }));
+          }
+        }}
+        mountMode="dialog"
+      />
+    </SiteToolsContext.Provider>
   );
 };
 

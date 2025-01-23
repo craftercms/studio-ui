@@ -262,7 +262,7 @@ export function PreviewSimulatorPanel(props: any) {
               key={device.value}
               value={device.value}
               control={<Radio />}
-              label={formatMessage(getTranslation(device.title, translations))}
+              label={getTranslation(device.title, translations, formatMessage)}
             />
           ))}
         </RadioGroup>

@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { fetchActiveEnvironment } from '../../services/environment';
 import { fetchConfigurationXML, fetchSiteConfigurationFiles, writeConfiguration } from '../../services/configuration';
 import { SiteConfigurationFileWithId } from '../../models/SiteConfigurationFile';
@@ -76,8 +76,8 @@ import { MaxLengthCircularProgress } from '../MaxLengthCircularProgress';
 import useUnmount from '../../hooks/useUnmount';
 import useActiveUser from '../../hooks/useActiveUser';
 import { createCustomDocumentEventListener } from '../../utils/dom';
-import { useNavigate } from 'react-router-dom';
 import { ProjectToolsRoutes } from '../../env/routes';
+import { SiteToolsContext } from '../SiteTools';
 
 interface SiteConfigurationManagementProps {
   embedded?: boolean;
@@ -100,6 +100,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const [selectedConfigFile, setSelectedConfigFile] = useState<SiteConfigurationFileWithId>(
     () => JSON.parse(sessionStorage.getItem(sessionStorageKey))?.selectedConfigFile ?? null
   );
+  const [changesRecoveredOnMount] = useState<boolean>(() => selectedConfigFile !== null);
   const ignoreEnv = selectedConfigFile?.path === 'site-policy-config.xml';
   const [selectedConfigFileXml, setSelectedConfigFileXml] = useState(null);
   const [configError, setConfigError] = useState(null);
@@ -116,9 +117,11 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   const [confirmDialogProps, setConfirmDialogProps] = useState<ConfirmDialogProps>(null);
   const [keyword, setKeyword] = useState('');
   const dispatch = useDispatch();
+  const setTool = useContext(SiteToolsContext)?.setTool;
   const refs = useUpdateRefs({
     disabledSaveButton,
-    selectedConfigFile
+    selectedConfigFile,
+    setTool
   });
   const functionRefs = useUpdateRefs({
     onSubmittingAndOrPendingChange
@@ -127,9 +130,16 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
     container: null
   });
   const [contentSize, setContentSize] = useState(0);
-  const navigate = useNavigate();
 
   useMount(() => {
+    if (changesRecoveredOnMount) {
+      dispatch(
+        showSystemNotification({
+          message: formatMessage({ defaultMessage: 'Unsaved changes were restored on to the editor.' }),
+          options: { variant: 'info' }
+        })
+      );
+    }
     fetchActiveEnvironment().subscribe({
       next(env) {
         setEnvironment(env);
@@ -141,7 +151,7 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   });
 
   useUnmount(() => {
-    if (!refs.current.disabledSaveButton && mountMode === 'page') {
+    if (!refs.current.disabledSaveButton) {
       sessionStorage.setItem(
         sessionStorageKey,
         JSON.stringify({
@@ -150,22 +160,37 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
         })
       );
       const eventId = 'unsavedConfigurationChangesConfirmation';
-      dispatch(
-        showConfirmDialog({
-          body: <FormattedMessage defaultMessage="You left unsaved changes. Go back and continue editing?" />,
-          onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
-          onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })]),
-          okButtonText: <FormattedMessage defaultMessage="Continue editing" />,
-          cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
-        })
-      );
-      createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
-        if (button === 'ok') {
-          navigate(ProjectToolsRoutes.Configuration);
-        } else {
-          sessionStorage.removeItem(sessionStorageKey);
-        }
-      });
+      const title = getTranslation(refs.current.selectedConfigFile.title, translations, formatMessage);
+      if (refs.current.setTool) {
+        dispatch(
+          showConfirmDialog({
+            body: formatMessage({ defaultMessage: 'You left unsaved changes on "{title}"' }, { title }),
+            onCancel: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'cancel' })]),
+            onOk: batchActions([closeConfirmDialog(), dispatchDOMEvent({ id: eventId, button: 'ok' })]),
+            okButtonText: <FormattedMessage defaultMessage="Go back and recover changes" />,
+            cancelButtonText: <FormattedMessage defaultMessage="Discard changes" />
+          })
+        );
+        createCustomDocumentEventListener<{ button: 'ok' | 'cancel' }>(eventId, ({ button }) => {
+          if (button === 'ok') {
+            refs.current.setTool(ProjectToolsRoutes.Configuration);
+          } else {
+            sessionStorage.removeItem(sessionStorageKey);
+          }
+        });
+      } else {
+        dispatch(
+          showConfirmDialog({
+            body: formatMessage(
+              {
+                defaultMessage:
+                  'You left unsaved changes on "{title}". You may go back to configuration now if you wish to recover or ignore to discard changes.'
+              },
+              { title }
+            )
+          })
+        );
+      }
     }
   });
 
@@ -185,34 +210,35 @@ export function SiteConfigurationManagement(props: SiteConfigurationManagementPr
   useEffect(() => {
     if (selectedConfigFile && environment) {
       setConfigError(null);
-      fetchConfigurationXML(
-        site,
-        selectedConfigFile.path,
-        selectedConfigFile.module,
-        ignoreEnv ? null : environment
-      ).subscribe({
-        next(xml) {
-          const sessionData = JSON.parse(sessionStorage.getItem(sessionStorageKey));
-          if (sessionData?.content) {
-            setSelectedConfigFileXml(sessionData.content);
-            setContentSize(sessionData.content.length);
-            setDisabledSaveButton(false);
-            sessionStorage.removeItem(sessionStorageKey);
-          } else {
+      const sessionData = JSON.parse(sessionStorage.getItem(sessionStorageKey));
+      if (sessionData?.content) {
+        setSelectedConfigFileXml(sessionData.content);
+        setContentSize(sessionData.content.length);
+        setDisabledSaveButton(false);
+        sessionStorage.removeItem(sessionStorageKey);
+        setLoadingXml(false);
+      } else {
+        fetchConfigurationXML(
+          site,
+          selectedConfigFile.path,
+          selectedConfigFile.module,
+          ignoreEnv ? null : environment
+        ).subscribe({
+          next(xml) {
             setSelectedConfigFileXml(xml ?? '');
             setContentSize(xml?.length ?? 0);
+            setLoadingXml(false);
+          },
+          error({ response }) {
+            if (response.response.code === 7000) {
+              setSelectedConfigFileXml('');
+            } else {
+              setConfigError(response.response);
+            }
+            setLoadingXml(false);
           }
-          setLoadingXml(false);
-        },
-        error({ response }) {
-          if (response.response.code === 7000) {
-            setSelectedConfigFileXml('');
-          } else {
-            setConfigError(response.response);
-          }
-          setLoadingXml(false);
-        }
-      });
+        });
+      }
     }
   }, [selectedConfigFile, environment, site, ignoreEnv, refs, sessionStorageKey]);
 

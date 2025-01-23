@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createIntl, createIntlCache, IntlShape } from 'react-intl';
+import { createIntl, createIntlCache, IntlShape, MessageDescriptor } from 'react-intl';
 import { Subject } from 'rxjs';
 import TranslationOrText from '../models/TranslationOrText';
 import { nou } from './object';
@@ -101,7 +101,11 @@ export function augmentTranslations(translations: { [localeCode: string]: object
   }
 }
 
-export function getTranslation(key: string, table: any, formatMessage = (descriptor) => descriptor) {
+export function getTranslation(
+  key: string,
+  table: Record<string, MessageDescriptor>,
+  formatMessage: IntlShape['formatMessage']
+): string {
   return formatMessage(
     table[key] || {
       id: 'translationNotAvailable',
