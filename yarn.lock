@@ -3246,25 +3246,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-internals@npm:7.23.6":
-  version: 7.23.6
-  resolution: "@mui/x-internals@npm:7.23.6"
+"@mui/x-internals@npm:7.24.1":
+  version: 7.24.1
+  resolution: "@mui/x-internals@npm:7.24.1"
   dependencies:
     "@babel/runtime": "npm:^7.25.7"
     "@mui/utils": "npm:^5.16.6 || ^6.0.0"
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/9492411ba80d7191a4486094076bb87c973d9f37789897465d13866788d7c007ff0b6e4fb181f1c2b4a9a393c77a9899d147ced113b8463c5f2e9f69df3b7ee4
+  checksum: 10/cd299136a323cf279fd5996b2ab7eefe1ace6205941cc39840fc018ce065ff81876af9c7037b0dc327869357424fbd6184dabdd5c031817c7814091108fe9aa5
   languageName: node
   linkType: hard
 
 "@mui/x-tree-view@npm:^7.22.1":
-  version: 7.23.6
-  resolution: "@mui/x-tree-view@npm:7.23.6"
+  version: 7.24.1
+  resolution: "@mui/x-tree-view@npm:7.24.1"
   dependencies:
     "@babel/runtime": "npm:^7.25.7"
     "@mui/utils": "npm:^5.16.6 || ^6.0.0"
-    "@mui/x-internals": "npm:7.23.6"
+    "@mui/x-internals": "npm:7.24.1"
     "@types/react-transition-group": "npm:^4.4.11"
     clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
@@ -3281,7 +3281,7 @@ __metadata:
       optional: true
     "@emotion/styled":
       optional: true
-  checksum: 10/1d607b2d491b706d98e9c49719ff9f8d0f05a67216357c622513d3a9d02eb0f7fb9bab8420a97b1ac442bc42fa8f76dbce27a379b68d43ed850a91ef1a4e0537
+  checksum: 10/2e942fc3b337fd4426561cc584d64bb2aefc64fa5380869fa8884c553674c86f147c69c74e2992b40f582ae197d1df3cca9c91f3190ba0b1aaa8d136c1fcc517
   languageName: node
   linkType: hard
 
