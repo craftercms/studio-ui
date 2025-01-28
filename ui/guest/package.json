@@ -14,52 +14,6 @@
   "craftercms": {
     "id": "craftercms.guest"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "plugin:prettier/recommended"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error"
-      ],
-      "spaced-comment": [
-        "error",
-        "always",
-        {
-          "line": {
-            "markers": [
-              "/",
-              "#"
-            ]
-          },
-          "block": {
-            "markers": [
-              "!",
-              "*",
-              "#",
-              "function",
-              "const",
-              "if",
-              "export",
-              "interface",
-              "#__PURE__",
-              "@__PURE__"
-            ],
-            "exceptions": [
-              "!",
-              "*",
-              "#"
-            ],
-            "balanced": false
-          }
-        }
-      ]
-    }
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -91,7 +45,8 @@
     "replace-env-version": "node ./scripts/replaceEnvVersion.js",
     "build:npm": "run-s clean:npm build:modern replace-env-version create-package-file copy-jquery-npm",
     "copy-jquery-npm": "cp -r ./src/jquery ./build_tsc/jquery",
-    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json"
+    "bom": "mkdir -p target && yarn cyclonedx --output-file target/bom.json",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@craftercms/classes": "4.2.0",

@@ -30,6 +30,7 @@ export interface RepositoryStatus {
   clean: boolean;
   conflicting: string[];
   uncommittedChanges: string[];
+  untracked: string[];
 }
 
 export interface FileDiff {
