@@ -118,7 +118,6 @@ export function TransferListColumn(props: TransferListColumnProps) {
               }
             />
           ) : (
-            // @ts-expect-error InfiniteScroll cannot be used as a JSX component.
             <InfiniteScroll
               initialLoad={false}
               pageStart={0}
