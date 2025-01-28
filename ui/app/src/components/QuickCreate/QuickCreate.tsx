@@ -75,6 +75,16 @@ interface QuickCreateMenuButtonProps {
 }
 
 interface QuickCreateSectionProps {
+  classes?: Partial<
+    Record<
+      | 'menuItem'
+      | 'quickCreateEmptyRoot'
+      | 'quickCreateEmptyCardContent'
+      | 'quickCreateEmptyDescription'
+      | 'quickCreateEmptyCardActions',
+      string
+    >
+  >;
   onItemSelected: (item: QuickCreateItem) => any;
   version: string;
   quickCreateItems: QuickCreateItem[];
@@ -151,17 +161,23 @@ export function QuickCreateMenu(props: QuickCreateMenuProps) {
 }
 
 function QuickCreateSection(props: QuickCreateSectionProps) {
-  const { version, quickCreateItems, onItemSelected } = props;
+  const { version, quickCreateItems, classes, onItemSelected } = props;
 
   return (
     <>
       {quickCreateItems.map((item) => (
-        <MenuItem key={item.path} onClick={() => onItemSelected(item)} sx={{ fontSize: 14 }}>
+        <MenuItem
+          key={item.path}
+          onClick={() => onItemSelected(item)}
+          className={classes?.menuItem}
+          sx={{ fontSize: 14 }}
+        >
           {item.label}
         </MenuItem>
       ))}
       {quickCreateItems.length === 0 && (
         <Card
+          className={classes?.quickCreateEmptyRoot}
           sx={{
             width: '149px',
             justifyContent: 'center',
@@ -172,11 +188,11 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
             boxShadow: 'none'
           }}
         >
-          <CardContent sx={{ padding: '5px 10px' }}>
+          <CardContent className={classes?.quickCreateEmptyCardContent} sx={{ padding: '5px 10px' }}>
             <Typography color="textSecondary" gutterBottom>
               <ErrorOutlineOutlinedIcon fontSize={'small'} />
             </Typography>
-            <Typography sx={{ fontSize: '12px' }}>
+            <Typography className={classes?.quickCreateEmptyDescription} sx={{ fontSize: '12px' }}>
               <FormattedMessage
                 id="quickCreateMenu.learnMoreError"
                 defaultMessage="Quick create has not been configured. Please contact your system administrator."
@@ -184,6 +200,7 @@ function QuickCreateSection(props: QuickCreateSectionProps) {
             </Typography>
           </CardContent>
           <CardActions
+            className={classes?.quickCreateEmptyCardActions}
             sx={{
               padding: 0,
               '& .MuiButton-root': {

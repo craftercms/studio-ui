@@ -27,12 +27,13 @@ import ListItemButton from '@mui/material/ListItemButton';
 import Box from '@mui/material/Box';
 
 export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
-  const { items: rejectItems, checkedItems, onUpdateChecked } = props;
+  const { items: rejectItems, checkedItems, onUpdateChecked, classes } = props;
   return (
     <List
       subheader={
         <ListSubheader
           component="div"
+          className={classes?.listSubHeader}
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -40,7 +41,7 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
             lineHeight: '30px'
           }}
         >
-          <Box component="label" sx={{ marginLeft: '40px' }}>
+          <Box component="label" className={classes?.subHeaderItem} sx={{ marginLeft: '40px' }}>
             <FormattedMessage id="words.item" defaultMessage="Item" />
           </Box>
           <label>
@@ -48,6 +49,7 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
           </label>
         </ListSubheader>
       }
+      className={classes?.itemsList}
       sx={(theme) => ({
         border: `1px solid ${theme.palette.divider}`,
         background: theme.palette.background.paper,
@@ -74,6 +76,12 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
               primary={item.label}
               secondary={item.path}
               id={labelId}
+              primaryTypographyProps={{
+                classes: { root: classes?.ellipsis }
+              }}
+              secondaryTypographyProps={{
+                classes: { root: classes?.ellipsis }
+              }}
               sx={{
                 [`& .${listItemTextClasses.primary}, & .${listItemTextClasses.secondary}`]: {
                   overflow: 'hidden',
@@ -84,6 +92,7 @@ export function RejectDialogContentUI(props: RejectDialogContentUIProps) {
             />
             <ListItemText
               disableTypography={true}
+              className={classes?.submittedBy}
               sx={{
                 flexGrow: 0,
                 width: '100px',

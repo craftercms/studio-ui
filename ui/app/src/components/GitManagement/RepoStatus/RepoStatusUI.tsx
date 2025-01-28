@@ -210,7 +210,10 @@ export function RepoStatusUI(props: RepoStatusUIProps) {
                     {status.untracked.map((file) => (
                       <GlobalAppGridRow key={file} className="hoverDisabled">
                         <GlobalAppGridCell>
-                          <Box component="span" sx={{ fontWeight: 600 }}>{file.substr(file.lastIndexOf('/') + 1)}</Box> - {file}
+                          <Box component="span" sx={{ fontWeight: 600 }}>
+                            {file.substr(file.lastIndexOf('/') + 1)}
+                          </Box>{' '}
+                          - {file}
                         </GlobalAppGridCell>
                       </GlobalAppGridRow>
                     ))}

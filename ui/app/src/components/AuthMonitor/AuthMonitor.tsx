@@ -177,11 +177,12 @@ type SSOFormProps = PropsWithChildren<{
   onSubmit: (e) => any;
   ssoButtonClicked: boolean;
   onSetSSOButtonClicked: Function;
+  classes?: Record<'ssoAction' | 'input', string>;
   sxs?: PartialSxRecord<'ssoAction' | 'input'>;
 }>;
 
 function SSOForm(props: SSOFormProps) {
-  const { username, onSubmit, authoringUrl, ssoButtonClicked, onSetSSOButtonClicked, sxs } = props;
+  const { username, onSubmit, authoringUrl, ssoButtonClicked, onSetSSOButtonClicked, classes, sxs } = props;
   const onOpenLogin = () => {
     window.open(`${authoringUrl}/login/resume`, '_blank', 'toolbar=0,location=0,menubar=0,dependent=true');
     onSetSSOButtonClicked(true);
@@ -193,11 +194,13 @@ function SSOForm(props: SSOFormProps) {
         disabled
         type="email"
         value={username}
+        className={classes?.input}
         sx={sxs?.input}
         label={<FormattedMessage id="authMonitor.usernameTextFieldLabel" defaultMessage="Username" />}
       />
       <Box
         component="section"
+        className={classes?.ssoAction}
         sx={{
           textAlign: 'center',
           display: 'flex',

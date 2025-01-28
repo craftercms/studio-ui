@@ -30,6 +30,7 @@ export interface RejectDialogContentUIProps {
   items: SandboxItem[];
   checkedItems: string[];
   onUpdateChecked?(value?: string): void;
+  classes?: Partial<Record<'itemsList' | 'listSubHeader' | 'subHeaderItem' | 'submittedBy' | 'ellipsis', string>>;
 }
 
 export interface RejectDialogUIProps {

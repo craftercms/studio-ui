@@ -107,6 +107,7 @@ const messages = defineMessages({
 // region AppsRail
 
 interface AppsRailProps {
+  classes?: Partial<Record<'appsRail' | 'railTop' | 'appsSkeletonTile', string>>;
   widgets: WidgetDescriptor[];
   formatMessage: IntlShape['formatMessage'];
   user: EnhancedUser;
@@ -164,6 +165,7 @@ const UserDisplaySection = ({ formatMessage, user, onLogout }) => (
 );
 
 const AppsRail = ({
+  classes,
   widgets,
   formatMessage,
   user,
@@ -173,8 +175,9 @@ const AppsRail = ({
   globalNavigationPosition,
   lonely
 }: AppsRailProps) => (
-  <Grid size={{ xs: 12, md: lonely ? 12 : 8 }}>
+  <Grid className={classes?.appsRail} size={{ xs: 12, md: lonely ? 12 : 8 }}>
     <Box
+      className={classes?.railTop}
       sx={{
         padding: '30px 29px',
         overflow: 'auto',
@@ -192,9 +195,10 @@ const AppsRail = ({
   </Grid>
 );
 
-const AppsRailSkeleton = ({ closeButtonPosition, formatMessage, onLogout, user }) => (
-  <Grid size={{ xs: 12, md: 8 }}>
+const AppsRailSkeleton = ({ classes, closeButtonPosition, formatMessage, onLogout, user }: Partial<AppsRailProps>) => (
+  <Grid size={{ xs: 12, md: 8 }} className={classes?.appsRail}>
     <Box
+      className={classes?.railTop}
       sx={{
         padding: '30px 29px',
         overflow: 'auto',
@@ -208,6 +212,7 @@ const AppsRailSkeleton = ({ closeButtonPosition, formatMessage, onLogout, user }
         <Skeleton
           key={i}
           variant="rectangular"
+          className={classes?.appsSkeletonTile}
           sx={{
             margin: 5,
             width: 120,
@@ -226,6 +231,9 @@ const AppsRailSkeleton = ({ closeButtonPosition, formatMessage, onLogout, user }
 // region SiteRail
 
 interface SitesRailProps {
+  classes?: Partial<
+    Record<'sitesRail' | 'railTop' | 'mySitesTitle' | 'titleCard' | 'railBottom' | 'versionText', string>
+  >;
   formatMessage: IntlShape['formatMessage'];
   sites: Site[];
   site: string;
@@ -234,15 +242,17 @@ interface SitesRailProps {
   onSiteCardClick(id: string): void;
 }
 
-const SitesRail = ({ formatMessage, sites, site, onSiteCardClick, options, version }: SitesRailProps) => (
+const SitesRail = ({ classes, formatMessage, sites, site, onSiteCardClick, options, version }: SitesRailProps) => (
   <Grid
     size={{ md: 4 }}
+    className={classes?.sitesRail}
     sx={{
       display: { xs: 'none', sm: 'none', md: 'block' },
       backgroundColor: (theme) => theme.palette.background.default
     }}
   >
     <Box
+      className={classes?.railTop}
       sx={{
         padding: '30px 29px',
         overflow: 'auto',
@@ -253,6 +263,7 @@ const SitesRail = ({ formatMessage, sites, site, onSiteCardClick, options, versi
       <Typography
         variant="subtitle1"
         component="h2"
+        className={classes?.mySitesTitle}
         sx={{ marginBottom: '24px', textTransform: 'uppercase', fontWeight: 600 }}
       >
         {formatMessage(messages.mySites)}
@@ -265,6 +276,7 @@ const SitesRail = ({ formatMessage, sites, site, onSiteCardClick, options, versi
               selected={item.id === site}
               title={item.name}
               value={item.id}
+              classes={{ root: classes?.titleCard }}
               sxs={{ root: { marginBottom: '20px' } }}
               state={item.state}
               onCardClick={() => onSiteCardClick(item.id)}
@@ -279,6 +291,7 @@ const SitesRail = ({ formatMessage, sites, site, onSiteCardClick, options, versi
       )}
     </Box>
     <Box
+      className={classes?.railBottom}
       sx={{
         height: 65,
         display: 'flex',
@@ -288,16 +301,17 @@ const SitesRail = ({ formatMessage, sites, site, onSiteCardClick, options, versi
       }}
     >
       <CrafterCMSLogo width={115} />
-      <Typography color="textSecondary" variant="caption">
+      <Typography className={classes?.versionText} color="textSecondary" variant="caption">
         {version}
       </Typography>
     </Box>
   </Grid>
 );
 
-const SiteRailSkeleton = ({ formatMessage, version }) => (
+const SiteRailSkeleton = ({ classes, formatMessage, version }: Partial<SitesRailProps>) => (
   <Grid
     size={{ md: 4 }}
+    className={classes?.sitesRail}
     sx={{
       backgroundColor: (theme) => theme.palette.background.default
     }}
@@ -326,6 +340,7 @@ const SiteRailSkeleton = ({ formatMessage, version }) => (
       </List>
     </Box>
     <Box
+      className={classes?.railBottom}
       sx={{
         height: 65,
         display: 'flex',
@@ -335,7 +350,7 @@ const SiteRailSkeleton = ({ formatMessage, version }) => (
       }}
     >
       <CrafterCMSLogo width={115} />
-      <Typography color="textSecondary" variant="caption">
+      <Typography className={classes?.versionText} color="textSecondary" variant="caption">
         {version}
       </Typography>
     </Box>

@@ -46,13 +46,14 @@ function useContentTypePreviewImage(contentTypeName: string) {
 }
 
 const DefaultCardContent = (props) => {
-  const { headerTitle, subheader, imgTitle, contentTypeName } = props;
+  const { headerTitle, subheader, classes, imgTitle, contentTypeName } = props;
   const src = useContentTypePreviewImage(contentTypeName);
   return (
     <>
       <CardHeader
         title={headerTitle}
         subheader={subheader}
+        classes={{ content: classes?.cardHeader }}
         sx={{
           [`& .${cardHeaderClasses.content}`]: {
             overflow: 'hidden'
@@ -61,29 +62,37 @@ const DefaultCardContent = (props) => {
         titleTypographyProps={{
           variant: 'body1',
           title: headerTitle,
+          classes: { root: classes?.cardHeaderContentTypography },
           sx: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
         }}
         subheaderTypographyProps={{
           noWrap: true,
           title: subheader,
+          classes: { root: classes?.cardHeaderContentTypography },
           sx: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
         }}
       />
       <Divider />
-      {src && <CardMedia sx={{ paddingTop: '75%' }} image={src} title={imgTitle} />}
+      {src && <CardMedia className={classes?.media} sx={{ paddingTop: '75%' }} image={src} title={imgTitle} />}
     </>
   );
 };
 
 const CompactCardContent = (props) => {
-  const { headerTitle, subheader, imgTitle, contentTypeName } = props;
+  const { headerTitle, subheader, classes, imgTitle, contentTypeName } = props;
   const src = useContentTypePreviewImage(contentTypeName);
   return (
     <>
-      {src && <CardMedia sx={{ width: 151, minWidth: 151 }} image={src} title={imgTitle} />}
+      {src && (
+        <CardMedia className={classes?.compactMedia} sx={{ width: 151, minWidth: 151 }} image={src} title={imgTitle} />
+      )}
       <CardHeader
         title={headerTitle}
         subheader={subheader}
+        classes={{
+          root: classes?.cardHeader,
+          content: classes?.cardHeader
+        }}
         sx={{
           overflow: 'hidden',
           [`& .${cardHeaderClasses.content}`]: {
@@ -93,11 +102,13 @@ const CompactCardContent = (props) => {
         titleTypographyProps={{
           variant: 'body1',
           title: headerTitle,
+          classes: { root: classes?.cardHeaderContentTypography },
           sx: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
         }}
         subheaderTypographyProps={{
           noWrap: true,
           title: subheader,
+          classes: { root: classes?.cardHeaderContentTypography },
           sx: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
         }}
       />

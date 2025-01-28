@@ -48,12 +48,13 @@ const ActionsGroup = forwardRef<HTMLDivElement, ActionsGroupProps>(function Acti
   const marginLeft = spacing && SPACINGS[spacing] !== undefined ? SPACINGS[spacing] : spacing;
   const [showMenu, setShowMenu] = useState<any>();
   return (
-    <Box className={className} sx={sxs?.root} {...other} ref={ref}>
+    <Box className={[className, propClasses?.root].filter(Boolean).join(' ')} sx={sxs?.root} {...other} ref={ref}>
       {actions.slice(0, actions.length - extraActions).map((child, index) => (
         <Button
           key={child.id}
           onClick={(e) => onActionClicked?.(child.id, e)}
           style={{ marginLeft: index === 0 ? undefined : marginLeft }}
+          className={propClasses?.action}
           sx={{
             minWidth: '40px',
             ...sxs?.action

@@ -80,6 +80,7 @@ type SubViewProps = React.PropsWithChildren<{
   children: React.ReactNode;
   isFetching: boolean;
   onSubmit: React.Dispatch<React.SetStateAction<boolean>>;
+  classes?: Partial<Record<any, string>>;
   formatMessage: Function;
   onSnack: React.Dispatch<React.SetStateAction<{ open: boolean; message: string }>>;
   setLanguage: React.Dispatch<React.SetStateAction<string>>;
@@ -144,6 +145,7 @@ function LoginView(props: SubViewProps) {
     children,
     isFetching,
     onSubmit,
+    classes,
     setLanguage,
     onRecover,
     formatMessage,
@@ -207,9 +209,10 @@ function LoginView(props: SubViewProps) {
   return (
     <>
       <DialogContent>
-        <HeaderView error={error} introMessage="" />
+        <HeaderView error={error} introMessage="" classes={classes} />
         <LogInForm
           children={children}
+          classes={classes}
           onSubmit={handleSubmit}
           username={username}
           password={password}
@@ -230,7 +233,7 @@ function LoginView(props: SubViewProps) {
 }
 
 function RecoverView(props: SubViewProps) {
-  const { children, isFetching, onSubmit, formatMessage, onSnack, setMode } = props;
+  const { children, isFetching, onSubmit, classes, formatMessage, onSnack, setMode } = props;
   const [username, setUsername] = useState(() => localStorage.getItem('username') ?? '');
   const [error, setError] = useState('');
   const onSubmitRecover = (e: any) => {
@@ -260,7 +263,11 @@ function RecoverView(props: SubViewProps) {
   return (
     <form onSubmit={onSubmitRecover}>
       <DialogContent>
-        <HeaderView error={error} introMessage={formatMessage(translations.recoverYourPasswordViewTitle)} />
+        <HeaderView
+          error={error}
+          classes={classes}
+          introMessage={formatMessage(translations.recoverYourPasswordViewTitle)}
+        />
         {children}
         <TextField
           id="recoverFormUsernameField"
@@ -270,6 +277,7 @@ function RecoverView(props: SubViewProps) {
           type="text"
           value={username}
           onChange={(e: any) => setUsername(e.target.value)}
+          className={classes?.username}
           label={<FormattedMessage id="loginView.usernameTextFieldLabel" defaultMessage="Username" />}
           slotProps={{
             htmlInput: { maxLength: USER_USERNAME_MAX_LENGTH }
@@ -304,8 +312,17 @@ function RecoverView(props: SubViewProps) {
 }
 
 function ResetView(props: SubViewProps) {
-  const { children, isFetching, onSubmit, formatMessage, onSnack, setMode, token, passwordRequirementsMinComplexity } =
-    props;
+  const {
+    children,
+    isFetching,
+    onSubmit,
+    classes,
+    formatMessage,
+    onSnack,
+    setMode,
+    token,
+    passwordRequirementsMinComplexity
+  } = props;
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [isValid, setValid] = useState<boolean>(null);
@@ -355,6 +372,7 @@ function ResetView(props: SubViewProps) {
       <DialogContent>
         <HeaderView
           error={error}
+          classes={classes}
           introMessage={
             <FormattedMessage
               id="loginView.resetYourPasswordIntroText"
@@ -376,6 +394,7 @@ function ResetView(props: SubViewProps) {
           error={isValid !== null && !isValid}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
+          className={classes?.resetPassword}
           sxs={{ root: { mb: 0 } }}
           placeholder={formatMessage(translations.resetPasswordFieldPlaceholderLabel)}
           onFocus={(e) => setAnchorEl(e.target)}
@@ -391,6 +410,7 @@ function ResetView(props: SubViewProps) {
           error={passwordsMismatch}
           value={newPasswordConfirm}
           onChange={(e) => setNewPasswordConfirm(e.target.value)}
+          className={classes?.resetPassword}
           sxs={{ root: { mb: 0 } }}
           placeholder={formatMessage(translations.resetPasswordConfirmFieldPlaceholderLabel)}
         />
@@ -405,10 +425,11 @@ function ResetView(props: SubViewProps) {
   );
 }
 
-function HeaderView({ error, introMessage }: any) {
+function HeaderView({ error, introMessage, classes }: any) {
   return (
     <Typography
       variant="body2"
+      className={classes[error ? 'errorMessage' : 'recoverInfoMessage']}
       sx={
         error
           ? (theme) => ({
@@ -444,11 +465,12 @@ function HeaderView({ error, introMessage }: any) {
   );
 }
 
-function UnrecognizedView() {
+function UnrecognizedView({ classes }: { classes?: SubViewProps['classes'] }) {
   return (
     <DialogContent>
       <Typography
         variant="body2"
+        className={classes?.recoverInfoMessage}
         sx={{
           maxWidth: 300,
           textAlign: 'center',

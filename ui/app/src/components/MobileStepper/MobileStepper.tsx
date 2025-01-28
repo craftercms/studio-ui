@@ -27,6 +27,7 @@ export interface MobileStepperProps {
   activeStep?: number;
   backButton?: ReactNode;
   onDotClick?: Function;
+  classes?: Partial<Record<'root' | 'dots' | 'dot' | 'progress', string>>;
   className?: string;
   sx?: SxProps<Theme>;
   LinearProgressProps?: any;
@@ -53,6 +54,7 @@ export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStep
       activeStep = 0,
       backButton,
       onDotClick,
+      classes = {},
       sx,
       className,
       LinearProgressProps,
@@ -67,7 +69,7 @@ export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStep
       <Paper
         square
         elevation={0}
-        className={clsx(`${mobileStepperClasses.root}-position${capitalize(position)}`, className)}
+        className={clsx(classes?.root, `${mobileStepperClasses.root}-position${capitalize(position)}`, className)}
         sx={sx}
         onClick={(e) => e.stopPropagation()}
         ref={ref}
@@ -80,12 +82,12 @@ export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStep
           </React.Fragment>
         )}
         {variant === 'dots' && (
-          <div className={mobileStepperClasses.dots}>
+          <div className={clsx(classes?.dots, mobileStepperClasses.dots)}>
             {[...new Array(steps)].map((_, index) => (
               <div
                 key={index}
                 onClick={onDotClick ? (e) => onDotClick(e, index) : null}
-                className={clsx(mobileStepperClasses.dot, {
+                className={clsx(classes?.dot, mobileStepperClasses.dot, {
                   [mobileStepperClasses.dotActive]: index === activeStep
                 })}
               />
@@ -94,7 +96,7 @@ export const UnstyledMobileStepper = React.forwardRef<HTMLDivElement, MobileStep
         )}
         {variant === 'progress' && (
           <LinearProgress
-            className={mobileStepperClasses.progress}
+            className={clsx(classes?.progress, mobileStepperClasses.progress)}
             variant="determinate"
             value={Math.ceil((activeStep / (steps - 1)) * 100)}
             {...LinearProgressProps}
